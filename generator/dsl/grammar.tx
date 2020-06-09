@@ -1,0 +1,48 @@
+Store:
+	objects*=Object
+;
+
+Object:
+	( Variable | Function ) ';'
+;
+
+Variable:
+	type=Type name=Name ('=' default=Immediate ) ?
+;
+
+Function:
+	'(' type=Type ')' name=Name
+;
+
+Type:
+	FixedType | BlobType
+;
+
+FixedType:
+	'bool' |
+	'int8' | 'uint8' |
+	'int16' | 'uint16' |
+	'int32' | 'uint32' |
+	'int64' | 'uint64' |
+	'float' | 'double' |
+	'ptr32' | 'ptr64'
+;
+
+BlobType:
+	type=BlobBaseType '[' size=INT ']'
+;
+
+BlobBaseType:
+	( 'string' | 'blob' ) 
+;
+
+Name[noskipws]:
+	/\s*/-
+	/[^;=]*[^;=\s]/
+	/\s*/-
+;
+
+Immediate:
+	NUMBER | BOOL
+;
+

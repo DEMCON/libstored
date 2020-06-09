@@ -1,3 +1,3 @@
-=libstored - Store for Embedded Debugger
+# libstored - Store for Embedded Debugger
 
 
