@@ -1,0 +1,111 @@
+#ifndef __LIBSTORED_STORE_H
+#define __LIBSTORED_STORE_H
+// vim:filetype=cpp
+
+#ifdef __cplusplus
+
+#include <libstored/macros.h>
+#include <libstored/util.h>
+#include <libstored/types.h>
+
+namespace stored {
+
+	template <typename Impl>
+	class Store {
+	private:
+		char buffer[] = {...};
+
+		template <typename T> Variable<T,Impl> variable(size_t offset, size_t len = sizeof(T)) {
+			stored_assert(dynamic_cast<Impl*>(this));
+			return Variable<T,Impl>(*static_cast<Impl*>(this), reinterpret_cast<T*>(&buffer[offset]), len);
+		}
+
+		template <typename T> Function<T,Impl> function(unsigned int f) {
+			stored_assert(dynamic_cast<Impl*>(this));
+			return Function<T,Impl>(*static_cast<Impl*>(this), f);
+		}
+
+	protected:
+		size_t callback(bool UNUSED_PAR(set), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len), unsigned int UNUSED_PAR(f)) {
+			stored_assert(dynamic_cast<Impl*>(this));
+
+			switch(f)
+			case 1: // /t
+				stored_assert(len == sizeof(uint32_t));
+				static_cast<Impl*>(this)->t(set, *(uint32_t*)value);
+				return sizeof(uint32_t);
+			default:
+				return 0;
+			}
+		}
+
+		void t(bool set, uint32_t& value) {}
+
+	public:
+		Variable<int32_t,Impl> bla__asdf() { return variable<int32_t>(0); }
+		Variable<bool,Impl> bla__b_0() { return variable<bool>(4); }
+		Variable<bool,Impl> bla__b_1() { return variable<bool>(5); }
+		Function<uint32_t,Impl> t() { return function<bool>(&t_); }
+
+	private:
+		static uint8_t const directory[] = {...};
+
+		static size_t decodeOffset(uint8_t const*& p) {
+			size_t v = 0;
+			while(*p & 0x80) {
+				v = (v << 7) | (*p & 0x7f);
+				p++;
+			}
+			return v | *p++;
+		}
+
+		static void skipOffset(uint8_t const*& p) {
+			while(*p++ & 0x80);
+		}
+
+	public:
+		Variant find(char const* name) const {
+			uint8_t const* p = nameDefinition();
+			while(true) {
+				if(*p == '/') {
+					// Skip till next /
+					while(*name != '/') { if(!*name++) return Variant(); }
+					p++;
+				} else if(*p == 0) {
+					// end
+					return Variant();
+				} else if(*p >= 0x80) {
+					// var
+					uint8_t type = *p++ ^ 0x80;
+					uint8_t len;
+					if(!Type::isFixed(type))
+						len = *p++;
+					size_t offset = decodeOffset(++p);
+					if(Type::isFunction(type))
+						return Variant(*this, type, offset);
+					else
+						return Variant(*this, type, data + offset, len);
+				} else {
+					// match char
+					int c = (int)*name - (int)*p++;
+					if(c < 0) {
+						// take jmp_l
+						p += decodeOffset(p);
+					} else {
+						skipOffset(p);
+						if(c > 0) {
+							// take jmp_g
+							p += decodeOffset(p);
+						} else {
+							// equal
+							skipOffset(p);
+						}
+					}
+				}
+			}
+		}
+	};
+
+} // namespace
+#endif // __cplusplus
+#endif // __LIBSTORED_STORE_H

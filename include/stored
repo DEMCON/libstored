@@ -1,0 +1,7 @@
+#ifndef __LIBSTORED
+#define __LIBSTORED
+// vim:filetype=cpp
+
+#include <stored.h>
+
+#endif // __LIBSTORED
