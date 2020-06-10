@@ -15,7 +15,7 @@ from textx.export import metamodel_export, model_export
 from dsl import types
 
 generator_dir = os.path.dirname(__file__)
-libstored_dir = os.path.join(generator_dir, '..')
+libstored_dir = os.path.abspath(os.path.join(generator_dir, '..'))
 
 logging.basicConfig(format='[  ?%%] %(message)s', level=logging.DEBUG)
 logger = logging.getLogger('libstored')
@@ -75,6 +75,28 @@ def stype(o):
         t += ' | Type::Function'
     return t
 
+def carray(a):
+    s = ''
+    line = 0
+    for i in a:
+        s += '0x%02x, ' % i
+        line += 1
+        if line > 32:
+            s += '\n'
+            line = 0
+    return s
+
+def model_name(model_file):
+    return os.path.splitext(os.path.split(model_file)[1])[0]
+
+def model_cname(model_file):
+    s = model_name(model_file)
+    s = re.sub(r'[^A-Za-z0-9]+', '_', s)
+    s = re.sub(r'_([a-z])', lambda m: m.group(1).upper(), s)
+    s = re.sub(r'^_|_$', '', s)
+    s = s[0].upper() + s[1:]
+    return s
+
 ##
 # @brief Load a model from a file
 # @param filename The name of the file to load
@@ -89,14 +111,14 @@ def load_model(filename, debug=False):
         ],
         debug=debug)
 
-
+    
     model = meta.model_from_file(filename, debug=False)
+    model.name = model_cname(filename)
     return model
 
-def model_name(model_file):
-    return os.path.splitext(os.path.split(model_file)[1])[0]
-
 def generate_store(model_file, output_dir, debug=False):
+    logger.info(f"generating store {model_name(model_file)}")
+
     model = load_model(model_file)
 
     # create the output dir if it does not exist yet
@@ -104,32 +126,71 @@ def generate_store(model_file, output_dir, debug=False):
         os.mkdir(output_dir)
     if not os.path.exists(os.path.join(output_dir, 'include')):
         os.mkdir(os.path.join(output_dir, 'include'))
+    if not os.path.exists(os.path.join(output_dir, 'src')):
+        os.mkdir(os.path.join(output_dir, 'src'))
 
     # now generate the code
 
     jenv = jinja2.Environment(
-            loader = jinja2.FileSystemLoader(os.path.join(libstored_dir, 'include', 'libstored')),
+            loader = jinja2.FileSystemLoader([
+                os.path.join(libstored_dir, 'include', 'libstored'),
+                os.path.join(libstored_dir, 'src'),
+            ]),
             trim_blocks = True,
             lstrip_blocks = True)
 
     jenv.filters['ctype'] = ctype
     jenv.filters['stype'] = stype
     jenv.filters['cname'] = types.cname
+    jenv.filters['carray'] = carray
+    jenv.filters['len'] = len
     jenv.tests['variable'] = is_variable
     jenv.tests['function'] = is_function
     jenv.tests['blob'] = is_blob
 
-    store_tmpl = jenv.get_template('store.h.tmpl')
+    store_h_tmpl = jenv.get_template('store.h.tmpl')
+    store_cpp_tmpl = jenv.get_template('store.cpp.tmpl')
 
-    with open(os.path.join(output_dir, 'include', model_name(model_file) + '_store.h'), 'w') as f:
-        logger.info("generating store")
-        f.write(store_tmpl.render(store=model))
+    with open(os.path.join(output_dir, 'include', model_name(model_file) + '.h'), 'w') as f:
+        f.write(store_h_tmpl.render(store=model))
+
+    with open(os.path.join(output_dir, 'src', model_name(model_file) + '.cpp'), 'w') as f:
+        f.write(store_cpp_tmpl.render(store=model))
+
+def generate_cmake(model_files, output_dir, debug=False):
+    logger.info("generating CMakeLists.txt")
+    models = map(model_name, model_files)
+
+    # create the output dir if it does not exist yet
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+
+    jenv = jinja2.Environment(
+            loader = jinja2.FileSystemLoader([
+                os.path.join(libstored_dir),
+            ]),
+            trim_blocks = True,
+            lstrip_blocks = True)
+
+    jenv.filters['header'] = lambda m: f'include/{m}.h'
+    jenv.filters['src'] = lambda m: f'src/{m}.cpp'
+
+    cmake_tmpl = jenv.get_template('CMakeLists.txt.tmpl')
+
+    with open(os.path.join(output_dir, 'CMakeLists.txt'), 'w') as f:
+        f.write(cmake_tmpl.render(
+            libstored_dir=libstored_dir,
+            models=models
+            ))
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Store generator')
-    parser.add_argument('store_file', type=str, help='store description to parse')
-    parser.add_argument('output_dir', type=str, nargs='?', default='.', help='output directory for generated files (default: %(default)s)')
+    parser.add_argument('store_file', type=str, nargs='+', help='store description to parse')
+    parser.add_argument('output_dir', type=str, help='output directory for generated files')
 
     args = parser.parse_args()
-    generate_store(args.store_file, args.output_dir)
+    for f in args.store_file:
+        generate_store(f, args.output_dir)
+
+    generate_cmake(args.store_file, args.output_dir)
 

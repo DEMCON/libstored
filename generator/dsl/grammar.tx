@@ -1,5 +1,5 @@
 Store:
-	objects*=Object
+	objects+=Object
 ;
 
 Object:

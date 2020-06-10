@@ -25,9 +25,20 @@ def object_name(s):
     s = re.sub(r'\s+', ' ', s)
     return s
 
+class Directory(object):
+    def __init__(self):
+        self.data = [1,2,3]
+
+class Buffer(object):
+    def __init__(self):
+        self.size = 10
+        self.init = [4,5,6]
+
 class Store(object):
     def __init__(self, objects):
         self.objects = objects
+        self.buffer = Buffer()
+        self.directory = Directory()
 
 class Variable(object):
     def __init__(self, parent, type, name, default):

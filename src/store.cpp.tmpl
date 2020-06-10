@@ -1,0 +1,25 @@
+// vim:filetype=cpp
+#include "{{store.name}}.h"
+
+namespace stored {
+
+{% if store.buffer.init|len > 0 %}
+static char const {{store.name}}Data_bufferinit[{{store.buffer.init|len}}] = {
+{{store.buffer.init|carray}}
+};
+{% endif %}
+
+{{store.name}}Data::{{store.name}}Data()
+    : buffer()
+{
+{% if store.buffer.init|len > 0 %}
+    memcpy(buffer, {{store.name}}Data_bufferinit, sizeof({{store.name}}Data_bufferinit));
+{% endif %}
+}
+
+static uint8_t const {{store.name}}::directory[{{store.directory.data|len}}] = {
+{{store.directory.data|carray}}
+};
+
+} // namespace
+

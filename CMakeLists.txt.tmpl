@@ -1,0 +1,33 @@
+# vim:filetype=cmake
+cmake_minimum_required(VERSION 3.0)
+
+set(libstored_dir "{{libstored_dir}}")
+
+add_library(libstored
+    ${libstored_dir}/include/stored
+    ${libstored_dir}/include/stored.h
+    ${libstored_dir}/include/libstored/macros.h
+    ${libstored_dir}/include/libstored/types.h
+    ${libstored_dir}/include/libstored/directory.h
+    ${libstored_dir}/include/libstored/util.h
+{% for m in models %}
+    ${CMAKE_CURRENT_SOURCE_DIR}/{{m|header}}
+    ${CMAKE_CURRENT_SOURCE_DIR}/{{m|src}}
+{% endfor %}
+)
+
+target_include_directories(libstored
+    PUBLIC ${libstored_dir}/include
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+set_target_properties(libstored PROPERTIES OUTPUT_NAME "stored")
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	target_compile_definitions(libstored PUBLIC -D_DEBUG)
+else()
+	target_compile_definitions(libstored PUBLIC -DNDEBUG)
+endif()
+
+target_compile_options(libstored PRIVATE -Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion)
+
