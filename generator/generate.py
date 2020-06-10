@@ -17,7 +17,7 @@ from dsl import types
 generator_dir = os.path.dirname(__file__)
 libstored_dir = os.path.abspath(os.path.join(generator_dir, '..'))
 
-logging.basicConfig(format='[  ?%%] %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='       %(message)s', level=logging.DEBUG)
 logger = logging.getLogger('libstored')
 
 def is_variable(o):
@@ -157,7 +157,7 @@ def generate_store(model_file, output_dir, debug=False):
     with open(os.path.join(output_dir, 'src', model_name(model_file) + '.cpp'), 'w') as f:
         f.write(store_cpp_tmpl.render(store=model))
 
-def generate_cmake(model_files, output_dir, debug=False):
+def generate_cmake(libprefix, model_files, output_dir, debug=False):
     logger.info("generating CMakeLists.txt")
     models = map(model_name, model_files)
 
@@ -180,11 +180,13 @@ def generate_cmake(model_files, output_dir, debug=False):
     with open(os.path.join(output_dir, 'CMakeLists.txt'), 'w') as f:
         f.write(cmake_tmpl.render(
             libstored_dir=libstored_dir,
-            models=models
+            models=models,
+            libprefix=libprefix,
             ))
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Store generator')
+    parser.add_argument('-p', type=str, help='libstored prefix for cmake library target')
     parser.add_argument('store_file', type=str, nargs='+', help='store description to parse')
     parser.add_argument('output_dir', type=str, help='output directory for generated files')
 
@@ -192,5 +194,5 @@ if __name__ == '__main__':
     for f in args.store_file:
         generate_store(f, args.output_dir)
 
-    generate_cmake(args.store_file, args.output_dir)
+    generate_cmake(args.p, args.store_file, args.output_dir)
 

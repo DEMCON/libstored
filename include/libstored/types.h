@@ -19,16 +19,16 @@ namespace stored {
 			FlagFunction = 0x40,
 
 			// int
-			Int8 = FlagFixed | FlagInt | FlagSigned | 0;
-			Uint8 = FlagFixed | FlagInt | 0;
-			Int16 = FlagFixed | FlagInt | FlagSigned | 1;
-			Uint16 = FlagFixed | FlagInt | 1;
-			Int32 = FlagFixed | FlagInt | FlagSigned | 3;
-			Uint32 = FlagFixed | FlagInt | 3;
-			Int64 = FlagFixed | FlagInt | FlagSigned | 7;
-			Uint64 = FlagFixed | FlagInt | 7;
-			Int = FlagFixed | FlagInt | (sizeof(int) - 1);
-			Uint = FlagFixed | (sizeof(int) - 1);
+			Int8 = FlagFixed | FlagInt | FlagSigned | 0,
+			Uint8 = FlagFixed | FlagInt | 0,
+			Int16 = FlagFixed | FlagInt | FlagSigned | 1,
+			Uint16 = FlagFixed | FlagInt | 1,
+			Int32 = FlagFixed | FlagInt | FlagSigned | 3,
+			Uint32 = FlagFixed | FlagInt | 3,
+			Int64 = FlagFixed | FlagInt | FlagSigned | 7,
+			Uint64 = FlagFixed | FlagInt | 7,
+			Int = FlagFixed | FlagInt | (sizeof(int) - 1),
+			Uint = FlagFixed | (sizeof(int) - 1),
 
 			// things with fixed length
 			Float = FlagFixed | FlagSigned | 3,
@@ -52,7 +52,7 @@ namespace stored {
 	};
 
 	namespace impl {
-		template <bool signd, size_t size> struct toIntType { enum { type = Type::Unknown }; };
+		template <bool signd, size_t size> struct toIntType { enum { type = Type::Void }; };
 		template <> struct toIntType<true,1> { enum { type = Type::Int8 }; };
 		template <> struct toIntType<false,1> { enum { type = Type::Uint8 }; };
 		template <> struct toIntType<true,2> { enum { type = Type::Int16 }; };
@@ -63,9 +63,9 @@ namespace stored {
 		template <> struct toIntType<false,8> { enum { type = Type::Uint64 }; };
 	}
 
-	template <typename T> struct toType { enum { type = Type::Blob; } };
-	template <> struct toType<void> { enum { type = Type::Void; } };
-	template <> struct toType<bool> { enum { type = Type::Bool; } };
+	template <typename T> struct toType { enum { type = Type::Blob }; };
+	template <> struct toType<void> { enum { type = Type::Void }; };
+	template <> struct toType<bool> { enum { type = Type::Bool }; };
 	template <> struct toType<char> : public impl::toIntType<false,sizeof(char)> {};
 	template <> struct toType<signed char> : public impl::toIntType<true,sizeof(char)> {};
 	template <> struct toType<unsigned char> : public impl::toIntType<false,sizeof(char)> {};
@@ -79,10 +79,10 @@ namespace stored {
 	template <> struct toType<unsigned long> : public impl::toIntType<false,sizeof(long)> {};
 	template <> struct toType<long long> : public impl::toIntType<true,sizeof(long long)> {};
 	template <> struct toType<unsigned long long> : public impl::toIntType<false,sizeof(long long)> {};
-	template <> struct toType<float> { enum { type = Type::Float; } };
-	template <> struct toType<double> { enum { type = Type::Double; } };
-	template <> struct toType<char*> { enum { type = Type::String; } };
-	template <typename T> struct toType<T*> { enum { type = Type::Pointer; } };
+	template <> struct toType<float> { enum { type = Type::Float }; };
+	template <> struct toType<double> { enum { type = Type::Double }; };
+	template <> struct toType<char*> { enum { type = Type::String }; };
+	template <typename T> struct toType<T*> { enum { type = Type::Pointer }; };
 
 	template <typename T, typename Container, bool Hooks = Config::EnableHooks>
 	class Variable {

@@ -1,7 +1,7 @@
-//#include "Hello.h"
+#include "Hello.h"
 
 int main()
 {
-//    stored::Hello h;
+    stored::Hello h;
 }
 

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 
 set(libstored_dir "{{libstored_dir}}")
 
-add_library(libstored
+add_library({{libprefix}}libstored
     ${libstored_dir}/include/stored
     ${libstored_dir}/include/stored.h
     ${libstored_dir}/include/libstored/macros.h
@@ -16,18 +16,18 @@ add_library(libstored
 {% endfor %}
 )
 
-target_include_directories(libstored
+target_include_directories({{libprefix}}libstored
     PUBLIC ${libstored_dir}/include
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-set_target_properties(libstored PROPERTIES OUTPUT_NAME "stored")
+set_target_properties({{libprefix}}libstored PROPERTIES OUTPUT_NAME "stored")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	target_compile_definitions(libstored PUBLIC -D_DEBUG)
+	target_compile_definitions({{libprefix}}libstored PUBLIC -D_DEBUG)
 else()
-	target_compile_definitions(libstored PUBLIC -DNDEBUG)
+	target_compile_definitions({{libprefix}}libstored PUBLIC -DNDEBUG)
 endif()
 
-target_compile_options(libstored PRIVATE -Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion)
+target_compile_options({{libprefix}}libstored PRIVATE -Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion)
 
