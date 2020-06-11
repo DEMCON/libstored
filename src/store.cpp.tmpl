@@ -1,10 +1,15 @@
-// vim:filetype=cpp
+{#
+vim:filetype=cpp
+-#}
+
 #include "{{store.name}}.h"
+
+#include <cstring>
 
 namespace stored {
 
 {% if store.buffer.init|len > 0 %}
-static char const {{store.name}}Data_bufferinit[{{store.buffer.init|len}}] = {
+static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len}}] = {
 {{store.buffer.init|carray}}
 };
 {% endif %}
@@ -17,7 +22,7 @@ static char const {{store.name}}Data_bufferinit[{{store.buffer.init|len}}] = {
 {% endif %}
 }
 
-static uint8_t const {{store.name}}::directory[{{store.directory.data|len}}] = {
+uint8_t const {{store.name}}Data::directory[{{store.directory.data|len}}] = {
 {{store.directory.data|carray}}
 };
 

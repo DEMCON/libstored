@@ -1,6 +1,9 @@
-#ifndef __LIBSTORED_STORE_H
-#define __LIBSTORED_STORE_H
-// vim:filetype=cpp
+{#
+vim:filetype=cpp
+-#}
+
+#ifndef __LIBSTORED_STORE_H_{{store.name}}
+#define __LIBSTORED_STORE_H_{{store.name}}
 
 #ifdef __cplusplus
 
@@ -22,22 +25,18 @@ namespace stored {
 	};
 
 	template <typename Implementation>
-	class {{store.name}} {
-	public:
-		{{store.name}}() {
-			stored_assert(dynamic_cast<Implementation*>(this));
-		}
-
+	class {{store.name}}Base {
 	private:
 		{{store.name}}Data m_data;
-		char* buffer() const { return m_data.buffer; }
+		char* buffer() { return m_data.buffer; }
+		char const* buffer() const { return m_data.buffer; }
 
 		Implementation& implementation() { return *static_cast<Implementation*>(this); }
 		Implementation const& implementation() const { return *static_cast<Implementation const*>(this); }
 
 		// Accessor generators.
 		template <typename T> Variable<T,Implementation> variable(size_t offset, size_t len = sizeof(T)) {
-			return Variable<T,Implementation>(implementation(), reinterpret_cast<T*>(&buffer()[offset]), len);
+			return Variable<T,Implementation>(implementation(), *reinterpret_cast<T*>(&buffer()[offset]));
 		}
 
 		template <typename T> Function<T,Implementation> function(unsigned int f) {
@@ -48,15 +47,15 @@ namespace stored {
 			return Variant<Implementation>(implementation(), type, &buffer()[offset], len);
         }
 		
-		template <typename T> friend class Variable<T,Implementation>;
-		template <typename T> friend class Function<T,Implementation>;
-		template <typename T> friend class Variant<Implementation>;
+		template <typename T, typename I, bool H> friend class Variable;
+		template <typename T, typename I> friend class Function;
+		friend class Variant<Implementation>;
 
 	protected:
 		// Function callback resolver.
 
 		size_t callback(bool UNUSED_PAR(set), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len), unsigned int f) {
-			switch(f)
+			switch(f) {
 {% for o in store.objects %}
 {%   if o is function %}
 			case {{o.f}}: // {{o}}
@@ -64,7 +63,7 @@ namespace stored {
 				return implementation().{{o.cname}}(set, buffer, len);
 {%     else %}
 				stored_assert(len == sizeof({{o|ctype}}));
-				implementation().{{o.cname}}(set, *reinterpret_cast<{{o|ctype}}*>(value));
+				implementation().{{o.cname}}(set, *reinterpret_cast<{{o|ctype}}*>(buffer));
 				return sizeof({{o|ctype}});
 {%     endif %}
 {%   endif %}
@@ -89,7 +88,7 @@ namespace stored {
 {% endfor %}
 
 		// Hooks. Override in subclass when required.
-		void hookSet(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) {}
+		void hookSet(Type::type UNUSED_PAR(type), void* UNUSED_PAR(key), size_t UNUSED_PAR(len)) {}
 
 	public:
 		// Type-specific object accessors.
@@ -104,7 +103,7 @@ namespace stored {
 		Variable<{{o|ctype}},Implementation> {{o.cname}}() { return variable<{{o|ctype}}>({{o.offset}}); }
 {%     elif o is function %}
 		/*! \brief {{o}} */
-		Function<{{o|ctype}},Implementation> {{o.cname}}() { return function<{{o|ctype}}>({{o.offset}}); }
+		Function<{{o|ctype}},Implementation> {{o.cname}}() { return function<{{o|ctype}}>({{o.f}}); }
 {%     endif %}
 {%   endif %}
 {% endfor %}
@@ -114,10 +113,13 @@ namespace stored {
 		uint8_t* directory() const { return m_data.directory; }
 
 		Variant<Implementation> find(char const* name) {
-			return find(implementation(), directory(), name);
+			return find(implementation(), buffer(), directory(), name);
 		}
+	};
+	
+	class {{store.name}} : public {{store.name}}Base<{{store.name}}> {
 	};
 
 } // namespace
 #endif // __cplusplus
-#endif // __LIBSTORED_STORE_H
+#endif // __LIBSTORED_STORE_H_{{store.name}}

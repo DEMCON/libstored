@@ -1,3 +1,3 @@
 add_executable(1_hello main.cpp)
-libstored_create(1_hello Hello.st)
+libstored_generate(1_hello Hello.st)
 

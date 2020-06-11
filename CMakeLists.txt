@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 project(libstored)
 
 if(NOT CMAKE_BUILD_TYPE)
-   set(CMAKE_BUILD_TYPE Debug FORCE)
+   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
 endif()
 
 if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
@@ -17,7 +17,7 @@ endif()
 
 set(PYTHON_EXECUTABLE "python3" CACHE STRING "Path to the python executable" FORCE)
 
-macro(libstored_create target model)
+macro(libstored_generate target model)
     if(NOT EXISTS libstored)
         # Execute right away, such that the CMakeLists.txt exists.
         execute_process(
@@ -42,7 +42,7 @@ macro(libstored_create target model)
         DEPENDS ${target}-libstored.timestamp
     )
     add_dependencies(${target}-libstored ${target}-libstored-generate)
-    add_dependencies(${target} ${target}-libstored)
+    target_link_libraries(${target} PUBLIC ${target}-libstored)
 endmacro()
 
 option(LIBSTORED_EXAMPLES "Build examples" ON)

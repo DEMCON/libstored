@@ -45,7 +45,8 @@ def ctype(o):
             'uint64': 'uint64_t',
             'float': 'float',
             'double': 'double',
-            'ptr': 'void*',
+            'ptr32': 'void*',
+            'ptr64': 'void*',
             'blob': 'char',
             'string': 'char'
     }[o.type]
@@ -66,13 +67,14 @@ def stype(o):
             'uint64': 'Type::Uint64',
             'float': 'Type::Float',
             'double': 'Type::Double',
-            'ptr': 'Type::Pointer',
+            'ptr32': 'Type::Pointer',
+            'ptr64': 'Type::Pointer',
             'blob': 'Type::Blob',
             'string': 'Type::String'
         }[o.type]
 
     if is_function(o):
-        t += ' | Type::Function'
+        t += ' | Type::FlagFunction'
     return t
 
 def carray(a):
@@ -114,6 +116,7 @@ def load_model(filename, debug=False):
     
     model = meta.model_from_file(filename, debug=False)
     model.name = model_cname(filename)
+    model.generateBuffer()
     return model
 
 def generate_store(model_file, output_dir, debug=False):

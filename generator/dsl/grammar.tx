@@ -46,3 +46,6 @@ Immediate:
 	NUMBER | BOOL
 ;
 
+Comment:
+	/(#|\/\/).*$/
+;

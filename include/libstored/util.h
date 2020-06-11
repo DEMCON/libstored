@@ -30,7 +30,9 @@
 #endif
 
 #ifdef __cplusplus
-#include <assert.h>
+#include <cassert>
+#include <math.h>
+#include <limits>
 
 namespace stored {
 
@@ -40,6 +42,64 @@ namespace stored {
 #  define stored_assert(expr)	do { if(::stored::Config::EnableAssert) assert(expr); } while(false)
 #endif
 
+	namespace impl {
+		template <typename T> struct signedness_helper { typedef T signed_type; typedef T unsigned_type; };
+		template <> struct signedness_helper<short> { typedef short signed_type; typedef unsigned short unsigned_type; };
+		template <> struct signedness_helper<unsigned short> { typedef short signed_type; typedef unsigned short unsigned_type; };
+		template <> struct signedness_helper<int> { typedef int signed_type; typedef unsigned int unsigned_type; };
+		template <> struct signedness_helper<unsigned int> { typedef int signed_type; typedef unsigned int unsigned_type; };
+		template <> struct signedness_helper<long> { typedef long signed_type; typedef unsigned long unsigned_type; };
+		template <> struct signedness_helper<unsigned long> { typedef long signed_type; typedef unsigned long unsigned_type; };
+		template <> struct signedness_helper<long long> { typedef long long signed_type; typedef unsigned long long unsigned_type; };
+		template <> struct signedness_helper<unsigned long long> { typedef long long signed_type; typedef unsigned long long unsigned_type; };
+
+		template <typename R> struct saturated_cast_helper
+		{
+			template <typename T> __attribute__((pure)) static R cast(T value)
+			{
+				// Lower bound check
+				if(std::numeric_limits<R>::is_integer) {
+					if(!std::numeric_limits<T>::is_signed) {
+						// No need to check
+					} else if(!std::numeric_limits<R>::is_signed) {
+						if(value <= 0)
+							return 0;
+					} else {
+						// Both are signed.
+						if(static_cast<typename signedness_helper<T>::signed_type>(value) <= static_cast<typename signedness_helper<R>::signed_type>(std::numeric_limits<R>::min()))
+							return std::numeric_limits<R>::min();
+					}
+				} else {
+					if(value <= -std::numeric_limits<R>::max())
+						return -std::numeric_limits<R>::max();
+				}
+
+				// Upper bound check
+				if(value > 0)
+					if(static_cast<typename signedness_helper<T>::unsigned_type>(value) >= static_cast<typename signedness_helper<R>::unsigned_type>(std::numeric_limits<R>::max()))
+						return std::numeric_limits<R>::max();
+
+				// Default conversion
+				return static_cast<R>(value);
+			}
+
+			__attribute__((pure)) static R cast(float value) { return cast(llroundf(value)); }
+			__attribute__((pure)) static R cast(double value) { return cast(llround(value)); }
+			__attribute__((pure)) static R cast(long double value) { return cast(llroundl(value)); }
+			__attribute__((pure)) static R cast(bool value) { return static_cast<R>(value); }
+			__attribute__((pure)) static R cast(R value) { return value; }
+		};
+
+		template <> struct saturated_cast_helper<float>  { template <typename T> constexpr static float cast(T value) { return static_cast<float>(value); } };
+		template <> struct saturated_cast_helper<double> { template <typename T> constexpr static double cast(T value) { return static_cast<double>(value); } };
+		template <> struct saturated_cast_helper<long double> { template <typename T> constexpr static long double cast(T value) { return static_cast<long double>(value); } };
+		template <> struct saturated_cast_helper<bool>   { template <typename T> __attribute__((pure)) static bool cast(T value) { return static_cast<bool>(saturated_cast_helper<int>::cast(value)); } };
+	}
+
 } // namespace
+
+template <typename R, typename T>
+__attribute__((pure)) R saturated_cast(T value) { return stored::impl::saturated_cast_helper<R>::cast(value); }
+
 #endif // __cplusplus
 #endif // __LIBSTORED_UTIL_H

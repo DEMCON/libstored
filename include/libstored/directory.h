@@ -22,7 +22,7 @@ namespace stored {
     };
 
 	template <typename Container>
-	Variant<Container> find(Container& container, uint8_t const* directory, char const* name) {
+	Variant<Container> find(Container& container, void* buffer, uint8_t const* directory, char const* name) {
 		if(unlikely(!directory || !name))
 			return Variant<Container>();
 
@@ -37,7 +37,7 @@ namespace stored {
 				return Variant<Container>();
 			} else if(*p >= 0x80) {
 				// var
-				uint8_t type = *p++ ^ 0x80;
+                Type::type type = (Type::type)(*p++ ^ 0x80);
 				uint8_t len;
 				if(!Type::isFixed(type))
 					len = *p++;
@@ -45,7 +45,7 @@ namespace stored {
 				if(Type::isFunction(type))
 					return Variant<Container>(container, type, offset);
 				else
-					return Variant<Container>(container, type, data + offset, len);
+					return Variant<Container>(container, type, (char*)buffer + offset, len);
 			} else {
 				// match char
 				int c = (int)*name - (int)*p++;
@@ -64,6 +64,7 @@ namespace stored {
 				}
 			}
 		}
+    }
 
 } // namespace
 #endif // __cplusplus

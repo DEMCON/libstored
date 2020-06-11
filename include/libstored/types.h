@@ -7,6 +7,11 @@
 #include <libstored/config.h>
 #include <libstored/util.h>
 
+#include <cstdlib>
+#include <cstring>
+#include <algorithm>
+#include <cinttypes>
+
 namespace stored {
 
 	struct Type {
@@ -52,20 +57,20 @@ namespace stored {
 	};
 
 	namespace impl {
-		template <bool signd, size_t size> struct toIntType { enum { type = Type::Void }; };
-		template <> struct toIntType<true,1> { enum { type = Type::Int8 }; };
-		template <> struct toIntType<false,1> { enum { type = Type::Uint8 }; };
-		template <> struct toIntType<true,2> { enum { type = Type::Int16 }; };
-		template <> struct toIntType<false,2> { enum { type = Type::Uint16 }; };
-		template <> struct toIntType<true,4> { enum { type = Type::Int32 }; };
-		template <> struct toIntType<false,4> { enum { type = Type::Uint32 }; };
-		template <> struct toIntType<true,8> { enum { type = Type::Int64 }; };
-		template <> struct toIntType<false,8> { enum { type = Type::Uint64 }; };
+		template <bool signd, size_t size> struct toIntType { static stored::Type::type const type = Type::Void; };
+		template <> struct toIntType<true,1> { static stored::Type::type const type = Type::Int8; };
+		template <> struct toIntType<false,1> { static stored::Type::type const type = Type::Uint8; };
+		template <> struct toIntType<true,2> { static stored::Type::type const type = Type::Int16; };
+		template <> struct toIntType<false,2> { static stored::Type::type const type = Type::Uint16; };
+		template <> struct toIntType<true,4> { static stored::Type::type const type = Type::Int32; };
+		template <> struct toIntType<false,4> { static stored::Type::type const type = Type::Uint32; };
+		template <> struct toIntType<true,8> { static stored::Type::type const type = Type::Int64; };
+		template <> struct toIntType<false,8> { static stored::Type::type const type = Type::Uint64; };
 	}
 
-	template <typename T> struct toType { enum { type = Type::Blob }; };
-	template <> struct toType<void> { enum { type = Type::Void }; };
-	template <> struct toType<bool> { enum { type = Type::Bool }; };
+	template <typename T> struct toType { static Type::type const type = Type::Blob; };
+	template <> struct toType<void> { static Type::type const type = Type::Void; };
+	template <> struct toType<bool> { static Type::type const type = Type::Bool; };
 	template <> struct toType<char> : public impl::toIntType<false,sizeof(char)> {};
 	template <> struct toType<signed char> : public impl::toIntType<true,sizeof(char)> {};
 	template <> struct toType<unsigned char> : public impl::toIntType<false,sizeof(char)> {};
@@ -75,34 +80,56 @@ namespace stored {
 	template <> struct toType<unsigned int> : public impl::toIntType<false,sizeof(int)> {};
 	template <> struct toType<long> : public impl::toIntType<true,sizeof(long)> {};
 	template <> struct toType<unsigned long> : public impl::toIntType<false,sizeof(long)> {};
-	template <> struct toType<long> : public impl::toIntType<true,sizeof(long)> {};
-	template <> struct toType<unsigned long> : public impl::toIntType<false,sizeof(long)> {};
 	template <> struct toType<long long> : public impl::toIntType<true,sizeof(long long)> {};
 	template <> struct toType<unsigned long long> : public impl::toIntType<false,sizeof(long long)> {};
-	template <> struct toType<float> { enum { type = Type::Float }; };
-	template <> struct toType<double> { enum { type = Type::Double }; };
-	template <> struct toType<char*> { enum { type = Type::String }; };
-	template <typename T> struct toType<T*> { enum { type = Type::Pointer }; };
+	template <> struct toType<float> { static Type::type const type = Type::Float; };
+	template <> struct toType<double> { static Type::type const type = Type::Double; };
+	template <> struct toType<char*> { static Type::type const type = Type::String; };
+	template <typename T> struct toType<T*> { static Type::type const type = Type::Pointer; };
 
 	template <typename T, typename Container, bool Hooks = Config::EnableHooks>
 	class Variable {
 	public:
 		typedef T type;
-		Variable(Container& UNUSED_PAR(container), type& buffer) : m_buffer(&buffer) {}
+		Variable(Container& UNUSED_PAR(container), type& buffer)
+			: m_buffer(&buffer)
+		{
+			stored_assert(((uintptr_t)&buffer & (sizeof(type) - 1)) == 0);
+		}
 		Variable() : m_buffer() {}
 
-		type const& get() {
-			stored_assert(valid());
-			return *buffer();
+		Variable(Variable const& v) { (*this) = v; }
+		Variable& operator=(Variable const& v) {
+			m_buffer = v.m_buffer;
+			return *this;
 		}
 
-		void set(type const& v) {
+#if __cplusplus >= 201103L
+		Variable(Variable&& v) { (*this) = std::move(v); }
+		Variable& operator=(Variable&& v) { this->operator=((Variable const&)v); }
+#endif
+
+		type const& get() const {
 			stored_assert(valid());
-			*buffer() = v;
+			return buffer();
 		}
+
+		template <typename U>
+		U as() const { return saturated_cast<U>(get()); }
+
+		operator type const&() const { return get(); }
+
+		void set(type v) {
+			stored_assert(valid());
+			buffer() = v;
+		}
+
+		Variable& operator=(type v) { set(v); return *this; }
 
 		bool valid() const { return m_buffer; }
 		Container& container() const { std::abort(); }
+
+		void* key() const { return &buffer(); }
 
 	protected:
 		type& buffer() const {
@@ -118,16 +145,32 @@ namespace stored {
 	class Variable<T,Container,true> : public Variable<T,Container,false> {
 	public:
 		typedef Variable<T,Container,false> base;
-		using base::type;
+		typedef typename base::type type;
 		
 		Variable(Container& container, type& buffer)
 			: base(container, buffer)
 			, m_container(&container)
 		{}
+		
+		Variable(Variable const& v) { (*this) = v; }
+		Variable& operator=(Variable const& v) {
+			base::operator=(v);
+			m_container = v.m_container;
+			return *this;
+		}
 
-		void set(type const& v) {
+#if __cplusplus >= 201103L
+		Variable(Variable&& v) { (*this) = std::move(v); }
+		Variable& operator=(Variable&& v) { this->operator=((Variable const&)v); }
+#endif
+
+		void set(type v) {
 			base::set(v);
-			container().hookSet(toType<T>::type, &this->buffer(), sizeof(type));
+			container().hookSet(toType<T>::type, this->key(), sizeof(type));
+		}
+		Variable& operator=(type v) { 
+			base::operator=(v);
+			return *this;
 		}
 
 		Container& container() const {
@@ -166,7 +209,7 @@ namespace stored {
 
 		size_t set(void* src, size_t len) {
 			stored_assert(valid());
-			callback(true, src, len);
+			return callback(true, src, len);
 		}
 
 		type operator()() const { return get(); }
@@ -201,7 +244,9 @@ namespace stored {
 
 		Variant(Container& container, Type::type type, void* buffer, size_t len)
 			: m_container(&container), m_buffer(buffer), m_len((uint8_t)len), m_type((uint8_t)type)
-		{}
+		{
+			stored_assert(!Type::isFixed(this->type()) || ((uintptr_t)buffer & (Type::size(this->type()) - 1)) == 0);
+		}
 		
 		Variant(Container& container, Type::type type, unsigned int f)
 			: m_container(&container), m_f(f), m_type((uint8_t)type)
@@ -216,13 +261,13 @@ namespace stored {
 			: m_container(v.valid() ? &v.container() : nullptr)
 			, m_buffer(v.valid() ? &v.get() : nullptr)
 			, m_len(v.size())
-			, m_type(GetType<T>::type)
+			, m_type(toType<T>::type)
 		{}
 		
 		template <typename T>
 		Variant(Function<T,Container> const& f)
 			: m_container(f.valid() ? &f.container() : nullptr)
-			, m_callback(f.valid() ? f.callback() : nullptr)
+			, m_f(f.valid() ? f.callback() : nullptr)
 			, m_type(f.type())
 		{}
 
@@ -255,13 +300,13 @@ namespace stored {
 				}
 				memcpy(m_buffer, src, len);
 				if(Config::EnableHooks)
-					container().hookSet(type(), m_buffer, len);
+					container().hookSet(type(), key(), len);
 			}
 			return len;
 		}
 
 		Type::type type() const { return m_type; }
-		size_t size() const { return !Type::isFixed(type()) ? len : Type::size(type()); }
+		size_t size() const { return Type::isFixed(type()) ? Type::size(type()) : (size_t)m_len; }
 		bool valid() const { return m_buffer; }
 		bool isFunction() const { stored_assert(valid()); return Type::isFunction(type()); }
 		bool isVariable() const { stored_assert(valid()); return !isFunction(); }
@@ -276,6 +321,11 @@ namespace stored {
 		template <typename T> Function<T,Container> function() const {
 			stored_assert(isFunction());
 			return Function<T,Container>(container(), m_f);
+		}
+		
+		void* key() const {
+			stored_assert(isVariable());
+			return m_buffer;
 		}
 
 	private:
