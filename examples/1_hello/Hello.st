@@ -2,7 +2,7 @@
 // Comment
 
 # Default initialized
-int32 hello;
+int32 /hello;
 double world;
 int32 zero;
 
@@ -12,7 +12,8 @@ float f = 1.2e3;
 
 # Strange names
 int32 asdf[3];
-(float) a b;
+(float) a b/a;
 int8 a b/c = 4;
+bool a b/d/e;
 string[3] s;
 (string[5]) fun;

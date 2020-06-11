@@ -83,7 +83,7 @@ def carray(a):
     for i in a:
         s += '0x%02x, ' % i
         line += 1
-        if line > 32:
+        if line > 16:
             s += '\n'
             line = 0
     return s
@@ -117,6 +117,7 @@ def load_model(filename, debug=False):
     model = meta.model_from_file(filename, debug=False)
     model.name = model_cname(filename)
     model.generateBuffer()
+    model.generateDirectory()
     return model
 
 def generate_store(model_file, output_dir, debug=False):

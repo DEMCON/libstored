@@ -110,10 +110,10 @@ namespace stored {
 
 	public:
 		// Directory parsers.
-		uint8_t* directory() const { return m_data.directory; }
+		uint8_t const* directory() const { return m_data.directory; }
 
 		Variant<Implementation> find(char const* name) {
-			return find(implementation(), buffer(), directory(), name);
+			return stored::find(implementation(), buffer(), directory(), name);
 		}
 	};
 	

@@ -305,7 +305,7 @@ namespace stored {
 			return len;
 		}
 
-		Type::type type() const { return m_type; }
+		Type::type type() const { return (Type::type)m_type; }
 		size_t size() const { return Type::isFixed(type()) ? Type::size(type()) : (size_t)m_len; }
 		bool valid() const { return m_buffer; }
 		bool isFunction() const { stored_assert(valid()); return Type::isFunction(type()); }
@@ -315,7 +315,7 @@ namespace stored {
 		template <typename T> Variable<T,Container> variable() const {
 			stored_assert(isVariable());
 			stored_assert(sizeof(T) == size());
-			return Variable<T,Container>(container(), reinterpret_cast<T*>(m_buffer));
+			return Variable<T,Container>(container(), *reinterpret_cast<T*>(m_buffer));
 		}
 
 		template <typename T> Function<T,Container> function() const {
