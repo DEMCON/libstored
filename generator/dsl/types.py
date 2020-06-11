@@ -68,6 +68,7 @@ def object_name(s):
 class Directory(object):
     def __init__(self):
         self.data = []
+        self.longdata = []
 
     def merge(self, root, h):
 #        print(f'merge {root} {h}')
@@ -204,6 +205,7 @@ class Directory(object):
 
     def generate(self, objects):
         h = self.hierarchical(objects)
+        self.longdata = [ord('/')] + self.generateDict(h) + [0]
         self.stripUnambig(h)
         self.data = [ord('/')] + self.generateDict(h) + [0]
 #        print(self.data)

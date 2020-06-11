@@ -6,7 +6,7 @@
 namespace stored {
 	struct Config : public DefaultConfig {
 		// Override defaults from DefaultConfig here for your local setup.
-		//static bool const EnableAssert = false;
+		//static bool const HookSetOnChangeOnly = true;
 	};
 } // namespace
 #endif // __cplusplus

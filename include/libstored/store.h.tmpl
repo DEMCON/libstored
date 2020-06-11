@@ -21,7 +21,11 @@ namespace stored {
 		char buffer[{{store.buffer.size}}];
 
 		// Directory.
+#ifdef LIBSTORED_FULL_NAMES
+		static uint8_t const directory[{{store.directory.longdata|len}}];
+#else
 		static uint8_t const directory[{{store.directory.data|len}}];
+#endif
 	};
 
 	template <typename Implementation>
@@ -87,8 +91,22 @@ namespace stored {
 {%   endif %}
 {% endfor %}
 
+		typedef uintptr_t Key;
+
+		/*!
+		 * \brief Converts a variable's buffer to a key.
+		 *
+		 * A key is unique for all variables of the same store,
+		 * but identical for the same variables across different instances of the same store class.
+		 */
+		Key bufferToKey(void const* buffer) const { return (uintptr_t)buffer - (uintptr_t)this->buffer(); }
+
 		// Hooks. Override in subclass when required.
-		void hookSet(Type::type UNUSED_PAR(type), void* UNUSED_PAR(key), size_t UNUSED_PAR(len)) {}
+
+		/*!
+		 * \brief Hook to be called after a variable has been set.
+		 */
+		void hookSet(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) {}
 
 	public:
 		// Type-specific object accessors.
@@ -112,9 +130,20 @@ namespace stored {
 		// Directory parsers.
 		uint8_t const* directory() const { return m_data.directory; }
 
+		/*!
+		 * \brief Finds an object with the given name.
+		 * \return the object, or an invalid #stored::Variant if not found.
+		 */
 		Variant<Implementation> find(char const* name) {
 			return stored::find(implementation(), buffer(), directory(), name);
 		}
+
+		/*!
+		 * \brief Calls a callback for every object in the #directory().
+		 */
+		template <typename F>
+		SFINAE_IS_FUNCTION(F, void(char const*, Type::type, char*, size_t), void)
+		list(F f) { stored::list<Implementation,F>(implementation(), buffer(), directory(), f); }
 	};
 	
 	class {{store.name}} : public {{store.name}}Base<{{store.name}}> {

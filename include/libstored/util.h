@@ -34,6 +34,21 @@
 #include <math.h>
 #include <limits>
 
+#if __cplusplus >= 201103L
+#  include <functional>
+#  include <type_traits>
+
+#  ifndef DOXYGEN
+#    define SFINAE_IS_FUNCTION(T, F, T_OK) \
+	typename std::enable_if<std::is_assignable<std::function<F>, T>::value, T_OK>::type
+#  else
+#    define SFINAE_IS_FUNCTION(T, F, T_OK) T_OK
+#  endif
+#else
+#  define SFINAE_IS_FUNCTION(T, F, T_OK) T_OK
+#endif
+
+
 namespace stored {
 
 #ifdef STORED_HAVE_ZTH

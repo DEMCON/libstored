@@ -29,5 +29,10 @@ else()
 	target_compile_definitions({{libprefix}}libstored PUBLIC -DNDEBUG)
 endif()
 
+option(LIBSTORED_FULL_NAMES "Use full names instead of as short as possible" ON)
+if(LIBSTORED_FULL_NAMES)
+	target_compile_definitions({{libprefix}}libstored PUBLIC -DLIBSTORED_FULL_NAMES)
+endif()
+
 target_compile_options({{libprefix}}libstored PRIVATE -Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion)
 

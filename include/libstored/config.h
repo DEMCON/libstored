@@ -24,6 +24,7 @@ namespace stored {
 #endif
 
 		static bool const EnableHooks = true;
+		static bool const HookSetOnChangeOnly = false;
 	};
 } // namespace
 #endif // __cplusplus

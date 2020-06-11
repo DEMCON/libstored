@@ -2,6 +2,10 @@
 
 #include <cstdio>
 
+static void list_cb(char const* name, stored::Type::type type, char* buffer, size_t len) {
+    printf("%s: type 0x%x, buffer %p, len %zu\n", name, (int)type, buffer, len);
+}
+
 int main()
 {
     stored::Hello h;
@@ -13,6 +17,8 @@ int main()
 
     h.find("/hello").variable<int32_t>() = 43;
     printf("hello=%d\n", h.hello().as<int>());
+
+    h.list(&list_cb);
 
     return 0;
 }

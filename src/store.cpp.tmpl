@@ -22,9 +22,15 @@ static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len
 {% endif %}
 }
 
+#ifdef LIBSTORED_FULL_NAMES
+uint8_t const {{store.name}}Data::directory[{{store.directory.longdata|len}}] = {
+{{store.directory.longdata|carray}}
+};
+#else
 uint8_t const {{store.name}}Data::directory[{{store.directory.data|len}}] = {
 {{store.directory.data|carray}}
 };
+#endif
 
 } // namespace
 

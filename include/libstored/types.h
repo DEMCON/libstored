@@ -129,8 +129,6 @@ namespace stored {
 		bool valid() const { return m_buffer; }
 		Container& container() const { std::abort(); }
 
-		void* key() const { return &buffer(); }
-
 	protected:
 		type& buffer() const {
 			stored_assert(valid());
@@ -165,8 +163,12 @@ namespace stored {
 #endif
 
 		void set(type v) {
+			if(Config::HookSetOnChangeOnly)
+				if(memcmp(&v, &this->buffer(), sizeof(v)) == 0)
+					return;
+
 			base::set(v);
-			container().hookSet(toType<T>::type, this->key(), sizeof(type));
+			container().hookSet(toType<T>::type, &this->buffer(), sizeof(type));
 		}
 		Variable& operator=(type v) { 
 			base::operator=(v);
@@ -177,6 +179,8 @@ namespace stored {
 			stored_assert(this->valid());
 			return *m_container;
 		}
+		
+		typename Container::Key key() const { return container().bufferToKey(&this->buffer()); }
 
 	private:
 		Container* m_container;
@@ -298,9 +302,13 @@ namespace stored {
 					stored_assert(len <= size());
 					len = std::min(len, size());
 				}
-				memcpy(m_buffer, src, len);
-				if(Config::EnableHooks)
-					container().hookSet(type(), key(), len);
+
+				if(!Config::HookSetOnChangeOnly || memcmp(src, m_buffer, len) != 0) {
+					memcpy(m_buffer, src, len);
+
+					if(Config::EnableHooks)
+						container().hookSet(type(), m_buffer, len);
+				}
 			}
 			return len;
 		}
@@ -323,9 +331,9 @@ namespace stored {
 			return Function<T,Container>(container(), m_f);
 		}
 		
-		void* key() const {
+		typename Container::Key key() const {
 			stored_assert(isVariable());
-			return m_buffer;
+			return container()->bufferToKey(m_buffer);
 		}
 
 	private:
