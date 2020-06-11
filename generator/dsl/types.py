@@ -135,6 +135,7 @@ class Directory(object):
         # else: must be a dict
 
         names = list(h.keys())
+        names.sort()
 #        print(names)
 
         if names == []:
@@ -146,7 +147,6 @@ class Directory(object):
             return [ord('/')] + self.generateDict(h['/'])
         else:
             # Choose pivot to compare to
-
             pivot = int(len(names) / 2)
             expr = self.generateDict(h[names[pivot]])
 

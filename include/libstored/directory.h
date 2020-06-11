@@ -55,7 +55,7 @@ namespace stored {
 				uint8_t len;
 				if(!Type::isFixed(type))
 					len = *p++;
-				size_t offset = directoryHelper::decodeOffset(++p);
+				size_t offset = directoryHelper::decodeOffset(p);
 				if(Type::isFunction(type))
 					return Variant<Container>(container, type, offset);
 				else

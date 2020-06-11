@@ -2,7 +2,7 @@
 // Comment
 
 # Default initialized
-int32 /hello;
+int32 hello;
 double world;
 int32 zero;
 
