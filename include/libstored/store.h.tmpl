@@ -21,11 +21,7 @@ namespace stored {
 		char buffer[{{store.buffer.size}}];
 
 		// Directory.
-#ifdef LIBSTORED_FULL_NAMES
-		static uint8_t const directory[{{store.directory.longdata|len}}];
-#else
-		static uint8_t const directory[{{store.directory.data|len}}];
-#endif
+		static uint8_t const* directory();
 	};
 
 	template <typename Implementation>
@@ -128,7 +124,7 @@ namespace stored {
 
 	public:
 		// Directory parsers.
-		uint8_t const* directory() const { return m_data.directory; }
+		uint8_t const* directory() const { return m_data.directory(); }
 
 		/*!
 		 * \brief Finds an object with the given name.

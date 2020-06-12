@@ -5,19 +5,50 @@
 
 #include <string>
 
-/*
-end ::= 0
-char ::= [\x21..\x7e]
-byte_high ::= [0x80..0xff]			# 7 lsb carry data
-byte_low ::= [0..0x7f]				# 7 lsb carry data
-int_bin ::= byte_high * byte_low	# little-endian
-jmp_l ::= int_bin
-jmp_g :: int_bin
-var ::= type offset | (String | Blob) byte offset
-type ::= [0x80..0xff]
-offset ::= int_bin
-expr ::= '/' expr | char jmp_l jmp_g expr expr ? expr ? | var | end
-*/
+/*!
+ * \defgroup libstored_directory directory
+ * \brief Directory with names, types and buffer offsets.
+ *
+ * The directory is a description in binary. While parsing the pointer starts at the 
+ * beginning of the directory and scans over the bytes. While scanning, a name is searched.
+ * In principe, the directory is a binary tree of characters the name must match.
+ *
+ * It is using the following grammar:
+ *
+ * \code
+ * directory ::= expr
+ *
+ * expr ::=
+ *      # Hierarchy separator: skip all characters of the name until a '/' is encountered.
+ *      '/' expr |
+ *      # Match current char in the name. If it compress less or greater, add the jmp_l or
+ *      # jmp_g to the pointer. Otherwise continue with the first expression.
+ *      # If there is no object for a specific jump, jmp_* can be 0, in which case the 
+ *      # expr_* is omitted.
+ *      char jmp_l jmp_g expr expr_l ? expr_g ? |
+ *      # A variable has been reached for the given name.
+ *      var |
+ *      # No variable exists with the given name.
+ *      end
+ *
+ * char ::= [\x21..\x7e]                # printable ASCII
+ * int ::= bytehigh * bytelow           # little-endian
+ * byte ::= [0..0xff]
+ * bytehigh ::= [0x80..0xff]			# 7 lsb carry data
+ * bytelow ::= [0..0x7f]				# 7 lsb carry data
+ *
+ * # End of directory marker.
+ * end ::= 0
+ *
+ * # The jmp is added to the pointer at the position of the last byte of the int.
+ * # So, a jmp value of 0 effectively results in end.
+ * jmp ::= int
+ *
+ * var ::= (String | Blob) byte offset | type offset
+ * type ::= [0x80..0xff]                # This is stored::Type::type with 0x80 or'ed into it.
+ * offset ::= int
+ * \endcode
+ */
 
 #ifdef __cplusplus
 namespace stored {
@@ -37,6 +68,9 @@ namespace stored {
 		}
 	};
 
+	/*!
+	 * \ingroup libstored_directory
+	 */
 	template <typename Container>
 	Variant<Container> find(Container& container, void* buffer, uint8_t const* directory, char const* name) {
 		if(unlikely(!directory || !name))
@@ -145,6 +179,9 @@ namespace stored {
 		}
 	}
 
+	/*!
+	 * \ingroup libstored_directory
+	 */
 	template <typename Container, typename F>
 	void list(Container& container, void* buffer, uint8_t const* directory, F& f) {
 		std::string name;

@@ -23,6 +23,7 @@ namespace stored {
 			false;
 #endif
 
+		static bool const FullNames = false;
 		static bool const EnableHooks = true;
 		static bool const HookSetOnChangeOnly = false;
 	};
