@@ -22,16 +22,16 @@ static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len
 {% endif %}
 }
 
-static uint8_t const directory_full_[{{store.directory.longdata|len}}] = {
+static uint8_t const {{store.name}}Data_directory_full[{{store.directory.longdata|len}}] = {
 {{store.directory.longdata|carray}}
 };
 
-static uint8_t const directory_[{{store.directory.data|len}}] = {
+static uint8_t const {{store.name}}Data_directory[{{store.directory.data|len}}] = {
 {{store.directory.data|carray}}
 };
 
 uint8_t const* {{store.name}}Data::directory() {
-    return Config::FullNames ? directory_full_ : directory_;
+    return Config::FullNames ? {{store.name}}Data_directory_full : {{store.name}}Data_directory;
 }
 
 } // namespace

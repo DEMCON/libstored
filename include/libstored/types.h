@@ -159,7 +159,7 @@ namespace stored {
 
 #if __cplusplus >= 201103L
 		Variable(Variable&& v) { (*this) = std::move(v); }
-		Variable& operator=(Variable&& v) { this->operator=((Variable const&)v); }
+		Variable& operator=(Variable&& v) { this->operator=((Variable const&)v); return *this; }
 #endif
 
 		void set(type v) {
@@ -241,7 +241,7 @@ namespace stored {
 		unsigned int m_f;
 	};
 
-	template <typename Container>
+	template <typename Container = void>
 	class Variant {
 	public:
 		typedef size_t(Callback)(Container&,bool,uint8_t*,size_t);
@@ -338,6 +338,42 @@ namespace stored {
 
 	private:
 		Container* m_container;
+		union {
+			void* m_buffer;
+			unsigned int m_f;
+		};
+		uint8_t m_len;
+		uint8_t m_type;
+	};
+	
+	template <>
+	class Variant<void> {
+	public:
+		Variant(Type::type type, void* buffer, size_t len)
+			: m_buffer(buffer), m_len((uint8_t)len), m_type((uint8_t)type)
+		{}
+		
+		Variant(Type::type type, unsigned int f)
+			: m_f(f), m_type((uint8_t)type)
+		{}
+
+		Variant()
+			: m_buffer()
+		{}
+
+		template <typename Container>
+		Variant<Container> apply(Container& container) const {
+			if(!m_buffer)
+				return Variant<Container>();
+			else if(Type::isFunction((Type::type)m_type))
+				return Variant<Container>(container, (Type::type)m_type, m_f);
+			else {
+				stored_assert((uintptr_t)m_buffer >= (uintptr_t)&container && (uintptr_t)m_buffer + m_len < (uintptr_t)&container + sizeof(Container));
+				return Variant<Container>(container, (Type::type)m_type, m_buffer, m_len);
+			}
+		}
+
+	private:
 		union {
 			void* m_buffer;
 			unsigned int m_f;

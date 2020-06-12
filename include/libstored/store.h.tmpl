@@ -35,7 +35,8 @@ namespace stored {
 		Implementation const& implementation() const { return *static_cast<Implementation const*>(this); }
 
 		// Accessor generators.
-		template <typename T> Variable<T,Implementation> variable(size_t offset, size_t len = sizeof(T)) {
+		template <typename T> Variable<T,Implementation> variable(size_t offset) {
+			stored_assert(offset + sizeof(T) < sizeof(m_data.buffer));
 			return Variable<T,Implementation>(implementation(), *reinterpret_cast<T*>(&buffer()[offset]));
 		}
 
@@ -44,6 +45,7 @@ namespace stored {
 		}
         
 		Variant<Implementation> variant(Type::type type, size_t offset, size_t len) {
+			stored_assert(offset + len < sizeof(m_data.buffer));
 			return Variant<Implementation>(implementation(), type, &buffer()[offset], len);
         }
 		
@@ -87,6 +89,7 @@ namespace stored {
 {%   endif %}
 {% endfor %}
 
+	public:
 		typedef uintptr_t Key;
 
 		/*!
@@ -95,8 +98,12 @@ namespace stored {
 		 * A key is unique for all variables of the same store,
 		 * but identical for the same variables across different instances of the same store class.
 		 */
-		Key bufferToKey(void const* buffer) const { return (uintptr_t)buffer - (uintptr_t)this->buffer(); }
+		Key bufferToKey(void const* buffer) const {
+			stored_assert((uintptr_t)buffer >= (uintptr_t)this->buffer() && (uintptr_t)buffer < (uintptr_t)this->buffer() + sizeof(m_data.buffer));
+			return (uintptr_t)buffer - (uintptr_t)this->buffer();
+		}
 
+	protected:
 		// Hooks. Override in subclass when required.
 
 		/*!
@@ -138,8 +145,10 @@ namespace stored {
 		 * \brief Calls a callback for every object in the #directory().
 		 */
 		template <typename F>
-		SFINAE_IS_FUNCTION(F, void(char const*, Type::type, char*, size_t), void)
-		list(F f) { stored::list<Implementation,F>(implementation(), buffer(), directory(), f); }
+		void list(F f) { stored::list(&implementation(), buffer(), directory(), f); }
+
+		template <typename F>
+		void list(F f, void* arg) { stored::list(&implementation(), buffer(), directory(), f, arg); }
 	};
 	
 	class {{store.name}} : public {{store.name}}Base<{{store.name}}> {

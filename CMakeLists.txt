@@ -43,6 +43,10 @@ macro(libstored_generate target model)
     )
     add_dependencies(${target}-libstored ${target}-libstored-generate)
     target_link_libraries(${target} PUBLIC ${target}-libstored)
+
+    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
+        target_link_options(${target} PUBLIC -Wl,--gc-sections)
+    endif()
 endmacro()
 
 option(LIBSTORED_EXAMPLES "Build examples" ON)

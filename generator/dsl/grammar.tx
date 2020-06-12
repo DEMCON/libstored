@@ -1,21 +1,33 @@
 Store:
-	objects+=Object
+	objects*=Object
 ;
 
 Object:
-	( Variable | Function ) ';'
+	( Variable | Function | Scope )
 ;
 
 Variable:
-	type=Type name=Name ('=' default=Immediate ) ?
+	type=InitializedType name=Name 
 ;
 
 Function:
-	'(' type=Type ')' name=Name
+	'(' type=Type ')' ( '[' len=INT ']' ) ? name=Name
+;
+
+Scope:
+	'{' objects*=Object '}' name=Name
+;
+
+InitializedType:
+	fixed=FixedTypeArray ('=' init=Immediate ) ? | blob=BlobType
 ;
 
 Type:
-	FixedType | BlobType
+	fixed=FixedTypeArray | blob=BlobType
+;
+
+FixedTypeArray:
+	type=FixedType ( '[' len=INT ']' ) ?
 ;
 
 FixedType:
@@ -38,8 +50,7 @@ BlobBaseType:
 
 Name[noskipws]:
 	/\s*/-
-	/[^;=]*[^;=\s]/
-	/\s*/-
+	/[ -~]*[!-~]$/
 ;
 
 Immediate:
@@ -49,3 +60,4 @@ Immediate:
 Comment:
 	/^(#|\/\/).*$/
 ;
+

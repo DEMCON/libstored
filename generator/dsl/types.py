@@ -1,6 +1,7 @@
 # vim:et
 import re
 import struct
+import copy
 
 cnames = {}
 
@@ -11,7 +12,7 @@ def cname(s):
     c = re.sub(r'[^A-Za-z0-9/]+', '_', c)
     c = re.sub(r'/+', '__', c)
     c = re.sub(r'^__', '', c)
-    c = re.sub(r'^[^A-Za-z]', '_', c)
+    c = re.sub(r'^[^A-Za-z]_*', '_', c)
     c = re.sub(r'_+$', '', c)
 
     u = c
@@ -112,28 +113,30 @@ class Directory(object):
             return [0]
 
         res = []
-        while i > 0:
-            if i >= 0x80:
-                res += [(i & 0x7f) | 0x80]
-            else:
-                res += [i]
+        while i >= 0x80:
+            res.insert(0, i & 0x7f)
             i = i >> 7
+        res.insert(0, i)
+
+        for j in range(0,len(res)-1):
+            res[j] += 0x80
 
         return res
 
     def encodeType(self, o):
         func = isinstance(o, Function)
-        if isinstance(o.type, BlobType):
-            return [typeflags(o.type.type, func) + 0x80] + self.encodeInt(o.type.size)
-        else:
-            return [typeflags(o.type, func) + 0x80]
+        res = [typeflags(o.type, func) + 0x80]
+        if o.isBlob():
+            res += self.encodeInt(o.size)
+        return res
 
     def generateDict(self, h):
         if isinstance(h, Variable):
             return self.encodeType(h) + self.encodeInt(h.offset)
         elif isinstance(h, Function):
             return self.encodeType(h) + self.encodeInt(h.f)
-        # else: must be a dict
+        else:
+            assert isinstance(h, dict)
 
         names = list(h.keys())
         names.sort()
@@ -182,8 +185,12 @@ class Directory(object):
     def stripUnambig(self, h):
         if not isinstance(h, dict):
             return
-        if len(h) == 1 and ('/' in h or '\x00' in h):
-            return
+        if len(h) == 1:
+            if '/' in h:
+                self.stripUnambig(h['/'])
+                return
+            elif '\x00' in h:
+                return
 
 #        print(f'strip {h}')
         for k in list(h.keys()):
@@ -233,13 +240,13 @@ class Buffer(object):
         else:
             return size + a - (size % a) 
 
-    def generate(self, initvars, defaultvars):
+    def generate(self, initvars, defaultvars, littleEndian = True):
         self.init = []
         for v in initvars:
             size = v.buffersize()
             alignedsize = self.align(size)
             v.offset = len(self.init)
-            self.init += list(v.encode(v.default))
+            self.init += list(v.encode(v.init, littleEndian))
             if alignedsize > size:
                 self.init += [0] * (alignedsize - size)
 
@@ -255,33 +262,91 @@ class Store(object):
         self.objects = objects
         self.buffer = Buffer()
         self.directory = Directory()
+        self.littleEndian = True
+
+    def process(self):
+        self.flattenScopes()
+        self.expandArrays()
+        self.generateBuffer()
+        self.generateDirectory()
+    
+    def flattenScope(self, scope):
+        res = []
+        for i in range(0, len(scope)):
+            o = scope[i]
+            if isinstance(o, Scope):
+                flatten = self.flattenScope(o.objects)
+                for f in flatten:
+                    f.setName(o.name + '/' + f.name)
+                res += flatten
+            else:
+                res.append(o)
+        return res
+
+    def flattenScopes(self):
+        self.objects = self.flattenScope(self.objects)
+
+    def expandArrays(self):
+        os = []
+        while self.objects != []:
+            o = self.objects.pop(0)
+            if o.len > 1:
+                for i in range(0,o.len):
+                    newo = copy.copy(o)
+                    newo.len = 1
+                    newo.setName(newo.name + f'[{i}]')
+                    os.append(newo)
+                    if isinstance(o, Function):
+                        o.bump()
+            else:
+                os.append(o)
+        self.objects = os
 
     def generateBuffer(self):
         initvars = []
         defaultvars = []
         for o in self.objects:
             if isinstance(o, Variable):
-                if o.default == None:
+                assert o.len == 1
+                if o.init == None:
                     defaultvars.append(o)
                 else:
                     initvars.append(o)
 
         initvars.sort(key=lambda o: o.size, reverse=True)
         defaultvars.sort(key=lambda o: o.size, reverse=True)
-        self.buffer.generate(initvars, defaultvars)
+        self.buffer.generate(initvars, defaultvars, self.littleEndian)
 
     def generateDirectory(self):
         self.directory.generate(self.objects)
 
-class Variable(object):
-    def __init__(self, parent, type, name, default):
-        self.parent = parent
-        self.type = type
+class Object(object):
+    def __init__(self, parent, name, len = 0):
+        self.setName(name)
+        self.len = len if len > 1 else 1
+    
+    def setName(self, name):
         self.name = object_name(name)
         self.cname = cname(self.name)
-        self.default = default
+
+class Variable(Object):
+    def __init__(self, parent, type, name):
+        super().__init__(self, name)
+        self.parent = parent
         self.offset = 0
-        self.size = type.size if isinstance(type, BlobType) else csize(self.type)
+        if type.fixed != None:
+            self.type = type.fixed.type
+            self.size = csize(type.fixed.type)
+            self.init = type.init
+            self.len = type.fixed.len if type.fixed.len > 1 else 1
+        else:
+            self.type = type.blob.type
+            self.size = type.blob.size
+            self.init = None
+            self.len = 1
+
+    def isBlob(self):
+        return self.type in ['blob', 'string']
 
     def encode(self, x, littleEndian=True):
         endian = '<' if littleEndian else '>'
@@ -313,19 +378,37 @@ class Variable(object):
     def __str__(self):
         return self.name
 
-class Function(object):
+class Function(Object):
     f = 1
 
-    def __init__(self, parent, type, name):
+    def __init__(self, parent, type, name, len):
+        super().__init__(self, name)
         self.parent = parent
-        self.type = type
-        self.name = object_name(name)
-        self.cname = cname(self.name)
-        self.f = Function.f
         self.offset = self.f
         self.size = 0
-        Function.f += 1
+        self.len = len if len > 1 else 1
+        if type.fixed != None:
+            self.type = type.fixed.type
+        else:
+            self.type = type.blob.type
+        self.bump()
     
+    def isBlob(self):
+        return self.type in ['blob', 'string']
+    
+    def bump(self):
+        self.f = Function.f
+        Function.f += 1
+
+    def __str__(self):
+        return self.name
+
+class Scope(Object):
+    def __init__(self, parent, objects, name):
+        super().__init__(self, name)
+        self.parent = parent
+        self.objects = objects
+
     def __str__(self):
         return self.name
 

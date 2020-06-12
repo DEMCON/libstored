@@ -2,18 +2,38 @@
 // Comment
 
 # Default initialized
-int32 hello;
-double world;
-int32 zero;
+int32 hello
+double world
+int32 zero
 
 # Explicit initialized
-uint64 u64 = 1234;
-float f = 1.2e3;
+uint64=1234     u64
+float = 1.2e3   f
+
+# array
+int32[3] asdf
+bool[2]=true asdfb
+
+# scope
+{
+    int8 i
+    int8=3 j
+    (bool) fb
+    {
+        bool[3] ss
+    } subscope
+} scope
+
+# blob
+string[3] s
+(string[5]) fun
+
+# functions
+(float) z
+(float)[3] y
 
 # Strange names
-int32 asdf[3];
 (float) a b/a;
-int8 a b/c = 4;
-bool a b/d/e;
-string[3] s;
-(string[5]) fun;
+int8 a b/c = 4
+bool 4 a b/ddd/eee
+
