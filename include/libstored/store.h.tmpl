@@ -22,7 +22,7 @@ namespace stored {
 
 		// Directory.
 		static uint8_t const* directory();
-	};
+	} __attribute__((aligned(sizeof(double))));
 
 	template <typename Implementation>
 	class {{store.name}}Base {
@@ -36,7 +36,7 @@ namespace stored {
 
 		// Accessor generators.
 		template <typename T> Variable<T,Implementation> variable(size_t offset) {
-			stored_assert(offset + sizeof(T) < sizeof(m_data.buffer));
+			stored_assert(offset + sizeof(T) <= sizeof(m_data.buffer));
 			return Variable<T,Implementation>(implementation(), *reinterpret_cast<T*>(&buffer()[offset]));
 		}
 

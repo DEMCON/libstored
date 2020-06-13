@@ -12,8 +12,8 @@ namespace stored {
 static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len}}] = {
 {{store.buffer.init|carray}}
 };
-{% endif %}
 
+{% endif %}
 {{store.name}}Data::{{store.name}}Data()
     : buffer()
 {

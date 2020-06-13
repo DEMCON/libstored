@@ -1,38 +1,17 @@
-// Comment
+// This is a comment. The comment must start at the beginning of the line.
+// It is not possible to add a comment as a suffix of a non-comment line.
 
-// Default initialized
+// Basically, a variable is defined as:
+// <type> <name>
+//
+// Only built-in types can be used (although a blob can be cast to anything),
+// and the name consists of all ASCII-printable characters (ASCII 0x20-0x7e).
+// All variable are (default) initialized to zero or equivalent.
+// More on that later on, but this creates two variables:
+
 int32 hello
 double world
-int32 zero
 
-// Explicit initialized
-uint64=1234     u64
-float=1.2e3   f
-
-// array
-int32[3] asdf
-bool[2]=true asdfb
-
-// scope
-{
-    int8 i
-    int8=3 j
-    (bool) fb
-    {
-        bool[3] ss
-    }[3] subscope
-}[2] scope
-
-// blob
-string[3] s
-(string[5]) fun
-
-// functions
-(float) z
-(float)[3] y
-
-// Strange names
-(float) a b/a;
-int8 a b/c = 4
-bool 4 a b/ddd/eee
+// This file is named Hello.st, so a C++ object stored::Hello is generated,
+// which can be included using Hello.h.
 
