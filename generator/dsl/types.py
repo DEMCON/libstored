@@ -127,6 +127,7 @@ class Directory(object):
         func = isinstance(o, Function)
         res = [typeflags(o.type, func) + 0x80]
         if o.isBlob():
+            assert o.size <= 0xff
             res += self.encodeInt(o.size)
         return res
 
@@ -134,6 +135,7 @@ class Directory(object):
         if isinstance(h, Variable):
             return self.encodeType(h) + self.encodeInt(h.offset)
         elif isinstance(h, Function):
+#            print(f'function {h.name} {h.f}')
             return self.encodeType(h) + self.encodeInt(h.f)
         else:
             assert isinstance(h, dict)
@@ -149,6 +151,9 @@ class Directory(object):
             return self.generateDict(h['\x00'])
         elif names == ['/']:
             return [ord('/')] + self.generateDict(h['/'])
+        elif len(names) == 1 and isinstance(names[0], int):
+            # skip
+            return [names[0]] + self.generateDict(h[names[0]])
         else:
             # Choose pivot to compare to
             pivot = int(len(names) / 2)
@@ -192,6 +197,18 @@ class Directory(object):
             elif '\x00' in h:
                 return
 
+        # Drop at end of name:
+        # Find the chain:  h[k] -> v[vk] -> vv={[\0/]: object}
+        # And replace by:  h[k] -> vv
+
+        # Skip unambiguous chars within name:
+        # Find the chain:  h[k] -> v[vk] -> multiple vv
+        # And replace by:  h[k] -> v[1]  -> multiple vv
+
+        # Skip more:
+        # Find the chain:  h[k] -> v[vk] -> vv={int: object}
+        # And replace by:  h[k] -> vv={int+1: object}
+
 #        print(f'strip {h}')
         for k in list(h.keys()):
             v = h[k]
@@ -205,9 +222,18 @@ class Directory(object):
                 vv = v[vk]
                 if len(vv) == 1:
                     vvk = list(vv.keys())[0]
-                    if vvk == '/' or vvk == '\x00':
+                    if isinstance(vvk, int):
+#                        print(f'skip more {vk}')
+                        h[k] = vv
+                        vv[vvk + 1] = vv[vvk]
+                        del vv[vvk]
+                    elif vvk == '/' or vvk == '\x00':
 #                        print(f'drop {vk}')
                         h[k] = vv
+                else:
+#                    print(f'skip {vk}')
+                    v[1] = v[vk]
+                    del v[vk]
 #        print(f'stripped {h}')
 
     def generate(self, objects):
@@ -266,7 +292,6 @@ class Store(object):
 
     def process(self):
         self.flattenScopes()
-        self.expandArrays()
         self.generateBuffer()
         self.generateDirectory()
     
@@ -275,7 +300,8 @@ class Store(object):
         for i in range(0, len(scope)):
             o = scope[i]
             if isinstance(o, Scope):
-                flatten = self.flattenScope(o.objects)
+#                print(f'flatten {o.name}')
+                flatten = self.flattenScope(self.expandArrays(o.objects))
                 for f in flatten:
                     f.setName(o.name + '/' + f.name)
                 res += flatten
@@ -284,23 +310,28 @@ class Store(object):
         return res
 
     def flattenScopes(self):
+        self.objects = self.expandArrays(self.objects)
         self.objects = self.flattenScope(self.objects)
 
-    def expandArrays(self):
+    def copy(self, o):
+        newo = copy.copy(o)
+        if isinstance(newo, Scope):
+            newo.objects = list(map(self.copy, newo.objects))
+        return newo
+
+    def expandArrays(self, objects):
         os = []
-        while self.objects != []:
-            o = self.objects.pop(0)
+        for o in objects:
             if o.len > 1:
-                for i in range(0,o.len):
-                    newo = copy.copy(o)
+#                print(f'expand {o.name}')
+                for i in range(0, o.len):
+                    newo = self.copy(o)
                     newo.len = 1
                     newo.setName(newo.name + f'[{i}]')
                     os.append(newo)
-                    if isinstance(o, Function):
-                        o.bump()
             else:
                 os.append(o)
-        self.objects = os
+        return os
 
     def generateBuffer(self):
         initvars = []
@@ -312,6 +343,8 @@ class Store(object):
                     defaultvars.append(o)
                 else:
                     initvars.append(o)
+            elif isinstance(o, Function):
+                o.bump()
 
         initvars.sort(key=lambda o: o.size, reverse=True)
         defaultvars.sort(key=lambda o: o.size, reverse=True)
@@ -323,7 +356,7 @@ class Store(object):
 class Object(object):
     def __init__(self, parent, name, len = 0):
         self.setName(name)
-        self.len = len if len > 1 else 1
+        self.len = len if isinstance(len, int) and len > 1 else 1
     
     def setName(self, name):
         self.name = object_name(name)
@@ -338,7 +371,7 @@ class Variable(Object):
             self.type = type.fixed.type
             self.size = csize(type.fixed.type)
             self.init = type.init
-            self.len = type.fixed.len if type.fixed.len > 1 else 1
+            self.len = type.fixed.len if isinstance(type.fixed.len, int) and type.fixed.len > 1 else 1
         else:
             self.type = type.blob.type
             self.size = type.blob.size
@@ -382,16 +415,14 @@ class Function(Object):
     f = 1
 
     def __init__(self, parent, type, name, len):
-        super().__init__(self, name)
+        super().__init__(self, name, len)
         self.parent = parent
         self.offset = self.f
         self.size = 0
-        self.len = len if len > 1 else 1
         if type.fixed != None:
             self.type = type.fixed.type
         else:
             self.type = type.blob.type
-        self.bump()
     
     def isBlob(self):
         return self.type in ['blob', 'string']
@@ -404,8 +435,8 @@ class Function(Object):
         return self.name
 
 class Scope(Object):
-    def __init__(self, parent, objects, name):
-        super().__init__(self, name)
+    def __init__(self, parent, objects, name, len):
+        super().__init__(self, name, len)
         self.parent = parent
         self.objects = objects
 

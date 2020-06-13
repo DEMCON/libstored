@@ -3,34 +3,40 @@ Store:
 ;
 
 Object:
+	/\s*/-
 	( Variable | Function | Scope )
+	/\s*/-
 ;
 
-Variable:
+Variable[noskipws]:
 	type=InitializedType name=Name 
 ;
 
-Function:
-	'(' type=Type ')' ( '[' len=INT ']' ) ? name=Name
+Function[noskipws]:
+	'(' type=Type ')' len=Array name=Name
 ;
 
-Scope:
-	'{' objects*=Object '}' name=Name
+Scope[noskipws]:
+	'{' objects*=Object '}' len=Array name=Name
 ;
 
-InitializedType:
+InitializedType[noskipws]:
 	fixed=FixedTypeArray ('=' init=Immediate ) ? | blob=BlobType
 ;
 
-Type:
+Type[noskipws]:
 	fixed=FixedTypeArray | blob=BlobType
 ;
 
-FixedTypeArray:
-	type=FixedType ( '[' len=INT ']' ) ?
+FixedTypeArray[noskipws]:
+	type=FixedType len=Array
 ;
 
-FixedType:
+Array[noskipws]:
+	( '['- INT ']'- ) ?
+;
+
+FixedType[noskipws]:
 	'bool' |
 	'int8' | 'uint8' |
 	'int16' | 'uint16' |
@@ -40,24 +46,24 @@ FixedType:
 	'ptr32' | 'ptr64'
 ;
 
-BlobType:
+BlobType[noskipws]:
 	type=BlobBaseType '[' size=INT ']'
 ;
 
-BlobBaseType:
+BlobBaseType[noskipws]:
 	( 'string' | 'blob' ) 
 ;
 
 Name[noskipws]:
-	/\s*/-
+	/\s+/-
 	/[ -~]*[!-~]$/
 ;
 
-Immediate:
+Immediate[noskipws]:
 	NUMBER | BOOL
 ;
 
 Comment:
-	/^(#|\/\/).*$/
+	/^\/\/.*$/
 ;
 

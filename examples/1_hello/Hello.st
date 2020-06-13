@@ -1,38 +1,37 @@
-# Comment
 // Comment
 
-# Default initialized
+// Default initialized
 int32 hello
 double world
 int32 zero
 
-# Explicit initialized
+// Explicit initialized
 uint64=1234     u64
-float = 1.2e3   f
+float=1.2e3   f
 
-# array
+// array
 int32[3] asdf
 bool[2]=true asdfb
 
-# scope
+// scope
 {
     int8 i
     int8=3 j
     (bool) fb
     {
         bool[3] ss
-    } subscope
-} scope
+    }[3] subscope
+}[2] scope
 
-# blob
+// blob
 string[3] s
 (string[5]) fun
 
-# functions
+// functions
 (float) z
 (float)[3] y
 
-# Strange names
+// Strange names
 (float) a b/a;
 int8 a b/c = 4
 bool 4 a b/ddd/eee

@@ -25,12 +25,16 @@
  *      # If there is no object for a specific jump, jmp_* can be 0, in which case the 
  *      # expr_* is omitted.
  *      char jmp_l jmp_g expr expr_l ? expr_g ? |
+ *      # Skip the next n non-/ characters of the name.
+ *      skip expr |
  *      # A variable has been reached for the given name.
  *      var |
  *      # No variable exists with the given name.
  *      end
+ *      # Note that expr does never start with \x7f (DEL).
+ *      # Let's say, it is reserved for now.
  *
- * char ::= [\x21..\x7e]                # printable ASCII
+ * char ::= [\x20..\x2e,\x30..\x7e]     # printable ASCII, except '/'
  * int ::= bytehigh * bytelow           # Unsigned VLQ
  * byte ::= [0..0xff]
  * bytehigh ::= [0x80..0xff]			# 7 lsb carry data
@@ -46,6 +50,8 @@
  * var ::= (String | Blob) byte offset | type offset
  * type ::= [0x80..0xff]                # This is stored::Type::type with 0x80 or'ed into it.
  * offset ::= int
+ *
+ * skip ::= [1..0x1f]
  * \endcode
  */
 

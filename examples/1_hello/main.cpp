@@ -3,7 +3,7 @@
 #include <cstdio>
 
 static void list_cb(stored::Hello* h, char const* name, stored::Type::type type, void* buffer, size_t len) {
-    printf("%s: type 0x%x, buffer %p, key=%" PRIuPTR ", len %zu\n",
+    printf("%s: type 0x%x, buffer %p, key %" PRIuPTR ", len %zu\n",
         name, (int)type, buffer, stored::Type::isFunction(type) ? 0 : h->bufferToKey(buffer), len);
 }
 

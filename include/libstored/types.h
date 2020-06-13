@@ -50,8 +50,8 @@ namespace stored {
 		};
 
 		static bool isFunction(type t) { return t & FlagFunction; }
-		static bool isFixed(type t) { return !isFunction(t) && (t & FlagFixed); }
-		static bool isInt(type t) { return !isFunction(t) && isFixed(t) && (t & FlagInt); }
+		static bool isFixed(type t) { return t & FlagFixed; }
+		static bool isInt(type t) { return isFixed(t) && (t & FlagInt); }
 		static bool isSpecial(type t) { return (t & MaskFlags) == 0; }
 		static size_t size(type t) { return !isFixed(t) ? 0 : (t & MaskSize) + 1; }
 	};
@@ -219,7 +219,7 @@ namespace stored {
 		type operator()() const { return get(); }
 		void operator()(type value) const { set(value); }
 		
-		bool valid() const { return m_f >= 0; }
+		bool valid() const { return id() >= 0; }
 
 		Container& container() const {
 			stored_assert(valid());
@@ -228,13 +228,15 @@ namespace stored {
 
 		size_t callback(bool set, type& value) {
 			stored_assert(valid());
-			return container().callback(set, &value, sizeof(type), m_f);
+			return container().callback(set, &value, sizeof(type), id());
 		}
 
 		size_t callback(bool set, void* buffer, size_t len) {
 			stored_assert(valid());
-			return container().callback(set, buffer, len, m_f);
+			return container().callback(set, buffer, len, id());
 		}
+
+		unsigned int id() const { return m_f; }
 
 	private:
 		Container* m_container;
@@ -253,8 +255,10 @@ namespace stored {
 		}
 		
 		Variant(Container& container, Type::type type, unsigned int f)
-			: m_container(&container), m_f(f), m_type((uint8_t)type)
-		{}
+			: m_container(&container), m_f((uintptr_t)f), m_type((uint8_t)type)
+		{
+			static_assert(sizeof(uintptr_t) >= sizeof(unsigned int), "");
+		}
 
 		Variant()
 			: m_buffer()
@@ -271,13 +275,13 @@ namespace stored {
 		template <typename T>
 		Variant(Function<T,Container> const& f)
 			: m_container(f.valid() ? &f.container() : nullptr)
-			, m_f(f.valid() ? f.callback() : nullptr)
+			, m_f(f.valid() ? f.id() : 0)
 			, m_type(f.type())
 		{}
 
 		size_t get(uint8_t* dst, size_t len = 0) const {
 			if(Type::isFunction(type())) {
-				len = container().callback(false, dst, len, m_f);
+				len = container().callback(false, dst, len, (unsigned int)m_f);
 			} else {
 				if(Type::isFixed(type())) {
 					stored_assert(len == size() || len == 0);
@@ -293,7 +297,7 @@ namespace stored {
 
 		size_t set(uint8_t const* src, size_t len = 0) {
 			if(isFunction()) {
-				len = container().callback(true, src, len, m_f);
+				len = container().callback(true, src, len, (unsigned int)m_f);
 			} else {
 				if(Type::isFixed(type())) {
 					stored_assert(len == size() || len == 0);
@@ -328,7 +332,7 @@ namespace stored {
 
 		template <typename T> Function<T,Container> function() const {
 			stored_assert(isFunction());
-			return Function<T,Container>(container(), m_f);
+			return Function<T,Container>(container(), (unsigned int)m_f);
 		}
 		
 		typename Container::Key key() const {
@@ -340,7 +344,7 @@ namespace stored {
 		Container* m_container;
 		union {
 			void* m_buffer;
-			unsigned int m_f;
+			uintptr_t m_f;
 		};
 		uint8_t m_len;
 		uint8_t m_type;
@@ -354,8 +358,10 @@ namespace stored {
 		{}
 		
 		Variant(Type::type type, unsigned int f)
-			: m_f(f), m_type((uint8_t)type)
-		{}
+			: m_f((uintptr_t)f), m_type((uint8_t)type)
+		{
+			static_assert(sizeof(uintptr_t) >= sizeof(unsigned int), "");
+		}
 
 		Variant()
 			: m_buffer()
@@ -366,7 +372,7 @@ namespace stored {
 			if(!m_buffer)
 				return Variant<Container>();
 			else if(Type::isFunction((Type::type)m_type))
-				return Variant<Container>(container, (Type::type)m_type, m_f);
+				return Variant<Container>(container, (Type::type)m_type, (unsigned int)m_f);
 			else {
 				stored_assert((uintptr_t)m_buffer >= (uintptr_t)&container && (uintptr_t)m_buffer + m_len < (uintptr_t)&container + sizeof(Container));
 				return Variant<Container>(container, (Type::type)m_type, m_buffer, m_len);
@@ -376,7 +382,7 @@ namespace stored {
 	private:
 		union {
 			void* m_buffer;
-			unsigned int m_f;
+			uintptr_t m_f;
 		};
 		uint8_t m_len;
 		uint8_t m_type;

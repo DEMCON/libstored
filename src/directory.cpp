@@ -19,18 +19,16 @@ namespace stored {
 namespace impl {
 
 Variant<> find(void* buffer, uint8_t const* directory, char const* name) {
-	if(unlikely(!directory || !name))
+	if(unlikely(!directory || !name)) {
+notfound:
 		return Variant<>();
+	}
 
 	uint8_t const* p = directory;
 	while(true) {
-		if(*p == '/') {
-			// Skip till next /
-			while(*name++ != '/') { if(!*name) return Variant<>(); }
-			p++;
-		} else if(*p == 0) {
+		if(*p == 0) {
 			// end
-			return Variant<>();
+			goto notfound;
 		} else if(*p >= 0x80) {
 			// var
 			Type::type type = (Type::type)(*p++ ^ 0x80);
@@ -43,7 +41,23 @@ Variant<> find(void* buffer, uint8_t const* directory, char const* name) {
 			else
 				return Variant<>(type, (char*)buffer + offset, len);
 		} else if(!*name) {
-			return Variant<>();
+			goto notfound;
+		} else if(*p <= 0x1f) {
+			// skip
+			for(uint8_t i = *p++; i > 0; i--, name++) {
+				switch(*name) {
+				case '\0':
+				case '/':
+					goto notfound;
+				default:;
+				}
+			}
+		} else if(*p == '/') {
+			// Skip till next /
+			while(*name++ != '/')
+				if(!*name)
+					goto notfound;
+			p++;
 		} else {
 			// match char
 			int c = (int)*name - (int)*p++;
@@ -79,12 +93,7 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
 	size_t erase = 0;
 
 	while(true) {
-		if(*p == '/') {
-			// Hierarchy separator.
-			name.push_back('/');
-			erase++;
-			p++;
-		} else if(*p == 0) {
+		if(*p == 0) {
 			// end
 			break;
 		} else if(*p >= 0x80) {
@@ -98,10 +107,20 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
 
 			size_t offset = decodeOffset(p);
 			if(Type::isFunction(type))
-				f(container, (char const*)name.c_str(), type, (char*)offset, 0, arg);
+				f(container, (char const*)name.c_str(), type, (char*)(uintptr_t)offset, 0, arg);
 			else
 				f(container, (char const*)name.c_str(), type, (char*)buffer + offset, len, arg);
 			break;
+		} else if(*p <= 0x1f) {
+			// skip
+			name.append(*p, '?');
+			erase += *p;
+			p++;
+		} else if(*p == '/') {
+			// Hierarchy separator.
+			name.push_back('/');
+			erase++;
+			p++;
 		} else {
 			// next char in name
 			char c = *p++;
