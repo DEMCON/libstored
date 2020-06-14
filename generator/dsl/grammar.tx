@@ -47,7 +47,7 @@ FixedType[noskipws]:
 ;
 
 BlobType[noskipws]:
-	type=BlobBaseType '[' size=INT ']'
+	type=BlobBaseType ':' size=INT ( '[' len=INT ']' ) ?
 ;
 
 BlobBaseType[noskipws]:
@@ -56,7 +56,7 @@ BlobBaseType[noskipws]:
 
 Name[noskipws]:
 	/\s+/-
-	/[ -~]*[!-~]$/
+	/([ -.0-~]\/?)*[!-.0-~]/
 ;
 
 Immediate[noskipws]:
@@ -64,6 +64,6 @@ Immediate[noskipws]:
 ;
 
 Comment:
-	/^\/\/.*$/
+	/\/\/.*$/
 ;
 

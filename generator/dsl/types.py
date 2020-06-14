@@ -384,7 +384,7 @@ class Variable(Object):
             self.type = type.blob.type
             self.size = type.blob.size
             self.init = None
-            self.len = 1
+            self.len = type.blob.len
 
     def isBlob(self):
         return self.type in ['blob', 'string']
@@ -452,8 +452,9 @@ class Scope(Object):
         return self.name
 
 class BlobType(object):
-    def __init__(self, parent, type, size):
+    def __init__(self, parent, type, size, len):
         self.parent = parent
         self.type = type
+        self.len = len if len != None and len > 1 else 1
         self.size = size if size > 0 else 0
 

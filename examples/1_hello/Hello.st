@@ -1,5 +1,4 @@
-// This is a comment. The comment must start at the beginning of the line.
-// It is not possible to add a comment as a suffix of a non-comment line.
+// This is a comment. The comment is always till the end of the line.
 
 // Basically, a variable is defined as:
 // <type> <name>
@@ -14,4 +13,6 @@ double world
 
 // This file is named Hello.st, so a C++ object stored::Hello is generated,
 // which can be included using Hello.h.
+
+// Check out scripts/st.vim for syntax highlighting in Vim.
 
