@@ -45,7 +45,9 @@ macro(libstored_generate target model)
     target_link_libraries(${target} PUBLIC ${target}-libstored)
 
     if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
-        target_link_options(${target} PUBLIC -Wl,--gc-sections)
+		if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+			target_link_options(${target} PUBLIC -Wl,--gc-sections)
+		endif()
     endif()
 endmacro()
 

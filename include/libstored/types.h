@@ -355,7 +355,8 @@ namespace stored {
 	public:
 		Variant(Type::type type, void* buffer, size_t len)
 			: m_buffer(buffer), m_len((uint8_t)len), m_type((uint8_t)type)
-		{}
+		{
+		}
 		
 		Variant(Type::type type, unsigned int f)
 			: m_f((uintptr_t)f), m_type((uint8_t)type)
@@ -374,7 +375,7 @@ namespace stored {
 			else if(Type::isFunction((Type::type)m_type))
 				return Variant<Container>(container, (Type::type)m_type, (unsigned int)m_f);
 			else {
-				stored_assert((uintptr_t)m_buffer >= (uintptr_t)&container && (uintptr_t)m_buffer + m_len < (uintptr_t)&container + sizeof(Container));
+				stored_assert((uintptr_t)m_buffer >= (uintptr_t)&container && (uintptr_t)m_buffer + m_len <= (uintptr_t)&container + sizeof(Container));
 				return Variant<Container>(container, (Type::type)m_type, m_buffer, m_len);
 			}
 		}

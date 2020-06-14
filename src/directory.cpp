@@ -32,9 +32,7 @@ notfound:
 		} else if(*p >= 0x80) {
 			// var
 			Type::type type = (Type::type)(*p++ ^ 0x80);
-			uint8_t len;
-			if(!Type::isFixed(type))
-				len = *p++;
+			size_t len = !Type::isFixed(type) ? (size_t)*p++ : Type::size(type);
 			size_t offset = decodeOffset(p);
 			if(Type::isFunction(type))
 				return Variant<>(type, (unsigned int)offset);
@@ -123,7 +121,7 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
 			p++;
 		} else {
 			// next char in name
-			char c = *p++;
+			char c = (char)*p++;
 
 			// take jmp_l
 			size_t jmp = decodeOffset(p);
@@ -140,7 +138,7 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
 	}
 
 	if(erase)
-		name.erase(name.end() - erase, name.end());
+		name.erase(name.end() - (long)erase, name.end());
 }
 
 /*!
