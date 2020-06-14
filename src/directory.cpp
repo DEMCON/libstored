@@ -97,7 +97,7 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
 		} else if(*p >= 0x80) {
 			// var
 			Type::type type = (Type::type)(*p++ ^ 0x80);
-			size_t len = !Type::isFixed(type) ? len = decodeInt(p) : Type::size(type);
+			size_t len = !Type::isFixed(type) ? decodeInt(p) : Type::size(type);
 			size_t offset = decodeInt(p);
 			if(Type::isFunction(type))
 				f(container, (char const*)name.c_str(), type, (char*)(uintptr_t)offset, 0, arg);
