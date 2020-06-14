@@ -25,7 +25,7 @@ syn match stFullType '^\s*(\?\<[a-z0-9]\+\>\(:[0-9A-Fa-fx]\+\)\?)\?\(\[[0-9A-Fa-
 hi def link stFullType Type
 
 syn match stName contained '.*' contains=stComment
-hi def link stName Identifier
+"hi def link stName Identifier
 
 syn region stScope start='{' end='}' nextgroup=stRegionType fold transparent contains=stFullType,stScope,stComment
 "hi def link stScope Type
