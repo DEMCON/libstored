@@ -249,7 +249,7 @@ namespace stored {
 		typedef size_t(Callback)(Container&,bool,uint8_t*,size_t);
 
 		Variant(Container& container, Type::type type, void* buffer, size_t len)
-			: m_container(&container), m_buffer(buffer), m_len((uint8_t)len), m_type((uint8_t)type)
+			: m_container(&container), m_buffer(buffer), m_len(len), m_type((uint8_t)type)
 		{
 			stored_assert(!Type::isFixed(this->type()) || ((uintptr_t)buffer & (Type::size(this->type()) - 1)) == 0);
 		}
@@ -318,7 +318,7 @@ namespace stored {
 		}
 
 		Type::type type() const { return (Type::type)m_type; }
-		size_t size() const { return Type::isFixed(type()) ? Type::size(type()) : (size_t)m_len; }
+		size_t size() const { return Type::isFixed(type()) ? Type::size(type()) : m_len; }
 		bool valid() const { return m_buffer; }
 		bool isFunction() const { stored_assert(valid()); return Type::isFunction(type()); }
 		bool isVariable() const { stored_assert(valid()); return !isFunction(); }
@@ -346,7 +346,7 @@ namespace stored {
 			void* m_buffer;
 			uintptr_t m_f;
 		};
-		uint8_t m_len;
+		size_t m_len;
 		uint8_t m_type;
 	};
 	
@@ -354,7 +354,7 @@ namespace stored {
 	class Variant<void> {
 	public:
 		Variant(Type::type type, void* buffer, size_t len)
-			: m_buffer(buffer), m_len((uint8_t)len), m_type((uint8_t)type)
+			: m_buffer(buffer), m_len(len), m_type((uint8_t)type)
 		{
 		}
 		
@@ -385,7 +385,7 @@ namespace stored {
 			void* m_buffer;
 			uintptr_t m_f;
 		};
-		uint8_t m_len;
+		size_t m_len;
 		uint8_t m_type;
 	};
 

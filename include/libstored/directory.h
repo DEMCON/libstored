@@ -47,8 +47,9 @@
  * # So, a jmp value of 0 effectively results in end.
  * jmp ::= int
  *
- * var ::= (String | Blob) byte offset | type offset
+ * var ::= (String | Blob) size offset | type offset
  * type ::= [0x80..0xff]                # This is stored::Type::type with 0x80 or'ed into it.
+ * size ::= int
  * offset ::= int
  *
  * skip ::= [1..0x1f]

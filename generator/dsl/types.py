@@ -2,6 +2,7 @@
 import re
 import struct
 import copy
+import sys
 
 cnames = {}
 
@@ -127,7 +128,6 @@ class Directory(object):
         func = isinstance(o, Function)
         res = [typeflags(o.type, func) + 0x80]
         if o.isBlob():
-            assert o.size <= 0xff
             res += self.encodeInt(o.size)
         return res
 
@@ -245,7 +245,7 @@ class Directory(object):
 
 class Buffer(object):
     def __init__(self):
-        self.size = 10
+        self.size = 0
         self.init = []
 
     def align(self, size, force=None):
@@ -292,6 +292,7 @@ class Store(object):
 
     def process(self):
         self.flattenScopes()
+        self.checkNames()
         self.generateBuffer()
         self.generateDirectory()
     
@@ -332,6 +333,13 @@ class Store(object):
             else:
                 os.append(o)
         return os
+
+    def checkNames(self):
+        for o in self.objects:
+            if len(list(filter(lambda x: x.name == o.name, self.objects))) > 1:
+                sys.exit(f'Duplicate name "{o.name}"')
+            if '//' in o.name:
+                sys.exit(f'Empty scope name in "{o.name}"')
 
     def generateBuffer(self):
         initvars = []
@@ -447,5 +455,5 @@ class BlobType(object):
     def __init__(self, parent, type, size):
         self.parent = parent
         self.type = type
-        self.size = size
+        self.size = size if size > 0 else 0
 

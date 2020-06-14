@@ -2,7 +2,7 @@
 
 #include <string>
 
-static size_t decodeOffset(uint8_t const*& p) {
+static size_t decodeInt(uint8_t const*& p) {
 	size_t v = 0;
 	while(*p & 0x80) {
 		v = (v | (*p & 0x7f)) << 7;
@@ -32,8 +32,8 @@ notfound:
 		} else if(*p >= 0x80) {
 			// var
 			Type::type type = (Type::type)(*p++ ^ 0x80);
-			size_t len = !Type::isFixed(type) ? (size_t)*p++ : Type::size(type);
-			size_t offset = decodeOffset(p);
+			size_t len = !Type::isFixed(type) ? decodeInt(p) : Type::size(type);
+			size_t offset = decodeInt(p);
 			if(Type::isFunction(type))
 				return Variant<>(type, (unsigned int)offset);
 			else
@@ -61,12 +61,12 @@ notfound:
 			int c = (int)*name - (int)*p++;
 			if(c < 0) {
 				// take jmp_l
-				p += decodeOffset(p) - 1;
+				p += decodeInt(p) - 1;
 			} else {
 				skipOffset(p);
 				if(c > 0) {
 					// take jmp_g
-					p += decodeOffset(p) - 1;
+					p += decodeInt(p) - 1;
 				} else {
 					// equal
 					skipOffset(p);
@@ -97,13 +97,8 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
 		} else if(*p >= 0x80) {
 			// var
 			Type::type type = (Type::type)(*p++ ^ 0x80);
-			size_t len = 0;
-			if(!Type::isFixed(type))
-				len = (size_t)*p++;
-			else
-				len = Type::size(type);
-
-			size_t offset = decodeOffset(p);
+			size_t len = !Type::isFixed(type) ? len = decodeInt(p) : Type::size(type);
+			size_t offset = decodeInt(p);
 			if(Type::isFunction(type))
 				f(container, (char const*)name.c_str(), type, (char*)(uintptr_t)offset, 0, arg);
 			else
@@ -124,11 +119,11 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
 			char c = (char)*p++;
 
 			// take jmp_l
-			size_t jmp = decodeOffset(p);
+			size_t jmp = decodeInt(p);
 			list(container, buffer, p + jmp - 1, f, arg, name);
 
 			// take jmp_g
-			jmp = decodeOffset(p);
+			jmp = decodeInt(p);
 			list(container, buffer, p + jmp - 1, f, arg, name);
 
 			// resume with this char
