@@ -5,4 +5,6 @@ endif()
 
 add_subdirectory(1_hello)
 add_subdirectory(2_basic)
+add_subdirectory(3_scope)
+add_subdirectory(4_function)
 

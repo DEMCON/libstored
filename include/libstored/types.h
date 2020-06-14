@@ -226,7 +226,7 @@ namespace stored {
 			return *m_container;
 		}
 
-		size_t callback(bool set, type& value) {
+		size_t callback(bool set, type& value) const {
 			stored_assert(valid());
 			return container().callback(set, &value, sizeof(type), id());
 		}

@@ -65,7 +65,7 @@ namespace stored {
 				return implementation().{{o.cname}}(set, buffer, len);
 {%     else %}
 				stored_assert(len == sizeof({{o|ctype}}));
-				implementation().{{o.cname}}(set, *reinterpret_cast<{{o|ctype}}*>(buffer));
+				implementation().__{{o.cname}}(set, *reinterpret_cast<{{o|ctype}}*>(buffer));
 				return sizeof({{o|ctype}});
 {%     endif %}
 {%   endif %}
@@ -81,10 +81,10 @@ namespace stored {
 {%   if o is function %}
 {%     if o is blob %}
 		/*! \brief Callback for {{o}} */
-		size_t {{o.cname}}(bool UNUSED_PAR(set), {{o|ctype}}* UNUSED_PAR(value), size_t UNUSED_PAR(len)) { return 0; }
+		size_t __{{o.cname}}(bool UNUSED_PAR(set), {{o|ctype}}* UNUSED_PAR(value), size_t UNUSED_PAR(len)) { return 0; }
 {%     else %}
 		/*! \brief Callback for {{o}} */
-		void {{o.cname}}(bool UNUSED_PAR(set), {{o|ctype}}& UNUSED_PAR(value)) {}
+		void __{{o.cname}}(bool UNUSED_PAR(set), {{o|ctype}}& UNUSED_PAR(value)) {}
 {%     endif %}
 {%   endif %}
 {% endfor %}
