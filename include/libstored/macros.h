@@ -60,9 +60,19 @@
 #  endif
 #endif
 
-#if defined(__cplusplus) && __cplusplus < 201103L && !defined(constexpr)
-#  define constexpr
-#  define nullptr NULL
+#if defined(__cplusplus) && __cplusplus < 201103L
+#  ifndef constexpr
+#    define constexpr
+#  endif
+#  ifndef override
+#    define override
+#  endif
+#  ifndef final
+#    define final
+#  endif
+#  ifndef nullptr
+#    define nullptr NULL
+#  endif
 #endif
 
 #endif // __LIBSTORED_MACROS_H

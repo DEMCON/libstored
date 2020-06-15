@@ -17,11 +17,15 @@ endif()
 
 set(PYTHON_EXECUTABLE "python3" CACHE STRING "Path to the python executable" FORCE)
 
-macro(libstored_generate target model)
+function(libstored_generate target) # add all other models as varargs
+    foreach(model IN ITEMS ${ARGN})
+        list(APPEND models ${CMAKE_CURRENT_SOURCE_DIR}/${model})
+    endforeach()
+
     if(NOT EXISTS libstored)
         # Execute right away, such that the CMakeLists.txt exists.
         execute_process(
-            COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/generator/generate.py -p ${target}- ${CMAKE_CURRENT_SOURCE_DIR}/${model} ${CMAKE_CURRENT_SOURCE_DIR}/libstored
+            COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/generator/generate.py -p ${target}- ${models} ${CMAKE_CURRENT_SOURCE_DIR}/libstored
         )
     endif()
     
@@ -32,10 +36,10 @@ macro(libstored_generate target model)
         DEPENDS ${PROJECT_SOURCE_DIR}/include/libstored/store.h.tmpl
         DEPENDS ${PROJECT_SOURCE_DIR}/src/store.cpp.tmpl
         DEPENDS ${PROJECT_SOURCE_DIR}/CMakeLists.txt.tmpl
-        DEPENDS ${model}
-        COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/generator/generate.py -p ${target}- ${CMAKE_CURRENT_SOURCE_DIR}/${model} ${CMAKE_CURRENT_SOURCE_DIR}/libstored
+        DEPENDS ${models}
+        COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/generator/generate.py -p ${target}- ${models} ${CMAKE_CURRENT_SOURCE_DIR}/libstored
         COMMAND ${CMAKE_COMMAND} -E touch ${target}-libstored.timestamp
-        COMMENT "Generate store from ${model}"
+        COMMENT "Generate store from ${ARGN}"
         VERBATIM
     )
     add_custom_target(${target}-libstored-generate
@@ -49,7 +53,7 @@ macro(libstored_generate target model)
 			target_link_options(${target} PUBLIC -Wl,--gc-sections)
 		endif()
     endif()
-endmacro()
+endfunction()
 
 option(LIBSTORED_EXAMPLES "Build examples" ON)
 if(LIBSTORED_EXAMPLES)

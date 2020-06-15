@@ -262,7 +262,8 @@ namespace stored {
 
 		Variant()
 			: m_buffer()
-		{}
+		{
+		}
 
 		template <typename T>
 		Variant(Variable<T,Container> const& v)
@@ -279,7 +280,7 @@ namespace stored {
 			, m_type(f.type())
 		{}
 
-		size_t get(uint8_t* dst, size_t len = 0) const {
+		size_t get(void* dst, size_t len = 0) const {
 			if(Type::isFunction(type())) {
 				len = container().callback(false, dst, len, (unsigned int)m_f);
 			} else {
@@ -295,9 +296,9 @@ namespace stored {
 			return len;
 		}
 
-		size_t set(uint8_t const* src, size_t len = 0) {
+		size_t set(void const* src, size_t len = 0) {
 			if(isFunction()) {
-				len = container().callback(true, src, len, (unsigned int)m_f);
+				len = container().callback(true, const_cast<void*>(src), len, (unsigned int)m_f);
 			} else {
 				if(Type::isFixed(type())) {
 					stored_assert(len == size() || len == 0);
@@ -317,8 +318,8 @@ namespace stored {
 			return len;
 		}
 
-		Type::type type() const { return (Type::type)m_type; }
-		size_t size() const { return Type::isFixed(type()) ? Type::size(type()) : m_len; }
+		Type::type type() const { stored_assert(valid()); return (Type::type)m_type; }
+		size_t size() const { stored_assert(valid()); return Type::isFixed(type()) ? Type::size(type()) : m_len; }
 		bool valid() const { return m_buffer; }
 		bool isFunction() const { stored_assert(valid()); return Type::isFunction(type()); }
 		bool isVariable() const { stored_assert(valid()); return !isFunction(); }
@@ -370,6 +371,8 @@ namespace stored {
 
 		template <typename Container>
 		Variant<Container> apply(Container& container) const {
+			static_assert(sizeof(Variant<Container>) == sizeof(Variant<>), "");
+
 			if(!m_buffer)
 				return Variant<Container>();
 			else if(Type::isFunction((Type::type)m_type))
@@ -379,8 +382,18 @@ namespace stored {
 				return Variant<Container>(container, (Type::type)m_type, m_buffer, m_len);
 			}
 		}
+		
+		size_t get(void* UNUSED_PAR(dst), size_t UNUSED_PAR(len) = 0) const { stored_assert(valid()); return 0; }
+		size_t set(void const* UNUSED_PAR(src), size_t UNUSED_PAR(len) = 0) { stored_assert(valid()); return 0; }
+		Type::type type() const { stored_assert(valid()); return (Type::type)m_type; }
+		size_t size() const { stored_assert(valid()); return Type::isFixed(type()) ? Type::size(type()) : m_len; }
+		bool valid() const { return m_buffer; }
+		bool isFunction() const { stored_assert(valid()); return Type::isFunction(type()); }
+		bool isVariable() const { stored_assert(valid()); return !isFunction(); }
+		void* container() const { stored_assert(false); return nullptr; }
 
 	private:
+		void* m_dummy; // Make this class the same size as a non-void container.
 		union {
 			void* m_buffer;
 			uintptr_t m_f;

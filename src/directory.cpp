@@ -2,13 +2,14 @@
 
 #include <string>
 
-static size_t decodeInt(uint8_t const*& p) {
-	size_t v = 0;
+template <typename T>
+static T decodeInt(uint8_t const*& p) {
+	T v = 0;
 	while(*p & 0x80) {
-		v = (v | (*p & 0x7f)) << 7;
+		v = (v | (T)(*p & 0x7f)) << 7;
 		p++;
 	}
-	return v | *p++;
+	return v | (T)*p++;
 }
 
 static void skipOffset(uint8_t const*& p) {
@@ -32,8 +33,8 @@ notfound:
 		} else if(*p >= 0x80) {
 			// var
 			Type::type type = (Type::type)(*p++ ^ 0x80);
-			size_t len = !Type::isFixed(type) ? decodeInt(p) : Type::size(type);
-			size_t offset = decodeInt(p);
+			size_t len = !Type::isFixed(type) ? decodeInt<size_t>(p) : Type::size(type);
+			size_t offset = decodeInt<size_t>(p);
 			if(Type::isFunction(type))
 				return Variant<>(type, (unsigned int)offset);
 			else
@@ -61,12 +62,12 @@ notfound:
 			int c = (int)*name - (int)*p++;
 			if(c < 0) {
 				// take jmp_l
-				p += decodeInt(p) - 1;
+				p += decodeInt<uintptr_t>(p) - 1;
 			} else {
 				skipOffset(p);
 				if(c > 0) {
 					// take jmp_g
-					p += decodeInt(p) - 1;
+					p += decodeInt<uintptr_t>(p) - 1;
 				} else {
 					// equal
 					skipOffset(p);
@@ -97,8 +98,8 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
 		} else if(*p >= 0x80) {
 			// var
 			Type::type type = (Type::type)(*p++ ^ 0x80);
-			size_t len = !Type::isFixed(type) ? decodeInt(p) : Type::size(type);
-			size_t offset = decodeInt(p);
+			size_t len = !Type::isFixed(type) ? decodeInt<size_t>(p) : Type::size(type);
+			size_t offset = decodeInt<size_t>(p);
 			if(Type::isFunction(type))
 				f(container, (char const*)name.c_str(), type, (char*)(uintptr_t)offset, 0, arg);
 			else
@@ -119,11 +120,11 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
 			char c = (char)*p++;
 
 			// take jmp_l
-			size_t jmp = decodeInt(p);
+			uintptr_t jmp = decodeInt<uintptr_t>(p);
 			list(container, buffer, p + jmp - 1, f, arg, name);
 
 			// take jmp_g
-			jmp = decodeInt(p);
+			jmp = decodeInt<uintptr_t>(p);
 			list(container, buffer, p + jmp - 1, f, arg, name);
 
 			// resume with this char

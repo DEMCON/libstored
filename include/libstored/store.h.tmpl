@@ -24,15 +24,19 @@ namespace stored {
 		static uint8_t const* directory();
 	} __attribute__((aligned(sizeof(double))));
 
-	template <typename Implementation>
+	template <typename Implementation_>
 	class {{store.name}}Base {
+	public:
+		typedef Implementation_ Implementation;
+		char const* name() const { return "/{{store.name}}"; }
+
+		Implementation& implementation() { return *static_cast<Implementation*>(this); }
+		Implementation const& implementation() const { return *static_cast<Implementation const*>(this); }
+
 	private:
 		{{store.name}}Data m_data;
 		char* buffer() { return m_data.buffer; }
 		char const* buffer() const { return m_data.buffer; }
-
-		Implementation& implementation() { return *static_cast<Implementation*>(this); }
-		Implementation const& implementation() const { return *static_cast<Implementation const*>(this); }
 
 		// Accessor generators.
 		template <typename T> Variable<T,Implementation> variable(size_t offset) {
