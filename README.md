@@ -62,12 +62,53 @@ See `examples` for more explanation. This is just an impression of the syntax.
 A store can be queried using the following commands. These can be extended by
 an application.
 
+Requests always start with a ASCII characters are command.
+Every request gets a response. Either with actual data, or with ack `!` or nack `?`.
+Requests are processed in order.
+
 ### Capabilities
 
-Request:
+Request: `?`
+
 	?
-Response:
-	?LRWAME
+
+Response: a list of command characters.
+
+	?rwe
+
+### Echo
+
+Request: `e` \<any data\>
+
+	eHello World
+
+Response: \<the same data\>
+
+	Hello World
+
+### Read
+
+Request: `r` \<name of object\>
+
+	r/bla/asdf
+
+Response: \<ASCII hex value of object\>
+
+For values with fixed length (int, float), the byte order is big/network
+endian.  For ints, the initial zeros can be omitted. For other data, all bytes
+are encoded.
+
+	123abc
+
+### Write 
+
+Request: `w` \<value in ASCII hex\> \<name of object\>
+
+	W10/b/a
+
+Response: `!` | `?`
+
+	!
 
 ### List
 
@@ -76,22 +117,6 @@ Response:
 
 	L/b
 	/b/a /b/b[0 /b/b[1
-
-### echo
-
-	Eabc
-	abc
-
-### read/write
-
-	R/bla/asdf
-	123abc
-
-	R/b/a
-	123abc
-
-	W/b/a 10
-	!
 
 ### alias
 	A0/bla/a

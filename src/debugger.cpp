@@ -104,11 +104,13 @@ void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
 	list = (char*)spm().alloc(4 + reserve);
 	len = 0;
 
-	list[len++] = '?';
+	list[len++] = CmdCapabilities;
 	if(Config::DebuggerRead)
-		list[len++] = 'r';
+		list[len++] = CmdRead;
 	if(Config::DebuggerWrite)
-		list[len++] = 'w';
+		list[len++] = CmdWrite;
+	if(Config::DebuggerEcho)
+		list[len++] = CmdEcho;
 
 	list[len] = 0;
 }
@@ -122,7 +124,7 @@ void Debugger::processApplication(void const* frame, size_t len) {
 	char const* p = (char const*)frame;
 
 	switch(p[0]) {
-	case '?': {
+	case CmdCapabilities: {
 		// get capabilities
 		// Request: '?'
 		// Response: <list of command chars>
@@ -133,7 +135,7 @@ void Debugger::processApplication(void const* frame, size_t len) {
 		respondApplication(c, cs);
 		return;
 	}
-	case 'r': {
+	case CmdRead: {
 		// read an object
 		// Request: 'r' </path/to/object>
 		// Response: <hex-encoded value>
@@ -152,7 +154,7 @@ void Debugger::processApplication(void const* frame, size_t len) {
 		respondApplication(data, size);
 		return;
 	}
-	case 'w': {
+	case CmdWrite: {
 		// write an object
 		// Request: 'w' <hex-encoded value> </path/to/object>
 		// Response: '?' | '!'
@@ -177,15 +179,33 @@ void Debugger::processApplication(void const* frame, size_t len) {
 		variant.set(value, valuelen);
 		break;
 	}
+	case CmdEcho: {
+		// echo the request
+		// Request: 'e' <any data>
+		// Response: <the data>
+
+		if(!Config::DebuggerEcho)
+			goto error;
+
+		if(len <= 1)
+			goto error;
+
+		respondApplication(p + 1, len - 1);
+		return;
+	}
 	default:
 		// Unknown command.
 		goto error;
 	}
 
-	respondApplication("!", 1);
+	{
+		char ack = Ack;
+		respondApplication(&ack, 1);
+	}
 	return;
 error:
-	respondApplication("?", 1);
+	char nack = Nack;
+	respondApplication(&nack, 1);
 }
 
 void Debugger::respondApplication(void const* UNUSED_PAR(frame), size_t UNUSED_PAR(len)) {

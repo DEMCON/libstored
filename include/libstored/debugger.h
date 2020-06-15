@@ -228,6 +228,13 @@ namespace stored {
 		}
 #endif
 
+		static char const CmdCapabilities = '?';
+		static char const CmdRead = 'r';
+		static char const CmdWrite = 'w';
+		static char const CmdEcho = 'e';
+		static char const Ack = '!';
+		static char const Nack = '?';
+
 		virtual void process(void const* data, size_t len);
 
 	protected:
