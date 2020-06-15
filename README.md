@@ -90,6 +90,8 @@ Response: \<the same data\>
 
 Request: `r` \<name of object\>
 
+The name of the object may be abbreviated, as long as it is unambiguous.
+
 	r/bla/asdf
 
 Response: \<ASCII hex value of object\>
@@ -104,7 +106,9 @@ are encoded.
 
 Request: `w` \<value in ASCII hex\> \<name of object\>
 
-	W10/b/a
+See Read for details about the hex value and object name.
+
+	w10/b/a
 
 Response: `!` | `?`
 
