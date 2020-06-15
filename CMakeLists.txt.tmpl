@@ -1,7 +1,7 @@
 # vim:filetype=cmake
 cmake_minimum_required(VERSION 3.0)
 
-set(libstored_dir "{{libstored_dir}}")
+file(TO_CMAKE_PATH "{{libstored_dir|escapebs}}" libstored_dir)
 
 add_library({{libprefix}}libstored
     ${libstored_dir}/include/stored

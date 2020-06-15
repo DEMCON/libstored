@@ -82,6 +82,9 @@ def carray(a):
             line = 0
     return s
 
+def escapebs(s):
+    return re.sub(r'\\', r'\\\\', s)
+
 def model_name(model_file):
     return os.path.splitext(os.path.split(model_file)[1])[0]
 
@@ -172,6 +175,7 @@ def generate_cmake(libprefix, model_files, output_dir):
 
     jenv.filters['header'] = lambda m: f'include/{m}.h'
     jenv.filters['src'] = lambda m: f'src/{m}.cpp'
+    jenv.filters['escapebs'] = escapebs
 
     cmake_tmpl = jenv.get_template('CMakeLists.txt.tmpl')
 

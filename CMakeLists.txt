@@ -15,7 +15,11 @@ if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
       cmake ..")
 endif()
 
-set(PYTHON_EXECUTABLE "python3" CACHE STRING "Path to the python executable" FORCE)
+if(WIN32)
+	set(PYTHON_EXECUTABLE "python" CACHE STRING "Path to the python executable" FORCE)
+else()
+	set(PYTHON_EXECUTABLE "python3" CACHE STRING "Path to the python executable" FORCE)
+endif()
 
 function(libstored_generate target) # add all other models as varargs
     foreach(model IN ITEMS ${ARGN})

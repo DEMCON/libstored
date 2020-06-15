@@ -29,7 +29,8 @@ Have a look in the `examples` directory for further in-depth reading.
 
 ## How to build
 
-Build out-of-tree:
+Run `scripts/bootstrap` once to install all build dependencies.
+Then run `scripts/build` to build the project. This does effectively:
 
 	mkdir build
 	cd build
