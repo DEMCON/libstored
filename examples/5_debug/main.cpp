@@ -67,5 +67,6 @@ int main() {
 	debugger.process("wf00f/SomeStore/i");
 	debugger.process("r/SomeStore/i");
 
+	return 0;
 }
 

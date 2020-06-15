@@ -1,5 +1,32 @@
 # libstored - Store for Embedded Debugger
 
+This is a generator for a store. A store is a collection of objects, like
+variables in a `struct`. These objects can be read and written, using common
+get/set methods. However, the store has a few interesting properties:
+
+- Objects are defined by a simple language. The generator produces an
+  application-specific store implementation, and all files needed for your
+  specific project.
+- Objects can have a piece of memory as backing (just like a normal variable in
+  a `struct`), but can also have custom callbacks on every get and set. This
+  allows all kinds of side effects, even though the interface of the object is
+  the same.
+- Objects are accessible using a C++ interface, but also via name lookup by
+  string. The generator generates a compact name parser, such that names,
+  types, and sizes can be queried dynamically.
+- The Embedded Debugger can be attached to a store, which exposes the full
+  store to any external interface. The protocol's application layer is
+  implemented and ready to use. As an application developer, you only have to
+  implement the hardware-specifics, like the transport layer of the Embedded
+  Debugger protocol.
+- There are sufficient hooks by the store to implement an application-specific
+  synchronization method, other than the Embedded Debugger.
+- All code is normal C++, there are no platform-dependent constructs used.
+  Therefore, all platforms are (soon) supported (Windows/Linux/Mac/bare
+  metal/x86/ARM/gcc/clang).
+
+Have a look in the `examples` directory for further in-depth reading.
+
 ## How to build
 
 Build out-of-tree:
@@ -9,30 +36,38 @@ Build out-of-tree:
 	cmake ..
 	cmake --build .
 
-By default, all examples are built.
-For example, notice that sources are generated under `examples/1_hello`,
-while the example itself is built in the `build` directory.
+By default, all examples are built.  For example, notice that sources are
+generated under `examples/1_hello`, while the example itself is built in the
+`build` directory.
 
-## Syntax
+## Syntax example
 
-	uint32_t /t;
-	int32_t /bla/asdf = 42;
-	bool /bla/b[0] = 1;
-	bool /bla/b[1];
+See `examples` for more explanation. This is just an impression of the syntax.
 
-	uint32_t t;
+	// Comment
+	// Grammar: type:size[array]=initializer long name with any character
+
+	uint32 some int
+	int8=42 another int, which is initialized
+	(uint64) time (s)
+
 	{
-		int32_t asdf;
-		bool[2] b;
-		string[16] s;
-	} bla;
+		bool=true b
+		double[2] numbers
+		string:16 s
+	} scope
 
 ## Embedded Debugger commands
 
-### help
+A store can be queried using the following commands. These can be extended by
+an application.
 
+### Capabilities
+
+Request:
 	?
-	LRWAME
+Response:
+	?LRWAME
 
 ### List
 
