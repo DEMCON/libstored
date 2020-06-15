@@ -26,6 +26,9 @@ namespace stored {
 		static bool const FullNames = false;
 		static bool const EnableHooks = true;
 		static bool const HookSetOnChangeOnly = false;
+
+		static bool const DebuggerRead = true;
+		static bool const DebuggerWrite = true;
 	};
 } // namespace
 #endif // __cplusplus

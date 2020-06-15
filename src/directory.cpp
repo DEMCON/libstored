@@ -19,7 +19,7 @@ static void skipOffset(uint8_t const*& p) {
 namespace stored {
 namespace impl {
 
-Variant<> find(void* buffer, uint8_t const* directory, char const* name) {
+Variant<> find(void* buffer, uint8_t const* directory, char const* name, size_t len) {
 	if(unlikely(!directory || !name)) {
 notfound:
 		return Variant<>();
@@ -39,11 +39,11 @@ notfound:
 				return Variant<>(type, (unsigned int)offset);
 			else
 				return Variant<>(type, (char*)buffer + offset, len);
-		} else if(!*name) {
+		} else if(!*name || len == 0) {
 			goto notfound;
 		} else if(*p <= 0x1f) {
 			// skip
-			for(uint8_t i = *p++; i > 0; i--, name++) {
+			for(uint8_t i = *p++; i > 0 && len > 0; i--, name++, len--) {
 				switch(*name) {
 				case '\0':
 				case '/':
@@ -53,7 +53,7 @@ notfound:
 			}
 		} else if(*p == '/') {
 			// Skip till next /
-			while(*name++ != '/')
+			while(len-- > 0 && *name++ != '/')
 				if(!*name)
 					goto notfound;
 			p++;
@@ -72,6 +72,7 @@ notfound:
 					// equal
 					skipOffset(p);
 					name++;
+					len--;
 				}
 			}
 		}

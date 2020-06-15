@@ -141,8 +141,8 @@ namespace stored {
 		 * \brief Finds an object with the given name.
 		 * \return the object, or an invalid #stored::Variant if not found.
 		 */
-		Variant<Implementation> find(char const* name) {
-			return stored::find(implementation(), buffer(), directory(), name);
+		Variant<Implementation> find(char const* name, size_t len = std::numeric_limits<size_t>::max()) {
+			return stored::find(implementation(), buffer(), directory(), name, len);
 		}
 
 		/*!

@@ -10,6 +10,7 @@
 #include <new>
 #include <utility>
 #include <map>
+#include <vector>
 
 namespace stored {
 
@@ -127,7 +128,7 @@ namespace stored {
 
 		virtual char const* name() const = 0;
 
-		virtual DebugVariant find(char const* name) = 0;
+		virtual DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) = 0;
 
 		typedef void(ListCallback)(char const*, DebugVariant&);
 		virtual void list(ListCallback* f) const = 0;
@@ -163,8 +164,8 @@ namespace stored {
 		
 		char const* name() const override { return store().name(); }
 
-		DebugVariant find(char const* name) override {
-			return store().find(name);
+		DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) override {
+			return store().find(name, len);
 		}
 	
 		virtual void list(DebugStoreBase::ListCallbackArg* f, void* arg = nullptr) const override {
@@ -200,7 +201,7 @@ namespace stored {
 
 		typedef std::map<char const*, DebugStoreBase*, StorePrefixComparator> StoreMap;
 
-		~Debugger();
+		virtual ~Debugger();
 
 		template <typename Store>
 		void map(Store& store, char const* name = nullptr) {
@@ -210,7 +211,7 @@ namespace stored {
 		void unmap(char const* name);
 		StoreMap const& stores() const;
 
-		DebugVariant find(char const* name) const;
+		DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) const;
 
 		typedef DebugStoreBase::ListCallbackArg ListCallbackArg;
 		typedef DebugStoreBase::ListCallback ListCallback;
@@ -227,11 +228,22 @@ namespace stored {
 		}
 #endif
 
+		virtual void process(void const* data, size_t len);
+
+	protected:
+		virtual void capabilities(char*& list, size_t& len, size_t reserve = 0);
+		virtual void processApplication(void const* frame, size_t len);
+		virtual void respondApplication(void const* frame, size_t len);
+
 	protected:
 		void map(DebugStoreBase* store, char const* name);
+		void encodeHex(Type::type type, void const*& data, size_t& len, bool shortest = true);
+		bool decodeHex(Type::type type, void const*& data, size_t& len);
+		ScratchPad& spm();
 
 	private:
 		StoreMap m_map;
+		ScratchPad m_scratchpad;
 	};
 
 } // namespace

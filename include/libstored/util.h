@@ -33,6 +33,7 @@
 #include <cassert>
 #include <math.h>
 #include <limits>
+#include <list>
 
 #if __cplusplus >= 201103L
 #  include <functional>
@@ -111,6 +112,101 @@ namespace stored {
 		template <> struct saturated_cast_helper<bool>   { template <typename T> __attribute__((pure)) static bool cast(T value) { return static_cast<bool>(saturated_cast_helper<int>::cast(value)); } };
 	}
 
+	class ScratchPad {
+	public:
+		ScratchPad(size_t reserve = 0)
+			: m_buffer()
+			, m_size()
+			, m_capacity()
+			, m_total()
+		{
+			this->reserve(reserve);
+		}
+
+		~ScratchPad() {
+			free(m_buffer);
+
+			for(std::list<char*>::iterator it = m_old.begin(); it != m_old.end(); ++it)
+				free(*it);
+		}
+
+		void reset() {
+			if(likely(!m_total))
+				return;
+
+			if(unlikely(!m_old.empty())) {
+				for(std::list<char*>::iterator it = m_old.begin(); it != m_old.end(); ++it)
+					free(*it);
+
+				m_old.clear();
+				reserve(m_total);
+			}
+
+			m_size = 0;
+			m_total = 0;
+		}
+
+		void reserve(size_t more) {
+			size_t new_cap = m_size + more;
+
+			if(likely(new_cap <= m_capacity))
+				return;
+
+			void* p;
+			if(m_size == 0) {
+				p = realloc(m_buffer, new_cap);
+			} else {
+				// realloc() may move the memory, which makes all previously alloced pointers
+				// invalid. Push current buffer on m_old and alloc a new buffer.
+				m_old.push_back(m_buffer);
+				new_cap = more * 2 + sizeof(void*) * 8; // plus some extra reserve space
+				p = malloc(new_cap);
+				m_size = 0;
+			}
+
+			if(unlikely(!p))
+				throw std::bad_alloc();
+
+			m_buffer = (char*)p;
+			m_capacity = new_cap;
+		}
+
+		void shrink_to_fit() {
+			// Don't realloc to 0; behavior is implementation-defined.
+			if(m_capacity <= 1)
+				return;
+
+			void* p = realloc(m_buffer, m_size);
+
+			if(unlikely(!p))
+				throw std::bad_alloc();
+
+			m_buffer = (char*)p;
+			m_capacity = m_size;
+		}
+
+		__attribute__((malloc,returns_nonnull,warn_unused_result))
+		void* alloc(size_t size) {
+			if(unlikely(size == 0))
+				return m_buffer;
+
+			size_t const align = sizeof(void*);
+			size = (size + align - 1) & ~(align - 1);
+			reserve(size);
+
+			char* p = m_buffer + m_size;
+			m_size += size;
+			m_total += size;
+			return p;
+		}
+
+	private:
+		char* m_buffer;
+		size_t m_size;
+		size_t m_capacity;
+		size_t m_total;
+		std::list<char*> m_old;
+	};
 } // namespace
 
 template <typename R, typename T>

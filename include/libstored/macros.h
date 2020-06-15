@@ -42,6 +42,12 @@
 #  error Unsupported compiler. Please use gcc.
 #endif
 
+
+
+//////////////////////////////////////////////////
+// Misc
+//
+
 #if defined(__cplusplus) && __cplusplus >= 201703L
 #  define STORED_FALLTHROUGH [[fallthrough]];
 #elif GCC_VERSION >= 70000L
@@ -50,7 +56,27 @@
 #  define STORED_FALLTHROUGH
 #endif
 
+
+//////////////////////////////////////////////////
+// Platform
+//
+
 #define __STDC_FORMAT_MACROS
+
+#if defined(__BYTE_ORDER__)
+#  if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#    define STORED_LITTLE_ENDIAN
+#  else
+#    define STORED_BIG_ENDIAN
+#  endif
+#else
+#  error Unknown byte order
+#endif
+
+
+//////////////////////////////////////////////////
+// C/C++ version support
+//
 
 #ifndef EXTERN_C
 #  ifdef __cplusplus

@@ -60,15 +60,15 @@
 namespace stored {
 
 	namespace impl {
-		Variant<> find(void* buffer, uint8_t const* directory, char const* name);
+		Variant<> find(void* buffer, uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max());
 	}
 
 	/*!
 	 * \ingroup libstored_directory
 	 */
 	template <typename Container>
-	Variant<Container> find(Container& container, void* buffer, uint8_t const* directory, char const* name) {
-		return impl::find(buffer, directory, name).apply<Container>(container);
+	Variant<Container> find(Container& container, void* buffer, uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max()) {
+		return impl::find(buffer, directory, name, len).apply<Container>(container);
 	}
 
 	typedef void(ListCallbackArg)(void*, char const*, Type::type, void*, size_t, void*);
