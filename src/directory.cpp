@@ -148,8 +148,10 @@ void list(void* container, void* buffer, uint8_t const* directory, ListCallback*
 /*!
  * \ingroup libstored_directory
  */
-void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg) {
+void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg, char const* prefix) {
 	std::string name;
+	if(prefix)
+		name = prefix;
 	list(container, buffer, directory, f, arg, name);
 }
 

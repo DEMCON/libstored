@@ -117,11 +117,14 @@ Response: `!` | `?`
 
 ### List
 
-	L/
-	/b /t
+Request: 'l'
 
-	L/b
-	/b/a /b/b[0 /b/b[1
+	l
+
+Response: ( \<type byte in hex\> \<length in hex\> \<name of object\> `\n` ) *
+
+	3b4/b/i8
+	011/b/b
 
 ### alias
 	A0/bla/a

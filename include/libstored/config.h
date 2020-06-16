@@ -30,6 +30,7 @@ namespace stored {
 		static bool const DebuggerRead = true;
 		static bool const DebuggerWrite = true;
 		static bool const DebuggerEcho = true;
+		static bool const DebuggerList = true;
 	};
 } // namespace
 #endif // __cplusplus

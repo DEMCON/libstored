@@ -134,7 +134,7 @@ namespace stored {
 		virtual void list(ListCallback* f) const = 0;
 
 		typedef void(ListCallbackArg)(char const*, DebugVariant&, void*);
-		virtual void list(ListCallbackArg* f, void* arg = nullptr) const = 0;
+		virtual void list(ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr) const = 0;
 
 #if __cplusplus >= 201103L
 		template <typename F>
@@ -168,9 +168,9 @@ namespace stored {
 			return store().find(name, len);
 		}
 	
-		virtual void list(DebugStoreBase::ListCallbackArg* f, void* arg = nullptr) const override {
+		virtual void list(DebugStoreBase::ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr) const override {
 			void* cb[] = {(void*)f, arg};
-			store().list(&listCallback, cb);
+			store().list(&listCallback, cb, prefix);
 		}
 
 		virtual void list(DebugStoreBase::ListCallback* f) const override {
@@ -232,6 +232,7 @@ namespace stored {
 		static char const CmdRead = 'r';
 		static char const CmdWrite = 'w';
 		static char const CmdEcho = 'e';
+		static char const CmdList = 'l';
 		static char const Ack = '!';
 		static char const Nack = '?';
 
@@ -242,10 +243,21 @@ namespace stored {
 		virtual void processApplication(void const* frame, size_t len);
 		virtual void respondApplication(void const* frame, size_t len);
 
+	private:
+		static void listCmdCallback(char const* name, DebugVariant& variant, void* arg);
+
 	protected:
 		void map(DebugStoreBase* store, char const* name);
-		void encodeHex(Type::type type, void const*& data, size_t& len, bool shortest = true);
-		bool decodeHex(Type::type type, void const*& data, size_t& len);
+
+		template <typename T, typename B>
+		void encodeHex(T value, B*& buf, size_t& len, bool shortest = true) {
+			void* data = (void*)&value;
+			len = sizeof(T);
+			encodeHex(toType<T>::type, data, len, shortest);
+			buf = (B*)data;
+		}
+		void encodeHex(Type::type type, void*& data, size_t& len, bool shortest = true);
+		bool decodeHex(Type::type type, void*& data, size_t& len);
 		ScratchPad& spm();
 
 	private:

@@ -1,6 +1,7 @@
 #include <libstored/debugger.h>
 
 #include <cstring>
+#include <string>
 
 namespace stored {
 
@@ -88,7 +89,7 @@ Debugger::StoreMap const& Debugger::stores() const {
 
 void Debugger::list(ListCallbackArg* f, void* arg) const {
 	for(StoreMap::const_iterator it = m_map.begin(); it != m_map.end(); ++it)
-		it->second->list(f, arg);
+		it->second->list(f, arg, it->first);
 }
 
 void Debugger::list(ListCallback* f) const {
@@ -101,7 +102,7 @@ void Debugger::process(void const* data, size_t len) {
 }
 
 void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
-	list = (char*)spm().alloc(4 + reserve);
+	list = (char*)spm().alloc(6 + reserve);
 	len = 0;
 
 	list[len++] = CmdCapabilities;
@@ -111,6 +112,8 @@ void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
 		list[len++] = CmdWrite;
 	if(Config::DebuggerEcho)
 		list[len++] = CmdEcho;
+	if(Config::DebuggerList)
+		list[len++] = CmdList;
 
 	list[len] = 0;
 }
@@ -148,8 +151,8 @@ void Debugger::processApplication(void const* frame, size_t len) {
 			goto error;
 
 		size_t size = v.size();
-		void const* data = spm().alloc(size);
-		size = v.get((void*)data, size);
+		void* data = spm().alloc(size);
+		size = v.get(data, size);
 		encodeHex(v.type(), data, size);
 		respondApplication(data, size);
 		return;
@@ -162,7 +165,7 @@ void Debugger::processApplication(void const* frame, size_t len) {
 		if(!Config::DebuggerWrite)
 			goto error;
 
-		void const* value = ++p;
+		void* value = (void*)++p;
 		len--;
 		while(len > 0 && *p != '/') { p++; len--; }
 		if(len == 0)
@@ -193,6 +196,25 @@ void Debugger::processApplication(void const* frame, size_t len) {
 		respondApplication(p + 1, len - 1);
 		return;
 	}
+	case CmdList: {
+		// list all objects
+		// Request 'l'
+		// Response: ( <type byte in hex> <length in hex> <name of object> '\n' ) *
+
+		if(!Config::DebuggerList)
+			goto error;
+
+		std::string frame;
+		void* args[] = {this, &frame};
+
+		list(&listCmdCallback, args);
+
+		if(frame.empty())
+			goto error;
+
+		respondApplication(&frame[0], frame.size());
+		return;
+	}
 	default:
 		// Unknown command.
 		goto error;
@@ -217,7 +239,7 @@ static char encodeNibble(uint8_t n) {
 	return (char)((n < 10 ? '0' : 'a' - 10) + n);
 }
 
-void Debugger::encodeHex(Type::type type, void const*& data, size_t& len, bool shortest) {
+void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortest) {
 	if(len == 0)
 		return;
 
@@ -230,14 +252,15 @@ void Debugger::encodeHex(Type::type type, void const*& data, size_t& len, bool s
 
 	if(shortest && type == Type::Bool) {
 		// single char
-		char* hex = (char*)spm().alloc(1);
-		*hex = src[0] ? '1' : '0';
+		char* hex = (char*)spm().alloc(2);
+		hex[0] = src[0] ? '1' : '0';
+		hex[1] = 0;
 		len = 1;
 		data = hex;
 		return;
 	}
 	
-	char* hex = (char*)spm().alloc(len * 2);
+	char* hex = (char*)spm().alloc(len * 2 + 1);
 
 	if(Type::isFixed(type)) {
 		// big endian
@@ -254,10 +277,9 @@ void Debugger::encodeHex(Type::type type, void const*& data, size_t& len, bool s
 		len *= 2;
 
 		if(shortest && Type::isInt(type))
-			for(; len > 2 && hex[0] == '0' && hex[1] == '0'; len -= 2, hex += 2);
+			for(; len > 1 && hex[0] == '0'; len--, hex++);
 	} else {
 		// just a byte sequence in hex
-		char* hex = (char*)spm().alloc(len * 2);
 		for(size_t i = 0; i < len; i++, src++) {
 			hex[i * 2] = encodeNibble(*src);
 			hex[i * 2 + 1] = encodeNibble((uint8_t)(*src >> 4));
@@ -266,6 +288,7 @@ void Debugger::encodeHex(Type::type type, void const*& data, size_t& len, bool s
 		len *= 2;
 	}
 
+	hex[len] = 0;
 	data = hex;
 }
 
@@ -281,7 +304,7 @@ static uint8_t decodeNibble(char c, bool& ok) {
 	return 0;
 }
 
-bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len) {
+bool Debugger::decodeHex(Type::type type, void*& data, size_t& len) {
 	if(len == 0 || !data)
 		return false;
 	
@@ -332,6 +355,29 @@ bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len) {
 
 ScratchPad& Debugger::spm() {
 	return m_scratchpad;
+}
+
+void Debugger::listCmdCallback(char const* name, DebugVariant& variant, void* arg) {
+	Debugger* that = (Debugger*)((void**)arg)[0];
+	std::string* frame = (std::string*)((void**)arg)[1];
+
+	// encodeHex() uses the spm for its result.
+	that->spm().reset();
+	char const* buf;
+	size_t buflen;
+
+	// Append type
+	that->encodeHex((uint8_t)variant.type(), buf, buflen, false);
+	*frame += buf;
+
+	// Append length
+	that->encodeHex(variant.size(), buf, buflen);
+	*frame += buf;
+
+	// Append name
+	*frame += name;
+
+	*frame += "\n";
 }
 
 } // namespace

@@ -10,7 +10,7 @@
  *
  * The directory is a description in binary. While parsing the pointer starts at the 
  * beginning of the directory and scans over the bytes. While scanning, a name is searched.
- * In principe, the directory is a binary tree of characters the name must match.
+ * In principle, the directory is a binary tree of characters the name must match.
  *
  * It is using the following grammar:
  *
@@ -89,7 +89,7 @@ namespace stored {
 #endif
 
 	void list(void* container, void* buffer, uint8_t const* directory, ListCallback* f);
-	void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg = nullptr);
+	void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr);
 
 } // namespace
 #endif // __cplusplus

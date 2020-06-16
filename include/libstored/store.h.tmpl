@@ -152,7 +152,7 @@ namespace stored {
 		void list(F f) { stored::list(&implementation(), buffer(), directory(), f); }
 
 		template <typename F>
-		void list(F f, void* arg) { stored::list(&implementation(), buffer(), directory(), f, arg); }
+		void list(F f, void* arg, char const* prefix = nullptr) { stored::list(&implementation(), buffer(), directory(), f, arg, prefix); }
 	};
 	
 	class {{store.name}} : public {{store.name}}Base<{{store.name}}> {
