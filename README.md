@@ -117,14 +117,16 @@ Response: `!` | `?`
 
 ### List
 
+Requests a full list of all objects of all registered stores to the current Embedded Debugger.
+
 Request: 'l'
 
 	l
 
-Response: ( \<type byte in hex\> \<length in hex\> \<name of object\> `\n` ) *
+Response: ( \<type byte in hex\> \<length in hex\> \<name of object\> `\n` ) * | `?`
 
 	3b4/b/i8
-	011/b/b
+	211/b/b
 
 ### alias
 	A0/bla/a
