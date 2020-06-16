@@ -73,6 +73,10 @@
 #  error Unknown byte order
 #endif
 
+#if !defined(STORED_HAVE_VALGRIND) && defined(ZTH_HAVE_VALGRIND)
+#  define STORED_HAVE_VALGRIND
+#endif
+
 
 //////////////////////////////////////////////////
 // C/C++ version support

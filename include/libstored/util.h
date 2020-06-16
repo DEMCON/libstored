@@ -49,6 +49,10 @@
 #  define SFINAE_IS_FUNCTION(T, F, T_OK) T_OK
 #endif
 
+#ifdef STORED_HAVE_VALGRIND
+#  include <valgrind/memcheck.h>
+#endif
+
 
 namespace stored {
 
@@ -144,8 +148,48 @@ namespace stored {
 
 			m_size = 0;
 			m_total = 0;
+
+#ifdef STORED_HAVE_VALGRIND
+			VALGRIND_MAKE_MEM_NOACCESS(&m_buffer[m_size], m_capacity - m_size);
+#endif
 		}
 
+		bool empty() const {
+			return m_total == 0;
+		}
+
+		size_t size() const {
+			return m_total;
+		}
+
+		class Snapshot {
+		public:
+			Snapshot(ScratchPad& spm, void* buffer) : m_spm(&spm), m_buffer(buffer) {}
+			~Snapshot() { if(m_spm) m_spm->rollback(m_buffer); }
+			void reset() { m_spm = nullptr; }
+		private:
+			ScratchPad* m_spm;
+			void* m_buffer;
+		};
+		friend class Snapshot;
+
+		Snapshot snapshot() {
+			return Snapshot(*this, empty() ? nullptr : &m_buffer[m_size]);
+		}
+
+private:
+		void rollback(void* snapshot) {
+			if(unlikely(!snapshot)) {
+				reset();
+			} else if(likely((uintptr_t)snapshot >= (uintptr_t)m_buffer && (uintptr_t)snapshot < (uintptr_t)&m_buffer[m_size])) {
+				m_size = (size_t)((uintptr_t)snapshot - (uintptr_t)m_buffer);
+#ifdef STORED_HAVE_VALGRIND
+				VALGRIND_MAKE_MEM_NOACCESS(&m_buffer[m_size], m_capacity - m_size);
+#endif
+			}
+		}
+
+public:
 		void reserve(size_t more) {
 			size_t new_cap = m_size + more;
 
@@ -169,6 +213,10 @@ namespace stored {
 
 			m_buffer = (char*)p;
 			m_capacity = new_cap;
+
+#ifdef STORED_HAVE_VALGRIND
+			VALGRIND_MAKE_MEM_NOACCESS(m_buffer, m_capacity);
+#endif
 		}
 
 		void shrink_to_fit() {
@@ -197,6 +245,10 @@ namespace stored {
 			char* p = m_buffer + m_size;
 			m_size += size;
 			m_total += size;
+
+#ifdef STORED_HAVE_VALGRIND
+			VALGRIND_MAKE_MEM_UNDEFINED(p, size);
+#endif
 			return p;
 		}
 

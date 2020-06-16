@@ -1,5 +1,6 @@
 # vim:filetype=cmake
 cmake_minimum_required(VERSION 3.0)
+include(CheckIncludeFileCXX)
 
 file(TO_CMAKE_PATH "{{libstored_dir|escapebs}}" libstored_dir)
 
@@ -32,4 +33,9 @@ else()
 endif()
 
 target_compile_options({{libprefix}}libstored PRIVATE -Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion -ffunction-sections -fdata-sections)
+
+CHECK_INCLUDE_FILE_CXX("valgrind/memcheck.h" STORED_HAVE_VALGRIND)
+if(STORED_HAVE_VALGRIND)
+	target_compile_definitions({{libprefix}}libstored PUBLIC -DSTORED_HAVE_VALGRIND)
+endif()
 

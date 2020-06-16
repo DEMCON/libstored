@@ -5,6 +5,22 @@
 
 namespace stored {
 
+struct ListCmdCallbackArg {
+	Debugger* that;
+	Debugger::FrameHandler response;
+	bool gotSomething;
+
+	void operator()(void const* buf, size_t len) {
+		(*response)(that, buf, len, false);
+		gotSomething = true;
+	}
+};
+
+Debugger::Debugger()
+	: m_macroSize()
+{
+}
+
 Debugger::~Debugger() {
 	for(StoreMap::iterator it = m_map.begin(); it != m_map.end(); ++it)
 		delete it->second;
@@ -25,8 +41,8 @@ notfound:
 
 	if(Config::DebuggerAlias > 0 && len == 1 && name[0] != '/') {
 		// This is probably an alias.
-		decltype(m_aliases.begin()) it = m_aliases.find(name[0]);
-		if(it != m_aliases.end())
+		AliasMap::const_iterator it = aliases().find(name[0]);
+		if(it != aliases().end())
 			// Got it.
 			return it->second;
 	}
@@ -95,6 +111,22 @@ Debugger::StoreMap const& Debugger::stores() const {
 	return m_map;
 }
 
+Debugger::AliasMap& Debugger::aliases() {
+	return m_aliases;
+}
+
+Debugger::MacroMap const& Debugger::macros() const {
+	return m_macros;
+}
+
+Debugger::MacroMap& Debugger::macros() {
+	return m_macros;
+}
+
+Debugger::AliasMap const& Debugger::aliases() const {
+	return m_aliases;
+}
+
 void Debugger::list(ListCallbackArg* f, void* arg) const {
 	for(StoreMap::const_iterator it = m_map.begin(); it != m_map.end(); ++it)
 		it->second->list(f, arg, it->first);
@@ -106,11 +138,12 @@ void Debugger::list(ListCallback* f) const {
 
 void Debugger::process(void const* data, size_t len) {
 	// Default implementation: only process at application level.
-	processApplication(data, len);
+	ScratchPad::Snapshot snapshot = spm().snapshot();
+	processApplication(data, len, &frameHandler<Debugger,&Debugger::respondApplication>);
 }
 
 void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
-	list = (char*)spm().alloc(7 + reserve);
+	list = (char*)spm().alloc(8 + reserve);
 	len = 0;
 
 	list[len++] = CmdCapabilities;
@@ -124,15 +157,17 @@ void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
 		list[len++] = CmdList;
 	if(Config::DebuggerAlias > 0)
 		list[len++] = CmdAlias;
+	if(Config::DebuggerMacro > 0)
+		list[len++] = CmdMacro;
 
 	list[len] = 0;
 }
 
-void Debugger::processApplication(void const* frame, size_t len) {
+void Debugger::processApplication(void const* frame, size_t len, FrameHandler response) {
 	if(unlikely(!frame || len == 0))
 		return;
 	
-	spm().reset();
+	ScratchPad::Snapshot snapshot = spm().snapshot();
 
 	char const* p = (char const*)frame;
 
@@ -145,7 +180,7 @@ void Debugger::processApplication(void const* frame, size_t len) {
 		char* c;
 		size_t cs;
 		capabilities(c, cs);
-		respondApplication(c, cs);
+		(*response)(this, c, cs, true);
 		return;
 	}
 	case CmdRead: {
@@ -164,7 +199,7 @@ void Debugger::processApplication(void const* frame, size_t len) {
 		void* data = spm().alloc(size);
 		size = v.get(data, size);
 		encodeHex(v.type(), data, size);
-		respondApplication(data, size);
+		(response)(this, data, size, true);
 		return;
 	}
 	case CmdWrite: {
@@ -205,7 +240,7 @@ void Debugger::processApplication(void const* frame, size_t len) {
 		if(len <= 1)
 			goto error;
 
-		respondApplication(p + 1, len - 1);
+		(*response)(this, p + 1, len - 1, true);
 		return;
 	}
 	case CmdList: {
@@ -216,15 +251,14 @@ void Debugger::processApplication(void const* frame, size_t len) {
 		if(!Config::DebuggerList)
 			goto error;
 
-		std::string frame;
-		void* args[] = {this, &frame};
+		ListCmdCallbackArg arg = {this, response, false};
 
-		list(&listCmdCallback, args);
+		list(&listCmdCallback, &arg);
 
-		if(frame.empty())
+		if(!arg.gotSomething)
 			goto error;
 
-		respondApplication(&frame[0], frame.size());
+		(*response)(this, nullptr, 0, true);
 		return;
 	}
 	case CmdAlias: {
@@ -245,7 +279,7 @@ void Debugger::processApplication(void const* frame, size_t len) {
 
 		if(len == 2) {
 			// erase given alias
-			m_aliases.erase(a);
+			aliases().erase(a);
 			break;
 		}
 
@@ -253,10 +287,10 @@ void Debugger::processApplication(void const* frame, size_t len) {
 		if(!variant.valid())
 			goto error;
 
-		if(m_aliases.size() == Config::DebuggerAlias) {
+		if(aliases().size() == Config::DebuggerAlias) {
 			// Only accept this alias if it replaces one.
-			decltype(m_aliases.begin()) it = m_aliases.find(a);
-			if(it == m_aliases.end())
+			AliasMap::iterator it = aliases().find(a);
+			if(it == aliases().end())
 				// Overflow.
 				goto error;
 
@@ -264,26 +298,97 @@ void Debugger::processApplication(void const* frame, size_t len) {
 			it->second = variant;
 		} else {
 			// Add new alias.
-			m_aliases.insert(std::make_pair(a, variant));
+			aliases().insert(std::make_pair(a, variant));
 		}
+		break;
+	}
+	case CmdMacro: {
+		// define a macro
+		// Request: 'm' <char> ( <sep> <any command> ) *
+		// Response: '!' | '?'
+
+		if(Config::DebuggerMacro <= 0)
+			goto error;
+
+		if(len < 2)
+			goto error;
+
+		char m = p[1];
+		if(len == 2) {
+			// Erase macro
+			MacroMap::iterator it = macros().find(m);
+			if(it != macros().end()) {
+				stored_assert(it->second.size() <= m_macroSize);
+				m_macroSize -= it->second.size();
+				macros().erase(it);
+			}
+			break;
+		}
+
+		p += 2;
+		len -= 2;
+		if(len + m_macroSize > Config::DebuggerMacro)
+			goto error;
+
+		macros().insert(MacroMap::value_type(m, std::string(p, len)));
+		m_macroSize += len;
 		break;
 	}
 	default:
 		// Unknown command.
+
+		if(Config::DebuggerMacro && !macros().empty()) {
+			// Try parsing this as a macro.
+			if(runMacro(p[0], response))
+				return;
+		}
+
 		goto error;
 	}
 
 	{
 		char ack = Ack;
-		respondApplication(&ack, 1);
+		(*response)(this, &ack, 1, true);
 	}
 	return;
 error:
 	char nack = Nack;
-	respondApplication(&nack, 1);
+	(*response)(this, &nack, 1, true);
 }
 
-void Debugger::respondApplication(void const* UNUSED_PAR(frame), size_t UNUSED_PAR(len)) {
+bool Debugger::runMacro(char m, FrameHandler response) {
+	MacroMap::iterator it = macros().find(m);
+
+	if(it == macros().end())
+		// Unknown macro.
+		return false;
+
+	std::string const& definition = const_cast<std::string const&>(it->second);
+
+	// Expect the separator and at least one char to execute.
+	if(definition.size() < 2)
+		// Nothing to do.
+		return true;
+
+	char sep = definition[0];
+
+	size_t pos = 0;
+	do {
+		size_t nextpos = definition.find(sep, ++pos);
+		size_t len;
+		if(nextpos == std::string::npos)
+			len = definition.size() - pos;
+		else
+			len = nextpos - pos;
+		processApplication(&definition[pos], len, response);
+		pos = nextpos;
+	} while(pos != std::string::npos);
+
+	(*response)(this, nullptr, 0, true);
+	return true;
+}
+
+void Debugger::respondApplication(void const* UNUSED_PAR(frame), size_t UNUSED_PAR(len), bool UNUSED_PAR(last)) {
 	// Default implementation does nothing.
 }
 
@@ -411,26 +516,27 @@ ScratchPad& Debugger::spm() {
 }
 
 void Debugger::listCmdCallback(char const* name, DebugVariant& variant, void* arg) {
-	Debugger* that = (Debugger*)((void**)arg)[0];
-	std::string* frame = (std::string*)((void**)arg)[1];
+	stored_assert(arg);
+	ListCmdCallbackArg* a = (ListCmdCallbackArg*)arg;
 
 	// encodeHex() uses the spm for its result.
-	that->spm().reset();
+	ScratchPad::Snapshot snapshot = a->that->spm().snapshot();
 	char const* buf;
 	size_t buflen;
 
-	// Append type
-	that->encodeHex((uint8_t)variant.type(), buf, buflen, false);
-	*frame += buf;
+	// Append type.
+	a->that->encodeHex((uint8_t)variant.type(), buf, buflen, false);
+	(*a)(buf, buflen);
 
-	// Append length
-	that->encodeHex(variant.size(), buf, buflen);
-	*frame += buf;
+	// Append length.
+	a->that->encodeHex(variant.size(), buf, buflen);
+	(*a)(buf, buflen);
 
-	// Append name
-	*frame += name;
+	// Append name.
+	(*a)(name, strlen(name));
 
-	*frame += "\n";
+	// End of item.
+	(*a)("\n", 1);
 }
 
 } // namespace

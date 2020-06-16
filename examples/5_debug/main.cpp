@@ -6,21 +6,36 @@
 class MyDebugger : public stored::Debugger {
 public:
 	typedef stored::Debugger base;
+	MyDebugger() : m_responding() {}
 	virtual ~MyDebugger() override {}
-
+	
 	void process(char const* frame) {
-		processApplication(frame, strlen(frame));
+		base::process(frame, strlen(frame));
 	}
 
 protected:
-	virtual void processApplication(void const* frame, size_t len) override {
-		printf(">>   %s\n", (char const*)frame);
-		base::processApplication(frame, len);
+	virtual void processApplication(void const* frame, size_t len, FrameHandler response) override {
+		printf(">>   %.*s\n", (int)len, (char const*)frame);
+		base::processApplication(frame, len, response);
 	}
 
-	virtual void respondApplication(void const* frame, size_t len) override {
-		printf("<<   %.*s\n", (int)len, (char const*)frame);
+	virtual void respondApplication(void const* frame, size_t len, bool last) override {
+		if(!m_responding) {
+			printf("<<   ");
+			m_responding = true;
+		}
+
+		if(len)
+			printf("%.*s", (int)len, (char const*)frame);
+
+		if(last) {
+			printf("\n");
+			m_responding = false;
+		}
 	}
+
+private:
+	bool m_responding;
 };
 
 int main() {
@@ -70,6 +85,8 @@ int main() {
 	debugger.process("l");
 	debugger.process("a0/SomeStore/i");
 	debugger.process("r0");
+	debugger.process("m0 r0 r0");
+	debugger.process("0");
 
 	return 0;
 }
