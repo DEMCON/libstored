@@ -126,7 +126,7 @@ Request: 'l'
 Response: ( \<type byte in hex\> \<length in hex\> \<name of object\> `\n` ) * | `?`
 
 	3b4/b/i8
-	211/b/b
+	201/b/b
 
 ### alias
 	A0/bla/a

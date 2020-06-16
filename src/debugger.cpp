@@ -23,6 +23,14 @@ notfound:
 		return DebugVariant();
 	}
 
+	if(Config::DebuggerAlias > 0 && len == 1 && name[0] != '/') {
+		// This is probably an alias.
+		decltype(m_aliases.begin()) it = m_aliases.find(name[0]);
+		if(it != m_aliases.end())
+			// Got it.
+			return it->second;
+	}
+
 	// name contains '/prefix/object', where '/prefix' equals or is an
 	// (unambiguous) abbreviation of the mapped name of a store.
 
@@ -102,7 +110,7 @@ void Debugger::process(void const* data, size_t len) {
 }
 
 void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
-	list = (char*)spm().alloc(6 + reserve);
+	list = (char*)spm().alloc(7 + reserve);
 	len = 0;
 
 	list[len++] = CmdCapabilities;
@@ -114,6 +122,8 @@ void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
 		list[len++] = CmdEcho;
 	if(Config::DebuggerList)
 		list[len++] = CmdList;
+	if(Config::DebuggerAlias > 0)
+		list[len++] = CmdAlias;
 
 	list[len] = 0;
 }
@@ -167,7 +177,9 @@ void Debugger::processApplication(void const* frame, size_t len) {
 
 		void* value = (void*)++p;
 		len--;
-		while(len > 0 && *p != '/') { p++; len--; }
+		// Find / that indicates the object.
+		// Always use last char, which may be an alias.
+		while(len > 1 && *p != '/') { p++; len--; }
 		if(len == 0)
 			goto error;
 
@@ -198,7 +210,7 @@ void Debugger::processApplication(void const* frame, size_t len) {
 	}
 	case CmdList: {
 		// list all objects
-		// Request 'l'
+		// Request: 'l'
 		// Response: ( <type byte in hex> <length in hex> <name of object> '\n' ) *
 
 		if(!Config::DebuggerList)
@@ -214,6 +226,47 @@ void Debugger::processApplication(void const* frame, size_t len) {
 
 		respondApplication(&frame[0], frame.size());
 		return;
+	}
+	case CmdAlias: {
+		// define an alias
+		// Request: 'a' <char> </path/to/object> ?
+		// Response: '!' | '?'
+
+		if(Config::DebuggerAlias <= 0)
+			goto error;
+
+		if(len < 2)
+			goto error;
+
+		char a = p[1];
+		if(a < 0x20 || a >= 0x7f || a == '/')
+			// invalid
+			goto error;
+
+		if(len == 2) {
+			// erase given alias
+			m_aliases.erase(a);
+			break;
+		}
+
+		DebugVariant variant = find(&p[2], len - 2);
+		if(!variant.valid())
+			goto error;
+
+		if(m_aliases.size() == Config::DebuggerAlias) {
+			// Only accept this alias if it replaces one.
+			decltype(m_aliases.begin()) it = m_aliases.find(a);
+			if(it == m_aliases.end())
+				// Overflow.
+				goto error;
+
+			// Replace.
+			it->second = variant;
+		} else {
+			// Add new alias.
+			m_aliases.insert(std::make_pair(a, variant));
+		}
+		break;
 	}
 	default:
 		// Unknown command.

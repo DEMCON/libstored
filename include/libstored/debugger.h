@@ -233,6 +233,7 @@ namespace stored {
 		static char const CmdWrite = 'w';
 		static char const CmdEcho = 'e';
 		static char const CmdList = 'l';
+		static char const CmdAlias = 'a';
 		static char const Ack = '!';
 		static char const Nack = '?';
 
@@ -263,6 +264,7 @@ namespace stored {
 	private:
 		StoreMap m_map;
 		ScratchPad m_scratchpad;
+		std::map<char, DebugVariant> m_aliases;
 	};
 
 } // namespace

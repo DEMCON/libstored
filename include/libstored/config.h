@@ -31,6 +31,7 @@ namespace stored {
 		static bool const DebuggerWrite = true;
 		static bool const DebuggerEcho = true;
 		static bool const DebuggerList = true;
+		static int const DebuggerAlias = 0x100; // effectively no limit
 	};
 } // namespace
 #endif // __cplusplus
