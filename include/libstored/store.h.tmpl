@@ -21,7 +21,8 @@ namespace stored {
 		char buffer[{{store.buffer.size}}];
 
 		// Directory.
-		static uint8_t const* directory();
+		static uint8_t const* shortDirectory();
+		static uint8_t const* longDirectory();
 	} __attribute__((aligned(sizeof(double))));
 
 	template <typename Implementation_>
@@ -135,24 +136,25 @@ namespace stored {
 
 	public:
 		// Directory parsers.
-		uint8_t const* directory() const { return m_data.directory(); }
+		uint8_t const* shortDirectory() const { return m_data.shortDirectory(); }
+		uint8_t const* longDirectory() const { return m_data.longDirectory(); }
 
 		/*!
 		 * \brief Finds an object with the given name.
 		 * \return the object, or an invalid #stored::Variant if not found.
 		 */
 		Variant<Implementation> find(char const* name, size_t len = std::numeric_limits<size_t>::max()) {
-			return stored::find(implementation(), buffer(), directory(), name, len);
+			return stored::find(implementation(), buffer(), shortDirectory(), name, len);
 		}
 
 		/*!
-		 * \brief Calls a callback for every object in the #directory().
+		 * \brief Calls a callback for every object in the #longDirectory().
 		 */
 		template <typename F>
-		void list(F f) { stored::list(&implementation(), buffer(), directory(), f); }
+		void list(F f) { stored::list(&implementation(), buffer(), longDirectory(), f); }
 
 		template <typename F>
-		void list(F f, void* arg, char const* prefix = nullptr) { stored::list(&implementation(), buffer(), directory(), f, arg, prefix); }
+		void list(F f, void* arg, char const* prefix = nullptr) { stored::list(&implementation(), buffer(), longDirectory(), f, arg, prefix); }
 	};
 	
 	class {{store.name}} : public {{store.name}}Base<{{store.name}}> {

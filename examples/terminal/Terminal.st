@@ -1,3 +1,7 @@
-int32 a
-int32 b
+int64 supercalifragilisticexpialidocious
+int32 oh gosh
+
+{
+	bool world
+} small
 
