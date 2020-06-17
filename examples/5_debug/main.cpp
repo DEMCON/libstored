@@ -3,39 +3,50 @@
 #include "SomeStore.h"
 #include "AnotherStore.h"
 
-class MyDebugger : public stored::Debugger {
+class PrintfPhysical : public stored::ProtocolLayer {
 public:
-	typedef stored::Debugger base;
-	MyDebugger() : m_responding() {}
-	virtual ~MyDebugger() override {}
-	
-	void process(char const* frame) {
-		base::process(frame, strlen(frame));
+	typedef stored::ProtocolLayer base;
+
+	PrintfPhysical(ProtocolLayer& up)
+		: base(&up)
+		, m_encoding()
+	{
+		up.setDown(this);
 	}
 
-protected:
-	virtual void processApplication(void const* frame, size_t len, FrameHandler response) override {
-		printf(">>   %.*s\n", (int)len, (char const*)frame);
-		base::processApplication(frame, len, response);
+	void decode(char const* frame) {
+		char* s = strdup(frame);
+		if(s)
+			decode(s, strlen(s));
+		free(s);
 	}
 
-	virtual void respondApplication(void const* frame, size_t len, bool last) override {
-		if(!m_responding) {
+	void decode(void* buffer, size_t len) override final {
+		printf(">>   %.*s\n", (int)len, (char const*)buffer);
+		base::decode(buffer, len);
+	}
+
+	void encode(void* buffer, size_t len, bool last = true) override final {
+		encode((void const*)buffer, len, last);
+	}
+
+	void encode(void const* buffer, size_t len, bool last = true) override final {
+		if(!m_encoding) {
 			printf("<<   ");
-			m_responding = true;
+			m_encoding = true;
 		}
 
 		if(len)
-			printf("%.*s", (int)len, (char const*)frame);
+			printf("%.*s", (int)len, (char const*)buffer);
 
 		if(last) {
 			printf("\n");
-			m_responding = false;
+			m_encoding = false;
 		}
 	}
 
 private:
-	bool m_responding;
+	bool m_encoding;
 };
 
 int main() {
@@ -45,7 +56,7 @@ int main() {
 	stored::AnotherStore anotherStore;
 
 	// Register them to a debugger.
-	MyDebugger debugger;
+	stored::Debugger debugger;
 	debugger.map(someStore1, "/SomeStore");
 	debugger.map(someStore2, "/OtherInstanceOfSomeStore");
 	debugger.map(anotherStore); // Use default name.
@@ -77,16 +88,17 @@ int main() {
 	printf("i2 = %" PRId32 "\n", i);
 
 	// Now process some Embedded Debugger messages
-	debugger.process("?");
-	debugger.process("r/AnotherStore/j");
-	debugger.process("wf00f/SomeStore/i");
-	debugger.process("r/SomeStore/i");
-	debugger.process("eHello World!!1");
-	debugger.process("l");
-	debugger.process("a0/SomeStore/i");
-	debugger.process("r0");
-	debugger.process("m0 r0 r0");
-	debugger.process("0");
+	PrintfPhysical phy(debugger);
+	phy.decode("?");
+	phy.decode("r/AnotherStore/j");
+	phy.decode("wf00f/SomeStore/i");
+	phy.decode("r/SomeStore/i");
+	phy.decode("eHello World!!1");
+	phy.decode("l");
+	phy.decode("a0/SomeStore/i");
+	phy.decode("r0");
+	phy.decode("m* r0 e; r0 e; r/AnotherStore/j");
+	phy.decode("*");
 
 	return 0;
 }

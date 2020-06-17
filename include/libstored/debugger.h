@@ -6,6 +6,7 @@
 #include <libstored/macros.h>
 #include <libstored/types.h>
 #include <libstored/util.h>
+#include <libstored/spm.h>
 
 #include <new>
 #include <utility>
@@ -190,7 +191,44 @@ namespace stored {
 		Store& m_store;
 	};
 
-	class Debugger {
+	class ProtocolLayer {
+	public:
+		explicit ProtocolLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
+			: m_up(up), m_down(down)
+		{}
+
+		virtual ~ProtocolLayer();
+
+		void setUp(ProtocolLayer* up) { m_up = up; }
+		void setDown(ProtocolLayer* down) { m_down = down; }
+
+		ProtocolLayer* up() const { return m_up; }
+		ProtocolLayer* down() const { return m_down; }
+
+		virtual void decode(void* buffer, size_t len) {
+			if(up())
+				up()->decode(buffer, len);
+		}
+
+		void encode() {
+			encode((void const*)nullptr, 0, true);
+		}
+
+		virtual void encode(void* buffer, size_t len, bool last = true) {
+			if(down())
+				down()->encode(buffer, len, last);
+		}
+
+		virtual void encode(void const* buffer, size_t len, bool last = true) {
+			if(down())
+				down()->encode(buffer, len, last);
+		}
+	private:
+		ProtocolLayer* m_up;
+		ProtocolLayer* m_down;
+	};
+
+	class Debugger : public ProtocolLayer {
 	public:
 		struct StorePrefixComparator {
 			bool operator()(char const* lhs, char const* rhs) const {
@@ -239,18 +277,11 @@ namespace stored {
 		static char const Ack = '!';
 		static char const Nack = '?';
 
-		template <typename C, void(C::*F)(void const*, size_t, bool)>
-		static void frameHandler(Debugger* that, void const* buf, size_t len, bool last) {
-			(static_cast<C*>(that)->*F)(buf, len, last);
-		}
-		typedef void(*FrameHandler)(Debugger*, void const*, size_t, bool);
-
-public:
-		virtual void process(void const* data, size_t len);
-
+	public:
 		virtual void capabilities(char*& list, size_t& len, size_t reserve = 0);
-		virtual void processApplication(void const* frame, size_t len, FrameHandler response);
-		virtual void respondApplication(void const* frame, size_t len, bool last = true);
+		virtual void process(void const* frame, size_t len, ProtocolLayer& response);
+
+		virtual void decode(void* buffer, size_t len) override;
 
 	protected:
 		typedef std::map<char, DebugVariant> AliasMap;
@@ -260,7 +291,7 @@ public:
 		typedef std::map<char, std::string> MacroMap;
 		MacroMap& macros();
 		MacroMap const& macros() const;
-		virtual bool runMacro(char m, FrameHandler response);
+		virtual bool runMacro(char m, ProtocolLayer& response);
 
 	private:
 		static void listCmdCallback(char const* name, DebugVariant& variant, void* arg);

@@ -5,13 +5,16 @@
 
 namespace stored {
 
+ProtocolLayer::~ProtocolLayer() {
+}
+
 struct ListCmdCallbackArg {
 	Debugger* that;
-	Debugger::FrameHandler response;
+	ProtocolLayer* response;
 	bool gotSomething;
 
 	void operator()(void const* buf, size_t len) {
-		(*response)(that, buf, len, false);
+		response->encode(buf, len, false);
 		gotSomething = true;
 	}
 };
@@ -136,12 +139,6 @@ void Debugger::list(ListCallback* f) const {
 	list((DebugStoreBase::ListCallbackArg*)f, nullptr);
 }
 
-void Debugger::process(void const* data, size_t len) {
-	// Default implementation: only process at application level.
-	ScratchPad::Snapshot snapshot = spm().snapshot();
-	processApplication(data, len, &frameHandler<Debugger,&Debugger::respondApplication>);
-}
-
 void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
 	list = (char*)spm().alloc(8 + reserve);
 	len = 0;
@@ -163,7 +160,11 @@ void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
 	list[len] = 0;
 }
 
-void Debugger::processApplication(void const* frame, size_t len, FrameHandler response) {
+void Debugger::decode(void* buffer, size_t len) {
+	process(buffer, len, *this);
+}
+
+void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 	if(unlikely(!frame || len == 0))
 		return;
 	
@@ -180,7 +181,7 @@ void Debugger::processApplication(void const* frame, size_t len, FrameHandler re
 		char* c;
 		size_t cs;
 		capabilities(c, cs);
-		(*response)(this, c, cs, true);
+		response.encode(c, cs, true);
 		return;
 	}
 	case CmdRead: {
@@ -199,7 +200,7 @@ void Debugger::processApplication(void const* frame, size_t len, FrameHandler re
 		void* data = spm().alloc(size);
 		size = v.get(data, size);
 		encodeHex(v.type(), data, size);
-		(response)(this, data, size, true);
+		response.encode(data, size, true);
 		return;
 	}
 	case CmdWrite: {
@@ -240,7 +241,7 @@ void Debugger::processApplication(void const* frame, size_t len, FrameHandler re
 		if(len <= 1)
 			goto error;
 
-		(*response)(this, p + 1, len - 1, true);
+		response.encode(p + 1, len - 1, true);
 		return;
 	}
 	case CmdList: {
@@ -251,14 +252,14 @@ void Debugger::processApplication(void const* frame, size_t len, FrameHandler re
 		if(!Config::DebuggerList)
 			goto error;
 
-		ListCmdCallbackArg arg = {this, response, false};
+		ListCmdCallbackArg arg = {this, &response, false};
 
 		list(&listCmdCallback, &arg);
 
 		if(!arg.gotSomething)
 			goto error;
 
-		(*response)(this, nullptr, 0, true);
+		response.encode();
 		return;
 	}
 	case CmdAlias: {
@@ -273,7 +274,7 @@ void Debugger::processApplication(void const* frame, size_t len, FrameHandler re
 			goto error;
 
 		char a = p[1];
-		if(a < 0x20 || a >= 0x7f || a == '/')
+		if(a < 0x20 || a > 0x7e || a == '/')
 			// invalid
 			goto error;
 
@@ -348,15 +349,32 @@ void Debugger::processApplication(void const* frame, size_t len, FrameHandler re
 
 	{
 		char ack = Ack;
-		(*response)(this, &ack, 1, true);
+		response.encode(&ack, 1, true);
 	}
 	return;
 error:
 	char nack = Nack;
-	(*response)(this, &nack, 1, true);
+	response.encode(&nack, 1, true);
 }
 
-bool Debugger::runMacro(char m, FrameHandler response) {
+class FrameMerger : public ProtocolLayer {
+public:
+	typedef ProtocolLayer base;
+
+	FrameMerger(ProtocolLayer& down)
+		: base(nullptr, &down)
+	{}
+
+	void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) override final {
+		base::encode(buffer, len, false);
+	}
+
+	void encode(void* buffer, size_t len, bool UNUSED_PAR(last) = true) override final {
+		base::encode(buffer, len, false);
+	}
+};
+
+bool Debugger::runMacro(char m, ProtocolLayer& response) {
 	MacroMap::iterator it = macros().find(m);
 
 	if(it == macros().end())
@@ -372,6 +390,8 @@ bool Debugger::runMacro(char m, FrameHandler response) {
 
 	char sep = definition[0];
 
+	FrameMerger merger(response);
+
 	size_t pos = 0;
 	do {
 		size_t nextpos = definition.find(sep, ++pos);
@@ -380,16 +400,12 @@ bool Debugger::runMacro(char m, FrameHandler response) {
 			len = definition.size() - pos;
 		else
 			len = nextpos - pos;
-		processApplication(&definition[pos], len, response);
+		process(&definition[pos], len, merger);
 		pos = nextpos;
 	} while(pos != std::string::npos);
 
-	(*response)(this, nullptr, 0, true);
+	response.encode();
 	return true;
-}
-
-void Debugger::respondApplication(void const* UNUSED_PAR(frame), size_t UNUSED_PAR(len), bool UNUSED_PAR(last)) {
-	// Default implementation does nothing.
 }
 
 static char encodeNibble(uint8_t n) {

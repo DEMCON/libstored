@@ -119,7 +119,7 @@ Response: `!` | `?`
 
 Requests a full list of all objects of all registered stores to the current Embedded Debugger.
 
-Request: 'l'
+Request: `l`
 
 	l
 
@@ -128,38 +128,42 @@ Response: ( \<type byte in hex\> \<length in hex\> \<name of object\> `\n` ) * |
 	3b4/b/i8
 	201/b/b
 
-### alias
-	A0/bla/a
+### Alias
+
+Assigns a character to a object path.  An alias can be everywhere where an
+object path is expected.  Creating aliases skips parsing the object path
+repeatedly, so makes debugging more efficient.  If no object is specified, the
+alias is removed.  The number of aliases may be limited. If the limit is hit,
+the response will be `?`.
+The alias name can be any char in the range 0x20 ` ` - 0x7e `~`, except for 0x2f `/`.
+
+Request: `a` \<char\> ( \<name of object\> ) ?
+
+	a0/bla/a
+
+Response: `!` | `?`
+
 	!
 
-	A1/z/z/z
-	?
+### Macro
 
-	A1/b/b[0]
+Saves a sequence of commands and assigns a name to it.  The macro name can be
+any char in the range 0x20 ` ` - 0x7e `~`.  In case of a name clash with an
+existing non-macro command, the command is executed; the macro cannot hide or
+replace the command.  The separator can be any char, as long as it is not used
+within a command of the macro definition. Without the definition after the
+macro name, the macro is removed. The system may be limited in total definition
+length. The macro string is reinterpreted every time it is invoked. The
+responses of the commands are merged into one response frame, without
+separators.
+
+Request: `m` \<char\> ( \<separator\> \<command\> ) *
+
+	mZ r/bla/a e; r/bla/z
+
+Response: `!` | `?`
+
 	!
-
-	At/t
-	!
-
-	Rt10
-	234847 0 42
-
-	W010
-	!
-
-	A1
-	!
-
-### macro
-
-	MsRt10
-	!
-
-	s
-	23866 0 42
-
-	s
-	23970 0 42
 
 ## Protocol stack
 
