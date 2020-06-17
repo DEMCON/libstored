@@ -7,6 +7,7 @@
 #include <libstored/types.h>
 #include <libstored/util.h>
 #include <libstored/spm.h>
+#include <libstored/protocol.h>
 
 #include <new>
 #include <utility>
@@ -189,43 +190,6 @@ namespace stored {
 
 	private:
 		Store& m_store;
-	};
-
-	class ProtocolLayer {
-	public:
-		explicit ProtocolLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
-			: m_up(up), m_down(down)
-		{}
-
-		virtual ~ProtocolLayer();
-
-		void setUp(ProtocolLayer* up) { m_up = up; }
-		void setDown(ProtocolLayer* down) { m_down = down; }
-
-		ProtocolLayer* up() const { return m_up; }
-		ProtocolLayer* down() const { return m_down; }
-
-		virtual void decode(void* buffer, size_t len) {
-			if(up())
-				up()->decode(buffer, len);
-		}
-
-		void encode() {
-			encode((void const*)nullptr, 0, true);
-		}
-
-		virtual void encode(void* buffer, size_t len, bool last = true) {
-			if(down())
-				down()->encode(buffer, len, last);
-		}
-
-		virtual void encode(void const* buffer, size_t len, bool last = true) {
-			if(down())
-				down()->encode(buffer, len, last);
-		}
-	private:
-		ProtocolLayer* m_up;
-		ProtocolLayer* m_down;
 	};
 
 	class Debugger : public ProtocolLayer {

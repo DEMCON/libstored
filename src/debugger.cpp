@@ -5,9 +5,6 @@
 
 namespace stored {
 
-ProtocolLayer::~ProtocolLayer() {
-}
-
 struct ListCmdCallbackArg {
 	Debugger* that;
 	ProtocolLayer* response;
@@ -50,13 +47,13 @@ notfound:
 			return it->second;
 	}
 
-	// name contains '/prefix/object', where '/prefix' equals or is an
-	// (unambiguous) abbreviation of the mapped name of a store.
-
 	if(m_map.size() == 1) {
 		// Don't compare prefix, just forward to the only mapped store.
-		return m_map.begin()->second->find(&name[1], len - 1);
+		return m_map.begin()->second->find(name, len);
 	}
+	
+	// name contains '/prefix/object', where '/prefix' equals he mapped name of
+	// a store.
 
 	StoreMap::const_iterator it = m_map.upper_bound(name);
 	// If found, it->first:
@@ -131,8 +128,11 @@ Debugger::AliasMap const& Debugger::aliases() const {
 }
 
 void Debugger::list(ListCallbackArg* f, void* arg) const {
-	for(StoreMap::const_iterator it = m_map.begin(); it != m_map.end(); ++it)
-		it->second->list(f, arg, it->first);
+	if(m_map.size() == 1)
+		m_map.begin()->second->list(f, arg);
+	else
+		for(StoreMap::const_iterator it = m_map.begin(); it != m_map.end(); ++it)
+			it->second->list(f, arg, it->first);
 }
 
 void Debugger::list(ListCallback* f) const {
@@ -496,15 +496,16 @@ bool Debugger::decodeHex(Type::type type, void*& data, size_t& len) {
 		bin = (uint8_t*)spm().alloc(binlen);
 		memset(bin, 0, binlen);
 
-		for(size_t i = 0; i < len; i += 2) {
+		for(size_t i = 0; i < len; i++) {
+			uint8_t b = decodeNibble(src[len - i - 1], ok);
+			if(i & 1)
+				b = (uint8_t)(b << 4);
+
 #ifdef STORED_LITTLE_ENDIAN
-			bin[i / 2] =
+			bin[i / 2] |= b;
 #else
-			bin[(len + i) / 2 - 1] =
+			bin[(len - i - 1) / 2] |= b;
 #endif
-				(uint8_t)(
-				(decodeNibble(src[len - i - 2], ok) << 4) |
-				 decodeNibble(src[len - i - 1], ok));
 		}
 	} else {
 		if(len & 1)

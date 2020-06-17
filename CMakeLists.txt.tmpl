@@ -13,6 +13,7 @@ add_library({{libprefix}}libstored
     ${libstored_dir}/include/libstored/util.h
     ${libstored_dir}/src/directory.cpp
     ${libstored_dir}/src/debugger.cpp
+    ${libstored_dir}/src/protocol.cpp
 {% for m in models %}
     ${CMAKE_CURRENT_SOURCE_DIR}/{{m|header}}
     ${CMAKE_CURRENT_SOURCE_DIR}/{{m|src}}

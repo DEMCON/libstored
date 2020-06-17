@@ -99,6 +99,7 @@ int main() {
 	phy.decode("r0");
 	phy.decode("m* r0 e; r0 e; r/AnotherStore/j");
 	phy.decode("*");
+	phy.decode("m*");
 
 	return 0;
 }
