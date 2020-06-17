@@ -76,7 +76,11 @@ void TerminalLayer::writeToFd(int fd, void const* buffer, size_t len) {
 
 	ssize_t res = 0;
 	for(size_t i = 0; res >= 0 && i < len; i += (size_t)res)
-		res = write(fd, (char*)buffer + i, len - i);
+		res = write(fd, (char*)buffer + i,
+#ifdef STORED_OS_WINDOWS
+				(unsigned int)
+#endif
+				(len - i));
 }
 
 void TerminalLayer::encode(void* buffer, size_t len, bool last) {

@@ -67,6 +67,7 @@ int main() {
 	printf("To inject a command, enter `ESC %c <your command> ESC %c`.\n",
 		stored::TerminalLayer::EscStart,
 		stored::TerminalLayer::EscEnd);
+	printf("If pressing ESC does not work, try pressing Ctrl+[ instead.\n");
 	printf("All other input is considered part of the normal application stream,\n"
 		"which is case-invered in this example.\n\n");
 

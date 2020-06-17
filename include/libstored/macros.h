@@ -66,6 +66,19 @@
 // Platform
 //
 
+#if defined(_WIN32) || defined(__CYGWIN__)
+#  define STORED_OS_WINDOWS 1
+#  define _WANT_IO_C99_FORMATS 1
+#  define __USE_MINGW_ANSI_STDIO 1
+#  if defined(UNICODE) || defined(_UNICODE)
+#    error Do not use UNICODE. Use ANSI with UTF-8 instead.
+#  endif
+#elif defined(__linux__)
+#  define STORED_OS_LINUX 1
+#else
+#  define STORED_OS_GENERIC 1
+#endif
+
 #define __STDC_FORMAT_MACROS
 
 #if defined(__BYTE_ORDER__)
@@ -81,6 +94,7 @@
 #if !defined(STORED_HAVE_VALGRIND) && defined(ZTH_HAVE_VALGRIND)
 #  define STORED_HAVE_VALGRIND
 #endif
+
 
 
 //////////////////////////////////////////////////
