@@ -78,7 +78,7 @@ int main() {
 	do {
 		len = read(STDIN_FILENO, buffer, sizeof(buffer));
 		if(len > 0)
-			phy.decode(buffer, len);
+			phy.decode(buffer, (size_t)len);
 	} while(len > 0);
 
 	return 0;

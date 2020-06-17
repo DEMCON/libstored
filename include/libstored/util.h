@@ -52,8 +52,8 @@
 #  define SFINAE_IS_FUNCTION(T, F, T_OK) T_OK
 #endif
 
-#if __cplusplus && __cplusplus < 201103L && !defined(static_assert)
-#  define static_assert(expr, msg)	typedef int static_assert_[(expr) ? 1 : -1] __attribute__((unused))
+#if defined(__cplusplus) && __cplusplus < 201103L && !defined(static_assert)
+#  define static_assert(expr, msg)	do { typedef __attribute__((unused)) int static_assert_[(expr) ? 1 : -1]; } while(0)
 #endif
 
 

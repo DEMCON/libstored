@@ -75,7 +75,7 @@ void TerminalLayer::writeToFd(int fd, void const* buffer, size_t len) {
 		return;
 
 	ssize_t res = 0;
-	for(size_t i = 0; res >= 0 && i < len; i += res)
+	for(size_t i = 0; res >= 0 && i < len; i += (size_t)res)
 		res = write(fd, (char*)buffer + i, len - i);
 }
 

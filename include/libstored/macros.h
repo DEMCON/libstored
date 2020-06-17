@@ -23,7 +23,12 @@
 //
 
 #ifdef __GNUC__
+#  ifdef __clang__
+// This is clang, which looks a lot like gcc
+#    pragma clang diagnostic ignored "-Wunused-local-typedef"
+#  else
 // This is gcc
+#  endif
 #  ifdef __cplusplus
 #    if __cplusplus < 201103L && !defined(decltype)
 #      define decltype(x) __typeof__(x) // Well, not really true when references are involved...
