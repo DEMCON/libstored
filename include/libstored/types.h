@@ -10,7 +10,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
-#include <cinttypes>
+
+#if __cplusplus >= 201103L
+#  include <cinttypes>
+#else
+#  include <inttypes.h>
+#endif
 
 namespace stored {
 

@@ -13,6 +13,7 @@
 #include <utility>
 #include <map>
 #include <vector>
+#include <string>
 
 namespace stored {
 

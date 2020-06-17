@@ -36,6 +36,7 @@
 #include <math.h>
 #include <limits>
 #include <list>
+#include <cstring>
 
 #if __cplusplus >= 201103L
 #  include <functional>
@@ -49,6 +50,10 @@
 #  endif
 #else
 #  define SFINAE_IS_FUNCTION(T, F, T_OK) T_OK
+#endif
+
+#if __cplusplus && __cplusplus < 201103L && !defined(static_assert)
+#  define static_assert(expr, msg)	typedef int static_assert_[(expr) ? 1 : -1] __attribute__((unused))
 #endif
 
 

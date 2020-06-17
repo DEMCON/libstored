@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 
 #include <libstored/macros.h>
+#include <libstored/util.h>
 
 #include <vector>
 
