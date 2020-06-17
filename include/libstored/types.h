@@ -398,7 +398,13 @@ namespace stored {
 		void* container() const { stored_assert(false); return nullptr; }
 
 	private:
-		void* m_dummy __attribute__((unused)); // Make this class the same size as a non-void container.
+		// Make this class the same size as a non-void container.
+#ifdef __clang__
+		void* m_dummy __attribute__((unused));
+#else
+		void* m_dummy;
+#endif
+
 		union {
 			void* m_buffer;
 			uintptr_t m_f;
