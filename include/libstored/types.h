@@ -112,7 +112,11 @@ namespace stored {
 #if __cplusplus >= 201103L
 		Variable(Variable&& v) { (*this) = std::move(v); }
 		Variable& operator=(Variable&& v) { this->operator=((Variable const&)v); }
+		~Variable() = default;
+#else
+		~Variable() {}
 #endif
+
 
 		type const& get() const {
 			stored_assert(valid());
@@ -165,6 +169,9 @@ namespace stored {
 #if __cplusplus >= 201103L
 		Variable(Variable&& v) { (*this) = std::move(v); }
 		Variable& operator=(Variable&& v) { this->operator=((Variable const&)v); return *this; }
+		~Variable() = default;
+#else
+		~Variable() {}
 #endif
 
 		void set(type v) {
@@ -253,24 +260,29 @@ namespace stored {
 	public:
 		typedef size_t(Callback)(Container&,bool,uint8_t*,size_t);
 
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant(Container& container, Type::type type, void* buffer, size_t len)
 			: m_container(&container), m_buffer(buffer), m_len(len), m_type((uint8_t)type)
 		{
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 			stored_assert(!Type::isFixed(this->type()) || ((uintptr_t)buffer & (Type::size(this->type()) - 1)) == 0);
 		}
 		
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant(Container& container, Type::type type, unsigned int f)
 			: m_container(&container), m_f((uintptr_t)f), m_type((uint8_t)type)
 		{
 			static_assert(sizeof(uintptr_t) >= sizeof(unsigned int), "");
 		}
 
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant()
 			: m_buffer()
 		{
 		}
 
 		template <typename T>
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant(Variable<T,Container> const& v)
 			: m_container(v.valid() ? &v.container() : nullptr)
 			, m_buffer(v.valid() ? &v.get() : nullptr)
@@ -279,6 +291,7 @@ namespace stored {
 		{}
 		
 		template <typename T>
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant(Function<T,Container> const& f)
 			: m_container(f.valid() ? &f.container() : nullptr)
 			, m_f(f.valid() ? f.id() : 0)
@@ -303,6 +316,7 @@ namespace stored {
 
 		size_t set(void const* src, size_t len = 0) {
 			if(isFunction()) {
+				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
 				len = container().callback(true, const_cast<void*>(src), len, (unsigned int)m_f);
 			} else {
 				if(Type::isFixed(type())) {
@@ -333,6 +347,7 @@ namespace stored {
 		template <typename T> Variable<T,Container> variable() const {
 			stored_assert(isVariable());
 			stored_assert(sizeof(T) == size());
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return Variable<T,Container>(container(), *reinterpret_cast<T*>(m_buffer));
 		}
 
@@ -359,17 +374,20 @@ namespace stored {
 	template <>
 	class Variant<void> {
 	public:
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant(Type::type type, void* buffer, size_t len)
 			: m_buffer(buffer), m_len(len), m_type((uint8_t)type)
 		{
 		}
 		
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant(Type::type type, unsigned int f)
 			: m_f((uintptr_t)f), m_type((uint8_t)type)
 		{
 			static_assert(sizeof(uintptr_t) >= sizeof(unsigned int), "");
 		}
 
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant()
 			: m_buffer()
 		{}
@@ -378,11 +396,12 @@ namespace stored {
 		Variant<Container> apply(Container& container) const {
 			static_assert(sizeof(Variant<Container>) == sizeof(Variant<>), "");
 
-			if(!m_buffer)
+			if(!valid())
 				return Variant<Container>();
-			else if(Type::isFunction((Type::type)m_type))
+			else if(isFunction())
 				return Variant<Container>(container, (Type::type)m_type, (unsigned int)m_f);
 			else {
+				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 				stored_assert((uintptr_t)m_buffer >= (uintptr_t)&container && (uintptr_t)m_buffer + m_len <= (uintptr_t)&container + sizeof(Container));
 				return Variant<Container>(container, (Type::type)m_type, m_buffer, m_len);
 			}

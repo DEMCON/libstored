@@ -140,7 +140,7 @@ void Debugger::list(ListCallback* f) const {
 }
 
 void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
-	list = (char*)spm().alloc(8 + reserve);
+	list = spm().alloc<char>(8 + reserve);
 	len = 0;
 
 	list[len++] = CmdCapabilities;
@@ -197,7 +197,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 			goto error;
 
 		size_t size = v.size();
-		void* data = spm().alloc(size);
+		void* data = spm().alloc<char>(size);
 		size = v.get(data, size);
 		encodeHex(v.type(), data, size);
 		response.encode(data, size, true);
@@ -426,7 +426,7 @@ void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortes
 
 	if(shortest && type == Type::Bool) {
 		// single char
-		char* hex = (char*)spm().alloc(2);
+		char* hex = spm().alloc<char>(2);
 		hex[0] = src[0] ? '1' : '0';
 		hex[1] = 0;
 		len = 1;
@@ -434,7 +434,7 @@ void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortes
 		return;
 	}
 	
-	char* hex = (char*)spm().alloc(len * 2 + 1);
+	char* hex = spm().alloc<char>(len * 2 + 1);
 
 	if(Type::isFixed(type)) {
 		// big endian
@@ -493,7 +493,7 @@ bool Debugger::decodeHex(Type::type type, void*& data, size_t& len) {
 		if(binlen * 2 < len)
 			return false;
 
-		bin = (uint8_t*)spm().alloc(binlen);
+		bin = spm().alloc<uint8_t>(binlen);
 		memset(bin, 0, binlen);
 
 		for(size_t i = 0; i < len; i++) {
@@ -513,7 +513,7 @@ bool Debugger::decodeHex(Type::type type, void*& data, size_t& len) {
 			return false;
 
 		binlen = (len + 1) / 2;
-		bin = (uint8_t*)spm().alloc(binlen);
+		bin = spm().alloc<uint8_t>(binlen);
 
 		for(size_t i = 0; i + 1 < len; i += 2) {
 			bin[i] =
@@ -534,6 +534,7 @@ ScratchPad& Debugger::spm() {
 
 void Debugger::listCmdCallback(char const* name, DebugVariant& variant, void* arg) {
 	stored_assert(arg);
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 	ListCmdCallbackArg* a = (ListCmdCallbackArg*)arg;
 
 	// encodeHex() uses the spm for its result.

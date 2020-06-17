@@ -31,12 +31,12 @@ static uint8_t const {{store.name}}Data_directory[{{store.directory.data|len}}] 
 };
 
 uint8_t const* {{store.name}}Data::longDirectory() {
-    return Config::FullNames ? {{store.name}}Data_directory_full : {{store.name}}Data_directory;
+    return Config::FullNames ? (uint8_t const*){{store.name}}Data_directory_full : (uint8_t const*){{store.name}}Data_directory;
 }
 
 uint8_t const* {{store.name}}Data::shortDirectory() {
-    return {{store.name}}Data_directory;
+    return (uint8_t const*){{store.name}}Data_directory;
 }
 
-} // namespace
+} // namespace stored
 

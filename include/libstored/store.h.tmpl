@@ -42,6 +42,7 @@ namespace stored {
 		// Accessor generators.
 		template <typename T> Variable<T,Implementation> variable(size_t offset) {
 			stored_assert(offset + sizeof(T) <= sizeof(m_data.buffer));
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return Variable<T,Implementation>(implementation(), *reinterpret_cast<T*>(&buffer()[offset]));
 		}
 
@@ -104,7 +105,9 @@ namespace stored {
 		 * but identical for the same variables across different instances of the same store class.
 		 */
 		Key bufferToKey(void const* buffer) const {
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 			stored_assert((uintptr_t)buffer >= (uintptr_t)this->buffer() && (uintptr_t)buffer < (uintptr_t)this->buffer() + sizeof(m_data.buffer));
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 			return (uintptr_t)buffer - (uintptr_t)this->buffer();
 		}
 

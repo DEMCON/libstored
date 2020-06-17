@@ -40,3 +40,17 @@ if(STORED_HAVE_VALGRIND)
 	target_compile_definitions({{libprefix}}libstored PUBLIC -DSTORED_HAVE_VALGRIND)
 endif()
 
+if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
+    find_program(CLANG_TIDY_EXE NAMES "clang-tidy" DOC "Path to clang-tidy executable")
+    if(CLANG_TIDY_EXE)
+        set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}"
+            "-checks=cppcoreguidelines-*,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-pro-type-union-access,-cppcoreguidelines-pro-bounds-pointer-arithmetic"
+            "-header-filter=libstored/.*.h")
+    endif()
+
+    if(CLANG_TIDY_EXE)
+        set_target_properties({{libprefix}}libstored
+            PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}" )
+    endif()
+endif()
+

@@ -132,10 +132,12 @@ public:
 			m_capacity = m_size;
 		}
 
+		template <typename T>
 		__attribute__((malloc,returns_nonnull,warn_unused_result))
-		void* alloc(size_t size) {
+		T* alloc(size_t count) {
+			size_t size = count * sizeof(T);
 			if(unlikely(size == 0))
-				return m_buffer;
+				return reinterpret_cast<T*>(m_buffer);
 
 			size_t const align = sizeof(void*);
 			size = (size + align - 1) & ~(align - 1);
@@ -148,7 +150,7 @@ public:
 #ifdef STORED_HAVE_VALGRIND
 			VALGRIND_MAKE_MEM_UNDEFINED(p, size);
 #endif
-			return p;
+			return reinterpret_cast<T*>(p);
 		}
 
 	private:
