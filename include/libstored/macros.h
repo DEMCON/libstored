@@ -91,8 +91,12 @@
 #  error Unknown byte order
 #endif
 
-#if !defined(STORED_HAVE_VALGRIND) && defined(ZTH_HAVE_VALGRIND)
+#if !defined(STORED_HAVE_VALGRIND) && defined(ZTH_HAVE_VALGRIND) 
 #  define STORED_HAVE_VALGRIND
+#endif
+
+#ifdef CLANG_TIDY
+#  undef STORED_HAVE_VALGRIND
 #endif
 
 

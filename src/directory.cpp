@@ -38,7 +38,7 @@ notfound:
 			if(Type::isFunction(type))
 				return Variant<>(type, (unsigned int)offset);
 			else
-				return Variant<>(type, (char*)buffer + offset, len);
+				return Variant<>(type, static_cast<char*>(buffer) + offset, len);
 		} else if(!*name || len == 0) {
 			goto notfound;
 		} else if(*p <= 0x1f) {
@@ -101,10 +101,8 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
 			Type::type type = (Type::type)(*p++ ^ 0x80);
 			size_t len = !Type::isFixed(type) ? decodeInt<size_t>(p) : Type::size(type);
 			size_t offset = decodeInt<size_t>(p);
-			if(Type::isFunction(type))
-				f(container, (char const*)name.c_str(), type, (char*)(uintptr_t)offset, 0, arg);
-			else
-				f(container, (char const*)name.c_str(), type, (char*)buffer + offset, len, arg);
+			char* b = Type::isFunction(type) ? nullptr : static_cast<char*>(buffer);
+			f(container, name.c_str(), type, b + offset, len, arg);
 			break;
 		} else if(*p <= 0x1f) {
 			// skip
@@ -136,13 +134,6 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
 
 	if(erase)
 		name.erase(name.end() - (long)erase, name.end());
-}
-
-/*!
- * \ingroup libstored_directory
- */
-void list(void* container, void* buffer, uint8_t const* directory, ListCallback* f) {
-	list(container, buffer, directory, (ListCallbackArg*)f, nullptr);
 }
 
 /*!

@@ -26,7 +26,7 @@ void TerminalLayer::decode(void* buffer, size_t len) {
 	size_t nonDebugOffset = m_decodeState < StateDebug ? 0 : len;
 	
 	for(size_t i = 0; i < len; i++) {
-		char c = ((char*)buffer)[i];
+		char c = (static_cast<char*>(buffer))[i];
 
 		switch(m_decodeState) {
 		case StateNormal:
@@ -35,7 +35,7 @@ void TerminalLayer::decode(void* buffer, size_t len) {
 			break;
 		case StateNormalEsc:
 			if(c == EscStart) {
-				nonDebugDecode((char*)buffer + nonDebugOffset, i - nonDebugOffset - 1); // Also skip the ESC
+				nonDebugDecode(static_cast<char*>(buffer) + nonDebugOffset, i - nonDebugOffset - 1); // Also skip the ESC
 				m_decodeState = StateDebug;
 				nonDebugOffset = len;
 			} else
@@ -63,7 +63,7 @@ void TerminalLayer::decode(void* buffer, size_t len) {
 	}
 
 	if(nonDebugOffset < len)
-		nonDebugDecode((char*)buffer + nonDebugOffset, len - nonDebugOffset);
+		nonDebugDecode(static_cast<char*>(buffer) + nonDebugOffset, len - nonDebugOffset);
 }
 
 void TerminalLayer::nonDebugDecode(void* buffer, size_t len) {
@@ -76,7 +76,7 @@ void TerminalLayer::writeToFd(int fd, void const* buffer, size_t len) {
 
 	ssize_t res = 0;
 	for(size_t i = 0; res >= 0 && i < len; i += (size_t)res)
-		res = write(fd, (char*)buffer + i,
+		res = write(fd, static_cast<char const*>(buffer) + i,
 #ifdef STORED_OS_WINDOWS
 				(unsigned int)
 #endif

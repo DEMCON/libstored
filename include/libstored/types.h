@@ -52,6 +52,8 @@ namespace stored {
 			Void = 0,
 			Blob = 1,
 			String = 2,
+
+			Invalid = 0xff,
 		};
 
 		static bool isFunction(type t) { return t & FlagFunction; }
@@ -264,8 +266,9 @@ namespace stored {
 		Variant(Container& container, Type::type type, void* buffer, size_t len)
 			: m_container(&container), m_buffer(buffer), m_len(len), m_type((uint8_t)type)
 		{
-			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
-			stored_assert(!Type::isFixed(this->type()) || ((uintptr_t)buffer & (Type::size(this->type()) - 1)) == 0);
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+			stored_assert(!Type::isFixed(this->type()) ||
+				(reinterpret_cast<uintptr_t>(buffer) & (Type::size(this->type()) - 1)) == 0);
 		}
 		
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
@@ -389,7 +392,7 @@ namespace stored {
 
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant()
-			: m_buffer()
+			: m_type((uint8_t)Type::Invalid)
 		{}
 
 		template <typename Container>
@@ -409,9 +412,9 @@ namespace stored {
 		
 		size_t get(void* UNUSED_PAR(dst), size_t UNUSED_PAR(len) = 0) const { stored_assert(valid()); return 0; }
 		size_t set(void const* UNUSED_PAR(src), size_t UNUSED_PAR(len) = 0) { stored_assert(valid()); return 0; }
-		Type::type type() const { stored_assert(valid()); return (Type::type)m_type; }
+		Type::type type() const { return (Type::type)m_type; }
 		size_t size() const { stored_assert(valid()); return Type::isFixed(type()) ? Type::size(type()) : m_len; }
-		bool valid() const { return m_buffer; }
+		bool valid() const { return type() != Type::Invalid; }
 		bool isFunction() const { stored_assert(valid()); return Type::isFunction(type()); }
 		bool isVariable() const { stored_assert(valid()); return !isFunction(); }
 		void* container() const { stored_assert(false); return nullptr; }

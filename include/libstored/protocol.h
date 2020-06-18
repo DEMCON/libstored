@@ -65,6 +65,18 @@ namespace stored {
 			if(down())
 				down()->encode(buffer, len, last);
 		}
+
+	private:
+#if __cplusplus >= 201103L
+		ProtocolLayer(ProtocolLayer const&) = delete;
+		ProtocolLayer(ProtocolLayer&&) = delete;
+		void operator=(ProtocolLayer const&) = delete;
+		void operator=(ProtocolLayer&&) = delete;
+#else
+		ProtocolLayer(ProtocolLayer const&);
+		void operator=(ProtocolLayer const&);
+#endif
+
 	private:
 		ProtocolLayer* m_up;
 		ProtocolLayer* m_down;
@@ -92,6 +104,17 @@ namespace stored {
 		void encodeEnd();
 
 		void writeToFd(int fd, void const* buffer, size_t len);
+
+	private:
+#if __cplusplus >= 201103L
+		TerminalLayer(TerminalLayer const&) = delete;
+		TerminalLayer(TerminalLayer&&) = delete;
+		void operator=(TerminalLayer const&) = delete;
+		void operator=(TerminalLayer&&) = delete;
+#else
+		TerminalLayer(TerminalLayer const&);
+		void operator=(TerminalLayer const&);
+#endif
 
 	private:
 		int m_nonDebugDecodeFd;

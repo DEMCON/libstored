@@ -3,6 +3,18 @@
 #include <cstring>
 #include <string>
 
+template <typename T>
+static void cleanup(T* t) {
+	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+	delete t;
+}
+
+#if __cplusplus >= 201103L
+template <typename T>
+static void cleanup(std::unique_ptr<T>&) {
+}
+#endif
+
 namespace stored {
 
 struct ListCmdCallbackArg {
@@ -22,8 +34,10 @@ Debugger::Debugger()
 }
 
 Debugger::~Debugger() {
+#if __cplusplus < 201103L
 	for(StoreMap::iterator it = m_map.begin(); it != m_map.end(); ++it)
-		delete it->second;
+		cleanup(it->second);
+#endif
 }
 
 static bool checkPrefix(char const* name, char const* prefix, size_t len) {
@@ -93,8 +107,12 @@ void Debugger::map(DebugStoreBase* store, char const* name) {
 		m_map.insert(std::make_pair(name, store));
 	} else {
 		// Replace previous mapping.
-		delete it->second;
+#if __cplusplus >= 201103L
+		it->second.reset(store);
+#else
+		cleanup(it->second);
 		it->second = store;
+#endif
 	}
 }
 
@@ -103,7 +121,7 @@ void Debugger::unmap(char const* name) {
 	if(it == m_map.end())
 		return;
 
-	delete it->second;
+	cleanup(it->second);
 	m_map.erase(it);
 }
 
@@ -133,10 +151,6 @@ void Debugger::list(ListCallbackArg* f, void* arg) const {
 	else
 		for(StoreMap::const_iterator it = m_map.begin(); it != m_map.end(); ++it)
 			it->second->list(f, arg, it->first);
-}
-
-void Debugger::list(ListCallback* f) const {
-	list((DebugStoreBase::ListCallbackArg*)f, nullptr);
 }
 
 void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
@@ -170,7 +184,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 	
 	ScratchPad::Snapshot snapshot = spm().snapshot();
 
-	char const* p = (char const*)frame;
+	char const* p = static_cast<char const*>(frame);
 
 	switch(p[0]) {
 	case CmdCapabilities: {
@@ -211,7 +225,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		if(!Config::DebuggerWrite)
 			goto error;
 
-		void* value = (void*)++p;
+		void const* value = ++p;
 		len--;
 		// Find / that indicates the object.
 		// Always use last char, which may be an alias.
@@ -219,7 +233,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		if(len == 0)
 			goto error;
 
-		size_t valuelen = (size_t)((uintptr_t)p - (uintptr_t)value);
+		size_t valuelen = (size_t)(static_cast<char const*>(p) - static_cast<char const*>(value));
 		DebugVariant variant = find(p, len);
 		if(!variant.valid())
 			goto error;
@@ -381,6 +395,7 @@ bool Debugger::runMacro(char m, ProtocolLayer& response) {
 		// Unknown macro.
 		return false;
 
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
 	std::string const& definition = const_cast<std::string const&>(it->second);
 
 	// Expect the separator and at least one char to execute.
@@ -422,7 +437,7 @@ void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortes
 		return;
 	}
 
-	uint8_t const* src = (uint8_t const*)data;
+	uint8_t const* src = static_cast<uint8_t const*>(data);
 
 	if(shortest && type == Type::Bool) {
 		// single char
@@ -478,11 +493,11 @@ static uint8_t decodeNibble(char c, bool& ok) {
 	return 0;
 }
 
-bool Debugger::decodeHex(Type::type type, void*& data, size_t& len) {
+bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len) {
 	if(len == 0 || !data)
 		return false;
 	
-	char const* src = (char const*)data;
+	char const* src = static_cast<char const*>(data);
 	size_t binlen;
 	uint8_t* bin;
 

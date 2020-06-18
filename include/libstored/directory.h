@@ -72,7 +72,6 @@ namespace stored {
 	}
 
 	typedef void(ListCallbackArg)(void*, char const*, Type::type, void*, size_t, void*);
-	typedef void(ListCallback)(void*, char const*, Type::type, void*, size_t);
 
 #if __cplusplus >= 201103L
 	/*!
@@ -88,7 +87,6 @@ namespace stored {
 	}
 #endif
 
-	void list(void* container, void* buffer, uint8_t const* directory, ListCallback* f);
 	void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr);
 
 } // namespace

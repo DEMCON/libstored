@@ -14,19 +14,13 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace stored {
 
 	// Container-template-type-invariant base class.
 	class DebugVariantBase {
 	public:
-		virtual ~DebugVariantBase()
-#if __cplusplus >= 201103L
-			= default;
-#else
-			{}
-#endif
-
 		virtual size_t get(void* dst, size_t len = 0) const = 0;
 		virtual size_t set(void const* src, size_t len = 0) = 0;
 		virtual Type::type type() const = 0;
@@ -40,17 +34,16 @@ namespace stored {
 	public:
 		DebugVariantTyped(Variant<Container> const& variant)
 			: m_variant(variant)
-		{}
+		{
+#if __cplusplus >= 201103L
+			static_assert(std::is_trivially_destructible<Variant<Container>>::value, "");
+#elif defined(__GCC__)
+			static_assert(__has_trivial_destructor(Variant<Container>), "");
+#endif
+		}
 
 		DebugVariantTyped() {}
 
-		virtual ~DebugVariantTyped() override
-#if __cplusplus >= 201103L
-			= default;
-#else
-			{}
-#endif
-		
 		size_t get(void* dst, size_t len = 0) const override final {
 			return variant().get(dst, len); }
 		size_t set(void const* src, size_t len = 0) override final {
@@ -72,11 +65,13 @@ namespace stored {
 	// Template-type-independent container for a DebugVariantTyped.
 	class DebugVariant : public DebugVariantBase {
 	public:
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		DebugVariant() {
 			new(m_buffer) DebugVariantTyped<>();
 		}
 
 		template <typename Container>
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		DebugVariant(Variant<Container> const& variant) {
 			// Check if the cast of variant() is valid.
 			static_assert(sizeof(DebugVariantTyped<Container>) == sizeof(DebugVariantTyped<>), "");
@@ -84,17 +79,16 @@ namespace stored {
 			// Check if our default copy constructor works properly.
 #if __cplusplus >= 201103L
 			static_assert(std::is_trivially_copyable<Variant<Container>>::value, "");
+			static_assert(std::is_trivially_destructible<Variant<Container>>::value, "");
 #elif defined(__GCC__)
 			static_assert(__has_trivial_copy(Variant<Container>), "");
+			static_assert(__has_trivial_destructor(Variant<Container>), "");
 #endif
 
 			new(m_buffer) DebugVariantTyped<Container>(variant);
 			// Check if the cast of variant() works properly.
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			stored_assert(static_cast<DebugVariantBase*>(reinterpret_cast<DebugVariantTyped<Container>*>(m_buffer)) == &this->variant());
-		}
-
-		~DebugVariant() override {
-			variant().~DebugVariantBase();
 		}
 
 		size_t get(void* dst, size_t len = 0) const override final {
@@ -109,10 +103,12 @@ namespace stored {
 			return variant().valid(); }
 
 		DebugVariantBase& variant() {
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return *static_cast<DebugVariantBase*>(reinterpret_cast<DebugVariantTyped<>*>(m_buffer));
 		}
 
 		DebugVariantBase const& variant() const {
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return *static_cast<DebugVariantBase const*>(reinterpret_cast<DebugVariantTyped<> const*>(m_buffer));
 		}
 
@@ -121,6 +117,9 @@ namespace stored {
 	};
 
 	class DebugStoreBase {
+	protected:
+		DebugStoreBase() {}
+
 	public:
 		virtual ~DebugStoreBase()
 #if __cplusplus >= 201103L
@@ -133,13 +132,12 @@ namespace stored {
 
 		virtual DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) = 0;
 
-		typedef void(ListCallback)(char const*, DebugVariant&);
-		virtual void list(ListCallback* f) const = 0;
-
 		typedef void(ListCallbackArg)(char const*, DebugVariant&, void*);
 		virtual void list(ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr) const = 0;
 
 #if __cplusplus >= 201103L
+		typedef void(ListCallback)(char const*, DebugVariant&);
+
 		template <typename F>
 		SFINAE_IS_FUNCTION(F, ListCallback, void)
 		list(F& f) const {
@@ -148,6 +146,16 @@ namespace stored {
 			};
 			list(static_cast<ListCallbackArg*>(cb), &f);
 		}
+#endif
+	private:
+#if __cplusplus >= 201103L
+		DebugStoreBase(DebugStoreBase const&) = delete;
+		DebugStoreBase(DebugStoreBase&&) = delete;
+		void operator=(DebugStoreBase const&) = delete;
+		void operator=(DebugStoreBase&&) = delete;
+#else
+		DebugStoreBase(DebugStoreBase const&);
+		void operator=(DebugStoreBase const&);
 #endif
 	};
 
@@ -170,24 +178,38 @@ namespace stored {
 		DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) override {
 			return store().find(name, len);
 		}
-	
-		virtual void list(DebugStoreBase::ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr) const override {
-			void* cb[] = {(void*)f, arg};
-			store().list(&listCallback, cb, prefix);
+
+	private:
+		struct ListCallbackArgs {
+			ListCallbackArg* f;
+			void* arg;
+		};
+
+		static void listCallback(void* container, char const* name, Type::type type, void* buffer, size_t len, void* arg) {
+			DebugVariant variant(Variant<typename Store::Implementation>(*(typename Store::Implementation*)container, type, buffer, len));
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+			ListCallbackArgs& args = *reinterpret_cast<ListCallbackArgs*>(arg);
+			(*args.f)(name, variant, args.arg);
 		}
 
-		virtual void list(DebugStoreBase::ListCallback* f) const override {
-			void* cb[] = {(void*)f, nullptr};
-			store().list(&listCallback, cb);
+	public:
+		virtual void list(DebugStoreBase::ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr) const override {
+			ListCallbackArgs args = {f, arg};
+			store().list(&listCallback, &args, prefix);
 		}
 
 		typename Store::Implementation& store() const { return m_store.implementation(); }
 
 	private:
-		static void listCallback(void* container, char const* name, Type::type type, void* buffer, size_t len, void* cb) {
-			DebugVariant variant(Variant<typename Store::Implementation>(*(typename Store::Implementation*)container, type, buffer, len));
-			(*(ListCallbackArg*)((void**)cb)[0])(name, variant, ((void**)cb)[1]);
-		}
+#if __cplusplus >= 201103L
+		DebugStore(DebugStore const&) = delete;
+		DebugStore(DebugStore&&) = delete;
+		void operator=(DebugStore const&) = delete;
+		void operator=(DebugStore&&) = delete;
+#else
+		DebugStore(DebugStore const&);
+		void operator=(DebugStore const&);
+#endif
 
 	private:
 		Store& m_store;
@@ -202,7 +224,13 @@ namespace stored {
 			}
 		};
 
-		typedef std::map<char const*, DebugStoreBase*, StorePrefixComparator> StoreMap;
+		typedef std::map<char const*,
+#if __cplusplus >= 201103L
+			std::unique_ptr<DebugStoreBase>
+#else
+			DebugStoreBase*
+#endif
+			, StorePrefixComparator> StoreMap;
 
 		Debugger();
 		virtual ~Debugger();
@@ -218,15 +246,16 @@ namespace stored {
 		DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) const;
 
 		typedef DebugStoreBase::ListCallbackArg ListCallbackArg;
+		void list(ListCallbackArg* f, void* arg = nullptr) const;
+
+#if __cplusplus >= 201103L
 		typedef DebugStoreBase::ListCallback ListCallback;
 
-		void list(ListCallbackArg* f, void* arg = nullptr) const;
-		void list(ListCallback* f) const;
-#if __cplusplus >= 201103L
 		template <typename F>
 		void list(F& f) const {
 			auto cb = [](char const* name, DebugVariant& variant, void* arg) {
-				(*(F*)arg)(name, variant);
+				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+				(*reinterpret_cast<F*>(arg))(name, variant);
 			};
 			list((ListCallbackArg*)cb, &f);
 		}
@@ -272,8 +301,19 @@ namespace stored {
 			buf = (B*)data;
 		}
 		void encodeHex(Type::type type, void*& data, size_t& len, bool shortest = true);
-		bool decodeHex(Type::type type, void*& data, size_t& len);
+		bool decodeHex(Type::type type, void const*& data, size_t& len);
 		ScratchPad& spm();
+
+	private:
+#if __cplusplus >= 201103L
+		Debugger(Debugger const&) = delete;
+		Debugger(Debugger&&) = delete;
+		void operator=(Debugger const&) = delete;
+		void operator=(Debugger&&) = delete;
+#else
+		Debugger(Debugger const&);
+		void operator=(Debugger const&);
+#endif
 
 	private:
 		StoreMap m_map;

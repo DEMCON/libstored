@@ -43,9 +43,14 @@ endif()
 if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
     find_program(CLANG_TIDY_EXE NAMES "clang-tidy" DOC "Path to clang-tidy executable")
     if(CLANG_TIDY_EXE)
-        set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}"
-            "-checks=cppcoreguidelines-*,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-pro-type-union-access,-cppcoreguidelines-pro-bounds-pointer-arithmetic"
-            "-header-filter=libstored/.*.h")
+        string(CONCAT CLANG_TIDY_CHECKS "-checks="
+            "cppcoreguidelines-*,"
+            "-cppcoreguidelines-pro-bounds-array-to-pointer-decay,"
+            "-cppcoreguidelines-pro-type-union-access,"
+            "-cppcoreguidelines-pro-bounds-pointer-arithmetic"
+        )
+        set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
+            "-header-filter=.*libstored.*")
     endif()
 
     if(CLANG_TIDY_EXE)

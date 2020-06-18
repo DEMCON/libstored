@@ -71,6 +71,7 @@ namespace stored {
 				return implementation().{{o.cname}}(set, buffer, len);
 {%     else %}
 				stored_assert(len == sizeof({{o|ctype}}));
+				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 				implementation().__{{o.cname}}(set, *reinterpret_cast<{{o|ctype}}*>(buffer));
 				return sizeof({{o|ctype}});
 {%     endif %}
@@ -154,10 +155,12 @@ namespace stored {
 		 * \brief Calls a callback for every object in the #longDirectory().
 		 */
 		template <typename F>
-		void list(F f) { stored::list(&implementation(), buffer(), longDirectory(), f); }
-
-		template <typename F>
 		void list(F f, void* arg, char const* prefix = nullptr) { stored::list(&implementation(), buffer(), longDirectory(), f, arg, prefix); }
+
+#if __cplusplus >= 201103L
+		template <typename F>
+		void list(F& f) { stored::list<Implementation,F>(&implementation(), buffer(), longDirectory(), f); }
+#endif
 	};
 	
 	class {{store.name}} : public {{store.name}}Base<{{store.name}}> {
