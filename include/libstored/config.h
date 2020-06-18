@@ -4,8 +4,8 @@
 #include <libstored/macros.h>
 
 #ifdef __cplusplus
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 namespace stored {
 	struct DefaultConfig {

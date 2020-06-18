@@ -66,13 +66,14 @@ namespace stored {
 				down()->encode(buffer, len, last);
 		}
 
-	private:
 #if __cplusplus >= 201103L
+	public:
 		ProtocolLayer(ProtocolLayer const&) = delete;
 		ProtocolLayer(ProtocolLayer&&) = delete;
 		void operator=(ProtocolLayer const&) = delete;
 		void operator=(ProtocolLayer&&) = delete;
 #else
+	private:
 		ProtocolLayer(ProtocolLayer const&);
 		void operator=(ProtocolLayer const&);
 #endif
@@ -105,13 +106,14 @@ namespace stored {
 
 		void writeToFd(int fd, void const* buffer, size_t len);
 
-	private:
 #if __cplusplus >= 201103L
+	public:
 		TerminalLayer(TerminalLayer const&) = delete;
 		TerminalLayer(TerminalLayer&&) = delete;
 		void operator=(TerminalLayer const&) = delete;
 		void operator=(TerminalLayer&&) = delete;
 #else
+	private:
 		TerminalLayer(TerminalLayer const&);
 		void operator=(TerminalLayer const&);
 #endif

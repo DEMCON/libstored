@@ -5,15 +5,15 @@
 template <typename T>
 static T decodeInt(uint8_t const*& p) {
 	T v = 0;
-	while(*p & 0x80) {
-		v = (v | (T)(*p & 0x7f)) << 7;
+	while(*p & 0x80u) {
+		v = (v | (T)(*p & 0x7fu)) << 7u;
 		p++;
 	}
 	return v | (T)*p++;
 }
 
 static void skipOffset(uint8_t const*& p) {
-	while(*p++ & 0x80);
+	while(*p++ & 0x80u);
 }
 
 namespace stored {
@@ -30,9 +30,9 @@ notfound:
 		if(*p == 0) {
 			// end
 			goto notfound;
-		} else if(*p >= 0x80) {
+		} else if(*p >= 0x80u) {
 			// var
-			Type::type type = (Type::type)(*p++ ^ 0x80);
+			Type::type type = (Type::type)(*p++ ^ 0x80u);
 			size_t len = !Type::isFixed(type) ? decodeInt<size_t>(p) : Type::size(type);
 			size_t offset = decodeInt<size_t>(p);
 			if(Type::isFunction(type))
@@ -98,7 +98,7 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
 			break;
 		} else if(*p >= 0x80) {
 			// var
-			Type::type type = (Type::type)(*p++ ^ 0x80);
+			Type::type type = (Type::type)(*p++ ^ 0x80u);
 			size_t len = !Type::isFixed(type) ? decodeInt<size_t>(p) : Type::size(type);
 			size_t offset = decodeInt<size_t>(p);
 			char* b = Type::isFunction(type) ? nullptr : static_cast<char*>(buffer);

@@ -21,39 +21,39 @@ namespace stored {
 
 	struct Type {
 		enum type {
-			MaskSize = 0x07,
-			MaskFlags = 0x78,
-			FlagSigned = 0x08,
-			FlagInt = 0x10,
-			FlagFixed = 0x20,
-			FlagFunction = 0x40,
+			MaskSize = 0x07u,
+			MaskFlags = 0x78u,
+			FlagSigned = 0x08u,
+			FlagInt = 0x10u,
+			FlagFixed = 0x20u,
+			FlagFunction = 0x40u,
 
 			// int
-			Int8 = FlagFixed | FlagInt | FlagSigned | 0,
-			Uint8 = FlagFixed | FlagInt | 0,
-			Int16 = FlagFixed | FlagInt | FlagSigned | 1,
-			Uint16 = FlagFixed | FlagInt | 1,
-			Int32 = FlagFixed | FlagInt | FlagSigned | 3,
-			Uint32 = FlagFixed | FlagInt | 3,
-			Int64 = FlagFixed | FlagInt | FlagSigned | 7,
-			Uint64 = FlagFixed | FlagInt | 7,
+			Int8 = FlagFixed | FlagInt | FlagSigned | 0u,
+			Uint8 = FlagFixed | FlagInt | 0u,
+			Int16 = FlagFixed | FlagInt | FlagSigned | 1u,
+			Uint16 = FlagFixed | FlagInt | 1u,
+			Int32 = FlagFixed | FlagInt | FlagSigned | 3u,
+			Uint32 = FlagFixed | FlagInt | 3u,
+			Int64 = FlagFixed | FlagInt | FlagSigned | 7u,
+			Uint64 = FlagFixed | FlagInt | 7u,
 			Int = FlagFixed | FlagInt | (sizeof(int) - 1),
 			Uint = FlagFixed | (sizeof(int) - 1),
 
 			// things with fixed length
-			Float = FlagFixed | FlagSigned | 3,
-			Double = FlagFixed | FlagSigned | 7,
-			Bool = FlagFixed | 0,
-			Pointer32 = FlagFixed | 3,
-			Pointer64 = FlagFixed | 7,
+			Float = FlagFixed | FlagSigned | 3u,
+			Double = FlagFixed | FlagSigned | 7u,
+			Bool = FlagFixed | 0u,
+			Pointer32 = FlagFixed | 3u,
+			Pointer64 = FlagFixed | 7u,
 			Pointer = sizeof(void*) <= 4 ? Pointer32 : Pointer64,
 
 			// (special) things with undefined length
-			Void = 0,
-			Blob = 1,
-			String = 2,
+			Void = 0u,
+			Blob = 1u,
+			String = 2u,
 
-			Invalid = 0xff,
+			Invalid = 0xffu,
 		};
 
 		static bool isFunction(type t) { return t & FlagFunction; }
@@ -112,8 +112,8 @@ namespace stored {
 		}
 
 #if __cplusplus >= 201103L
-		Variable(Variable&& v) { (*this) = std::move(v); }
-		Variable& operator=(Variable&& v) { this->operator=((Variable const&)v); }
+		Variable(Variable&& v) noexcept { (*this) = std::move(v); }
+		Variable& operator=(Variable&& v) noexcept { this->operator=((Variable const&)v); }
 		~Variable() = default;
 #else
 		~Variable() {}
@@ -128,7 +128,7 @@ namespace stored {
 		template <typename U>
 		U as() const { return saturated_cast<U>(get()); }
 
-		operator type const&() const { return get(); }
+		explicit operator type const&() const { return get(); }
 
 		void set(type v) {
 			stored_assert(valid());
@@ -169,8 +169,8 @@ namespace stored {
 		}
 
 #if __cplusplus >= 201103L
-		Variable(Variable&& v) { (*this) = std::move(v); }
-		Variable& operator=(Variable&& v) { this->operator=((Variable const&)v); return *this; }
+		Variable(Variable&& v) noexcept { (*this) = std::move(v); }
+		Variable& operator=(Variable&& v) noexcept { this->operator=((Variable const&)v); return *this; }
 		~Variable() = default;
 #else
 		~Variable() {}
@@ -286,7 +286,7 @@ namespace stored {
 
 		template <typename T>
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		Variant(Variable<T,Container> const& v)
+		explicit Variant(Variable<T,Container> const& v)
 			: m_container(v.valid() ? &v.container() : nullptr)
 			, m_buffer(v.valid() ? &v.get() : nullptr)
 			, m_len(v.size())
@@ -295,7 +295,7 @@ namespace stored {
 		
 		template <typename T>
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		Variant(Function<T,Container> const& f)
+		explicit Variant(Function<T,Container> const& f)
 			: m_container(f.valid() ? &f.container() : nullptr)
 			, m_f(f.valid() ? f.id() : 0)
 			, m_type(f.type())
@@ -417,7 +417,7 @@ namespace stored {
 		bool valid() const { return type() != Type::Invalid; }
 		bool isFunction() const { stored_assert(valid()); return Type::isFunction(type()); }
 		bool isVariable() const { stored_assert(valid()); return !isFunction(); }
-		void* container() const { stored_assert(false); return nullptr; }
+		void* container() const;
 
 	private:
 		// Make this class the same size as a non-void container.

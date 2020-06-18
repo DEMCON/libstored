@@ -19,8 +19,12 @@ TerminalLayer::TerminalLayer(int nonDebugDecodeFd, int encodeFd, ProtocolLayer* 
 	, m_encodeState()
 {}
 
-TerminalLayer::~TerminalLayer() {
-}
+TerminalLayer::~TerminalLayer()
+#if __cplusplus < 201103L
+{}
+#else
+	= default;
+#endif
 
 void TerminalLayer::decode(void* buffer, size_t len) {
 	size_t nonDebugOffset = m_decodeState < StateDebug ? 0 : len;

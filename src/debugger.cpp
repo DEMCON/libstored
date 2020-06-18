@@ -11,7 +11,7 @@ static void cleanup(T* t) {
 
 #if __cplusplus >= 201103L
 template <typename T>
-static void cleanup(std::unique_ptr<T>&) {
+static void cleanup(std::unique_ptr<T>& UNUSED_PAR(t)) {
 }
 #endif
 
@@ -33,12 +33,15 @@ Debugger::Debugger()
 {
 }
 
-Debugger::~Debugger() {
+Debugger::~Debugger()
 #if __cplusplus < 201103L
+{
 	for(StoreMap::iterator it = m_map.begin(); it != m_map.end(); ++it)
 		cleanup(it->second);
-#endif
 }
+#else
+	= default;
+#endif
 
 static bool checkPrefix(char const* name, char const* prefix, size_t len) {
 	stored_assert(name && prefix);
@@ -94,11 +97,8 @@ void Debugger::map(DebugStoreBase* store, char const* name) {
 	if(!name && store)
 		name = store->name();
 
-	if(!name || name[0] != '/' || !store) {
-		// This is probably not what you meant...
-		stored_assert(false);
+	if(!name || name[0] != '/' || !store)
 		return;
-	}
 
 	StoreMap::iterator it = m_map.find(name);
 
@@ -375,15 +375,15 @@ class FrameMerger : public ProtocolLayer {
 public:
 	typedef ProtocolLayer base;
 
-	FrameMerger(ProtocolLayer& down)
+	explicit FrameMerger(ProtocolLayer& down)
 		: base(nullptr, &down)
 	{}
 
-	void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) override final {
+	void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
 		base::encode(buffer, len, false);
 	}
 
-	void encode(void* buffer, size_t len, bool UNUSED_PAR(last) = true) override final {
+	void encode(void* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
 		base::encode(buffer, len, false);
 	}
 };
@@ -455,10 +455,10 @@ void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortes
 		// big endian
 		for(size_t i = 0; i < len; i++, src++) {
 #ifdef STORED_LITTLE_ENDIAN
-			hex[(len - i) * 2 - 2] = encodeNibble((uint8_t)(*src >> 4));
+			hex[(len - i) * 2 - 2] = encodeNibble((uint8_t)(*src >> 4u));
 			hex[(len - i) * 2 - 1] = encodeNibble(*src);
 #else
-			hex[i * 2] = encodeNibble(*src >> 4);
+			hex[i * 2] = encodeNibble(*src >> 4u);
 			hex[i * 2 + 1] = encodeNibble(*src);
 #endif
 		}
@@ -471,7 +471,7 @@ void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortes
 		// just a byte sequence in hex
 		for(size_t i = 0; i < len; i++, src++) {
 			hex[i * 2] = encodeNibble(*src);
-			hex[i * 2 + 1] = encodeNibble((uint8_t)(*src >> 4));
+			hex[i * 2 + 1] = encodeNibble((uint8_t)(*src >> 4u));
 		}
 
 		len *= 2;
@@ -513,8 +513,8 @@ bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len) {
 
 		for(size_t i = 0; i < len; i++) {
 			uint8_t b = decodeNibble(src[len - i - 1], ok);
-			if(i & 1)
-				b = (uint8_t)(b << 4);
+			if(i & 1u)
+				b = (uint8_t)(b << 4u);
 
 #ifdef STORED_LITTLE_ENDIAN
 			bin[i / 2] |= b;
@@ -523,7 +523,7 @@ bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len) {
 #endif
 		}
 	} else {
-		if(len & 1)
+		if(len & 1u)
 			// Bytes must come in pair of nibbles.
 			return false;
 
@@ -531,10 +531,9 @@ bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len) {
 		bin = spm().alloc<uint8_t>(binlen);
 
 		for(size_t i = 0; i + 1 < len; i += 2) {
-			bin[i] =
-				(uint8_t)(
-				(decodeNibble(src[i], ok) << 4) |
-				 decodeNibble(src[i + 1], ok));
+			bin[i] = (uint8_t)(
+				(uint8_t)(decodeNibble(src[i], ok) << 4u) |
+				decodeNibble(src[i + 1], ok));
 		}
 	}
 

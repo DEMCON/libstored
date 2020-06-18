@@ -32,7 +32,7 @@ namespace stored {
 	template <typename Container = void>
 	class DebugVariantTyped : public DebugVariantBase {
 	public:
-		DebugVariantTyped(Variant<Container> const& variant)
+		explicit DebugVariantTyped(Variant<Container> const& variant)
 			: m_variant(variant)
 		{
 #if __cplusplus >= 201103L
@@ -42,17 +42,22 @@ namespace stored {
 #endif
 		}
 
-		DebugVariantTyped() {}
+		DebugVariantTyped()
+#if __cplusplus >= 201103L
+			 = default;
+#else
+			{}
+#endif
 
-		size_t get(void* dst, size_t len = 0) const override final {
+		size_t get(void* dst, size_t len = 0) const final {
 			return variant().get(dst, len); }
-		size_t set(void const* src, size_t len = 0) override final {
+		size_t set(void const* src, size_t len = 0) final {
 			return variant().set(src, len); }
-		Type::type type() const override final {
+		Type::type type() const final {
 			return variant().type(); }
-		size_t size() const override final {
+		size_t size() const final {
 			return variant().size(); }
-		bool valid() const override final {
+		bool valid() const final {
 			return variant().valid(); }
 
 		Variant<Container> const& variant() const { return m_variant; }
@@ -72,7 +77,7 @@ namespace stored {
 
 		template <typename Container>
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		DebugVariant(Variant<Container> const& variant) {
+		explicit DebugVariant(Variant<Container> const& variant) {
 			// Check if the cast of variant() is valid.
 			static_assert(sizeof(DebugVariantTyped<Container>) == sizeof(DebugVariantTyped<>), "");
 
@@ -91,15 +96,15 @@ namespace stored {
 			stored_assert(static_cast<DebugVariantBase*>(reinterpret_cast<DebugVariantTyped<Container>*>(m_buffer)) == &this->variant());
 		}
 
-		size_t get(void* dst, size_t len = 0) const override final {
+		size_t get(void* dst, size_t len = 0) const final {
 			return variant().get(dst, len); }
-		size_t set(void const* src, size_t len = 0) override final {
+		size_t set(void const* src, size_t len = 0) final {
 			return variant().set(src, len); }
-		Type::type type() const override final {
+		Type::type type() const final {
 			return variant().type(); }
-		size_t size() const override final {
+		size_t size() const final {
 			return variant().size(); }
-		bool valid() const override final {
+		bool valid() const final {
 			return variant().valid(); }
 
 		DebugVariantBase& variant() {
@@ -118,7 +123,12 @@ namespace stored {
 
 	class DebugStoreBase {
 	protected:
-		DebugStoreBase() {}
+		DebugStoreBase()
+#if __cplusplus >= 201103L
+			=  default;
+#else
+			{}
+#endif
 
 	public:
 		virtual ~DebugStoreBase()
@@ -147,13 +157,15 @@ namespace stored {
 			list(static_cast<ListCallbackArg*>(cb), &f);
 		}
 #endif
-	private:
+
 #if __cplusplus >= 201103L
+	public:
 		DebugStoreBase(DebugStoreBase const&) = delete;
 		DebugStoreBase(DebugStoreBase&&) = delete;
 		void operator=(DebugStoreBase const&) = delete;
 		void operator=(DebugStoreBase&&) = delete;
 #else
+	private:
 		DebugStoreBase(DebugStoreBase const&);
 		void operator=(DebugStoreBase const&);
 #endif
@@ -162,7 +174,7 @@ namespace stored {
 	template <typename Store>
 	class DebugStore : public DebugStoreBase {
 	public:
-		DebugStore(Store& store)
+		explicit DebugStore(Store& store)
 			: m_store(store)
 		{}
 
@@ -176,7 +188,7 @@ namespace stored {
 		char const* name() const override { return store().name(); }
 
 		DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) override {
-			return store().find(name, len);
+			return DebugVariant(store().find(name, len));
 		}
 
 	private:
@@ -200,13 +212,14 @@ namespace stored {
 
 		typename Store::Implementation& store() const { return m_store.implementation(); }
 
-	private:
 #if __cplusplus >= 201103L
+	public:
 		DebugStore(DebugStore const&) = delete;
 		DebugStore(DebugStore&&) = delete;
 		void operator=(DebugStore const&) = delete;
 		void operator=(DebugStore&&) = delete;
 #else
+	private:
 		DebugStore(DebugStore const&);
 		void operator=(DebugStore const&);
 #endif
@@ -233,7 +246,7 @@ namespace stored {
 			, StorePrefixComparator> StoreMap;
 
 		Debugger();
-		virtual ~Debugger();
+		virtual ~Debugger() override;
 
 		template <typename Store>
 		void map(Store& store, char const* name = nullptr) {
@@ -304,13 +317,14 @@ namespace stored {
 		bool decodeHex(Type::type type, void const*& data, size_t& len);
 		ScratchPad& spm();
 
-	private:
 #if __cplusplus >= 201103L
+	public:
 		Debugger(Debugger const&) = delete;
 		Debugger(Debugger&&) = delete;
 		void operator=(Debugger const&) = delete;
 		void operator=(Debugger&&) = delete;
 #else
+	private:
 		Debugger(Debugger const&);
 		void operator=(Debugger const&);
 #endif

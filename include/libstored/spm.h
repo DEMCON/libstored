@@ -17,7 +17,7 @@ namespace stored {
 
 	class ScratchPad {
 	public:
-		ScratchPad(size_t reserve = 0)
+		explicit ScratchPad(size_t reserve = 0)
 			: m_buffer()
 			, m_size()
 			, m_capacity()
@@ -50,7 +50,7 @@ namespace stored {
 			m_total = 0;
 
 #ifdef STORED_HAVE_VALGRIND
-			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,hicpp-no-assembler)
 			VALGRIND_MAKE_MEM_NOACCESS(&m_buffer[m_size], m_capacity - m_size);
 #endif
 		}
@@ -72,8 +72,8 @@ namespace stored {
 			void reset() { m_spm = nullptr; }
 
 #if __cplusplus >= 201103L
-			Snapshot(Snapshot&& s) : m_spm(s.m_spm), m_buffer(s.m_buffer) { s.reset(); }
-			Snapshot& operator=(Snapshot&& s) {
+			Snapshot(Snapshot&& s) noexcept : m_spm(s.m_spm), m_buffer(s.m_buffer) { s.reset(); }
+			Snapshot& operator=(Snapshot&& s) noexcept {
 				reset();
 				m_spm = s.m_spm;
 				m_buffer = s.m_buffer;
@@ -87,8 +87,10 @@ namespace stored {
 			void reset() const { m_spm = nullptr; }
 
 #if __cplusplus >= 201103L
+		public:
 			Snapshot& operator=(Snapshot const& s) = delete;
 #else
+		private:
 			Snapshot& operator=(Snapshot const& s);
 #endif
 
@@ -111,7 +113,7 @@ private:
 			{
 				m_size = (size_t)(static_cast<char*>(snapshot) - static_cast<char*>(m_buffer));
 #ifdef STORED_HAVE_VALGRIND
-				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,hicpp-no-assembler)
 				VALGRIND_MAKE_MEM_NOACCESS(&m_buffer[m_size], m_capacity - m_size);
 #endif
 			}
@@ -146,7 +148,7 @@ public:
 			m_capacity = new_cap;
 
 #ifdef STORED_HAVE_VALGRIND
-			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,hicpp-no-assembler)
 			VALGRIND_MAKE_MEM_NOACCESS(m_buffer, m_capacity);
 #endif
 		}
@@ -183,20 +185,21 @@ public:
 			m_total += size;
 
 #ifdef STORED_HAVE_VALGRIND
-			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,hicpp-no-assembler)
 			VALGRIND_MAKE_MEM_UNDEFINED(p, size);
 #endif
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return reinterpret_cast<T*>(p);
 		}
 
-	private:
 #if __cplusplus >= 201103L
+	public:
 		ScratchPad(ScratchPad const&) = delete;
 		ScratchPad(ScratchPad&&) = delete;
 		void operator=(ScratchPad const&) = delete;
 		void operator=(ScratchPad&&) = delete;
 #else
+	private:
 		ScratchPad(ScratchPad const&);
 		void operator=(ScratchPad const&);
 #endif

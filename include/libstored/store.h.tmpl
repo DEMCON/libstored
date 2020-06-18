@@ -140,8 +140,8 @@ namespace stored {
 
 	public:
 		// Directory parsers.
-		uint8_t const* shortDirectory() const { return m_data.shortDirectory(); }
-		uint8_t const* longDirectory() const { return m_data.longDirectory(); }
+		uint8_t const* shortDirectory() const { return {{store.name}}Data::shortDirectory(); }
+		uint8_t const* longDirectory() const { return {{store.name}}Data::longDirectory(); }
 
 		/*!
 		 * \brief Finds an object with the given name.

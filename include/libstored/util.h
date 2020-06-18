@@ -33,7 +33,7 @@
 
 #ifdef __cplusplus
 #include <cassert>
-#include <math.h>
+#include <cmath>
 #include <limits>
 #include <list>
 #include <cstring>
