@@ -88,24 +88,28 @@ namespace stored {
 	protected:
 		// Function callback resolver.
 
-		size_t callback(bool UNUSED_PAR(set), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len), unsigned int f) {
+		size_t callback(bool UNUSED_PAR(set), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len), unsigned int UNUSED_PAR(f)) {
+{% if store.objects|hasfunction %}
 			switch(f) {
-{% for o in store.objects %}
-{%   if o is function %}
+{%   for o in store.objects %}
+{%     if o is function %}
 			case {{o.f}}: // {{o}}
-{%     if o is blob %}
+{%       if o is blob %}
 				return implementation().{{o.cname}}(set, buffer, len);
-{%     else %}
+{%       else %}
 				stored_assert(len == sizeof({{o|ctype}}));
 				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 				implementation().__{{o.cname}}(set, *reinterpret_cast<{{o|ctype}}*>(buffer));
 				return sizeof({{o|ctype}});
+{%       endif %}
 {%     endif %}
-{%   endif %}
-{% endfor %}
+{%   endfor %}
 			default:
 				return 0;
 			}
+{% else %}
+			return 0;
+{% endif %}
 		}
 
 		// Default function callback. Override in subclass.

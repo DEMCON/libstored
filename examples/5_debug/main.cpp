@@ -3,6 +3,10 @@
 #include "ExampleDebugSomeStore.h"
 #include "ExampleDebugAnotherStore.h"
 
+#ifdef STORED_COMPILER_MSVC
+#  define strdup(s) _strdup(s)
+#endif
+
 class PrintfPhysical : public stored::ProtocolLayer {
 public:
 	typedef stored::ProtocolLayer base;

@@ -300,6 +300,9 @@ class Buffer(object):
             v.offset = self.size
             self.size += size
 
+        if self.size == 0:
+            self.size = 1
+
 class Store(object):
     def __init__(self, objects):
         self.objects = objects

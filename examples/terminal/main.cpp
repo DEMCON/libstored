@@ -2,7 +2,16 @@
 
 #include <stored>
 
-#include <unistd.h>
+#ifdef STORED_COMPILER_MSVC
+#  include <io.h>
+#  define read(fd, buffer, len) _read(fd, buffer, (unsigned int)(len))
+#  define STDERR_FILENO		_fileno(stderr)
+#  define STDOUT_FILENO		_fileno(stdout)
+#  define STDIN_FILENO		_fileno(stdin)
+#else
+#  include <unistd.h>
+#endif
+
 #include <stdio.h>
 
 // The default implementation emits the response to stdout, with APC / ST

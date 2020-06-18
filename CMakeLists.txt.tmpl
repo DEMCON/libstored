@@ -33,7 +33,11 @@ else()
 	target_compile_definitions({{libprefix}}libstored PUBLIC -DNDEBUG)
 endif()
 
-target_compile_options({{libprefix}}libstored PRIVATE -Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion -ffunction-sections -fdata-sections)
+if(MSVC)
+	target_compile_options({{libprefix}}libstored PRIVATE /Wall /WX)
+else()
+	target_compile_options({{libprefix}}libstored PRIVATE -Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion -ffunction-sections -fdata-sections)
+endif()
 
 CHECK_INCLUDE_FILE_CXX("valgrind/memcheck.h" STORED_HAVE_VALGRIND)
 if(STORED_HAVE_VALGRIND)

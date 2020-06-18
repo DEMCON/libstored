@@ -51,12 +51,12 @@ notfound:
 		} else if(*p >= 0x80u) {
 			// var
 			Type::type type = (Type::type)(*p++ ^ 0x80u);
-			size_t len = !Type::isFixed(type) ? decodeInt<size_t>(p) : Type::size(type);
+			size_t datalen = !Type::isFixed(type) ? decodeInt<size_t>(p) : Type::size(type);
 			size_t offset = decodeInt<size_t>(p);
 			if(Type::isFunction(type))
 				return Variant<>(type, (unsigned int)offset);
 			else
-				return Variant<>(type, static_cast<char*>(buffer) + offset, len);
+				return Variant<>(type, static_cast<char*>(buffer) + offset, datalen);
 		} else if(!*name || len == 0) {
 			goto notfound;
 		} else if(*p <= 0x1f) {

@@ -42,6 +42,12 @@ def is_variable(o):
 def is_function(o):
     return isinstance(o, types.Function)
 
+def has_function(os):
+    for o in os:
+        if is_function(o):
+            return True
+    return False
+
 def is_blob(o):
     return o.isBlob()
 
@@ -161,6 +167,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.filters['cname'] = types.cname
     jenv.filters['carray'] = carray
     jenv.filters['len'] = len
+    jenv.filters['hasfunction' ] = has_function
     jenv.tests['variable'] = is_variable
     jenv.tests['function'] = is_function
     jenv.tests['blob'] = is_blob

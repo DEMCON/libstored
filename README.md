@@ -22,8 +22,8 @@ get/set methods. However, the store has a few interesting properties:
 - There are sufficient hooks by the store to implement an application-specific
   synchronization method, other than the Embedded Debugger.
 - All code is normal C++, there are no platform-dependent constructs used.
-  Therefore, all platforms are (soon) supported (Windows/Linux/Mac/bare
-  metal/x86/ARM/gcc/clang).
+  Therefore, all platforms are supported (Windows/Linux/Mac/bare
+  metal/x86/ARM/gcc/clang/MSVC).
 
 Have a look in the `examples` directory for further in-depth reading.
 

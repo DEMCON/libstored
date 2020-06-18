@@ -2,6 +2,10 @@
 
 #include <ctime>
 
+#ifdef STORED_COMPILER_MSVC
+#  pragma warning(disable: 4996)
+#endif
+
 // Create a subclass of stored::ExampleFunctionBase to define the side effects of the functions.
 class MyExample : public stored::ExampleFunctionBase<MyExample> {
 public:

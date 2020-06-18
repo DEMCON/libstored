@@ -18,7 +18,15 @@
 
 #include <libstored/protocol.h>
 
-#include <unistd.h>
+#ifdef STORED_COMPILER_MSVC
+#  include <io.h>
+#else
+#  include <unistd.h>
+#endif
+
+#if defined(STORED_OS_WINDOWS)
+#  define write(fd, buffer, count) _write(fd, buffer, (unsigned int)(count))
+#endif
 
 namespace stored {
 
@@ -98,11 +106,7 @@ void TerminalLayer::writeToFd(int fd, void const* buffer, size_t len) {
 
 	ssize_t res = 0;
 	for(size_t i = 0; res >= 0 && i < len; i += (size_t)res)
-		res = write(fd, static_cast<char const*>(buffer) + i,
-#ifdef STORED_OS_WINDOWS
-				(unsigned int)
-#endif
-				(len - i));
+		res = write(fd, static_cast<char const*>(buffer) + i, (len - i));
 }
 
 void TerminalLayer::encode(void* buffer, size_t len, bool last) {

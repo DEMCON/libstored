@@ -85,7 +85,7 @@ namespace stored {
 		static bool isFixed(type t) { return t & FlagFixed; }
 		static bool isInt(type t) { return isFixed(t) && (t & FlagInt); }
 		static bool isSpecial(type t) { return (t & MaskFlags) == 0; }
-		static size_t size(type t) { return !isFixed(t) ? 0 : (t & MaskSize) + 1; }
+		static size_t size(type t) { return !isFixed(t) ? 0u : (size_t)(t & MaskSize) + 1u; }
 	};
 
 	/*!
