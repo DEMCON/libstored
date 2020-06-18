@@ -39,7 +39,8 @@ Then run `scripts/build` to build the project. This does effectively:
 
 By default, all examples are built.  For example, notice that sources are
 generated under `examples/1_hello`, while the example itself is built in the
-`build` directory.
+`build` directory. The documentation can be viewed at
+`doxygen/html/index.html`.
 
 ## Syntax example
 

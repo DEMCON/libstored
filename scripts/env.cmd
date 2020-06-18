@@ -29,7 +29,7 @@ where /q make > NUL 2> NUL
 if errorlevel 1 goto need_bootstrap
 echo Found make
 
-where /q python3 > NUL 2> NUL
+where /q python > NUL 2> NUL
 if errorlevel 1 goto need_bootstrap
 echo Found python
 

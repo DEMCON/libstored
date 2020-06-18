@@ -129,6 +129,9 @@ typedef SSIZE_T ssize_t;
 #  undef STORED_HAVE_VALGRIND
 #endif
 
+#if defined(NDEBUG) && defined(STORED_HAVE_VALGRIND) && !defined(NVALGRIND)
+#  define NVALGRIND
+#endif
 
 
 //////////////////////////////////////////////////
