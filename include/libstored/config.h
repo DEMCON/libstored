@@ -24,7 +24,15 @@
 #include <cstddef>
 #include <cstdint>
 
+/*!
+ * \defgroup libstored_config config
+ * \ingroup libstored
+ */
+
 namespace stored {
+	/*!
+	 * \ingroup libstored_config
+	 */
 	struct DefaultConfig {
 		static bool const Debug = 
 #ifndef NDEBUG

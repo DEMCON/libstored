@@ -1,4 +1,4 @@
-#include "Terminal.h"
+#include "ExampleTerminal.h"
 
 #include <stored>
 
@@ -55,7 +55,7 @@ protected:
 };
 
 int main() {
-	stored::Terminal store;
+	stored::ExampleTerminal store;
 
 	stored::Debugger debugger;
 	debugger.map(store);

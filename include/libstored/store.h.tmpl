@@ -32,6 +32,10 @@ vim:filetype=cpp
 
 namespace stored {
 
+	/*!
+	 * \brief Data storage of {{store.name}}Base.
+	 * \ingroup libstored_stores
+	 */
 	struct {{store.name}}Data {
 		{{store.name}}Data();
 
@@ -43,6 +47,10 @@ namespace stored {
 		static uint8_t const* longDirectory();
 	} __attribute__((aligned(sizeof(double))));
 
+	/*!
+	 * \brief Base class with default interface of all {{store.name}} implementations.
+	 * \ingroup libstored_stores
+	 */
 	template <typename Implementation_>
 	class {{store.name}}Base {
 	public:
@@ -181,6 +189,10 @@ namespace stored {
 #endif
 	};
 	
+	/*!
+	 * \brief Default {{store.name}}Base implementation.
+	 * \ingroup libstored_stores
+	 */
 	class {{store.name}} : public {{store.name}}Base<{{store.name}}> {
 	};
 

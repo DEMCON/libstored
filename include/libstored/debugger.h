@@ -18,6 +18,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/*!
+ * \defgroup libstored_debugger debugger
+ * \ingroup libstored
+ */
+
 #ifdef __cplusplus
 
 #include <libstored/macros.h>
@@ -85,6 +90,9 @@ namespace stored {
 	};
 
 	// Template-type-independent container for a DebugVariantTyped.
+	/*!
+	 * \ingroup libstored_debugger
+	 */
 	class DebugVariant : public DebugVariantBase {
 	public:
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
@@ -188,6 +196,9 @@ namespace stored {
 #endif
 	};
 
+	/*!
+	 * \ingroup libstored_debugger
+	 */
 	template <typename Store>
 	class DebugStore : public DebugStoreBase {
 	public:
@@ -245,6 +256,9 @@ namespace stored {
 		Store& m_store;
 	};
 
+	/*!
+	 * \ingroup libstored_debugger
+	 */
 	class Debugger : public ProtocolLayer {
 	public:
 		struct StorePrefixComparator {

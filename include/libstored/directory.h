@@ -71,6 +71,8 @@
  *
  * skip ::= [1..0x1f]
  * \endcode
+ *
+ * \ingroup libstored
  */
 
 #ifdef __cplusplus

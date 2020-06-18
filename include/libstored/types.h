@@ -18,6 +18,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/*!
+ * \defgroup libstored_types types
+ * \ingroup libstored
+ */
+
 #ifdef __cplusplus
 
 #include <libstored/macros.h>
@@ -36,6 +41,9 @@
 
 namespace stored {
 
+	/*!
+	 * \ingroup libstored_types
+	 */
 	struct Type {
 		enum type {
 			MaskSize = 0x07u,
@@ -80,6 +88,9 @@ namespace stored {
 		static size_t size(type t) { return !isFixed(t) ? 0 : (t & MaskSize) + 1; }
 	};
 
+	/*!
+	 * \private
+	 */
 	namespace impl {
 		template <bool signd, size_t size> struct toIntType { static stored::Type::type const type = Type::Void; };
 		template <> struct toIntType<true,1> { static stored::Type::type const type = Type::Int8; };
@@ -92,6 +103,10 @@ namespace stored {
 		template <> struct toIntType<false,8> { static stored::Type::type const type = Type::Uint64; };
 	}
 
+	/*!
+	 * \addtogroup libstored_types
+	 * @{
+	 */
 	template <typename T> struct toType { static Type::type const type = Type::Blob; };
 	template <> struct toType<void> { static Type::type const type = Type::Void; };
 	template <> struct toType<bool> { static Type::type const type = Type::Bool; };
@@ -110,7 +125,13 @@ namespace stored {
 	template <> struct toType<double> { static Type::type const type = Type::Double; };
 	template <> struct toType<char*> { static Type::type const type = Type::String; };
 	template <typename T> struct toType<T*> { static Type::type const type = Type::Pointer; };
+	/*!
+	 * }@
+	 */
 
+	/*!
+	 * \ingroup libstored_types
+	 */
 	template <typename T, typename Container, bool Hooks = Config::EnableHooks>
 	class Variable {
 	public:
@@ -167,6 +188,9 @@ namespace stored {
 		type* m_buffer;
 	};
 
+	/*!
+	 * \ingroup libstored_types
+	 */
 	template <typename T, typename Container>
 	class Variable<T,Container,true> : public Variable<T,Container,false> {
 	public:
@@ -217,6 +241,9 @@ namespace stored {
 		Container* m_container;
 	};
 
+	/*!
+	 * \ingroup libstored_types
+	 */
 	template <typename T, typename Container>
 	class Function {
 	public:
@@ -274,6 +301,9 @@ namespace stored {
 		unsigned int m_f;
 	};
 
+	/*!
+	 * \ingroup libstored_types
+	 */
 	template <typename Container = void>
 	class Variant {
 	public:
@@ -391,6 +421,9 @@ namespace stored {
 		uint8_t m_type;
 	};
 	
+	/*!
+	 * \ingroup libstored_types
+	 */
 	template <>
 	class Variant<void> {
 	public:

@@ -32,6 +32,9 @@
 
 namespace stored {
 
+	/*!
+	 * \ingroup libstored_util
+	 */
 	class ScratchPad {
 	public:
 		explicit ScratchPad(size_t reserve = 0)

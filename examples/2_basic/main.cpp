@@ -1,8 +1,8 @@
-#include "Example.h"
+#include "ExampleBasic.h"
 
 int main()
 {
-    stored::Example e;
+    stored::ExampleBasic e;
 
 	// Initialized value.
 	printf("test42=%" PRId8 "\n", e.test42().get());

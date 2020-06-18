@@ -1,12 +1,12 @@
 // Include the generated model, based on Hello.st.
-#include "Hello.h"
+#include "ExampleHello.h"
 
 #include <cstdio>
 
 int main()
 {
     // Construct the store.
-    stored::Hello h;
+    stored::ExampleHello h;
 
     // Print defaults.
     printf("hello=%" PRIi32 " world=%g\n", h.hello().get(), h.world().get());

@@ -1,12 +1,25 @@
+/*
+ * Copy this file to your project, and make sure the include path is such that
+ * your file is found before the default supplied one.
+ */
+
 #ifndef __LIBSTORED_CONFIG_H
 #  error Do not include this file directly, include <stored> instead.
 #endif
 
+#ifndef STORED_CONFIG_H
+#define STORED_CONFIG_H
+
 #ifdef __cplusplus
 namespace stored {
+	/*!
+	 * \ingroup libstored_config
+	 */
 	struct Config : public DefaultConfig {
 		// Override defaults from DefaultConfig here for your local setup.
 		//static bool const HookSetOnChangeOnly = true;
 	};
 } // namespace
 #endif // __cplusplus
+#endif // STORED_CONFIG_H
+

@@ -1,7 +1,7 @@
-#include "Example.h"
+#include "ExampleScope.h"
 
 int main() {
-	stored::Example e;
+	stored::ExampleScope e;
 
 	// Notice how the scope separator gets replaced by two underscores.
 	printf("/scope/an int by API: %" PRId8 "\n", e.scope__an_int().get());

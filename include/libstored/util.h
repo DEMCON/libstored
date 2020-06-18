@@ -18,6 +18,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/*!
+ * \defgroup libstored_util util
+ * \ingroup libstored
+ */
+
 #include <libstored/macros.h>
 
 /*!
@@ -25,6 +30,7 @@
  * \brief Marks the given expression to likely be evaluated to true.
  * \details This may help compiler optimization.
  * \returns the evaluated \c expr
+ * \ingroup libstored_util
  */
 #ifndef likely
 #  ifdef __GNUC__
@@ -39,6 +45,7 @@
  * \brief Marks the given expression to likely be evaluated to true.
  * \details This may help compiler optimization.
  * \returns the evaluated \c expr
+ * \ingroup libstored_util
  */
 #ifndef unlikely
 #  ifdef __GNUC__
@@ -76,12 +83,18 @@
 
 namespace stored {
 
+	/*!
+	 * \ingroup libstored_util
+	 */
 #ifdef STORED_HAVE_ZTH
 #  define stored_assert(expr)	do { if(::stored::Config::EnableAssert) zth_assert(expr); } while(false)
 #else
 #  define stored_assert(expr)	do { if(::stored::Config::EnableAssert) assert(expr); } while(false)
 #endif
 
+	/*!
+	 * \private
+	 */
 	namespace impl {
 		template <typename T> struct signedness_helper { typedef T signed_type; typedef T unsigned_type; };
 		template <> struct signedness_helper<short> { typedef short signed_type; typedef unsigned short unsigned_type; };
@@ -138,6 +151,9 @@ namespace stored {
 
 } // namespace
 
+/*!
+ * \ingroup libstored_util
+ */
 template <typename R, typename T>
 __attribute__((pure)) R saturated_cast(T value) { return stored::impl::saturated_cast_helper<R>::cast(value); }
 

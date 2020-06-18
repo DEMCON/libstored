@@ -15,6 +15,22 @@ if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
       cmake ..")
 endif()
 
+find_package(Doxygen)
+option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
+
+if(LIBSTORED_DOCUMENTATION)
+	if(NOT DOXYGEN_FOUND)
+		message(FATAL_ERROR "Doxygen is needed to build the documentation.")
+	endif()
+
+	add_custom_target(
+		doc ALL
+		COMMAND doxygen
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		COMMENT "Generating API documentation with Doxygen (see doxygen/html/index.html)"
+	)
+endif()
+
 if(WIN32)
 	set(PYTHON_EXECUTABLE "python" CACHE STRING "Path to the python executable" FORCE)
 else()
@@ -57,6 +73,10 @@ function(libstored_generate target) # add all other models as varargs
 			target_link_options(${target} PUBLIC -Wl,--gc-sections)
 		endif()
     endif()
+
+    if(LIBSTORED_DOCUMENTATION)
+        add_dependencies(doc ${target}-libstored-generate)
+    endif()
 endfunction()
 
 option(LIBSTORED_EXAMPLES "Build examples" ON)
@@ -64,18 +84,3 @@ if(LIBSTORED_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
-find_package(Doxygen)
-option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
-
-if(LIBSTORED_DOCUMENTATION)
-	if(NOT DOXYGEN_FOUND)
-		message(FATAL_ERROR "Doxygen is needed to build the documentation.")
-	endif()
-
-	add_custom_target(
-		doc ALL
-		COMMAND doxygen
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		COMMENT "Generating API documentation with Doxygen (see doxygen/html/index.html)"
-	)
-endif()

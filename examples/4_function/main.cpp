@@ -1,17 +1,17 @@
-#include "Example.h"
+#include "ExampleFunction.h"
 
 #include <ctime>
 
-// Create a subclass of stored::ExampleBase to define the side effects of the functions.
-class MyExample : public stored::ExampleBase<MyExample> {
+// Create a subclass of stored::ExampleFunctionBase to define the side effects of the functions.
+class MyExample : public stored::ExampleFunctionBase<MyExample> {
 public:
-	typedef stored::ExampleBase<MyExample> base;
-	friend class stored::ExampleBase<MyExample>;
+	typedef stored::ExampleFunctionBase<MyExample> base;
+	friend class stored::ExampleFunctionBase<MyExample>;
 
 protected:
 	// Override the default functions from base. Even though they are not
 	// virtual, these are called as expected.  To do this, you had to specify
-	// the class as the template parameter of ExampleBase :)
+	// the class as the template parameter of ExampleFunctionBase :)
 
 	// The function gets the parameter set, which indicates if the value is
 	// written (true) or should be returned (false).

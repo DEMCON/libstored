@@ -18,6 +18,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/*!
+ * \defgroup libstored_protocol protocol
+ * \ingroup libstored
+ */
+
 #ifdef __cplusplus
 
 #include <libstored/macros.h>
@@ -27,6 +32,9 @@
 
 namespace stored {
 
+	/*!
+	 * \ingroup libstored_protocol
+	 */
 	class ProtocolLayer {
 	public:
 		explicit ProtocolLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
@@ -100,6 +108,9 @@ namespace stored {
 		ProtocolLayer* m_down;
 	};
 
+	/*!
+	 * \ingroup libstored_protocol
+	 */
 	class TerminalLayer : public ProtocolLayer {
 	public:
 		typedef ProtocolLayer base;
