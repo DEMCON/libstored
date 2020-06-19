@@ -36,6 +36,7 @@ namespace stored {
 	 * \ingroup libstored_util
 	 */
 	class ScratchPad {
+		CLASS_NOCOPY(ScratchPad)
 	public:
 		explicit ScratchPad(size_t reserve = 0)
 			: m_buffer()
@@ -211,18 +212,6 @@ public:
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return reinterpret_cast<T*>(p);
 		}
-
-#if __cplusplus >= 201103L
-	public:
-		ScratchPad(ScratchPad const&) = delete;
-		ScratchPad(ScratchPad&&) = delete;
-		void operator=(ScratchPad const&) = delete;
-		void operator=(ScratchPad&&) = delete;
-#else
-	private:
-		ScratchPad(ScratchPad const&);
-		void operator=(ScratchPad const&);
-#endif
 
 	private:
 		char* m_buffer;

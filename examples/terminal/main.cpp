@@ -69,8 +69,11 @@ int main() {
 	stored::Debugger debugger;
 	debugger.map(store);
 
+	stored::AsciiEscapeLayer escape;
+	escape.wrap(debugger);
+
 	CaseInverter phy;
-	phy.wrap(debugger);
+	phy.wrap(escape);
 
 	printf("Terminal with out-of-band debug messages test\n\n");
 	printf("To inject a command, enter `ESC %c <your command> ESC %c`.\n",

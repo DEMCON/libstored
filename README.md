@@ -68,6 +68,8 @@ Requests always start with a ASCII characters are command.
 Every request gets a response. Either with actual data, or with ack `!` or nack `?`.
 Requests are processed in order.
 
+This is the OSI application layer of the protocol stack.
+
 ### Capabilities
 
 Request: `?`
@@ -217,7 +219,9 @@ Response: `?` | `!`
 
 ### Streams
 
-Read all available data from a stream.
+Read all available data from a stream. Streams are application-defined
+sequences of bytes, like stdout and stderr. They may contain binary data.
+There are an arbitrary number of streams, with an arbitrary single-char name.
 
 To list all streams with data:
 
@@ -247,32 +251,46 @@ The number of streams and the maximum buffer size of a stream may be limited.
 
 ### Application layer
 
-See above:
+See above. See stored::Debugger.
 
-	request: <cmd>[<args...>]
-	response: <response>|!|?[<error>]
+### Presentation layer
 
-### Presentation layer:
-For UART: In case of binary data, escape all bytes < 0x20 as follows: the
-sequence DEL (0x7f) removes the 3 MSb of the successive byte. For example, the
-sequence `DEL ;` (0x7f 0x3b) decodes as ESC (0x1b).
+For terminal or UART: In case of binary data, escape all bytes < 0x20 as
+follows: the sequence `DEL` (0x7f) removes the 3 MSb of the successive byte.
+For example, the sequence `DEL ;` (0x7f 0x3b) decodes as `ESC` (0x1b).
+See stored::AsciiEscapeLayer.
+
+For CAN/ZeroMQ: nothing required.
 
 ### Session layer:
-(no session support, only one-to-one link)
+
+For terminal/UART/CAN: no session support, there is only one (implicit) session.
+
+For ZeroMQ: use REQ/REP sockets, where the application-layer request and
+response are exactly one ZeroMQ message. All layers below are managed by ZeroMQ.
 
 ### Transport layer
-In case of lossless channels (UART/TCP), nothing to add.
-In lossly channels, a CRC may be appended, and message id/retransmit.
+
+For terminal or UART: out-of-band message are captured using `ESC _` (APC) and
+`ESC \` (ST).  A message consists of the bytes in between these sequences.
+
+In case of lossly channels (UART/CAN), CRC, message sequence number, and
+retransmits should be implemented.  This depends on the specific transport
+hardware and embedded device.
 
 ### Network layer
-In multi-core systems, a src/dst header may be appended.
+
+For terminal/UART/ZeroMQ, nothing has to be done.
+
+For CAN: packet fragmentation/reassembling/routing is done here.
 
 ### Datalink layer
-In case of lossless UART: out-of-band message are captured using `ESC _` (APC) and `ESC \` (ST).
-A message consists of the bytes in between these sequences.
+
+Depends on the device.
 
 ### Physical layer
-(not specified, depends on device)
+
+Depends on the device.
 
 
 ## License

@@ -80,6 +80,29 @@
 #  define static_assert(expr, msg)	do { typedef __attribute__((unused)) int static_assert_[(expr) ? 1 : -1]; } while(0)
 #endif
 
+#ifndef CLASS_NOCOPY
+#  if __cplusplus >= 201103L
+#    define CLASS_NOCOPY(Class) \
+	public: \
+		Class(Class const&) = delete; \
+		Class(Class&&) = delete; /* NOLINT(misc-macro-parentheses) */ \
+		void operator=(Class const&) = delete; \
+		void operator=(Class&&) = delete; /* NOLINT(misc-macro-parentheses) */
+#  else
+#    define CLASS_NOCOPY(Class) \
+	private: \
+		Class(Class const&); \
+		void operator=(Class const&);
+#  endif
+#endif
+
+#ifndef is_default
+#  if __cplusplus >= 201103L
+#    define is_default = default;
+#  else
+#    define is_default {}
+#  endif
+#endif
 
 namespace stored {
 

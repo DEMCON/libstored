@@ -30,12 +30,74 @@
 
 namespace stored {
 
+
+
+//////////////////////////////
+// ProtocolLayer
+//
+
 ProtocolLayer::~ProtocolLayer() {
 	if(up() && up()->down() == this)
 		up()->setDown(down());
 	if(down() && down()->up() == this)
 		down()->setUp(up());
 }
+
+
+
+
+//////////////////////////////
+// AsciiEscapeLayer
+//
+
+AsciiEscapeLayer::AsciiEscapeLayer(ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+{}
+
+template <typename void_type, typename char_type>
+static void AsciiEscapeLayer_encode(AsciiEscapeLayer& that, void_type* buffer, size_t len, bool last) {
+	char_type* p = static_cast<char_type*>(buffer);
+	char_type* chunk = p;
+	for(size_t i = 0; i < len; i++) {
+		if(unlikely(!(p[i] & (uint8_t)~(uint8_t)AsciiEscapeLayer::EscMask))) {
+			switch(p[i]) {
+			case '\t':
+			case '\n':
+			case '\r':
+				// Don't escape.
+				continue;
+
+			default:
+				// This is a to-be-escaped byte.
+				if(chunk < p + i)
+					that.AsciiEscapeLayer::base::encode(chunk, (size_t)(p + i - chunk), false);
+
+				char_type esc[2] = { AsciiEscapeLayer::Esc, (char_type)(p[i] | 0x40u) };
+				that.AsciiEscapeLayer::base::encode(esc, sizeof(esc), last && i + 1 == len);
+				chunk = p + i + 1;
+			}
+		}
+	}
+
+	if(likely(chunk < p + len))
+		that.AsciiEscapeLayer::base::encode(chunk, (size_t)(p + len - chunk), last);
+}
+
+void AsciiEscapeLayer::encode(void* buffer, size_t len, bool last) {
+	AsciiEscapeLayer_encode<void,uint8_t>(*this, buffer, len, last);
+}
+
+void AsciiEscapeLayer::encode(void const* buffer, size_t len, bool last) {
+	AsciiEscapeLayer_encode<void const,uint8_t const>(*this, buffer, len, last);
+}
+
+
+
+
+
+//////////////////////////////
+// TerminalLayer
+//
 
 TerminalLayer::TerminalLayer(int nonDebugDecodeFd, int encodeFd, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
@@ -45,12 +107,7 @@ TerminalLayer::TerminalLayer(int nonDebugDecodeFd, int encodeFd, ProtocolLayer* 
 	, m_encodeState()
 {}
 
-TerminalLayer::~TerminalLayer()
-#if __cplusplus < 201103L
-{}
-#else
-	= default;
-#endif
+TerminalLayer::~TerminalLayer() is_default;
 
 void TerminalLayer::decode(void* buffer, size_t len) {
 	size_t nonDebugOffset = m_decodeState < StateDebug ? 0 : len;

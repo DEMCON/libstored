@@ -36,6 +36,7 @@ namespace stored {
 	 * \ingroup libstored_protocol
 	 */
 	class ProtocolLayer {
+		CLASS_NOCOPY(ProtocolLayer)
 	public:
 		explicit ProtocolLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
 			: m_up(up), m_down(down)
@@ -91,18 +92,6 @@ namespace stored {
 				down()->encode(buffer, len, last);
 		}
 
-#if __cplusplus >= 201103L
-	public:
-		ProtocolLayer(ProtocolLayer const&) = delete;
-		ProtocolLayer(ProtocolLayer&&) = delete;
-		void operator=(ProtocolLayer const&) = delete;
-		void operator=(ProtocolLayer&&) = delete;
-#else
-	private:
-		ProtocolLayer(ProtocolLayer const&);
-		void operator=(ProtocolLayer const&);
-#endif
-
 	private:
 		ProtocolLayer* m_up;
 		ProtocolLayer* m_down;
@@ -111,7 +100,29 @@ namespace stored {
 	/*!
 	 * \ingroup libstored_protocol
 	 */
+	class AsciiEscapeLayer : public ProtocolLayer {
+		CLASS_NOCOPY(AsciiEscapeLayer)
+	public:
+		typedef ProtocolLayer base;
+
+		static char const Esc      = '\x7f'; // DEL
+		static char const EscMask  = '\x1f'; // data bits of the next char
+
+		explicit AsciiEscapeLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~AsciiEscapeLayer() override is_default;
+
+		// There is no use case in which binary data is to be decoded, so escapes are never used.
+//		virtual void decode(void* buffer, size_t len) override;
+
+		virtual void encode(void* buffer, size_t len, bool last = true) override;
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+	};
+
+	/*!
+	 * \ingroup libstored_protocol
+	 */
 	class TerminalLayer : public ProtocolLayer {
+		CLASS_NOCOPY(TerminalLayer)
 	public:
 		typedef ProtocolLayer base;
 
@@ -133,18 +144,6 @@ namespace stored {
 		void encodeEnd();
 
 		void writeToFd(int fd, void const* buffer, size_t len);
-
-#if __cplusplus >= 201103L
-	public:
-		TerminalLayer(TerminalLayer const&) = delete;
-		TerminalLayer(TerminalLayer&&) = delete;
-		void operator=(TerminalLayer const&) = delete;
-		void operator=(TerminalLayer&&) = delete;
-#else
-	private:
-		TerminalLayer(TerminalLayer const&);
-		void operator=(TerminalLayer const&);
-#endif
 
 	private:
 		int m_nonDebugDecodeFd;

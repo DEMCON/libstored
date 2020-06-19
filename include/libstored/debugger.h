@@ -64,12 +64,7 @@ namespace stored {
 #endif
 		}
 
-		DebugVariantTyped()
-#if __cplusplus >= 201103L
-			 = default;
-#else
-			{}
-#endif
+		DebugVariantTyped() is_default;
 
 		size_t get(void* dst, size_t len = 0) const final {
 			return variant().get(dst, len); }
@@ -147,6 +142,7 @@ namespace stored {
 	};
 
 	class DebugStoreBase {
+		CLASS_NOCOPY(DebugStoreBase)
 	protected:
 		DebugStoreBase()
 #if __cplusplus >= 201103L
@@ -156,12 +152,7 @@ namespace stored {
 #endif
 
 	public:
-		virtual ~DebugStoreBase()
-#if __cplusplus >= 201103L
-			= default;
-#else
-			{}
-#endif
+		virtual ~DebugStoreBase() is_default;
 
 		virtual char const* name() const = 0;
 
@@ -182,18 +173,6 @@ namespace stored {
 			list(static_cast<ListCallbackArg*>(cb), &f);
 		}
 #endif
-
-#if __cplusplus >= 201103L
-	public:
-		DebugStoreBase(DebugStoreBase const&) = delete;
-		DebugStoreBase(DebugStoreBase&&) = delete;
-		void operator=(DebugStoreBase const&) = delete;
-		void operator=(DebugStoreBase&&) = delete;
-#else
-	private:
-		DebugStoreBase(DebugStoreBase const&);
-		void operator=(DebugStoreBase const&);
-#endif
 	};
 
 	/*!
@@ -201,17 +180,13 @@ namespace stored {
 	 */
 	template <typename Store>
 	class DebugStore : public DebugStoreBase {
+		CLASS_NOCOPY(DebugStore)
 	public:
 		explicit DebugStore(Store& store)
 			: m_store(store)
 		{}
 
-		virtual ~DebugStore() override 
-#if __cplusplus >= 201103L
-			= default;
-#else
-			{}
-#endif
+		virtual ~DebugStore() override is_default;
 		
 		char const* name() const override { return store().name(); }
 
@@ -240,18 +215,6 @@ namespace stored {
 
 		typename Store::Implementation& store() const { return m_store.implementation(); }
 
-#if __cplusplus >= 201103L
-	public:
-		DebugStore(DebugStore const&) = delete;
-		DebugStore(DebugStore&&) = delete;
-		void operator=(DebugStore const&) = delete;
-		void operator=(DebugStore&&) = delete;
-#else
-	private:
-		DebugStore(DebugStore const&);
-		void operator=(DebugStore const&);
-#endif
-
 	private:
 		Store& m_store;
 	};
@@ -260,6 +223,7 @@ namespace stored {
 	 * \ingroup libstored_debugger
 	 */
 	class Debugger : public ProtocolLayer {
+		CLASS_NOCOPY(Debugger)
 	public:
 		explicit Debugger(char const* identification = nullptr);
 		virtual ~Debugger() override;
@@ -396,23 +360,6 @@ namespace stored {
 
 		typedef std::map<char, std::string> StreamMap;
 		StreamMap m_streams;
-
-
-
-
-		////////////////////////////
-		// Misc
-#if __cplusplus >= 201103L
-	public:
-		Debugger(Debugger const&) = delete;
-		Debugger(Debugger&&) = delete;
-		void operator=(Debugger const&) = delete;
-		void operator=(Debugger&&) = delete;
-#else
-	private:
-		Debugger(Debugger const&);
-		void operator=(Debugger const&);
-#endif
 	};
 
 } // namespace
