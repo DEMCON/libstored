@@ -170,11 +170,11 @@ Response: `!` | `?`
 
 Returns a fixed string that identifies the application.
 
-Request: 'i'
+Request: `i`
 
 	i
 
-Response: '?' | \<UTF-8 encoded application name\>
+Response: `?` | \<UTF-8 encoded application name\>
 
 	libstored
 
@@ -182,11 +182,11 @@ Response: '?' | \<UTF-8 encoded application name\>
 
 Returns a list of versions.
 
-Request: 'v'
+Request: `v`
 
 	v
 
-Response: '?' | \<protocol version\> ( ' ' \<application-specific version\> ) *
+Response: `?` | \<protocol version\> ( ` ` \<application-specific version\> ) *
 
 	2 r243+trunk beta
 
@@ -195,11 +195,11 @@ Response: '?' | \<protocol version\> ( ' ' \<application-specific version\> ) *
 Read a memory via a pointer instead of the store.  Returns the number of
 requested bytes. If no length is specified, a word is returned.
 
-Request: 'R' \<pointer in hex\> ( ' ' \<length\> ) ?
+Request: `R` \<pointer in hex\> ( ` ` \<length\> ) ?
 
 	R1ffefff7cc 4
 
-Response: '?' | \<bytes in hex\>
+Response: `?` | \<bytes in hex\>
 
 	efbe0000
 
@@ -207,11 +207,11 @@ Response: '?' | \<bytes in hex\>
 
 Write a memory via a pointer instead of the store.
 
-Request: 'W' \<pointer in hex\> ' ' \<bytes in hex\>
+Request: `W` \<pointer in hex\> ` ` \<bytes in hex\>
 
 	W1ffefff7cc 0123
 
-Response: '?' | '!'
+Response: `?` | `!`
 
 	!
 
@@ -228,7 +228,7 @@ See above:
 ### Presentation layer:
 For UART: In case of binary data, escape all bytes < 0x20 as follows: the
 sequence DEL (0x7f) removes the 3 MSb of the successive byte. For example, the
-sequence 'DEL ;' (0x7f 0x3b) decodes as ESC (0x1b).
+sequence `DEL ;` (0x7f 0x3b) decodes as ESC (0x1b).
 
 ### Session layer:
 (no session support, only one-to-one link)
