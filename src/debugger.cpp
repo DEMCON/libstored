@@ -46,8 +46,10 @@ struct ListCmdCallbackArg {
 	}
 };
 
-Debugger::Debugger()
-	: m_macroSize()
+Debugger::Debugger(char const* identification)
+	: m_identification(identification)
+	, m_versions()
+	, m_macroSize()
 {
 }
 
@@ -172,7 +174,8 @@ void Debugger::list(ListCallbackArg* f, void* arg) const {
 }
 
 void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
-	list = spm().alloc<char>(8 + reserve);
+	size_t const maxlen = 16;
+	list = spm().alloc<char>(maxlen + reserve);
 	len = 0;
 
 	list[len++] = CmdCapabilities;
@@ -188,8 +191,38 @@ void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
 		list[len++] = CmdAlias;
 	if(Config::DebuggerMacro > 0)
 		list[len++] = CmdMacro;
+	if(Config::DebuggerIdentification > 0)
+		list[len++] = CmdIdentification;
+	if(Config::DebuggerVersion > 0)
+		list[len++] = CmdVersion;
 
+	stored_assert(len < maxlen);
 	list[len] = 0;
+}
+
+char const* Debugger::identification() {
+	return m_identification;
+}
+
+void Debugger::setIdentification(char const* identification) {
+	m_identification = identification;
+}
+
+bool Debugger::version(ProtocolLayer& response) {
+	char* buffer;
+	size_t len = encodeHex(Config::DebuggerVersion, buffer);
+	response.encode(buffer, len, false);
+
+	if(m_versions && *m_versions) {
+		response.encode(" ", 1, false);
+		response.encode(m_versions, strlen(m_versions), false);
+	}
+
+	return true;
+}
+
+void Debugger::setVersions(char const* versions) {
+	m_versions = versions;
 }
 
 void Debugger::decode(void* buffer, size_t len) {
@@ -367,6 +400,148 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		m_macroSize += len;
 		break;
 	}
+	case CmdIdentification: {
+		// Return identification string
+		// Request: 'i'
+		// Response: <UTF-8 encoded string>
+
+		if(!Config::DebuggerIdentification)
+			goto error;
+	
+		char const* id = identification();
+		if(!id || !*id)
+			// Not supported, apparently.
+			goto error;
+
+		response.encode(id, strlen(id), true);
+		return;
+	}
+	case CmdVersion: {
+		// Return version(s)
+		// Request: 'v'
+		// Response: <debugger version> ( ' ' <application-defined version> ) *
+
+		if(!Config::DebuggerVersion)
+			goto error;
+	
+		if(!version(response))
+			// No version output.
+			goto error;
+
+		response.encode();
+		return;
+	}
+	case CmdReadMem: {
+		// Read memory directly.
+		// Request: 'R' <ASCII-hex address> ( ' ' <length> ) ?
+		// Response: '?' | <ASCII-hex bytes>
+
+		if(!Config::DebuggerReadMem)
+			goto error;
+	
+		if(len < 2)
+			goto error;
+
+		char const* addrhex = ++p;
+
+		// Find end of address
+		size_t bufferlen = 1;
+		p++;
+		len -= 2;
+		for(; len > 0 && *p != ' '; bufferlen++, p++, len--);
+
+		void const* buffer = addrhex;
+		if(!decodeHex(Type::Pointer, buffer, bufferlen))
+			goto error;
+		
+		stored_assert(bufferlen == sizeof(void*));
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+		char* addr = *reinterpret_cast<char* const*>(buffer);
+		size_t datalen = sizeof(void*);
+
+		if(len > 1) {
+			buffer = p + 1;
+			bufferlen = len - 1;
+			if(!decodeHex(Type::Uint, buffer, bufferlen))
+				goto error;
+
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+			datalen = (size_t)*reinterpret_cast<unsigned int const*>(buffer);
+		}
+
+		if(datalen == 0)
+			goto error;
+
+		// Go read the memory in chunks
+		while(datalen > 0) {
+			ScratchPad::Snapshot snapshot = spm().snapshot();
+
+			size_t chunk = std::min<size_t>(64u, datalen);
+			void* r = addr;
+			size_t rlen = chunk;
+			encodeHex(Type::Blob, r, rlen);
+			response.encode(r, rlen, false);
+			addr += chunk;
+			datalen -= chunk;
+		}
+
+		response.encode();
+		return;
+	}
+	case CmdWriteMem: {
+		// Write memory directly.
+		// Request: 'W' <ASCII-hex address> ' ' <ASCII-hex bytes>
+		// Response: '!' | '?'
+		//
+		if(!Config::DebuggerWriteMem)
+			goto error;
+	
+		if(len < 2)
+			goto error;
+	
+		char const* addrhex = ++p;
+
+		// Find length of address
+		size_t bufferlen = 1;
+		p++;
+		len -= 2;
+		for(; len > 0 && *p != ' '; bufferlen++, p++, len--);
+
+		void const* buffer = addrhex;
+		if(!decodeHex(Type::Pointer, buffer, bufferlen))
+			goto error;
+		
+		stored_assert(bufferlen == sizeof(void*));
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+		char* addr = *reinterpret_cast<char* const*>(buffer);
+
+		// p should point to the ' ' before the data
+		if(len < 3) // ' ' and two hex chars of the first byte
+			goto error;
+
+		len--;
+		p++;
+
+		if(len & 1u)
+			// Odd number of nibbles.
+			goto error;
+
+		// Process data in chunks.
+		while(len > 0) {
+			ScratchPad::Snapshot snapshot = spm().snapshot();
+
+			size_t chunk = std::min<size_t>(64u, len);
+			void const* w = p;
+			size_t wlen = chunk;
+			if(!decodeHex(Type::Blob, w, wlen))
+				goto error;
+			memcpy(addr, w, wlen);
+			addr += chunk;
+			p += chunk;
+			len -= chunk;
+		}
+		break;
+	}
 	default:
 		// Unknown command.
 
@@ -488,8 +663,8 @@ void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortes
 	} else {
 		// just a byte sequence in hex
 		for(size_t i = 0; i < len; i++, src++) {
-			hex[i * 2] = encodeNibble(*src);
-			hex[i * 2 + 1] = encodeNibble((uint8_t)(*src >> 4u));
+			hex[i * 2] = encodeNibble((uint8_t)(*src >> 4u));
+			hex[i * 2 + 1] = encodeNibble(*src);
 		}
 
 		len *= 2;
@@ -549,7 +724,7 @@ bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len) {
 		bin = spm().alloc<uint8_t>(binlen);
 
 		for(size_t i = 0; i + 1 < len; i += 2) {
-			bin[i] = (uint8_t)(
+			bin[i / 2] = (uint8_t)(
 				(uint8_t)(decodeNibble(src[i], ok) << 4u) |
 				decodeNibble(src[i + 1], ok));
 		}
@@ -575,7 +750,7 @@ void Debugger::listCmdCallback(char const* name, DebugVariant& variant, void* ar
 	size_t buflen;
 
 	// Append type.
-	a->that->encodeHex((uint8_t)variant.type(), buf, buflen, false);
+	buflen = a->that->encodeHex((uint8_t)variant.type(), buf, false);
 	(*a)(buf, buflen);
 
 	// Append length.

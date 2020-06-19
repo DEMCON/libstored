@@ -166,6 +166,56 @@ Response: `!` | `?`
 
 	!
 
+### Identification
+
+Returns a fixed string that identifies the application.
+
+Request: 'i'
+
+	i
+
+Response: '?' | \<UTF-8 encoded application name\>
+
+	libstored
+
+### Version
+
+Returns a list of versions.
+
+Request: 'v'
+
+	v
+
+Response: '?' | \<protocol version\> ( ' ' \<application-specific version\> ) *
+
+	2 r243+trunk beta
+
+### Read memory
+
+Read a memory via a pointer instead of the store.  Returns the number of
+requested bytes. If no length is specified, a word is returned.
+
+Request: 'R' \<pointer in hex\> ( ' ' \<length\> ) ?
+
+	R1ffefff7cc 4
+
+Response: '?' | \<bytes in hex\>
+
+	efbe0000
+
+### Write memory
+
+Write a memory via a pointer instead of the store.
+
+Request: 'W' \<pointer in hex\> ' ' \<bytes in hex\>
+
+	W1ffefff7cc 0123
+
+Response: '?' | '!'
+
+	!
+
+
 ## Protocol stack
 
 ### Application layer

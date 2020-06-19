@@ -276,7 +276,7 @@ namespace stored {
 #endif
 			, StorePrefixComparator> StoreMap;
 
-		Debugger();
+		explicit Debugger(char const* identification = nullptr);
 		virtual ~Debugger() override;
 
 		template <typename Store>
@@ -312,13 +312,21 @@ namespace stored {
 		static char const CmdList = 'l';
 		static char const CmdAlias = 'a';
 		static char const CmdMacro = 'm';
+		static char const CmdIdentification = 'i';
+		static char const CmdVersion = 'v';
+		static char const CmdReadMem = 'R';
+		static char const CmdWriteMem = 'W';
 		static char const Ack = '!';
 		static char const Nack = '?';
 
 	public:
 		virtual void capabilities(char*& list, size_t& len, size_t reserve = 0);
-		virtual void process(void const* frame, size_t len, ProtocolLayer& response);
+		virtual char const* identification();
+		void setIdentification(char const* identification = nullptr);
+		virtual bool version(ProtocolLayer& response);
+		void setVersions(char const* versions = nullptr);
 
+		virtual void process(void const* frame, size_t len, ProtocolLayer& response);
 		virtual void decode(void* buffer, size_t len) override;
 
 	protected:
@@ -338,11 +346,12 @@ namespace stored {
 		void map(DebugStoreBase* store, char const* name);
 
 		template <typename T, typename B>
-		void encodeHex(T value, B*& buf, size_t& len, bool shortest = true) {
+		size_t encodeHex(T value, B*& buf, bool shortest = true) {
 			void* data = (void*)&value;
-			len = sizeof(T);
+			size_t len = sizeof(T);
 			encodeHex(toType<T>::type, data, len, shortest);
 			buf = (B*)data;
+			return len;
 		}
 		void encodeHex(Type::type type, void*& data, size_t& len, bool shortest = true);
 		bool decodeHex(Type::type type, void const*& data, size_t& len);
@@ -361,6 +370,9 @@ namespace stored {
 #endif
 
 	private:
+		char const* m_identification;
+		char const* m_versions;
+
 		StoreMap m_map;
 		ScratchPad m_scratchpad;
 

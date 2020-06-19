@@ -60,7 +60,8 @@ int main() {
 	stored::ExampleDebugAnotherStore anotherStore;
 
 	// Register them to a debugger.
-	stored::Debugger debugger;
+	stored::Debugger debugger("5_debug");
+	debugger.setVersions("123");
 	debugger.map(someStore1, "/SomeStore");
 	debugger.map(someStore2, "/OtherInstanceOfSomeStore");
 	debugger.map(anotherStore); // Use default name.
@@ -94,6 +95,8 @@ int main() {
 	// Now process some Embedded Debugger messages
 	PrintfPhysical phy(debugger);
 	phy.decode("?");
+	phy.decode("i");
+	phy.decode("v");
 	phy.decode("r/ExampleDebugAnotherStore/j");
 	phy.decode("wf00f/SomeStore/i");
 	phy.decode("r/SomeStore/i");
@@ -104,6 +107,16 @@ int main() {
 	phy.decode("m* r0 e; r0 e; r/ExampleDebugAnotherStore/j");
 	phy.decode("*");
 	phy.decode("m*");
+
+	int mem = 0xbeef;
+	char buffer[32] = {};
+	snprintf(buffer, sizeof(buffer), "R%" PRIxPTR " %zu", (uintptr_t)&mem, sizeof(mem));
+	phy.decode(buffer);
+	
+	snprintf(buffer, sizeof(buffer), "W%" PRIxPTR " cafe", (uintptr_t)&mem);
+	phy.decode(buffer);
+
+	printf("mem = 0x%x\n", mem);
 
 	return 0;
 }

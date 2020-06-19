@@ -58,6 +58,10 @@ namespace stored {
 		static bool const DebuggerList = true;
 		static int const DebuggerAlias = 0x100; // Value is max number of aliases. efault is effectively no limit.
 		static int const DebuggerMacro = 0x1000; // Value is max total length of macros.
+		static bool const DebuggerIdentification = true;
+		static int const DebuggerVersion = 2;
+		static bool const DebuggerReadMem = true;
+		static bool const DebuggerWriteMem = true;
 	};
 } // namespace
 #endif // __cplusplus
