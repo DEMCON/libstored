@@ -215,6 +215,33 @@ Response: `?` | `!`
 
 	!
 
+### Streams
+
+Read all available data from a stream.
+
+To list all streams with data:
+
+Request: `s`
+
+To request all data from a stream, where the optional suffix is appended to the response:
+
+Request: `s` \<char\> \<suffix\> ?
+
+	sA/
+
+Response: `?` | \<data\> \<suffix\>
+
+	Hello World!!1/
+
+Once data has been read from the stream, it is removed. The next call will
+return new data.  If a stream was never used, `?` is returned. If it was used,
+but it is empty now, the stream char does not show up in the `s` call, but does
+respond with the suffix. If no suffix was provided, and there is no data, the
+response is empty.
+
+The number of streams and the maximum buffer size of a stream may be limited.
+
+
 
 ## Protocol stack
 

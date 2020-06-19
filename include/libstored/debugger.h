@@ -261,6 +261,13 @@ namespace stored {
 	 */
 	class Debugger : public ProtocolLayer {
 	public:
+		explicit Debugger(char const* identification = nullptr);
+		virtual ~Debugger() override;
+
+	public:
+		////////////////////////////
+		// Store mapping
+
 		struct StorePrefixComparator {
 			bool operator()(char const* lhs, char const* rhs) const {
 				stored_assert(lhs && rhs);
@@ -276,9 +283,6 @@ namespace stored {
 #endif
 			, StorePrefixComparator> StoreMap;
 
-		explicit Debugger(char const* identification = nullptr);
-		virtual ~Debugger() override;
-
 		template <typename Store>
 		void map(Store& store, char const* name = nullptr) {
 			map(new DebugStore<Store>(store), name);
@@ -286,6 +290,19 @@ namespace stored {
 
 		void unmap(char const* name);
 		StoreMap const& stores() const;
+	
+	protected:
+		void map(DebugStoreBase* store, char const* name);
+
+	private:
+		StoreMap m_map;
+
+
+
+	
+	public:
+		////////////////////////////
+		// Variable access
 
 		DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) const;
 
@@ -304,6 +321,14 @@ namespace stored {
 			list((ListCallbackArg*)cb, &f);
 		}
 #endif
+	private:
+		static void listCmdCallback(char const* name, DebugVariant& variant, void* arg);
+
+
+	
+	public:
+		////////////////////////////
+		// Protocol
 
 		static char const CmdCapabilities = '?';
 		static char const CmdRead = 'r';
@@ -316,6 +341,7 @@ namespace stored {
 		static char const CmdVersion = 'v';
 		static char const CmdReadMem = 'R';
 		static char const CmdWriteMem = 'W';
+		static char const CmdStream = 's';
 		static char const Ack = '!';
 		static char const Nack = '?';
 
@@ -326,10 +352,18 @@ namespace stored {
 		virtual bool version(ProtocolLayer& response);
 		void setVersions(char const* versions = nullptr);
 
+		size_t stream(char s, char const* data);
+		size_t stream(char s, char const* data, size_t len);
+		std::string* stream(char s);
+		std::string const* stream(char s) const;
+		char const* streams(void const*& buffer, size_t& len);
+
 		virtual void process(void const* frame, size_t len, ProtocolLayer& response);
 		virtual void decode(void* buffer, size_t len) override;
 
 	protected:
+		ScratchPad& spm();
+
 		typedef std::map<char, DebugVariant> AliasMap;
 		AliasMap& aliases();
 		AliasMap const& aliases() const;
@@ -338,12 +372,6 @@ namespace stored {
 		MacroMap& macros();
 		MacroMap const& macros() const;
 		virtual bool runMacro(char m, ProtocolLayer& response);
-
-	private:
-		static void listCmdCallback(char const* name, DebugVariant& variant, void* arg);
-
-	protected:
-		void map(DebugStoreBase* store, char const* name);
 
 		template <typename T, typename B>
 		size_t encodeHex(T value, B*& buf, bool shortest = true) {
@@ -355,8 +383,25 @@ namespace stored {
 		}
 		void encodeHex(Type::type type, void*& data, size_t& len, bool shortest = true);
 		bool decodeHex(Type::type type, void const*& data, size_t& len);
-		ScratchPad& spm();
 
+	private:
+		ScratchPad m_scratchpad;
+		char const* m_identification;
+		char const* m_versions;
+
+		AliasMap m_aliases;
+
+		MacroMap m_macros;
+		size_t m_macroSize;
+
+		typedef std::map<char, std::string> StreamMap;
+		StreamMap m_streams;
+
+
+
+
+		////////////////////////////
+		// Misc
 #if __cplusplus >= 201103L
 	public:
 		Debugger(Debugger const&) = delete;
@@ -368,18 +413,6 @@ namespace stored {
 		Debugger(Debugger const&);
 		void operator=(Debugger const&);
 #endif
-
-	private:
-		char const* m_identification;
-		char const* m_versions;
-
-		StoreMap m_map;
-		ScratchPad m_scratchpad;
-
-		AliasMap m_aliases;
-
-		MacroMap m_macros;
-		size_t m_macroSize;
 	};
 
 } // namespace

@@ -542,6 +542,44 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		}
 		break;
 	}
+	case CmdStream: {
+		// Get stream data
+		// Request: 's' ( <stream char> <suffix> ? ) ?
+		//
+		// Without stream char:
+		// Response: '?' | <stream char> +
+		//
+		// With stream char
+		// Response: <stream data> <suffix>
+
+		if(Config::DebuggerStreams < 1)
+			goto error;
+	
+		if(len == 1) {
+			void const* buffer;
+			size_t bufferlen;
+			streams(buffer, bufferlen);
+			if(bufferlen == 0)
+				goto error;
+
+			response.encode(buffer, bufferlen);
+			return;
+		}
+
+		char s = p[1];
+		char const* suffix = &p[2];
+		size_t suffixlen = len - 2;
+
+		std::string* str = stream(s);
+		if(!str)
+			goto error;
+
+		response.encode(str->data(), str->size(), false);
+		str->clear();
+
+		response.encode(suffix, suffixlen);
+		return;
+	}
 	default:
 		// Unknown command.
 
@@ -762,6 +800,55 @@ void Debugger::listCmdCallback(char const* name, DebugVariant& variant, void* ar
 
 	// End of item.
 	(*a)("\n", 1);
+}
+
+size_t Debugger::stream(char s, char const* data) {
+	return stream(s, data, strlen(data));
+}
+
+size_t Debugger::stream(char s, char const* data, size_t len) {
+	if(Config::DebuggerStreams < 1)
+		return 0;
+
+	if(s == '?')
+		// This is ambiguous in the 's' command return.
+		return 0;
+
+	std::string* str = stream(s);
+	if(!str && m_streams.size() < Config::DebuggerStreams) {
+		// Add a new stream.
+		str = &m_streams.insert(std::make_pair(s, std::string())).first->second;
+	}
+
+	len = std::min(len, Config::DebuggerStreamBuffer - str->size());
+	
+	str->append(data, len);
+
+	return len;
+}
+
+std::string const* Debugger::stream(char s) const {
+	StreamMap::const_iterator it = m_streams.find(s);
+	return it == m_streams.end() ? nullptr : &it->second;
+}
+
+std::string* Debugger::stream(char s) {
+	StreamMap::iterator it = m_streams.find(s);
+	return it == m_streams.end() ? nullptr : &it->second;
+}
+
+char const* Debugger::streams(void const*& buffer, size_t& len) {
+	size_t size = m_streams.size();
+	char* b = spm().alloc<char>(size + 1);
+
+	len = 0;
+	for(StreamMap::const_iterator it = m_streams.begin(); it != m_streams.end(); ++it)
+		if(!it->second.empty())
+			b[len++] = it->first;
+
+	b[len] = 0;
+	buffer = b;
+	return b;
 }
 
 } // namespace

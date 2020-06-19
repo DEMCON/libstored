@@ -62,6 +62,8 @@ namespace stored {
 		static int const DebuggerVersion = 2;
 		static bool const DebuggerReadMem = true;
 		static bool const DebuggerWriteMem = true;
+		static int const DebuggerStreams = 1;
+		static size_t const DebuggerStreamBuffer = 1024;
 	};
 } // namespace
 #endif // __cplusplus

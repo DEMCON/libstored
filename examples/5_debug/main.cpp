@@ -118,6 +118,16 @@ int main() {
 
 	printf("mem = 0x%x\n", mem);
 
+	phy.decode("s");
+	debugger.stream('A', "Hello");
+	phy.decode("s");
+	phy.decode("sA");
+	debugger.stream('A', "stream!!1");
+	phy.decode("sA");
+	phy.decode("s");
+	phy.decode("sA/");
+	phy.decode("sB/");
+
 	return 0;
 }
 
