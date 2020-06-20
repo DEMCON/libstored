@@ -54,6 +54,37 @@ AsciiEscapeLayer::AsciiEscapeLayer(ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 {}
 
+void AsciiEscapeLayer::decode(void* buffer, size_t len) {
+	char* p = static_cast<char*>(buffer);
+
+	// Common case: there is no escape character.
+	size_t i = 0;
+	for(; i + 1 < len; i++)
+		if(unlikely(p[i] == Esc))
+			goto first_escape;
+
+	// No escape characters.
+	base::decode(buffer, len);
+	return;
+
+first_escape:
+	// Process escape sequences in-place.
+	size_t decodeOffset = i;
+
+escape:
+	p[decodeOffset++] = (uint8_t)p[++i] & (uint8_t)EscMask;
+
+	for(; i + 1 < len; i++, decodeOffset++) {
+		if(unlikely(p[i] == Esc))
+			goto escape;
+		else
+			p[decodeOffset] = p[i];
+	}
+
+	p[decodeOffset++] = p[i];
+	base::decode(p, decodeOffset);
+}
+
 template <typename void_type, typename char_type>
 static void AsciiEscapeLayer_encode(AsciiEscapeLayer& that, void_type* buffer, size_t len, bool last) {
 	char_type* p = static_cast<char_type*>(buffer);
@@ -79,7 +110,7 @@ static void AsciiEscapeLayer_encode(AsciiEscapeLayer& that, void_type* buffer, s
 		}
 	}
 
-	if(likely(chunk < p + len))
+	if(likely(chunk < p + len) || (len == 0 && last))
 		that.AsciiEscapeLayer::base::encode(chunk, (size_t)(p + len - chunk), last);
 }
 

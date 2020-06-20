@@ -18,27 +18,27 @@
 // arround it. However, your normal terminal strips this out.  If you pipe the
 // stdout to a file, you will see these sequences.
 //
-// If you enable the following line, this example dumps the response to stderr
-// instead.
-#define TERM_NO_ESCAPE
+// If you enable the following line, this example dumps the response to stderr too.
+#define PRINT_TO_STDERR
+//#define SUPPRESS_ESCAPE
 
 class CaseInverter : public stored::TerminalLayer {
 public:
 	typedef stored::TerminalLayer base;
 	explicit CaseInverter(stored::Debugger* debugger = nullptr)
 		: base(-1,
-#ifdef TERM_NO_ESCAPE
-			-1
+#ifdef SUPPRESS_ESCAPE
+				-1
 #else
-			STDOUT_FILENO
+				STDOUT_FILENO
 #endif
-			, debugger)
+				, debugger)
 	{}
 
-	virtual ~CaseInverter() {}
+	virtual ~CaseInverter() override is_default;
 
 protected:
-	void nonDebugDecode(void* buffer, size_t len) override final {
+	void nonDebugDecode(void* buffer, size_t len) final {
 		for(char* p = (char*)buffer; len > 0; len--, p++) {
 			char c = *p;
 			if(c >= 'a' && c <= 'z')
@@ -50,13 +50,13 @@ protected:
 		}
 	}
 
-#ifdef TERM_NO_ESCAPE
-	void encode(void* buffer, size_t len, bool last) override final {
+#ifdef PRINT_TO_STDERR
+	void encode(void* buffer, size_t len, bool last) final {
 		base::encode(buffer, len, last);
-		encode((void const*)buffer, len, last);
+		writeToFd(STDERR_FILENO, buffer, len);
 	}
 
-	void encode(void const* buffer, size_t len, bool last) override final {
+	void encode(void const* buffer, size_t len, bool last) final {
 		base::encode(buffer, len, last);
 		writeToFd(STDERR_FILENO, buffer, len);
 	}

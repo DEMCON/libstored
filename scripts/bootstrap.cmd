@@ -34,10 +34,7 @@ if errorlevel 1 goto error
 choco install -y tortoisegit git cmake make python3 pip
 if errorlevel 1 goto error
 
-C:\Python38\Scripts\pip3 install textx
-if errorlevel 1 goto error
-
-C:\Python38\Scripts\pip3 install jinja2
+C:\Python38\Scripts\pip3 install textx jinja2 pyzmq
 if errorlevel 1 goto error
 
 :done

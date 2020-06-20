@@ -195,6 +195,12 @@ void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
 		list[len++] = CmdIdentification;
 	if(Config::DebuggerVersion > 0)
 		list[len++] = CmdVersion;
+	if(Config::DebuggerReadMem)
+		list[len++] = CmdReadMem;
+	if(Config::DebuggerWriteMem)
+		list[len++] = CmdWriteMem;
+	if(Config::DebuggerStreams > 0 && Config::DebuggerStreamBuffer > 0)
+		list[len++] = CmdStream;
 
 	stored_assert(len < maxlen);
 	list[len] = 0;
@@ -301,9 +307,6 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		// Response: <the data>
 
 		if(!Config::DebuggerEcho)
-			goto error;
-
-		if(len <= 1)
 			goto error;
 
 		response.encode(p + 1, len - 1, true);
@@ -792,7 +795,7 @@ void Debugger::listCmdCallback(char const* name, DebugVariant& variant, void* ar
 	(*a)(buf, buflen);
 
 	// Append length.
-	a->that->encodeHex(variant.size(), buf, buflen);
+	buflen = a->that->encodeHex(variant.size(), buf);
 	(*a)(buf, buflen);
 
 	// Append name.

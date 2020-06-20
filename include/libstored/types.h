@@ -104,8 +104,7 @@ namespace stored {
 	}
 
 	/*!
-	 * \addtogroup libstored_types
-	 * @{
+	 * \ingroup libstored_types
 	 */
 	template <typename T> struct toType { static Type::type const type = Type::Blob; };
 	template <> struct toType<void> { static Type::type const type = Type::Void; };
@@ -125,9 +124,6 @@ namespace stored {
 	template <> struct toType<double> { static Type::type const type = Type::Double; };
 	template <> struct toType<char*> { static Type::type const type = Type::String; };
 	template <typename T> struct toType<T*> { static Type::type const type = Type::Pointer; };
-	/*!
-	 * }@
-	 */
 
 	/*!
 	 * \ingroup libstored_types

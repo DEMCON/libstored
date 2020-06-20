@@ -249,6 +249,30 @@ The number of streams and the maximum buffer size of a stream may be limited.
 
 ## Protocol stack
 
+Every embedded device is different, so the required protocol layers are too.
+What is common, is the Application layer, but as the Transport and Physical
+layer are often different, the layers in between are often different too.
+To provide a common Embedded Debugger interface, the client (e.g., GUI, CLI,
+python scripts), we standardize on ZeroMQ REQ/REP over TCP.
+
+Not every device supports ZeroMQ, or even TCP. For this, several bridges are
+required. Different configurations may be possible:
+
+- In case of a Linux/Windows application: embed ZeroMQ server into the
+  application, such that the application binds to a REP socket.  A client can
+  connect to the application directly.
+- Terminal application with only stdin/stdout: use escape sequences in the
+  stdin/stdout stream. `client/stdio_wrapper.py` is provided to inject/extract
+  these messages from those streams and prove a ZeroMQ interface.
+- Application over CAN: like a `client/stdio_wrapper.py`, a CAN extractor to
+  ZeroMQ bridge is required.
+
+Then, the client can be connected to the ZeroMQ interface.
+`client/cli_client.py` is provided as a command line tool that lets you
+directly enter the protocol messages as defined above.  Test it using the
+`terminal` example, started using the `client/stdio_wrapper.py`. Then connect
+the `cli_client` to it.
+
 ### Application layer
 
 See above. See stored::Debugger.
@@ -273,6 +297,7 @@ response are exactly one ZeroMQ message. All layers below are managed by ZeroMQ.
 
 For terminal or UART: out-of-band message are captured using `ESC _` (APC) and
 `ESC \` (ST).  A message consists of the bytes in between these sequences.
+See stored::TerminalLayer.
 
 In case of lossly channels (UART/CAN), CRC, message sequence number, and
 retransmits should be implemented.  This depends on the specific transport

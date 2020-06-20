@@ -111,9 +111,7 @@ namespace stored {
 		explicit AsciiEscapeLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~AsciiEscapeLayer() override is_default;
 
-		// There is no use case in which binary data is to be decoded, so escapes are never used.
-//		virtual void decode(void* buffer, size_t len) override;
-
+		virtual void decode(void* buffer, size_t len) override;
 		virtual void encode(void* buffer, size_t len, bool last = true) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
 	};
