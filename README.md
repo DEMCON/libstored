@@ -270,6 +270,8 @@ required. Different configurations may be possible:
 Then, the client can be connected to the ZeroMQ interface. The following
 clients are provided:
 
+- `client/ed2.ZmqClient`: a python class that allows easy access to all objects
+  of the connected store. This is the basis of the clients below.
 - `client/cli_client.py`: a command line tool that lets you directly enter the
   protocol messages as defined above.
 - `client/gui_client.py`: a simple GUI that shows the list of objects and lets
