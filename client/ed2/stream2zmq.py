@@ -70,7 +70,9 @@ class Stream2Zmq(ZmqServer):
 
         for b in message:
             if b < 0x20:
-                res += bytearray([0x1b, b | 0x40])
+                res += bytearray([0x7f, b | 0x40])
+            elif b == 0x7f:
+                res += bytearray([0x7f, 0x7f])
             else:
                 res.append(b)
 
@@ -86,7 +88,10 @@ class Stream2Zmq(ZmqServer):
         esc = False
         for b in data:
             if esc:
-                res.append(b & 0x3f)
+                if b == 0x7f:
+                    res.append(0x7f)
+                else:
+                    res.append(b & 0x3f)
                 esc = False
             elif b == 0x7f:
                 esc = True

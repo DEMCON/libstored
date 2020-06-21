@@ -63,7 +63,7 @@ def csize(o):
 
 def typeflags(s, func=False):
     return {
-            'bool': 0x21,
+            'bool': 0x20,
             'int8': 0x38,
             'uint8': 0x30,
             'int16': 0x39,

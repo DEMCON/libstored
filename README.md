@@ -267,11 +267,16 @@ required. Different configurations may be possible:
 - Application over CAN: like a `client/stdio_wrapper.py`, a CAN extractor to
   ZeroMQ bridge is required.
 
-Then, the client can be connected to the ZeroMQ interface.
-`client/cli_client.py` is provided as a command line tool that lets you
-directly enter the protocol messages as defined above.  Test it using the
-`terminal` example, started using the `client/stdio_wrapper.py`. Then connect
-the `cli_client` to it.
+Then, the client can be connected to the ZeroMQ interface. The following
+clients are provided:
+
+- `client/cli_client.py`: a command line tool that lets you directly enter the
+  protocol messages as defined above.
+- `client/gui_client.py`: a simple GUI that shows the list of objects and lets
+  you manipulate the values.
+
+Test it using the `terminal` example, started using the
+`client/stdio_wrapper.py`. Then connect one of the clients above to it.
 
 ### Application layer
 
@@ -282,6 +287,7 @@ See above. See stored::Debugger.
 For terminal or UART: In case of binary data, escape all bytes < 0x20 as
 follows: the sequence `DEL` (0x7f) removes the 3 MSb of the successive byte.
 For example, the sequence `DEL ;` (0x7f 0x3b) decodes as `ESC` (0x1b).
+To encode `DEL` itself, repeat it.
 See stored::AsciiEscapeLayer.
 
 For CAN/ZeroMQ: nothing required.

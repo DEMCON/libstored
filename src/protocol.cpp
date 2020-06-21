@@ -72,7 +72,10 @@ first_escape:
 	size_t decodeOffset = i;
 
 escape:
-	p[decodeOffset] = (uint8_t)p[++i] & (uint8_t)EscMask;
+	if(p[++i] == Esc)
+		p[decodeOffset] = (uint8_t)Esc;
+	else
+		p[decodeOffset] = (uint8_t)p[i] & (uint8_t)EscMask;
 	decodeOffset++;
 	i++;
 
@@ -87,28 +90,38 @@ escape:
 	base::decode(p, decodeOffset);
 }
 
+static char needEscape(char c) {
+	if(!((uint8_t)c & (uint8_t)~(uint8_t)AsciiEscapeLayer::EscMask)) {
+		switch(c) {
+		case '\t':
+		case '\n':
+		case '\r':
+			// Don't escape.
+			return 0;
+		default:
+			return (char)((uint8_t)c | 0x40u);
+		}
+	} else if(c == AsciiEscapeLayer::Esc) {
+		return c;
+	} else {
+		return 0;
+	}
+}
+
 template <typename void_type, typename char_type>
 static void AsciiEscapeLayer_encode(AsciiEscapeLayer& that, void_type* buffer, size_t len, bool last) {
 	char_type* p = static_cast<char_type*>(buffer);
 	char_type* chunk = p;
 	for(size_t i = 0; i < len; i++) {
-		if(unlikely(!(p[i] & (uint8_t)~(uint8_t)AsciiEscapeLayer::EscMask))) {
-			switch(p[i]) {
-			case '\t':
-			case '\n':
-			case '\r':
-				// Don't escape.
-				continue;
+		char escaped = needEscape((char)p[i]);
+		if(unlikely(escaped)) {
+			// This is a to-be-escaped byte.
+			if(chunk < p + i)
+				that.AsciiEscapeLayer::base::encode(chunk, (size_t)(p + i - chunk), false);
 
-			default:
-				// This is a to-be-escaped byte.
-				if(chunk < p + i)
-					that.AsciiEscapeLayer::base::encode(chunk, (size_t)(p + i - chunk), false);
-
-				char_type esc[2] = { AsciiEscapeLayer::Esc, (char_type)(p[i] | 0x40u) };
-				that.AsciiEscapeLayer::base::encode(esc, sizeof(esc), last && i + 1 == len);
-				chunk = p + i + 1;
-			}
+			char_type esc[2] = { AsciiEscapeLayer::Esc, (char_type)escaped };
+			that.AsciiEscapeLayer::base::encode(esc, sizeof(esc), last && i + 1 == len);
+			chunk = p + i + 1;
 		}
 	}
 

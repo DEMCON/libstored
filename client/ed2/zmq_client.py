@@ -3,17 +3,26 @@
 import zmq
 import time
 
+from PySide2.QtCore import QObject, Signal, Slot, Property
 from .zmq_server import ZmqServer
 
-class Object:
+class Object(QObject):
+    valueChanged = Signal()
+    valueUpdated = Signal()
+
     def __init__(self, name, type, size, client = None):
-        self.name = name
+        super().__init__()
+        self._name = name
         self.type = type
         self.size = size
         self.client = client
         self._value = None
         self.t = None
         self._alias = None
+
+    @Property(str, constant=True)
+    def name(self):
+        return self._name
 
     @staticmethod
     def listResponseDecode(s, client):
@@ -71,6 +80,28 @@ class Object:
     def isSpecial(self):
         return self.type & 0x78 == 0
 
+    @Property(str, constant=True)
+    def typeName(self):
+        t = {
+                self.Int8: 'int8',
+                self.Uint8: 'uint8',
+                self.Int16: 'int16',
+                self.Uint16: 'uint16',
+                self.Int32: 'int32',
+                self.Uint32: 'uint32',
+                self.Int64: 'int64',
+                self.Uint64: 'uint64',
+                self.Float: 'float',
+                self.Double: 'double',
+                self.Pointer32: 'ptr32',
+                self.Pointer64: 'ptr64',
+                self.Bool: 'bool',
+                self.Blob: 'blob',
+                self.String: 'string',
+                self.Void: 'void',
+            }.get(self.type & ~self.FlagFunction, '?')
+        return f'({t})' if self.isFunction() else t
+
     @property
     def alias(self):
         return self._alias
@@ -109,6 +140,7 @@ class Object:
         return (value & (sign_bit - 1)) - (value & sign_bit)
 
     # Read value from server.
+    @Slot(result='QVariant')
     def read(self):
         value = self._read()
         self.set(value)
@@ -167,6 +199,7 @@ class Object:
             return None
 
     # Write value to server.
+    @Slot(object, result=bool)
     def write(self, value = None):
         if value != None:
             self.set(value)
@@ -185,11 +218,11 @@ class Object:
         elif dtype == self.String:
             data = value.encode()
         elif dtype == self.Pointer32:
-            data = '%x' % value
+            data = ('%x' % value).encode()
         elif dtype == self.Pointer64:
-            data = '%x' % value
+            data = ('%x' % value).encode()
         elif dtype == self.Bool:
-            data = '1' if value else '0'
+            data = b'1' if value else b'0'
         elif dtype == self.Float:
             data = struct.pack('<f', value)
         elif dtype == self.Double:
@@ -221,28 +254,52 @@ class Object:
 
         if value != self._value:
             self._value = value
-            self.valueChanged()
+            self.valueChanged.emit()
 
-    # Hook when the value has changed. Override if required.
-    def valueChanged(self):
-        pass
+        self.valueUpdated.emit()
+
+    def interpret(self, value):
+        if isinstance(value,str):
+            value = {
+                self.Int8: lambda x: int(x,0),
+                self.Uint8: lambda x: int(x,0),
+                self.Int16: lambda x: int(x,0),
+                self.Uint16: lambda x: int(x,0),
+                self.Int32: lambda x: int(x,0),
+                self.Uint32: lambda x: int(x,0),
+                self.Int64: lambda x: int(x,0),
+                self.Uint64: lambda x: int(x,0),
+                self.Float: lambda x: float(x),
+                self.Double: lambda x: float(x),
+                self.Pointer32: lambda x: int(x,0),
+                self.Pointer64: lambda x: int(x,0),
+                self.Bool: lambda x: x.lower() in ['true', '1'],
+                self.Blob: lambda x: x.encode(),
+                self.String: lambda x: x,
+                self.Void: lambda x: bytearray(),
+            }.get(self.type & ~self.FlagFunction, lambda x: x)(value)
+        return value
 
     # Returns the currently known value (without an actual read())
-    @property
+    @Property('QVariant', notify=valueChanged)
     def value(self):
         return self._value
 
     # Writes the value to the server.
     @value.setter
-    def value(self, v):
-        return self.write(v)
+    def _value_set(self, v):
+        try:
+            return self.write(self.interpret(v))
+        except ValueError:
+            return False
 
 
 
 
-class ZmqClient:
+class ZmqClient(QObject):
 
     def __init__(self, address='localhost', port=ZmqServer.default_port):
+        super().__init__()
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REQ)
         self.socket.connect(f'tcp://{address}:{port}')
@@ -261,9 +318,11 @@ class ZmqClient:
     def close(self):
         self.socket.close()
 
+    @Slot(result=str)
     def capabilities(self):
         return self.req(b'?').decode()
 
+    @Slot(result=str)
     def echo(self, s):
         return self.req(b'e' + s.encode()).decode()
 
@@ -276,9 +335,11 @@ class ZmqClient:
                 res.append(obj)
         return res
     
+    @Slot(result=str)
     def identification(self):
         return self.req(b'i').decode()
 
+    @Slot(result=str)
     def version(self):
         return self.req(b'v').decode()
 
