@@ -72,7 +72,9 @@ first_escape:
 	size_t decodeOffset = i;
 
 escape:
-	p[decodeOffset++] = (uint8_t)p[++i] & (uint8_t)EscMask;
+	p[decodeOffset] = (uint8_t)p[++i] & (uint8_t)EscMask;
+	decodeOffset++;
+	i++;
 
 	for(; i + 1 < len; i++, decodeOffset++) {
 		if(unlikely(p[i] == Esc))

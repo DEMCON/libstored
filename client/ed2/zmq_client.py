@@ -1,11 +1,248 @@
 # vim:et
 
 import zmq
+import time
+
 from .zmq_server import ZmqServer
+
+class Object:
+    def __init__(self, name, type, size, client = None):
+        self.name = name
+        self.type = type
+        self.size = size
+        self.client = client
+        self._value = None
+        self.t = None
+        self._alias = None
+
+    @staticmethod
+    def listResponseDecode(s, client):
+        split = s.split('/', 1)
+        if len(split) < 2:
+            return None
+        if len(split[0]) < 3:
+            return None
+        try:
+            return Object('/' + split[1], int(split[0][0:2], 16), int(split[0][2:], 16), client)
+        except ValueError:
+            return None
+
+    FlagSigned = 0x8
+    FlagInt = 0x10
+    FlagFixed = 0x20
+    FlagFunction = 0x40
+
+    Int8 = FlagFixed | FlagInt | FlagSigned | 0
+    Uint8 = FlagFixed | FlagInt | 0
+    Int16 = FlagFixed | FlagInt | FlagSigned | 1
+    Uint16 = FlagFixed | FlagInt | 1
+    Int32 = FlagFixed | FlagInt | FlagSigned | 3
+    Uint32 = FlagFixed | FlagInt | 3
+    Int64 = FlagFixed | FlagInt | FlagSigned | 7
+    Uint64 = FlagFixed | FlagInt | 7
+
+    Float = FlagFixed | FlagSigned | 3
+    Double = FlagFixed | FlagSigned | 7
+    Bool = FlagFixed | 0
+    Pointer32 = FlagFixed | 3
+    Pointer64 = FlagFixed | 7
+
+    Void = 0
+    Blob = 1
+    String = 2
+
+    Invalid = 0xff
+
+    def isValidType(self):
+        return self.type & 0x80 == 0
+
+    def isFunction(self):
+        return self.type & self.FlagFunction != 0
+
+    def isFixed(self):
+        return self.type & self.FlagFixed != 0
+
+    def isInt(self):
+        return self.isFixed() and self.type & self.FlagInt != 0
+
+    def isSigned(self):
+        return self.isFixed() and self.type & self.FlagSigned != 0
+
+    def isSpecial(self):
+        return self.type & 0x78 == 0
+
+    @property
+    def alias(self):
+        return self._alias
+
+    @alias.setter
+    def alias(self, a):
+        if a == self._alias:
+            return
+
+        if a != None and not (isinstance(a, str) and len(a) == 1):
+            raise ValueError('Invalid alias ' + a)
+
+        if self.client != None:
+            # Drop prevous alias
+            if self._alias != None:
+                self.client.req(b'a' + self._alias.encode())
+
+            if a != None:
+                rep = self.client.req(b'a' + a.encode() + self.name.encode())
+                if rep != b'!':
+                    # Failed setting, drop alias all together.
+                    a = None
+
+        self._alias = a
+
+    # Return the alias or the normal name, if no alias was set.
+    def shortName(self):
+        if self._alias != None:
+            return self._alias
+        else:
+            return self.name
+
+    @staticmethod
+    def sign_extend(value, bits):
+        sign_bit = 1 << (bits - 1)
+        return (value & (sign_bit - 1)) - (value & sign_bit)
+
+    # Read value from server.
+    def read(self):
+        value = self._read()
+        self.set(value)
+        return value
+
+    def _read(self):
+        if self.client == None:
+            return None
+        
+        rep = self.client.req(b'r' + self.shortName().encode())
+        return self._decodeReadRep(rep)
+
+    # Decode a read reply.
+    def decodeReadRep(self, rep, t = None):
+        value = self._decodeReadRep(rep)
+        if value != None:
+            self.set(value, t)
+
+    def _decodeReadRep(self, rep):
+        if rep == b'?':
+            return None
+
+        dtype = self.type & ~self.FlagFunction
+        try:
+            if self.isFixed():
+                binint = int(rep.decode(), 16)
+                if self.isInt() and not self.isSigned():
+                    return binint
+                elif dtype == self.Int8:
+                    return self.sign_extend(binint, 8)
+                elif dtype == self.Int16:
+                    return self.sign_extend(binint, 16)
+                elif dtype == self.Int32:
+                    return self.sign_extend(binint, 32)
+                elif dtype == self.Int64:
+                    return self.sign_extend(binint, 64)
+                elif dtype == self.Float:
+                    return struct.unpack('<f', struct.pack('<I', dint))[0]
+                elif dtype == self.Double:
+                    return struct.unpack('<d', struct.pack('<Q', dint))[0]
+                elif dtype == self.Bool:
+                    return binint != 0
+                elif dtype == self.Pointer32 or dtype == self.Pointer64:
+                    return binint
+                else:
+                    return None
+            elif dtype == self.Void:
+                return b''
+            elif dtype == self.Blob:
+                return rep
+            elif dtype == self.String:
+                return rep.decode()
+            else:
+                return None
+        except ValueError:
+            return None
+
+    # Write value to server.
+    def write(self, value = None):
+        if value != None:
+            self.set(value)
+        return self._write(value)
+
+    def _write(self, value):
+        if self.client == None:
+            return False
+
+        dtype = self.type & ~self.FlagFunction
+
+        if dtype == self.Void:
+            data = b''
+        elif dtype == self.Blob:
+            data = value
+        elif dtype == self.String:
+            data = value.encode()
+        elif dtype == self.Pointer32:
+            data = '%x' % value
+        elif dtype == self.Pointer64:
+            data = '%x' % value
+        elif dtype == self.Bool:
+            data = '1' if value else '0'
+        elif dtype == self.Float:
+            data = struct.pack('<f', value)
+        elif dtype == self.Double:
+            data = struct.pack('<d', value)
+        elif not self.isInt():
+            return False
+        elif self.isSigned():
+            data = ('%x' % value).encode()
+        elif dtype == self.Int8:
+            data = ('%2x' % value)[-2:].encode()
+        elif dtype == self.Int16:
+            data = ('%4x' % value)[-4:].encode()
+        elif dtype == self.Int32:
+            data = ('%8x' % value)[-8:].encode()
+        elif dtype == self.Int64:
+            data = ('%16x' % value)[-16:].encode()
+        else:
+            return False
+
+        rep = self.client.req(b'w' + data + self.shortName().encode())
+        return rep == b'!'
+
+    # Locally set value, but do not actually write it to the server.
+    def set(self, value, t = None):
+        if t == None:
+            t = time.time()
+
+        self.t = t
+
+        if value != self._value:
+            self._value = value
+            self.valueChanged()
+
+    # Hook when the value has changed. Override if required.
+    def valueChanged(self):
+        pass
+
+    # Returns the currently known value (without an actual read())
+    @property
+    def value(self):
+        return self._value
+
+    # Writes the value to the server.
+    @value.setter
+    def value(self, v):
+        return self.write(v)
+
+
+
 
 class ZmqClient:
 
-    def __init__(self, address, port=ZmqServer.default_port):
+    def __init__(self, address='localhost', port=ZmqServer.default_port):
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REQ)
         self.socket.connect(f'tcp://{address}:{port}')
@@ -14,6 +251,68 @@ class ZmqClient:
         self.socket.send(message)
         return self.socket.recv()
 
+    def timestampToTime(self, t = None):
+        if t == None:
+            return time.time()
+        else:
+            # Override to implement arbitrary conversion.
+            return t
+
     def close(self):
         self.socket.close()
+
+    def capabilities(self):
+        return self.req(b'?').decode()
+
+    def echo(self, s):
+        return self.req(b'e' + s.encode()).decode()
+
+    # Returns a list of Objects, registered to this client.
+    def list(self):
+        res = []
+        for o in self.req(b'l').decode().split('\n'):
+            obj = Object.listResponseDecode(o, self)
+            if obj != None:
+                res.append(obj)
+        return res
+    
+    def identification(self):
+        return self.req(b'i').decode()
+
+    def version(self):
+        return self.req(b'v').decode()
+
+    def readMem(self, pointer, size):
+        rep = self.req(('R%x %d' % (pointer, size)).encode()).decode()
+
+        if rep == '?':
+            return None
+
+        if len(rep) & 1:
+            # Odd number of bytes.
+            return None
+
+        res = bytearray()
+        for i in range(0, len(rep), 2):
+            res.append(int(rep[i:i+2], 16))
+        return res
+
+    def writeMem(self, pointer, data):
+        req = 'W%x ' % pointer
+        for i in range(0, len(data)):
+            req += '%02x' % data[i]
+        rep = self.req(req.encode())
+        return rep == b'!'
+
+    def streams(self):
+        rep = self.req(b's')
+        if rep == b'?':
+            return []
+        else:
+            return list(map(lambda b: chr(b), rep))
+
+    def stream(self, s, suffix=''):
+        if not isinstance(s, str) or len(s) != 1:
+            raise ValueError('Invalid stream name ' + s)
+        return self.req(b's' + (s + suffix).encode()).decode()
 
