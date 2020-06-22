@@ -68,7 +68,7 @@
 #    define UNUSED_PAR(name)	name
 #  endif
 #  define __attribute__(...)
-#  pragma warning(disable: 4100 4127 4514 4571 4625 4626 4710 4774 4820 5026 5027 5045)
+#  pragma warning(disable: 4100 4127 4324 4514 4571 4625 4626 4710 4774 4820 5026 5027 5045)
 #  include <BaseTsd.h>
 typedef SSIZE_T ssize_t;
 #else

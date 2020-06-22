@@ -36,6 +36,9 @@ namespace stored {
 	 * \brief Data storage of {{store.name}}Base.
 	 * \ingroup libstored_stores
 	 */
+#ifdef STORED_COMPILER_MSVC
+	__declspec(align(8))
+#endif
 	struct {{store.name}}Data {
 		{{store.name}}Data();
 
@@ -45,7 +48,11 @@ namespace stored {
 		// Directory.
 		static uint8_t const* shortDirectory();
 		static uint8_t const* longDirectory();
-	} __attribute__((aligned(sizeof(double))));
+	}
+#ifndef STORED_COMPILER_MSVC
+	__attribute__((aligned(sizeof(double))))
+#endif
+	;
 
 	/*!
 	 * \brief Base class with default interface of all {{store.name}} implementations.
