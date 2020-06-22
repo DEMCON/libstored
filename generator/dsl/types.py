@@ -298,7 +298,7 @@ class Buffer(object):
             size = v.buffersize()
             alignedsize = self.align(size)
             v.offset = self.size
-            self.size += size
+            self.size += alignedsize
 
         if self.size == 0:
             self.size = 1

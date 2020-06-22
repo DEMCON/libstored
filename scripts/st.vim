@@ -9,7 +9,7 @@ endif
 
 let b:current_syntax = "st"
 
-syn keyword stTypes contained bool int8 uint8 int16 uint16 int32 uint32 int64 uint64 float double string blob
+syn keyword stTypes contained bool int8 uint8 int16 uint16 int32 uint32 int64 uint64 float double string blob ptr32 ptr64
 hi def link stTypes Keyword
 
 syn match stFloat contained '\([-+]\?[0-9]*\.[0-9]\([eE][-+]\?[0-9]\+\)\?\|[Nn]a[Nn]\|[-+]\?[Ii]nf\(inity\)\?\)\>'
