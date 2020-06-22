@@ -4,11 +4,12 @@ rem Call this script to prepare the runtime environment on Windows for building 
 set here=%~dp0
 pushd %here%\..
 
+set PATH=C:\Program Files\CMake\bin;C:\Python38;C:\Python38\Scripts;%ChocolateyInstall%\lib\mingw\tools\install\mingw64\bin;%ChocolateyInstall%\bin;%PATH%
+
 where /q cmake > NUL 2> NUL
 if errorlevel 1 goto find_cmake
 goto have_cmake
 :find_cmake
-set PATH=C:\Program Files\CMake\bin;%PATH%
 where /q cmake > NUL 2> NUL
 if errorlevel 1 goto need_bootstrap
 :have_cmake
@@ -20,7 +21,6 @@ where /q git > NUL 2> NUL
 if errorlevel 1 goto need_bootstrap
 echo Found git
 
-set PATH=%ChocolateyInstall%\lib\mingw\tools\install\mingw64\bin;%ChocolateyInstall%\bin;C:\Python38;C:\Python38\Scripts;%PATH%
 where /q gcc > NUL 2> NUL
 if errorlevel 1 goto need_bootstrap
 echo Found gcc

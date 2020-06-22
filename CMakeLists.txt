@@ -79,7 +79,9 @@ function(libstored_generate target) # add all other models as varargs
 
     if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
 		if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-			target_link_options(${target} PUBLIC -Wl,--gc-sections)
+			if(target_type STREQUAL "EXECUTABLE")
+				target_link_options(${target} PUBLIC -Wl,--gc-sections)
+			endif()
 		endif()
     endif()
 

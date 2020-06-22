@@ -1,3 +1,15 @@
+if(MSVC)
+	add_compile_options(/W1 /WX)
+
+	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		add_compile_options(/MTd)
+	else()
+		add_compile_options(/MT)
+	endif()
+else()
+	add_compile_options(-Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wconversion -ffunction-sections -fdata-sections)
+endif()
+
 add_subdirectory("${PROJECT_SOURCE_DIR}/extern/googletest" "extern/googletest")
 
 add_custom_target(teststore)

@@ -1,5 +1,16 @@
+#include <stored>
+
 #include "TestStore.h"
 #include "gtest/gtest.h"
+
+#ifdef STORED_OS_WINDOWS
+#  include <malloc.h>
+#  ifndef alloca
+#    define alloca(s) _malloca(s)
+#  endif
+#else
+#  include <alloca.h>
+#endif
 
 namespace {
 
@@ -72,7 +83,7 @@ TEST(Types, Double) {
 	stored::TestStore store;
 	EXPECT_EQ(store.default_double().get(), 0);
 	store.default_double() = 3.14;
-	EXPECT_FLOAT_EQ(store.default_double().get(), 3.14);
+	EXPECT_DOUBLE_EQ(store.default_double().get(), 3.14);
 }
 
 TEST(Types, Bool) {
@@ -100,8 +111,9 @@ TEST(Types, Pointer) {
 TEST(Types, Blob) {
 	stored::TestStore store;
 	size_t s = store.default_blob().size();
-	char buffer1[s] = {};
-	char buffer2[s] = {};
+	char* buffer1 = (char*)alloca(s);
+	memset(buffer1, 0, s);
+	char* buffer2 = (char*)alloca(s);
 	EXPECT_EQ(store.default_blob().get(buffer2, s), s);
 	EXPECT_EQ(memcmp(buffer1, buffer2, s), 0);
 
@@ -116,12 +128,14 @@ TEST(Types, Blob) {
 TEST(Types, String) {
 	stored::TestStore store;
 	size_t s = store.default_string().size();
-	char buffer1[s + 1] = {};
-	char buffer2[s + 1] = {};
+	char* buffer1 = (char*)alloca(s + 1);
+	memset(buffer1, 0, s + 1);
+	char* buffer2 = (char*)alloca(s + 1);
+	memset(buffer2, 0, s + 1);
 	EXPECT_EQ(store.default_string().get(buffer2, s), s);
 	EXPECT_EQ(memcmp(buffer1, buffer2, s), 0);
 
-	for(size_t i = 0; i < sizeof(buffer1); i++)
+	for(size_t i = 0; i < s + 1; i++)
 		buffer1[i] = 'a';
 
 	EXPECT_EQ(store.default_string().set(buffer1, s), s);

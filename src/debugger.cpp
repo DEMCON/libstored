@@ -191,7 +191,7 @@ void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
 		list[len++] = CmdAlias;
 	if(Config::DebuggerMacro > 0)
 		list[len++] = CmdMacro;
-	if(Config::DebuggerIdentification > 0)
+	if(Config::DebuggerIdentification)
 		list[len++] = CmdIdentification;
 	if(Config::DebuggerVersion > 0)
 		list[len++] = CmdVersion;
@@ -477,7 +477,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 
 		// Go read the memory in chunks
 		while(datalen > 0) {
-			ScratchPad::Snapshot snapshot = spm().snapshot();
+			ScratchPad::Snapshot chunk_snapshot = spm().snapshot();
 
 			size_t chunk = std::min<size_t>(64u, datalen);
 			void* r = addr;
@@ -531,7 +531,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 
 		// Process data in chunks.
 		while(len > 0) {
-			ScratchPad::Snapshot snapshot = spm().snapshot();
+			ScratchPad::Snapshot chunk_snapshot = spm().snapshot();
 
 			size_t chunk = std::min<size_t>(64u, len);
 			void const* w = p;
