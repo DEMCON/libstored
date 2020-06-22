@@ -15,6 +15,9 @@ else
 	BUILD_TYPE=$1
 fi
 
+git submodule init
+git submodule update
+
 mkdir -p build
 pushd build > /dev/null
 cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE ..

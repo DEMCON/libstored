@@ -29,6 +29,11 @@ Have a look in the `examples` directory for further in-depth reading.
 
 ## How to build
 
+Make sure to update the submodules after checkout:
+
+	git submodule init
+	git submodule update
+
 Run `scripts/bootstrap` once to install all build dependencies.
 Then run `scripts/build` to build the project. This does effectively:
 
@@ -41,6 +46,10 @@ By default, all examples are built.  For example, notice that sources are
 generated under `examples/1_hello`, while the example itself is built in the
 `build` directory. The documentation can be viewed at
 `doxygen/html/index.html`.
+
+To run all tests:
+
+	cmake --build . -- test
 
 ## Syntax example
 

@@ -66,7 +66,13 @@ function(libstored_generate target) # add all other models as varargs
         DEPENDS ${target}-libstored.timestamp
     )
     add_dependencies(${target}-libstored ${target}-libstored-generate)
-    target_link_libraries(${target} PUBLIC ${target}-libstored)
+
+	get_target_property(target_type ${target} TYPE)
+	if(target_type MATCHES "^(STATIC_LIBRARY|MODULE_LIBRARY|SHARED_LIBRARY|EXECUTABLE)$")
+	    target_link_libraries(${target} PUBLIC ${target}-libstored)
+	else()
+		add_dependencies(${target} ${target}-libstored)
+	endif()
 
     if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
 		if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -82,5 +88,14 @@ endfunction()
 option(LIBSTORED_EXAMPLES "Build examples" ON)
 if(LIBSTORED_EXAMPLES)
     add_subdirectory(examples)
+endif()
+
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0")
+	option(LIBSTORED_TESTS "Build the tests" ON)
+	if(LIBSTORED_TESTS)
+		enable_testing()
+		include(GoogleTest)
+		add_subdirectory(tests)
+	endif()
 endif()
 

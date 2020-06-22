@@ -7,6 +7,11 @@ if errorlevel 1 goto silent_error
 if not exist build mkdir build
 if errorlevel 1 goto error
 
+git submodule init
+if errorlevel 1 goto error
+git submodule update
+if errorlevel 1 goto error
+
 pushd build
 cmake -DCMAKE_BUILD_TYPE=Debug "-GMinGW Makefiles" -DCMAKE_PREFIX_PATH=%QT_DIR% ..
 if errorlevel 1 goto error_popd
