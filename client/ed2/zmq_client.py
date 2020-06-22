@@ -293,6 +293,18 @@ class Object(QObject):
         except ValueError:
             return False
 
+    @Property(str, notify=valueChanged)
+    def valueString(self):
+        v = self.value
+        if v == None:
+            return ""
+        else:
+            return str(v)
+
+    @valueString.setter
+    def _valueString_set(self, v):
+        return self._value_set(v)
+
 
 
 
