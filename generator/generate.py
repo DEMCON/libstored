@@ -51,6 +51,9 @@ def has_function(os):
 def is_blob(o):
     return o.isBlob()
 
+def is_pointer(o):
+    return o.type in ['ptr32', 'ptr64'];
+
 def ctype(o):
     return {
             'bool': 'bool',
@@ -128,7 +131,7 @@ def load_model(filename, littleEndian=True, debug=False):
         os.path.join(generator_dir, 'dsl', 'grammar.tx'),
         classes=[types.Store,
             types.Variable, types.Function, types.Scope,
-            types.BlobType
+            types.BlobType, types.Immediate
         ],
         debug=debug)
 
@@ -171,6 +174,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.tests['variable'] = is_variable
     jenv.tests['function'] = is_function
     jenv.tests['blob'] = is_blob
+    jenv.tests['pointer'] = is_pointer
 
     store_h_tmpl = jenv.get_template('store.h.tmpl')
     store_cpp_tmpl = jenv.get_template('store.cpp.tmpl')

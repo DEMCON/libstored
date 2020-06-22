@@ -398,7 +398,7 @@ class Variable(Object):
         if type.fixed != None:
             self.type = type.fixed.type
             self.size = csize(type.fixed.type)
-            self.init = type.init
+            self.init = None if type.init == None else type.init.value
             self.len = type.fixed.len if isinstance(type.fixed.len, int) and type.fixed.len > 1 else 1
         else:
             self.type = type.blob.type
@@ -412,19 +412,19 @@ class Variable(Object):
     def encode(self, x, littleEndian=True):
         endian = '<' if littleEndian else '>'
         res = {
-                'bool': lambda x: struct.pack(endian + '?', x),
-                'int8': lambda x: struct.pack(endian + 'b', x),
-                'uint8': lambda x: struct.pack(endian + 'B', x),
-                'int16': lambda x: struct.pack(endian + 'h', x),
-                'uint16': lambda x: struct.pack(endian + 'H', x),
-                'int32': lambda x: struct.pack(endian + 'i', x),
-                'uint32': lambda x: struct.pack(endian + 'I', x),
-                'int64': lambda x: struct.pack(endian + 'q', x),
-                'uint64': lambda x: struct.pack(endian + 'Q', x),
-                'float': lambda x: struct.pack(endian + 'f', x),
-                'double': lambda x: struct.pack(endian + 'd', x),
-                'ptr32': lambda x: struct.pack(endian + 'L', x),
-                'ptr64': lambda x: struct.pack(endian + 'Q', x),
+                'bool': lambda x: struct.pack(endian + '?', not x in [False, 'false', 0]),
+                'int8': lambda x: struct.pack(endian + 'b', int(x)),
+                'uint8': lambda x: struct.pack(endian + 'B', int(x)),
+                'int16': lambda x: struct.pack(endian + 'h', int(x)),
+                'uint16': lambda x: struct.pack(endian + 'H', int(x)),
+                'int32': lambda x: struct.pack(endian + 'i', int(x)),
+                'uint32': lambda x: struct.pack(endian + 'I', int(x)),
+                'int64': lambda x: struct.pack(endian + 'q', int(x)),
+                'uint64': lambda x: struct.pack(endian + 'Q', int(x)),
+                'float': lambda x: struct.pack(endian + 'f', float(x)),
+                'double': lambda x: struct.pack(endian + 'd', float(x)),
+                'ptr32': lambda x: struct.pack(endian + 'L', int(x)),
+                'ptr64': lambda x: struct.pack(endian + 'Q', int(x)),
                 'blob': lambda x: bytearray(x),
                 'string': lambda x: x.encode(),
         }[self.type](x)
@@ -477,4 +477,24 @@ class BlobType(object):
         self.type = type
         self.len = len if len != None and len > 1 else 1
         self.size = size if size > 0 else 0
+
+class Immediate(object):
+    def __init__(self, parent, value):
+        self.parent = parent
+        if isinstance(value, str):
+            if value.lower() == 'true':
+                self.value = True
+            elif value.lower() == 'false':
+                self.value = False
+            elif value.lower() == 'nan':
+                self.value = float('nan')
+            elif value.lower() in ['inf', 'infinity']:
+                self.value = float('inf')
+            elif value.lower() in ['-inf', '-infinity']:
+                self.value = float('-inf')
+            else:
+                self.value = int(value, 0)
+        else:
+            self.value = value
+
 

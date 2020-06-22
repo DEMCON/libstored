@@ -14,4 +14,5 @@ macro(libstored_add_test TESTNAME)
 endmacro()
 
 libstored_add_test(test_types test_types.cpp)
+libstored_add_test(test_init test_init.cpp)
 

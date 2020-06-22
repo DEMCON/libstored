@@ -18,7 +18,7 @@ hi def link stFloat Float
 syn match stInt contained '\<\([0-9]\+\|0x[0-9A-Fa-f]\+\)\>'
 hi def link stInt Number
 
-syn keyword stBool contained true false
+syn keyword stBool contained true false True False
 hi def link stBool Boolean
 
 syn match stFullType '^\s*(\?\<[a-z0-9]\+\>\(:[0-9A-Fa-fx]\+\)\?)\?\(\[[0-9A-Fa-fx]\+\]\)\?\(=[^[:space:]]\+\)\?' contains=stTypes,stFloat,stInt,stBool nextgroup=stName skipnl

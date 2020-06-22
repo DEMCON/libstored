@@ -386,6 +386,7 @@ namespace stored {
 
 		Type::type type() const { stored_assert(valid()); return (Type::type)m_type; }
 		size_t size() const { stored_assert(valid()); return Type::isFixed(type()) ? Type::size(type()) : m_len; }
+		void* buffer() const { stored_assert(isVariable()); return m_buffer; }
 		bool valid() const { return m_buffer; }
 		bool isFunction() const { stored_assert(valid()); return Type::isFunction(type()); }
 		bool isVariable() const { stored_assert(valid()); return !isFunction(); }

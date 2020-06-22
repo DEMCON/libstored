@@ -60,7 +60,7 @@ Name[noskipws]:
 ;
 
 Immediate[noskipws]:
-	NUMBER | BOOL
+	value=/0x[0-9a-fA-F]+/ | value=NUMBER | value=BOOL | value=/[Nn]a[Nn]|-?[Ii]nf(inity)?/
 ;
 
 Comment:

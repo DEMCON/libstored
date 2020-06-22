@@ -1,6 +1,8 @@
 #include "TestStore.h"
 #include "gtest/gtest.h"
 
+namespace {
+
 TEST(Types, Int8) {
 	stored::TestStore store;
 	EXPECT_EQ(store.default_int8().get(), 0);
@@ -114,16 +116,20 @@ TEST(Types, Blob) {
 TEST(Types, String) {
 	stored::TestStore store;
 	size_t s = store.default_string().size();
-	char buffer1[s] = {};
-	char buffer2[s] = {};
+	char buffer1[s + 1] = {};
+	char buffer2[s + 1] = {};
 	EXPECT_EQ(store.default_string().get(buffer2, s), s);
 	EXPECT_EQ(memcmp(buffer1, buffer2, s), 0);
 
-	for(size_t i = 0; i < s; i++)
-		buffer1[i] = (char)(i + 1);
+	for(size_t i = 0; i < sizeof(buffer1); i++)
+		buffer1[i] = 'a';
 
 	EXPECT_EQ(store.default_string().set(buffer1, s), s);
 	EXPECT_EQ(store.default_string().get(buffer2, s), s);
 	EXPECT_EQ(memcmp(buffer1, buffer2, s), 0);
+	EXPECT_EQ(strlen(buffer2), s);
+	EXPECT_EQ(strlen(static_cast<char*>(store.default_string().buffer())), s);
 }
+
+} // namespace
 

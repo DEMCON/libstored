@@ -160,10 +160,13 @@ namespace stored {
 {%   else %}
 {%     if o is variable %}
 		/*! \brief {{o}} */
-		Variable<{{o|ctype}},Implementation> {{o.cname}}() { return variable<{{o|ctype}}>({{o.offset}}); }
+		Variable<{{o|ctype}},Implementation> {{o.cname}}() {
+			stored_assert({{o.size}}u == sizeof({{o|ctype}})); // NOLINT(hicpp-static-assert,misc-static-assert)
+			return variable<{{o|ctype}}>({{o.offset}}); }
 {%     elif o is function %}
 		/*! \brief {{o}} */
-		Function<{{o|ctype}},Implementation> {{o.cname}}() { return function<{{o|ctype}}>({{o.f}}); }
+		Function<{{o|ctype}},Implementation> {{o.cname}}() {
+			return function<{{o|ctype}}>({{o.f}}); }
 {%     endif %}
 {%   endif %}
 {% endfor %}
