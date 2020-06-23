@@ -10,10 +10,10 @@ trap gotErr ERR
 case `uname -s` in
 	Linux*)
 		sudo apt install -y build-essential git-core gcc-multilib cmake python3 python3-pip gdb-multiarch clang-tidy doxygen
-		pip3 install jinja2 textx pyzmq pyside2;;
+		pip3 install jinja2 textx pyzmq pyside2 pyserial;;
 	Darwin*)
 		brew install cmake python3
-		pip3 install jinja2 textx pyzmq pyside2;;
+		pip3 install jinja2 textx pyzmq pyside2 pyserial;;
 	*)
 		echo "Unknown OS"
 		exit 1;;

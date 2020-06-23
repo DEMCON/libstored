@@ -15,6 +15,7 @@ class ZmqServer:
         self.socket = self.context.socket(zmq.REP)
         self.socket.bind(f'tcp://*:{port}')
         self.register(self.socket, zmq.POLLIN)
+        self.closing = False
     
     def register(self, socket, flags):
         self.poller.register(socket, flags)
@@ -48,6 +49,9 @@ class ZmqServer:
 
             # Send EOF
             socket.send(bytearray())
+        except:
+            if not self.closing:
+                raise
         finally:
             socket.close()
             self.sockets.remove(socket)
@@ -75,8 +79,11 @@ class ZmqServer:
         rep(b'?')
 
     def close(self):
+        self.closing = True
         for s in list(self.sockets):
             self.unregister(s)
             s.close()
 
+    def __del__(self):
+        self.close()
 

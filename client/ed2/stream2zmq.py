@@ -1,8 +1,6 @@
 # vim:et
 
 import sys
-import subprocess
-import threading
 import zmq
 
 from .zmq_server import ZmqServer

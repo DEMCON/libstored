@@ -50,16 +50,16 @@ Window {
 
                     Layout.fillHeight: true
                     Layout.preferredWidth: root.fontSize * 10
-                    text: obj.valueString
                     font.pixelSize: root.fontSize
                     horizontalAlignment: TextInput.AlignRight
+                    text: obj.valueString
 
                     onAccepted: {
                         obj.valueString = displayText
                         text = obj.valueString
                     }
 
-                    property bool editing: displayText != obj.valueString 
+                    property bool editing: activeFocus && text != obj.valueString 
                     property bool refreshed: false
                     color: editing ? "red" : refreshed ? "blue" : "black"
 
@@ -70,15 +70,18 @@ Window {
 
                     Timer {
                         id: updatedTimer
-                        interval: 1000
+                        interval: 1100
                         onTriggered: valueField.refreshed = false
                     }
                     
                     Connections {
                         target: obj
                         function onValueChanged() {
-                            valueField.refreshed = true
-                            updatedTimer.start()
+                            if(!valueField.editing) {
+                                valueField.text = obj.valueString
+                                valueField.refreshed = true
+                                updatedTimer.restart()
+                            }
                         }
                     }
                 }
@@ -181,6 +184,7 @@ Window {
             TextArea {
                 id: rep
                 readOnly: true
+                font.pixelSize: root.fontSize
             }
 
             background: Rectangle {

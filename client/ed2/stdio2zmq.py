@@ -11,17 +11,12 @@ class Stdio2Zmq(Stream2Zmq):
     def __init__(self, args, port=Stream2Zmq.default_port, **kwargs):
         super().__init__(port)
         self.process = subprocess.Popen(args=args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, **kwargs)
-
         self.stdout_socket = self.registerStream(self.process.stdout)
-        self.stdout_buffer = bytearray()
-        self.stdout_msg = bytearray()
-
         self.stdin_socket = self.registerStream(sys.stdin)
-
         self.rep_queue = []
 
     def poll(self, timeout_s = None):
-        # We need to check it the process still runs once in a while.
+        # We need to check if the process still runs once in a while.
         # So, still use a timeout, even if none is given.
         events = super().poll(1 if timeout_s == None else timeout_s)
         if events.get(self.stdin_socket, 0) & zmq.POLLIN:
