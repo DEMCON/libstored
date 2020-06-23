@@ -191,8 +191,11 @@ void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
 		list[len++] = CmdAlias;
 	if(Config::DebuggerMacro > 0)
 		list[len++] = CmdMacro;
-	if(Config::DebuggerIdentification)
-		list[len++] = CmdIdentification;
+	if(Config::DebuggerIdentification) {
+		char const* id = identification();
+		if(id && *id)
+			list[len++] = CmdIdentification;
+	}
 	if(Config::DebuggerVersion > 0)
 		list[len++] = CmdVersion;
 	if(Config::DebuggerReadMem)

@@ -159,5 +159,33 @@ Window {
             spacing: 3
             ScrollBar.vertical: ScrollBar {}
         }
+
+        TextField {
+            id: req
+            Layout.preferredHeight: root.fontSize * 2
+            font.pixelSize: root.fontSize
+            Layout.fillWidth: true
+            placeholderText: "enter command"
+
+            onAccepted: {
+                rep.text = client.req(text)
+            }
+        }
+
+        ScrollView {
+            Layout.preferredHeight: root.fontSize * 10
+            Layout.maximumHeight: parent.height / 4
+            Layout.fillWidth: true
+            clip: true
+
+            TextArea {
+                id: rep
+                readOnly: true
+            }
+
+            background: Rectangle {
+                border.color: "#c0c0c0"
+            }
+        }
     }
 }

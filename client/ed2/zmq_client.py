@@ -352,7 +352,11 @@ class ZmqClient(QObject):
         self.socket.connect(f'tcp://{address}:{port}')
         self._defaultPollInterval = 1
     
+    @Slot(str,result=str)
     def req(self, message):
+        if isinstance(message,str):
+            return self.req(message.encode()).decode()
+
         self.socket.send(message)
         return self.socket.recv()
 
