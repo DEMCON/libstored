@@ -201,7 +201,11 @@ namespace stored {
 		};
 
 		static void listCallback(void* container, char const* name, Type::type type, void* buffer, size_t len, void* arg) {
-			DebugVariant variant(Variant<typename Store::Implementation>(*(typename Store::Implementation*)container, type, buffer, len));
+			DebugVariant variant(
+				Type::isFunction(type) ?
+					// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+					Variant<typename Store::Implementation>(*(typename Store::Implementation*)container, type, (unsigned int)(uintptr_t)buffer) :
+					Variant<typename Store::Implementation>(*(typename Store::Implementation*)container, type, buffer, len));
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			ListCallbackArgs& args = *reinterpret_cast<ListCallbackArgs*>(arg);
 			(*args.f)(name, variant, args.arg);
