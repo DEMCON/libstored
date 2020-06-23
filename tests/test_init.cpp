@@ -14,6 +14,11 @@ TEST(Init, Hex) {
 	EXPECT_EQ(store.init_hex().get(), 0x54);
 }
 
+TEST(Init, Bin) {
+	stored::TestStore store;
+	EXPECT_EQ(store.init_bin().get(), 5);
+}
+
 TEST(Init, Bool) {
 	stored::TestStore store;
 	EXPECT_EQ(store.init_true().get(), true);

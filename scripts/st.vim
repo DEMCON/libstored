@@ -15,7 +15,7 @@ hi def link stTypes Keyword
 syn match stFloat contained '\([-+]\?[0-9]*\.[0-9]\([eE][-+]\?[0-9]\+\)\?\|[Nn]a[Nn]\|[-+]\?[Ii]nf\(inity\)\?\)\>'
 hi def link stFloat Float
 
-syn match stInt contained '\<\([0-9]\+\|0x[0-9A-Fa-f]\+\)\>'
+syn match stInt contained '\<\([0-9]\+\|0x[0-9A-Fa-f]\+\|0b[01]\+\)\>'
 hi def link stInt Number
 
 syn keyword stBool contained true false True False

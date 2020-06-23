@@ -3,12 +3,13 @@
 import zmq
 import time
 
-from PySide2.QtCore import QObject, Signal, Slot, Property
+from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt
 from .zmq_server import ZmqServer
 
 class Object(QObject):
     valueChanged = Signal()
     valueUpdated = Signal()
+    pollingChanged = Signal()
 
     def __init__(self, name, type, size, client = None):
         super().__init__()
@@ -19,6 +20,8 @@ class Object(QObject):
         self._value = None
         self.t = None
         self._alias = None
+        self._polling = False
+        self._pollTimer = None
 
     @Property(str, constant=True)
     def name(self):
@@ -142,11 +145,14 @@ class Object(QObject):
     # Read value from server.
     @Slot(result='QVariant')
     def read(self):
-        value = self._read()
+        return self._read()
+
+    def _read(self):
+        value = self.__read()
         self.set(value)
         return value
 
-    def _read(self):
+    def __read(self):
         if self.client == None:
             return None
         
@@ -305,7 +311,36 @@ class Object(QObject):
     def _valueString_set(self, v):
         return self._value_set(v)
 
+    @Property(bool,notify=pollingChanged)
+    def polling(self):
+        return self._polling
 
+    @polling.setter
+    def _polling_set(self, enable):
+        if self._polling != enable:
+            self._polling = enable
+            self.pollingChanged.emit()
+            if enable:
+                self.poll(self.client.defaultPollInterval)
+            elif self._pollTimer != None:
+                self._pollTimer.stop()
+
+    def poll(self, interval):
+        self.polling = True
+        self.read()
+        if self._pollTimer == None:
+            self._pollTimer = QTimer(parent=self)
+            self._pollTimer.timeout.connect(self._read)
+        self._pollTimer.setInterval(interval * 1000)
+        self._pollTimer.setSingleShot(False)
+        if interval < 0.01:
+            self._pollTimer.setTimerType(Qt.PreciseTimer)
+        elif interval < 2:
+            self._pollTimer.setTimerType(Qt.CoarseTimer)
+        else:
+            self._pollTimer.setTimerType(Qt.VeryCoarseTimer)
+
+        self._pollTimer.start()
 
 
 class ZmqClient(QObject):
@@ -315,6 +350,7 @@ class ZmqClient(QObject):
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REQ)
         self.socket.connect(f'tcp://{address}:{port}')
+        self._defaultPollInterval = 1
     
     def req(self, message):
         self.socket.send(message)
@@ -388,4 +424,12 @@ class ZmqClient(QObject):
         if not isinstance(s, str) or len(s) != 1:
             raise ValueError('Invalid stream name ' + s)
         return self.req(b's' + (s + suffix).encode()).decode()
+
+    @Property(float)
+    def defaultPollInterval(self):
+        return self._defaultPollInterval
+
+    @defaultPollInterval.setter
+    def _defaultPollInterval_set(self, interval):
+        self._defaultPollInterval = interval
 

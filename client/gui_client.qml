@@ -1,9 +1,8 @@
 // vim:et
-import QtQuick 2.0
+import QtQuick 2.12
 import QtQuick.Layouts 1.15
 import QtQuick.Window 2.2
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
+import QtQuick.Controls 2.5
 
 Window {
 
@@ -15,62 +14,87 @@ Window {
     readonly property int fontSize: 12
 
     Component {
-        id: nameDelegate
-        Text {
-            text: styleData.value.name
-            elide: Text.ElideMiddle
-            anchors.fill: parent
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: root.fontSize
-            fontSizeMode: Text.VerticalFit
-        }
-    }
-
-    Component {
-        id: valueDelegate
-        TextField {
-            text: styleData.value.valueString
-            anchors.fill: parent
-            font.pixelSize: root.fontSize
-            horizontalAlignment: TextInput.AlignRight
-
-            onAccepted: {
-                styleData.value.valueString = displayText
-                text = styleData.value.valueString
-            }
-
-            textColor: displayText == styleData.value.valueString ? "black" : "red"
-
-            onActiveFocusChanged: {
-                if(!activeFocus)
-                    text = styleData.value.valueString
-            }
-        }
-    }
-
-    Component {
-        id: operationsDelegate
-        RowLayout {
+        id: objectRow
+        Rectangle {
             id: row
-            anchors.fill: parent
+            width: objectList.width
+            height: root.fontSize * 2
+            color: index % 2 == 0 ? "#f0f0f0" : "white"
 
-            Button {
-                id: refreshButton
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-                text: "Refresh"
-                style: ButtonStyle {
-                    label: Text {
-                        renderType: Text.NativeRendering
-                        verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignHCenter
-                        font.pixelSize: root.fontSize
-                        text: refreshButton.text
-                        fontSizeMode: Text.Fit
+            RowLayout {
+                anchors.fill: parent
+
+                Text {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    text: obj.name
+                    elide: Text.ElideMiddle
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: root.fontSize
+                    fontSizeMode: Text.VerticalFit
+                }
+
+                TextField {
+                    id: valueField
+
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: root.fontSize * 10
+                    text: obj.valueString
+                    font.pixelSize: root.fontSize
+                    horizontalAlignment: TextInput.AlignRight
+
+                    onAccepted: {
+                        obj.valueString = displayText
+                        text = obj.valueString
+                    }
+
+                    property bool editing: displayText != obj.valueString 
+                    property bool refreshed: false
+                    color: editing ? "red" : refreshed ? "blue" : "black"
+
+                    onActiveFocusChanged: {
+                        if(!activeFocus)
+                            text = obj.valueString
+                    }
+
+                    Timer {
+                        id: updatedTimer
+                        interval: 1000
+                        onTriggered: valueField.refreshed = false
+                    }
+                    
+                    Connections {
+                        target: obj
+                        function onValueChanged() {
+                            valueField.refreshed = true
+                            updatedTimer.start()
+                        }
                     }
                 }
-                onClicked: {
-                    styleData.value.read()
+
+                CheckBox {
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: parent.height
+                    indicator.height: height * 0.618
+                    indicator.width: height * 0.618
+
+                    ToolTip.text: "Enable auto-refresh"
+                    ToolTip.visible: hovered
+                    ToolTip.delay: 1000
+
+                    checked: obj.polling
+
+                    onCheckedChanged: obj.polling = checked
+                }
+
+                Button {
+                    id: refreshButton
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: implicitWidth
+                    text: "Refresh"
+                    onClicked: {
+                        obj.read()
+                    }
                 }
             }
         }
@@ -78,48 +102,51 @@ Window {
 
     ColumnLayout {
         anchors.fill: parent
-        TableView {
-            id: objectList
+        anchors.margins: 5
 
+        RowLayout {
+            Layout.preferredHeight: root.fontSize * 2
+            Layout.fillHeight: false
+
+            TextField {
+                id: filter
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                placeholderText: "enter regex filter"
+                onTextChanged: objects.setFilterRegularExpression(text)
+            }
+
+            Button {
+                id: refreshAllButton
+                Layout.fillHeight: true
+                text: "Refresh all"
+                onClicked: {
+                    for(var i = 0; i < objects.rowCount(); i++)
+                        objects.sourceModel.at(objects.mapToSource(objects.index(i, 0)).row).read()
+                }
+            }
+        }
+
+        ListView {
             Layout.fillHeight: true
             Layout.fillWidth: true
-            Layout.margins: 5
+            id: objectList
             model: objects
+            delegate: objectRow
+            spacing: 3
+            ScrollBar.vertical: ScrollBar {}
+        }
 
-            rowDelegate: Rectangle {
-                height: root.fontSize * 2
-                SystemPalette {
-                    id: myPalette
-                    colorGroup: SystemPalette.Active
-                }
-                color: {
-                    var baseColor = styleData.alternate ? myPalette.alternateBase : myPalette.base
-                    return /* styleData.selected ? myPalette.highlight : */ baseColor
-                }
-            }
-
-            TableViewColumn {
-                id: nameColumn
-                title: "Name"
-                delegate: nameDelegate
-                role: "obj"
-            }
-
-            onWidthChanged: nameColumn.width = width - valueColumn.width - operationsColumn.width - 2
-
-            TableViewColumn {
-                id: valueColumn
-                title: "Value"
-                delegate: valueDelegate
-                role: "obj"
-            }
-
-            TableViewColumn {
-                id: operationsColumn
-                title: "Operations"
-                delegate: operationsDelegate
-                role: "obj"
-            }
+        ListView {
+            Layout.preferredHeight: contentHeight
+            Layout.maximumHeight: parent.height / 3
+            Layout.topMargin: 5
+            Layout.fillWidth: true
+            id: polledObjectList
+            model: polledObjects
+            delegate: objectRow
+            spacing: 3
+            ScrollBar.vertical: ScrollBar {}
         }
     }
 }

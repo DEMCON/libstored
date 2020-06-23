@@ -17,6 +17,7 @@ string:10 default string
 int32=42		init decimal
 int32=-42		init negative
 int32=0x54		init hex
+int32=0b101		init bin
 bool=true		init true
 bool=False		init false
 bool=0			init bool 0
