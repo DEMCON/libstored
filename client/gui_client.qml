@@ -33,6 +33,17 @@ Window {
                     font.pixelSize: root.fontSize
                     fontSizeMode: Text.VerticalFit
                 }
+                
+                Text {
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: root.fontSize * 5
+                    text: obj.typeName
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignRight
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: root.fontSize
+                    fontSizeMode: Text.VerticalFit
+                }
 
                 TextField {
                     id: valueField
