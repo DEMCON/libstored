@@ -25,6 +25,10 @@
 
 #include <libstored/macros.h>
 
+#ifdef STORED_HAVE_ZTH
+#  include <libzth/util.h>
+#endif
+
 /*!
  * \def likely(expr)
  * \brief Marks the given expression to likely be evaluated to true.
@@ -110,9 +114,9 @@ namespace stored {
 	 * \ingroup libstored_util
 	 */
 #ifdef STORED_HAVE_ZTH
-#  define stored_assert(expr)	do { if(::stored::Config::EnableAssert) zth_assert(expr); } while(false)
+#  define stored_assert(expr)	do { if(::stored::Config::EnableAssert) { zth_assert(expr); } } while(false)
 #else
-#  define stored_assert(expr)	do { if(::stored::Config::EnableAssert) assert(expr); } while(false)
+#  define stored_assert(expr)	do { if(::stored::Config::EnableAssert) { assert(expr); } } while(false)
 #endif
 
 	/*!

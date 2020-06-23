@@ -44,9 +44,17 @@ if(STORED_HAVE_VALGRIND)
 	target_compile_definitions({{libprefix}}libstored PUBLIC -DSTORED_HAVE_VALGRIND)
 endif()
 
+if(TARGET libzth)
+	target_compile_definitions({{libprefix}}libstored PUBLIC -DSTORED_HAVE_ZTH)
+	target_include_directories({{libprefix}}libstored
+		PRIVATE $<TARGET_PROPERTY:libzth,INTERFACE_INCLUDE_DIRECTORIES>
+	)
+	target_link_libraries({{libprefix}}libstored INTERFACE libzth)
+endif()
+
 if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
     find_program(CLANG_TIDY_EXE NAMES "clang-tidy" DOC "Path to clang-tidy executable")
-    if(CLANG_TIDY_EXE)
+    if(CLANG_TIDY_EXE AND NOT CMAKE_CROSSCOMPILING)
         option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ON)
         if(LIBSTORED_CLANG_TIDY)
             string(CONCAT CLANG_TIDY_CHECKS "-checks="

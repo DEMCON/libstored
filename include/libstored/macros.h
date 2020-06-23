@@ -22,7 +22,10 @@
 
 //////////////////////////////////////////////////
 // Preamble
-//
+
+#ifdef STORED_HAVE_ZTH
+#  include <libzth/macros.h>
+#endif
 
 #ifdef _DEBUG
 #  undef NDEBUG
