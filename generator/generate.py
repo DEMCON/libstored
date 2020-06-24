@@ -69,7 +69,7 @@ def ctype(o):
             'double': 'double',
             'ptr32': 'void*',
             'ptr64': 'void*',
-            'blob': 'char',
+            'blob': 'void',
             'string': 'char'
     }[o.type]
 

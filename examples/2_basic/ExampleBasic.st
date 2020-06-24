@@ -21,13 +21,17 @@ string:4   s
 // Indicate the size of the blob in bytes.
 blob:16    blob
 
-// To override the initialized value, specify it like this:
+// To override the default-initialized value (which is zero), specify it like
+// this:
 int8=42    test42
 
-// Initializer don't work on a string and blob, though.  Note that there should
-// not be any whitespace around the =, because after from the first whitespace,
-// the name is taken. So, this is not what you would expect, although the
-// syntax highlighting might give you a hint:
+// An initializer can be an int, as shown above, but also hex (0x12ab), binary
+// (0b01101), and float (1.4, -3.2e-4, inf, nan). Initializer don't work on a
+// string and blob, though.
+
+// Note that there should not be any whitespace around the =, because after
+// from the first whitespace, the name is taken. So, this is not what you would
+// expect, although the syntax highlighting might give you a hint:
 int8 = 42  test42
 
 // If you make this error a lot, you may prefer writing the name on the next

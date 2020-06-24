@@ -29,3 +29,7 @@ float=nan		init float nan
 float=inf		init float inf
 float=-Infinity	init float neg inf
 
+(double)		f read/write
+(uint16)		f read-only
+(string:4)		f write-only
+

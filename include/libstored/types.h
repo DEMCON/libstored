@@ -89,6 +89,8 @@ namespace stored {
 		static size_t size(type t) { return !isFixed(t) ? 0u : (size_t)(t & MaskSize) + 1u; }
 	};
 
+	constexpr static inline Type::type operator|(Type::type a, Type::type b) { return (Type::type)((uint8_t)a | (uint8_t)b); }
+
 	/*!
 	 * \private
 	 */

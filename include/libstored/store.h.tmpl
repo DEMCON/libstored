@@ -85,7 +85,13 @@ namespace stored {
         
 		Variant<Implementation> variant(Type::type type, size_t offset, size_t len) {
 			stored_assert(offset + len < sizeof(m_data.buffer));
+			stored_assert(!Type::isFunction(type));
 			return Variant<Implementation>(implementation(), type, &buffer()[offset], len);
+        }
+		
+		Variant<Implementation> variant(Type::type type, unsigned int f) {
+			stored_assert(Type::isFunction(type));
+			return Variant<Implementation>(implementation(), type, f);
         }
 		
 		template <typename T, typename I, bool H> friend class Variable;
@@ -102,7 +108,7 @@ namespace stored {
 {%     if o is function %}
 			case {{o.f}}: // {{o}}
 {%       if o is blob %}
-				return implementation().{{o.cname}}(set, buffer, len);
+				return implementation().__{{o.cname}}(set, static_cast<{{o|ctype}}*>(buffer), len);
 {%       else %}
 				stored_assert(len == sizeof({{o|ctype}}));
 				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -162,18 +168,23 @@ namespace stored {
 
 {% for o in store.objects %}
 {%   if o is blob %}
+{%     if o is variable %}
 		/*! \brief {{o}} */
-		Variant<Implementation> {{o.cname}}() { return variant({{o|stype}}, {{o.offset}}, {{o.size}}); }
+		Variant<Implementation> {{o.cname}}() { return variant({{o|stype}}, {{o.offset}}u, {{o.size}}u); }
+{%     elif o is function %}
+		/*! \brief {{o}} */
+		Variant<Implementation> {{o.cname}}() { return variant({{o|stype}}, {{o.f}}u); }
+{%     endif %}
 {%   else %}
 {%     if o is variable %}
 		/*! \brief {{o}} */
 		Variable<{{o|ctype}},Implementation> {{o.cname}}() {
 			stored_assert({{o.size}}u == sizeof({{o|ctype}})); // NOLINT(hicpp-static-assert,misc-static-assert)
-			return variable<{{o|ctype}}>({{o.offset}}); }
+			return variable<{{o|ctype}}>({{o.offset}}u); }
 {%     elif o is function %}
 		/*! \brief {{o}} */
 		Function<{{o|ctype}},Implementation> {{o.cname}}() {
-			return function<{{o|ctype}}>({{o.f}}); }
+			return function<{{o|ctype}}>({{o.f}}u); }
 {%     endif %}
 {%   endif %}
 {% endfor %}
