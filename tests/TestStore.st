@@ -33,3 +33,9 @@ float=-Infinity	init float neg inf
 (uint16)		f read-only
 (string:4)		f write-only
 
+bool[2]=True	array bool
+string:4[3]		array string
+(int32)[4]		array f int
+(blob:2)[2]		array f blob
+float[1]=3		array single
+
