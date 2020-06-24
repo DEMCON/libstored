@@ -18,12 +18,14 @@ get/set methods. However, the store has a few interesting properties:
   store to any external interface. The protocol's application layer is
   implemented and ready to use. As an application developer, you only have to
   implement the hardware-specifics, like the transport layer of the Embedded
-  Debugger protocol.
+  Debugger protocol. You can also easily extend the default set of Embedded
+  Debugger commands by adding another capability in a subclass of
+  stored::Debugger.
 - There are sufficient hooks by the store to implement an application-specific
   synchronization method, other than the Embedded Debugger.
 - All code is normal C++, there are no platform-dependent constructs used.
-  Therefore, all platforms are supported (Windows/Linux/Mac/bare
-  metal/x86/ARM/gcc/clang/MSVC).
+  Therefore, all platforms are supported: Windows/Linux/Mac/bare
+  metal (newlib), x86/ARM, gcc/clang/MSVC).
 
 Have a look in the `examples` directory for further in-depth reading.
 
@@ -50,6 +52,38 @@ generated under `examples/1_hello`, while the example itself is built in the
 To run all tests:
 
 	cmake --build . -- test
+
+### How to integrate in your build
+
+Building libstored on itself is not too interesting, it is about how it can
+generate stuff for you.  This is how to integrate it in your project:
+
+- Add libstored to your source repository, for example as a submodule.
+- Run `scripts/bootstrap` in the libstored directory once to install all
+  dependencies.
+- Include libstored to your cmake project. For example:
+
+	set(LIBSTORED_EXAMPLES OFF CACHE BOOL "Disable libstored examples" FORCE)
+	set(LIBSTORED_TESTS OFF CACHE BOOL "Disable libstored tests" FORCE)
+	set(LIBSTORED_DOCUMENTATION OFF CACHE BOOL "Disable libstored documentation" FORCE)
+	add_subdirectory(libstored)
+
+- Optional: install `scripts/st.vim` in `$HOME/.vim/syntax` to have proper
+  syntax highlighting in vim.
+- Add some store definition file to your project, let's say `MyStore.st`.
+  Assume you have a target `app` (which can be any type of cmake target), which
+  is going to use `MyStore.st`, generate all required files. This will generate
+  the sources in the `libstored` subdirectory of the current source directory,
+  a library named `app-libstored`, and set all the dependencies right.
+
+	add_application(app main.cpp)
+	libstored_generate(app FumoStore.st)
+
+- Now, build your `app`. The generated libstored library is automatically
+  built.
+
+Check out the examples of libstored, which are all independent applications
+with their own generate store.
 
 ## Syntax example
 

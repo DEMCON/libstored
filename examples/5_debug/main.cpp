@@ -7,7 +7,9 @@
 #  define strdup(s) _strdup(s)
 #endif
 
+// A 'physical layer' that sends the outgoing (encoded) data to print().
 class PrintfPhysical : public stored::ProtocolLayer {
+	CLASS_NOCOPY(PrintfPhysical)
 public:
 	typedef stored::ProtocolLayer base;
 
@@ -25,16 +27,16 @@ public:
 		free(s);
 	}
 
-	void decode(void* buffer, size_t len) override final {
+	void decode(void* buffer, size_t len) final {
 		printf(">>   %.*s\n", (int)len, (char const*)buffer);
 		base::decode(buffer, len);
 	}
 
-	void encode(void* buffer, size_t len, bool last = true) override final {
+	void encode(void* buffer, size_t len, bool last = true) final {
 		encode((void const*)buffer, len, last);
 	}
 
-	void encode(void const* buffer, size_t len, bool last = true) override final {
+	void encode(void const* buffer, size_t len, bool last = true) final {
 		if(!m_encoding) {
 			printf("<<   ");
 			m_encoding = true;
@@ -51,6 +53,42 @@ public:
 
 private:
 	bool m_encoding;
+};
+
+// Extend the capabilities with the 'z' command.
+class ExtendedDebugger : public stored::Debugger {
+	CLASS_NOCOPY(ExtendedDebugger)
+public:
+	typedef stored::Debugger base;
+	explicit ExtendedDebugger(char const* identification = nullptr)
+		: base(identification)
+	{}
+
+	virtual ~ExtendedDebugger() override is_default;
+
+	virtual void capabilities(char*& list, size_t& len, size_t reserve = 0) override {
+		// Get the default capabilities.
+		base::capabilities(list, len, reserve + 1 /* add room for our 'z' cmd */);
+		// Add our 'z' cmd.
+		list[len++] = 'z';
+	}
+
+	virtual void process(void const* frame, size_t len, ProtocolLayer& response) override {
+		if(unlikely(!frame || len == 0))
+			return;
+		
+		char const* p = static_cast<char const*>(frame);
+
+		switch(p[0]) {
+		case 'z':
+			// That's our cmd. Let's respond with something useful...
+			response.encode("Zzzz", 4);
+			break;
+		default:
+			// Not for us, forward to our base.
+			base::process(frame, len, response);
+		}
+	}
 };
 
 int main() {
@@ -127,6 +165,13 @@ int main() {
 	phy.decode("s");
 	phy.decode("sA/");
 	phy.decode("sB/");
+
+
+	// Test our debugger with the z capability.
+	ExtendedDebugger extdebugger;
+	PrintfPhysical extphy(extdebugger);
+	extphy.decode("?");
+	extphy.decode("z");
 
 	return 0;
 }
