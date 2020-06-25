@@ -78,6 +78,28 @@ Window {
                         hoverEnabled: true
                     }
                 }
+
+                ComboBox {
+                    id: format
+
+                    function strToIndex(s) {
+                        var f = obj.formats;
+                        for(var i = 0; i < f.length; i++)
+                            if(f[i] == s)
+                                return i;
+                        return -1;
+                    }
+
+                    model: obj.formats
+                    font.pixelSize: root.fontSize
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: root.fontSize * 8
+                    currentIndex: strToIndex(obj.format)
+
+                    onCurrentTextChanged: {
+                        obj.format = currentText
+                    }
+                }
                 
                 Text {
                     Layout.fillHeight: true
@@ -98,6 +120,7 @@ Window {
                     font.pixelSize: root.fontSize
                     horizontalAlignment: TextInput.AlignRight
                     text: obj.valueString
+                    readOnly: format.currentText === 'bytes'
 
                     onAccepted: {
                         obj.valueString = displayText

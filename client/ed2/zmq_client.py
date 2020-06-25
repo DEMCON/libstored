@@ -18,6 +18,7 @@
 
 import zmq
 import time
+import struct
 
 from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt
 from .zmq_server import ZmqServer
@@ -27,6 +28,7 @@ class Object(QObject):
     valueUpdated = Signal()
     pollingChanged = Signal()
     aliasChanged = Signal()
+    formatChanged = Signal()
 
     def __init__(self, name, type, size, client = None):
         super().__init__()
@@ -39,6 +41,8 @@ class Object(QObject):
         self._alias = None
         self._polling = False
         self._pollTimer = None
+        self._format = 'default'
+        self._formatter = lambda x: str(x)
 
     @Property(str, constant=True)
     def name(self):
@@ -160,27 +164,22 @@ class Object(QObject):
         return self._read()
 
     def _read(self):
-        value = self.__read()
-        self.set(value)
-        return value
-
-    def __read(self):
         if self.client == None:
             return None
         
         rep = self.client.req(b'r' + self.shortName().encode())
-        return self._decodeReadRep(rep)
+        return self.decodeReadRep(rep)
 
     # Decode a read reply.
     def decodeReadRep(self, rep, t = None):
-        value = self._decodeReadRep(rep)
-        if value != None:
-            self.set(value, t)
-
-    def _decodeReadRep(self, rep):
         if rep == b'?':
             return None
+        value = self._decode(rep)
+        if value != None:
+            self.set(value, t)
+        return value
 
+    def _decode(self, rep):
         dtype = self.type & ~self.FlagFunction
         try:
             if self.isFixed():
@@ -208,7 +207,7 @@ class Object(QObject):
             elif dtype == self.Void:
                 return b''
             elif dtype == self.Blob:
-                return rep
+                return bytearray([int(b, 16) for b in rep])
             elif dtype == self.String:
                 return rep.decode()
             else:
@@ -229,39 +228,43 @@ class Object(QObject):
 
         dtype = self.type & ~self.FlagFunction
 
-        if dtype == self.Void:
-            data = b''
-        elif dtype == self.Blob:
-            data = value
-        elif dtype == self.String:
-            data = value.encode()
-        elif dtype == self.Pointer32:
-            data = ('%x' % value).encode()
-        elif dtype == self.Pointer64:
-            data = ('%x' % value).encode()
-        elif dtype == self.Bool:
-            data = b'1' if value else b'0'
-        elif dtype == self.Float:
-            data = struct.pack('<f', value)
-        elif dtype == self.Double:
-            data = struct.pack('<d', value)
-        elif not self.isInt():
-            return False
-        elif self.isSigned():
-            data = ('%x' % value).encode()
-        elif dtype == self.Int8:
-            data = ('%2x' % value)[-2:].encode()
-        elif dtype == self.Int16:
-            data = ('%4x' % value)[-4:].encode()
-        elif dtype == self.Int32:
-            data = ('%8x' % value)[-8:].encode()
-        elif dtype == self.Int64:
-            data = ('%16x' % value)[-16:].encode()
-        else:
+        data = self._encode(value)
+        if data == None:
             return False
 
         rep = self.client.req(b'w' + data + self.shortName().encode())
         return rep == b'!'
+    
+
+    def _encodeHex(self, data, zerostrip = False):
+        s = ''.join(['%02x' % b for b in data])
+        if zerostrip:
+            s = s.lstrip('0')
+        return s.encode()
+
+    def _encode(self, value):
+        dtype = self.type & ~self.FlagFunction
+
+        if dtype == self.Void:
+            return b''
+        elif dtype == self.Blob:
+            return self._encodeHex(value)
+        elif dtype == self.String:
+            return self._encodeHex(value.encode())
+        elif dtype == self.Pointer32:
+            return ('%x' % value).encode()
+        elif dtype == self.Pointer64:
+            return ('%x' % value).encode()
+        elif dtype == self.Bool:
+            return b'1' if value else b'0'
+        elif dtype == self.Float:
+            return self._encodeHex(struct.pack('<f', value))
+        elif dtype == self.Double:
+            return self._encodeHex(struct.pack('<d', value))
+        elif not self.isInt():
+            return None
+        else:
+            return self._encodeHex(struct.pack('>q', value)[-self.size:], True)
 
     # Locally set value, but do not actually write it to the server.
     def set(self, value, t = None):
@@ -317,13 +320,56 @@ class Object(QObject):
         if v == None:
             return ""
         else:
-            return str(v)
+            try:
+                return self._formatter(v)
+            except:
+                return "?"
 
     @valueString.setter
     def _valueString_set(self, v):
         return self._value_set(v)
 
-    @Property(bool,notify=pollingChanged)
+    @Property(str, notify=formatChanged)
+    def format(self):
+        return self._format
+
+    @format.setter
+    def _format_set(self, f):
+        if self._format == f:
+            return
+
+        self._format = f
+
+        if f == 'hex':
+            self._formatter = hex
+        elif f == 'bin':
+            self._formatter = bin
+        elif f == 'bytes':
+            self._formatter = self._formatBytes
+        else:
+            self._formatter = str
+
+        self.formatChanged.emit()
+        self.valueChanged.emit()
+
+    def _formatBytes(self, value):
+        value = self._encode(value).decode()
+        value = '0' * (self.size * 2 - len(value)) + value
+        res = ''
+        for i in range(0, len(value), 2):
+            if res != []:
+                res += ' '
+            res += value[i:i+2]
+        return res
+
+    @Property('QVariant', constant=True)
+    def formats(self):
+        f = ['default', 'bytes']
+        if self.isFixed():
+            f += ['hex', 'bin']
+        return f
+
+    @Property(bool, notify=pollingChanged)
     def polling(self):
         return self._polling
 

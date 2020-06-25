@@ -21,7 +21,7 @@ import sys
 import ed2
 import argparse
 import os
-from PySide2.QtGui import QGuiApplication
+from PySide2.QtGui import QGuiApplication, QIcon
 from PySide2.QtQml import QQmlApplicationEngine
 from PySide2.QtCore import QUrl, QAbstractListModel, QModelIndex, Qt, Slot, QSortFilterProxyModel 
 
@@ -74,6 +74,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     app = QGuiApplication(sys.argv)
+    app.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "twotone_bug_report_black_48dp.png")))
     engine = QQmlApplicationEngine()
 
     client = ed2.ZmqClient(args.server, args.port)
