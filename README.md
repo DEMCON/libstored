@@ -64,8 +64,11 @@ generate stuff for you.  This is how to integrate it in your project:
 - Include libstored to your cmake project. For example:
 
 	set(LIBSTORED_EXAMPLES OFF CACHE BOOL "Disable libstored examples" FORCE)
-	set(LIBSTORED_TESTS OFF CACHE BOOL "Disable libstored tests" FORCE)
-	set(LIBSTORED_DOCUMENTATION OFF CACHE BOOL "Disable libstored documentation" FORCE)
+
+		set(LIBSTORED_TESTS OFF CACHE BOOL "Disable libstored tests" FORCE)
+
+        set(LIBSTORED_DOCUMENTATION OFF CACHE BOOL "Disable libstored documentation" FORCE)
+
 	add_subdirectory(libstored)
 
 - Optional: install `scripts/st.vim` in `$HOME/.vim/syntax` to have proper
