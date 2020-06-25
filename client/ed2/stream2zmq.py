@@ -51,7 +51,7 @@ class Stream2Zmq(ZmqServer):
 
         inMsg = len(self.stdout_msg) > 0
         for b in data:
-            if inMsg: 
+            if inMsg:
                 self.stdout_msg.append(b)
                 if self.stdout_msg[-2:] == b'\x1b\\':
                     # Found end of message
@@ -93,8 +93,7 @@ class Stream2Zmq(ZmqServer):
         res += b'\x1b\\'
         return res
 
-    @staticmethod
-    def decode(message):
+    def decode(self, message):
         # Strip APC and ST
         data = message[2:-2]
 

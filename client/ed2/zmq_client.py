@@ -354,6 +354,62 @@ class Object(QObject):
 
         self._pollTimer.start()
 
+class Macro(object):
+    def __init__(self, client, reqsep=b'\n', repsep=b' '):
+        self.client = client
+
+        self.macro = client.acquireMacro()
+        if self.macro != None:
+            self.macro = self.macro.encode()
+
+        self.cmds = {}
+
+        if isinstance(reqsep, str):
+            reqsep = reqsep.encode()
+        self.reqsep = reqsep
+
+        if isinstance(repsep, str):
+            repsep = repsep.encode()
+        self.repsep = repsep
+
+    def add(self, cmd, cb, key):
+        if isinstance(cmd, str):
+            cmd = cmd.encode()
+        self.cmds[key] = (cmd, cb)
+        self._update()
+
+    def remove(self, key):
+        if key in self.cmds[k]:
+            del self.cmds[k]
+            self._update()
+
+    def _update(self):
+        if self.macro == None:
+            return
+
+        cmds = []
+        for c in self.cmds.values():
+            if cmds != []:
+                cmds.append(b'e' + self.repsep)
+            cmds.append(c[0])
+
+        self.client.assignMacro(self.macro, cmds, self.reqsep)
+
+    def run(self):
+        if self.macro != None:
+            rep = self.client.req(self.macro)
+            cb = list(self.cmds.values())
+            values = rep.split(self.repsep)
+            if len(cb) != len(values):
+                print("Unexpected response length")
+                return
+
+            for i in range(0, len(values)):
+                cb[i][1](values[i])
+        else:
+            for c in self.cmds.values():
+                c[1](self.client.req(c[0]))
+
 
 class ZmqClient(QObject):
 
@@ -366,6 +422,9 @@ class ZmqClient(QObject):
         self.availableAliases = None
         self.temporaryAliases = {}
         self.permanentAliases = {}
+        self.availableMacros = None
+        self.usedMacros = []
+        self.objects = None
     
     @Slot(str,result=str)
     def req(self, message):
@@ -396,12 +455,38 @@ class ZmqClient(QObject):
 
     # Returns a list of Objects, registered to this client.
     def list(self):
+        if self.objects != None:
+            return self.objects
+
         res = []
         for o in self.req(b'l').decode().split('\n'):
             obj = Object.listResponseDecode(o, self)
             if obj != None:
                 res.append(obj)
+
+        self.objects = res
         return res
+
+    def find(self, name):
+        chunks = name.split('/')
+        obj = []
+        for o in self.list():
+            ochunks = o.name.split('/')
+            if len(chunks) != len(ochunks):
+                continue
+            match = True
+            for i in range(0, len(ochunks)):
+                if not (chunks[i].startswith(ochunks[i]) or ochunks[i].startswith(chunks[i])):
+                    match = False
+            if match:
+                obj.append(o)
+
+        if obj == []:
+            return None
+        elif len(obj) == 1:
+            return obj[0]
+        else:
+            return obj
     
     @Slot(result=str)
     def identification(self):
@@ -521,7 +606,7 @@ class ZmqClient(QObject):
 
             self.releaseAlias(tmp)
 
-            # Ok, we should have some more space now. Retry.
+            # OK, we should have some more space now. Retry.
             if not self._setAlias(a, obj.name):
                 # Still failing, give up.
                 return None
@@ -606,3 +691,50 @@ class ZmqClient(QObject):
             else:
                 print("Permanent aliases: \n\t" + '\n\t'.join([f'{a}: {o.name}' for a,o in self.permanentAliases.items()]))
 
+    def acquireMacro(self, cmds = None, sep='\n'):
+        if self.availableMacros == None:
+            # Not initialized yet.
+            capabilities = self.capabilities()
+            if not 'm' in capabilities:
+                # Not supported.
+                self.availableMacros = []
+            else:
+                self.availableMacros = list(map(chr, range(0x20, 0x7f)))
+                for c in capabilities:
+                    self.availableMacros.remove(c)
+
+        if self.availableMacros == []:
+            return None
+
+        m = self.availableMacros.pop()
+        if cmds != None:
+            if not self.assignMacro(m, cmds, sep):
+                # Setting macro failed. Rollback.
+                self.availableMacros.append(m)
+                return None
+
+        self.usedMacros.append(m)
+        return m
+
+    def assignMacro(self, m, cmds, sep=b'\n'):
+        if isinstance(m, str):
+            m = m.encode()
+        if isinstance(sep, str):
+            sep = sep.encode()
+
+        definition = b'm' + m
+
+        for cmd in cmds:
+            if isinstance(cmd, str):
+                cmd = cmd.encode()
+            definition += sep + cmd
+
+        return self.req(definition) == b'!'
+
+    def releaseMacro(self, m):
+        if m in self.usedMacros:
+            self.usedMacros.remove(m)
+            self.availableMacros.append(m)
+            self.req(b'm' + m.encode())
+
+        

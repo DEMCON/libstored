@@ -402,11 +402,25 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 
 		p += 2;
 		len -= 2;
-		if(len + m_macroSize > Config::DebuggerMacro)
-			goto error;
 
-		macros().insert(MacroMap::value_type(m, std::string(p, len)));
-		m_macroSize += len;
+		MacroMap::iterator it = macros().find(m);
+		if(it == macros().end()) {
+			// New macro.
+			size_t newlen = len + m_macroSize;
+			if(newlen > Config::DebuggerMacro)
+				goto error;
+
+			macros().insert(MacroMap::value_type(m, std::string(p, len)));
+			m_macroSize = newlen;
+		} else {
+			// Update existing macro.
+			size_t newlen = len + m_macroSize - it->second.size();;
+			if(newlen > Config::DebuggerMacro)
+				goto error;
+
+			it->second = std::string(p, len);
+			m_macroSize = newlen;
+		}
 		break;
 	}
 	case CmdIdentification: {

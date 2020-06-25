@@ -50,6 +50,11 @@ class Stdio2Zmq(Stream2Zmq):
             self.process.stdin.write(data)
             self.process.stdin.flush()
     
+    def decode(self, message):
+        # Remove \r as they can be inserted automatically by Windows.
+        # If \r is meant to be sent, escape it.
+        return super().decode(message.replace(b'\r', b''))
+    
     def close(self):
         self.process.terminate()
         super().close()

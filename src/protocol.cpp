@@ -95,9 +95,13 @@ static char needEscape(char c) {
 		switch(c) {
 		case '\t':
 		case '\n':
-		case '\r':
 			// Don't escape.
 			return 0;
+
+		case '\r':
+			// Do escape \r, as Windows may inject it automatically.  So, if \r
+			// is meant to be sent, escape it, such that the client may remove
+			// all (unescaped) \r's automatically.
 		default:
 			return (char)((uint8_t)c | 0x40u);
 		}

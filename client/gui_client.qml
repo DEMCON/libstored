@@ -30,6 +30,22 @@ Window {
     width: 800
     height: 600
 
+    Component.onCompleted: {
+        var text = "Embedded Debugger"
+
+        var id = client.identification()
+        if(id && id !== "?")
+        {
+            text += ": " + id
+
+            var v = client.version()
+            if(v && v !== "?")
+                text += " (" + v + ")"
+        }
+
+        root.title = text
+    }
+
     readonly property int fontSize: 12
 
     Component {
