@@ -63,13 +63,10 @@ generate stuff for you.  This is how to integrate it in your project:
   dependencies.
 - Include libstored to your cmake project. For example:
 
-	set(LIBSTORED_EXAMPLES OFF CACHE BOOL "Disable libstored examples" FORCE)
-
+		set(LIBSTORED_EXAMPLES OFF CACHE BOOL "Disable libstored examples" FORCE)
 		set(LIBSTORED_TESTS OFF CACHE BOOL "Disable libstored tests" FORCE)
-
-        set(LIBSTORED_DOCUMENTATION OFF CACHE BOOL "Disable libstored documentation" FORCE)
-
-	add_subdirectory(libstored)
+		set(LIBSTORED_DOCUMENTATION OFF CACHE BOOL "Disable libstored documentation" FORCE)
+		add_subdirectory(libstored)
 
 - Optional: install `scripts/st.vim` in `$HOME/.vim/syntax` to have proper
   syntax highlighting in vim.
@@ -79,8 +76,8 @@ generate stuff for you.  This is how to integrate it in your project:
   the sources in the `libstored` subdirectory of the current source directory,
   a library named `app-libstored`, and set all the dependencies right.
 
-	add_application(app main.cpp)
-	libstored_generate(app FumoStore.st)
+		add_application(app main.cpp)
+		libstored_generate(app FumoStore.st)
 
 - Now, build your `app`. The generated libstored library is automatically
   built.
