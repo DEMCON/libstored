@@ -101,7 +101,7 @@ Window {
 
                     onAccepted: {
                         obj.valueString = displayText
-                        text = obj.valueString
+                        Qt.callLater(function() { text = obj.valueString })
                     }
 
                     property bool editing: activeFocus && text != obj.valueString 
@@ -179,6 +179,34 @@ Window {
                     interval: 300
                     repeat: false
                     onTriggered: objects.setFilterRegularExpression(filter.text)
+                }
+            }
+            
+            TextField {
+                id: defaultPollField
+                Layout.fillHeight: true
+                Layout.preferredWidth: root.fontSize * 5
+                placeholderText: "poll interval (s)"
+                horizontalAlignment: Text.AlignRight
+
+                ToolTip.text: "poll interval (s)"
+                ToolTip.visible: hovered
+                ToolTip.delay: 1000
+
+                property string valueString: client ? client.defaultPollInterval : ""
+                text: valueString
+
+                onAccepted: {
+                    client.defaultPollInterval = text
+                    Qt.callLater(function() { text = valueString })
+                }
+
+                property bool editing: activeFocus && text != valueString 
+                color: editing ? "red" : "black"
+
+                onActiveFocusChanged: {
+                    if(!activeFocus)
+                        text = valueString
                 }
             }
 

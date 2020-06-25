@@ -330,29 +330,47 @@ class Object(QObject):
     @polling.setter
     def _polling_set(self, enable):
         if self._polling != enable:
-            self._polling = enable
-            self.pollingChanged.emit()
             if enable:
-                self.poll(self.client.defaultPollInterval)
-            elif self._pollTimer != None:
-                self._pollTimer.stop()
+                self.poll()
+            else:
+                self.poll(None)
 
-    def poll(self, interval):
-        self.polling = True
-        self.read()
+    def poll(self, interval_s=0):
+        if self.client != None:
+            self.client.poll(self, interval_s)
+
+    def _pollStop(self):
+        self._pollSetFlag(False)
+        if self._pollTimer != None:
+            self._pollTimer.stop()
+
+    def _pollSlow(self, interval_s):
+        self._pollSetFlag(True)
+
+        self._read()
+
         if self._pollTimer == None:
             self._pollTimer = QTimer(parent=self)
             self._pollTimer.timeout.connect(self._read)
-        self._pollTimer.setInterval(interval * 1000)
-        self._pollTimer.setSingleShot(False)
-        if interval < 0.01:
-            self._pollTimer.setTimerType(Qt.PreciseTimer)
-        elif interval < 2:
+            self._pollTimer.setSingleShot(False)
+
+        self._pollTimer.setInterval(interval_s * 1000)
+        if interval_s < 2:
             self._pollTimer.setTimerType(Qt.CoarseTimer)
         else:
             self._pollTimer.setTimerType(Qt.VeryCoarseTimer)
 
         self._pollTimer.start()
+
+    def _pollFast(self, interval_s):
+        self._pollSetFlag(True)
+        if self._pollTimer != None:
+            self._pollTimer.stop()
+
+    def _pollSetFlag(self, enable):
+        if self._polling != enable:
+            self._polling = enable
+            self.pollingChanged.emit()
 
 class Macro(object):
     def __init__(self, client, reqsep=b'\n', repsep=b' '):
@@ -378,9 +396,18 @@ class Macro(object):
         self.cmds[key] = (cmd, cb)
         self._update()
 
+        # Check if it still works...
+        if self.run():
+            # Success.
+            return True
+
+        # Rollback.
+        self.remove(key)
+        return False
+
     def remove(self, key):
-        if key in self.cmds[k]:
-            del self.cmds[k]
+        if key in self.cmds:
+            del self.cmds[key]
             self._update()
 
     def _update(self):
@@ -401,8 +428,7 @@ class Macro(object):
             cb = list(self.cmds.values())
             values = rep.split(self.repsep)
             if len(cb) != len(values):
-                print("Unexpected response length")
-                return
+                return False
 
             for i in range(0, len(values)):
                 cb[i][1](values[i])
@@ -410,8 +436,17 @@ class Macro(object):
             for c in self.cmds.values():
                 c[1](self.client.req(c[0]))
 
+        return True
+
+    def __len__(self):
+        return len(self.cmds)
+
 
 class ZmqClient(QObject):
+    
+    fastPollThreshold_s = 0.9
+    slowPollInterval_s = 2.0
+    defaultPollIntervalChanged = Signal()
 
     def __init__(self, address='localhost', port=ZmqServer.default_port):
         super().__init__()
@@ -425,6 +460,8 @@ class ZmqClient(QObject):
         self.availableMacros = None
         self.usedMacros = []
         self.objects = None
+        self.fastPollMacro = None
+        self.fastPollTimer = None
     
     @Slot(str,result=str)
     def req(self, message):
@@ -530,13 +567,16 @@ class ZmqClient(QObject):
             raise ValueError('Invalid stream name ' + s)
         return self.req(b's' + (s + suffix).encode()).decode()
 
-    @Property(float)
+    @Property(float, notify=defaultPollIntervalChanged)
     def defaultPollInterval(self):
         return self._defaultPollInterval
 
     @defaultPollInterval.setter
     def _defaultPollInterval_set(self, interval):
-        self._defaultPollInterval = interval
+        interval = max(0.0001, float(interval))
+        if interval != self._defaultPollInterval:
+            self._defaultPollInterval = interval
+            self.defaultPollIntervalChanged.emit()
 
     def acquireAlias(self, obj, prefer=None, temporary=True):
         if prefer == None and obj.alias != None:
@@ -737,4 +777,43 @@ class ZmqClient(QObject):
             self.availableMacros.append(m)
             self.req(b'm' + m.encode())
 
+    def poll(self, obj, interval_s=0):
+        if interval_s == None:
+            self._pollStop(obj)
+            return
+
+        if interval_s <= 0:
+            interval_s = self.defaultPollInterval
+
+        if interval_s < self.fastPollThreshold_s:
+            self._pollFast(obj, interval_s)
+        else:
+            self._pollSlow(obj, interval_s)
+
+    def _pollFast(self, obj, interval_s):
+        if self.fastPollMacro == None:
+            self.fastPollMacro = Macro(self)
+            self.fastPollTimer = QTimer(parent=self)
+            self.fastPollTimer.timeout.connect(lambda: self.fastPollMacro.run())
+            self.fastPollTimer.setInterval(self.fastPollThreshold_s * 1000)
+            self.fastPollTimer.setSingleShot(False)
+            self.fastPollTimer.setTimerType(Qt.PreciseTimer)
+
+        if not self.fastPollMacro.add(b'r' + obj.shortName().encode(), obj.decodeReadRep, obj):
+            self._pollSlow(obj, interval_s)
+        else:
+            obj._pollFast(interval_s)
+            self.fastPollTimer.setInterval(min(self.fastPollTimer.interval(), interval_s * 1000))
+            self.fastPollTimer.start()
+        
+    def _pollSlow(self, obj, interval_s):
+        obj._pollSlow(max(self.slowPollInterval_s, interval_s))
+    
+    def _pollStop(self, obj):
+        if self.fastPollMacro != None:
+            self.fastPollMacro.remove(obj)
+            if len(self.fastPollMacro) == 0:
+                self.fastPollTimer.stop()
+                self.fastPollTimer.setInterval(self.fastPollThreshold_s * 1000)
+        obj._pollStop()
         
