@@ -83,7 +83,7 @@ generate stuff for you.  This is how to integrate it in your project:
   built.
 
 Check out the examples of libstored, which are all independent applications
-with their own generate store.
+with their own generated store.
 
 ## Syntax example
 
