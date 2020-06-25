@@ -32,6 +32,16 @@ Window {
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: root.fontSize
                     fontSizeMode: Text.VerticalFit
+
+                    ToolTip.text: "Alias: " + obj.alias
+                    ToolTip.visible: mouseArea.containsMouse && obj.alias
+                    ToolTip.delay: 1000
+
+                    MouseArea {
+                        id: mouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                    }
                 }
                 
                 Text {
@@ -127,7 +137,14 @@ Window {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 placeholderText: "enter regex filter"
-                onTextChanged: objects.setFilterRegularExpression(text)
+                onTextChanged: regexTimer.restart()
+
+                Timer {
+                    id: regexTimer
+                    interval: 300
+                    repeat: false
+                    onTriggered: objects.setFilterRegularExpression(filter.text)
+                }
             }
 
             Button {

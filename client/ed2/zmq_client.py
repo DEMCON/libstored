@@ -10,6 +10,7 @@ class Object(QObject):
     valueChanged = Signal()
     valueUpdated = Signal()
     pollingChanged = Signal()
+    aliasChanged = Signal()
 
     def __init__(self, name, type, size, client = None):
         super().__init__()
@@ -105,37 +106,32 @@ class Object(QObject):
             }.get(self.type & ~self.FlagFunction, '?')
         return f'({t})' if self.isFunction() else t
 
-    @property
+    @Property(str, notify=aliasChanged)
     def alias(self):
         return self._alias
 
-    @alias.setter
-    def alias(self, a):
+    def _alias_set(self, a):
         if a == self._alias:
             return
 
-        if a != None and not (isinstance(a, str) and len(a) == 1):
-            raise ValueError('Invalid alias ' + a)
-
-        if self.client != None:
-            # Drop prevous alias
-            if self._alias != None:
-                self.client.req(b'a' + self._alias.encode())
-
-            if a != None:
-                rep = self.client.req(b'a' + a.encode() + self.name.encode())
-                if rep != b'!':
-                    # Failed setting, drop alias all together.
-                    a = None
-
         self._alias = a
+        self.aliasChanged.emit()
 
     # Return the alias or the normal name, if no alias was set.
     def shortName(self):
         if self._alias != None:
             return self._alias
-        else:
-            return self.name
+
+        if self.client != None:
+            # We don't have an alias, try to get one.
+            self.client.acquireAlias(self)
+
+        if self._alias != None:
+            # We may have got one. Use it.
+            return self._alias
+
+        # Still not alias, return name instead.
+        return self.name
 
     @staticmethod
     def sign_extend(value, bits):
@@ -351,11 +347,15 @@ class ZmqClient(QObject):
         self.socket = self.context.socket(zmq.REQ)
         self.socket.connect(f'tcp://{address}:{port}')
         self._defaultPollInterval = 1
+        self.availableAliases = None
+        self.temporaryAliases = {}
+        self.permanentAliases = {}
     
     @Slot(str,result=str)
     def req(self, message):
         if isinstance(message,str):
             return self.req(message.encode()).decode()
+        print(message)
 
         self.socket.send(message)
         return self.socket.recv()
@@ -436,4 +436,157 @@ class ZmqClient(QObject):
     @defaultPollInterval.setter
     def _defaultPollInterval_set(self, interval):
         self._defaultPollInterval = interval
+
+    def acquireAlias(self, obj, prefer=None, temporary=True):
+        if prefer == None and obj.alias != None:
+            if temporary != self._isTemporaryAlias(obj.alias):
+                # Switch type
+                return self._reassignAlias(obj.alias, obj, temporary)
+            else:
+                # Already assigned one.
+                return obj.alias
+        if prefer != None:
+            if obj.alias != prefer:
+                # Go assign one.
+                pass
+            elif temporary != self._isTemporaryAlias(prefer):
+                # Switch type
+                return self._reassignAlias(prefer, obj, temporary)
+            else:
+                # Already assigned preferred one.
+                return prefer
+
+        if self.availableAliases == None:
+            # Not yet initialized
+            if 'a' in self.capabilities():
+                self.availableAliases = list(map(chr, range(0x20, 0x7f)))
+                self.availableAliases.remove('/')
+            else:
+                self.availableAliases = []
+        
+        if prefer != None:
+            if self._isAliasAvailable(prefer):
+                return self._acquireAlias(prefer, obj, temporary)
+            elif self._isTemporaryAlias(prefer):
+                return self._reassignAlias(prefer, obj, temporary)
+            else:
+                # Cannot reassign permanent alias.
+                return None
+        else:
+            a = self._getFreeAlias()
+            if a == None:
+                a = self._getTemporaryAlias()
+            if a == None:
+                # Nothing free.
+                return None
+            return self._acquireAlias(a, obj, temporary)
+
+    def _isAliasAvailable(self, a):
+        return a in self.availableAliases
+    
+    def _isTemporaryAlias(self, a):
+        return a in self.temporaryAliases
+
+    def _isAliasInUse(self, a):
+        return a in self.temporaryAliases or a  in self.permanentAliases
+
+    def _acquireAlias(self, a, obj, temporary):
+        assert not self._isAliasInUse(a)
+
+        if not (isinstance(a, str) and len(a) == 1):
+            raise ValueError('Invalid alias ' + a)
+
+        if not self._setAlias(a, obj.name):
+            # Too many aliases, apparently. Drop a temporary one.
+            tmp = self._getTemporaryAlias()
+            if tmp == None:
+                # Nothing to drop.
+                return None
+
+            self.releaseAlias(tmp)
+
+            # Ok, we should have some more space now. Retry.
+            if not self._setAlias(a, obj.name):
+                # Still failing, give up.
+                return None
+
+        # Success!
+        if a in self.availableAliases:
+            self.availableAliases.remove(a)
+        if temporary:
+            self.temporaryAliases[a] = obj
+        else:
+            self.permanentAliases[a] = obj
+        obj._alias_set(a)
+        return a
+
+    def _setAlias(self, a, name):
+        rep = self.req(b'a' + a.encode() + name.encode())
+        return rep == b'!'
+
+    def _reassignAlias(self, a, obj, temporary):
+        assert a in self.temporaryAliases or a in self.permanentAliases
+        assert not self._isAliasAvailable(a)
+
+        if not self._setAlias(a, obj.name):
+            return None
+
+        self._releaseAlias(a)
+        if a in self.availableAliases:
+            self.availableAliases.remove(a)
+        if temporary:
+            self.temporaryAliases[a] = obj
+        else:
+            self.permanentAliases[a] = obj
+        obj._alias_set(a)
+        return a
+    
+    def _releaseAlias(self, alias):
+        obj = None
+        if alias in self.temporaryAliases:
+            obj = self.temporaryAliases[alias]
+            del self.temporaryAliases[alias]
+        elif alias in self.permanentAliases:
+            obj = self.permanentAliases[alias]
+            del self.permanentAliases[alias]
+
+        if obj != None:
+            obj._alias_set(None)
+            self.availableAliases.append(alias)
+
+        return obj
+
+    def _getFreeAlias(self):
+        if self.availableAliases == []:
+            return None
+        else:
+            return self.availableAliases.pop()
+
+    def _getTemporaryAlias(self):
+        keys = list(self.temporaryAliases.keys())
+        if keys == []:
+            return None
+        a = keys[0] # pick oldest one
+        self._releaseAlias(a)
+        return a
+
+    def releaseAlias(self, alias):
+        self._releaseAlias(alias)
+        self.req(b'a' + alias.encode())
+
+    def _printAliasMap(self):
+        if self.availableAliases == None:
+            print("Not initialized")
+        else:
+            print("Available aliases: " + ''.join(self.availableAliases))
+
+            if len(self.temporaryAliases) == 0:
+                print("No temporary aliases")
+            else:
+                print("Temporary aliases:\n\t" + '\n\t'.join([f'{a}: {o.name}' for a,o in self.temporaryAliases.items()]))
+
+            if len(self.permanentAliases) == 0:
+                print("No permanent aliases")
+            else:
+                print("Permanent aliases: \n\t" + '\n\t'.join([f'{a}: {o.name}' for a,o in self.permanentAliases.items()]))
 

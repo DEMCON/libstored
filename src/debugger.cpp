@@ -370,7 +370,10 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 			it->second = variant;
 		} else {
 			// Add new alias.
-			aliases().insert(std::make_pair(a, variant));
+			std::pair<AliasMap::iterator, bool> inserted = aliases().insert(std::make_pair(a, variant));
+			if(!inserted.second)
+				// Already there. Replace it.
+				inserted.first->second = variant;
 		}
 		break;
 	}
