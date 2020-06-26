@@ -134,7 +134,7 @@ namespace stored {
 		size_t __{{o.cname}}(bool UNUSED_PAR(set), {{o|ctype}}* UNUSED_PAR(value), size_t UNUSED_PAR(len)) { return 0; }
 {%     else %}
 		/*! \brief Callback for {{o}} */
-		void __{{o.cname}}(bool UNUSED_PAR(set), {{o|ctype}}& UNUSED_PAR(value)) {}
+		void __{{o.cname}}(bool set, {{o|ctype}}& value) { if(!set) value = ({{o|ctype}})0; }
 {%     endif %}
 {%   endif %}
 {% endfor %}

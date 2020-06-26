@@ -245,6 +245,7 @@ Window {
         }
 
         ListView {
+            clip: true
             Layout.fillHeight: true
             Layout.fillWidth: true
             id: objectList
@@ -255,6 +256,7 @@ Window {
         }
 
         ListView {
+            clip: true
             Layout.preferredHeight: contentHeight
             Layout.maximumHeight: parent.height / 3
             Layout.topMargin: 5

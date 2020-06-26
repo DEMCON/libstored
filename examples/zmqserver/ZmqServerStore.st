@@ -16,8 +16,8 @@ string:15 a string
 
 {
 	(int32)		an int8 + an int16
-	(double)	circle area (r = /double)
-	(uint32)	length of /string
+	(double)	circle area (r = /a double)
+	(uint32)	length of /a string
 } compute
 
 {

@@ -108,7 +108,7 @@ int ZmqLayer::recv(bool block) {
 
 	more = zmq_msg_more(&msg);
 
-	if(unlikely(!m_bufferSize || more || zmq_msg_get(&msg, ZMQ_SHARED))) {
+	if(unlikely(m_bufferSize || more || zmq_msg_get(&msg, ZMQ_SHARED))) {
 		// Save for later processing.
 		size_t msgSize = zmq_msg_size(&msg);
 		size_t newBufferSize = m_bufferSize + msgSize;

@@ -369,10 +369,10 @@ namespace stored {
 				len = container().callback(true, const_cast<void*>(src), len, (unsigned int)m_f);
 			} else {
 				if(Type::isFixed(type())) {
-					stored_assert(len == size() || len == 0);
+					if(len != size() && len != 0)
+						return 0;
 					len = size();
 				} else {
-					stored_assert(len <= size());
 					len = std::min(len, size());
 				}
 

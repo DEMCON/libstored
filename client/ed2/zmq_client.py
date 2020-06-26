@@ -41,8 +41,8 @@ class Object(QObject):
         self._alias = None
         self._polling = False
         self._pollTimer = None
-        self._format = 'default'
-        self._formatter = lambda x: str(x)
+        self._format = None
+        self._format_set(self.formats[0])
 
     @Property(str, constant=True)
     def name(self):
@@ -179,6 +179,15 @@ class Object(QObject):
             self.set(value, t)
         return value
 
+    def _decodeHex(self, data):
+        data = data.decode()
+        if len(data) % 2 == 1:
+            data = '0' + data
+        res = bytearray()
+        for i in range(0, len(data), 2):
+            res.append(int(data[i:i+2], 16))
+        return res
+
     def _decode(self, rep):
         dtype = self.type & ~self.FlagFunction
         try:
@@ -195,9 +204,9 @@ class Object(QObject):
                 elif dtype == self.Int64:
                     return self.sign_extend(binint, 64)
                 elif dtype == self.Float:
-                    return struct.unpack('<f', struct.pack('<I', dint))[0]
+                    return struct.unpack('<f', struct.pack('<I', binint))[0]
                 elif dtype == self.Double:
-                    return struct.unpack('<d', struct.pack('<Q', dint))[0]
+                    return struct.unpack('<d', struct.pack('<Q', binint))[0]
                 elif dtype == self.Bool:
                     return binint != 0
                 elif dtype == self.Pointer32 or dtype == self.Pointer64:
@@ -207,12 +216,12 @@ class Object(QObject):
             elif dtype == self.Void:
                 return b''
             elif dtype == self.Blob:
-                return bytearray([int(b, 16) for b in rep])
+                return self._decodeHex(rep)
             elif dtype == self.String:
-                return rep.decode()
+                return self._decodeHex(rep).decode()
             else:
                 return None
-        except ValueError:
+        except:
             return None
 
     # Write value to server.
@@ -245,26 +254,31 @@ class Object(QObject):
     def _encode(self, value):
         dtype = self.type & ~self.FlagFunction
 
-        if dtype == self.Void:
-            return b''
-        elif dtype == self.Blob:
-            return self._encodeHex(value)
-        elif dtype == self.String:
-            return self._encodeHex(value.encode())
-        elif dtype == self.Pointer32:
-            return ('%x' % value).encode()
-        elif dtype == self.Pointer64:
-            return ('%x' % value).encode()
-        elif dtype == self.Bool:
-            return b'1' if value else b'0'
-        elif dtype == self.Float:
-            return self._encodeHex(struct.pack('<f', value))
-        elif dtype == self.Double:
-            return self._encodeHex(struct.pack('<d', value))
-        elif not self.isInt():
+        try:
+            if dtype == self.Void:
+                return b''
+            elif dtype == self.Blob:
+                return self._encodeHex(value)
+            elif dtype == self.String:
+                return self._encodeHex(value.encode()) + b'00'
+            elif dtype == self.Pointer32:
+                return ('%x' % value).encode()
+            elif dtype == self.Pointer64:
+                return ('%x' % value).encode()
+            elif dtype == self.Bool:
+                return b'1' if value else b'0'
+            elif dtype == self.Float:
+                return self._encodeHex(struct.pack('>f', value))
+            elif dtype == self.Double:
+                return self._encodeHex(struct.pack('>d', value))
+            elif not self.isInt():
+                return None
+            elif self.isSigned():
+                return self._encodeHex(struct.pack('>q', value)[-self.size:], True)
+            else:
+                return self._encodeHex(struct.pack('>Q', value)[-self.size:], True)
+        except:
             return None
-        else:
-            return self._encodeHex(struct.pack('>q', value)[-self.size:], True)
 
     # Locally set value, but do not actually write it to the server.
     def set(self, value, t = None):
@@ -364,6 +378,9 @@ class Object(QObject):
 
     @Property('QVariant', constant=True)
     def formats(self):
+        if self.type == self.Blob:
+            return ['bytes']
+
         f = ['default', 'bytes']
         if self.isFixed():
             f += ['hex', 'bin']
@@ -516,7 +533,7 @@ class ZmqClient(QObject):
 #        print(message)
 
         self.socket.send(message)
-        return self.socket.recv()
+        return b''.join(self.socket.recv_multipart())
 
     def timestampToTime(self, t = None):
         if t == None:
