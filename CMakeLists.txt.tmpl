@@ -11,9 +11,11 @@ add_library({{libprefix}}libstored
     ${libstored_dir}/include/libstored/types.h
     ${libstored_dir}/include/libstored/directory.h
     ${libstored_dir}/include/libstored/util.h
+    ${libstored_dir}/include/libstored/zmq.h
     ${libstored_dir}/src/directory.cpp
     ${libstored_dir}/src/debugger.cpp
     ${libstored_dir}/src/protocol.cpp
+    ${libstored_dir}/src/zmq.cpp
 {% for m in models %}
     ${CMAKE_CURRENT_SOURCE_DIR}/{{m|header}}
     ${CMAKE_CURRENT_SOURCE_DIR}/{{m|src}}
@@ -39,8 +41,8 @@ else()
 	target_compile_options({{libprefix}}libstored PRIVATE -Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion -ffunction-sections -fdata-sections)
 endif()
 
-CHECK_INCLUDE_FILE_CXX("valgrind/memcheck.h" STORED_HAVE_VALGRIND)
-if(STORED_HAVE_VALGRIND)
+CHECK_INCLUDE_FILE_CXX("valgrind/memcheck.h" LIBSTORED_HAVE_VALGRIND)
+if(LIBSTORED_HAVE_VALGRIND)
 	target_compile_definitions({{libprefix}}libstored PUBLIC -DSTORED_HAVE_VALGRIND)
 endif()
 
@@ -50,6 +52,14 @@ if(TARGET libzth)
 		PRIVATE $<TARGET_PROPERTY:libzth,INTERFACE_INCLUDE_DIRECTORIES>
 	)
 	target_link_libraries({{libprefix}}libstored INTERFACE libzth)
+endif()
+
+if(LIBSTORED_HAVE_LIBZMQ)
+	target_compile_definitions({{libprefix}}libstored PUBLIC -DSTORED_HAVE_ZMQ)
+	target_include_directories({{libprefix}}libstored
+		PRIVATE $<TARGET_PROPERTY:libzmq,INTERFACE_INCLUDE_DIRECTORIES>
+	)
+	target_link_libraries({{libprefix}}libstored INTERFACE libzmq)
 endif()
 
 if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
@@ -83,7 +93,7 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
                 "-readability-else-after-return,"
             )
             set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
-                "-header-filter=.*libstored.*")
+                "-header-filter=.*includ/libstored.*")
         endif()
 
         set_target_properties({{libprefix}}libstored

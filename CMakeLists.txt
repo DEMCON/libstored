@@ -37,6 +37,10 @@ else()
 	set(PYTHON_EXECUTABLE "python3" CACHE STRING "Path to the python executable" FORCE)
 endif()
 
+option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
+
+add_subdirectory(extern)
+
 set(LIBSTORED_SOURCE_DIR ${PROJECT_SOURCE_DIR} CACHE STRING "Path to the libstored sources" FORCE)
 
 function(libstored_generate target) # add all other models as varargs

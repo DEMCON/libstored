@@ -153,9 +153,9 @@ namespace stored {
 
 		bool m_encodeState;
 	};
-
-
 } // namespace
 #endif // __cplusplus
-#endif // __LIBSTORED_PROTOCOL_H
 
+#include <libstored/zmq.h>
+
+#endif // __LIBSTORED_PROTOCOL_H

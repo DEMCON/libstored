@@ -32,5 +32,6 @@
 #include <libstored/util.h>
 #include <libstored/debugger.h>
 #include <libstored/protocol.h>
+#include <libstored/zmq.h>
 
 #endif // __LIBSTORED_H

@@ -2059,6 +2059,8 @@ PREDEFINED             = DOXYGEN \
 						 __x86_64__ \
 						 __attribute__(x)= \
 						 EXTERN_C= \
+						 _DEBUG \
+						 STORED_HAVE_ZMQ \
 
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
