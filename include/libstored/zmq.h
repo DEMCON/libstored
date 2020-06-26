@@ -25,6 +25,10 @@
 #  ifdef STORED_HAVE_ZMQ
 #    include <libstored/protocol.h>
 
+#  ifdef STORED_OS_WINDOWS
+#    include <winsock2.h>
+#  endif
+
 namespace stored {
 
 	/*!
@@ -44,6 +48,14 @@ namespace stored {
 
 		void* context() const;
 		virtual int recv(bool block = false);
+
+#ifdef STORED_OS_WINDOWS
+		typedef SOCKET socket_type;
+#else
+		typedef int socket_type;
+#endif
+		socket_type fd();
+
 
 #ifndef DOXYGEN // Doxygen gets confused about the const and non-const overload.
 		void encode(void* buffer, size_t len, bool last = true) final;

@@ -70,6 +70,21 @@ void* ZmqLayer::context() const {
 	return m_context;
 }
 
+ZmqLayer::socket_type ZmqLayer::fd() {
+	socket_type socket;
+	size_t size = sizeof(socket);
+
+	if(zmq_getsockopt(m_socket, ZMQ_FD, &socket, &size) == -1) {
+#ifdef STORED_OS_WINDOWS
+		return INVALID_SOCKET;
+#else
+		return -1;
+#endif
+	}
+
+	return socket;
+}
+
 int ZmqLayer::recv(bool block) {
 	int res = 0;
 	int more;

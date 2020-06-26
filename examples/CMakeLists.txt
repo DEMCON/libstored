@@ -15,3 +15,7 @@ add_subdirectory(4_function)
 add_subdirectory(5_debug)
 add_subdirectory(terminal)
 
+if(LIBSTORED_HAVE_LIBZMQ)
+	add_subdirectory(zmqserver)
+endif()
+
