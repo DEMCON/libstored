@@ -68,8 +68,8 @@ Window {
                     font.pixelSize: root.fontSize
                     fontSizeMode: Text.VerticalFit
 
-                    ToolTip.text: "Alias: " + obj.alias
-                    ToolTip.visible: mouseArea.containsMouse && obj.alias
+                    ToolTip.text: obj.name + (obj.alias ? "\nAlias: " + obj.alias : "")
+                    ToolTip.visible: mouseArea.containsMouse
                     ToolTip.delay: 1000
 
                     MouseArea {
@@ -116,10 +116,11 @@ Window {
                     id: valueField
 
                     Layout.fillHeight: true
-                    Layout.preferredWidth: root.fontSize * 10
+                    Layout.preferredWidth: root.fontSize * 15
                     font.pixelSize: root.fontSize
                     horizontalAlignment: TextInput.AlignRight
                     text: obj.valueString
+                    placeholderText: obj.t ? "" : "value?"
                     readOnly: format.currentText === 'bytes'
 
                     onAccepted: {
@@ -152,6 +153,10 @@ Window {
                             }
                         }
                     }
+
+                    ToolTip.text: "Last update: " + obj.tString
+                    ToolTip.visible: hovered && obj.tString
+                    ToolTip.delay: 1000
                 }
 
                 CheckBox {

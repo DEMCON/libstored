@@ -18,6 +18,7 @@
 
 import zmq
 import time
+import datetime
 import struct
 
 from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt
@@ -29,6 +30,7 @@ class Object(QObject):
     pollingChanged = Signal()
     aliasChanged = Signal()
     formatChanged = Signal()
+    tUpdated = Signal()
 
     def __init__(self, name, type, size, client = None):
         super().__init__()
@@ -37,7 +39,7 @@ class Object(QObject):
         self.size = size
         self.client = client
         self._value = None
-        self.t = None
+        self._t = None
         self._alias = None
         self._polling = False
         self._pollTimer = None
@@ -249,6 +251,8 @@ class Object(QObject):
         s = ''.join(['%02x' % b for b in data])
         if zerostrip:
             s = s.lstrip('0')
+            if s == '':
+                s = '0'
         return s.encode()
 
     def _encode(self, value):
@@ -285,13 +289,25 @@ class Object(QObject):
         if t == None:
             t = time.time()
 
-        self.t = t
+        self._t = t
+        self.tUpdated.emit()
 
         if value != self._value:
             self._value = value
             self.valueChanged.emit()
 
         self.valueUpdated.emit()
+
+    @Property(float, notify=tUpdated)
+    def t(self):
+        return self._t
+
+    @Property(str, notify=tUpdated)
+    def tString(self):
+        if self._t == None:
+            return None
+        else:
+            return datetime.datetime.fromtimestamp(self._t).strftime('%Y-%m-%d %H:%M:%S.%f')
 
     def interpret(self, value):
         if isinstance(value,str):

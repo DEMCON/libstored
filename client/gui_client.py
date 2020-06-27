@@ -48,6 +48,7 @@ class ObjectListModel(QAbstractListModel):
     def data(self, index, role=Qt.DisplayRole):
         if 0 <= index.row() < self.rowCount() and index.isValid():
             o = self._objects[index.row()]
+            assert o != None
             if role == self.NameRole:
                 return o.name
             elif role == self.ObjectRole:

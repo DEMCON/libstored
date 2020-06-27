@@ -131,10 +131,10 @@ namespace stored {
 {%   if o is function %}
 {%     if o is blob %}
 		/*! \brief Callback for {{o}} */
-		size_t __{{o.cname}}(bool UNUSED_PAR(set), {{o|ctype}}* UNUSED_PAR(value), size_t UNUSED_PAR(len)) { return 0; }
+		size_t __{{o.cname}}(bool UNUSED_PAR(set), {{o|ctype}}* UNUSED_PAR(value), size_t UNUSED_PAR(len));
 {%     else %}
 		/*! \brief Callback for {{o}} */
-		void __{{o.cname}}(bool set, {{o|ctype}}& value) { if(!set) value = ({{o|ctype}})0; }
+		void __{{o.cname}}(bool set, {{o|ctype}}& value);
 {%     endif %}
 {%   endif %}
 {% endfor %}
@@ -160,8 +160,17 @@ namespace stored {
 
 		/*!
 		 * \brief Hook to be called after a variable has been set.
+		 *
+		 * Note that this hook is not called for writes to functions.
 		 */
-		void hookSet(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) {}
+		void hookSet(Type::type type, void* buffer, size_t len) {
+			// This function is called by Variants, and alike, but the implementation
+			// has to friend all of them if it overrides this function.
+			// To ease integration give a default implementation that forwards the hook.
+			implementation().__hookSet(type, buffer, len);
+		}
+
+		void __hookSet(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) {}
 
 	public:
 		// Type-specific object accessors.
@@ -219,6 +228,17 @@ namespace stored {
 	 * \ingroup libstored_stores
 	 */
 	class {{store.name}} : public {{store.name}}Base<{{store.name}}> {
+		friend class {{store.name}}Base<{{store.name}}>;
+	protected:
+{% for o in store.objects %}
+{%   if o is function %}
+{%     if o is blob %}
+		size_t __{{o.cname}}(bool UNUSED_PAR(set), {{o|ctype}}* UNUSED_PAR(value), size_t UNUSED_PAR(len)) { return 0; }
+{%     else %}
+		void __{{o.cname}}(bool set, {{o|ctype}}& value) { if(!set) value = ({{o|ctype}})0; }
+{%     endif %}
+{%   endif %}
+{% endfor %}
 	};
 
 } // namespace
