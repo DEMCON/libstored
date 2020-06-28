@@ -26,6 +26,7 @@
 
 /*!
  * \defgroup libstored_config config
+ * \brief Static configuration of the libstored library.
  * \ingroup libstored
  */
 

@@ -20,6 +20,7 @@
 
 /*!
  * \defgroup libstored_util util
+ * \brief Misc helper functionality.
  * \ingroup libstored
  */
 

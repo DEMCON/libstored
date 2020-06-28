@@ -17,6 +17,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+##
+# \file
+# \brief A Pyside2/QtQuick GUI client.
+# \ingroup libstored_client
+
 import sys
 import ed2
 import argparse
@@ -58,7 +63,9 @@ class ObjectListModel(QAbstractListModel):
 
     @Slot(int, result='QVariant')
     def at(self, index):
-        return self._objects[index];
+        o = self._objects[index]
+        assert o != None
+        return o
 
     def roleNames(self):
         return {
@@ -76,7 +83,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     app = QGuiApplication(sys.argv)
     app.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "twotone_bug_report_black_48dp.png")))
-    engine = QQmlApplicationEngine()
+    engine = QQmlApplicationEngine(parent=app)
 
     client = ed2.ZmqClient(args.server, args.port)
     engine.rootContext().setContextProperty("client", client)

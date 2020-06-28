@@ -21,6 +21,9 @@ import zmq
 
 from .zmq_server import ZmqServer
 
+##
+# \brief A generic out-of-band frame grabber for ASCII streams.
+# \ingroup libstored_client
 class Stream2Zmq(ZmqServer):
     def __init__(self, args, port=ZmqServer.default_port, **kwargs):
         super().__init__(port)

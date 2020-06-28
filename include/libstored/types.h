@@ -20,6 +20,7 @@
 
 /*!
  * \defgroup libstored_types types
+ * \brief Type utilities and generic and typed interfaces to objects in a store.
  * \ingroup libstored
  */
 

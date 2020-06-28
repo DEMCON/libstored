@@ -17,6 +17,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+##
+# \file
+# \brief A Command line interface client to enter Embedded Debugger commands.
+# \ingroup libstored_client
+
 import sys
 import ed2
 import argparse

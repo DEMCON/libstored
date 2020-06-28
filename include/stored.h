@@ -24,6 +24,7 @@
 
 /*!
  * \defgroup libstored_stores stores
+ * \brief Generated stores.
  * \ingroup libstored
  */
 

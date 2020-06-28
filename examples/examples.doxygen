@@ -1,0 +1,48 @@
+// vim:filetype=cpp
+
+/*!
+\example 1_hello/main.cpp
+\brief Hello World.
+\verbinclude 1_hello/ExampleHello.st
+*/
+
+/*!
+\example 2_basic/main.cpp
+\brief Basic syntax.
+\verbinclude 2_basic/ExampleBasic.st
+*/
+
+/*!
+\example 3_scope/main.cpp
+\brief Scoping syntax.
+\verbinclude 3_scope/ExampleScope.st
+*/
+
+/*!
+\example 4_function/main.cpp
+\brief Function objects.
+\verbinclude 4_function/ExampleFunction.st
+*/
+
+/*!
+\example 5_debug/main.cpp
+\brief Embedded Debugger interface.
+
+<p>ExampleDebugSomeStore.st:
+\verbinclude 5_debug/ExampleDebugSomeStore.st
+
+ExampleDebugAnotherStore.st:
+\verbinclude 5_debug/ExampleDebugAnotherStore.st
+*/
+
+/*!
+\example terminal/main.cpp
+\brief A stdin/stdout terminal application to test hand-injected Embedded Debugger messages.
+\verbinclude terminal/ExampleTerminal.st
+*/
+
+/*!
+\example zmqserver/main.cpp
+\brief A stored::ZmqServer interface for a lot of different types of objects.
+\verbinclude zmqserver/ZmqServerStore.st
+*/

@@ -23,6 +23,9 @@ import zmq
 
 from .stream2zmq import Stream2Zmq
 
+##
+# \brief A stdin/stdout frame grabber to ZmqServer bridge.
+# \ingroup libstored_client
 class Stdio2Zmq(Stream2Zmq):
     def __init__(self, args, port=Stream2Zmq.default_port, **kwargs):
         super().__init__(port)

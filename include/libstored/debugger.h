@@ -20,6 +20,7 @@
 
 /*!
  * \defgroup libstored_debugger debugger
+ * \brief Embedded Debugger message handling.
  * \ingroup libstored
  */
 

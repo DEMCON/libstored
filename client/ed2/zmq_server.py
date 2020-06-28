@@ -20,6 +20,15 @@ import zmq
 import threading
 import io
 
+##
+# \brief A ZMQ Server
+#
+# This can be used to create a bridge from an arbitrary interface to ZMQ, which
+# in turn can be used to connect a ed2.zmq_client.ZmqClient to.
+#
+# Instantiate as ed2.ZmqServer().
+#
+# \ingroup libstored_client
 class ZmqServer:
     default_port = 19026
 

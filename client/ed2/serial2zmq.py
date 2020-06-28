@@ -22,6 +22,9 @@ import zmq
 
 from .stream2zmq import Stream2Zmq
 
+##
+# \brief Serial port frame grabber to ZmqServer bridge.
+# \ingroup libstored_client
 class Serial2Zmq(Stream2Zmq):
     def __init__(self, zmqport=Stream2Zmq.default_port, **kwargs):
         super().__init__(zmqport)

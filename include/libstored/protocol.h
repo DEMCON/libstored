@@ -20,6 +20,7 @@
 
 /*!
  * \defgroup libstored_protocol protocol
+ * \brief Protocol layers, to be wrapped around a stored::Debugger instance.
  * \ingroup libstored
  */
 

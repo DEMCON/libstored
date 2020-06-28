@@ -794,7 +794,9 @@ WARN_LOGFILE           =
 INPUT                  = include \
                          include/stored \
                          src \
+						 client \
 						 examples \
+						 examples/examples.doxygen \
 						 README.md
 
 # This tag can be used to specify the character encoding of the source files
@@ -822,7 +824,8 @@ INPUT_ENCODING         = UTF-8
 
 FILE_PATTERNS          = *.c \
                          *.cpp \
-                         *.h
+                         *.h \
+						 *.py
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.

@@ -24,6 +24,12 @@ import struct
 from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt
 from .zmq_server import ZmqServer
 
+##
+# \brief A variable or function as handled by a ZmqClient
+#
+# Do not instantiate directly, but as a ZmqClient for its objects.
+#
+# \ingroup libstored_client
 class Object(QObject):
     valueChanged = Signal()
     valueUpdated = Signal()
@@ -32,12 +38,12 @@ class Object(QObject):
     formatChanged = Signal()
     tUpdated = Signal()
 
-    def __init__(self, name, type, size, client = None):
-        super().__init__()
+    def __init__(self, name, type, size, client=None):
+        super().__init__(parent=client)
         self._name = name
-        self.type = type
-        self.size = size
-        self.client = client
+        self._type = type
+        self._size = size
+        self._client = client
         self._value = None
         self._t = None
         self._alias = None
@@ -45,6 +51,18 @@ class Object(QObject):
         self._pollTimer = None
         self._format = None
         self._format_set(self.formats[0])
+
+    @property
+    def type(self):
+        return self._type
+
+    @property
+    def size(self):
+        return self._size
+
+    @property
+    def client(self):
+        return self._client
 
     @Property(str, constant=True)
     def name(self):
@@ -89,22 +107,22 @@ class Object(QObject):
     Invalid = 0xff
 
     def isValidType(self):
-        return self.type & 0x80 == 0
+        return self._type & 0x80 == 0
 
     def isFunction(self):
-        return self.type & self.FlagFunction != 0
+        return self._type & self.FlagFunction != 0
 
     def isFixed(self):
-        return self.type & self.FlagFixed != 0
+        return self._type & self.FlagFixed != 0
 
     def isInt(self):
-        return self.isFixed() and self.type & self.FlagInt != 0
+        return self.isFixed() and self._type & self.FlagInt != 0
 
     def isSigned(self):
-        return self.isFixed() and self.type & self.FlagSigned != 0
+        return self.isFixed() and self._type & self.FlagSigned != 0
 
     def isSpecial(self):
-        return self.type & 0x78 == 0
+        return self._type & 0x78 == 0
 
     @Property(str, constant=True)
     def typeName(self):
@@ -125,7 +143,7 @@ class Object(QObject):
                 self.Blob: 'blob',
                 self.String: 'string',
                 self.Void: 'void',
-            }.get(self.type & ~self.FlagFunction, '?')
+            }.get(self._type & ~self.FlagFunction, '?')
         return f'({t})' if self.isFunction() else t
 
     @Property(str, notify=aliasChanged)
@@ -144,16 +162,16 @@ class Object(QObject):
         if self._alias != None:
             return self._alias
 
-        if self.client != None:
+        if self._client != None:
             # We don't have an alias, try to get one.
-            self.client.acquireAlias(self)
+            self._client.acquireAlias(self)
 
         if self._alias != None:
             # We may have got one. Use it.
             return self._alias
 
         # Still not alias, return name instead.
-        return self.name
+        return self._name
 
     @staticmethod
     def sign_extend(value, bits):
@@ -166,10 +184,10 @@ class Object(QObject):
         return self._read()
 
     def _read(self):
-        if self.client == None:
+        if self._client == None:
             return None
         
-        rep = self.client.req(b'r' + self.shortName().encode())
+        rep = self._client.req(b'r' + self.shortName().encode())
         return self.decodeReadRep(rep)
 
     # Decode a read reply.
@@ -191,7 +209,7 @@ class Object(QObject):
         return res
 
     def _decode(self, rep):
-        dtype = self.type & ~self.FlagFunction
+        dtype = self._type & ~self.FlagFunction
         try:
             if self.isFixed():
                 binint = int(rep.decode(), 16)
@@ -234,7 +252,7 @@ class Object(QObject):
         return self._write(value)
 
     def _write(self, value):
-        if self.client == None:
+        if self._client == None:
             return False
 
         dtype = self.type & ~self.FlagFunction
@@ -243,7 +261,7 @@ class Object(QObject):
         if data == None:
             return False
 
-        rep = self.client.req(b'w' + data + self.shortName().encode())
+        rep = self._client.req(b'w' + data + self.shortName().encode())
         return rep == b'!'
     
 
@@ -256,7 +274,7 @@ class Object(QObject):
         return s.encode()
 
     def _encode(self, value):
-        dtype = self.type & ~self.FlagFunction
+        dtype = self._type & ~self.FlagFunction
 
         try:
             if dtype == self.Void:
@@ -278,9 +296,9 @@ class Object(QObject):
             elif not self.isInt():
                 return None
             elif self.isSigned():
-                return self._encodeHex(struct.pack('>q', value)[-self.size:], True)
+                return self._encodeHex(struct.pack('>q', value)[-self._size:], True)
             else:
-                return self._encodeHex(struct.pack('>Q', value)[-self.size:], True)
+                return self._encodeHex(struct.pack('>Q', value)[-self._size:], True)
         except:
             return None
 
@@ -328,7 +346,7 @@ class Object(QObject):
                 self.Blob: lambda x: x.encode(),
                 self.String: lambda x: x,
                 self.Void: lambda x: bytearray(),
-            }.get(self.type & ~self.FlagFunction, lambda x: x)(value)
+            }.get(self._type & ~self.FlagFunction, lambda x: x)(value)
         return value
 
     # Returns the currently known value (without an actual read())
@@ -346,7 +364,7 @@ class Object(QObject):
 
     @Property(str, notify=valueChanged)
     def valueString(self):
-        v = self.value
+        v = self._value
         if v == None:
             return ""
         else:
@@ -384,7 +402,7 @@ class Object(QObject):
 
     def _formatBytes(self, value):
         value = self._encode(value).decode()
-        value = '0' * (self.size * 2 - len(value)) + value
+        value = '0' * (self._size * 2 - len(value)) + value
         res = ''
         for i in range(0, len(value), 2):
             if res != []:
@@ -394,7 +412,7 @@ class Object(QObject):
 
     @Property('QVariant', constant=True)
     def formats(self):
-        if self.type == self.Blob:
+        if self._type == self.Blob:
             return ['bytes']
 
         f = ['default', 'bytes']
@@ -415,8 +433,8 @@ class Object(QObject):
                 self.poll(None)
 
     def poll(self, interval_s=0):
-        if self.client != None:
-            self.client.poll(self, interval_s)
+        if self._client != None:
+            self._client.poll(self, interval_s)
 
     def _pollStop(self):
         self._pollSetFlag(False)
@@ -451,28 +469,42 @@ class Object(QObject):
             self._polling = enable
             self.pollingChanged.emit()
 
+##
+# \brief Macro object as returned by ZmqClient.acquireMacro()
+#
+# Do not instantiate directly, but let ZmqClient acquire one for you.
+#
+# \ingroup libstored_client
 class Macro(object):
     def __init__(self, client, reqsep=b'\n', repsep=b' '):
-        self.client = client
+        self._client = client
 
-        self.macro = client.acquireMacro()
-        if self.macro != None:
-            self.macro = self.macro.encode()
+        self._macro = client.acquireMacro()
+        if self._macro != None:
+            self._macro = self._macro.encode()
 
-        self.cmds = {}
+        self._cmds = {}
 
         if isinstance(reqsep, str):
             reqsep = reqsep.encode()
-        self.reqsep = reqsep
+        self._reqsep = reqsep
 
         if isinstance(repsep, str):
             repsep = repsep.encode()
-        self.repsep = repsep
+        self._repsep = repsep
+
+    @property
+    def macro(self):
+        return self._macro
+
+    @property
+    def client(self):
+        return self._client
 
     def add(self, cmd, cb, key):
         if isinstance(cmd, str):
             cmd = cmd.encode()
-        self.cmds[key] = (cmd, cb)
+        self._cmds[key] = (cmd, cb)
         self._update()
 
         # Check if it still works...
@@ -485,71 +517,91 @@ class Macro(object):
         return False
 
     def remove(self, key):
-        if key in self.cmds:
-            del self.cmds[key]
+        if key in self._cmds:
+            del self._cmds[key]
             self._update()
 
     def _update(self):
-        if self.macro == None:
+        if self._macro == None:
             return
 
         cmds = []
-        for c in self.cmds.values():
+        for c in self._cmds.values():
             if cmds != []:
-                cmds.append(b'e' + self.repsep)
+                cmds.append(b'e' + self._repsep)
             cmds.append(c[0])
 
-        self.client.assignMacro(self.macro, cmds, self.reqsep)
+        self._client.assignMacro(self._macro, cmds, self._reqsep)
 
     def run(self):
-        if self.macro != None:
-            rep = self.client.req(self.macro)
-            cb = list(self.cmds.values())
-            values = rep.split(self.repsep)
+        if self._macro != None:
+            rep = self._client.req(self._macro)
+            cb = list(self._cmds.values())
+            values = rep.split(self._repsep)
             if len(cb) != len(values):
                 return False
 
             for i in range(0, len(values)):
                 cb[i][1](values[i])
         else:
-            for c in self.cmds.values():
-                c[1](self.client.req(c[0]))
+            for c in self._cmds.values():
+                c[1](self._client.req(c[0]))
 
         return True
 
     def __len__(self):
-        return len(self.cmds)
+        return len(self._cmds)
 
 
+##
+# \brief A ZMQ client.
+#
+# This client can connect to either the ed2.zmq_server.ZmqServer and stored::ZmqLayer.
+#
+# Instantiate as ed2.ZmqClient().
+#
+# \ingroup libstored_client
 class ZmqClient(QObject):
     
     fastPollThreshold_s = 0.9
     slowPollInterval_s = 2.0
     defaultPollIntervalChanged = Signal()
 
-    def __init__(self, address='localhost', port=ZmqServer.default_port):
-        super().__init__()
-        self.context = zmq.Context()
-        self.socket = self.context.socket(zmq.REQ)
-        self.socket.connect(f'tcp://{address}:{port}')
+    def __init__(self, address='localhost', port=ZmqServer.default_port, parent=None):
+        super().__init__(parent=parent)
+        self._context = zmq.Context()
+        self._socket = self._context.socket(zmq.REQ)
+        self._socket.connect(f'tcp://{address}:{port}')
         self._defaultPollInterval = 1
-        self.availableAliases = None
-        self.temporaryAliases = {}
-        self.permanentAliases = {}
-        self.availableMacros = None
-        self.usedMacros = []
-        self.objects = None
-        self.fastPollMacro = None
-        self.fastPollTimer = None
+        self._availableAliases = None
+        self._temporaryAliases = {}
+        self._permanentAliases = {}
+        self._availableMacros = None
+        self._usedMacros = []
+        self._objects = None
+        self._fastPollMacro = None
+        self._fastPollTimer = None
     
+    @property
+    def context(self):
+        return self._context
+
+    @property
+    def objects(self):
+        return list(self._objects)
+
+    @property
+    def socket(self):
+        return self._socket
+
     @Slot(str,result=str)
     def req(self, message):
         if isinstance(message,str):
             return self.req(message.encode()).decode()
 #        print(message)
 
-        self.socket.send(message)
-        return b''.join(self.socket.recv_multipart())
+        self._socket.send(message)
+        return b''.join(self._socket.recv_multipart())
 
     def timestampToTime(self, t = None):
         if t == None:
@@ -559,7 +611,7 @@ class ZmqClient(QObject):
             return t
 
     def close(self):
-        self.socket.close()
+        self._socket.close()
 
     @Slot(result=str)
     def capabilities(self):
@@ -571,8 +623,12 @@ class ZmqClient(QObject):
 
     # Returns a list of Objects, registered to this client.
     def list(self):
-        if self.objects != None:
-            return self.objects
+        self._list_init()
+        return self.objects
+
+    def _list_init(self):
+        if self._objects != None:
+            return
 
         res = []
         for o in self.req(b'l').decode().split('\n'):
@@ -580,13 +636,13 @@ class ZmqClient(QObject):
             if obj != None:
                 res.append(obj)
 
-        self.objects = res
-        return res
+        self._objects = res
 
     def find(self, name):
         chunks = name.split('/')
         obj = []
-        for o in self.list():
+        self._list_init()
+        for o in self._objects:
             ochunks = o.name.split('/')
             if len(chunks) != len(ochunks):
                 continue
@@ -676,13 +732,13 @@ class ZmqClient(QObject):
                 # Already assigned preferred one.
                 return prefer
 
-        if self.availableAliases == None:
+        if self._availableAliases == None:
             # Not yet initialized
             if 'a' in self.capabilities():
-                self.availableAliases = list(map(chr, range(0x20, 0x7f)))
-                self.availableAliases.remove('/')
+                self._availableAliases = list(map(chr, range(0x20, 0x7f)))
+                self._availableAliases.remove('/')
             else:
-                self.availableAliases = []
+                self._availableAliases = []
         
         if prefer != None:
             if self._isAliasAvailable(prefer):
@@ -702,13 +758,13 @@ class ZmqClient(QObject):
             return self._acquireAlias(a, obj, temporary)
 
     def _isAliasAvailable(self, a):
-        return a in self.availableAliases
+        return a in self._availableAliases
     
     def _isTemporaryAlias(self, a):
-        return a in self.temporaryAliases
+        return a in self._temporaryAliases
 
     def _isAliasInUse(self, a):
-        return a in self.temporaryAliases or a  in self.permanentAliases
+        return a in self._temporaryAliases or a  in self._permanentAliases
 
     def _acquireAlias(self, a, obj, temporary):
         assert not self._isAliasInUse(a)
@@ -731,12 +787,12 @@ class ZmqClient(QObject):
                 return None
 
         # Success!
-        if a in self.availableAliases:
-            self.availableAliases.remove(a)
+        if a in self._availableAliases:
+            self._availableAliases.remove(a)
         if temporary:
-            self.temporaryAliases[a] = obj
+            self._temporaryAliases[a] = obj
         else:
-            self.permanentAliases[a] = obj
+            self._permanentAliases[a] = obj
         obj._alias_set(a)
         return a
 
@@ -745,45 +801,45 @@ class ZmqClient(QObject):
         return rep == b'!'
 
     def _reassignAlias(self, a, obj, temporary):
-        assert a in self.temporaryAliases or a in self.permanentAliases
+        assert a in self._temporaryAliases or a in self._permanentAliases
         assert not self._isAliasAvailable(a)
 
         if not self._setAlias(a, obj.name):
             return None
 
         self._releaseAlias(a)
-        if a in self.availableAliases:
-            self.availableAliases.remove(a)
+        if a in self._availableAliases:
+            self._availableAliases.remove(a)
         if temporary:
-            self.temporaryAliases[a] = obj
+            self._temporaryAliases[a] = obj
         else:
-            self.permanentAliases[a] = obj
+            self._permanentAliases[a] = obj
         obj._alias_set(a)
         return a
     
     def _releaseAlias(self, alias):
         obj = None
-        if alias in self.temporaryAliases:
-            obj = self.temporaryAliases[alias]
-            del self.temporaryAliases[alias]
-        elif alias in self.permanentAliases:
-            obj = self.permanentAliases[alias]
-            del self.permanentAliases[alias]
+        if alias in self._temporaryAliases:
+            obj = self._temporaryAliases[alias]
+            del self._temporaryAliases[alias]
+        elif alias in self._permanentAliases:
+            obj = self._permanentAliases[alias]
+            del self._permanentAliases[alias]
 
         if obj != None:
             obj._alias_set(None)
-            self.availableAliases.append(alias)
+            self._availableAliases.append(alias)
 
         return obj
 
     def _getFreeAlias(self):
-        if self.availableAliases == []:
+        if self._availableAliases == []:
             return None
         else:
-            return self.availableAliases.pop()
+            return self._availableAliases.pop()
 
     def _getTemporaryAlias(self):
-        keys = list(self.temporaryAliases.keys())
+        keys = list(self._temporaryAliases.keys())
         if keys == []:
             return None
         a = keys[0] # pick oldest one
@@ -795,44 +851,44 @@ class ZmqClient(QObject):
         self.req(b'a' + alias.encode())
 
     def _printAliasMap(self):
-        if self.availableAliases == None:
+        if self._availableAliases == None:
             print("Not initialized")
         else:
-            print("Available aliases: " + ''.join(self.availableAliases))
+            print("Available aliases: " + ''.join(self._availableAliases))
 
-            if len(self.temporaryAliases) == 0:
+            if len(self._temporaryAliases) == 0:
                 print("No temporary aliases")
             else:
-                print("Temporary aliases:\n\t" + '\n\t'.join([f'{a}: {o.name}' for a,o in self.temporaryAliases.items()]))
+                print("Temporary aliases:\n\t" + '\n\t'.join([f'{a}: {o.name}' for a,o in self._temporaryAliases.items()]))
 
-            if len(self.permanentAliases) == 0:
+            if len(self._permanentAliases) == 0:
                 print("No permanent aliases")
             else:
-                print("Permanent aliases: \n\t" + '\n\t'.join([f'{a}: {o.name}' for a,o in self.permanentAliases.items()]))
+                print("Permanent aliases: \n\t" + '\n\t'.join([f'{a}: {o.name}' for a,o in self._permanentAliases.items()]))
 
     def acquireMacro(self, cmds = None, sep='\n'):
-        if self.availableMacros == None:
+        if self._availableMacros == None:
             # Not initialized yet.
             capabilities = self.capabilities()
             if not 'm' in capabilities:
                 # Not supported.
-                self.availableMacros = []
+                self._availableMacros = []
             else:
-                self.availableMacros = list(map(chr, range(0x20, 0x7f)))
+                self._availableMacros = list(map(chr, range(0x20, 0x7f)))
                 for c in capabilities:
-                    self.availableMacros.remove(c)
+                    self._availableMacros.remove(c)
 
-        if self.availableMacros == []:
+        if self._availableMacros == []:
             return None
 
-        m = self.availableMacros.pop()
+        m = self._availableMacros.pop()
         if cmds != None:
             if not self.assignMacro(m, cmds, sep):
                 # Setting macro failed. Rollback.
-                self.availableMacros.append(m)
+                self._availableMacros.append(m)
                 return None
 
-        self.usedMacros.append(m)
+        self._usedMacros.append(m)
         return m
 
     def assignMacro(self, m, cmds, sep=b'\n'):
@@ -851,9 +907,9 @@ class ZmqClient(QObject):
         return self.req(definition) == b'!'
 
     def releaseMacro(self, m):
-        if m in self.usedMacros:
-            self.usedMacros.remove(m)
-            self.availableMacros.append(m)
+        if m in self._usedMacros:
+            self._usedMacros.remove(m)
+            self._availableMacros.append(m)
             self.req(b'm' + m.encode())
 
     def poll(self, obj, interval_s=0):
@@ -870,29 +926,29 @@ class ZmqClient(QObject):
             self._pollSlow(obj, interval_s)
 
     def _pollFast(self, obj, interval_s):
-        if self.fastPollMacro == None:
-            self.fastPollMacro = Macro(self)
-            self.fastPollTimer = QTimer(parent=self)
-            self.fastPollTimer.timeout.connect(lambda: self.fastPollMacro.run())
-            self.fastPollTimer.setInterval(self.fastPollThreshold_s * 1000)
-            self.fastPollTimer.setSingleShot(False)
-            self.fastPollTimer.setTimerType(Qt.PreciseTimer)
+        if self._fastPollMacro == None:
+            self._fastPollMacro = Macro(self)
+            self._fastPollTimer = QTimer(parent=self)
+            self._fastPollTimer.timeout.connect(lambda: self._fastPollMacro.run())
+            self._fastPollTimer.setInterval(self._fastPollThreshold_s * 1000)
+            self._fastPollTimer.setSingleShot(False)
+            self._fastPollTimer.setTimerType(Qt.PreciseTimer)
 
-        if not self.fastPollMacro.add(b'r' + obj.shortName().encode(), obj.decodeReadRep, obj):
+        if not self._fastPollMacro.add(b'r' + obj.shortName().encode(), obj.decodeReadRep, obj):
             self._pollSlow(obj, interval_s)
         else:
             obj._pollFast(interval_s)
-            self.fastPollTimer.setInterval(min(self.fastPollTimer.interval(), interval_s * 1000))
-            self.fastPollTimer.start()
+            self._fastPollTimer.setInterval(min(self._fastPollTimer.interval(), interval_s * 1000))
+            self._fastPollTimer.start()
         
     def _pollSlow(self, obj, interval_s):
         obj._pollSlow(max(self.slowPollInterval_s, interval_s))
     
     def _pollStop(self, obj):
-        if self.fastPollMacro != None:
-            self.fastPollMacro.remove(obj)
-            if len(self.fastPollMacro) == 0:
-                self.fastPollTimer.stop()
-                self.fastPollTimer.setInterval(self.fastPollThreshold_s * 1000)
+        if self._fastPollMacro != None:
+            self._fastPollMacro.remove(obj)
+            if len(self._fastPollMacro) == 0:
+                self._fastPollTimer.stop()
+                self._fastPollTimer.setInterval(self.fastPollThreshold_s * 1000)
         obj._pollStop()
         

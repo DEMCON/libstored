@@ -17,6 +17,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+##
+# \file
+# \brief A stdin/stdout frame grabber to ZmqServer wrapper for a to-be-started process.
+# \ingroup libstored_client
+
 import ed2
 import argparse
 

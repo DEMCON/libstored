@@ -16,6 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+##
+# \defgroup libstored_client client
+# \brief Python client interfaces to the embedded application.
+# \ingroup libstored
+
 from ed2.zmq_server import ZmqServer
 from ed2.zmq_client import ZmqClient
 from ed2.stdio2zmq import Stdio2Zmq
