@@ -23,9 +23,10 @@
 #  include <libstored/macros.h>
 
 #  ifdef STORED_HAVE_ZMQ
+#    include <zmq.h>
 #    include <libstored/protocol.h>
 
-#  ifdef STORED_OS_WINDOWS
+#  if defined(STORED_OS_WINDOWS) && !defined(STORED_COMPILER_MSVC)
 #    include <winsock2.h>
 #  endif
 

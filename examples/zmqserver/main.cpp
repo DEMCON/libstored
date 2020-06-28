@@ -1,5 +1,7 @@
 #include <stored>
 #include "ZmqServerStore.h"
+#include <cmath>
+#include <time.h>
 
 #if __cplusplus >= 201103L
 #  include <chrono>
@@ -40,7 +42,7 @@ protected:
 	void __rand(bool set, double& value) {
 		if(!set) {
 #ifdef STORED_OS_WINDOWS
-			value = (double)rand() / RAND_MAX;
+			value = (double)::rand() / RAND_MAX;
 #else
 			value = drand48();
 #endif
@@ -53,7 +55,7 @@ protected:
 				std::chrono::system_clock::now().time_since_epoch()).count());
 #else
 			// There is no portable implementation here...
-			value = (uint64_t)time() * 1000000ULL;
+			value = (uint64_t)time(NULL) * 1000000ULL;
 #endif
 		}
 	}

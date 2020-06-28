@@ -16,7 +16,7 @@
 
 #ifndef STORED_OS_WINDOWS
 // The default implementation emits the response to stdout, with APC / ST
-// arround it. However, your normal terminal strips this out.  If you pipe the
+// around it. However, your normal terminal strips this out.  If you pipe the
 // stdout to a file, you will see these sequences.
 //
 // If you enable the following line, this example dumps the response to stderr too.

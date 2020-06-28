@@ -70,10 +70,16 @@
 #  ifndef UNUSED_PAR
 #    define UNUSED_PAR(name)	name
 #  endif
-#  define __attribute__(...)
-#  pragma warning(disable: 4100 4127 4324 4514 4571 4625 4626 4710 4774 4820 5026 5027 5045)
+#  define NOMINMAX
+#  define _USE_MATH_DEFINES
+#  pragma warning(disable: 4100 4127 4324 4514 4571 4625 4626 4710 4774 4820 5026 5027 5039 5045)
+#  pragma warning(push)
+#  pragma warning(disable: 4668)
+#  include <Windows.h>
+#  pragma warning(pop)
 #  include <BaseTsd.h>
 typedef SSIZE_T ssize_t;
+#  define __attribute__(...)
 #else
 #  error Unsupported compiler.
 #endif

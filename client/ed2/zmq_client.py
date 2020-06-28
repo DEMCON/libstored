@@ -238,7 +238,7 @@ class Object(QObject):
             elif dtype == self.Blob:
                 return self._decodeHex(rep)
             elif dtype == self.String:
-                return self._decodeHex(rep).decode()
+                return self._decodeHex(rep.partition(b'0')[0]).decode()
             else:
                 return None
         except:
@@ -930,7 +930,7 @@ class ZmqClient(QObject):
             self._fastPollMacro = Macro(self)
             self._fastPollTimer = QTimer(parent=self)
             self._fastPollTimer.timeout.connect(lambda: self._fastPollMacro.run())
-            self._fastPollTimer.setInterval(self._fastPollThreshold_s * 1000)
+            self._fastPollTimer.setInterval(self.fastPollThreshold_s * 1000)
             self._fastPollTimer.setSingleShot(False)
             self._fastPollTimer.setTimerType(Qt.PreciseTimer)
 
