@@ -8,9 +8,11 @@
 
 // Create a subclass of stored::ExampleFunctionBase to define the side effects of the functions.
 class MyExample : public stored::ExampleFunctionBase<MyExample> {
+	CLASS_NOCOPY(MyExample)
 public:
 	typedef stored::ExampleFunctionBase<MyExample> base;
 	friend class stored::ExampleFunctionBase<MyExample>;
+	MyExample() {}
 
 protected:
 	// Override the default functions from base. Even though they are not

@@ -157,7 +157,6 @@ namespace stored {
 		~Variable() {}
 #endif
 
-
 		type const& get() const {
 			stored_assert(valid());
 			return buffer();
@@ -216,17 +215,28 @@ namespace stored {
 #else
 		~Variable() {}
 #endif
+		type get() const {
+			container().hookEntryRO(toType<T>::type, &this->buffer(), sizeof(type));
+			type res = base::get();
+			container().hookExitRO(toType<T>::type, &this->buffer(), sizeof(type));
+			return res;
+		}
+
+		template <typename U>
+		U as() const { return saturated_cast<U>(get()); }
+
+		explicit operator type const&() const { return get(); }
 
 		void set(type v) {
-			if(Config::HookSetOnChangeOnly)
-				if(memcmp(&v, &this->buffer(), sizeof(v)) == 0)
-					return;
-
-			base::set(v);
-			container().hookSet(toType<T>::type, &this->buffer(), sizeof(type));
+			container().hookEntryX(toType<T>::type, &this->buffer(), sizeof(type));
+			bool changed = memcmp(&v, &this->buffer(), sizeof(v)) != 0;
+			if(changed)
+				base::set(v);
+			container().hookExitX(toType<T>::type, &this->buffer(), sizeof(type), changed);
 		}
+
 		Variable& operator=(type v) { 
-			base::operator=(v);
+			set(v);
 			return *this;
 		}
 
@@ -359,7 +369,14 @@ namespace stored {
 					stored_assert(len <= size());
 					len = std::min(len, size());
 				}
+
+				if(Config::EnableHooks)
+					container().hookEntryRO(type(), m_buffer, len);
+
 				memcpy(dst, m_buffer, len);
+
+				if(Config::EnableHooks)
+					container().hookExitRO(type(), m_buffer, len);
 			}
 			return len;
 		}
@@ -377,12 +394,18 @@ namespace stored {
 					len = std::min(len, size());
 				}
 
-				if(!Config::HookSetOnChangeOnly || memcmp(src, m_buffer, len) != 0) {
+				bool changed = true;
+
+				if(Config::EnableHooks) {
+					container().hookEntryX(type(), m_buffer, len);
+					changed = memcmp(src, m_buffer, len) != 0;
+				}
+
+				if(changed)
 					memcpy(m_buffer, src, len);
 
-					if(Config::EnableHooks)
-						container().hookSet(type(), m_buffer, len);
-				}
+				if(Config::EnableHooks)
+					container().hookExitX(type(), m_buffer, len, changed);
 			}
 			return len;
 		}

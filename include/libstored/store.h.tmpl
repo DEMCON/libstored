@@ -60,6 +60,10 @@ namespace stored {
 	 */
 	template <typename Implementation_>
 	class {{store.name}}Base {
+		CLASS_NOCOPY({{store.name}}Base)
+	protected:
+		{{store.name}}Base() {}
+
 	public:
 		typedef Implementation_ Implementation;
 		char const* name() const { return "/{{store.name}}"; }
@@ -159,18 +163,40 @@ namespace stored {
 		// Hooks. Override in subclass when required.
 
 		/*!
-		 * \brief Hook to be called after a variable has been set.
-		 *
-		 * Note that this hook is not called for writes to functions.
+		 * \brief Hook when exclusive access to a given variable is to be acquired.
+		 * \details Must be followed by #hookExitX().
 		 */
-		void hookSet(Type::type type, void* buffer, size_t len) {
+		void hookEntryX(Type::type type, void* buffer, size_t len) {
 			// This function is called by Variants, and alike, but the implementation
 			// has to friend all of them if it overrides this function.
 			// To ease integration give a default implementation that forwards the hook.
-			implementation().__hookSet(type, buffer, len);
-		}
+			implementation().__hookEntryX(type, buffer, len); }
 
-		void __hookSet(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) {}
+		/*!
+		 * \brief Hook when exclusive access to a given variable is released.
+		 * \details Must be preceded by #hookEntryX().
+		 */
+		void hookExitX(Type::type type, void* buffer, size_t len, bool changed) {
+			implementation().__hookExitX(type, buffer, len, changed); }
+
+		/*!
+		 * \brief Hook when read-only access to a given variable is to be acquired.
+		 * \details Must be followed by #hookExitRO().
+		 */
+		void hookEntryRO(Type::type type, void* buffer, size_t len) {
+			implementation().__hookEntryRO(type, buffer, len); }
+
+		/*!
+		 * \brief Hook when read-only access to a given variable is released.
+		 * \details Must be preceded by #hookEntryRO().
+		 */
+		void hookExitRO(Type::type type, void* buffer, size_t len) {
+			implementation().__hookExitRO(type, buffer, len); }
+
+		void __hookEntryX(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) {}
+		void __hookExitX(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len), bool UNUSED_PAR(changed)) {}
+		void __hookEntryRO(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) {}
+		void __hookExitRO(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) {}
 
 	public:
 		// Type-specific object accessors.
@@ -228,7 +254,11 @@ namespace stored {
 	 * \ingroup libstored_stores
 	 */
 	class {{store.name}} : public {{store.name}}Base<{{store.name}}> {
+		CLASS_NOCOPY({{store.name}})
+	public:
+		typedef {{store.name}}Base<{{store.name}}> base;
 		friend class {{store.name}}Base<{{store.name}}>;
+		{{store.name}}() {}
 	protected:
 {% for o in store.objects %}
 {%   if o is function %}

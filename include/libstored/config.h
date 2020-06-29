@@ -80,10 +80,6 @@ namespace stored {
 		 * overhead for every object access.
 		 */
 		static bool const EnableHooks = true;
-		/*!
-		 * \brief When \c true, call \c Store::hookSet() on change only, otherwise on every set.
-		 */
-		static bool const HookSetOnChangeOnly = false;
 
 		/*! \brief When \c true, stored::Debugger implements the read capability. */
 		static bool const DebuggerRead = true;

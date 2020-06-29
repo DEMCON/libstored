@@ -36,6 +36,12 @@ ExampleDebugAnotherStore.st:
 */
 
 /*!
+\example 6_sync/main.cpp
+\brief Synchronization.
+\verbinclude 6_sync/ExampleSync.st
+*/
+
+/*!
 \example terminal/main.cpp
 \brief A stdin/stdout terminal application to test hand-injected Embedded Debugger messages.
 \verbinclude terminal/ExampleTerminal.st
