@@ -41,20 +41,58 @@
 
 namespace stored {
 
-	// Container-template-type-invariant base class.
+	/*!
+	 * \brief Container-template-type-invariant base class of a wrapper for #stored::Variant.
+	 */
 	class DebugVariantBase {
 	public:
+		/*!
+		 * \brief Retrieve data from the object.
+		 * \param dst the destination buffer
+		 * \param len the size of \p dst
+		 * \return the number of bytes written into \p dst
+		 */
 		virtual size_t get(void* dst, size_t len = 0) const = 0;
+
+		/*!
+		 * \brief Set data to the buffer.
+		 * \param src the data to be written
+		 * \param len the length of \p src
+		 * \return the number of bytes consumed
+		 */
 		virtual size_t set(void const* src, size_t len = 0) = 0;
+
+		/*!
+		 * \brief The type of this object.
+		 */
 		virtual Type::type type() const = 0;
+
+		/*!
+		 * \brief The size of this object.
+		 */
 		virtual size_t size() const = 0;
+
+		/*!
+		 * \brief Returns if this wrapper points to a valid object.
+		 */
 		virtual bool valid() const = 0;
 	};
 
-	// Container-specific subclass of DebugVariantBase.
+	/*!
+	 * \brief Container-specific subclass of #stored::DebugVariantBase.
+	 *
+	 * This object is trivially copyable and assignable.
+	 * You probably don't want to use this object directly, use
+	 * #stored::DebugVariant instead.
+	 *
+	 * \see stored::DebugVariant
+	 */
 	template <typename Container = void>
 	class DebugVariantTyped : public DebugVariantBase {
 	public:
+		/*!
+		 * \brief Construct a wrapper around the given variant.
+		 */
 		explicit DebugVariantTyped(Variant<Container> const& variant)
 			: m_variant(variant)
 		{
@@ -65,6 +103,9 @@ namespace stored {
 #endif
 		}
 
+		/*!
+		 * \brief Constructs an invalid wrapper.
+		 */
 		DebugVariantTyped() is_default;
 
 		size_t get(void* dst, size_t len = 0) const final {
@@ -78,24 +119,42 @@ namespace stored {
 		bool valid() const final {
 			return variant().valid(); }
 
+		/*! \brief Returns the variant this object is a wrapper of. */
 		Variant<Container> const& variant() const { return m_variant; }
+		/*! \copydoc variant() const */
 		Variant<Container>& variant() { return m_variant; }
 
 	private:
+		/*! \brief The wrapped variant. */
 		Variant<Container> m_variant;
 	};
 
-	// Template-type-independent container for a DebugVariantTyped.
 	/*!
+	 * \brief A wrapper for any type of object in a store.
+	 *
+	 * This is a template-type-independent container for a #stored::DebugVariantTyped. 
+	 *
+	 * Even though the \c DebugVariantTyped uses virtual functions,
+	 * inheritance, and templates, the allocation is done within this object.
+	 * This object is small, efficient, default-copyable and
+	 * default-assignable, and can therefore be used as a value in a standard
+	 * container.
+	 *
 	 * \ingroup libstored_debugger
 	 */
 	class DebugVariant : public DebugVariantBase {
 	public:
+		/*!
+		 * \brief Constructor for an invalid #stored::Variant wrapper.
+		 */
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		DebugVariant() {
 			new(m_buffer) DebugVariantTyped<>();
 		}
 
+		/*!
+		 * \brief Constructor for a #stored::Variant wrapper.
+		 */
 		template <typename Container>
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		explicit DebugVariant(Variant<Container> const& variant) {

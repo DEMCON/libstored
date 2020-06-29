@@ -20,6 +20,7 @@
 
 /*!
  * \defgroup libstored libstored
+ * \brief Store for Embedded Debugger
  */
 
 /*!

@@ -1,4 +1,7 @@
-/*
+/*!
+ * \file
+ * \brief Application-specific stored::DefaultConfig override.
+ *
  * Copy this file to your project, and make sure the include path is such that
  * your file is found before the default supplied one.
  */
@@ -13,6 +16,8 @@
 #ifdef __cplusplus
 namespace stored {
 	/*!
+	 * \brief Example of a configuration that override the stored::DefaultConfig.
+	 * \see stored_config.h
 	 * \ingroup libstored_config
 	 */
 	struct Config : public DefaultConfig {

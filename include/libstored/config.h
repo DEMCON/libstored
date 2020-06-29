@@ -32,9 +32,23 @@
 
 namespace stored {
 	/*!
+	 * \brief Default configuration.
+	 *
+	 * All configuration options are set at compile-time.
+	 *
+	 * To override defaults, copy the file stored_config.h to your own project,
+	 * set the configuration values properly, and make sure that that file is
+	 * in the include path before the libstored one.
+	 *
 	 * \ingroup libstored_config
 	 */
 	struct DefaultConfig {
+		/*!
+		 * \brief When \c true, compile as debug binary.
+		 *
+		 * This may include additional (and possibly slow) code for debugging,
+		 * which can safely left out for release builds.
+		 */
 		static bool const Debug = 
 #ifndef NDEBUG
 			true;
@@ -42,6 +56,9 @@ namespace stored {
 			false;
 #endif
 
+		/*!
+		 * \brief When \c true, enable #stored_assert() checks.
+		 */
 		static bool const EnableAssert = 
 #ifndef NDEBUG
 			Debug;
@@ -49,21 +66,62 @@ namespace stored {
 			false;
 #endif
 
+		/*!
+		 * \brief When \c true, include full name directory listing support.
+		 *
+		 * If \c false, a listing can be still be requested, but the names may
+		 * be abbreviated.
+		 */
 		static bool const FullNames = true;
+		/*!
+		 * \brief When \c true, enable calls to \c hook...() functions of the store.
+		 *
+		 * This may be required for additional synchronization, but may add
+		 * overhead for every object access.
+		 */
 		static bool const EnableHooks = true;
+		/*!
+		 * \brief When \c true, call \c Store::hookSet() on change only, otherwise on every set.
+		 */
 		static bool const HookSetOnChangeOnly = false;
 
+		/*! \brief When \c true, stored::Debugger implements the read capability. */
 		static bool const DebuggerRead = true;
+		/*! \brief When \c true, stored::Debugger implements the write capability. */
 		static bool const DebuggerWrite = true;
+		/*! \brief When \c true, stored::Debugger implements the echo capability. */
 		static bool const DebuggerEcho = true;
+		/*! \brief When \c true, stored::Debugger implements the list capability. */
 		static bool const DebuggerList = true;
-		static int const DebuggerAlias = 0x100; // Value is max number of aliases. efault is effectively no limit.
-		static int const DebuggerMacro = 0x1000; // Value is max total length of macros.
+		/*!
+		 * \brief When not 0, stored::Debugger implements the alias capability.
+		 *
+		 * The defined number is the number of aliases that are supported at the same time.
+		 */
+		static int const DebuggerAlias = 0x100; // Value is max number of aliases. Default is effectively no limit.
+		/*!
+		 * \brief When not 0, stored::Debugger implements the macro capability.
+		 *
+		 * The defined number is the total amount of memory that can be used
+		 * for all macro definitions (excluding data structure overhead of the
+		 * implementation).
+		 */
+		static int const DebuggerMacro = 0x1000;
+		/*! \brief When \c true, stored::Debugger implements the identification capability. */
 		static bool const DebuggerIdentification = true;
+		/*! \brief When \c true, stored::Debugger implements the version capability. */
 		static int const DebuggerVersion = 2;
+		/*! \brief When \c true, stored::Debugger implements the read memory capability. */
 		static bool const DebuggerReadMem = true;
+		/*! \brief When \c true, stored::Debugger implements the write memory capability. */
 		static bool const DebuggerWriteMem = true;
+		/*!
+		 * \brief When not 0, stored::Debugger implements the streams capability.
+		 *
+		 * The defined number is the number of concurrent streams that are supported.
+		 */
 		static int const DebuggerStreams = 1;
+		/*! \brief Size of one stream buffer in bytes. */
 		static size_t const DebuggerStreamBuffer = 1024;
 	};
 } // namespace
