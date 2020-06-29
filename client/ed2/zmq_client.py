@@ -611,7 +611,12 @@ class ZmqClient(QObject):
             return t
 
     def close(self):
-        self._socket.close()
+        if self._fastPollTimer:
+            self._fastPollTimer.stop()
+        self._socket.close(0)
+    
+    def __del__(self):
+        self.close()
 
     @Slot(result=str)
     def capabilities(self):

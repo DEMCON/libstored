@@ -107,7 +107,7 @@ class ZmqServer:
         self.closing = True
         for s in list(self.sockets):
             self.unregister(s)
-            s.close()
+            s.close(0)
 
     def __del__(self):
         self.close()
