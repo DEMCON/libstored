@@ -318,7 +318,7 @@ clients are provided:
 - `client/cli_client.py`: a command line tool that lets you directly enter the
   protocol messages as defined above.
 - `client/gui_client.py`: a simple GUI that shows the list of objects and lets
-  you manipulate the values.
+  you manipulate the values. The GUI has support to send samples to `lognplot`.
 
 Test it using the `terminal` example, started using the
 `client/stdio_wrapper.py`. Then connect one of the clients above to it.
