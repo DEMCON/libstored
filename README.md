@@ -102,6 +102,23 @@ See `examples` for more explanation. This is just an impression of the syntax.
 		string:16 s
 	} scope
 
+## Debugging example
+
+To get a grasp how debugging feels like, try the following.
+
+- Build the examples, as discussed above.
+- If you use Windows, execute `scripts/env.cmd` to set your environment
+  properly.  In the instructions below, use `python` instead of `python3`.
+- Run your favorite `lognplot` instance, e.g., by running `python3 -m lognplot`.
+- Run `examples/zmqserver/zmqserver`. This starts an application with a store
+  with all kinds of object types, and provides a ZMQ server interface for
+  debugging.
+- Run `python3 client/gui_client.py -l`. This GUI connects to both the
+  `zmqserver` application via ZMQ, and to the `lognplot` instance.
+- The GUI window will pop up and show the objects of the `zmqserver` example.
+  If polling is enabled of one of the objects, the values are forwarded to
+  `lognplot`.
+
 ## Embedded Debugger commands
 
 A store can be queried using the following commands. These can be extended by
