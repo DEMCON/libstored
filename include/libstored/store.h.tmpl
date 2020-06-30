@@ -62,7 +62,7 @@ namespace stored {
 	class {{store.name}}Base {
 		CLASS_NOCOPY({{store.name}}Base)
 	protected:
-		{{store.name}}Base() {}
+		{{store.name}}Base() is_default;
 
 	public:
 		typedef Implementation_ Implementation;
@@ -258,7 +258,7 @@ namespace stored {
 	public:
 		typedef {{store.name}}Base<{{store.name}}> base;
 		friend class {{store.name}}Base<{{store.name}}>;
-		{{store.name}}() {}
+		{{store.name}}() is_default;
 	protected:
 {% for o in store.objects %}
 {%   if o is function %}

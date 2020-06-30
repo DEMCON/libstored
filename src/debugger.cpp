@@ -21,6 +21,9 @@
 #include <cstring>
 #include <string>
 
+/*!
+ * \brief Cleanup of a given object.
+ */
 template <typename T>
 static void cleanup(T* t) {
 	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
@@ -35,17 +38,26 @@ static void cleanup(std::unique_ptr<T>& UNUSED_PAR(t)) {
 
 namespace stored {
 
+/*!
+ * \brief Arguments passed to \c listCmdCallback().
+ */
 struct ListCmdCallbackArg {
 	Debugger* that;
 	ProtocolLayer* response;
 	bool gotSomething;
 
+	/*! \brief Invoke the callback. */
 	void operator()(void const* buf, size_t len) {
 		response->encode(buf, len, false);
 		gotSomething = true;
 	}
 };
 
+/*!
+ * \brief Constructor.
+ * \param identification the identification, that is to be returned by #identification().
+ * \see #setIdentification()
+ */
 Debugger::Debugger(char const* identification)
 	: m_identification(identification)
 	, m_versions()
@@ -53,6 +65,9 @@ Debugger::Debugger(char const* identification)
 {
 }
 
+/*!
+ * \brief Destructor.
+ */
 Debugger::~Debugger()
 #if __cplusplus < 201103L
 {
@@ -63,6 +78,9 @@ Debugger::~Debugger()
 	= default;
 #endif
 
+/*!
+ * \brief Check if the given name has the given prefix.
+ */
 static bool checkPrefix(char const* name, char const* prefix, size_t len) {
 	stored_assert(name && prefix);
 	// Check full prefix, as we only check against prefix and not to others,
@@ -70,6 +88,7 @@ static bool checkPrefix(char const* name, char const* prefix, size_t len) {
 	return memcmp(name, prefix, std::min(len, strlen(prefix))) == 0;
 }
 
+/*! \copydoc stored::DebugStoreBase::find() */
 DebugVariant Debugger::find(char const* name, size_t len) const {
 	if(unlikely(!name)) {
 notfound:
@@ -113,6 +132,11 @@ gotit:
 	return it->second->find(&name[1], len - 1);
 }
 
+/*!
+ * \brief Register a store to this Debugger.
+ *
+ * Don't use this function directly; use #map(Store&, char const*) instead.
+ */
 void Debugger::map(DebugStoreBase* store, char const* name) {
 	if(!name && store)
 		name = store->name();
@@ -136,6 +160,14 @@ void Debugger::map(DebugStoreBase* store, char const* name) {
 	}
 }
 
+/*!
+ * \brief Unmaps a store from this Debugger.
+ *
+ * Note that if after unmapping there is only one mapped store left,
+ * the prefixes are automatically dropped from all names.
+ *
+ * \see #map()
+ */
 void Debugger::unmap(char const* name) {
 	StoreMap::iterator it = m_map.find(name);
 	if(it == m_map.end())
@@ -145,26 +177,46 @@ void Debugger::unmap(char const* name) {
 	m_map.erase(it);
 }
 
+/*!
+ * \brief Returns the mapped stores.
+ */
 Debugger::StoreMap const& Debugger::stores() const {
 	return m_map;
 }
 
-Debugger::AliasMap& Debugger::aliases() {
-	return m_aliases;
-}
-
-Debugger::MacroMap const& Debugger::macros() const {
-	return m_macros;
-}
-
-Debugger::MacroMap& Debugger::macros() {
-	return m_macros;
-}
-
+/*!
+ * \brief Returns the registered aliases.
+ */
 Debugger::AliasMap const& Debugger::aliases() const {
 	return m_aliases;
 }
 
+/*!
+ * \copydoc aliases() const
+ */
+Debugger::AliasMap& Debugger::aliases() {
+	return m_aliases;
+}
+
+/*!
+ * \brief Returns the defined macros.
+ */
+Debugger::MacroMap const& Debugger::macros() const {
+	return m_macros;
+}
+
+/*!
+ * \copydoc macros() const
+ */
+Debugger::MacroMap& Debugger::macros() {
+	return m_macros;
+}
+
+/*!
+ * \brief Iterates over the directory and invoke a callback for every object.
+ * \param f the callback to invoke
+ * \param arg an arbitrary argument to be passed to \p f
+ */
 void Debugger::list(ListCallbackArg* f, void* arg) const {
 	if(m_map.size() == 1)
 		m_map.begin()->second->list(f, arg);
@@ -173,6 +225,16 @@ void Debugger::list(ListCallbackArg* f, void* arg) const {
 			it->second->list(f, arg, it->first);
 }
 
+/*!
+ * \brief Get the capabilities as supported by this Debugger.
+ * 
+ * The \p list is allocated on the #spm().
+ * The pointer and the length are returned through the \p list and \p len arguments.
+ *
+ * \param list the list of capabilities
+ * \param len the size of the buffer of \p list
+ * \param reserve when allocating memory for \p list, add this number of bytes
+ */
 void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
 	size_t const maxlen = 16;
 	list = spm().alloc<char>(maxlen + reserve);
@@ -209,14 +271,26 @@ void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
 	list[len] = 0;
 }
 
+/*!
+ * \brief Returns the identification.
+ * \see #setIdentification()
+ */
 char const* Debugger::identification() {
 	return m_identification;
 }
 
+/*!
+ * \brief Sets the identification.
+ * \see #identification()
+ */
 void Debugger::setIdentification(char const* identification) {
 	m_identification = identification;
 }
 
+/*!
+ * \brief Push the version string into the given response.
+ * \see #setVersions()
+ */
 bool Debugger::version(ProtocolLayer& response) {
 	char* buffer;
 	size_t len = encodeHex(Config::DebuggerVersion, buffer);
@@ -230,6 +304,9 @@ bool Debugger::version(ProtocolLayer& response) {
 	return true;
 }
 
+/*!
+ * \brief Set the versions as used by #version().
+ */
 void Debugger::setVersions(char const* versions) {
 	m_versions = versions;
 }
@@ -238,6 +315,12 @@ void Debugger::decode(void* buffer, size_t len) {
 	process(buffer, len, *this);
 }
 
+/*!
+ * \brief Process a Embedded %Debugger message.
+ * \param frame the frame to decode
+ * \param len the length of \p frame
+ * \param response the layer to push responses into
+ */
 void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 	if(unlikely(!frame || len == 0))
 		return;
@@ -625,6 +708,9 @@ error:
 	response.encode(&nack, 1, true);
 }
 
+/*!
+ * \brief Helper layer to merge responses for the macro response.
+ */
 class FrameMerger : public ProtocolLayer {
 public:
 	typedef ProtocolLayer base;
@@ -642,6 +728,10 @@ public:
 	}
 };
 
+/*!
+ * \brief Execute the given macro, and produce the results in the given response.
+ * \return \c false when the macro does not exist
+ */
 bool Debugger::runMacro(char m, ProtocolLayer& response) {
 	MacroMap::iterator it = macros().find(m);
 
@@ -677,11 +767,27 @@ bool Debugger::runMacro(char m, ProtocolLayer& response) {
 	return true;
 }
 
+/*!
+ * \brief Encode the 4 LSb into ASCII hex.
+ */
 static char encodeNibble(uint8_t n) {
 	n &= 0xf;
 	return (char)((n < 10 ? '0' : 'a' - 10) + n);
 }
 
+/*!
+ * \brief Encode data to ASCII hex.
+ *
+ * 'ASCII hex' is the hexadecimal representation as a ASCII string.  So, the
+ * value 100 (decimal) is the value 0x64 (hex), so encoded as "64" (bytes: 0x36
+ * 0x34).  The endianness is determined by the type of the data.
+ *
+ * \param type the type of the data
+ * \param data a pointer to the data to be encoded, where the pointer is overwritten by a #spm() allocated buffer with the result
+ * \param len the length of \p data, which is overwritten with the length of the result
+ * \param shortest if \c true, trim the 0 from the left, if the type allows that
+ * \see #decodeHex()
+ */
 void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortest) {
 	if(len == 0)
 		return;
@@ -735,6 +841,11 @@ void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortes
 	data = hex;
 }
 
+/*!
+ * \brief Decode a nibble.
+ * \param c the nibble to decode in ASCII hex
+ * \param ok will be set to \c false when decoding failed. The value is untouched when decoding was successful.
+ */
 static uint8_t decodeNibble(char c, bool& ok) {
 	if(c >= '0' && c <= '9')
 		return (uint8_t)(c - '0');
@@ -747,6 +858,10 @@ static uint8_t decodeNibble(char c, bool& ok) {
 	return 0;
 }
 
+/*!
+ * \brief Decode ASCII hex.
+ * \see #encodeHex(Type::type, void*&, size_t&, bool)
+ */
 bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len) {
 	if(len == 0 || !data)
 		return false;
@@ -796,10 +911,16 @@ bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len) {
 	return ok;
 }
 
+/*!
+ * \brief Returns a scratch pad memory.
+ */
 ScratchPad& Debugger::spm() {
 	return m_scratchpad;
 }
 
+/*!
+ * \brief #list() callback for processing #CmdList.
+ */
 void Debugger::listCmdCallback(char const* name, DebugVariant& variant, void* arg) {
 	stored_assert(arg);
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
@@ -825,10 +946,25 @@ void Debugger::listCmdCallback(char const* name, DebugVariant& variant, void* ar
 	(*a)("\n", 1);
 }
 
+/*!
+ * \brief Adds a zero-terminated string to the given stream.
+ * \see #stream(char, char const*, size_t)
+ */
 size_t Debugger::stream(char s, char const* data) {
 	return stream(s, data, strlen(data));
 }
 
+/*!
+ * \brief Adds a buffer to the given stream.
+ *
+ * This function does not block when the buffer is full.
+ *
+ * \param s the stream to append to, which is created if it does not exist yet
+ * \param data the data to be appended (which may include 0)
+ * \param len the length of \p data
+ * \return The length that was appended. On success, this equals \p len,
+ *         but may be less if the buffer was full.
+ */
 size_t Debugger::stream(char s, char const* data, size_t len) {
 	if(Config::DebuggerStreams < 1)
 		return 0;
@@ -850,16 +986,29 @@ size_t Debugger::stream(char s, char const* data, size_t len) {
 	return len;
 }
 
+/*!
+ * \brief Returns the stream buffer given a stream name.
+ * \return the stream or \c nullptr when there is no stream with the given name
+ */
 std::string const* Debugger::stream(char s) const {
 	StreamMap::const_iterator it = m_streams.find(s);
 	return it == m_streams.end() ? nullptr : &it->second;
 }
 
+/*!
+ * \copydoc stream(char) const
+ */
 std::string* Debugger::stream(char s) {
 	StreamMap::iterator it = m_streams.find(s);
 	return it == m_streams.end() ? nullptr : &it->second;
 }
 
+/*!
+ * \brief Gets the existing streams.
+ * \param buffer an #spm() allocated buffer with stream names
+ * \param len the length of the resulting \p buffer
+ * \return 0-terminated string of stream names (which equals \c buffer)
+ */
 char const* Debugger::streams(void const*& buffer, size_t& len) {
 	size_t size = m_streams.size();
 	char* b = spm().alloc<char>(size + 1);

@@ -175,7 +175,7 @@ namespace stored {
 		Variable& operator=(type v) { set(v); return *this; }
 
 		bool valid() const { return m_buffer; }
-		Container& container() const { std::abort(); }
+		Container& container() const;// { std::abort(); }
 
 	protected:
 		type& buffer() const {
@@ -216,9 +216,9 @@ namespace stored {
 		~Variable() {}
 #endif
 		type get() const {
-			container().hookEntryRO(toType<T>::type, &this->buffer(), sizeof(type));
+			entryRO();
 			type res = base::get();
-			container().hookExitRO(toType<T>::type, &this->buffer(), sizeof(type));
+			exitRO();
 			return res;
 		}
 
@@ -228,11 +228,11 @@ namespace stored {
 		explicit operator type const&() const { return get(); }
 
 		void set(type v) {
-			container().hookEntryX(toType<T>::type, &this->buffer(), sizeof(type));
+			entryX();
 			bool changed = memcmp(&v, &this->buffer(), sizeof(v)) != 0;
 			if(changed)
 				base::set(v);
-			container().hookExitX(toType<T>::type, &this->buffer(), sizeof(type), changed);
+			exitX(changed);
 		}
 
 		Variable& operator=(type v) { 
@@ -246,6 +246,22 @@ namespace stored {
 		}
 		
 		typename Container::Key key() const { return container().bufferToKey(&this->buffer()); }
+
+		void entryX() const {
+			container().hookEntryX(toType<T>::type, &this->buffer(), sizeof(type));
+		}
+
+		void exitX(bool changed) const {
+			container().hookExitX(toType<T>::type, &this->buffer(), sizeof(type), changed);
+		}
+
+		void entryRO() const {
+			container().hookEntryRO(toType<T>::type, &this->buffer(), sizeof(type));
+		}
+
+		void exitRO() const {
+			container().hookExitRO(toType<T>::type, &this->buffer(), sizeof(type));
+		}
 
 	private:
 		Container* m_container;
@@ -370,13 +386,9 @@ namespace stored {
 					len = std::min(len, size());
 				}
 
-				if(Config::EnableHooks)
-					container().hookEntryRO(type(), m_buffer, len);
-
+				entryRO(len);
 				memcpy(dst, m_buffer, len);
-
-				if(Config::EnableHooks)
-					container().hookExitRO(type(), m_buffer, len);
+				exitRO(len);
 			}
 			return len;
 		}
@@ -396,18 +408,41 @@ namespace stored {
 
 				bool changed = true;
 
-				if(Config::EnableHooks) {
-					container().hookEntryX(type(), m_buffer, len);
+				entryX(len);
+
+				if(Config::EnableHooks)
 					changed = memcmp(src, m_buffer, len) != 0;
-				}
 
 				if(changed)
 					memcpy(m_buffer, src, len);
 
-				if(Config::EnableHooks)
-					container().hookExitX(type(), m_buffer, len, changed);
+				exitX(changed, len);
 			}
 			return len;
+		}
+
+		void entryX() const { entryX(size()); }
+		void entryX(size_t len) const {
+			if(Config::EnableHooks)
+				container().hookEntryX(type(), m_buffer, len);
+		}
+
+		void exitX(bool changed) const { exitX(changed, size()); }
+		void exitX(bool changed, size_t len) const {
+			if(Config::EnableHooks)
+				container().hookExitX(type(), m_buffer, len, changed);
+		}
+
+		void entryRO() const { entryRO(size()); }
+		void entryRO(size_t len) const {
+			if(Config::EnableHooks)
+				container().hookExitRO(type(), m_buffer, len);
+		}
+
+		void exitRO() const { exitRO(size()); }
+		void exitRO(size_t len) const {
+			if(Config::EnableHooks)
+				container().hookExitRO(type(), m_buffer, len);
 		}
 
 		Type::type type() const { stored_assert(valid()); return (Type::type)m_type; }
@@ -486,6 +521,10 @@ namespace stored {
 		
 		size_t get(void* UNUSED_PAR(dst), size_t UNUSED_PAR(len) = 0) const { stored_assert(valid()); return 0; }
 		size_t set(void const* UNUSED_PAR(src), size_t UNUSED_PAR(len) = 0) { stored_assert(valid()); return 0; }
+		void entryX(size_t UNUSED_PAR(len) = 0) const {}
+		void exitX(bool UNUSED_PAR(changed), size_t UNUSED_PAR(len) = 0) const {}
+		void entryRO(size_t UNUSED_PAR(len) = 0) const {}
+		void exitRO(size_t UNUSED_PAR(len) = 0) const {}
 		Type::type type() const { return (Type::type)m_type; }
 		size_t size() const { stored_assert(valid()); return Type::isFixed(type()) ? Type::size(type()) : m_len; }
 		bool valid() const { return type() != Type::Invalid; }
