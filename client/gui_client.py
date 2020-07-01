@@ -57,7 +57,7 @@ class ObjectListModel(QAbstractListModel):
         if 0 <= index.row() < self.rowCount() and index.isValid():
             o = self._objects[index.row()]
             assert o != None
-            if role == self.NameRole:
+            if role == self.NameRole or role == Qt.DisplayRole:
                 return o.name
             elif role == self.ObjectRole:
                 return o
@@ -106,11 +106,13 @@ if __name__ == '__main__':
     filteredObjects.setSourceModel(model)
     filteredObjects.setSortRole(model.NameRole)
     filteredObjects.setFilterRole(model.NameRole)
+    filteredObjects.sort(0)
     polledObjects = QSortFilterProxyModel(parent=app)
     polledObjects.setSourceModel(model)
     polledObjects.setSortRole(model.NameRole)
     polledObjects.setFilterRole(model.PollingRole)
     polledObjects.setFilterRegularExpression('true')
+    polledObjects.sort(0)
 
     engine.rootContext().setContextProperty("objects", filteredObjects)
     engine.rootContext().setContextProperty("polledObjects", polledObjects)

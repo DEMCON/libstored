@@ -381,7 +381,7 @@ namespace stored {
 	class Debugger : public ProtocolLayer {
 		CLASS_NOCOPY(Debugger)
 	public:
-		explicit Debugger(char const* identification = nullptr);
+		explicit Debugger(char const* identification = nullptr, char const* versions = nullptr);
 		virtual ~Debugger() override;
 
 	public:

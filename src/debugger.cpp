@@ -56,11 +56,13 @@ struct ListCmdCallbackArg {
 /*!
  * \brief Constructor.
  * \param identification the identification, that is to be returned by #identification().
+ * \param versions the version list, that is to be processed by #version().
  * \see #setIdentification()
+ * \see #setVersions()
  */
-Debugger::Debugger(char const* identification)
+Debugger::Debugger(char const* identification, char const* versions)
 	: m_identification(identification)
-	, m_versions()
+	, m_versions(versions)
 	, m_macroSize()
 {
 }
@@ -281,6 +283,11 @@ char const* Debugger::identification() {
 
 /*!
  * \brief Sets the identification.
+ *
+ * The supplied string is not copied; just the pointer is saved, so the string
+ * must remain valid while the Debugger has its pointer.  So, it is fine to
+ * supply a string literal.
+ *
  * \see #identification()
  */
 void Debugger::setIdentification(char const* identification) {
@@ -306,6 +313,12 @@ bool Debugger::version(ProtocolLayer& response) {
 
 /*!
  * \brief Set the versions as used by #version().
+ *
+ * The supplied string is not copied; just the pointer is saved, so the string
+ * must remain valid while the Debugger has its pointer.  So, it is fine to
+ * supply a string literal.
+ *
+ * \see #version()
  */
 void Debugger::setVersions(char const* versions) {
 	m_versions = versions;
