@@ -200,6 +200,7 @@ namespace stored {
 			: base(container, buffer)
 			, m_container(&container)
 		{}
+		Variable() is_default;
 		
 		Variable(Variable const& v) { (*this) = v; }
 		Variable& operator=(Variable const& v) {

@@ -167,11 +167,11 @@ void TerminalLayer::decode(void* buffer, size_t len) {
 
 		switch(m_decodeState) {
 		case StateNormal:
-			if(c == Esc)
+			if(unlikely(c == Esc))
 				m_decodeState = StateNormalEsc;
 			break;
 		case StateNormalEsc:
-			if(c == EscStart) {
+			if(likely(c == EscStart)) {
 				nonDebugDecode(static_cast<char*>(buffer) + nonDebugOffset, i - nonDebugOffset - 1); // Also skip the ESC
 				m_decodeState = StateDebug;
 				nonDebugOffset = len;
@@ -179,13 +179,13 @@ void TerminalLayer::decode(void* buffer, size_t len) {
 				m_decodeState = StateNormal;
 			break;
 		case StateDebug:
-			if(c == Esc)
+			if(unlikely(c == Esc))
 				m_decodeState = StateDebugEsc;
 			else
 				m_buffer.push_back(c);
 			break;
 		case StateDebugEsc:
-			if(c == EscEnd) {
+			if(likely(c == EscEnd)) {
 				base::decode(&m_buffer[0], m_buffer.size());
 				m_decodeState = StateNormal;
 				m_buffer.clear();
