@@ -36,6 +36,11 @@ namespace stored {
 // ProtocolLayer
 //
 
+/*!
+ * \brief Destructor.
+ *
+ * Ties to the layer above and below are nicely removed.
+ */
 ProtocolLayer::~ProtocolLayer() {
 	if(up() && up()->down() == this)
 		up()->setDown(down());
@@ -50,6 +55,9 @@ ProtocolLayer::~ProtocolLayer() {
 // AsciiEscapeLayer
 //
 
+/*!
+ * \copydoc stored::ProtocolLayer::ProtocolLayer()
+ */
 AsciiEscapeLayer::AsciiEscapeLayer(ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 {}
@@ -112,6 +120,10 @@ static char needEscape(char c) {
 	}
 }
 
+/*!
+ * \brief Implementation of both encode functions.
+ * \private
+ */
 template <typename void_type, typename char_type>
 static void AsciiEscapeLayer_encode(AsciiEscapeLayer& that, void_type* buffer, size_t len, bool last) {
 	char_type* p = static_cast<char_type*>(buffer);
@@ -149,6 +161,11 @@ void AsciiEscapeLayer::encode(void const* buffer, size_t len, bool last) {
 // TerminalLayer
 //
 
+/*!
+ * \copydoc stored::ProtocolLayer::ProtocolLayer()
+ * \param nonDebugDecodeFd the file descriptor to write data to that are not part of debug messages during decode(). Set to -1 to drop this data.
+ * \param encodeFd the file descriptor to write encoded debug messages to. Set to -1 to drop this data.
+ */
 TerminalLayer::TerminalLayer(int nonDebugDecodeFd, int encodeFd, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_nonDebugDecodeFd(nonDebugDecodeFd)
@@ -157,6 +174,9 @@ TerminalLayer::TerminalLayer(int nonDebugDecodeFd, int encodeFd, ProtocolLayer* 
 	, m_encodeState()
 {}
 
+/*!
+ * \copydoc stored::ProtocolLayer::~ProtocolLayer()
+ */
 TerminalLayer::~TerminalLayer() is_default;
 
 void TerminalLayer::decode(void* buffer, size_t len) {
@@ -203,10 +223,18 @@ void TerminalLayer::decode(void* buffer, size_t len) {
 		nonDebugDecode(static_cast<char*>(buffer) + nonDebugOffset, len - nonDebugOffset);
 }
 
+/*!
+ * \brief Receptor of non-debug data during decode().
+ * 
+ * Default implementation writes to the \c nonDebugDecodeFd, as supplied to the constructor.
+ */
 void TerminalLayer::nonDebugDecode(void* buffer, size_t len) {
 	writeToFd(m_nonDebugDecodeFd, buffer, len);
 }
 
+/*!
+ * \brief Helper function to write a buffer to a file descriptor.
+ */
 void TerminalLayer::writeToFd(int fd, void const* buffer, size_t len) {
 	if(fd < 0)
 		return;
@@ -232,6 +260,11 @@ void TerminalLayer::encode(void const* buffer, size_t len, bool last) {
 		encodeEnd();
 }
 
+/*!
+ * \brief Emits a start-of-frame sequence if it hasn't done yet.
+ * 
+ * Call #encodeEnd() to finish the current frame.
+ */
 void TerminalLayer::encodeStart() {
 	if(m_encodeState)
 		return;
@@ -242,6 +275,9 @@ void TerminalLayer::encodeStart() {
 	base::encode((void*)start, sizeof(start), false);
 }
 
+/*!
+ * \brief Emits an end-of-frame sequence of the frame started using #encodeStart().
+ */
 void TerminalLayer::encodeEnd() {
 	if(!m_encodeState)
 		return;

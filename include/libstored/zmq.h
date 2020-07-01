@@ -33,6 +33,7 @@
 namespace stored {
 
 	/*!
+	 * \brief A protocol layer that wraps the protocol stack and implements ZeroMQ REQ/REP around it.
 	 * \ingroup libstored_protocol
 	 */
 	class ZmqLayer : public ProtocolLayer {
@@ -50,6 +51,7 @@ namespace stored {
 		void* context() const;
 		virtual int recv(bool block = false);
 
+		/*! \brief The socket type. */
 #ifdef STORED_OS_WINDOWS
 		typedef SOCKET socket_type;
 #else
@@ -64,11 +66,17 @@ namespace stored {
 		void encode(void const* buffer, size_t len, bool last = true) final;
 
 	private:
+		/*! \brief The ZeroMQ context. */
 		void* m_context;
+		/*! \brief Flag to indicate if we created #m_context or not. */
 		bool m_contextCleanup;
+		/*! \brief The REP socket. */
 		void* m_socket;
+		/*! \brief A buffer to save partial request before decode() can start. */
 		void* m_buffer;
+		/*! \brief Number of bytes in #m_buffer. */
 		size_t m_bufferCapacity;
+		/*! \brief Allocated size of #m_buffer. */
 		size_t m_bufferSize;
 	};
 } // namespace

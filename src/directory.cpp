@@ -20,6 +20,11 @@
 
 #include <string>
 
+/*!
+ * \brief Decodes an Unsigned VLQ number.
+ * \param p a pointer to the buffer to decode, which is incremented till after the decoded value
+ * \return the decoded value
+ */
 template <typename T>
 static T decodeInt(uint8_t const*& p) {
 	T v = 0;
@@ -30,6 +35,10 @@ static T decodeInt(uint8_t const*& p) {
 	return v | (T)*p++;
 }
 
+/*!
+ * \brief Skips an Unsigned VLQ number, which encodes a buffer offset.
+ * \param p a pointer to the offset to be skipped, which is increment till after the offset
+ */
 static void skipOffset(uint8_t const*& p) {
 	while(*p++ & 0x80u);
 }
@@ -37,6 +46,20 @@ static void skipOffset(uint8_t const*& p) {
 namespace stored {
 namespace impl {
 
+/*!
+ * \brief Finds an object in a directory.
+ * 
+ * Don't call this function, use stored::find() instead.
+ *
+ * \param buffer the buffer with variable's data
+ * \param directory the binary directory description
+ * \param name the name to find, can be abbreviated as long as it is unambiguous
+ * \param len the maximum length of \p name to parse
+ * \return a container-independent variant, which is not valid when not found
+ * \ingroup libstored_directory
+ * \see #stored::find()
+ * \private
+ */
 Variant<> find(void* buffer, uint8_t const* directory, char const* name, size_t len) {
 	if(unlikely(!directory || !name)) {
 notfound:
@@ -100,6 +123,7 @@ notfound:
 } // namespace impl
 
 /*!
+ * \brief Implementation for stored::list().
  * \private
  */
 static void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg, std::string& name)
@@ -155,6 +179,13 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
 }
 
 /*!
+ * \brief Iterates over all objects in the directory and invoke a callback for every object.
+ * \param container the container that contains \p buffer and \p directory
+ * \param buffer the buffer that holds the data of all variables
+ * \param directory the binary directory, to be parsed
+ * \param f the callback function
+ * \param arg an arbitrary argument to be passed to \p f
+ * \param prefix when not \c nullptr, a string that is prepended for the name that is supplied to \p f
  * \ingroup libstored_directory
  */
 void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg, char const* prefix) {

@@ -37,6 +37,11 @@ namespace stored {
 // ZmqLayer
 //
 
+/*!
+ * \copydoc stored::ProtocolLayer::ProtocolLayer()
+ * \param context the ZeroMQ context to use. If \c nullptr, a new context is allocated.
+ * \param port the port to bind to
+ */
 ZmqLayer::ZmqLayer(void* context, int port, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_context(context ? context : zmq_ctx_new())
@@ -56,6 +61,12 @@ ZmqLayer::ZmqLayer(void* context, int port, ProtocolLayer* up, ProtocolLayer* do
 	zmq_bind(m_socket, bind);
 }
 
+/*!
+ * \copydoc stored::ProtocolLayer::~ProtocolLayer()
+ * 
+ * The sockets are closed (which may block).
+ * If a ZeroMQ context was allocated, it is terminated here.
+ */
 ZmqLayer::~ZmqLayer() {
 	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc)
 	free(m_buffer);
@@ -66,10 +77,18 @@ ZmqLayer::~ZmqLayer() {
 		zmq_ctx_term(context());
 }
 
+/*!
+ * \brief The ZeroMQ context.
+ */
 void* ZmqLayer::context() const {
 	return m_context;
 }
 
+/*!
+ * \brief The ZeroMQ socket, which can be used for \c poll() or \c select().
+ *
+ * Use this socket to determine if recv() would block.
+ */
 ZmqLayer::socket_type ZmqLayer::fd() {
 	socket_type socket;
 	size_t size = sizeof(socket);
@@ -85,6 +104,10 @@ ZmqLayer::socket_type ZmqLayer::fd() {
 	return socket;
 }
 
+/*!
+ * \brief Try to receive data from the ZeroMQ REP socket, and decode() it.
+ * \param block if \c true, this function will block on receiving data from the ZeroMQ socket
+ */
 int ZmqLayer::recv(bool block) {
 	int res = 0;
 	int more;
@@ -156,6 +179,10 @@ void ZmqLayer::encode(void* buffer, size_t len, bool last) {
 }
 #endif
 
+/*!
+ * \copydoc stored::ProtocolLayer::encode(void const*, size_t, bool)
+ * \details Encoded data is send as REP over the ZeroMQ socket.
+ */
 void ZmqLayer::encode(void const* buffer, size_t len, bool last) {
 	zmq_send(m_socket, buffer, len, last ? 0 : ZMQ_SNDMORE);
 }

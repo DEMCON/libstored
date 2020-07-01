@@ -31,7 +31,7 @@
  *
  * It is using the following grammar:
  *
- * \code
+ * \code{.unparsed}
  * directory ::= expr
  *
  * expr ::=
@@ -83,6 +83,13 @@ namespace stored {
 	}
 
 	/*!
+	 * \brief Finds an object in a directory.
+	 * \param container the container that has the \p buffer and \p directory. Specify the actual (lowest) subclass of the store.
+	 * \param buffer the buffer with variable's data
+	 * \param directory the binary directory description
+	 * \param name the name to find, can be abbreviated as long as it is unambiguous
+	 * \param len the maximum length of \p name to parse
+	 * \return a variant, which is not valid when not found
 	 * \ingroup libstored_directory
 	 */
 	template <typename Container>
@@ -90,10 +97,24 @@ namespace stored {
 		return impl::find(buffer, directory, name, len).apply<Container>(container);
 	}
 
+	/*!
+	 * \brief Function prototype for the callback of #list().
+	 *
+	 * It receives the pointer to its container, the name of the object,
+	 * the type of the object, the pointer to the buffer, the length of the buffer,
+	 * and the \c arg parameter of \c list().
+	 */
 	typedef void(ListCallbackArg)(void*, char const*, Type::type, void*, size_t, void*);
+	
+	void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr);
 
 #if __cplusplus >= 201103L
 	/*!
+	 * \brief Iterates over all objects in the directory and invoke a callback for every object.
+	 * \param container the container that contains \p buffer and \p directory
+	 * \param buffer the buffer that holds the data of all variables
+	 * \param directory the binary directory, to be parsed
+	 * \param f the callback function, which receives the container, name, type, buffer, and size
 	 * \ingroup libstored_directory
 	 */
 	template <typename Container, typename F>
@@ -105,8 +126,6 @@ namespace stored {
 		list(container, buffer, directory, static_cast<ListCallbackArg*>(cb), &f);
 	}
 #endif
-
-	void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr);
 
 } // namespace
 #endif // __cplusplus
