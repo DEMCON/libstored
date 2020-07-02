@@ -28,6 +28,7 @@
 
 #ifdef STORED_HAVE_ZTH
 #  include <libzth/util.h>
+#  include <libzth/worker.h>
 #endif
 
 /*!
@@ -57,6 +58,22 @@
 #    define unlikely(expr) __builtin_expect(!!(expr), 0)
 #  else
 #    define unlikely(expr) (expr)
+#  endif
+#endif
+
+/*!
+ * \def stored_yield()
+ * \brief Allow to yield the processor during long-running tasks.
+ */
+#ifndef stored_yield
+#  ifdef STORED_HAVE_ZTH
+#    ifdef __cplusplus
+#      define stored_yield()	zth::yield()
+#    else
+#      define stored_yield()	zth_yield()
+#    endif
+#  else
+#    define stored_yield()		do {} while(false)
 #  endif
 #endif
 

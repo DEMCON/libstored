@@ -44,12 +44,13 @@ namespace stored {
 struct ListCmdCallbackArg {
 	Debugger* that;
 	ProtocolLayer* response;
-	bool gotSomething;
+	unsigned int callbacks;
 
 	/*! \brief Invoke the callback. */
 	void operator()(void const* buf, size_t len) {
 		response->encode(buf, len, false);
-		gotSomething = true;
+		if(++callbacks % 0x80)
+			stored_yield();
 	}
 };
 
@@ -223,8 +224,10 @@ void Debugger::list(ListCallbackArg* f, void* arg) const {
 	if(m_map.size() == 1)
 		m_map.begin()->second->list(f, arg);
 	else
-		for(StoreMap::const_iterator it = m_map.begin(); it != m_map.end(); ++it)
+		for(StoreMap::const_iterator it = m_map.begin(); it != m_map.end(); ++it) {
 			it->second->list(f, arg, it->first);
+			stored_yield();
+		}
 }
 
 /*!
@@ -419,11 +422,11 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		if(!Config::DebuggerList)
 			goto error;
 
-		ListCmdCallbackArg arg = {this, &response, false};
+		ListCmdCallbackArg arg = {this, &response, 0};
 
 		list(&listCmdCallback, &arg);
 
-		if(!arg.gotSomething)
+		if(!arg.callbacks)
 			goto error;
 
 		response.encode();

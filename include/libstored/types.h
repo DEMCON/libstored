@@ -43,6 +43,11 @@
 namespace stored {
 
 	/*!
+	 * \brief %Type traits of objects in a store.
+	 *
+	 * The type is a set of flags masked into a byte.
+	 * It always fits in a signed char.
+	 *
 	 * \ingroup libstored_types
 	 */
 	struct Type {
@@ -72,7 +77,7 @@ namespace stored {
 			Bool = FlagFixed | 0u,
 			Pointer32 = FlagFixed | 3u,
 			Pointer64 = FlagFixed | 7u,
-			Pointer = sizeof(void*) <= 4 ? Pointer32 : Pointer64,
+			Pointer = (sizeof(void*) <= 4 ? Pointer32 : Pointer64),
 
 			// (special) things with undefined length
 			Void = 0u,
@@ -82,20 +87,24 @@ namespace stored {
 			Invalid = 0xffu,
 		};
 
+		/*! \brief Checks if the given type is a function. */
 		static bool isFunction(type t) { return t & FlagFunction; }
+		/*! \brief Checks if the given type has a fixed length, or is a function with such an argument. */
 		static bool isFixed(type t) { return t & FlagFixed; }
+		/*! \brief Checks if the given type is an integer, or is a function with such an argument. */
 		static bool isInt(type t) { return isFixed(t) && (t & FlagInt); }
+		/*! \brief Checks if the given type is signed number, or is a function with such an argument. */
 		static bool isSigned(type t) { return isFixed(t) && (t & FlagSigned); }
+		/*! \brief Checks if the given type is special (non-fixed size) type, or is a function with such an argument. */
 		static bool isSpecial(type t) { return (t & MaskFlags) == 0; }
+		/*! \brief Returns the size of the (function argument) type, or 0 when it is not fixed. */
 		static size_t size(type t) { return !isFixed(t) ? 0u : (size_t)(t & MaskSize) + 1u; }
 	};
 
 	constexpr static inline Type::type operator|(Type::type a, Type::type b) { return (Type::type)((uint8_t)a | (uint8_t)b); }
 
-	/*!
-	 * \private
-	 */
 	namespace impl {
+		/*! \brief Returns the #stored::Type::type of the given \c int type. */
 		template <bool signd, size_t size> struct toIntType { static stored::Type::type const type = Type::Void; };
 		template <> struct toIntType<true,1> { static stored::Type::type const type = Type::Int8; };
 		template <> struct toIntType<false,1> { static stored::Type::type const type = Type::Uint8; };
@@ -108,6 +117,7 @@ namespace stored {
 	}
 
 	/*!
+	 * \brief Returns the #stored::Type::type that corresponds to the given type \p T.
 	 * \ingroup libstored_types
 	 */
 	template <typename T> struct toType { static Type::type const type = Type::Blob; };
@@ -130,6 +140,11 @@ namespace stored {
 	template <typename T> struct toType<T*> { static Type::type const type = Type::Pointer; };
 
 	/*!
+	 * \brief A typed variable in a store.
+	 *
+	 * A Variable is very small (it contains only a pointer).
+	 * It is default copyable and assignable, so it is fine to pass it by value.
+	 *
 	 * \ingroup libstored_types
 	 */
 	template <typename T, typename Container, bool Hooks = Config::EnableHooks>
@@ -177,6 +192,9 @@ namespace stored {
 		bool valid() const { return m_buffer; }
 		Container& container() const;// { std::abort(); }
 
+		bool operator==(Variable const& rhs) const { return m_buffer == rhs.m_buffer; }
+		bool operator!=(Variable const& rhs) const { return !(*this == rhs); }
+
 	protected:
 		type& buffer() const {
 			stored_assert(valid());
@@ -188,6 +206,11 @@ namespace stored {
 	};
 
 	/*!
+	 * \brief A typed variable in a store, with hook support.
+	 *
+	 * This Variable is very small (it contains two pointers).
+	 * It is default copyable and assignable, so it is fine to pass it by value.
+	 *
 	 * \ingroup libstored_types
 	 */
 	template <typename T, typename Container>
@@ -269,6 +292,11 @@ namespace stored {
 	};
 
 	/*!
+	 * \brief A typed function in a store.
+	 *
+	 * A Function is very small (it contains two words).
+	 * It is default copyable and assignable, so it is fine to pass it by value.
+	 *
 	 * \ingroup libstored_types
 	 */
 	template <typename T, typename Container>
@@ -322,6 +350,14 @@ namespace stored {
 		}
 
 		unsigned int id() const { return m_f; }
+		
+		bool operator==(Function const& rhs) const {
+			if(valid() != rhs.valid())
+				return false;
+			if(!valid())
+				return true;
+			return m_container == rhs.m_container && m_f == rhs.m_f; }
+		bool operator!=(Function const& rhs) const { return !(*this == rhs); }
 
 	private:
 		Container* m_container;
@@ -329,6 +365,11 @@ namespace stored {
 	};
 
 	/*!
+	 * \brief A untyped interface to an object in a store.
+	 *
+	 * A Variant is quite small (only about four words).
+	 * It is default copyable and assignable, so it is fine to pass it by value.
+	 *
 	 * \ingroup libstored_types
 	 */
 	template <typename Container = void>
@@ -471,6 +512,15 @@ namespace stored {
 			return container()->bufferToKey(m_buffer);
 		}
 
+		bool operator==(Variant const& rhs) const {
+			if(valid() != rhs.valid())
+				return false;
+			if(!valid())
+				return true;
+			return m_type == rhs.m_type && m_container == rhs.m_container &&
+				(isFunction() ? m_f == rhs.m_f : m_buffer == rhs.m_buffer && m_len == rhs.m_len); }
+		bool operator!=(Variant const& rhs) const { return !(*this == rhs); }
+
 	private:
 		Container* m_container;
 		union {
@@ -482,6 +532,11 @@ namespace stored {
 	};
 	
 	/*!
+	 * \brief A store-independent untyped wrapper for an object.
+	 *
+	 * It is not usable, until it is applied to a store.
+	 *
+	 * \see #apply()
 	 * \ingroup libstored_types
 	 */
 	template <>
@@ -532,6 +587,15 @@ namespace stored {
 		bool isFunction() const { stored_assert(valid()); return Type::isFunction(type()); }
 		bool isVariable() const { stored_assert(valid()); return !isFunction(); }
 		void* container() const;
+
+		bool operator==(Variant const& rhs) const {
+			if(valid() != rhs.valid())
+				return false;
+			if(!valid())
+				return true;
+			return m_type == rhs.m_type &&
+				(isFunction() ? m_f == rhs.m_f : m_buffer == rhs.m_buffer && m_len == rhs.m_len); }
+		bool operator!=(Variant const& rhs) const { return !(*this == rhs); }
 
 	private:
 		// Make this class the same size as a non-void container.

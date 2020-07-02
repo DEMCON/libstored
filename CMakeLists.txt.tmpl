@@ -47,11 +47,7 @@ if(LIBSTORED_HAVE_VALGRIND)
 endif()
 
 if(TARGET libzth)
-	target_compile_definitions({{libprefix}}libstored PUBLIC -DSTORED_HAVE_ZTH)
-	target_include_directories({{libprefix}}libstored
-		PRIVATE $<TARGET_PROPERTY:libzth,INTERFACE_INCLUDE_DIRECTORIES>
-	)
-	target_link_libraries({{libprefix}}libstored INTERFACE libzth)
+	target_link_libraries({{libprefix}}libstored PUBLIC libzth)
 endif()
 
 if(LIBSTORED_HAVE_LIBZMQ)
