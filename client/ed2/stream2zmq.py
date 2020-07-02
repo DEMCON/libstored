@@ -18,6 +18,7 @@
 
 import sys
 import zmq
+import logging
 
 from .zmq_server import ZmqServer
 
@@ -30,34 +31,39 @@ class Stream2Zmq(ZmqServer):
         self.stdout_buffer = bytearray()
         self.stdout_msg = bytearray()
         self.rep_queue = []
+        self.logger = logging.getLogger(__name__)
 
     def req(self, message, rep):
         self.rep_queue.append(rep)
-        self.sendToApp(self.encode(message))
+        encoded = self.encode(message)
+        self.logger.info('sending ' + str(encoded))
+        self.sendToApp(encoded)
 
     def sendToApp(self, data):
         pass
 
     def stdout(self, data):
-        sys.stdout.write(data)
+        sys.stdout.write(data.decode(errors="replace"))
 
     # Extract Zmq response from the application's stdout, and forward the rest
     # to self.stdout.
     def recvFromApp(self, data):
         if self.rep_queue == []:
             # Can't contain a response, as we don't expect one.
-            self.stdout(data.decode())
+            self.stdout(data)
             return
-
+        
         # Can't be processing both.
         assert len(self.stdout_msg) == 0 or len(self.stdout_buffer) == 0
-
+        
         inMsg = len(self.stdout_msg) > 0
         for b in data:
             if inMsg:
                 self.stdout_msg.append(b)
                 if self.stdout_msg[-2:] == b'\x1b\\':
                     # Found end of message
+                    self.logger.debug("end of message")
+                    self.logger.info('received ' + str(self.stdout_msg))
                     self.rep_queue.pop(0)(self.decode(self.stdout_msg))
                     self.stdout_msg = bytearray()
                     inMsg = False
@@ -66,6 +72,7 @@ class Stream2Zmq(ZmqServer):
                 self.stdout_buffer.pop()
                 self.stdout_msg = bytearray(b'\x1b_')
                 inMsg = True
+                self.logger.debug("start of message")
             else:
                 # Got more stdout
                 self.stdout_buffer.append(b)

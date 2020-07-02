@@ -20,6 +20,7 @@
 import ed2
 import argparse
 import serial
+import logging
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='stdin/stdout wrapper to ZMQ server',
@@ -28,8 +29,12 @@ if __name__ == '__main__':
     parser.add_argument('port', help='serial port')
     parser.add_argument('baud', nargs='?', type=int, default=115200, help='baud rate')
     parser.add_argument('-r', dest='rtscts', default=False, help='RTS/CTS flow control', action='store_true')
+    parser.add_argument('-v', dest='verbose', default=False, help='Enable verbose output', action='store_true')
 
     args = parser.parse_args()
+
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
 
     bridge = ed2.Serial2Zmq(args.port, port=args.port, baudrate=args.baud, rtscts=args.rtscts)
 

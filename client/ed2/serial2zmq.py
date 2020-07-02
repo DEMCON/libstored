@@ -19,6 +19,7 @@
 import sys
 import serial
 import zmq
+import logging
 
 from .stream2zmq import Stream2Zmq
 
@@ -32,6 +33,7 @@ class Serial2Zmq(Stream2Zmq):
         self.serial_socket = self.registerStream(self.serial)
         self.stdin_socket = self.registerStream(sys.stdin)
         self.rep_queue = []
+        self.logger = logging.getLogger(__name__)
 
     def poll(self, timeout_s = None):
         events = super().poll(timeout_s)
@@ -43,6 +45,8 @@ class Serial2Zmq(Stream2Zmq):
     def sendToApp(self, data):
         if len(data) > 0:
             self.serial.write(data)
+            self.serial.flush()
+            self.logger.info('sent ' + str(data))
     
     def close(self):
         super().close()

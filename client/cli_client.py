@@ -25,13 +25,18 @@
 import sys
 import ed2
 import argparse
+import logging
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='ZMQ command line client')
     parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
     parser.add_argument('-p', dest='port', type=int, default=ed2.ZmqServer.default_port, help='port')
+    parser.add_argument('-v', dest='verbose', default=False, help='Enable verbose output', action='store_true')
 
     args = parser.parse_args()
+
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
 
     client = ed2.ZmqClient(args.server, args.port)
 

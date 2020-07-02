@@ -154,7 +154,7 @@ Window {
                         }
                     }
 
-                    ToolTip.text: "Last update: " + obj.tString
+                    ToolTip.text: obj.name + "\nLast update: " + obj.tString
                     ToolTip.visible: hovered && obj.tString
                     ToolTip.delay: 1000
                 }
