@@ -157,8 +157,11 @@ namespace stored {
 							return std::numeric_limits<R>::min();
 					}
 				} else {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Woverflow" // This error triggers when R is integer, but this code path is not trigger then.
 					if(value <= -std::numeric_limits<R>::max())
 						return -std::numeric_limits<R>::max();
+#pragma GCC diagnostic pop
 				}
 
 				// Upper bound check

@@ -202,7 +202,7 @@ namespace stored {
 		{}
 		Variable() is_default;
 		
-		Variable(Variable const& v) { (*this) = v; }
+		Variable(Variable const& v) : base() { (*this) = v; }
 		Variable& operator=(Variable const& v) {
 			base::operator=(v);
 			m_container = v.m_container;
