@@ -38,7 +38,7 @@ namespace stored {
 //
 
 /*!
- * \copydoc stored::ProtocolLayer::ProtocolLayer()
+ * \copydoc stored::ProtocolLayer::ProtocolLayer(ProtocolLayer*,ProtocolLayer*)
  * \param context the ZeroMQ context to use. If \c nullptr, a new context is allocated.
  * \param port the port to bind to
  */

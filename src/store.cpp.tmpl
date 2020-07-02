@@ -27,11 +27,18 @@ vim:filetype=cpp
 namespace stored {
 
 {% if store.buffer.init|len > 0 %}
+/*!
+ * \brief Non-zero initialized variables in the store.
+ * \details This block of memory is copied to the start of the buffer upon initialization.
+ */
 static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len}}] = {
 {{store.buffer.init|carray}}
 };
 
 {% endif %}
+/*!
+ * \brief Constructor.
+ */
 {{store.name}}Data::{{store.name}}Data()
     : buffer()
 {
@@ -40,18 +47,35 @@ static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len
 {% endif %}
 }
 
+/*!
+ * \brief Directory listing with full names in binary directory format.
+ * \details This is typically used for listing the directory.
+ * \see \ref libstore_directory for the format
+ */
 static uint8_t const {{store.name}}Data_directory_full[{{store.directory.longdata|len}}] = {
 {{store.directory.longdata|carray}}
 };
 
+/*!
+ * \brief Directory listing with short (but unambiguous) names in binary directory format.
+ * \detials This is typically used for searching the directory.
+ * \see \ref libstore_directory for the format
+ */
 static uint8_t const {{store.name}}Data_directory[{{store.directory.data|len}}] = {
 {{store.directory.data|carray}}
 };
 
+/*!
+ * \brief Retuns the long directory.
+ * \details When not available, the short directory is returned.
+ */
 uint8_t const* {{store.name}}Data::longDirectory() {
     return Config::FullNames ? (uint8_t const*){{store.name}}Data_directory_full : (uint8_t const*){{store.name}}Data_directory;
 }
 
+/*!
+ * \brief Returns the short directory.
+ */
 uint8_t const* {{store.name}}Data::shortDirectory() {
     return (uint8_t const*){{store.name}}Data_directory;
 }

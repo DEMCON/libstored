@@ -89,14 +89,20 @@
 #  if __cplusplus >= 201103L
 #    define CLASS_NOCOPY(Class) \
 	public: \
+		/*! \brief Deleted copy constructor. */ \
 		Class(Class const&) = delete; \
+		/*! \brief Deleted move constructor. */ \
 		Class(Class&&) = delete; /* NOLINT(misc-macro-parentheses) */ \
+		/*! \brief Deleted assignment operator. */ \
 		void operator=(Class const&) = delete; \
+		/*! \brief Deleted move assignment operator. */ \
 		void operator=(Class&&) = delete; /* NOLINT(misc-macro-parentheses) */
 #  else
 #    define CLASS_NOCOPY(Class) \
 	private: \
+		/*! \brief Deleted copy constructor. */ \
 		Class(Class const&); \
+		/*! \brief Deleted assignment operator. */ \
 		void operator=(Class const&);
 #  endif
 #endif

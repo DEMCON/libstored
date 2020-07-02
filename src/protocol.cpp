@@ -162,7 +162,7 @@ void AsciiEscapeLayer::encode(void const* buffer, size_t len, bool last) {
 //
 
 /*!
- * \copydoc stored::ProtocolLayer::ProtocolLayer()
+ * \copydoc stored::ProtocolLayer::ProtocolLayer(ProtocolLayer*,ProtocolLayer*)
  * \param nonDebugDecodeFd the file descriptor to write data to that are not part of debug messages during decode(). Set to -1 to drop this data.
  * \param encodeFd the file descriptor to write encoded debug messages to. Set to -1 to drop this data.
  */
