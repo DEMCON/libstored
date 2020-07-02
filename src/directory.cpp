@@ -68,6 +68,7 @@ notfound:
 
 	uint8_t const* p = directory;
 	while(true) {
+		bool nameEnd = !*name || len == 0;
 		if(*p == 0) {
 			// end
 			goto notfound;
@@ -80,27 +81,35 @@ notfound:
 				return Variant<>(type, (unsigned int)offset);
 			else
 				return Variant<>(type, static_cast<char*>(buffer) + offset, datalen);
-		} else if(!*name || len == 0) {
-			goto notfound;
 		} else if(*p <= 0x1f) {
 			// skip
-			for(uint8_t i = *p++; i > 0 && len > 0; i--, name++, len--) {
+			if(nameEnd)
+				goto notfound;
+
+			uint8_t skip;
+			for(skip = *p++; skip > 0 && len > 0 && *name; skip--, name++, len--) {
 				switch(*name) {
-				case '\0':
 				case '/':
 					goto notfound;
 				default:;
 				}
 			}
+
+			if(skip > 0)
+				// Premature end of name
+				goto notfound;
 		} else if(*p == '/') {
 			// Skip till next /
+			if(nameEnd)
+				goto notfound;
+
 			while(len-- > 0 && *name++ != '/')
 				if(!*name)
 					goto notfound;
 			p++;
 		} else {
 			// match char
-			int c = (int)*name - (int)*p++;
+			int c = (nameEnd ? 0 : (int)*name) - (int)*p++;
 			if(c < 0) {
 				// take jmp_l
 				p += decodeInt<uintptr_t>(p) - 1;
