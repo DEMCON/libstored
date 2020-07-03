@@ -387,8 +387,8 @@ namespace stored {
 		}
 		
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		Variant(Container& container, Type::type type, unsigned int f)
-			: m_container(&container), m_f((uintptr_t)f), m_type((uint8_t)type)
+		Variant(Container& container, Type::type type, unsigned int f, size_t len = 0)
+			: m_container(&container), m_f((uintptr_t)f), m_len(len), m_type((uint8_t)type) 
 		{
 			static_assert(sizeof(uintptr_t) >= sizeof(unsigned int), "");
 		}
@@ -404,7 +404,7 @@ namespace stored {
 		explicit Variant(Variable<T,Container> const& v)
 			: m_container(v.valid() ? &v.container() : nullptr)
 			, m_buffer(v.valid() ? &v.get() : nullptr)
-			, m_len(v.size())
+			, m_len(sizeof(T))
 			, m_type(toType<T>::type)
 		{}
 		
@@ -413,6 +413,7 @@ namespace stored {
 		explicit Variant(Function<T,Container> const& f)
 			: m_container(f.valid() ? &f.container() : nullptr)
 			, m_f(f.valid() ? f.id() : 0)
+			, m_len(sizeof(T))
 			, m_type(f.type())
 		{}
 
@@ -549,8 +550,8 @@ namespace stored {
 		}
 		
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		Variant(Type::type type, unsigned int f)
-			: m_f((uintptr_t)f), m_type((uint8_t)type)
+		Variant(Type::type type, unsigned int f, size_t len = 0)
+			: m_f((uintptr_t)f), m_len(len), m_type((uint8_t)type)
 		{
 			static_assert(sizeof(uintptr_t) >= sizeof(unsigned int), "");
 		}
@@ -567,7 +568,7 @@ namespace stored {
 			if(!valid())
 				return Variant<Container>();
 			else if(isFunction())
-				return Variant<Container>(container, (Type::type)m_type, (unsigned int)m_f);
+				return Variant<Container>(container, (Type::type)m_type, (unsigned int)m_f, m_len);
 			else {
 				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 				stored_assert((uintptr_t)m_buffer >= (uintptr_t)&container && (uintptr_t)m_buffer + m_len <= (uintptr_t)&container + sizeof(Container));

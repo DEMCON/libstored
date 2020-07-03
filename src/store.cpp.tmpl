@@ -50,7 +50,7 @@ static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len
 /*!
  * \brief Directory listing with full names in binary directory format.
  * \details This is typically used for listing the directory.
- * \see \ref libstore_directory for the format
+ * \see \ref libstored_directory for the format
  */
 static uint8_t const {{store.name}}Data_directory_full[{{store.directory.longdata|len}}] = {
 {{store.directory.longdata|carray}}
@@ -59,7 +59,7 @@ static uint8_t const {{store.name}}Data_directory_full[{{store.directory.longdat
 /*!
  * \brief Directory listing with short (but unambiguous) names in binary directory format.
  * \detials This is typically used for searching the directory.
- * \see \ref libstore_directory for the format
+ * \see \ref libstored_directory for the format
  */
 static uint8_t const {{store.name}}Data_directory[{{store.directory.data|len}}] = {
 {{store.directory.data|carray}}

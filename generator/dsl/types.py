@@ -446,11 +446,12 @@ class Function(Object):
         super().__init__(self, name, len)
         self.parent = parent
         self.offset = self.f
-        self.size = 0
         if type.fixed != None:
             self.type = type.fixed.type
+            self.size = csize(type.fixed.type)
         else:
             self.type = type.blob.type
+            self.size = type.blob.size
     
     def isBlob(self):
         return self.type in ['blob', 'string']

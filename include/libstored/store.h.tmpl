@@ -183,7 +183,7 @@ namespace stored {
 {%   if o is function %}
 {%     if o is blob %}
 		/*! \brief Callback for {{o}} */
-		size_t __{{o.cname}}(bool UNUSED_PAR(set), {{o|ctype}}* UNUSED_PAR(value), size_t UNUSED_PAR(len));
+		size_t __{{o.cname}}(bool set, {{o|ctype}}* value, size_t len);
 {%     else %}
 		/*! \brief Callback for {{o}} */
 		void __{{o.cname}}(bool set, {{o|ctype}}& value);
@@ -291,7 +291,7 @@ namespace stored {
 		Variant<Implementation> {{o.cname}}() { return variant({{o|stype}}, {{o.offset}}u, {{o.size}}u); }
 {%     elif o is function %}
 		/*! \brief {{o}} */
-		Variant<Implementation> {{o.cname}}() { return variant({{o|stype}}, {{o.f}}u); }
+		Variant<Implementation> {{o.cname}}() { return variant({{o|stype}}, {{o.f}}u, {{o.size}}u); }
 {%     endif %}
 {%   else %}
 {%     if o is variable %}

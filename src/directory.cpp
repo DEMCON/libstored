@@ -78,7 +78,7 @@ notfound:
 			size_t datalen = !Type::isFixed(type) ? decodeInt<size_t>(p) : Type::size(type);
 			size_t offset = decodeInt<size_t>(p);
 			if(Type::isFunction(type))
-				return Variant<>(type, (unsigned int)offset);
+				return Variant<>(type, (unsigned int)offset, datalen);
 			else
 				return Variant<>(type, static_cast<char*>(buffer) + offset, datalen);
 		} else if(*p <= 0x1f) {
