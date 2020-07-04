@@ -25,6 +25,7 @@
  */
 
 #include <libstored/macros.h>
+#include <libstored/config.h>
 
 #ifdef STORED_HAVE_ZTH
 #  include <libzth/util.h>
@@ -202,6 +203,9 @@ namespace stored {
 		template <> struct saturated_cast_helper<long double> { template <typename T> constexpr static long double cast(T value) { return static_cast<long double>(value); } };
 		template <> struct saturated_cast_helper<bool>   { template <typename T> __attribute__((pure)) static bool cast(T value) { return static_cast<bool>(saturated_cast_helper<int>::cast(value)); } };
 	}
+
+	size_t strncpy(char* __restrict__ dst, char const* __restrict__ src, size_t len);
+	int strncmp(char const* __restrict__ str1, size_t len1, char const* __restrict__ str2, size_t len2 = std::numeric_limits<size_t>::max());
 
 } // namespace
 

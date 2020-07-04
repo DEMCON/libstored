@@ -340,7 +340,7 @@ namespace stored {
 			DebugVariant variant(
 				Type::isFunction(type) ?
 					// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
-					Variant<typename Store::Implementation>(*(typename Store::Implementation*)container, type, (unsigned int)(uintptr_t)buffer) :
+					Variant<typename Store::Implementation>(*(typename Store::Implementation*)container, type, (unsigned int)(uintptr_t)buffer, len) :
 					Variant<typename Store::Implementation>(*(typename Store::Implementation*)container, type, buffer, len));
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			ListCallbackArgs& args = *reinterpret_cast<ListCallbackArgs*>(arg);

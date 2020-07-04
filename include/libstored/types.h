@@ -436,7 +436,16 @@ namespace stored {
 				}
 
 				entryRO(len);
-				memcpy(dst, m_buffer, len);
+				if(unlikely(type() == Type::String)) {
+					char* dst_ = static_cast<char*>(dst);
+					char* buffer_ = static_cast<char*>(m_buffer);
+					size_t len_ = strncpy(dst_, buffer_, len);
+					if(len > len_)
+						dst_[len_] = '\0';
+					len = len_;
+				} else {
+					memcpy(dst, m_buffer, len);
+				}
 				exitRO(len);
 			}
 			return len;
@@ -459,11 +468,24 @@ namespace stored {
 
 				entryX(len);
 
-				if(Config::EnableHooks)
-					changed = memcmp(src, m_buffer, len) != 0;
+				if(unlikely(type() == Type::String)) {
+					// src may not be null-terminated.
+					char const* src_ = static_cast<char const*>(src);
+					// The byte after the buffer of the string is reserved for the \0.
+					char* buffer_ = static_cast<char*>(m_buffer);
 
-				if(changed)
-					memcpy(m_buffer, src, len);
+					if(Config::EnableHooks)
+						changed = strncmp(src_, len, buffer_, len + 1) != 0;
+
+					if(changed)
+						buffer_[strncpy(buffer_, src_, len)] = '\0';
+				} else {
+					if(Config::EnableHooks)
+						changed = memcmp(src, m_buffer, len) != 0;
+
+					if(changed)
+						memcpy(m_buffer, src, len);
+				}
 
 				exitX(changed, len);
 			}

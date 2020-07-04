@@ -170,6 +170,9 @@ typedef SSIZE_T ssize_t;
 #    ifndef nullptr
 #      define nullptr NULL
 #    endif
+#    ifndef __restrict__
+#      define __restrict__ __restrict
+#    endif
 #  endif
 #endif
 

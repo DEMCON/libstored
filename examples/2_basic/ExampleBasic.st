@@ -13,8 +13,8 @@ uint64     u64
 float      f
 double     d
 
-// A string is a UTF-8 string. Indicate the length of the string in bytes. This
-// includes the \0 terminator.
+// A string is a UTF-8 string. Indicate the length of the string in bytes,
+// excluding the \0 terminator, which is added implicitly.
 string:4   s
 
 // A blob is just a piece of memory. You can use it for any other buffer.
