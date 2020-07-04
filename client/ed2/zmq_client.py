@@ -126,6 +126,7 @@ class Object(QObject):
 
     @Property(str, constant=True)
     def typeName(self):
+        dtype = self._type & ~self.FlagFunction
         t = {
                 self.Int8: 'int8',
                 self.Uint8: 'uint8',
@@ -143,7 +144,9 @@ class Object(QObject):
                 self.Blob: 'blob',
                 self.String: 'string',
                 self.Void: 'void',
-            }.get(self._type & ~self.FlagFunction, '?')
+            }.get(dtype, '?')
+        if dtype in [self.Blob, self.String]:
+            t = f'{t}:{self.size}'
         return f'({t})' if self.isFunction() else t
 
     @Property(str, notify=aliasChanged)

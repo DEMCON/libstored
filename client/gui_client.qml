@@ -103,7 +103,7 @@ Window {
                 
                 Text {
                     Layout.fillHeight: true
-                    Layout.preferredWidth: root.fontSize * 5
+                    Layout.preferredWidth: root.fontSize * 5.5
                     text: obj.typeName
                     elide: Text.ElideRight
                     horizontalAlignment: Text.AlignRight
