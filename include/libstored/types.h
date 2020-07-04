@@ -180,7 +180,10 @@ namespace stored {
 		template <typename U>
 		U as() const { return saturated_cast<U>(get()); }
 
-		explicit operator type const&() const { return get(); }
+#if __cplusplus >= 201103L
+		explicit
+#endif
+		operator type const&() const { return get(); }
 
 		void set(type v) {
 			stored_assert(valid());
@@ -249,7 +252,10 @@ namespace stored {
 		template <typename U>
 		U as() const { return saturated_cast<U>(get()); }
 
-		explicit operator type const&() const { return get(); }
+#if __cplusplus >= 201103L
+		explicit
+#endif
+		operator type const&() const { return get(); }
 
 		void set(type v) {
 			entryX();

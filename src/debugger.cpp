@@ -151,7 +151,11 @@ void Debugger::map(DebugStoreBase* store, char const* name) {
 
 	if(it == m_map.end()) {
 		// New; insert.
-		m_map.insert(std::make_pair(name, store));
+#if __cplusplus >= 201103L
+		m_map.insert(StoreMap::value_type(name, std::unique_ptr<DebugStoreBase>(store)));
+#else
+		m_map.insert(StoreMap::value_type(name, store));
+#endif
 	} else {
 		// Replace previous mapping.
 #if __cplusplus >= 201103L

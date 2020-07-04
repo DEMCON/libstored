@@ -5,6 +5,17 @@ function gotErr {
 	exit 1
 }
 
+function numproc {
+	case `uname -s` in
+		Linux*)
+			nproc;;
+		Darwin*)
+			sysctl -n hw.logicalcpu;;
+		*)
+			echo 1;;
+	esac
+}
+
 trap gotErr ERR
 
 pushd "$( cd "$(dirname "$0")"/..; pwd -P )" > /dev/null
@@ -21,6 +32,6 @@ git submodule update
 mkdir -p build
 pushd build > /dev/null
 cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE ..
-cmake --build . -- -j`nproc` all
+cmake --build . -- -j`numproc` all
 popd > /dev/null
 
