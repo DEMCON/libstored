@@ -142,77 +142,155 @@ namespace stored {
 	/*!
 	 * \brief A typed variable in a store.
 	 *
+	 * This class only works for fixed-length variables (see stored::Type::isFixed()).
+	 * Otherwise, use #stored::Variant.
+	 *
 	 * A Variable is very small (it contains only a pointer).
-	 * It is default copyable and assignable, so it is fine to pass it by value.
+	 * It is copyable and assignable, so it is fine to pass it by value.
 	 *
 	 * \ingroup libstored_types
 	 */
 	template <typename T, typename Container, bool Hooks = Config::EnableHooks>
 	class Variable {
 	public:
+		/*! \brief The (fixed-length) type of this variable. */
 		typedef T type;
+
+		/*!
+		 * \brief Constructor for a valid Variable.
+		 * \param container the Container this Variable belongs to
+		 * \param buffer the reference to this Variable's buffer inside container's buffer
+		 */
 		Variable(Container& UNUSED_PAR(container), type& buffer)
 			: m_buffer(&buffer)
 		{
 			stored_assert(((uintptr_t)&buffer & (sizeof(type) - 1)) == 0);
 		}
+
+		/*!
+		 * \brief Constructor for an invalid Variable.
+		 */
 		Variable() : m_buffer() {}
 
+		/*!
+		 * \brief Copy construct, such that this Variable points to the same buffer the given Variable does.
+		 */
 		Variable(Variable const& v) { (*this) = v; }
+
+		/*!
+		 * \brief Let this Variable point to the same buffer as the given Variable.
+		 */
 		Variable& operator=(Variable const& v) {
 			m_buffer = v.m_buffer;
 			return *this;
 		}
 
 #if __cplusplus >= 201103L
+		/*!
+		 * \brief Move-construct.
+		 */
 		Variable(Variable&& v) noexcept { (*this) = std::move(v); }
+		/*!
+		 * \brief Move-assign.
+		 */
 		Variable& operator=(Variable&& v) noexcept { this->operator=((Variable const&)v); }
+		/*!
+		 * \brief Dtor.
+		 */
 		~Variable() = default;
 #else
+		/*!
+		 * \brief Dtor.
+		 */
 		~Variable() {}
 #endif
 
+		/*!
+		 * \brief Returns the value.
+		 * \details Only call this function when it is #valid().
+		 */
 		type const& get() const {
 			stored_assert(valid());
 			return buffer();
 		}
 
+		/*!
+		 * \brief Returns the value, like #get(), cast to the given type.
+		 * \details Only call this function when it is #valid().
+		 */
 		template <typename U>
 		U as() const { return saturated_cast<U>(get()); }
 
+		/*!
+		 * \brief Returns the value, which is identical to #get().
+		 */
 #if __cplusplus >= 201103L
 		explicit
 #endif
 		operator type const&() const { return get(); }
 
+		/*!
+		 * \brief Sets the value.
+		 * \details Only call this function when it is #valid().
+		 */
 		void set(type v) {
 			stored_assert(valid());
 			buffer() = v;
 		}
 
+		/*!
+		 * \brief Sets the value, which is identical to #set().
+		 */
 		Variable& operator=(type v) { set(v); return *this; }
 
+		/*!
+		 * \brief Checks if this Variable points to a valid buffer.
+		 */
 		bool valid() const { return m_buffer; }
+
+		/*!
+		 * \brief Returns the container this Variable belongs to.
+		 */
 		Container& container() const;// { std::abort(); }
 
+		/*!
+		 * \brief Checks if two Variables point to the same buffer, or are both invalid.
+		 */
 		bool operator==(Variable const& rhs) const { return m_buffer == rhs.m_buffer; }
+
+		/*!
+		 * \brief Checks if two Variables do not point to the same buffer.
+		 */
 		bool operator!=(Variable const& rhs) const { return !(*this == rhs); }
 
+		/*!
+		 * \brief Returns the size of the data.
+		 */
+		static size_t size() { return sizeof(type); }
+
 	protected:
+		/*!
+		 * \brief Returns the buffer this Variable points to.
+		 * \details Only call this function when it is #valid().
+		 */
 		type& buffer() const {
 			stored_assert(valid());
 			return *m_buffer;
 		}
 
 	private:
+		/*! \brief The buffer of this Variable. */
 		type* m_buffer;
 	};
 
 	/*!
 	 * \brief A typed variable in a store, with hook support.
 	 *
+	 * This class only works for fixed-length variables (see stored::Type::isFixed()).
+	 * Otherwise, use #stored::Variant.
+	 *
 	 * This Variable is very small (it contains two pointers).
-	 * It is default copyable and assignable, so it is fine to pass it by value.
+	 * It is copyable and assignable, so it is fine to pass it by value.
 	 *
 	 * \ingroup libstored_types
 	 */
@@ -220,28 +298,68 @@ namespace stored {
 	class Variable<T,Container,true> : public Variable<T,Container,false> {
 	public:
 		typedef Variable<T,Container,false> base;
+		/*! \copydoc stored::Variable::type */
 		typedef typename base::type type;
 		
+		/*! \copydoc stored::Variable::Variable(Container&, type&) */
 		Variable(Container& container, type& buffer)
 			: base(container, buffer)
 			, m_container(&container)
+#ifdef _DEBUG
+			, m_entry()
+#endif
 		{}
-		Variable() is_default;
+
+		/*! \copydoc stored::Variable::Variable() */
+		Variable()
+#ifdef _DEBUG
+			: m_entry() {}
+#else
+			is_default;
+#endif
 		
-		Variable(Variable const& v) : base() { (*this) = v; }
+		/*! \copydoc stored::Variable::Variable(Variable const&) */
+		Variable(Variable const& v)
+			: base()
+#ifdef _DEBUG
+			, m_entry()
+#endif
+		{ (*this) = v; }
+
+		/*! \copydoc stored::Variable::operator=(Variable const&) */
 		Variable& operator=(Variable const& v) {
+#ifdef _DEBUG
+			stored_assert(m_entry == EntryNone);
+#endif
 			base::operator=(v);
 			m_container = v.m_container;
 			return *this;
 		}
 
 #if __cplusplus >= 201103L
-		Variable(Variable&& v) noexcept { (*this) = std::move(v); }
+		/*! \copydoc stored::Variable::Variable(Variable&&) */
+		Variable(Variable&& v) noexcept
+#  ifdef _DEBUG
+			: m_entry()
+#  endif
+		{ (*this) = std::move(v); }
+		/*! \copydoc stored::Variable::operator=(Variable&&) */
 		Variable& operator=(Variable&& v) noexcept { this->operator=((Variable const&)v); return *this; }
-		~Variable() = default;
+		/*! \copydoc stored::Variable::~Variable() */
+		~Variable()
+#  ifdef _DEBUG
+		{ stored_assert(m_entry == EntryNone); }
+#  else
+			= default;
+#  endif
 #else
-		~Variable() {}
+		/*! \copydoc stored::Variable::~Variable() */
+		~Variable() { stored_assert(m_entry == EntryNone); }
 #endif
+		/*!
+		 * \copydoc stored::Variable::get()
+		 * \details #entryRO()/#exitRO() are called around the actual data retrieval.
+		 */
 		type get() const {
 			entryRO();
 			type res = base::get();
@@ -249,14 +367,22 @@ namespace stored {
 			return res;
 		}
 
+		/*! \copydoc stored::Variable::as() */
 		template <typename U>
 		U as() const { return saturated_cast<U>(get()); }
 
+		/*!
+		 * \brief Returns the value, which is identical to #get().
+		 */
 #if __cplusplus >= 201103L
 		explicit
 #endif
-		operator type const&() const { return get(); }
+		operator type() const { return get(); }
 
+		/*!
+		 * \copydoc stored::Variable::set()
+		 * \details #entryX()/#exitX() are called around the actual data retrieval.
+		 */
 		void set(type v) {
 			entryX();
 			bool changed = memcmp(&v, &this->buffer(), sizeof(v)) != 0;
@@ -265,40 +391,90 @@ namespace stored {
 			exitX(changed);
 		}
 
+		/*! \copydoc stored::Variable::operator=(type) */
 		Variable& operator=(type v) { 
 			set(v);
 			return *this;
 		}
+		
+		/*! \copydoc stored::Variable::size() */
+		static size_t size() { return sizeof(type); }
 
+		/*! \copydoc stored::Variable::container() */
 		Container& container() const {
 			stored_assert(this->valid());
 			return *m_container;
 		}
 		
+		/*!
+		 * \brief Returns the key that belongs to this Variable.
+		 * \see your store's bufferToKey()
+		 */
 		typename Container::Key key() const { return container().bufferToKey(&this->buffer()); }
 
+		/*!
+		 * \brief Calls the \c entryX() hook of the container.
+		 * \see your store's \c hookEntryX()
+		 */
 		void entryX() const {
+#ifdef _DEBUG
+			stored_assert(m_entry == EntryNone);
+			m_entry = EntryX;
+#endif
 			container().hookEntryX(toType<T>::type, &this->buffer(), sizeof(type));
 		}
 
+		/*!
+		 * \brief Calls the \c exitX() hook of the container.
+		 * \see your store's \c hookExitX()
+		 */
 		void exitX(bool changed) const {
 			container().hookExitX(toType<T>::type, &this->buffer(), sizeof(type), changed);
+#ifdef _DEBUG
+			stored_assert(m_entry == EntryX);
+			m_entry = EntryNone;
+#endif
 		}
 
+		/*!
+		 * \brief Calls the \c entryRO() hook of the container.
+		 * \see your store's \c hookEntryRO()
+		 */
 		void entryRO() const {
+#ifdef _DEBUG
+			stored_assert(m_entry == EntryNone);
+			m_entry = EntryRO;
+#endif
 			container().hookEntryRO(toType<T>::type, &this->buffer(), sizeof(type));
 		}
 
+		/*!
+		 * \brief Calls the \c exitRO() hook of the container.
+		 * \see your store's \c hookExitRO()
+		 */
 		void exitRO() const {
 			container().hookExitRO(toType<T>::type, &this->buffer(), sizeof(type));
+#ifdef _DEBUG
+			stored_assert(m_entry == EntryRO);
+			m_entry = EntryNone;
+#endif
 		}
 
 	private:
+		/*! \brief The container of this Variable. */
 		Container* m_container;
+#ifdef _DEBUG
+		enum { EntryNone, EntryRO, EntryX };
+		/*! \brief Tracking entry/exit calls. */
+		mutable uint_fast8_t m_entry;
+#endif
 	};
 
 	/*!
 	 * \brief A typed function in a store.
+	 *
+	 * This class only works for functions with fixed-length arguments (see stored::Type::isFixed()).
+	 * Otherwise, use #stored::Variant.
 	 *
 	 * A Function is very small (it contains two words).
 	 * It is default copyable and assignable, so it is fine to pass it by value.
@@ -308,11 +484,23 @@ namespace stored {
 	template <typename T, typename Container>
 	class Function {
 	public:
+		/*! \brief The type of the function's argument. */
 		typedef T type;
 
+		/*!
+		 * \brief Constructor for a valid Function.
+		 */
 		Function(Container& container, unsigned int f) : m_container(&container), m_f(f) {}
+		
+		/*!
+		 * \brief Constructor for an invalid Function.
+		 */
 		Function() : m_f() {}
 
+		/*!
+		 * \brief Calls the function and return its value.
+		 * \details Only call this function when it is #valid().
+		 */
 		type get() const {
 			stored_assert(valid());
 			type value;
@@ -320,58 +508,121 @@ namespace stored {
 			return value;
 		}
 
+		/*!
+		 * \brief Calls the function and write its value in the given buffer.
+		 * \details Only call this function when it is #valid().
+		 * \param dst the buffer to write to
+		 * \param len the length of \p dst, normally equal to #size()
+		 * \return the number of bytes written to \p dst
+		 */
 		size_t get(void* dst, size_t len) const {
 			stored_assert(valid());
 			return callback(false, dst, len);
 		}
 
+		/*!
+		 * \brief Call the function to write the value.
+		 * \details Only call this function when it is #valid().
+		 */
 		void set(type value) const {
 			stored_assert(valid());
 			callback(true, value);
 		}
 
+		/*!
+		 * \brief Call the function to write the value.
+		 * \details Only call this function when it is #valid().
+		 * \param src the buffer to read from
+		 * \param len the length of \p src, normally equal to #size()
+		 * \return the number of bytes read from \p src
+		 */
 		size_t set(void* src, size_t len) {
 			stored_assert(valid());
 			return callback(true, src, len);
 		}
 
+		/*!
+		 * \brief Call the function, like #get().
+		 */
 		type operator()() const { return get(); }
+		/*!
+		 * \brief Call the function, like #set().
+		 */
 		void operator()(type value) const { set(value); }
 		
-		bool valid() const { return id() >= 0; }
+		/*!
+		 * \brief Checks if this Function is valid.
+		 */
+		bool valid() const { return m_f > 0; }
 
+		/*!
+		 * \brief Returns the container this Function belongs to.
+		 * \details Only call this function when it is #valid().
+		 */
 		Container& container() const {
 			stored_assert(valid());
 			return *m_container;
 		}
 
+		/*!
+		 * \brief Invoke the callback at the #container().
+		 */
 		size_t callback(bool set, type& value) const {
 			stored_assert(valid());
 			return container().callback(set, &value, sizeof(type), id());
 		}
 
-		size_t callback(bool set, void* buffer, size_t len) {
+		/*!
+		 * \brief Invoke the callback at the #container().
+		 */
+		size_t callback(bool set, void* buffer, size_t len) const {
 			stored_assert(valid());
 			return container().callback(set, buffer, len, id());
 		}
 
-		unsigned int id() const { return m_f; }
+		/*!
+		 * \brief Returns the function ID.
+		 * \details Only call this function when it is #valid().
+		 */
+		unsigned int id() const {
+			stored_assert(valid());
+			return m_f;
+		}
 		
+		/*!
+		 * \brief Checks if this Function points to the same Function as the given one.
+		 */
 		bool operator==(Function const& rhs) const {
 			if(valid() != rhs.valid())
 				return false;
 			if(!valid())
 				return true;
-			return m_container == rhs.m_container && m_f == rhs.m_f; }
+			return m_container == rhs.m_container && m_f == rhs.m_f;
+		}
+
+		/*!
+		 * \brief Checks if this Function points to the same Function as the given one.
+		 */
 		bool operator!=(Function const& rhs) const { return !(*this == rhs); }
 
+		/*!
+		 * \brief Returns the size of the function's argument.
+		 */
+		static size_t size() { return sizeof(type); }
+
 	private:
+		/*! \brief The container this Function belongs to. */
 		Container* m_container;
+		/*! \brief The function ID. */
 		unsigned int m_f;
 	};
 
 	/*!
 	 * \brief A untyped interface to an object in a store.
+	 *
+	 * This class works for all variables and functions of all types.
+	 * However, using #stored::Variable or #stored::Function is more efficient both in performance and memory.
+	 * Use those when you can.
 	 *
 	 * A Variant is quite small (only about four words).
 	 * It is default copyable and assignable, so it is fine to pass it by value.
@@ -381,30 +632,51 @@ namespace stored {
 	template <typename Container = void>
 	class Variant {
 	public:
-		typedef size_t(Callback)(Container&,bool,uint8_t*,size_t);
-
+		/*!
+		 * \brief Constructor for a variable.
+		 */
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant(Container& container, Type::type type, void* buffer, size_t len)
 			: m_container(&container), m_buffer(buffer), m_len(len), m_type((uint8_t)type)
+#ifdef _DEBUG
+			, m_entry()
+#endif
 		{
+			stored_assert(!Type::isFunction(type));
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			stored_assert(!Type::isFixed(this->type()) ||
 				(reinterpret_cast<uintptr_t>(buffer) & (Type::size(this->type()) - 1)) == 0);
 		}
 		
+		/*!
+		 * \brief Constructor for a function.
+		 */
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant(Container& container, Type::type type, unsigned int f, size_t len)
 			: m_container(&container), m_f((uintptr_t)f), m_len(len), m_type((uint8_t)type) 
+#ifdef _DEBUG
+			, m_entry()
+#endif
 		{
+			stored_assert(!Type::isFunction(type));
 			static_assert(sizeof(uintptr_t) >= sizeof(unsigned int), "");
 		}
 
+		/*!
+		 * \brief Constructor for an invalid Variant.
+		 */
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant()
 			: m_buffer()
+#ifdef _DEBUG
+			, m_entry()
+#endif
 		{
 		}
 
+		/*!
+		 * \brief Constructor for a Variable.
+		 */
 		template <typename T>
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		explicit Variant(Variable<T,Container> const& v)
@@ -412,8 +684,14 @@ namespace stored {
 			, m_buffer(v.valid() ? &v.get() : nullptr)
 			, m_len(sizeof(T))
 			, m_type(toType<T>::type)
+#ifdef _DEBUG
+			, m_entry()
+#endif
 		{}
 		
+		/*!
+		 * \brief Constructor for a Function.
+		 */
 		template <typename T>
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		explicit Variant(Function<T,Container> const& f)
@@ -421,8 +699,21 @@ namespace stored {
 			, m_f(f.valid() ? f.id() : 0)
 			, m_len(sizeof(T))
 			, m_type(f.type())
+#ifdef _DEBUG
+			, m_entry()
+#endif
 		{}
 
+		/*!
+		 * \brief Get the value.
+		 * \details For variables, #entryRO()/#exitRO() is called.
+		 * \details In case #type() is Type::String, only up to the first null byte are copied.
+		 *          If \p dst is sufficiently large (\p len &gt; #size()), a null terminator is always written after the string.
+		 * \details Only call this function when #valid().
+		 * \param dst the buffer to copy to
+		 * \param len the length of \p dst, when this is a fixed type, 0 implies the normal size
+		 * \return the number of bytes written into \p dst
+		 */
 		size_t get(void* dst, size_t len = 0) const {
 			if(Type::isFunction(type())) {
 				len = container().callback(false, dst, len, (unsigned int)m_f);
@@ -451,6 +742,16 @@ namespace stored {
 			return len;
 		}
 
+		/*!
+		 * \brief Set the value.
+		 * \details For variables, #entryX()/#exitX() is called.
+		 * \details In case #type() is Type::String, only up to the first null byte are copied.
+		 *          If there is no null byte in \p src, it is implicitly appended at the end.
+		 * \details Only call this function when #valid().
+		 * \param src the buffer to copy from
+		 * \param len the length of \p src, when this is a fixed type, 0 implies the normal size
+		 * \return the number of bytes read from \p src
+		 */
 		size_t set(void const* src, size_t len = 0) {
 			if(isFunction()) {
 				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
@@ -492,78 +793,180 @@ namespace stored {
 			return len;
 		}
 
+		/*!
+		 * \brief Invokes \c hookEntryX() on the #container().
+		 */
 		void entryX() const { entryX(size()); }
+		/*! \copydoc entryX() */
 		void entryX(size_t len) const {
-			if(Config::EnableHooks)
+			if(Config::EnableHooks) {
+#ifdef _DEBUG
+				stored_assert(m_entry == EntryNone);
+				m_entry = EntryX;
+#endif
 				container().hookEntryX(type(), m_buffer, len);
+			}
 		}
 
+		/*!
+		 * \brief Invokes \c hookExitX() on the #container().
+		 */
 		void exitX(bool changed) const { exitX(changed, size()); }
+		/*! \copydoc exitX() */
 		void exitX(bool changed, size_t len) const {
-			if(Config::EnableHooks)
+			if(Config::EnableHooks) {
 				container().hookExitX(type(), m_buffer, len, changed);
+#ifdef _DEBUG
+				stored_assert(m_entry == EntryX);
+				m_entry = EntryNone;
+#endif
+			}
 		}
 
+		/*!
+		 * \brief Invokes \c hookEntryRO() on the #container().
+		 */
 		void entryRO() const { entryRO(size()); }
+		/*! \copydoc entryRO() */
 		void entryRO(size_t len) const {
-			if(Config::EnableHooks)
+			if(Config::EnableHooks) {
+#ifdef _DEBUG
+				stored_assert(m_entry == EntryNone);
+				m_entry = EntryRO;
+#endif
 				container().hookExitRO(type(), m_buffer, len);
+			}
 		}
 
+		/*!
+		 * \brief Invokes \c hookExitRO() on the #container().
+		 */
 		void exitRO() const { exitRO(size()); }
+		/*! \copydoc exitRO() */
 		void exitRO(size_t len) const {
-			if(Config::EnableHooks)
+			if(Config::EnableHooks) {
 				container().hookExitRO(type(), m_buffer, len);
+#ifdef _DEBUG
+				stored_assert(m_entry == EntryRO);
+				m_entry = EntryNone;
+#endif
+			}
 		}
 
+		/*!
+		 * \brief Returns the type.
+		 * \details Only call this function when it is #valid().
+		 */
 		Type::type type() const { stored_assert(valid()); return (Type::type)m_type; }
+		/*!
+		 * \brief Returns the size.
+		 * \details In case #type() is Type::String, this returns the maximum size of the string, excluding null terminator.
+		 * \details Only call this function when it is #valid().
+		 */
 		size_t size() const { stored_assert(valid()); return Type::isFixed(type()) ? Type::size(type()) : m_len; }
+		/*!
+		 * \brief Returns the buffer.
+		 * \details Only call this function when it is #valid().
+		 */
 		void* buffer() const { stored_assert(isVariable()); return m_buffer; }
+		/*!
+		 * \brief Checks if this Variant is valid.
+		 */
 		bool valid() const { return m_buffer; }
+		/*!
+		 * \brief Checks if the #type() is a function.
+		 * \details Only call this function when it is #valid().
+		 */
 		bool isFunction() const { stored_assert(valid()); return Type::isFunction(type()); }
+		/*!
+		 * \brief Checks if the #type() is a variable.
+		 * \details Only call this function when it is #valid().
+		 */
 		bool isVariable() const { stored_assert(valid()); return !isFunction(); }
+		/*!
+		 * \brief Returns the container.
+		 * \details Only call this function when it is #valid().
+		 */
 		Container& container() const { stored_assert(valid()); return *m_container; }
 
+		/*!
+		 * \brief Returns a #stored::Variable that corresponds to this Variant.
+		 * \details Only call this function when it #isVariable() and the #type() matches \p T.
+		 */
 		template <typename T> Variable<T,Container> variable() const {
 			stored_assert(isVariable());
+			stored_assert(Type::isFixed(type()));
+			stored_assert(toType<T>::type == type());
 			stored_assert(sizeof(T) == size());
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return Variable<T,Container>(container(), *reinterpret_cast<T*>(m_buffer));
 		}
 
+		/*!
+		 * \brief Returns a #stored::Function that corresponds to this Variant.
+		 * \details Only call this function when it #isFunction() and the #type() matches \p T.
+		 */
 		template <typename T> Function<T,Container> function() const {
 			stored_assert(isFunction());
+			stored_assert(Type::isFixed(type()));
+			stored_assert(toType<T>::type == type() & ~Type::Function);
+			stored_assert(sizeof(T) == size());
 			return Function<T,Container>(container(), (unsigned int)m_f);
 		}
 		
+		/*!
+		 * \brief Returns the key of this variable.
+		 * \details Only call this function when it #isVariable().
+		 * \see your store's \c bufferToKey()
+		 */
 		typename Container::Key key() const {
 			stored_assert(isVariable());
 			return container()->bufferToKey(m_buffer);
 		}
 
+		/*!
+		 * \brief Checks if this Variant points to the same object as the given one.
+		 */
 		bool operator==(Variant const& rhs) const {
 			if(valid() != rhs.valid())
 				return false;
 			if(!valid())
 				return true;
 			return m_type == rhs.m_type && m_container == rhs.m_container &&
-				(isFunction() ? m_f == rhs.m_f : m_buffer == rhs.m_buffer && m_len == rhs.m_len); }
+				(isFunction() ? m_f == rhs.m_f : m_buffer == rhs.m_buffer && m_len == rhs.m_len);
+		}
+
+		/*!
+		 * \brief Checks if this Variant points to the same object as the given one.
+		 */
 		bool operator!=(Variant const& rhs) const { return !(*this == rhs); }
 
 	private:
+		/*! \brief The container. */
 		Container* m_container;
 		union {
+			/*! \brief The buffer for a variable. */
 			void* m_buffer;
+			/*! \brief The function ID for a function. */
 			uintptr_t m_f;
 		};
+		/*! \brief Size of the data. */
 		size_t m_len;
+		/*! \brief Type of the object. */
 		uint8_t m_type;
+#ifdef _DEBUG
+		enum { EntryNone, EntryRO, EntryX };
+		/*! \brief Tracking entry/exit calls. */
+		mutable uint_fast8_t m_entry;
+#endif
 	};
 	
 	/*!
 	 * \brief A store-independent untyped wrapper for an object.
 	 *
 	 * It is not usable, until it is applied to a store.
+	 * All member functions, except for #apply() are there to match the Variant's interface,
+	 * but are non-functional, as there is no container.
 	 *
 	 * \see #apply()
 	 * \ingroup libstored_types
@@ -571,12 +974,18 @@ namespace stored {
 	template <>
 	class Variant<void> {
 	public:
+		/*!
+		 * \brief Constructor for a variable.
+		 */
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant(Type::type type, void* buffer, size_t len)
 			: m_buffer(buffer), m_len(len), m_type((uint8_t)type)
 		{
 		}
 		
+		/*!
+		 * \brief Constructor for a function.
+		 */
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant(Type::type type, unsigned int f, size_t len)
 			: m_f((uintptr_t)f), m_len(len), m_type((uint8_t)type)
@@ -584,11 +993,17 @@ namespace stored {
 			static_assert(sizeof(uintptr_t) >= sizeof(unsigned int), "");
 		}
 
+		/*!
+		 * \brief Constructor for an invalid Variant.
+		 */
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant()
 			: m_type((uint8_t)Type::Invalid)
 		{}
 
+		/*!
+		 * \brief Apply the stored object properties to a container.
+		 */
 		template <typename Container>
 		Variant<Container> apply(Container& container) const {
 			static_assert(sizeof(Variant<Container>) == sizeof(Variant<>), "");
@@ -604,26 +1019,42 @@ namespace stored {
 			}
 		}
 		
+		/*! \brief Don't use. */
 		size_t get(void* UNUSED_PAR(dst), size_t UNUSED_PAR(len) = 0) const { stored_assert(valid()); return 0; }
+		/*! \brief Don't use. */
 		size_t set(void const* UNUSED_PAR(src), size_t UNUSED_PAR(len) = 0) { stored_assert(valid()); return 0; }
+		/*! \brief Don't use. */
 		void entryX(size_t UNUSED_PAR(len) = 0) const {}
+		/*! \brief Don't use. */
 		void exitX(bool UNUSED_PAR(changed), size_t UNUSED_PAR(len) = 0) const {}
+		/*! \brief Don't use. */
 		void entryRO(size_t UNUSED_PAR(len) = 0) const {}
+		/*! \brief Don't use. */
 		void exitRO(size_t UNUSED_PAR(len) = 0) const {}
+		/*! \copybrief Variant::type() */
 		Type::type type() const { return (Type::type)m_type; }
+		/*! \copybrief Variant::size() */
 		size_t size() const { stored_assert(valid()); return Type::isFixed(type()) ? Type::size(type()) : m_len; }
+		/*! \copybrief Variant::valid() */
 		bool valid() const { return type() != Type::Invalid; }
+		/*! \copybrief Variant::isFunction() */
 		bool isFunction() const { stored_assert(valid()); return Type::isFunction(type()); }
+		/*! \copybrief Variant::isVariable() */
 		bool isVariable() const { stored_assert(valid()); return !isFunction(); }
+		/*! \brief Don't use. */
 		void* container() const;
 
+		/*! \copybrief Variant::operator==() */
 		bool operator==(Variant const& rhs) const {
 			if(valid() != rhs.valid())
 				return false;
 			if(!valid())
 				return true;
 			return m_type == rhs.m_type &&
-				(isFunction() ? m_f == rhs.m_f : m_buffer == rhs.m_buffer && m_len == rhs.m_len); }
+				(isFunction() ? m_f == rhs.m_f : m_buffer == rhs.m_buffer && m_len == rhs.m_len);
+		}
+
+		/*! \copybrief Variant::operator!=() */
 		bool operator!=(Variant const& rhs) const { return !(*this == rhs); }
 
 	private:
@@ -635,11 +1066,23 @@ namespace stored {
 #endif
 
 		union {
+			/*! \copydoc Variant::m_buffer */
 			void* m_buffer;
+			/*! \copydoc Variant::m_f */
 			uintptr_t m_f;
 		};
+		/*! \copydoc Variant::m_len */
 		size_t m_len;
+		/*! \copydoc Variant::m_type */
 		uint8_t m_type;
+#ifdef _DEBUG
+		/*! \copydoc Variant::m_entry */
+#  ifdef __clang__
+		uint8_t m_entry __attribute__((unused));
+#  else
+		uint8_t m_entry;
+#  endif
+#endif
 	};
 
 } // namespace

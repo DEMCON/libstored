@@ -89,6 +89,12 @@
 #  include <functional>
 #  include <type_traits>
 
+/*!
+ * \def SFINAE_IS_FUNCTION
+ * \param T the type to check
+ * \param F the function type to match T to
+ * \param T_OK the type that is returned by this macro when T matches F
+ */
 #  ifndef DOXYGEN
 #    define SFINAE_IS_FUNCTION(T, F, T_OK) \
 	typename std::enable_if<std::is_assignable<std::function<F>, T>::value, T_OK>::type
@@ -104,6 +110,12 @@
 #endif
 
 #ifndef CLASS_NOCOPY
+/*!
+ * \def CLASS_NOCOPY
+ * \brief Emits the copy/move constructor/assignment such that copy/move is not allowed.
+ * \details Put this macro inside the private section of your class.
+ * \param Class the class this macro is embedded in
+ */
 #  if __cplusplus >= 201103L
 #    define CLASS_NOCOPY(Class) \
 	public: \
@@ -136,6 +148,7 @@
 namespace stored {
 
 	/*!
+	 * \brief Like \c assert(), but only emits code when #stored::Config::EnableAssert.
 	 * \ingroup libstored_util
 	 */
 #ifdef STORED_HAVE_ZTH
@@ -210,6 +223,7 @@ namespace stored {
 } // namespace
 
 /*!
+ * \brief Converts a number type to another one, with proper rounding and saturation.
  * \ingroup libstored_util
  */
 template <typename R, typename T>
