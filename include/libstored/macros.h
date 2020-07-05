@@ -72,7 +72,7 @@
 #  endif
 #  define NOMINMAX
 #  define _USE_MATH_DEFINES
-#  pragma warning(disable: 4068 4100 4127 4324 4514 4571 4625 4626 4710 4774 4820 5026 5027 5039 5045)
+#  pragma warning(disable: 4068 4100 4127 4324 4514 4571 4625 4626 4710 4711 4774 4820 5026 5027 5039 5045)
 #  pragma warning(push)
 #  pragma warning(disable: 4668)
 #  include <Windows.h>
