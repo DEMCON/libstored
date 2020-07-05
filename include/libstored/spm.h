@@ -72,7 +72,7 @@ namespace stored {
 
 #ifdef STORED_HAVE_VALGRIND
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,hicpp-no-assembler)
-			VALGRIND_MAKE_MEM_NOACCESS(&m_buffer[m_size], m_capacity - m_size);
+			(void)VALGRIND_MAKE_MEM_NOACCESS(&m_buffer[m_size], m_capacity - m_size);
 #endif
 		}
 
@@ -135,7 +135,7 @@ private:
 				m_size = (size_t)(static_cast<char*>(snapshot) - static_cast<char*>(m_buffer));
 #ifdef STORED_HAVE_VALGRIND
 				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,hicpp-no-assembler)
-				VALGRIND_MAKE_MEM_NOACCESS(&m_buffer[m_size], m_capacity - m_size);
+				(void)VALGRIND_MAKE_MEM_NOACCESS(&m_buffer[m_size], m_capacity - m_size);
 #endif
 			}
 		}
@@ -170,7 +170,7 @@ public:
 
 #ifdef STORED_HAVE_VALGRIND
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,hicpp-no-assembler)
-			VALGRIND_MAKE_MEM_NOACCESS(m_buffer, m_capacity);
+			(void)VALGRIND_MAKE_MEM_NOACCESS(m_buffer, m_capacity);
 #endif
 		}
 
@@ -207,7 +207,7 @@ public:
 
 #ifdef STORED_HAVE_VALGRIND
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,hicpp-no-assembler)
-			VALGRIND_MAKE_MEM_UNDEFINED(p, size);
+			(void)VALGRIND_MAKE_MEM_UNDEFINED(p, size);
 #endif
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return reinterpret_cast<T*>(p);
