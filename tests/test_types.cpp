@@ -132,8 +132,7 @@ TEST(Types, String) {
 	memset(buffer1, 0, s + 1);
 	char* buffer2 = (char*)alloca(s + 1);
 	memset(buffer2, 0, s + 1);
-	EXPECT_EQ(store.default_string().get(buffer2, s), s);
-	EXPECT_EQ(memcmp(buffer1, buffer2, s), 0);
+	EXPECT_EQ(store.default_string().get(buffer2, s), 0);
 
 	for(size_t i = 0; i < s + 1; i++)
 		buffer1[i] = 'a';
@@ -143,6 +142,11 @@ TEST(Types, String) {
 	EXPECT_EQ(memcmp(buffer1, buffer2, s), 0);
 	EXPECT_EQ(strlen(buffer2), s);
 	EXPECT_EQ(strlen(static_cast<char*>(store.default_string().buffer())), s);
+
+	ASSERT_TRUE(s >= 4);
+	memcpy(buffer1, "a\0b\0", 4);
+	EXPECT_EQ(store.default_string().set(buffer1, s), 1);
+	EXPECT_EQ(store.default_string().get(buffer2, s), 1);
 }
 
 } // namespace

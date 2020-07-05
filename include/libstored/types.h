@@ -393,7 +393,7 @@ namespace stored {
 		}
 		
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		Variant(Container& container, Type::type type, unsigned int f, size_t len = 0)
+		Variant(Container& container, Type::type type, unsigned int f, size_t len)
 			: m_container(&container), m_f((uintptr_t)f), m_len(len), m_type((uint8_t)type) 
 		{
 			static_assert(sizeof(uintptr_t) >= sizeof(unsigned int), "");
@@ -478,7 +478,7 @@ namespace stored {
 						changed = strncmp(src_, len, buffer_, len + 1) != 0;
 
 					if(changed)
-						buffer_[strncpy(buffer_, src_, len)] = '\0';
+						buffer_[len = strncpy(buffer_, src_, len)] = '\0';
 				} else {
 					if(Config::EnableHooks)
 						changed = memcmp(src, m_buffer, len) != 0;
@@ -578,7 +578,7 @@ namespace stored {
 		}
 		
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		Variant(Type::type type, unsigned int f, size_t len = 0)
+		Variant(Type::type type, unsigned int f, size_t len)
 			: m_f((uintptr_t)f), m_len(len), m_type((uint8_t)type)
 		{
 			static_assert(sizeof(uintptr_t) >= sizeof(unsigned int), "");

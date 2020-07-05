@@ -103,7 +103,7 @@ namespace stored {
 		 * \brief Returns a typed Variable object, given the offset in the buffer.
 		 *
 		 * This only works for fixed-length types.
-		 * For other types, use #variant(Type::type, size_t, size_t).
+		 * For other types, use #variantv(Type::type, size_t, size_t).
 		 */
 		template <typename T> Variable<T,Implementation> variable(size_t offset) {
 			stored_assert(offset + sizeof(T) <= sizeof(m_data.buffer));
@@ -115,7 +115,7 @@ namespace stored {
 		 * \brief Returns a typed Function object, given the function identifier.
 		 *
 		 * This only works for fixed-length types.
-		 * For other types, use #variant(Type::type, unsigned int).
+		 * For other types, use #variantf(Type::type, unsigned int).
 		 */
 		template <typename T> Function<T,Implementation> function(unsigned int f) {
 			return Function<T,Implementation>(implementation(), f);
@@ -124,19 +124,19 @@ namespace stored {
 		/*!
 		 * \brief Returns the Variant for a variable.
 		 */
-		Variant<Implementation> variant(Type::type type, size_t offset, size_t len) {
+		Variant<Implementation> variantv(Type::type type, size_t offset, size_t len) {
 			stored_assert(offset + len < sizeof(m_data.buffer));
 			stored_assert(!Type::isFunction(type));
 			return Variant<Implementation>(implementation(), type, &buffer()[offset], len);
-        }
+		}
 		
 		/*!
 		 * \brief Returns the Variant for a function.
 		 */
-		Variant<Implementation> variant(Type::type type, unsigned int f) {
+		Variant<Implementation> variantf(Type::type type, unsigned int f, size_t len) {
 			stored_assert(Type::isFunction(type));
-			return Variant<Implementation>(implementation(), type, f);
-        }
+			return Variant<Implementation>(implementation(), type, f, len);
+		}
 		
 		// Variable/Function/Variant must be able to call callback() and the hooks.
 		// However, these functions should normally not be used from outside the class.
@@ -288,10 +288,10 @@ namespace stored {
 {%   if o is blob %}
 {%     if o is variable %}
 		/*! \brief {{o}} */
-		Variant<Implementation> {{o.cname}}() { return variant({{o|stype}}, {{o.offset}}u, {{o.size}}u); }
+		Variant<Implementation> {{o.cname}}() { return variantv({{o|stype}}, {{o.offset}}u, {{o.size}}u); }
 {%     elif o is function %}
 		/*! \brief {{o}} */
-		Variant<Implementation> {{o.cname}}() { return variant({{o|stype}}, {{o.f}}u, {{o.size}}u); }
+		Variant<Implementation> {{o.cname}}() { return variantf({{o|stype}}, {{o.f}}u, {{o.size}}u); }
 {%     endif %}
 {%   else %}
 {%     if o is variable %}

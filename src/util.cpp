@@ -65,10 +65,10 @@ int strncmp(char const* __restrict__ str1, size_t len1, char const* __restrict__
 		return 0;
 	else if(i == len1)
 		// str1 was shortest
-		return 1;
+		return str2[i] ? -1 : 0;
 	else
 		// str2 was shortest
-		return -1;
+		return str1[i] ? 1 : 0;
 }
 
 } // namespace
