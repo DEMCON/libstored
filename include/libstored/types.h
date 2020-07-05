@@ -909,7 +909,7 @@ namespace stored {
 		template <typename T> Function<T,Container> function() const {
 			stored_assert(isFunction());
 			stored_assert(Type::isFixed(type()));
-			stored_assert(toType<T>::type == type() & ~Type::Function);
+			stored_assert(toType<T>::type == (type() & ~Type::FlagFunction));
 			stored_assert(sizeof(T) == size());
 			return Function<T,Container>(container(), (unsigned int)m_f);
 		}
@@ -957,7 +957,7 @@ namespace stored {
 #ifdef _DEBUG
 		enum { EntryNone, EntryRO, EntryX };
 		/*! \brief Tracking entry/exit calls. */
-		mutable uint_fast8_t m_entry;
+		mutable uint8_t m_entry;
 #endif
 	};
 	
