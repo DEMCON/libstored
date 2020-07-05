@@ -658,7 +658,7 @@ namespace stored {
 			, m_entry()
 #endif
 		{
-			stored_assert(!Type::isFunction(type));
+			stored_assert(Type::isFunction(type));
 			static_assert(sizeof(uintptr_t) >= sizeof(unsigned int), "");
 		}
 
