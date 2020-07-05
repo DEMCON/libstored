@@ -1,6 +1,10 @@
 if(LIBSTORED_HAVE_LIBZMQ)
 	# If Zth includes libzmq or there already exists a libzmq target, skip including our external.
 	if(NOT ZTH_HAVE_LIBZMQ AND NOT libzmq)
+		if(APPLE)
+			# Make sure home-brew headers are in there.
+			include_directories(BEFORE SYSTEM /usr/local/include)
+		endif()
 		set(BUILD_TESTS OFF CACHE BOOL "Disabling building tests")
 		set(BUILD_STATIC OFF CACHE BOOL "Don't build static library" FORCE)
 		if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
