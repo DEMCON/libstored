@@ -508,6 +508,18 @@ namespace stored {
 			return value;
 		}
 
+		/*! \copydoc Variable::as() */
+		template <typename U>
+		U as() const { return saturated_cast<U>(get()); }
+
+		/*!
+		 * \brief Returns the value, which is identical to #get().
+		 */
+#if __cplusplus >= 201103L
+		explicit
+#endif
+		operator type const&() const { return get(); }
+
 		/*!
 		 * \brief Calls the function and write its value in the given buffer.
 		 * \details Only call this function when it is #valid().
@@ -549,6 +561,8 @@ namespace stored {
 		 * \brief Call the function, like #set().
 		 */
 		void operator()(type value) const { set(value); }
+		/*! \copydoc Variable::operator=(type) */
+		Function& operator=(type v) { set(v); return *this; }
 		
 		/*!
 		 * \brief Checks if this Function is valid.
