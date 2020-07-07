@@ -241,7 +241,7 @@ class Object(QObject):
             elif dtype == self.Blob:
                 return self._decodeHex(rep)
             elif dtype == self.String:
-                return self._decodeHex(rep.partition(b'0')[0]).decode()
+                return self._decodeHex(rep).partition(b'\x00')[0].decode()
             else:
                 return None
         except:

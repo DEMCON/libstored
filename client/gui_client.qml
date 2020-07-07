@@ -206,7 +206,7 @@ Window {
                     id: regexTimer
                     interval: 300
                     repeat: false
-                    onTriggered: objects.setFilterRegularExpression(filter.text)
+                    onTriggered: objects.setFilterRegularExpression("(?i)" + filter.text)
                 }
             }
             
