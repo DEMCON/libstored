@@ -1,0 +1,27 @@
+var util_8h =
+[
+    [ "saturated_cast_helper", "structstored_1_1impl_1_1saturated__cast__helper.html", null ],
+    [ "saturated_cast_helper< bool >", "structstored_1_1impl_1_1saturated__cast__helper_3_01bool_01_4.html", null ],
+    [ "saturated_cast_helper< double >", "structstored_1_1impl_1_1saturated__cast__helper_3_01double_01_4.html", null ],
+    [ "saturated_cast_helper< float >", "structstored_1_1impl_1_1saturated__cast__helper_3_01float_01_4.html", null ],
+    [ "saturated_cast_helper< long double >", "structstored_1_1impl_1_1saturated__cast__helper_3_01long_01double_01_4.html", null ],
+    [ "signedness_helper", "structstored_1_1impl_1_1signedness__helper.html", "structstored_1_1impl_1_1signedness__helper" ],
+    [ "signedness_helper< int >", "structstored_1_1impl_1_1signedness__helper_3_01int_01_4.html", "structstored_1_1impl_1_1signedness__helper_3_01int_01_4" ],
+    [ "signedness_helper< long >", "structstored_1_1impl_1_1signedness__helper_3_01long_01_4.html", "structstored_1_1impl_1_1signedness__helper_3_01long_01_4" ],
+    [ "signedness_helper< long long >", "structstored_1_1impl_1_1signedness__helper_3_01long_01long_01_4.html", "structstored_1_1impl_1_1signedness__helper_3_01long_01long_01_4" ],
+    [ "signedness_helper< short >", "structstored_1_1impl_1_1signedness__helper_3_01short_01_4.html", "structstored_1_1impl_1_1signedness__helper_3_01short_01_4" ],
+    [ "signedness_helper< unsigned int >", "structstored_1_1impl_1_1signedness__helper_3_01unsigned_01int_01_4.html", "structstored_1_1impl_1_1signedness__helper_3_01unsigned_01int_01_4" ],
+    [ "signedness_helper< unsigned long >", "structstored_1_1impl_1_1signedness__helper_3_01unsigned_01long_01_4.html", "structstored_1_1impl_1_1signedness__helper_3_01unsigned_01long_01_4" ],
+    [ "signedness_helper< unsigned long long >", "structstored_1_1impl_1_1signedness__helper_3_01unsigned_01long_01long_01_4.html", "structstored_1_1impl_1_1signedness__helper_3_01unsigned_01long_01long_01_4" ],
+    [ "signedness_helper< unsigned short >", "structstored_1_1impl_1_1signedness__helper_3_01unsigned_01short_01_4.html", "structstored_1_1impl_1_1signedness__helper_3_01unsigned_01short_01_4" ],
+    [ "CLASS_NOCOPY", "util_8h.html#a51b700a941b8d8d0f4c446dc2af5ce79", null ],
+    [ "is_default", "util_8h.html#a5e97f6533b7a0a1e8b49c4cea10f75fc", null ],
+    [ "likely", "group__libstored__util.html#gaa0672ea7123854cc5f51902a06c473fb", null ],
+    [ "SFINAE_IS_FUNCTION", "util_8h.html#a13bce87e38bd3a150e7062d8fdb6a823", null ],
+    [ "stored_assert", "group__libstored__util.html#gab750e51b876450a0a4ad419588a82a4d", null ],
+    [ "stored_yield", "util_8h.html#ab87f43bb221663fb973421055ae96d08", null ],
+    [ "unlikely", "group__libstored__util.html#gad8700448546b3b5111404cc021061fd5", null ],
+    [ "saturated_cast", "group__libstored__util.html#gacf36670c6952f79aef87c1ed7b610074", null ],
+    [ "strncmp", "util_8h.html#a732691fa4769154b74f9b71d24a10ad8", null ],
+    [ "strncpy", "util_8h.html#ab35f3536f6df038d221bf13ebab7a454", null ]
+];
