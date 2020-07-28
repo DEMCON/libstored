@@ -1,0 +1,21 @@
+# vim: et:st=2:sts=2
+
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull-requests:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: bootstrap
+        run: scripts/bootstrap.sh
+     
