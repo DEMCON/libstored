@@ -32,7 +32,10 @@ choco install -y mingw --version 7.3.0
 choco pin -n=mingw --version=7.3.0
 if errorlevel 1 goto error
 
-choco install -y tortoisegit git cmake make python3 pip
+choco install -y tortoisegit git cmake make python3 pkgconfiglite
+if errorlevel 1 goto error
+
+C:\Python38\python.exe -m ensurepip
 if errorlevel 1 goto error
 
 C:\Python38\Scripts\pip3 install textx jinja2 pyzmq pyside2 pyserial lognplot PyQt5

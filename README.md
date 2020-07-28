@@ -28,6 +28,9 @@ get/set methods. However, the store has a few interesting properties:
   metal (newlib), x86/ARM, gcc/clang/MSVC).
 
 Have a look in the `examples` directory for further in-depth reading.
+Refer to the [Doxygen documentation](https://demcon.github.io/libstored) for the C++ API.
+
+[![CI](https://github.com/DEMCON/libstored/workflows/CI/badge.svg)](https://github.com/DEMCON/libstored/actions?query=workflow%3ACI)
 
 ## Table of contents
 
