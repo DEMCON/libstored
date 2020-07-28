@@ -29,7 +29,17 @@ get/set methods. However, the store has a few interesting properties:
 
 Have a look in the `examples` directory for further in-depth reading.
 
-## How to build
+## Table of contents
+
+- [How to build](#build)
+	- [How to integrate in your build](#integrate)
+- [Syntax example](#syntax)
+- [Debugging example](#debugging)
+- [Embedded Debugger commands](#commands)
+- [Protocol stack](#protocol)
+- [License](#license)
+
+## <a name="build"></a>How to build
 
 Make sure to update the submodules after checkout:
 
@@ -53,7 +63,7 @@ To run all tests:
 
 	cmake --build . -- test
 
-### How to integrate in your build
+### <a name="integrate"></a>How to integrate in your build
 
 Building libstored on itself is not too interesting, it is about how it can
 generate stuff for you.  This is how to integrate it in your project:
@@ -85,7 +95,7 @@ generate stuff for you.  This is how to integrate it in your project:
 Check out the examples of libstored, which are all independent applications
 with their own generated store.
 
-## Syntax example
+## <a name="syntax"></a>Syntax example
 
 See `examples` for more explanation. This is just an impression of the syntax.
 
@@ -102,7 +112,7 @@ See `examples` for more explanation. This is just an impression of the syntax.
 		string:16 s
 	} scope
 
-## Debugging example
+## <a name="debugging"></a>Debugging example
 
 To get a grasp how debugging feels like, try the following.
 
@@ -119,7 +129,7 @@ To get a grasp how debugging feels like, try the following.
   If polling is enabled of one of the objects, the values are forwarded to
   `lognplot`.
 
-## Embedded Debugger commands
+## <a name="commands"></a>Embedded Debugger commands
 
 A store can be queried using the following commands. These can be extended by
 an application.
@@ -307,7 +317,7 @@ The number of streams and the maximum buffer size of a stream may be limited.
 
 
 
-## Protocol stack
+## <a name="protocol"></a>Protocol stack
 
 Every embedded device is different, so the required protocol layers are too.
 What is common, is the Application layer, but as the Transport and Physical
@@ -386,7 +396,7 @@ Depends on the device.
 Depends on the device.
 
 
-## License
+## <a name="license"></a>License
 
 The project license is specified in COPYING and COPYING.LESSER.
 
