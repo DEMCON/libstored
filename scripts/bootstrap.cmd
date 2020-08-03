@@ -35,10 +35,12 @@ if errorlevel 1 goto error
 choco install -y tortoisegit git cmake make python3 pkgconfiglite
 if errorlevel 1 goto error
 
-C:\Python38\python.exe -m ensurepip
+refreshenv
+set PATH=C:\Python38;C:\Python38\Scripts;%PATH%
+python.exe -m ensurepip
 if errorlevel 1 goto error
 
-C:\Python38\Scripts\pip3 install textx jinja2 pyzmq pyside2 pyserial lognplot PyQt5
+pip3 install textx jinja2 pyzmq pyside2 pyserial lognplot PyQt5
 if errorlevel 1 goto error
 
 :done
