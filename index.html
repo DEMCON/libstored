@@ -83,13 +83,16 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="title">libstored - Store for Embedded Debugger </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This is a generator for a store. A store is a collection of objects, like variables in a <code>struct</code>. These objects can be read and written, using common get/set methods. However, the store has a few interesting properties:</p>
+<div class="textblock"><p>If you have an embedded system, you probably want to debug it on-target. One of the questions you often have, is what is the value of internal variables of the program, and how can I change them. Debugging using <code>gdb</code> is great, but it pauses the application, which also stops control loops, for example.</p>
+<p>libstored helps you to access internal variables. These variables are part of a <em>store</em>. A store is defined in a simple language, and libstored provides a generator to produce a C++ class (as cmake library) with the variables you want. This generated C++ class is very efficient when accessed by the C++ application. However, it adds interesting functionality: all variables can be accessed remotely.</p>
+<p>The (OSI-stack) Application layer of this debugging interface is provided by libstored. You have to add all other (usually hardware-specific) layers of the OSI stack to get the debugging protocol in and out of your system. Although the protocol fits nicely to ZeroMQ, a TCP stream, or <code>stdio</code> via terminal, the complexity of integrating this depends on your embedded device. However, once you implemented this data transport, you can access the store, and observe and manipulate it using an Embedded Debugger (PC) client, where libstored provides Python classes, a CLI and GUI interface.</p>
+<p>Your application can have one store with one debugging interface, but also multiple stores with one debugging interface, or one store with multiple debugging interfaces &ndash; any combination is possible.</p>
+<p>The store has a few other interesting properties:</p>
 <ul>
-<li>Objects are defined by a simple language. The generator produces an application-specific store implementation, and all files needed for your specific project.</li>
 <li>Objects can have a piece of memory as backing (just like a normal variable in a <code>struct</code>), but can also have custom callbacks on every get and set. This allows all kinds of side effects, even though the interface of the object is the same.</li>
 <li>Objects are accessible using a C++ interface, but also via name lookup by string. The generator generates a compact name parser, such that names, types, and sizes can be queried dynamically.</li>
-<li>The Embedded Debugger can be attached to a store, which exposes the full store to any external interface. The protocol's application layer is implemented and ready to use. As an application developer, you only have to implement the hardware-specifics, like the transport layer of the Embedded Debugger protocol. You can also easily extend the default set of Embedded Debugger commands by adding another capability in a subclass of <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>.</li>
-<li>There are sufficient hooks by the store to implement an application-specific synchronization method, other than the Embedded Debugger.</li>
+<li>The Embedded Debugger has a standard set of commands, which can be disabled for your specific project. Moreover, you can also easily add custom commands by adding another capability in a subclass of <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>.</li>
+<li>There are sufficient hooks by the store to implement any application-specific synchronization method, other than the Embedded Debugger.</li>
 <li>All code is normal C++, there are no platform-dependent constructs used. Therefore, all platforms are supported: Windows/Linux/Mac/bare metal (newlib), x86/ARM, gcc/clang/MSVC).</li>
 </ul>
 <p>Have a look in the <code>examples</code> directory for further in-depth reading. Refer to the <a href="https://demcon.github.io/libstored">Doxygen documentation</a> for the C++ API.</p>
@@ -107,9 +110,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 <li><a href="#license">License</a></li>
 </ul>
 <h2><a class="anchor" id="build"></a>How to build</h2>
-<p>Make sure to update the submodules after checkout: </p><pre class="fragment">git submodule init
-git submodule update
-</pre><p>Run <code>scripts/bootstrap</code> once to install all build dependencies. Then run <code>scripts/build</code> to build the project. This does effectively: </p><pre class="fragment">mkdir build
+<p>Run <code>scripts/bootstrap</code> (as Administrator under Windows) once to install all build dependencies. Then run <code>scripts/build</code> to build the project. This does effectively: </p><pre class="fragment">mkdir build
 cd build
 cmake ..
 cmake --build .
@@ -145,6 +146,13 @@ int8=42 another int, which is initialized
     double[2] numbers
     string:16 s
 } scope
+</pre><p>The generated store has variables that can be accessed like this: </p><pre class="fragment">mystore.some_int() = 10;
+mystore.another_int_which_is_initialized().get();
+mystore.time_s().get();
+mystore.scope__b() = false;
+mystore.scope__numbers_0().set(0.1);
+mystore.scope__numbers_1().set(1.1);
+mystore.scope__s().set("hello");
 </pre><h2><a class="anchor" id="debugging"></a>Debugging example</h2>
 <p>To get a grasp how debugging feels like, try the following.</p>
 <ul>
@@ -155,7 +163,37 @@ int8=42 another int, which is initialized
 <li>Run <code>python3 <a class="el" href="gui__client_8py.html" title="A Pyside2/QtQuick GUI client. ">client/gui_client.py</a> -l</code>. This GUI connects to both the <code>zmqserver</code> application via ZMQ, and to the <code>lognplot</code> instance.</li>
 <li>The GUI window will pop up and show the objects of the <code>zmqserver</code> example. If polling is enabled of one of the objects, the values are forwarded to <code>lognplot</code>.</li>
 </ul>
-<h2><a class="anchor" id="commands"></a>Embedded Debugger commands</h2>
+<p>The structure of this setup is: </p><pre class="fragment">+------------+        +----------+
++ gui_client | -----&gt; | lognplot |
++------------+        +----------+
+      |
+      | ZeroMQ REQ/REP channel
+      |
++-----------+
++ zmqserver |
++-----------+
+</pre><p>The Embedded Debugger client connects via ZeroMQ. If you application does not have it, you must implement is somehow. The <code>examples/terminal/terminal</code> application could be debugged as follows:</p>
+<ul>
+<li>Run <code>python3 ../client/stdio_wrapper.py examples/terminal/terminal</code> from the <code>build</code> directory. This starts the <code>terminal</code> example, and extracts escaped debugger frames from <code>stdout</code>, which are forwarded to a ZeroMQ interface.</li>
+<li>Connect a client, such as <code><a class="el" href="gui__client_8py.html" title="A Pyside2/QtQuick GUI client. ">client/gui_client.py</a></code>.</li>
+</ul>
+<p>The structure of this setup is: </p><pre class="fragment">+------------+
++ gui_client |                 terminal interface
++------------+                         |
+      |                                |
+      | ZeroMQ REQ/REP channel         |
+      |                                |
++---------------+                      |
++ stdio_wrapper | ---------------------+
++---------------+
+      |
+      | stdin/stdout (mixed terminal interface
+      | with Embedded Debugger messages)
+      |
++----------+
++ terminal |
++----------+
+</pre><h2><a class="anchor" id="commands"></a>Embedded Debugger commands</h2>
 <p>A store can be queried using the following commands. These can be extended by an application.</p>
 <p>Requests always start with a ASCII characters are command. Every request gets a response. Either with actual data, or with ack <code>!</code> or nack <code>?</code>. Requests are processed in order.</p>
 <p>This is the OSI application layer of the protocol stack.</p>
