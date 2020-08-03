@@ -25,7 +25,7 @@ Your application can have one store with one debugging interface, but also
 multiple stores with one debugging interface, or one store with multiple
 debugging interfaces -- any combination is possible.
 
-So, the store has a few other interesting properties:
+The store has a few other interesting properties:
 
 - Objects can have a piece of memory as backing (just like a normal variable in
   a `struct`), but can also have custom callbacks on every get and set. This
@@ -188,7 +188,7 @@ The structure of this setup is:
 	+---------------+
 	      |
 	      | stdin/stdout (mixed terminal interface
-		  | with Embedded Debugger messages)
+	      | with Embedded Debugger messages)
 	      |
 	+----------+
 	+ terminal |
