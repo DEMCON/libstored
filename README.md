@@ -1,12 +1,32 @@
 # libstored - Store for Embedded Debugger
 
-This is a generator for a store. A store is a collection of objects, like
-variables in a `struct`. These objects can be read and written, using common
-get/set methods. However, the store has a few interesting properties:
+If you have an embedded system, you probably want to debug it on-target.  One
+of the questions you often have, is what is the value of internal variables of
+the program, and how can I change them.  Debugging using `gdb` is great, but it
+pauses the application, which also stops control loops, for example.
 
-- Objects are defined by a simple language. The generator produces an
-  application-specific store implementation, and all files needed for your
-  specific project.
+libstored helps you to access internal variables. These variables are part of
+a _store_. A store is defined in a simple language, and libstored provides a
+generator to produce a C++ class (as cmake library) with the variables you
+want.  This generated C++ class is very efficient when accessed by the C++
+application. However, it adds interesting functionality: all variables can be
+accessed remotely.
+
+The (OSI-stack) Application layer of this debugging interface is provided by
+libstored.  You have to add all other (usually hardware-specific) layers of
+the OSI stack to get the debugging protocol in and out of your system.
+Although the protocol fits nicely to ZeroMQ, a TCP stream, or `stdio` via
+terminal, the complexity of integrating this depends on your embedded device.
+However, once you implemented this data transport, you can access the store,
+and observe and manipulate it using an Embedded Debugger (PC) client, where
+libstored provides Python classes, a CLI and GUI interface.
+
+Your application can have one store with one debugging interface, but also
+multiple stores with one debugging interface, or one store with multiple
+debugging interfaces -- any combination is possible.
+
+So, the store has a few other interesting properties:
+
 - Objects can have a piece of memory as backing (just like a normal variable in
   a `struct`), but can also have custom callbacks on every get and set. This
   allows all kinds of side effects, even though the interface of the object is
@@ -14,14 +34,10 @@ get/set methods. However, the store has a few interesting properties:
 - Objects are accessible using a C++ interface, but also via name lookup by
   string. The generator generates a compact name parser, such that names,
   types, and sizes can be queried dynamically.
-- The Embedded Debugger can be attached to a store, which exposes the full
-  store to any external interface. The protocol's application layer is
-  implemented and ready to use. As an application developer, you only have to
-  implement the hardware-specifics, like the transport layer of the Embedded
-  Debugger protocol. You can also easily extend the default set of Embedded
-  Debugger commands by adding another capability in a subclass of
-  stored::Debugger.
-- There are sufficient hooks by the store to implement an application-specific
+- The Embedded Debugger has a standard set of commands, which can be disabled
+  for your specific project.  Moreover, you can also easily add custom commands
+  by adding another capability in a subclass of stored::Debugger.
+- There are sufficient hooks by the store to implement any application-specific
   synchronization method, other than the Embedded Debugger.
 - All code is normal C++, there are no platform-dependent constructs used.
   Therefore, all platforms are supported: Windows/Linux/Mac/bare
@@ -44,13 +60,9 @@ Refer to the [Doxygen documentation](https://demcon.github.io/libstored) for the
 
 ## <a name="build"></a>How to build
 
-Make sure to update the submodules after checkout:
-
-	git submodule init
-	git submodule update
-
-Run `scripts/bootstrap` once to install all build dependencies.
-Then run `scripts/build` to build the project. This does effectively:
+Run `scripts/bootstrap` (as Administrator under Windows) once to install all
+build dependencies.  Then run `scripts/build` to build the project. This does
+effectively:
 
 	mkdir build
 	cd build
@@ -115,6 +127,16 @@ See `examples` for more explanation. This is just an impression of the syntax.
 		string:16 s
 	} scope
 
+The generated store has variables that can be accessed like this:
+
+	mystore.some_int() = 10;
+	mystore.another_int_which_is_initialized().get();
+	mystore.time_s().get();
+	mystore.scope__b() = false;
+	mystore.scope__numbers_0().set(0.1);
+	mystore.scope__numbers_1().set(1.1);
+	mystore.scope__s().set("hello");
+
 ## <a name="debugging"></a>Debugging example
 
 To get a grasp how debugging feels like, try the following.
@@ -131,6 +153,46 @@ To get a grasp how debugging feels like, try the following.
 - The GUI window will pop up and show the objects of the `zmqserver` example.
   If polling is enabled of one of the objects, the values are forwarded to
   `lognplot`.
+
+The structure of this setup is:
+
+	+------------+        +----------+
+	+ gui_client | -----> | lognplot |
+	+------------+        +----------+
+	      |
+	      | ZeroMQ REQ/REP channel
+	      |
+	+-----------+
+	+ zmqserver |
+	+-----------+
+
+The Embedded Debugger client connects via ZeroMQ.
+If you application does not have it, you must implement is somehow.
+The `examples/terminal/terminal` application could be debugged as follows:
+
+- Run `python3 ../client/stdio_wrapper.py examples/terminal/terminal` from the `build` directory.
+  This starts the `terminal` example, and extracts escaped debugger frames from
+  `stdout`, which are forwarded to a ZeroMQ interface.
+- Connect a client, such as `client/gui_client.py`.
+
+The structure of this setup is:
+
+	+------------+
+	+ gui_client |                 terminal interface
+	+------------+                         |
+	      |                                |
+	      | ZeroMQ REQ/REP channel         |
+	      |                                |
+	+---------------+                      |
+	+ stdio_wrapper | ---------------------+
+	+---------------+
+	      |
+	      | stdin/stdout (mixed terminal interface
+		  | with Embedded Debugger messages)
+	      |
+	+----------+
+	+ terminal |
+	+----------+
 
 ## <a name="commands"></a>Embedded Debugger commands
 
