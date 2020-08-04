@@ -20,6 +20,7 @@ import zmq
 import time
 import datetime
 import struct
+import re
 
 from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt
 from .zmq_server import ZmqServer
@@ -538,23 +539,133 @@ class Macro(object):
 
     def run(self):
         if self._macro != None:
-            rep = self._client.req(self._macro)
-            cb = list(self._cmds.values())
-            values = rep.split(self._repsep)
-            if len(cb) != len(values):
-                return False
-
-            for i in range(0, len(values)):
-                cb[i][1](values[i])
+            return self.decode(self._client.req(self._macro))
         else:
             for c in self._cmds.values():
                 c[1](self._client.req(c[0]))
 
         return True
 
+    def decode(self, rep, t = None):
+        cb = list(self._cmds.values())
+        values = rep.split(self._repsep)
+        if len(cb) != len(values):
+            return False
+
+        for i in range(0, len(values)):
+            cb[i][1](values[i], t)
+
+        return True
+
     def __len__(self):
         return len(self._cmds)
 
+##
+# \brief Tracing command handling
+class Tracing(Macro):
+    def __init__(self, client, t=None, stream='t'):
+        super().__init__(client=client, reqsep=b'\n', repsep=';')
+        
+        self._enabled = None
+        
+        # Assume that the default trace is running fast, like 1 kHz.
+        # Make it slower by default.
+        self._decimate = 100
+
+        cap = self.client.capabilities()
+        if not 't' in cap:
+            raise ValueError('Tracing capability missing')
+        if not 'm' in cap:
+            raise ValueError('Macro capability missing')
+        if not 'e' in cap:
+            raise ValueError('Echo capability missing')
+        if not 's' in cap:
+            raise ValueError('Stream capability missing')
+
+        self._stream = stream
+        
+        # Start with sample separator.
+        self.add('e;', lambda x, t=None: None, 'e')
+
+        # We must have a macro, not a simulated Macro instance.
+        if self.macro == None:
+            raise ValueError('Cannot get macro for tracing')
+
+        t = self.client.time()
+        if t == None:
+            raise ValueError('Cannot determine time stamp variable')
+
+        self.add(f'r{t.shortName()}', lambda x, t: None, 't')
+        self._enabled = False
+        self._updateTracing(True);
+
+    def __del__(self):
+        try:
+            self._enabled = False
+            self.client.req(b't')
+        except:
+            pass
+
+    def _update(self):
+        super()._update()
+        # Remove existing samples from buffer, as the layout is changing.
+        self.client.stream(self._stream)
+        self._updateTracing()
+
+    def _updateTracing(self, force=False):
+        if self._enabled == None:
+            # Initializing
+            return
+
+        if (force or self._enabled) and len(self) == 0:
+            self._enabled = False
+            self.client.req(b't')
+        elif force or not self._enabled:
+            rep = self.client.req(b't' + self.macro + self.stream.encode() + ('%x' % self.decimate).encode()).decode()
+            if rep != '!':
+                raise ValueError('Cannot configure tracing')
+            self._enabled = True
+
+    @property
+    def enabled(self):
+        return self._enabled
+
+    @property
+    def decimate(self):
+        return self._decimate
+
+    @decimate.setter
+    def _decimate_set(self, decimate):
+        if not isinstance(decimate, int):
+            return
+
+        if decimate < 1:
+            decimate = 1
+        elif decimate > 0x7fffffff:
+            # Limit it somewhat to stay within 32 bit
+            decimate = 0x7fffffff
+
+        self._decimate = decimate
+        self._updateTracing(True)
+
+    @property
+    def stream(self):
+        return self._stream
+
+    def process(self):
+        s = self.client.stream(self._stream)
+        for sample in s.split(';;'):
+            # The first value is the time stamp.
+            t_data = s.split(',', 1)
+            if len(t_data) < 2:
+                # Empty sample.
+                continue
+            t = self.client.timestampToTime(t_data[0])
+            super().decode(s, t)
+
+    def __len__(self):
+        # Don't count sample separator and time stamp.
+        return max(0, super().__len__() - 2)
 
 ##
 # \brief A ZMQ client.
@@ -570,7 +681,7 @@ class ZmqClient(QObject):
     slowPollInterval_s = 2.0
     defaultPollIntervalChanged = Signal()
 
-    def __init__(self, address='localhost', port=ZmqServer.default_port, parent=None):
+    def __init__(self, address='localhost', port=ZmqServer.default_port, parent=None, t=None):
         super().__init__(parent=parent)
         self._context = zmq.Context()
         self._socket = self._context.socket(zmq.REQ)
@@ -584,6 +695,15 @@ class ZmqClient(QObject):
         self._objects = None
         self._fastPollMacro = None
         self._fastPollTimer = None
+        self._t = t
+        self._timestampToTime = lambda x: x
+        self._t0 = 0
+
+        try:
+            self._tracing = Tracing(self)
+        except:
+            # Not available.
+            self._tracing = None
     
     @property
     def context(self):
@@ -601,17 +721,82 @@ class ZmqClient(QObject):
     def req(self, message):
         if isinstance(message,str):
             return self.req(message.encode()).decode()
-#        print(message)
+        print(message)
 
         self._socket.send(message)
         return b''.join(self._socket.recv_multipart())
+
+    def time(self):
+        if self._t == False:
+            # Not found
+            return None
+        elif self._t != None:
+            return self._t
+
+        # Not initialized.
+        self._t = False
+
+        if isinstance(self._t, str):
+            # Take the given time variable
+            t = self.find(self._t)
+        else:
+            # Try finding /t (unit)
+            t = self.find('/t (')
+
+        if t == None:
+            # Not found, try the first /store/t (unit)
+            for o in self.list():
+                chunks = o.name.split('/', 4)
+                if len(chunks) != 3:
+                    # Strange name
+                    continue
+                elif chunks[2].name.startsWith('t ('):
+                    # Got some
+                    t = o
+                    break;
+            if t == None:
+                # Still not found. Give up.
+                return None
+        elif isinstance(t, list):
+            # Multiple found. Just take first one.
+            t = t[0]
+        else:
+            # One found
+            pass
+       
+        try:
+            t0 = t.read()
+            self._t0 = time.time()
+        except:
+            # Cannot read. Give up.
+            return None
+
+        # Try parse the unit
+        unit = re.sub(r'.*/t \((.*)\)$', r'\1', t.name)
+        if unit == 's':
+            self._timestampToType = lambda t: float(t - t0) + self._t0
+        elif unit == 'ms':
+            self._timestampToType = lambda t: float(t - t0) / 1e3 + self._t0
+        elif unit == 'us':
+            self._timestampToType = lambda t: float(t - t0) / 1e6 + self._t0
+        elif unit == 'ns':
+            self._timestampToType = lambda t: float(t - t0) / 1e9 + self._t0
+        else:
+            # Don't know a conversion, just use the raw value.
+            self._timestampToType = lambda t: t - t0 
+
+        # Make alias permanent.
+        self.acquireAlias(t, t.alias, False)
+        # All set.
+        self._t = t
+        return self._t
 
     def timestampToTime(self, t = None):
         if t == None:
             return time.time()
         else:
             # Override to implement arbitrary conversion.
-            return t
+            return self._timestampToType(t)
 
     def close(self):
         if self._fastPollTimer:

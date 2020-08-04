@@ -159,13 +159,13 @@ To get a grasp how debugging feels like, try the following.
 The structure of this setup is:
 
 	+------------+        +----------+
-	+ gui_client | -----> | lognplot |
+	| gui_client | -----> | lognplot |
 	+------------+        +----------+
 	      |
 	      | ZeroMQ REQ/REP channel
 	      |
 	+-----------+
-	+ zmqserver |
+	| zmqserver |
 	+-----------+
 
 The Embedded Debugger client connects via ZeroMQ.
@@ -180,20 +180,20 @@ The `examples/terminal/terminal` application could be debugged as follows:
 The structure of this setup is:
 
 	+------------+
-	+ gui_client |                 terminal interface
+	| gui_client |                 terminal interface
 	+------------+                         |
 	      |                                |
 	      | ZeroMQ REQ/REP channel         |
 	      |                                |
 	+---------------+                      |
-	+ stdio_wrapper | ---------------------+
+	| stdio_wrapper | ---------------------+
 	+---------------+
 	      |
 	      | stdin/stdout (mixed terminal interface
 	      | with Embedded Debugger messages)
 	      |
 	+----------+
-	+ terminal |
+	| terminal |
 	+----------+
 
 ## <a name="commands"></a>Embedded Debugger commands
@@ -399,6 +399,24 @@ If the output does not fit in the stream buffer, it is silently dropped.
 Response: `?` | `!`
 
 	!
+
+The buffer collects samples over time, which is read out by the client possibly
+at irregular intervals.  Therefore, you probably want to know the time stamp of
+the sample. For this, include reading the time in the macro definition. By
+convention, the time is a top-level variable `t` with the unit between braces.
+It is implementation-defined what the offset is of `t`, which can be since the
+epoch or since the last boot, for example.  For example, your store can have
+one of the following time variables:
+
+	// Nice resolution, wraps around after 500 millenia.
+	(uint64) t (us)
+	// Typical ARM systick counter, wraps around after 49 days.
+	(uint32) t (ms)
+	// Pythonic time. Watch out with significant bits.
+	(double) t (s)
+
+The time is usually a function type, as it is read-only and reading it should
+invoke some time-keeping functions.
 
 
 ## <a name="protocol"></a>Protocol stack
