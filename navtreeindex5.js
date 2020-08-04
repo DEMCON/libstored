@@ -1,5 +1,17 @@
 var NAVTREEINDEX5 =
 {
+"structstored_1_1_example_hello_data.html":[3,0,2,24],
+"structstored_1_1_example_hello_data.html#a622a6fefd688d7fc607f68c30901794d":[3,0,2,24,0],
+"structstored_1_1_example_hello_data.html#aea76f0c0e97a2ae01c5cdd555ad6a4d6":[3,0,2,24,1],
+"structstored_1_1_example_scope_data.html":[3,0,2,27],
+"structstored_1_1_example_scope_data.html#a23dc8c201f59444a16c7266e78bc4ba6":[3,0,2,27,1],
+"structstored_1_1_example_scope_data.html#acf55f1199c99b43554800f0815f53299":[3,0,2,27,0],
+"structstored_1_1_example_sync_data.html":[3,0,2,30],
+"structstored_1_1_example_sync_data.html#a0f590379d123c9f58b6645268fcfe8fb":[3,0,2,30,0],
+"structstored_1_1_example_sync_data.html#a72301d3228d070d130b1cc43e8a6094b":[3,0,2,30,1],
+"structstored_1_1_example_terminal_data.html":[3,0,2,33],
+"structstored_1_1_example_terminal_data.html#a47ced4714c0a16ab6fdf340e57dd3218":[3,0,2,33,0],
+"structstored_1_1_example_terminal_data.html#af690907c3de1c4a3521eea54d56e0ba5":[3,0,2,33,1],
 "structstored_1_1_list_cmd_callback_arg.html":[3,0,2,36],
 "structstored_1_1_list_cmd_callback_arg.html#a3e0554416bf2d281bd13aacae9722808":[3,0,2,36,2],
 "structstored_1_1_list_cmd_callback_arg.html#a668ce5f9e368ef2935e252f8718ba990":[3,0,2,36,0],

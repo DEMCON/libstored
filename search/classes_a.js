@@ -38,5 +38,6 @@ var searchData=
   ['totype_3c_20unsigned_20long_20long_20_3e',['toType&lt; unsigned long long &gt;',['../structstored_1_1to_type_3_01unsigned_01long_01long_01_4.html',1,'stored']]],
   ['totype_3c_20unsigned_20short_20_3e',['toType&lt; unsigned short &gt;',['../structstored_1_1to_type_3_01unsigned_01short_01_4.html',1,'stored']]],
   ['totype_3c_20void_20_3e',['toType&lt; void &gt;',['../structstored_1_1to_type_3_01void_01_4.html',1,'stored']]],
+  ['tracing',['Tracing',['../classed2_1_1zmq__client_1_1_tracing.html',1,'ed2::zmq_client']]],
   ['type',['Type',['../structstored_1_1_type.html',1,'stored']]]
 ];

@@ -33,7 +33,9 @@ var hierarchy =
     ] ],
     [ "stored::ExampleTerminalBase< ExampleTerminal >", "classstored_1_1_example_terminal_base.html", null ],
     [ "object", null, [
-      [ "ed2.zmq_client.Macro", "classed2_1_1zmq__client_1_1_macro.html", null ]
+      [ "ed2.zmq_client.Macro", "classed2_1_1zmq__client_1_1_macro.html", [
+        [ "ed2.zmq_client.Tracing", "classed2_1_1zmq__client_1_1_tracing.html", null ]
+      ] ]
     ] ],
     [ "stored::Debugger::StorePrefixComparator", "structstored_1_1_debugger_1_1_store_prefix_comparator.html", null ],
     [ "stored::DebugStoreBase", "classstored_1_1_debug_store_base.html", [

@@ -42,6 +42,7 @@ var group__libstored__client =
       [ "__len__", "classed2_1_1zmq__client_1_1_macro.html#a808d17b11aa4bb8f0dfac09cf629e86f", null ],
       [ "add", "classed2_1_1zmq__client_1_1_macro.html#afdf2daae86c3c213ef9e930a3129b76b", null ],
       [ "client", "classed2_1_1zmq__client_1_1_macro.html#aef135665a990f36b443e94f49d6676c8", null ],
+      [ "decode", "classed2_1_1zmq__client_1_1_macro.html#a82f0ac676198d9af3177f5734616eb19", null ],
       [ "macro", "classed2_1_1zmq__client_1_1_macro.html#af2b18e359b7334a9a40e6e3df1590a6f", null ],
       [ "remove", "classed2_1_1zmq__client_1_1_macro.html#a5dc1062255087a1c22c91ad869828096", null ],
       [ "run", "classed2_1_1zmq__client_1_1_macro.html#a01ec6921bbffa741da8a7ae179036b02", null ]
@@ -76,7 +77,7 @@ var group__libstored__client =
       [ "write", "classed2_1_1zmq__client_1_1_object.html#a9f3d04184501446ef94ff9301bbd30c2", null ]
     ] ],
     [ "ZmqClient", "classed2_1_1zmq__client_1_1_zmq_client.html", [
-      [ "__init__", "classed2_1_1zmq__client_1_1_zmq_client.html#a65c80ba2d7bd5405ce0c80fb58972fcd", null ],
+      [ "__init__", "classed2_1_1zmq__client_1_1_zmq_client.html#a548188460b78bf05d054610e5cf41dc9", null ],
       [ "__del__", "classed2_1_1zmq__client_1_1_zmq_client.html#a43a84f061a30b0ae4c6e7065262cf7e3", null ],
       [ "acquireAlias", "classed2_1_1zmq__client_1_1_zmq_client.html#ae844ec7524021cc1e3c335003169d81e", null ],
       [ "acquireMacro", "classed2_1_1zmq__client_1_1_zmq_client.html#a33c5dac4f6d150dea188d609132e78df", null ],
@@ -96,9 +97,11 @@ var group__libstored__client =
       [ "releaseMacro", "classed2_1_1zmq__client_1_1_zmq_client.html#a045faea389ed5b1473296abe93939219", null ],
       [ "req", "classed2_1_1zmq__client_1_1_zmq_client.html#a31e419e67341264e3c6a6729988d04f2", null ],
       [ "socket", "classed2_1_1zmq__client_1_1_zmq_client.html#ae9b801419eab010532a7a20e6f7258cb", null ],
-      [ "stream", "classed2_1_1zmq__client_1_1_zmq_client.html#aad57add79504ee1165d65139b91170b7", null ],
+      [ "stream", "classed2_1_1zmq__client_1_1_zmq_client.html#ad3b20b59ef676735f36854c6a9aa631e", null ],
       [ "streams", "classed2_1_1zmq__client_1_1_zmq_client.html#a9ece7218753adbd6c01dff9339e9bb37", null ],
+      [ "time", "classed2_1_1zmq__client_1_1_zmq_client.html#a9f9f8b3419ceb98b46b3f6b09961a31c", null ],
       [ "timestampToTime", "classed2_1_1zmq__client_1_1_zmq_client.html#a8eb0533de908386f60b4d5db4d921e3e", null ],
+      [ "traceDecimate", "classed2_1_1zmq__client_1_1_zmq_client.html#ad76366222534e802a94ea6e0ed5d4fcc", null ],
       [ "version", "classed2_1_1zmq__client_1_1_zmq_client.html#a62ba73412d19edd7b9d537280164fc30", null ],
       [ "writeMem", "classed2_1_1zmq__client_1_1_zmq_client.html#a6171a706d0a0cf7f14a46ed8fba4bfdc", null ]
     ] ],

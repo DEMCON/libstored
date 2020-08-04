@@ -165,13 +165,13 @@ mystore.scope__s().set("hello");
 <li>The GUI window will pop up and show the objects of the <code>zmqserver</code> example. If polling is enabled of one of the objects, the values are forwarded to <code>lognplot</code>.</li>
 </ul>
 <p>The structure of this setup is: </p><pre class="fragment">+------------+        +----------+
-+ gui_client | -----&gt; | lognplot |
+| gui_client | -----&gt; | lognplot |
 +------------+        +----------+
       |
       | ZeroMQ REQ/REP channel
       |
 +-----------+
-+ zmqserver |
+| zmqserver |
 +-----------+
 </pre><p>The Embedded Debugger client connects via ZeroMQ. If you application does not have it, you must implement is somehow. The <code>examples/terminal/terminal</code> application could be debugged as follows:</p>
 <ul>
@@ -179,20 +179,20 @@ mystore.scope__s().set("hello");
 <li>Connect a client, such as <code><a class="el" href="gui__client_8py.html" title="A Pyside2/QtQuick GUI client. ">client/gui_client.py</a></code>.</li>
 </ul>
 <p>The structure of this setup is: </p><pre class="fragment">+------------+
-+ gui_client |                 terminal interface
+| gui_client |                 terminal interface
 +------------+                         |
       |                                |
       | ZeroMQ REQ/REP channel         |
       |                                |
 +---------------+                      |
-+ stdio_wrapper | ---------------------+
+| stdio_wrapper | ---------------------+
 +---------------+
       |
       | stdin/stdout (mixed terminal interface
       | with Embedded Debugger messages)
       |
 +----------+
-+ terminal |
+| terminal |
 +----------+
 </pre><h2><a class="anchor" id="commands"></a>Embedded Debugger commands</h2>
 <p>A store can be queried using the following commands. These can be extended by an application.</p>
@@ -257,7 +257,14 @@ mystore.scope__s().set("hello");
 </pre><p>This executes macro output of <code>m</code> to the stream <code>s</code>, but only one in every 100 calls to trace(). If the output does not fit in the stream buffer, it is silently dropped.</p>
 <p><code>t</code> without arguments disables tracing. If the decimate argument is omitted, 1 is assumed (no decimate).</p>
 <p>Response: <code>?</code> | <code>!</code> </p><pre class="fragment">!
-</pre><h2><a class="anchor" id="protocol"></a>Protocol stack</h2>
+</pre><p>The buffer collects samples over time, which is read out by the client possibly at irregular intervals. Therefore, you probably want to know the time stamp of the sample. For this, include reading the time in the macro definition. By convention, the time is a top-level variable <code>t</code> with the unit between braces. It is implementation-defined what the offset is of <code>t</code>, which can be since the epoch or since the last boot, for example. For example, your store can have one of the following time variables: </p><pre class="fragment">// Nice resolution, wraps around after 500 millenia.
+(uint64) t (us)
+// Typical ARM systick counter, wraps around after 49 days.
+(uint32) t (ms)
+// Pythonic time. Watch out with significant bits.
+(double) t (s)
+</pre><p>The time is usually a function type, as it is read-only and reading it should invoke some time-keeping functions.</p>
+<h2><a class="anchor" id="protocol"></a>Protocol stack</h2>
 <p>Every embedded device is different, so the required protocol layers are too. What is common, is the Application layer, but as the Transport and Physical layer are often different, the layers in between are often different too. To provide a common Embedded Debugger interface, the client (e.g., GUI, CLI, python scripts), we standardize on ZeroMQ REQ/REP over TCP.</p>
 <p>Not every device supports ZeroMQ, or even TCP. For this, several bridges are required. Different configurations may be possible:</p>
 <ul>
