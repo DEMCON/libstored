@@ -50,6 +50,8 @@ var searchData=
   ['totype_3c_20unsigned_20long_20long_20_3e',['toType&lt; unsigned long long &gt;',['../structstored_1_1to_type_3_01unsigned_01long_01long_01_4.html',1,'stored']]],
   ['totype_3c_20unsigned_20short_20_3e',['toType&lt; unsigned short &gt;',['../structstored_1_1to_type_3_01unsigned_01short_01_4.html',1,'stored']]],
   ['totype_3c_20void_20_3e',['toType&lt; void &gt;',['../structstored_1_1to_type_3_01void_01_4.html',1,'stored']]],
+  ['trace',['trace',['../classstored_1_1_debugger.html#a65e235d57bae057514396431c97db437',1,'stored::Debugger']]],
+  ['tracing',['tracing',['../classstored_1_1_debugger.html#a03a04acf4a0ebf7003a473d9c1951e65',1,'stored::Debugger']]],
   ['tstring',['tString',['../classed2_1_1zmq__client_1_1_object.html#a55a84ded66c6edb5ba56326796189c7f',1,'ed2::zmq_client::Object']]],
   ['tupdated',['tUpdated',['../classed2_1_1zmq__client_1_1_object.html#aca7bb3ac8c7c52281b68b91c778ef91e',1,'ed2::zmq_client::Object']]],
   ['two_5fscopes_5f0_5f_5f_5fi',['two_scopes_0___i',['../classstored_1_1_example_scope_base.html#a67f1a297d3179565ad9ce4a81cf94954',1,'stored::ExampleScopeBase']]],

@@ -60,6 +60,7 @@ var group__libstored__protocol =
       [ "fd", "classstored_1_1_zmq_layer.html#a23337a3b834888ec196ca07047437edd", null ],
       [ "operator=", "classstored_1_1_zmq_layer.html#a15a50e22606255d0a960ebe1531cc2d0", null ],
       [ "operator=", "classstored_1_1_zmq_layer.html#af80a0c3ef82bc943db2775e632d5fc91", null ],
-      [ "recv", "classstored_1_1_zmq_layer.html#a1a284926a6e41e19475e0a4e20c9a1cf", null ]
+      [ "recv", "classstored_1_1_zmq_layer.html#a1a284926a6e41e19475e0a4e20c9a1cf", null ],
+      [ "socket", "classstored_1_1_zmq_layer.html#a57678336b0c738958e5806ab5d5f75fd", null ]
     ] ]
 ];

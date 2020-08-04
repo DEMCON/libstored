@@ -20,5 +20,6 @@ var searchData=
   ['stdio2zmq',['Stdio2Zmq',['../classed2_1_1stdio2zmq_1_1_stdio2_zmq.html',1,'ed2::stdio2zmq']]],
   ['storeprefixcomparator',['StorePrefixComparator',['../structstored_1_1_debugger_1_1_store_prefix_comparator.html',1,'stored::Debugger']]],
   ['stream2zmq',['Stream2Zmq',['../classed2_1_1stream2zmq_1_1_stream2_zmq.html',1,'ed2::stream2zmq']]],
+  ['stringencoder',['StringEncoder',['../classstored_1_1_string_encoder.html',1,'stored']]],
   ['syncedexamplesync',['SyncedExampleSync',['../class_synced_example_sync.html',1,'']]]
 ];

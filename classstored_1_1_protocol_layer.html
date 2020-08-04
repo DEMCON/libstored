@@ -101,10 +101,11 @@ Inheritance diagram for stored::ProtocolLayer:</div>
 <area href="classstored_1_1_ascii_escape_layer.html" title="Escape non-ASCII bytes. " alt="stored::AsciiEscapeLayer" shape="rect" coords="166,56,322,80"/>
 <area href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. " alt="stored::Debugger" shape="rect" coords="332,56,488,80"/>
 <area href="classstored_1_1_frame_merger.html" title="Helper layer to merge responses for the macro response. " alt="stored::FrameMerger" shape="rect" coords="498,56,654,80"/>
-<area href="classstored_1_1_terminal_layer.html" title="Extracts and injects Embedded Debugger messages in a stream of data, such as a terminal. " alt="stored::TerminalLayer" shape="rect" coords="664,56,820,80"/>
-<area href="classstored_1_1_zmq_layer.html" title="A protocol layer that wraps the protocol stack and implements ZeroMQ REQ/REP around it..." alt="stored::ZmqLayer" shape="rect" coords="830,56,986,80"/>
+<area href="classstored_1_1_string_encoder.html" title="Helper layer to encode into std::string. " alt="stored::StringEncoder" shape="rect" coords="664,56,820,80"/>
+<area href="classstored_1_1_terminal_layer.html" title="Extracts and injects Embedded Debugger messages in a stream of data, such as a terminal. " alt="stored::TerminalLayer" shape="rect" coords="830,56,986,80"/>
+<area href="classstored_1_1_zmq_layer.html" title="A protocol layer that wraps the protocol stack and implements ZeroMQ REQ/REP around it..." alt="stored::ZmqLayer" shape="rect" coords="996,56,1152,80"/>
 <area href="class_extended_debugger.html" alt="ExtendedDebugger" shape="rect" coords="332,112,488,136"/>
-<area href="class_case_inverter.html" alt="CaseInverter" shape="rect" coords="664,112,820,136"/>
+<area href="class_case_inverter.html" alt="CaseInverter" shape="rect" coords="830,112,986,136"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -449,7 +450,7 @@ Public Member Functions</h2></td></tr>
 <p>Encode a (partial) frame and forward it to the lower layer. </p>
 <p>The given buffer may be encoded in-place. </p>
 
-<p>Reimplemented in <a class="el" href="classstored_1_1_frame_merger.html#abc220fa26a4a872b4318ee853183c9a0">stored::FrameMerger</a>, <a class="el" href="classstored_1_1_terminal_layer.html#a3ec65326a6b12a297c69dc1ff8b0b23e">stored::TerminalLayer</a>, <a class="el" href="classstored_1_1_ascii_escape_layer.html#ac79cf25b2b20c482d65b50f841a8c6a3">stored::AsciiEscapeLayer</a>, <a class="el" href="class_case_inverter.html#a692913ac904fc366a5840166680d093f">CaseInverter</a>, and <a class="el" href="class_printf_physical.html#a2e610a3f56ae4b626b0cbffd966d6b06">PrintfPhysical</a>.</p>
+<p>Reimplemented in <a class="el" href="classstored_1_1_string_encoder.html#a4bd65735e840aae522e1b60721f439d4">stored::StringEncoder</a>, <a class="el" href="classstored_1_1_frame_merger.html#abc220fa26a4a872b4318ee853183c9a0">stored::FrameMerger</a>, <a class="el" href="classstored_1_1_terminal_layer.html#a3ec65326a6b12a297c69dc1ff8b0b23e">stored::TerminalLayer</a>, <a class="el" href="classstored_1_1_ascii_escape_layer.html#ac79cf25b2b20c482d65b50f841a8c6a3">stored::AsciiEscapeLayer</a>, <a class="el" href="class_case_inverter.html#a692913ac904fc366a5840166680d093f">CaseInverter</a>, and <a class="el" href="class_printf_physical.html#a2e610a3f56ae4b626b0cbffd966d6b06">PrintfPhysical</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00146">146</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
@@ -498,7 +499,7 @@ Public Member Functions</h2></td></tr>
 <p>Encode a (partial) frame and forward it to the lower layer. </p>
 <p>The given buffer will not be modified. A new buffer is allocated when required. </p>
 
-<p>Reimplemented in <a class="el" href="classstored_1_1_frame_merger.html#a388b28ac5690f83bbbdf1b48557786a7">stored::FrameMerger</a>, <a class="el" href="classstored_1_1_terminal_layer.html#a8e4eb065c098959fb740a9862cf59164">stored::TerminalLayer</a>, <a class="el" href="classstored_1_1_ascii_escape_layer.html#a3db26741f80800ade6a58055dc89b5ee">stored::AsciiEscapeLayer</a>, <a class="el" href="classstored_1_1_zmq_layer.html#ae4fca5b96098db29439f8cfc9f06a7a1">stored::ZmqLayer</a>, <a class="el" href="class_case_inverter.html#a566eb23f69cd661052b16fadd42ca059">CaseInverter</a>, and <a class="el" href="class_printf_physical.html#a192d35cf7f86602df79631e5f733465a">PrintfPhysical</a>.</p>
+<p>Reimplemented in <a class="el" href="classstored_1_1_string_encoder.html#a6aac5077fea5c2867749dbf39755d6cf">stored::StringEncoder</a>, <a class="el" href="classstored_1_1_frame_merger.html#a388b28ac5690f83bbbdf1b48557786a7">stored::FrameMerger</a>, <a class="el" href="classstored_1_1_terminal_layer.html#a8e4eb065c098959fb740a9862cf59164">stored::TerminalLayer</a>, <a class="el" href="classstored_1_1_ascii_escape_layer.html#a3db26741f80800ade6a58055dc89b5ee">stored::AsciiEscapeLayer</a>, <a class="el" href="classstored_1_1_zmq_layer.html#ae4fca5b96098db29439f8cfc9f06a7a1">stored::ZmqLayer</a>, <a class="el" href="class_case_inverter.html#a566eb23f69cd661052b16fadd42ca059">CaseInverter</a>, and <a class="el" href="class_printf_physical.html#a192d35cf7f86602df79631e5f733465a">PrintfPhysical</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00157">157</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 

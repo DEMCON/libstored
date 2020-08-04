@@ -35,9 +35,11 @@ var classstored_1_1_debugger =
     [ "stores", "classstored_1_1_debugger.html#aa5d552f9924f8ebc4bb64d36bf48a2c8", null ],
     [ "stream", "classstored_1_1_debugger.html#a9beaf6ddceb7169484385623446ade8b", null ],
     [ "stream", "classstored_1_1_debugger.html#ae5984c100fffd78efdb1364d077bfbb8", null ],
-    [ "stream", "classstored_1_1_debugger.html#aeb2f915ab14cdc37c17b0f31a23db492", null ],
+    [ "stream", "classstored_1_1_debugger.html#a88dbf3a1d49b93ef7d6024fe7ac79efb", null ],
     [ "stream", "classstored_1_1_debugger.html#ae36d2c9aba116777306825c0709cb821", null ],
     [ "streams", "classstored_1_1_debugger.html#aa44e53fc3bc28e0161fe1bcaf3c14d94", null ],
+    [ "trace", "classstored_1_1_debugger.html#a65e235d57bae057514396431c97db437", null ],
+    [ "tracing", "classstored_1_1_debugger.html#a03a04acf4a0ebf7003a473d9c1951e65", null ],
     [ "unmap", "classstored_1_1_debugger.html#ab7970bba0c51897467aa260705a22965", null ],
     [ "version", "classstored_1_1_debugger.html#ab6203b1226153a94c9ba87ae88931d6a", null ]
 ];

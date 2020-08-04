@@ -98,6 +98,7 @@ var hierarchy =
         [ "ExtendedDebugger", "class_extended_debugger.html", null ]
       ] ],
       [ "stored::FrameMerger", "classstored_1_1_frame_merger.html", null ],
+      [ "stored::StringEncoder", "classstored_1_1_string_encoder.html", null ],
       [ "stored::TerminalLayer", "classstored_1_1_terminal_layer.html", [
         [ "CaseInverter", "class_case_inverter.html", null ]
       ] ],

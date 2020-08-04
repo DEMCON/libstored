@@ -11,6 +11,8 @@ var searchData=
   ['timestamptotime',['timestampToTime',['../classed2_1_1zmq__client_1_1_zmq_client.html#a8eb0533de908386f60b4d5db4d921e3e',1,'ed2::zmq_client::ZmqClient']]],
   ['top_5f_5flevel1_5f_5fb',['top__level1__b',['../classstored_1_1_example_scope_base.html#a7e762104eb63cbb4152b7f4623f0a36e',1,'stored::ExampleScopeBase']]],
   ['top_5f_5flevel1_5f_5fb2',['top__level1__b2',['../classstored_1_1_example_scope_base.html#a7ff3500bbf6790c5aeeacabffb081481',1,'stored::ExampleScopeBase']]],
+  ['trace',['trace',['../classstored_1_1_debugger.html#a65e235d57bae057514396431c97db437',1,'stored::Debugger']]],
+  ['tracing',['tracing',['../classstored_1_1_debugger.html#a03a04acf4a0ebf7003a473d9c1951e65',1,'stored::Debugger']]],
   ['tstring',['tString',['../classed2_1_1zmq__client_1_1_object.html#a55a84ded66c6edb5ba56326796189c7f',1,'ed2::zmq_client::Object']]],
   ['two_5fscopes_5f0_5f_5f_5fi',['two_scopes_0___i',['../classstored_1_1_example_scope_base.html#a67f1a297d3179565ad9ce4a81cf94954',1,'stored::ExampleScopeBase']]],
   ['two_5fscopes_5f1_5f_5f_5fi',['two_scopes_1___i',['../classstored_1_1_example_scope_base.html#a8e1d5d66c3e0fbef2717371a20363a2a',1,'stored::ExampleScopeBase']]],

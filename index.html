@@ -93,6 +93,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 <li>Objects are accessible using a C++ interface, but also via name lookup by string. The generator generates a compact name parser, such that names, types, and sizes can be queried dynamically.</li>
 <li>The Embedded Debugger has a standard set of commands, which can be disabled for your specific project. Moreover, you can also easily add custom commands by adding another capability in a subclass of <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>.</li>
 <li>There are sufficient hooks by the store to implement any application-specific synchronization method, other than the Embedded Debugger.</li>
+<li>The store and all other libstored classes are not thread-safe. Using threads is troubling anyway, use <a href="https://github.com/jhrutgers/zth">fibers</a> instead.</li>
 <li>All code is normal C++, there are no platform-dependent constructs used. Therefore, all platforms are supported: Windows/Linux/Mac/bare metal (newlib), x86/ARM, gcc/clang/MSVC).</li>
 </ul>
 <p>Have a look in the <code>examples</code> directory for further in-depth reading. Refer to the <a href="https://demcon.github.io/libstored">Doxygen documentation</a> for the C++ API.</p>
@@ -250,7 +251,13 @@ mystore.scope__s().set("hello");
 </pre><p>Response: <code>?</code> | &lt;data&gt; &lt;suffix&gt; </p><pre class="fragment">Hello World!!1/
 </pre><p>Once data has been read from the stream, it is removed. The next call will return new data. If a stream was never used, <code>?</code> is returned. If it was used, but it is empty now, the stream char does not show up in the <code>s</code> call, but does respond with the suffix. If no suffix was provided, and there is no data, the response is empty.</p>
 <p>The number of streams and the maximum buffer size of a stream may be limited.</p>
-<h2><a class="anchor" id="protocol"></a>Protocol stack</h2>
+<h3>Tracing</h3>
+<p>Executes a macro every time the application invokes <a class="el" href="classstored_1_1_debugger.html#a65e235d57bae057514396431c97db437" title="Executes the trace macro and appends the output to the trace buffer. ">stored::Debugger::trace()</a>. A stream is filled with the macro output.</p>
+<p>Request: <code>t</code> ( &lt;macro&gt; &lt;stream&gt; ( &lt;decimate in hex&gt; ) ? ) ? </p><pre class="fragment">tms64
+</pre><p>This executes macro output of <code>m</code> to the stream <code>s</code>, but only one in every 100 calls to trace(). If the output does not fit in the stream buffer, it is silently dropped.</p>
+<p><code>t</code> without arguments disables tracing. If the decimate argument is omitted, 1 is assumed (no decimate).</p>
+<p>Response: <code>?</code> | <code>!</code> </p><pre class="fragment">!
+</pre><h2><a class="anchor" id="protocol"></a>Protocol stack</h2>
 <p>Every embedded device is different, so the required protocol layers are too. What is common, is the Application layer, but as the Transport and Physical layer are often different, the layers in between are often different too. To provide a common Embedded Debugger interface, the client (e.g., GUI, CLI, python scripts), we standardize on ZeroMQ REQ/REP over TCP.</p>
 <p>Not every device supports ZeroMQ, or even TCP. For this, several bridges are required. Different configurations may be possible:</p>
 <ul>

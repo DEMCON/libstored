@@ -10,6 +10,7 @@ var searchData=
   ['debuggerreadmem',['DebuggerReadMem',['../structstored_1_1_default_config.html#a62fae29db37f024971ed2c371a808341',1,'stored::DefaultConfig']]],
   ['debuggerstreambuffer',['DebuggerStreamBuffer',['../structstored_1_1_default_config.html#a21279247d11df5c7ccb61aa1a1fd45db',1,'stored::DefaultConfig']]],
   ['debuggerstreams',['DebuggerStreams',['../structstored_1_1_default_config.html#a4352b3506e2ca35f622bf5fe859f18e1',1,'stored::DefaultConfig']]],
+  ['debuggertrace',['DebuggerTrace',['../structstored_1_1_default_config.html#a1f25d415c20ec7121ecc92985fdb2c90',1,'stored::DefaultConfig']]],
   ['debuggerversion',['DebuggerVersion',['../structstored_1_1_default_config.html#afc4b17f20c3adac422d85a7347114ad3',1,'stored::DefaultConfig']]],
   ['debuggerwrite',['DebuggerWrite',['../structstored_1_1_default_config.html#acb3bf44721fd1b23d97182586643e51d',1,'stored::DefaultConfig']]],
   ['debuggerwritemem',['DebuggerWriteMem',['../structstored_1_1_default_config.html#a3785559331646bd485e2afdc3fa6fab2',1,'stored::DefaultConfig']]],

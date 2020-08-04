@@ -12,6 +12,7 @@ var searchData=
   ['cmdread',['CmdRead',['../classstored_1_1_debugger.html#a55d5fb1ac11bd741f5bc7974b1eddad1',1,'stored::Debugger']]],
   ['cmdreadmem',['CmdReadMem',['../classstored_1_1_debugger.html#a32be09384b1099b0f0f432f5fe5229e4',1,'stored::Debugger']]],
   ['cmdstream',['CmdStream',['../classstored_1_1_debugger.html#aee36a94c73ea14531b664c5885c27247',1,'stored::Debugger']]],
+  ['cmdtrace',['CmdTrace',['../classstored_1_1_debugger.html#a110a177a178e9090c45830074e14d02b',1,'stored::Debugger']]],
   ['cmdversion',['CmdVersion',['../classstored_1_1_debugger.html#a4a0cc435bd4d9d2cde9623ef29c2b98e',1,'stored::Debugger']]],
   ['cmdwrite',['CmdWrite',['../classstored_1_1_debugger.html#aa8059debdaef039b212fbce8b2c01adf',1,'stored::Debugger']]],
   ['cmdwritemem',['CmdWriteMem',['../classstored_1_1_debugger.html#a6a2a664ce598714e5a0bce09cbea4e9f',1,'stored::Debugger']]],
