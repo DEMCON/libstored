@@ -479,6 +479,7 @@ namespace stored {
 		static char const CmdReadMem = 'R';
 		static char const CmdWriteMem = 'W';
 		static char const CmdStream = 's';
+		static char const CmdTrace = 't';
 		static char const Ack = '!';
 		static char const Nack = '?';
 
@@ -491,9 +492,12 @@ namespace stored {
 
 		size_t stream(char s, char const* data);
 		size_t stream(char s, char const* data, size_t len);
-		std::string* stream(char s);
+		std::string* stream(char s, bool alloc = false);
 		std::string const* stream(char s) const;
 		char const* streams(void const*& buffer, size_t& len);
+
+		void trace();
+		bool tracing() const;
 
 		virtual void process(void const* frame, size_t len, ProtocolLayer& response);
 		virtual void decode(void* buffer, size_t len) override;
@@ -548,6 +552,15 @@ namespace stored {
 		typedef std::map<char, std::string> StreamMap;
 		/*! \brief The streams. */
 		StreamMap m_streams;
+
+		/*! \brief Macro of #trace(). */
+		char m_traceMacro;
+		/*! \brief Stream of #trace(). */
+		char m_traceStream;
+		/*! \brief Decimate setting of #trace(). 0 disables tracing. */
+		unsigned int m_traceDecimate;
+		/*! \brief Decimate counter of #trace(). */
+		unsigned int m_traceCount;
 	};
 
 } // namespace

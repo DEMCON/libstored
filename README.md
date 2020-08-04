@@ -39,6 +39,8 @@ The store has a few other interesting properties:
   by adding another capability in a subclass of stored::Debugger.
 - There are sufficient hooks by the store to implement any application-specific
   synchronization method, other than the Embedded Debugger.
+- The store and all other libstored classes are not thread-safe.
+  Using threads is troubling anyway, use [fibers](https://github.com/jhrutgers/zth) instead.
 - All code is normal C++, there are no platform-dependent constructs used.
   Therefore, all platforms are supported: Windows/Linux/Mac/bare
   metal (newlib), x86/ARM, gcc/clang/MSVC).
@@ -380,6 +382,23 @@ response is empty.
 
 The number of streams and the maximum buffer size of a stream may be limited.
 
+### Tracing
+
+Executes a macro every time the application invokes stored::Debugger::trace().
+A stream is filled with the macro output.
+
+Request: `t` ( \<macro\> \<stream\> ( \<decimate in hex\> ) ? ) ?
+
+	tms64
+
+This executes macro output of `m` to the stream `s`, but only one in every 100 calls to trace().
+If the output does not fit in the stream buffer, it is silently dropped.
+
+`t` without arguments disables tracing. If the decimate argument is omitted, 1 is assumed (no decimate).
+
+Response: `?` | `!`
+
+	!
 
 
 ## <a name="protocol"></a>Protocol stack

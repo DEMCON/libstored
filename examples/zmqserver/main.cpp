@@ -82,9 +82,22 @@ int main() {
 
 	printf("Connect via ZMQ to debug this application.\n");
 
+	time_t t = time(NULL);
 	while(true) {
-		if(zmqLayer.recv(true) == 0)
+		if(zmqLayer.recv() == 0)
 			store.incMessages();
+
+		// As an example, call debugger.trace() roughly once per second.
+		zmq_pollitem_t items[1];
+		items[0].socket = zmqLayer.socket();
+		items[0].events = ZMQ_POLLIN;
+		zmq_poll(items, 1, 100);
+
+		time_t now = time(NULL);
+		if(t != now) {
+			t = now;
+			debugger.trace();
+		}
 	}
 }
 

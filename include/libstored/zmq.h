@@ -49,6 +49,7 @@ namespace stored {
 		virtual ~ZmqLayer() override;
 
 		void* context() const;
+		void* socket() const;
 		virtual int recv(bool block = false);
 
 		/*! \brief The socket type. */

@@ -85,6 +85,15 @@ void* ZmqLayer::context() const {
 }
 
 /*!
+ * \brief The ZeroMQ socket.
+ *
+ * Do not use this function to manipulate the socket, only for calls like \c zmq_poll().
+ */
+void* ZmqLayer::socket() const {
+	return m_socket;
+}
+
+/*!
  * \brief The ZeroMQ socket, which can be used for \c poll() or \c select().
  *
  * Use this socket to determine if recv() would block.

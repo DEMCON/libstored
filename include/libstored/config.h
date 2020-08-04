@@ -119,6 +119,9 @@ namespace stored {
 		static int const DebuggerStreams = 1;
 		/*! \brief Size of one stream buffer in bytes. */
 		static size_t const DebuggerStreamBuffer = 1024;
+		
+		/*! \brief When \c true, stored::Debugger implements the trace capability. */
+		static bool const DebuggerTrace = DebuggerStreams > 0 && DebuggerMacro > 0;
 	};
 } // namespace
 #endif // __cplusplus

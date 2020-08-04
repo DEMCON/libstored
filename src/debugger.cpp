@@ -65,6 +65,10 @@ Debugger::Debugger(char const* identification, char const* versions)
 	: m_identification(identification)
 	, m_versions(versions)
 	, m_macroSize()
+	, m_traceMacro()
+	, m_traceStream()
+	, m_traceDecimate()
+	, m_traceCount()
 {
 }
 
@@ -275,6 +279,8 @@ void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
 		list[len++] = CmdWriteMem;
 	if(Config::DebuggerStreams > 0 && Config::DebuggerStreamBuffer > 0)
 		list[len++] = CmdStream;
+	if(Config::DebuggerTrace)
+		list[len++] = CmdTrace;
 
 	stored_assert(len < maxlen);
 	list[len] = 0;
@@ -706,6 +712,46 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		response.encode(suffix, suffixlen);
 		return;
 	}
+	case CmdTrace: {
+		// Configure trace
+		// 
+		// Enable:
+		// Request: 't' <macro> <stream> ( <decimate in hex> ) ?
+		//
+		// Disable:
+		// Request: 't'
+		//
+		// Response: `?` | `!`
+
+		if(!Config::DebuggerTrace)
+			goto error;
+
+		// Always disable by default.
+		m_traceDecimate = 0;
+
+		if(len == 1)
+			// Disable tracing.
+			break;
+
+		// Enable tracing
+		if(len < 3)
+			goto error;
+
+		m_traceMacro = p[1];
+		m_traceStream = p[2];
+
+		if(len > 3) {
+			void const* d = &p[3];
+			size_t dlen = std::min<size_t>(8, len - 3); // at most 32-bit
+			if(!decodeHex(Type::Uint, d, dlen))
+				goto error;
+
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+			m_traceDecimate = *reinterpret_cast<unsigned int const*>(d);
+		} else
+			m_traceDecimate = 1;
+		break;
+	}
 	default:
 		// Unknown command.
 
@@ -993,11 +1039,9 @@ size_t Debugger::stream(char s, char const* data, size_t len) {
 		// This is ambiguous in the 's' command return.
 		return 0;
 
-	std::string* str = stream(s);
-	if(!str && m_streams.size() < Config::DebuggerStreams) {
-		// Add a new stream.
-		str = &m_streams.insert(std::make_pair(s, std::string())).first->second;
-	}
+	std::string* str = stream(s, true);
+	if(!str)
+		return 0;
 
 	len = std::min(len, Config::DebuggerStreamBuffer - str->size());
 	
@@ -1017,10 +1061,38 @@ std::string const* Debugger::stream(char s) const {
 
 /*!
  * \copydoc stream(char) const
+ * \param s the stream name
+ * \param alloc when set to \c true, try to allocate the stream if it does not exist yet
  */
-std::string* Debugger::stream(char s) {
+std::string* Debugger::stream(char s, bool alloc) {
 	StreamMap::iterator it = m_streams.find(s);
-	return it == m_streams.end() ? nullptr : &it->second;
+
+	if(it != m_streams.end())
+		return &it->second;
+	else if(alloc) {
+		if(m_streams.size() >= Config::DebuggerStreams) {
+			// Out of buffers. Check if we can recycle something.
+			bool cleaned = true;
+			while(cleaned) {
+				cleaned = false;
+				for(StreamMap::iterator it = m_streams.begin(); it != m_streams.end(); ++it)
+					if(it->second.empty()) {
+						// Got one.
+						m_streams.erase(it);
+						cleaned = true;
+						break;
+					}
+			}
+		}
+
+		if(m_streams.size() < Config::DebuggerStreams)
+			// Add a new stream.
+			return &m_streams.insert(std::make_pair(s, std::string())).first->second;
+		else
+			// Out of buffers.
+			return nullptr;
+	} else
+		return nullptr;
 }
 
 /*!
@@ -1041,6 +1113,79 @@ char const* Debugger::streams(void const*& buffer, size_t& len) {
 	b[len] = 0;
 	buffer = b;
 	return b;
+}
+
+/*!
+ * \brief Helper layer to encode into std::string.
+ * \see #stored::Debugger::trace()
+ */
+class StringEncoder : public ProtocolLayer {
+public:
+	explicit StringEncoder(std::string& s)
+		: m_s(s)
+	{}
+
+	void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
+		m_s.append(static_cast<char const*>(buffer), len);
+	}
+
+	void encode(void* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
+		m_s.append(static_cast<char*>(buffer), len);
+	}
+
+private:
+	std::string& m_s;
+};
+
+/*!
+ * \brief Executes the trace macro and appends the output to the trace buffer.
+ *
+ * The application should always call this function as often as required for tracing.
+ * For example, if 1 kHz tracing is to be supported, make sure to call this function at (about) 1 kHz.
+ * Depending on the configuration, decimation is applied.
+ * This call will execute the macro, when required, so the call is potentially expensive.
+ *
+ * The output of the macro is either completely or not at all put in the stream buffer;
+ * it is not truncated.
+ */
+void Debugger::trace() {
+	if(!tracing())
+		return;
+
+	if(++m_traceCount < m_traceDecimate)
+		// Do not trace yet.
+		return;
+
+	m_traceCount = 0;
+
+	std::string* str = stream(m_traceStream, true);
+	if(!str)
+		// Out of streams.
+		return;
+
+	size_t oldSize = str->size();
+	if(oldSize >= Config::DebuggerStreamBuffer)
+		// No more space in buffer for another sample.
+		return;
+
+	// Note that runMacro() may overrun the defined maximum buffer size,
+	// but samples are never truncated.
+	
+	StringEncoder stringEncoder(*str);
+	if(!runMacro(m_traceMacro, stringEncoder)) {
+		// Revert.
+		str->resize(oldSize);
+		return;
+	}
+
+	// Success.
+}
+
+/*!
+ * \brief Checks if tracing is currently enabled and configured.
+ */
+bool Debugger::tracing() const {
+	return Config::DebuggerTrace && m_traceDecimate > 0;
 }
 
 } // namespace
