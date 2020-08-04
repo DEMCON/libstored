@@ -524,6 +524,9 @@ class Macro(object):
         if key in self._cmds:
             del self._cmds[key]
             self._update()
+            return True
+        else:
+            return False
 
     def _update(self):
         if self._macro == None:
@@ -564,13 +567,10 @@ class Macro(object):
 # \brief Tracing command handling
 class Tracing(Macro):
     def __init__(self, client, t=None, stream='t'):
-        super().__init__(client=client, reqsep=b'\n', repsep=';')
+        super().__init__(client=client, reqsep=b'\r', repsep=';')
         
         self._enabled = None
-        
-        # Assume that the default trace is running fast, like 1 kHz.
-        # Make it slower by default.
-        self._decimate = 100
+        self._decimate = 1
 
         cap = self.client.capabilities()
         if not 't' in cap:
@@ -585,7 +585,7 @@ class Tracing(Macro):
         self._stream = stream
         
         # Start with sample separator.
-        self.add('e;', lambda x, t=None: None, 'e')
+        self.add('e\n', lambda x, t=None: None, 'e')
 
         # We must have a macro, not a simulated Macro instance.
         if self.macro == None:
@@ -609,7 +609,7 @@ class Tracing(Macro):
     def _update(self):
         super()._update()
         # Remove existing samples from buffer, as the layout is changing.
-        self.client.stream(self._stream)
+        self.client.stream(self._stream, raw=True)
         self._updateTracing()
 
     def _updateTracing(self, force=False):
@@ -653,15 +653,20 @@ class Tracing(Macro):
         return self._stream
 
     def process(self):
-        s = self.client.stream(self._stream)
-        for sample in s.split(';;'):
+        s = self.client.stream(self._stream, raw=True)
+        time = self.client.time()
+        for sample in s.split(b'\n;'):
             # The first value is the time stamp.
-            t_data = s.split(',', 1)
+            t_data = sample.split(b';', 1)
             if len(t_data) < 2:
                 # Empty sample.
                 continue
-            t = self.client.timestampToTime(t_data[0])
-            super().decode(s, t)
+            t = time._decode(t_data[0])
+            if t == None:
+                continue
+            ts = self.client.timestampToTime(t)
+            time.set(t, ts)
+            super().decode(s, ts)
 
     def __len__(self):
         # Don't count sample separator and time stamp.
@@ -677,6 +682,7 @@ class Tracing(Macro):
 # \ingroup libstored_client
 class ZmqClient(QObject):
     
+    traceThreshold_s = 0.1
     fastPollThreshold_s = 0.9
     slowPollInterval_s = 2.0
     defaultPollIntervalChanged = Signal()
@@ -698,6 +704,7 @@ class ZmqClient(QObject):
         self._t = t
         self._timestampToTime = lambda x: x
         self._t0 = 0
+        self._tracingTimer = None
 
         try:
             self._tracing = Tracing(self)
@@ -721,7 +728,7 @@ class ZmqClient(QObject):
     def req(self, message):
         if isinstance(message,str):
             return self.req(message.encode()).decode()
-        print(message)
+#        print(message)
 
         self._socket.send(message)
         return b''.join(self._socket.recv_multipart())
@@ -801,10 +808,12 @@ class ZmqClient(QObject):
     def close(self):
         if self._fastPollTimer:
             self._fastPollTimer.stop()
+        if self._tracingTimer:
+            self._tracingTimer.stop()
         self._socket.close(0)
     
     def __del__(self):
-        self.close()
+        self._socket.close(0)
 
     @Slot(result=str)
     def capabilities(self):
@@ -890,10 +899,13 @@ class ZmqClient(QObject):
         else:
             return list(map(lambda b: chr(b), rep))
 
-    def stream(self, s, suffix=''):
+    def stream(self, s, suffix='', raw=False):
         if not isinstance(s, str) or len(s) != 1:
             raise ValueError('Invalid stream name ' + s)
-        return self.req(b's' + (s + suffix).encode()).decode()
+        data = self.req(b's' + (s + suffix).encode())
+        if not raw:
+            data = data.decode()
+        return data
 
     @Property(float, notify=defaultPollIntervalChanged)
     def defaultPollInterval(self):
@@ -1113,7 +1125,9 @@ class ZmqClient(QObject):
         if interval_s <= 0:
             interval_s = self.defaultPollInterval
 
-        if interval_s < self.fastPollThreshold_s:
+        if interval_s < self.traceThreshold_s:
+            self._trace(obj, interval_s)
+        elif interval_s < self.fastPollThreshold_s:
             self._pollFast(obj, interval_s)
         else:
             self._pollSlow(obj, interval_s)
@@ -1143,5 +1157,36 @@ class ZmqClient(QObject):
             if len(self._fastPollMacro) == 0:
                 self._fastPollTimer.stop()
                 self._fastPollTimer.setInterval(self.fastPollThreshold_s * 1000)
+
+        if self._tracing != None:
+            if self._tracing.remove(obj) and not self._tracing.enabled:
+                self._tracingTimer.stop()
+            
         obj._pollStop()
         
+    def _trace(self, obj, interval_s):
+        if self._tracing == None:
+            self._pollFast(obj, interval_s)
+            return
+        
+        if self._tracingTimer == None:
+            self._tracingTimer = QTimer(parent=self)
+            self._tracingTimer.timeout.connect(self._tracing.process)
+            self._tracingTimer.setInterval(self.traceThreshold_s * 1000)
+            self._tracingTimer.setSingleShot(False)
+            self._tracingTimer.setTimerType(Qt.PreciseTimer)
+
+        if not self._tracing.add(b'r' + obj.shortName().encode(), obj.decodeReadRep, obj):
+            self._pollFast(obj, interval_s)
+            return
+
+        obj._pollFast(interval_s)
+
+        if self._tracing.enabled:
+            self._tracingTimer.start()
+
+    @Slot(int)
+    def traceDecimate(self, decimate):
+        if self._tracing:
+            self._tracing.decimate = decimate
+
