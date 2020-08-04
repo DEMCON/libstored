@@ -24,19 +24,11 @@ echo Chocolatey not installed. Install from here: https://chocolatey.org/docs/in
 goto error
 :have_choco
 
-rem mingw (gcc 8.3.0) is broken:
-rem https://github.com/msys2/MINGW-packages/issues/5006
-rem version 8.2.0 is not available, reverting to 8.1.0
-rem 8.1.0 seems to crash as well, probably SSE2 / AVX related, reverting to 7.3.0
-choco install -y mingw --version 7.3.0
-choco pin -n=mingw --version=7.3.0
+choco install -y --no-progress tortoisegit git cmake make python3 pkgconfiglite mingw
 if errorlevel 1 goto error
 
-choco install -y tortoisegit git cmake make python3 pkgconfiglite
-if errorlevel 1 goto error
+call refreshenv
 
-refreshenv
-set PATH=C:\Python38;C:\Python38\Scripts;%PATH%
 python.exe -m ensurepip
 if errorlevel 1 goto error
 

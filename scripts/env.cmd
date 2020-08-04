@@ -4,34 +4,33 @@ rem Call this script to prepare the runtime environment on Windows for building 
 set here=%~dp0
 pushd %here%\..
 
-set PATH=C:\Program Files\CMake\bin;C:\Python38;C:\Python38\Scripts;%ChocolateyInstall%\lib\mingw\tools\install\mingw64\bin;%ChocolateyInstall%\bin;%PATH%
+call refreshenv
 
+echo Looking for cmake...
 where /q cmake > NUL 2> NUL
 if errorlevel 1 goto find_cmake
 goto have_cmake
 :find_cmake
-where /q cmake > NUL 2> NUL
+set PATH=C:\Program Files\CMake\bin;%PATH%
+where cmake 2> NUL | cmd /e /v /q /c"set/p.=&&echo(^!.^!"
 if errorlevel 1 goto need_bootstrap
 :have_cmake
-echo Found CMake
 
-rem Do not add git to the path, as sh.exe will be there also, which conflicts with make.
-rem set PATH=C:\Program Files\Git\bin;%PATH%
-where /q git > NUL 2> NUL
+echo Looking for git...
+where git 2> NUL | cmd /e /v /q /c"set/p.=&&echo(^!.^!"
 if errorlevel 1 goto need_bootstrap
-echo Found git
 
-where /q gcc > NUL 2> NUL
+echo Looking for gcc...
+where gcc 2> NUL | cmd /e /v /q /c"set/p.=&&echo(^!.^!"
 if errorlevel 1 goto need_bootstrap
-echo Found gcc
 
-where /q make > NUL 2> NUL
+echo Looking for make...
+where make 2> NUL | cmd /e /v /q /c"set/p.=&&echo(^!.^!"
 if errorlevel 1 goto need_bootstrap
-echo Found make
 
-where /q python > NUL 2> NUL
+echo Looking for python3...
+where python 2> NUL | cmd /e /v /q /c"set/p.=&&echo(^!.^!"
 if errorlevel 1 goto need_bootstrap
-echo Found python
 
 :done
 popd
