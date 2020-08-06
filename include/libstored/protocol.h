@@ -21,6 +21,84 @@
 /*!
  * \defgroup libstored_protocol protocol
  * \brief Protocol layers, to be wrapped around a #stored::Debugger instance.
+ *
+ * Every embedded device is different, so the required protocol layers are too.
+ * What is common, is the Application layer, but as the Transport and Physical
+ * layer are often different, the layers in between are often different too.
+ * To provide a common Embedded Debugger interface, the client (e.g., GUI, CLI,
+ * python scripts), we standardize on ZeroMQ REQ/REP over TCP.
+ * 
+ * Not every device supports ZeroMQ, or even TCP. For this, several bridges are
+ * required. Different configurations may be possible:
+ * 
+ * - In case of a Linux/Windows application: embed ZeroMQ server into the
+ *   application, such that the application binds to a REP socket.  A client can
+ *   connect to the application directly.
+ * - Terminal application with only stdin/stdout: use escape sequences in the
+ *   stdin/stdout stream. `client/stdio_wrapper.py` is provided to inject/extract
+ *   these messages from those streams and prove a ZeroMQ interface.
+ * - Application over CAN: like a `client/stdio_wrapper.py`, a CAN extractor to
+ *   ZeroMQ bridge is required.
+ * 
+ * Then, the client can be connected to the ZeroMQ interface. The following
+ * clients are provided:
+ * 
+ * - `client/ed2.ZmqClient`: a python class that allows easy access to all objects
+ *   of the connected store. This is the basis of the clients below.
+ * - `client/cli_client.py`: a command line tool that lets you directly enter the
+ *   protocol messages as defined above.
+ * - `client/gui_client.py`: a simple GUI that shows the list of objects and lets
+ *   you manipulate the values. The GUI has support to send samples to `lognplot`.
+ * 
+ * Test it using the `terminal` example, started using the
+ * `client/stdio_wrapper.py`. Then connect one of the clients above to it.
+ * 
+ * ### Application layer
+ * 
+ * See \ref libstored_debugger.
+ * 
+ * ### Presentation layer
+ * 
+ * For terminal or UART: In case of binary data, escape all bytes < 0x20 as
+ * follows: the sequence `DEL` (0x7f) removes the 3 MSb of the successive byte.
+ * For example, the sequence `DEL ;` (0x7f 0x3b) decodes as `ESC` (0x1b).
+ * To encode `DEL` itself, repeat it.
+ * See stored::AsciiEscapeLayer.
+ * 
+ * For CAN/ZeroMQ: nothing required.
+ * 
+ * ### Session layer:
+ * 
+ * For terminal/UART/CAN: no session support, there is only one (implicit) session.
+ * 
+ * For ZeroMQ: use REQ/REP sockets, where the application-layer request and
+ * response are exactly one ZeroMQ message. All layers below are managed by ZeroMQ.
+ * 
+ * ### Transport layer
+ * 
+ * For terminal or UART: out-of-band message are captured using `ESC _` (APC) and
+ * `ESC \` (ST).  A message consists of the bytes in between these sequences.
+ * See stored::TerminalLayer.
+ * 
+ * In case of lossly channels (UART/CAN), CRC, message sequence number, and
+ * retransmits should be implemented.  This depends on the specific transport
+ * hardware and embedded device.
+ * 
+ * ### Network layer
+ * 
+ * For terminal/UART/ZeroMQ, nothing has to be done.
+ * 
+ * For CAN: packet fragmentation/reassembling/routing is done here.
+ * 
+ * ### Datalink layer
+ * 
+ * Depends on the device.
+ * 
+ * ### Physical layer
+ * 
+ * Depends on the device.
+ * 
+ * 
  * \ingroup libstored
  */
 
