@@ -106,6 +106,38 @@ Classes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Protocol layers, to be wrapped around a <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> instance. </p>
+<p>Every embedded device is different, so the required protocol layers are too. What is common, is the Application layer, but as the Transport and Physical layer are often different, the layers in between are often different too. To provide a common Embedded Debugger interface, the client (e.g., GUI, CLI, python scripts), we standardize on ZeroMQ REQ/REP over TCP.</p>
+<p>Not every device supports ZeroMQ, or even TCP. For this, several bridges are required. Different configurations may be possible:</p>
+<ul>
+<li>In case of a Linux/Windows application: embed ZeroMQ server into the application, such that the application binds to a REP socket. A client can connect to the application directly.</li>
+<li>Terminal application with only stdin/stdout: use escape sequences in the stdin/stdout stream. <code><a class="el" href="stdio__wrapper_8py.html" title="A stdin/stdout frame grabber to ZmqServer wrapper for a to-be-started process. ">client/stdio_wrapper.py</a></code> is provided to inject/extract these messages from those streams and prove a ZeroMQ interface.</li>
+<li>Application over CAN: like a <code><a class="el" href="stdio__wrapper_8py.html" title="A stdin/stdout frame grabber to ZmqServer wrapper for a to-be-started process. ">client/stdio_wrapper.py</a></code>, a CAN extractor to ZeroMQ bridge is required.</li>
+</ul>
+<p>Then, the client can be connected to the ZeroMQ interface. The following clients are provided:</p>
+<ul>
+<li><code>client/ed2.ZmqClient</code>: a python class that allows easy access to all objects of the connected store. This is the basis of the clients below.</li>
+<li><code><a class="el" href="cli__client_8py.html" title="A Command line interface client to enter Embedded Debugger commands. ">client/cli_client.py</a></code>: a command line tool that lets you directly enter the protocol messages as defined above.</li>
+<li><code><a class="el" href="gui__client_8py.html" title="A Pyside2/QtQuick GUI client. ">client/gui_client.py</a></code>: a simple GUI that shows the list of objects and lets you manipulate the values. The GUI has support to send samples to <code>lognplot</code>.</li>
+</ul>
+<p>Test it using the <code>terminal</code> example, started using the <code><a class="el" href="stdio__wrapper_8py.html" title="A stdin/stdout frame grabber to ZmqServer wrapper for a to-be-started process. ">client/stdio_wrapper.py</a></code>. Then connect one of the clients above to it.</p>
+<h3>Application layer</h3>
+<p>See <a class="el" href="group__libstored__debugger.html">debugger</a>.</p>
+<h3>Presentation layer</h3>
+<p>For terminal or UART: In case of binary data, escape all bytes &lt; 0x20 as follows: the sequence <code>DEL</code> (0x7f) removes the 3 MSb of the successive byte. For example, the sequence <code>DEL ;</code> (0x7f 0x3b) decodes as <code>ESC</code> (0x1b). To encode <code>DEL</code> itself, repeat it. See <a class="el" href="classstored_1_1_ascii_escape_layer.html" title="Escape non-ASCII bytes. ">stored::AsciiEscapeLayer</a>.</p>
+<p>For CAN/ZeroMQ: nothing required.</p>
+<h3>Session layer:</h3>
+<p>For terminal/UART/CAN: no session support, there is only one (implicit) session.</p>
+<p>For ZeroMQ: use REQ/REP sockets, where the application-layer request and response are exactly one ZeroMQ message. All layers below are managed by ZeroMQ.</p>
+<h3>Transport layer</h3>
+<p>For terminal or UART: out-of-band message are captured using <code>ESC _</code> (APC) and <code>ESC \</code> (ST). A message consists of the bytes in between these sequences. See <a class="el" href="classstored_1_1_terminal_layer.html" title="Extracts and injects Embedded Debugger messages in a stream of data, such as a terminal. ">stored::TerminalLayer</a>.</p>
+<p>In case of lossly channels (UART/CAN), CRC, message sequence number, and retransmits should be implemented. This depends on the specific transport hardware and embedded device.</p>
+<h3>Network layer</h3>
+<p>For terminal/UART/ZeroMQ, nothing has to be done.</p>
+<p>For CAN: packet fragmentation/reassembling/routing is done here.</p>
+<h3>Datalink layer</h3>
+<p>Depends on the device.</p>
+<h3>Physical layer</h3>
+<p>Depends on the device. </p>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

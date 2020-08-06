@@ -106,8 +106,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 </li>
 <li><a href="#syntax">Syntax example</a></li>
 <li><a href="#debugging">Debugging example</a></li>
-<li><a href="#commands">Embedded Debugger commands</a></li>
-<li><a href="#protocol">Protocol stack</a></li>
+<li><a href="#protocol">Embedded Debugger protocol</a></li>
 <li><a href="#license">License</a></li>
 </ul>
 <h2><a class="anchor" id="build"></a>How to build</h2>
@@ -135,7 +134,7 @@ cmake --build .
 </ul>
 <p>Check out the examples of libstored, which are all independent applications with their own generated store.</p>
 <h2><a class="anchor" id="syntax"></a>Syntax example</h2>
-<p>See <code>examples</code> for more explanation. This is just an impression of the syntax. </p><pre class="fragment">// Comment
+<p>See the <a href="https://demcon.github.io/libstored/examples.html">examples</a> directory for more explanation. This is just an impression of the syntax. </p><pre class="fragment">// Comment
 // Grammar: type:size[array]=initializer long name with any character
 
 uint32 some int
@@ -194,110 +193,76 @@ mystore.scope__s().set("hello");
 +----------+
 | terminal |
 +----------+
-</pre><h2><a class="anchor" id="commands"></a>Embedded Debugger commands</h2>
-<p>A store can be queried using the following commands. These can be extended by an application.</p>
-<p>Requests always start with a ASCII characters are command. Every request gets a response. Either with actual data, or with ack <code>!</code> or nack <code>?</code>. Requests are processed in order.</p>
-<p>This is the OSI application layer of the protocol stack.</p>
-<h3>Capabilities</h3>
-<p>Request: <code>?</code> </p><pre class="fragment">?
-</pre><p>Response: a list of command characters. </p><pre class="fragment">?rwe
-</pre><h3>Echo</h3>
-<p>Request: <code>e</code> &lt;any data&gt; </p><pre class="fragment">eHello World
-</pre><p>Response: &lt;the same data&gt; </p><pre class="fragment">Hello World
-</pre><h3>Read</h3>
-<p>Request: <code>r</code> &lt;name of object&gt;</p>
-<p>The name of the object may be abbreviated, as long as it is unambiguous. </p><pre class="fragment">r/bla/asdf
-</pre><p>Response: &lt;ASCII hex value of object&gt;</p>
-<p>For values with fixed length (int, float), the byte order is big/network endian. For ints, the initial zeros can be omitted. For other data, all bytes are encoded. </p><pre class="fragment">123abc
-</pre><h3>Write</h3>
-<p>Request: <code>w</code> &lt;value in ASCII hex&gt; &lt;name of object&gt;</p>
-<p>See Read for details about the hex value and object name. </p><pre class="fragment">w10/b/a
-</pre><p>Response: <code>!</code> | <code>?</code> </p><pre class="fragment">!
-</pre><h3>List</h3>
-<p>Requests a full list of all objects of all registered stores to the current Embedded Debugger.</p>
-<p>Request: <code>l</code> </p><pre class="fragment">l
-</pre><p>Response: ( &lt;type byte in hex&gt; &lt;length in hex&gt; &lt;name of object&gt; <code>\n</code> ) * | <code>?</code> </p><pre class="fragment">3b4/b/i8
-201/b/b
-</pre><h3>Alias</h3>
-<p>Assigns a character to a object path. An alias can be everywhere where an object path is expected. Creating aliases skips parsing the object path repeatedly, so makes debugging more efficient. If no object is specified, the alias is removed. The number of aliases may be limited. If the limit is hit, the response will be <code>?</code>. The alias name can be any char in the range 0x20 - 0x7e <code>~</code>, except for 0x2f <code>/</code>.</p>
-<p>Request: <code>a</code> &lt;char&gt; ( &lt;name of object&gt; ) ? </p><pre class="fragment">a0/bla/a
-</pre><p>Response: <code>!</code> | <code>?</code> </p><pre class="fragment">!
-</pre><h3>Macro</h3>
-<p>Saves a sequence of commands and assigns a name to it. The macro name can be any char in the range 0x20 - 0x7e <code>~</code>. In case of a name clash with an existing non-macro command, the command is executed; the macro cannot hide or replace the command. The separator can be any char, as long as it is not used within a command of the macro definition. Without the definition after the macro name, the macro is removed. The system may be limited in total definition length. The macro string is reinterpreted every time it is invoked. The responses of the commands are merged into one response frame, without separators.</p>
-<p>Request: <code>m</code> &lt;char&gt; ( &lt;separator&gt; &lt;command&gt; ) * </p><pre class="fragment">mZ r/bla/a e; r/bla/z
-</pre><p>Response: <code>!</code> | <code>?</code> </p><pre class="fragment">!
-</pre><h3>Identification</h3>
-<p>Returns a fixed string that identifies the application.</p>
-<p>Request: <code>i</code> </p><pre class="fragment">i
-</pre><p>Response: <code>?</code> | &lt;UTF-8 encoded application name&gt; </p><pre class="fragment">libstored
-</pre><h3>Version</h3>
-<p>Returns a list of versions.</p>
-<p>Request: <code>v</code> </p><pre class="fragment">v
-</pre><p>Response: <code>?</code> | &lt;protocol version&gt; ( &lt;application-specific version&gt; ) * </p><pre class="fragment">2 r243+trunk beta
-</pre><h3>Read memory</h3>
-<p>Read a memory via a pointer instead of the store. Returns the number of requested bytes. If no length is specified, a word is returned.</p>
-<p>Request: <code>R</code> &lt;pointer in hex&gt; ( &lt;length&gt; ) ? </p><pre class="fragment">R1ffefff7cc 4
-</pre><p>Response: <code>?</code> | &lt;bytes in hex&gt; </p><pre class="fragment">efbe0000
-</pre><h3>Write memory</h3>
-<p>Write a memory via a pointer instead of the store.</p>
-<p>Request: <code>W</code> &lt;pointer in hex&gt; &lt;bytes in hex&gt; </p><pre class="fragment">W1ffefff7cc 0123
-</pre><p>Response: <code>?</code> | <code>!</code> </p><pre class="fragment">!
-</pre><h3>Streams</h3>
-<p>Read all available data from a stream. Streams are application-defined sequences of bytes, like stdout and stderr. They may contain binary data. There are an arbitrary number of streams, with an arbitrary single-char name.</p>
-<p>To list all streams with data:</p>
-<p>Request: <code>s</code></p>
-<p>To request all data from a stream, where the optional suffix is appended to the response:</p>
-<p>Request: <code>s</code> &lt;char&gt; &lt;suffix&gt; ? </p><pre class="fragment">sA/
-</pre><p>Response: <code>?</code> | &lt;data&gt; &lt;suffix&gt; </p><pre class="fragment">Hello World!!1/
-</pre><p>Once data has been read from the stream, it is removed. The next call will return new data. If a stream was never used, <code>?</code> is returned. If it was used, but it is empty now, the stream char does not show up in the <code>s</code> call, but does respond with the suffix. If no suffix was provided, and there is no data, the response is empty.</p>
-<p>The number of streams and the maximum buffer size of a stream may be limited.</p>
-<h3>Tracing</h3>
-<p>Executes a macro every time the application invokes <a class="el" href="classstored_1_1_debugger.html#a65e235d57bae057514396431c97db437" title="Executes the trace macro and appends the output to the trace buffer. ">stored::Debugger::trace()</a>. A stream is filled with the macro output.</p>
-<p>Request: <code>t</code> ( &lt;macro&gt; &lt;stream&gt; ( &lt;decimate in hex&gt; ) ? ) ? </p><pre class="fragment">tms64
-</pre><p>This executes macro output of <code>m</code> to the stream <code>s</code>, but only one in every 100 calls to trace(). If the output does not fit in the stream buffer, it is silently dropped.</p>
-<p><code>t</code> without arguments disables tracing. If the decimate argument is omitted, 1 is assumed (no decimate).</p>
-<p>Response: <code>?</code> | <code>!</code> </p><pre class="fragment">!
-</pre><p>The buffer collects samples over time, which is read out by the client possibly at irregular intervals. Therefore, you probably want to know the time stamp of the sample. For this, include reading the time in the macro definition. By convention, the time is a top-level variable <code>t</code> with the unit between braces. It is implementation-defined what the offset is of <code>t</code>, which can be since the epoch or since the last boot, for example. For example, your store can have one of the following time variables: </p><pre class="fragment">// Nice resolution, wraps around after 500 millenia.
-(uint64) t (us)
-// Typical ARM systick counter, wraps around after 49 days.
-(uint32) t (ms)
-// Pythonic time. Watch out with significant bits.
-(double) t (s)
-</pre><p>The time is usually a function type, as it is read-only and reading it should invoke some time-keeping functions.</p>
-<h2><a class="anchor" id="protocol"></a>Protocol stack</h2>
-<p>Every embedded device is different, so the required protocol layers are too. What is common, is the Application layer, but as the Transport and Physical layer are often different, the layers in between are often different too. To provide a common Embedded Debugger interface, the client (e.g., GUI, CLI, python scripts), we standardize on ZeroMQ REQ/REP over TCP.</p>
-<p>Not every device supports ZeroMQ, or even TCP. For this, several bridges are required. Different configurations may be possible:</p>
+</pre><p>There are some more ready-to-use clients, and a Python module in the <a href="https://github.com/DEMCON/libstored/tree/master/client">client</a> directory.</p>
+<h2><a class="anchor" id="protocol"></a>Embedded Debugger protocol</h2>
+<p>Communication with the debugger implementation in the application follows a request-response pattern. A full description of the commands can be found in the <a href="https://demcon.github.io/libstored/group__libstored__debugger.html">doxygen documentation</a>. These commands are implemented in the <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> class and ready to be used in your application.</p>
+<p>However, the request/response messages should be wrapped in a OSI-like protocol stack, which is described in more detail in the <a href="https://demcon.github.io/libstored/group__libstored__protocol.html">documentation too</a>). This stack depends on your application. A few standard protocol layers are available.</p>
+<p>To get a grasp about the protocol, I had a short chat with the <code>zmqserver</code> example using the <code><a class="el" href="cli__client_8py.html" title="A Command line interface client to enter Embedded Debugger commands. ">cli_client.py</a></code>. See the transcript below. Lines starting with <code>&gt;</code> are requests, entered by me, lines starting with <code>&lt;</code> are responses from the application.</p>
+<p>In the example below, I used the following commands:</p>
 <ul>
-<li>In case of a Linux/Windows application: embed ZeroMQ server into the application, such that the application binds to a REP socket. A client can connect to the application directly.</li>
-<li>Terminal application with only stdin/stdout: use escape sequences in the stdin/stdout stream. <code><a class="el" href="stdio__wrapper_8py.html" title="A stdin/stdout frame grabber to ZmqServer wrapper for a to-be-started process. ">client/stdio_wrapper.py</a></code> is provided to inject/extract these messages from those streams and prove a ZeroMQ interface.</li>
-<li>Application over CAN: like a <code><a class="el" href="stdio__wrapper_8py.html" title="A stdin/stdout frame grabber to ZmqServer wrapper for a to-be-started process. ">client/stdio_wrapper.py</a></code>, a CAN extractor to ZeroMQ bridge is required.</li>
+<li><code>?</code>: request capabilities of the target</li>
+<li><code>l</code>: list object in the store</li>
+<li><code>i</code>: return the identification of the target</li>
+<li><code>r</code>: read an object</li>
+<li><code>w</code>: write an object</li>
+<li><code>v</code>: request versions</li>
+<li><code>a</code>: define an alias</li>
 </ul>
-<p>Then, the client can be connected to the ZeroMQ interface. The following clients are provided:</p>
-<ul>
-<li><code>client/ed2.ZmqClient</code>: a python class that allows easy access to all objects of the connected store. This is the basis of the clients below.</li>
-<li><code><a class="el" href="cli__client_8py.html" title="A Command line interface client to enter Embedded Debugger commands. ">client/cli_client.py</a></code>: a command line tool that lets you directly enter the protocol messages as defined above.</li>
-<li><code><a class="el" href="gui__client_8py.html" title="A Pyside2/QtQuick GUI client. ">client/gui_client.py</a></code>: a simple GUI that shows the list of objects and lets you manipulate the values. The GUI has support to send samples to <code>lognplot</code>.</li>
-</ul>
-<p>Test it using the <code>terminal</code> example, started using the <code><a class="el" href="stdio__wrapper_8py.html" title="A stdin/stdout frame grabber to ZmqServer wrapper for a to-be-started process. ">client/stdio_wrapper.py</a></code>. Then connect one of the clients above to it.</p>
-<h3>Application layer</h3>
-<p>See above. See <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>.</p>
-<h3>Presentation layer</h3>
-<p>For terminal or UART: In case of binary data, escape all bytes &lt; 0x20 as follows: the sequence <code>DEL</code> (0x7f) removes the 3 MSb of the successive byte. For example, the sequence <code>DEL ;</code> (0x7f 0x3b) decodes as <code>ESC</code> (0x1b). To encode <code>DEL</code> itself, repeat it. See <a class="el" href="classstored_1_1_ascii_escape_layer.html" title="Escape non-ASCII bytes. ">stored::AsciiEscapeLayer</a>.</p>
-<p>For CAN/ZeroMQ: nothing required.</p>
-<h3>Session layer:</h3>
-<p>For terminal/UART/CAN: no session support, there is only one (implicit) session.</p>
-<p>For ZeroMQ: use REQ/REP sockets, where the application-layer request and response are exactly one ZeroMQ message. All layers below are managed by ZeroMQ.</p>
-<h3>Transport layer</h3>
-<p>For terminal or UART: out-of-band message are captured using <code>ESC _</code> (APC) and <code>ESC \</code> (ST). A message consists of the bytes in between these sequences. See <a class="el" href="classstored_1_1_terminal_layer.html" title="Extracts and injects Embedded Debugger messages in a stream of data, such as a terminal. ">stored::TerminalLayer</a>.</p>
-<p>In case of lossly channels (UART/CAN), CRC, message sequence number, and retransmits should be implemented. This depends on the specific transport hardware and embedded device.</p>
-<h3>Network layer</h3>
-<p>For terminal/UART/ZeroMQ, nothing has to be done.</p>
-<p>For CAN: packet fragmentation/reassembling/routing is done here.</p>
-<h3>Datalink layer</h3>
-<p>Depends on the device.</p>
-<h3>Physical layer</h3>
-<p>Depends on the device.</p>
-<h2><a class="anchor" id="license"></a>License</h2>
+<p>Refer to the documentation for the details about these and other commands. </p><pre class="fragment">&gt;  ?
+&lt;  ?rwelamivRWst
+&gt;  l
+&lt;  0110/a blob
+201/a bool
+2b4/a float
+2f8/a double
+02f/a string
+312/a uint16
+334/a uint32
+301/a uint8
+378/a uint64
+234/a ptr32
+278/a ptr64
+392/an int16
+3b4/an int32
+381/an int8
+3f8/an int64
+7b4/compute/an int8 + an int16
+734/compute/length of /a string
+6f8/compute/circle area (r = /a double)
+734/stats/ZMQ messages
+734/stats/object writes
+778/t (us)
+6f8/rand
+
+&gt;  i
+&lt;  zmqserver
+&gt;  r/a bool
+&lt;  0
+&gt;  w1/a bool
+&lt;  !
+&gt;  r/a bool
+&lt;  1
+&gt;  r/s/Z
+&lt;  14
+&gt;  r/s/Z
+&lt;  15
+&gt;  r/rand
+&lt;  3d26000000000000
+&gt;  r/rand
+&lt;  3f50250b79ae8000
+&gt;  r/rand
+&lt;  3fa550a89cb27a00
+&gt;  v
+&lt;  2
+&gt;  ar/rand
+&lt;  !
+&gt;  rr
+&lt;  3fc69c39e2668200
+&gt;  rr
+&lt;  3fd755a4ab38afc0
+&gt;  rr
+&lt;  3fb7617168255e00
+</pre><h2><a class="anchor" id="license"></a>License</h2>
 <p>The project license is specified in COPYING and COPYING.LESSER.</p>
 <p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
 <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.</p>
