@@ -19,6 +19,7 @@ var searchData=
   ['escend',['EscEnd',['../classstored_1_1_terminal_layer.html#a16632f9e5395384bc8db6940eb26259f',1,'stored::TerminalLayer']]],
   ['escmask',['EscMask',['../classstored_1_1_ascii_escape_layer.html#a61f7a9fd55a71c7c6c73a0ff3d73b612',1,'stored::AsciiEscapeLayer']]],
   ['escstart',['EscStart',['../classstored_1_1_terminal_layer.html#a641d9407a8c7517bcbfb3748b86fa43d',1,'stored::TerminalLayer']]],
+  ['event',['event',['../classed2_1_1zmq__client_1_1_object.html#a66397449c77cf3a6cfffd991addfee6b',1,'ed2::zmq_client::Object']]],
   ['examplebasic',['ExampleBasic',['../classstored_1_1_example_basic.html',1,'stored::ExampleBasic'],['../classstored_1_1_example_basic.html#a78f8d4bdefd6553ee83ec982f5ea0b62',1,'stored::ExampleBasic::ExampleBasic(ExampleBasic const &amp;)=delete'],['../classstored_1_1_example_basic.html#a0ed3ef11ff64b796ca3f0b50781b0147',1,'stored::ExampleBasic::ExampleBasic(ExampleBasic &amp;&amp;)=delete'],['../classstored_1_1_example_basic.html#a1db154d8a86521b2af3ffe693e4ac2d9',1,'stored::ExampleBasic::ExampleBasic()=default']]],
   ['examplebasic_2ecpp',['ExampleBasic.cpp',['../_example_basic_8cpp.html',1,'']]],
   ['examplebasic_2eh',['ExampleBasic.h',['../_example_basic_8h.html',1,'']]],
