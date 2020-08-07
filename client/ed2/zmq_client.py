@@ -21,8 +21,9 @@ import time
 import datetime
 import struct
 import re
+import sys
 
-from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt
+from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, QEvent, QCoreApplication
 from .zmq_server import ZmqServer
 
 ##
@@ -162,17 +163,17 @@ class Object(QObject):
         self.aliasChanged.emit()
 
     # Return the alias or the normal name, if no alias was set.
-    def shortName(self):
+    def shortName(self, tryToGetAlias = True):
         if self._alias != None:
             return self._alias
 
-        if self._client != None:
+        if self._client != None and tryToGetAlias:
             # We don't have an alias, try to get one.
             self._client.acquireAlias(self)
 
-        if self._alias != None:
-            # We may have got one. Use it.
-            return self._alias
+            if self._alias != None:
+                # We may have got one. Use it.
+                return self._alias
 
         # Still not alias, return name instead.
         return self._name
@@ -184,14 +185,29 @@ class Object(QObject):
 
     # Read value from server.
     @Slot(result='QVariant')
-    def read(self):
-        return self._read()
+    @Slot(bool,result='QVariant')
+    def read(self, tryToGetAlias=True):
+        return self._read(tryToGetAlias)
 
-    def _read(self):
+    AsyncReadEvent = QEvent.User
+
+    @Slot()
+    def asyncRead(self):
+        event = QEvent(self.AsyncReadEvent)
+        QCoreApplication.postEvent(self, event, Qt.LowEventPriority - 1)
+
+    def event(self, event):
+        if event.type() == self.AsyncReadEvent:
+            self.read(False)
+            return True
+        else:
+            return super().event(event)
+
+    def _read(self, tryToGetAlias=True):
         if self._client == None:
             return None
         
-        rep = self._client.req(b'r' + self.shortName().encode())
+        rep = self._client.req(b'r' + self.shortName(tryToGetAlias).encode())
         return self.decodeReadRep(rep)
 
     # Decode a read reply.
@@ -217,6 +233,12 @@ class Object(QObject):
         try:
             if self.isFixed():
                 binint = int(rep.decode(), 16)
+                if sys.version_info.major <= 3 and sys.version_info.minor < 9:
+                    # If binint >= 2^63 for Uint64, we run into problems in libshiboken.
+                    # See https://bugreports.qt.io/browse/PYSIDE-648
+                    # Force to Int64 in that case.
+                    if binint >= 1 << 63:
+                        binint -= 1 << 64
                 if self.isInt() and not self.isSigned():
                     return binint
                 elif dtype == self.Int8:
@@ -302,6 +324,8 @@ class Object(QObject):
             elif self.isSigned():
                 return self._encodeHex(struct.pack('>q', value)[-self._size:], True)
             else:
+                if value < 0:
+                    value += 1 << 64
                 return self._encodeHex(struct.pack('>Q', value)[-self._size:], True)
         except:
             return None
@@ -393,7 +417,7 @@ class Object(QObject):
         self._format = f
 
         if f == 'hex':
-            self._formatter = hex
+            self._formatter = lambda x: hex(x & (1 << self._size * 8) - 1)
         elif f == 'bin':
             self._formatter = bin
         elif f == 'bytes':

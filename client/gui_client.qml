@@ -244,7 +244,7 @@ Window {
                 text: "Refresh all"
                 onClicked: {
                     for(var i = 0; i < objects.rowCount(); i++)
-                        objects.sourceModel.at(objects.mapToSource(objects.index(i, 0)).row).read()
+                        objects.sourceModel.at(objects.mapToSource(objects.index(i, 0)).row).asyncRead()
                 }
             }
         }
