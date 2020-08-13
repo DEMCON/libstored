@@ -824,7 +824,7 @@ namespace stored {
 		}
 
 		/*!
-		 * \brief Wrapper for #set(void*,size_t) that converts the type.
+		 * \brief Wrapper for #set(void const*,size_t) that converts the type.
 		 * \details This only works for fixed types. Make sure that #type() matches \p T.
 		 */
 		template <typename T> void set(T value) {

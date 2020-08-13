@@ -18,11 +18,11 @@ protected:
 		if(!set)
 			value = an_int8().get() + an_int16().get();
 	}
-	void __compute__circle_area_r___a_double(bool set, double& value) {
+	void __compute__circle_area_r__a_double(bool set, double& value) {
 		if(!set)
 			value = M_PI * a_double().get() * a_double().get();
 	}
-	void __compute__length_of___a_string(bool set, uint32_t& value) {
+	void __compute__length_of__a_string(bool set, uint32_t& value) {
 		if(!set)
 			value = (uint32_t)strlen(static_cast<char*>(a_string().buffer()));
 

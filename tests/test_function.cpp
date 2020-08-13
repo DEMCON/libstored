@@ -27,7 +27,7 @@ protected:
 		if(!set)
 			return 0;
 
-		printf("f write-only: %*s\n", (int)len, buffer);
+		printf("f write-only: %.*s\n", (int)len, buffer);
 		return len;
 	}
 	void __array_f_int_0(bool set, int32_t& value) { if(!set) value = (int32_t)0; }
@@ -57,9 +57,9 @@ TEST(Function, ReadOnly) {
 
 TEST(Function, WriteOnly) {
 	FunctionTestStore store;
-	char buffer[] = "hello";
+	char buffer[] = "hi all!";
 	EXPECT_EQ(store.f_write_only().get(buffer, sizeof(buffer)), 0);
-	EXPECT_EQ(store.f_write_only().set(buffer, strlen(buffer)), 5u);
+	EXPECT_EQ(store.f_write_only().set(buffer, strlen(buffer)), 4u);
 }
 
 } // namespace
