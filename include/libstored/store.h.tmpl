@@ -307,6 +307,15 @@ namespace stored {
 {%   endif %}
 {% endfor %}
 
+{% for a in store.arrays %}
+		/*!
+		 * \brief Array-lookup accessor for {{a.name}}
+		 */
+		Variant<Implementation> {{a.c_decl()}} {
+{{a.c_impl()}}		}
+
+{% endfor %}
+
 	public:
 		/*!
 		 * \copydoc stored::{{store.name}}Data::shortDirectory()

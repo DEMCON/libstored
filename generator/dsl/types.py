@@ -28,7 +28,7 @@ def cname(s):
         return cnames[s]
     c = s
     c = re.sub(r'[^A-Za-z0-9/]+', '_', c)
-    c = re.sub(r'/+', '__', c)
+    c = re.sub(r'_*/+', '__', c)
     c = re.sub(r'^__', '', c)
     c = re.sub(r'^[^A-Za-z]_*', '_', c)
     c = re.sub(r'_+$', '', c)
@@ -303,6 +303,78 @@ class Buffer(object):
         if self.size == 0:
             self.size = 1
 
+class ArrayLookup(object):
+    def __init__(self, objects):
+        # All objects should have the same name, but only differ in their array index.
+        self.objects = objects
+
+        # Create a tree structure based on the part of the name.
+        self.tree = self._tree(objects)
+
+        if len(objects) == 0:
+            self._placeholders = 0
+        elif objects[0].name_index[-1][1] == None:
+            self._placeholders = max(0, len(objects[0].name_index) - 1)
+        else:
+            self._placeholders = len(objects[0].name_index)
+
+        if len(objects) > 0:
+            self.name = ''
+            for i in range(0, len(objects[0].name_index)):
+                ni = objects[0].name_index[i]
+                if ni[1] == None:
+                    self.name += ni[0]
+                else:
+                    self.name += f"{ni[0]}[{self.placeholders()[i]}]"
+            self.cname = cname(self.name)
+        else:
+            self.cname = None
+            self.name = None
+
+    def placeholders(self):
+        return 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'[:self._placeholders]
+
+    def _tree(self, objects, index = 0):
+        if len(objects) == 0:
+            return None
+        if len(objects) == 1:
+            return objects[0]
+
+        res = {}
+
+        groups = {}
+        # Group on subscript within this part of the name.
+        for o in objects:
+            subscript = o.name_index[index][1]
+            if not subscript in groups:
+                groups[subscript] = []
+            groups[subscript].append(o)
+
+        for subscript in groups.keys():
+            res[subscript] = self._tree(groups[subscript], index + 1)
+
+        return res
+
+    def c_impl(self):
+        return self._c_impl(self.tree, 0, self.placeholders(), '\t\t\t')
+    
+    def _c_impl(self, tree, index, placeholders, indent):
+        if tree == None:
+            return f'{indent}return Variant<Implementation>();\n'
+        if not isinstance(tree, dict):
+            return f'{indent}return Variant<Implementation>({tree.cname}());\n'
+        
+        res  = f'{indent}switch({placeholders[index]}) {{\n'
+        for i in tree.keys():
+            res += f'{indent}case {i}:\n'
+            res += self._c_impl(tree[i], index + 1, placeholders, indent + '\t')
+        res += f'{indent}default:\n{indent}\treturn Variant<Implementation>();\n'
+        res += f'{indent}}}\n'
+        return res
+
+    def c_decl(self):
+        return self.cname + '(' + ', '.join([f'int {x}' for x in self.placeholders()]) + ')'
+
 class Store(object):
     def __init__(self, objects):
         self.objects = objects
@@ -315,6 +387,7 @@ class Store(object):
         self.checkNames()
         self.generateBuffer()
         self.generateDirectory()
+        self.extractArrayAccessors()
     
     def flattenScope(self, scope):
         res = []
@@ -380,6 +453,31 @@ class Store(object):
 
     def generateDirectory(self):
         self.directory.generate(self.objects)
+    
+    def extractArrayAccessors(self):
+        # Find all objects that look like having one or more arrays
+        split_objects = []
+        for o in self.objects:
+            o.splitName()
+            if o.name_index == None:
+                continue
+            split_objects.append(o)
+
+        # Now, collect all similar objects.
+        grouped_objects = {}
+        for o in split_objects:
+            key = []
+            for i in range(0, len(o.name_index)):
+                key.append(o.name_index[i][0])
+            # Make hashable
+            key = tuple(key)
+            if not key in grouped_objects:
+                grouped_objects[key] = []
+            grouped_objects[key].append(o)
+
+        # Save the grouped objects, which will later be used to generate nested switch statements.
+        self.arrays = [ArrayLookup(x) for x in grouped_objects.values()]
+
 
 class Object(object):
     def __init__(self, parent, name, len = 0):
@@ -389,6 +487,28 @@ class Object(object):
     def setName(self, name):
         self.name = object_name(name)
         self.cname = cname(self.name)
+
+    # Split our name to find common array indices across objects.
+    def splitName(self):
+        chunks = re.split(r'\[(\d+)\]', self.name)
+        if len(chunks) == 1:
+            # Nothing to split
+            self.name_index = None
+            return
+
+        # chunks has now an alternating string/array index sequence.
+        # Merge into pairs
+        if chunks[-1] == '':
+            # drop empty element at the end (the name ends with an array index)
+            chunks.pop()
+        if len(chunks) % 2 == 1:
+            # odd number, must be ending in a non-array part of the name.
+            # Add dummy index
+            chunks.append(None)
+
+        self.name_index = []
+        for i in range(0, len(chunks), 2):
+            self.name_index.append((chunks[i], chunks[i+1]))
 
 class Variable(Object):
     def __init__(self, parent, type, name):
