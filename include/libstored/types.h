@@ -138,6 +138,8 @@ namespace stored {
 	template <> struct toType<double> { static Type::type const type = Type::Double; };
 	template <> struct toType<char*> { static Type::type const type = Type::String; };
 	template <typename T> struct toType<T*> { static Type::type const type = Type::Pointer; };
+	
+	template <typename Container = void> class Variant;
 
 	/*!
 	 * \brief A typed variable in a store.
@@ -277,6 +279,9 @@ namespace stored {
 			stored_assert(valid());
 			return *m_buffer;
 		}
+
+		// Make Variant a friend, such that a Variable can be converted to a Variant.
+		friend class Variant<Container>;
 
 	private:
 		/*! \brief The buffer of this Variable. */
@@ -643,7 +648,7 @@ namespace stored {
 	 *
 	 * \ingroup libstored_types
 	 */
-	template <typename Container = void>
+	template <typename Container>
 	class Variant {
 	public:
 		/*!
@@ -695,7 +700,7 @@ namespace stored {
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		explicit Variant(Variable<T,Container> const& v)
 			: m_container(v.valid() ? &v.container() : nullptr)
-			, m_buffer(v.valid() ? &v.get() : nullptr)
+			, m_buffer(v.valid() ? &v.buffer() : nullptr)
 			, m_len(sizeof(T))
 			, m_type(toType<T>::type)
 #ifdef _DEBUG
@@ -729,17 +734,16 @@ namespace stored {
 		 * \return the number of bytes written into \p dst
 		 */
 		size_t get(void* dst, size_t len = 0) const {
+			if(Type::isFixed(type())) {
+				stored_assert(len == size() || len == 0);
+				len = size();
+			} else {
+				len = std::min(len, size());
+			}
+
 			if(Type::isFunction(type())) {
 				len = container().callback(false, dst, len, (unsigned int)m_f);
 			} else {
-				if(Type::isFixed(type())) {
-					stored_assert(len == size() || len == 0);
-					len = size();
-				} else {
-					stored_assert(len <= size());
-					len = std::min(len, size());
-				}
-
 				entryRO(len);
 				if(unlikely(type() == Type::String)) {
 					char* dst_ = static_cast<char*>(dst);
@@ -757,6 +761,19 @@ namespace stored {
 		}
 
 		/*!
+		 * \brief Wrapper for #get(void*,size_t) const that converts the type.
+		 * \details This only works for fixed types. Make sure that #type() matches \p T.
+		 */
+		template <typename T> T get() const {
+			stored_assert(Type::isFixed(type()));
+			stored_assert(toType<T>::type == type());
+			stored_assert(sizeof(T) == size());
+			T data;
+			size_t len = get(&data, sizeof(T));
+			return len == sizeof(T) ? data : T();
+		}
+
+		/*!
 		 * \brief Set the value.
 		 * \details For variables, #entryX()/#exitX() is called.
 		 * \details In case #type() is Type::String, only up to the first null byte are copied.
@@ -767,18 +784,17 @@ namespace stored {
 		 * \return the number of bytes read from \p src
 		 */
 		size_t set(void const* src, size_t len = 0) {
+			if(Type::isFixed(type())) {
+				stored_assert(len == size() || len == 0);
+				len = size();
+			} else {
+				len = std::min(len, size());
+			}
+
 			if(isFunction()) {
 				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
 				len = container().callback(true, const_cast<void*>(src), len, (unsigned int)m_f);
 			} else {
-				if(Type::isFixed(type())) {
-					if(len != size() && len != 0)
-						return 0;
-					len = size();
-				} else {
-					len = std::min(len, size());
-				}
-
 				bool changed = true;
 
 				entryX(len);
@@ -805,6 +821,17 @@ namespace stored {
 				exitX(changed, len);
 			}
 			return len;
+		}
+
+		/*!
+		 * \brief Wrapper for #set(void*,size_t) that converts the type.
+		 * \details This only works for fixed types. Make sure that #type() matches \p T.
+		 */
+		template <typename T> void set(T value) {
+			stored_assert(Type::isFixed(type()));
+			stored_assert(toType<T>::type == type());
+			stored_assert(sizeof(T) == size());
+			set(&value, sizeof(T));
 		}
 
 		/*!
