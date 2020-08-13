@@ -16,6 +16,7 @@ var classstored_1_1_example_function_base =
     [ "callback", "classstored_1_1_example_function_base.html#a9ebbedc96face6d6898029a376795625", null ],
     [ "echo_0", "classstored_1_1_example_function_base.html#a893f98974201e2a67b10acc193103a67", null ],
     [ "echo_1", "classstored_1_1_example_function_base.html#a03761d1b912ff771432d52fd0d684c51", null ],
+    [ "echo_a", "classstored_1_1_example_function_base.html#a1d22555eb9f5c1cf519743e96b754d23", null ],
     [ "find", "classstored_1_1_example_function_base.html#a8eddfce928885715e71844169517b227", null ],
     [ "hookEntryRO", "classstored_1_1_example_function_base.html#a918f042893f4685bcf34f4d855ad5969", null ],
     [ "hookEntryX", "classstored_1_1_example_function_base.html#a9eeafad327ed8b7160805a7452a41396", null ],

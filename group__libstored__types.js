@@ -70,7 +70,8 @@ var group__libstored__types =
       [ "operator=", "classstored_1_1_variable.html#ac751adf3238de485af8a50dd20829f27", null ],
       [ "operator==", "classstored_1_1_variable.html#a43a3106ff73012cd677cb7cfcc0317e4", null ],
       [ "set", "classstored_1_1_variable.html#a36bd45168cb1f51b2af6780e17d4230f", null ],
-      [ "valid", "classstored_1_1_variable.html#a076118df9f13c23eba93d0f63627e3d2", null ]
+      [ "valid", "classstored_1_1_variable.html#a076118df9f13c23eba93d0f63627e3d2", null ],
+      [ "Variant< Container >", "classstored_1_1_variable.html#a75e7ee2aa66b65ef87a7ed2ffcc475b0", null ]
     ] ],
     [ "Variable< T, Container, true >", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html", [
       [ "base", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a67ff3e3aeb99ab939100dd28fa44ebda", null ],
@@ -112,12 +113,14 @@ var group__libstored__types =
       [ "exitX", "classstored_1_1_variant.html#a9b389c7235a90f013e98b84d0617d352", null ],
       [ "function", "classstored_1_1_variant.html#a6e64c9ec58d04d6996c10f720b1c8702", null ],
       [ "get", "classstored_1_1_variant.html#a9b160b7a25f5b42905cb62d21a00d6b3", null ],
+      [ "get", "classstored_1_1_variant.html#a24e447798023fc0393b42586f9a9d7cd", null ],
       [ "isFunction", "classstored_1_1_variant.html#ace4f41c8a960f8edae08691715018180", null ],
       [ "isVariable", "classstored_1_1_variant.html#a4c5b0a9c58666d045a74ec935bb7c3af", null ],
       [ "key", "classstored_1_1_variant.html#a85d6affa5768ff3cba127cf11e4b7d59", null ],
       [ "operator!=", "classstored_1_1_variant.html#ad4fe4422d93738dcfaba1cb4748b90c6", null ],
       [ "operator==", "classstored_1_1_variant.html#a6b18d813bbccf77c26291c309b457d8e", null ],
       [ "set", "classstored_1_1_variant.html#ae2b23190df0feb33c9bed5d599790443", null ],
+      [ "set", "classstored_1_1_variant.html#aad6114c3e0ae6cf3841c03b249cf5262", null ],
       [ "size", "classstored_1_1_variant.html#a61b27f12fe530bb89723dfea65b8cfa8", null ],
       [ "type", "classstored_1_1_variant.html#a78e3fd98101ec8709e6dff620ca37f22", null ],
       [ "valid", "classstored_1_1_variant.html#aa81a1cbaf423bf8fc50b9738e1d1b306", null ],

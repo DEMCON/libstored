@@ -7,6 +7,7 @@ var searchData=
   ['three_5fints_5f0',['three_ints_0',['../classstored_1_1_example_basic_base.html#a68c1c41492f33d787da5865430857a79',1,'stored::ExampleBasicBase']]],
   ['three_5fints_5f1',['three_ints_1',['../classstored_1_1_example_basic_base.html#aadb8aa27f193e6098aace7eb6f3deb83',1,'stored::ExampleBasicBase']]],
   ['three_5fints_5f2',['three_ints_2',['../classstored_1_1_example_basic_base.html#aaeb6b1b3b34b6a5ac84bc0c39fd65860',1,'stored::ExampleBasicBase']]],
+  ['three_5fints_5fa',['three_ints_a',['../classstored_1_1_example_basic_base.html#af785945f6963daf71d76d450bdd23c60',1,'stored::ExampleBasicBase']]],
   ['time',['time',['../classed2_1_1zmq__client_1_1_zmq_client.html#a9f9f8b3419ceb98b46b3f6b09961a31c',1,'ed2::zmq_client::ZmqClient']]],
   ['time_5fs',['time_s',['../classstored_1_1_example_function_base.html#aa0aedc464528e474fdb55e5b9394920e',1,'stored::ExampleFunctionBase']]],
   ['timestamptotime',['timestampToTime',['../classed2_1_1zmq__client_1_1_zmq_client.html#a8eb0533de908386f60b4d5db4d921e3e',1,'ed2::zmq_client::ZmqClient']]],
@@ -16,10 +17,12 @@ var searchData=
   ['tracedecimate',['traceDecimate',['../classed2_1_1zmq__client_1_1_zmq_client.html#ad76366222534e802a94ea6e0ed5d4fcc',1,'ed2::zmq_client::ZmqClient']]],
   ['tracing',['tracing',['../classstored_1_1_debugger.html#a03a04acf4a0ebf7003a473d9c1951e65',1,'stored::Debugger']]],
   ['tstring',['tString',['../classed2_1_1zmq__client_1_1_object.html#a55a84ded66c6edb5ba56326796189c7f',1,'ed2::zmq_client::Object']]],
-  ['two_5fscopes_5f0_5f_5f_5fi',['two_scopes_0___i',['../classstored_1_1_example_scope_base.html#a67f1a297d3179565ad9ce4a81cf94954',1,'stored::ExampleScopeBase']]],
-  ['two_5fscopes_5f1_5f_5f_5fi',['two_scopes_1___i',['../classstored_1_1_example_scope_base.html#a8e1d5d66c3e0fbef2717371a20363a2a',1,'stored::ExampleScopeBase']]],
+  ['two_5fscopes_5f0_5f_5fi',['two_scopes_0__i',['../classstored_1_1_example_scope_base.html#a7d3375a74758fb1579444c5f99080ac0',1,'stored::ExampleScopeBase']]],
+  ['two_5fscopes_5f1_5f_5fi',['two_scopes_1__i',['../classstored_1_1_example_scope_base.html#abf24469da3190703b42b5f812647de39',1,'stored::ExampleScopeBase']]],
+  ['two_5fscopes_5fa_5f_5fi',['two_scopes_a__i',['../classstored_1_1_example_scope_base.html#af025b44469a901868d51f41636a07866',1,'stored::ExampleScopeBase']]],
   ['two_5fstrings_5f0',['two_strings_0',['../classstored_1_1_example_basic_base.html#a0746a5dbbd0938985516307902201464',1,'stored::ExampleBasicBase']]],
   ['two_5fstrings_5f1',['two_strings_1',['../classstored_1_1_example_basic_base.html#a0723822124c808f97bdd6170ea41d8c6',1,'stored::ExampleBasicBase']]],
+  ['two_5fstrings_5fa',['two_strings_a',['../classstored_1_1_example_basic_base.html#acc1ae4d43fb8492d170a369856f3d7df',1,'stored::ExampleBasicBase']]],
   ['type',['type',['../classstored_1_1_debug_variant_base.html#a15083a445b89fde89ef7aa82fbc8298e',1,'stored::DebugVariantBase::type()'],['../classstored_1_1_debug_variant_typed.html#a1ba59f8d4db371eae40f99efaeed66c2',1,'stored::DebugVariantTyped::type()'],['../classstored_1_1_debug_variant.html#aa3c3a6a5dcb317b00a67265f09aa7f81',1,'stored::DebugVariant::type()'],['../classstored_1_1_variant.html#a78e3fd98101ec8709e6dff620ca37f22',1,'stored::Variant::type()'],['../classstored_1_1_variant_3_01void_01_4.html#a22a9c2672cdc46fa73cdd042098d5d6f',1,'stored::Variant&lt; void &gt;::type()'],['../classed2_1_1zmq__client_1_1_object.html#a1d973a2d88b860ae5e43d25891c29544',1,'ed2.zmq_client.Object.type()']]],
   ['typename',['typeName',['../classed2_1_1zmq__client_1_1_object.html#a43e805a5cd8692efc7b17fb166e07160',1,'ed2::zmq_client::Object']]]
 ];

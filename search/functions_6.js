@@ -9,6 +9,7 @@ var searchData=
   ['four_5fints_5f1',['four_ints_1',['../classstored_1_1_example_basic_base.html#a303151f4bc24d79d3b1844253b4a3c66',1,'stored::ExampleBasicBase']]],
   ['four_5fints_5f2',['four_ints_2',['../classstored_1_1_example_basic_base.html#a24a1ecf45455bd917782e6d1c3130236',1,'stored::ExampleBasicBase']]],
   ['four_5fints_5f3',['four_ints_3',['../classstored_1_1_example_basic_base.html#a0dea57a6fb622a9352b5541ce5fdb2c4',1,'stored::ExampleBasicBase']]],
+  ['four_5fints_5fa',['four_ints_a',['../classstored_1_1_example_basic_base.html#a2853c11ba02e24d1520e97b8954545de',1,'stored::ExampleBasicBase']]],
   ['framemerger',['FrameMerger',['../classstored_1_1_frame_merger.html#ad0780e281f194b856563fd55a1d504fd',1,'stored::FrameMerger']]],
   ['function',['function',['../classstored_1_1_variant.html#a6e64c9ec58d04d6996c10f720b1c8702',1,'stored::Variant::function()'],['../classstored_1_1_example_sync_base.html#a7aab2c541bb1f6980268c8343b55d06a',1,'stored::ExampleSyncBase::function()'],['../classstored_1_1_function.html#af7c7488a7f8575f72fbc6c42a0ad3f97',1,'stored::Function::Function(Container &amp;container, unsigned int f)'],['../classstored_1_1_function.html#adc44b6ec17eb5a5567e8ffe31187471e',1,'stored::Function::Function()']]]
 ];

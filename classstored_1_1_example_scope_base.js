@@ -31,8 +31,9 @@ var classstored_1_1_example_scope_base =
     [ "shortDirectory", "classstored_1_1_example_scope_base.html#a0d8e90ad15aad83e258179d0cab4a955", null ],
     [ "top__level1__b", "classstored_1_1_example_scope_base.html#a7e762104eb63cbb4152b7f4623f0a36e", null ],
     [ "top__level1__b2", "classstored_1_1_example_scope_base.html#a7ff3500bbf6790c5aeeacabffb081481", null ],
-    [ "two_scopes_0___i", "classstored_1_1_example_scope_base.html#a67f1a297d3179565ad9ce4a81cf94954", null ],
-    [ "two_scopes_1___i", "classstored_1_1_example_scope_base.html#a8e1d5d66c3e0fbef2717371a20363a2a", null ],
+    [ "two_scopes_0__i", "classstored_1_1_example_scope_base.html#a7d3375a74758fb1579444c5f99080ac0", null ],
+    [ "two_scopes_1__i", "classstored_1_1_example_scope_base.html#abf24469da3190703b42b5f812647de39", null ],
+    [ "two_scopes_a__i", "classstored_1_1_example_scope_base.html#af025b44469a901868d51f41636a07866", null ],
     [ "Function", "classstored_1_1_example_scope_base.html#adb932b890bc777c97b974306e181f08c", null ],
     [ "Variable", "classstored_1_1_example_scope_base.html#a467cf6e18c62552461715c542ce587fc", null ],
     [ "Variant< Implementation >", "classstored_1_1_example_scope_base.html#aac6d4804615302b3ff620cbd2c0484ad", null ]

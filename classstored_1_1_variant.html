@@ -148,6 +148,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9b160b7a25f5b42905cb62d21a00d6b3"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_variant.html#a9b160b7a25f5b42905cb62d21a00d6b3">get</a> (void *dst, size_t len=0) const</td></tr>
 <tr class="memdesc:a9b160b7a25f5b42905cb62d21a00d6b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the value.  <a href="#a9b160b7a25f5b42905cb62d21a00d6b3">More...</a><br /></td></tr>
 <tr class="separator:a9b160b7a25f5b42905cb62d21a00d6b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24e447798023fc0393b42586f9a9d7cd"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a24e447798023fc0393b42586f9a9d7cd"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classstored_1_1_variant.html#a24e447798023fc0393b42586f9a9d7cd">get</a> () const</td></tr>
+<tr class="memdesc:a24e447798023fc0393b42586f9a9d7cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper for <a class="el" href="classstored_1_1_variant.html#a9b160b7a25f5b42905cb62d21a00d6b3" title="Get the value. ">get(void*,size_t) const </a>that converts the type.  <a href="#a24e447798023fc0393b42586f9a9d7cd">More...</a><br /></td></tr>
+<tr class="separator:a24e447798023fc0393b42586f9a9d7cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace4f41c8a960f8edae08691715018180"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_variant.html#ace4f41c8a960f8edae08691715018180">isFunction</a> () const</td></tr>
 <tr class="memdesc:ace4f41c8a960f8edae08691715018180"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the <a class="el" href="classstored_1_1_variant.html#a78e3fd98101ec8709e6dff620ca37f22" title="Returns the type. ">type()</a> is a function.  <a href="#ace4f41c8a960f8edae08691715018180">More...</a><br /></td></tr>
 <tr class="separator:ace4f41c8a960f8edae08691715018180"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -166,6 +170,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae2b23190df0feb33c9bed5d599790443"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_variant.html#ae2b23190df0feb33c9bed5d599790443">set</a> (void const *src, size_t len=0)</td></tr>
 <tr class="memdesc:ae2b23190df0feb33c9bed5d599790443"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the value.  <a href="#ae2b23190df0feb33c9bed5d599790443">More...</a><br /></td></tr>
 <tr class="separator:ae2b23190df0feb33c9bed5d599790443"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad6114c3e0ae6cf3841c03b249cf5262"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aad6114c3e0ae6cf3841c03b249cf5262"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classstored_1_1_variant.html#aad6114c3e0ae6cf3841c03b249cf5262">set</a> (T value)</td></tr>
+<tr class="memdesc:aad6114c3e0ae6cf3841c03b249cf5262"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper for <a class="el" href="classstored_1_1_variant.html#ae2b23190df0feb33c9bed5d599790443" title="Set the value. ">set(void const*,size_t)</a> that converts the type.  <a href="#aad6114c3e0ae6cf3841c03b249cf5262">More...</a><br /></td></tr>
+<tr class="separator:aad6114c3e0ae6cf3841c03b249cf5262"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61b27f12fe530bb89723dfea65b8cfa8"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_variant.html#a61b27f12fe530bb89723dfea65b8cfa8">size</a> () const</td></tr>
 <tr class="memdesc:a61b27f12fe530bb89723dfea65b8cfa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the size.  <a href="#a61b27f12fe530bb89723dfea65b8cfa8">More...</a><br /></td></tr>
 <tr class="separator:a61b27f12fe530bb89723dfea65b8cfa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -181,14 +189,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a7f9fb0640b4c3203dc19311f881ddabf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename Container = void&gt;<br />
+<div class="textblock"><h3>template&lt;typename Container&gt;<br />
 class stored::Variant&lt; Container &gt;</h3>
 
 <p>A untyped interface to an object in a store. </p>
 <p>This class works for all variables and functions of all types. However, using <a class="el" href="classstored_1_1_variable.html" title="A typed variable in a store. ">stored::Variable</a> or <a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">stored::Function</a> is more efficient both in performance and memory. Use those when you can.</p>
 <p>A <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> is quite small (only about four words). It is default copyable and assignable, so it is fine to pass it by value. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00647">647</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00142">142</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a365a13995c58f15697ed2ed8c72c0b96"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a365a13995c58f15697ed2ed8c72c0b96">&#9670;&nbsp;</a></span>Variant() <span class="overload">[1/5]</span></h2>
@@ -196,7 +204,7 @@ class stored::Variant&lt; Container &gt;</h3>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -240,7 +248,7 @@ template&lt;typename Container = void&gt; </div>
 
 <p>Constructor for a variable. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00653">653</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00658">658</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -250,7 +258,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -294,7 +302,7 @@ template&lt;typename Container = void&gt; </div>
 
 <p>Constructor for a function. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00669">669</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00674">674</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -304,7 +312,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -325,7 +333,7 @@ template&lt;typename Container = void&gt; </div>
 
 <p>Constructor for an invalid <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00683">683</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00688">688</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -335,7 +343,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <div class="memtemplate">
 template&lt;typename T &gt; </div>
 <table class="mlabels">
@@ -359,7 +367,7 @@ template&lt;typename T &gt; </div>
 
 <p>Constructor for a <a class="el" href="classstored_1_1_variable.html" title="A typed variable in a store. ">Variable</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00696">696</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00701">701</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -369,7 +377,7 @@ template&lt;typename T &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <div class="memtemplate">
 template&lt;typename T &gt; </div>
 <table class="mlabels">
@@ -393,7 +401,7 @@ template&lt;typename T &gt; </div>
 
 <p>Constructor for a <a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">Function</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00711">711</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00716">716</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -404,7 +412,7 @@ template&lt;typename T &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -426,7 +434,7 @@ template&lt;typename Container = void&gt; </div>
 <p>Returns the buffer. </p>
 <p>Only call this function when it is <a class="el" href="classstored_1_1_variant.html#aa81a1cbaf423bf8fc50b9738e1d1b306" title="Checks if this Variant is valid. ">valid()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00885">885</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00912">912</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -436,7 +444,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -458,7 +466,7 @@ template&lt;typename Container = void&gt; </div>
 <p>Returns the container. </p>
 <p>Only call this function when it is <a class="el" href="classstored_1_1_variant.html#aa81a1cbaf423bf8fc50b9738e1d1b306" title="Checks if this Variant is valid. ">valid()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00904">904</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00931">931</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -468,7 +476,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -489,7 +497,7 @@ template&lt;typename Container = void&gt; </div>
 
 <p>Invokes <code>hookEntryRO()</code> on the <a class="el" href="classstored_1_1_variant.html#aab3081d77457d137c4fa1daf4ed4f7c0" title="Returns the container. ">container()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00843">843</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00870">870</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -499,7 +507,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -521,7 +529,7 @@ template&lt;typename Container = void&gt; </div>
 
 <p>Invokes <code>hookEntryRO()</code> on the <a class="el" href="classstored_1_1_variant.html#aab3081d77457d137c4fa1daf4ed4f7c0" title="Returns the container. ">container()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00845">845</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00872">872</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -531,7 +539,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -552,7 +560,7 @@ template&lt;typename Container = void&gt; </div>
 
 <p>Invokes <code>hookEntryX()</code> on the <a class="el" href="classstored_1_1_variant.html#aab3081d77457d137c4fa1daf4ed4f7c0" title="Returns the container. ">container()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00813">813</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00840">840</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -562,7 +570,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -584,7 +592,7 @@ template&lt;typename Container = void&gt; </div>
 
 <p>Invokes <code>hookEntryX()</code> on the <a class="el" href="classstored_1_1_variant.html#aab3081d77457d137c4fa1daf4ed4f7c0" title="Returns the container. ">container()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00815">815</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00842">842</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -594,7 +602,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -615,7 +623,7 @@ template&lt;typename Container = void&gt; </div>
 
 <p>Invokes <code>hookExitRO()</code> on the <a class="el" href="classstored_1_1_variant.html#aab3081d77457d137c4fa1daf4ed4f7c0" title="Returns the container. ">container()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00858">858</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00885">885</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -625,7 +633,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -647,7 +655,7 @@ template&lt;typename Container = void&gt; </div>
 
 <p>Invokes <code>hookExitRO()</code> on the <a class="el" href="classstored_1_1_variant.html#aab3081d77457d137c4fa1daf4ed4f7c0" title="Returns the container. ">container()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00860">860</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00887">887</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -657,7 +665,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -679,7 +687,7 @@ template&lt;typename Container = void&gt; </div>
 
 <p>Invokes <code>hookExitX()</code> on the <a class="el" href="classstored_1_1_variant.html#aab3081d77457d137c4fa1daf4ed4f7c0" title="Returns the container. ">container()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00828">828</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00855">855</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -689,7 +697,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -721,7 +729,7 @@ template&lt;typename Container = void&gt; </div>
 
 <p>Invokes <code>hookExitX()</code> on the <a class="el" href="classstored_1_1_variant.html#aab3081d77457d137c4fa1daf4ed4f7c0" title="Returns the container. ">container()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00830">830</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00857">857</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -731,7 +739,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <div class="memtemplate">
 template&lt;typename T &gt; </div>
 <table class="mlabels">
@@ -755,17 +763,17 @@ template&lt;typename T &gt; </div>
 <p>Returns a <a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">stored::Function</a> that corresponds to this <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a>. </p>
 <p>Only call this function when it <a class="el" href="classstored_1_1_variant.html#ace4f41c8a960f8edae08691715018180" title="Checks if the type() is a function. ">isFunction()</a> and the <a class="el" href="classstored_1_1_variant.html#a78e3fd98101ec8709e6dff620ca37f22" title="Returns the type. ">type()</a> matches <code>T</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00923">923</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00950">950</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
 <a id="a9b160b7a25f5b42905cb62d21a00d6b3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9b160b7a25f5b42905cb62d21a00d6b3">&#9670;&nbsp;</a></span>get()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b160b7a25f5b42905cb62d21a00d6b3">&#9670;&nbsp;</a></span>get() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -807,7 +815,41 @@ template&lt;typename Container = void&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>the number of bytes written into <code>dst</code> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00731">731</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00736">736</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+
+</div>
+</div>
+<a id="a24e447798023fc0393b42586f9a9d7cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24e447798023fc0393b42586f9a9d7cd">&#9670;&nbsp;</a></span>get() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Container&gt; </div>
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T <a class="el" href="classstored_1_1_variant.html">stored::Variant</a>&lt; Container &gt;::get </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Wrapper for <a class="el" href="classstored_1_1_variant.html#a9b160b7a25f5b42905cb62d21a00d6b3" title="Get the value. ">get(void*,size_t) const </a>that converts the type. </p>
+<p>This only works for fixed types. Make sure that <a class="el" href="classstored_1_1_variant.html#a78e3fd98101ec8709e6dff620ca37f22" title="Returns the type. ">type()</a> matches <code>T</code>. </p>
+
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00767">767</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -817,7 +859,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -839,7 +881,7 @@ template&lt;typename Container = void&gt; </div>
 <p>Checks if the <a class="el" href="classstored_1_1_variant.html#a78e3fd98101ec8709e6dff620ca37f22" title="Returns the type. ">type()</a> is a function. </p>
 <p>Only call this function when it is <a class="el" href="classstored_1_1_variant.html#aa81a1cbaf423bf8fc50b9738e1d1b306" title="Checks if this Variant is valid. ">valid()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00894">894</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00921">921</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -849,7 +891,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -871,7 +913,7 @@ template&lt;typename Container = void&gt; </div>
 <p>Checks if the <a class="el" href="classstored_1_1_variant.html#a78e3fd98101ec8709e6dff620ca37f22" title="Returns the type. ">type()</a> is a variable. </p>
 <p>Only call this function when it is <a class="el" href="classstored_1_1_variant.html#aa81a1cbaf423bf8fc50b9738e1d1b306" title="Checks if this Variant is valid. ">valid()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00899">899</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00926">926</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -881,7 +923,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -903,7 +945,7 @@ template&lt;typename Container = void&gt; </div>
 <p>Returns the key of this variable. </p>
 <p>Only call this function when it <a class="el" href="classstored_1_1_variant.html#a4c5b0a9c58666d045a74ec935bb7c3af" title="Checks if the type() is a variable. ">isVariable()</a>. </p><dl class="section see"><dt>See also</dt><dd>your store's <code>bufferToKey()</code> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00936">936</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00963">963</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -913,7 +955,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -935,7 +977,7 @@ template&lt;typename Container = void&gt; </div>
 
 <p>Checks if this <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> points to the same object as the given one. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00956">956</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00983">983</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -945,7 +987,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -967,17 +1009,17 @@ template&lt;typename Container = void&gt; </div>
 
 <p>Checks if this <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> points to the same object as the given one. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00944">944</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00971">971</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
 <a id="ae2b23190df0feb33c9bed5d599790443"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae2b23190df0feb33c9bed5d599790443">&#9670;&nbsp;</a></span>set()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2b23190df0feb33c9bed5d599790443">&#9670;&nbsp;</a></span>set() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1019,7 +1061,42 @@ template&lt;typename Container = void&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>the number of bytes read from <code>src</code> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00769">769</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00786">786</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+
+</div>
+</div>
+<a id="aad6114c3e0ae6cf3841c03b249cf5262"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad6114c3e0ae6cf3841c03b249cf5262">&#9670;&nbsp;</a></span>set() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Container&gt; </div>
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classstored_1_1_variant.html">stored::Variant</a>&lt; Container &gt;::set </td>
+          <td>(</td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Wrapper for <a class="el" href="classstored_1_1_variant.html#ae2b23190df0feb33c9bed5d599790443" title="Set the value. ">set(void const*,size_t)</a> that converts the type. </p>
+<p>This only works for fixed types. Make sure that <a class="el" href="classstored_1_1_variant.html#a78e3fd98101ec8709e6dff620ca37f22" title="Returns the type. ">type()</a> matches <code>T</code>. </p>
+
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00830">830</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -1029,7 +1106,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1052,7 +1129,7 @@ template&lt;typename Container = void&gt; </div>
 <p>In case <a class="el" href="classstored_1_1_variant.html#a78e3fd98101ec8709e6dff620ca37f22" title="Returns the type. ">type()</a> is <a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>, this returns the maximum size of the string, excluding null terminator.</p>
 <p>Only call this function when it is <a class="el" href="classstored_1_1_variant.html#aa81a1cbaf423bf8fc50b9738e1d1b306" title="Checks if this Variant is valid. ">valid()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00880">880</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00907">907</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -1062,7 +1139,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1084,7 +1161,7 @@ template&lt;typename Container = void&gt; </div>
 <p>Returns the type. </p>
 <p>Only call this function when it is <a class="el" href="classstored_1_1_variant.html#aa81a1cbaf423bf8fc50b9738e1d1b306" title="Checks if this Variant is valid. ">valid()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00874">874</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00901">901</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -1094,7 +1171,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1115,7 +1192,7 @@ template&lt;typename Container = void&gt; </div>
 
 <p>Checks if this <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> is valid. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00889">889</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00916">916</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -1125,7 +1202,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
 <div class="memtemplate">
 template&lt;typename T &gt; </div>
 <table class="mlabels">
@@ -1149,7 +1226,7 @@ template&lt;typename T &gt; </div>
 <p>Returns a <a class="el" href="classstored_1_1_variable.html" title="A typed variable in a store. ">stored::Variable</a> that corresponds to this <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a>. </p>
 <p>Only call this function when it <a class="el" href="classstored_1_1_variant.html#a4c5b0a9c58666d045a74ec935bb7c3af" title="Checks if the type() is a variable. ">isVariable()</a> and the <a class="el" href="classstored_1_1_variant.html#a78e3fd98101ec8709e6dff620ca37f22" title="Returns the type. ">type()</a> matches <code>T</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00910">910</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00937">937</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -1160,7 +1237,7 @@ template&lt;typename T &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void* <a class="el" href="classstored_1_1_variant.html">stored::Variant</a>&lt; Container &gt;::m_buffer</td>
@@ -1170,7 +1247,7 @@ template&lt;typename Container = void&gt; </div>
 
 <p>The buffer for a variable. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00963">963</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00990">990</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -1180,7 +1257,7 @@ template&lt;typename Container = void&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Container = void&gt; </div>
+template&lt;typename Container&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">uintptr_t <a class="el" href="classstored_1_1_variant.html">stored::Variant</a>&lt; Container &gt;::m_f</td>
@@ -1190,7 +1267,7 @@ template&lt;typename Container = void&gt; </div>
 
 <p>The function ID for a function. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00965">965</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00992">992</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>

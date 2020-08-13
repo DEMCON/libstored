@@ -17,5 +17,6 @@ var classstored_1_1_variable =
     [ "operator=", "classstored_1_1_variable.html#ac751adf3238de485af8a50dd20829f27", null ],
     [ "operator==", "classstored_1_1_variable.html#a43a3106ff73012cd677cb7cfcc0317e4", null ],
     [ "set", "classstored_1_1_variable.html#a36bd45168cb1f51b2af6780e17d4230f", null ],
-    [ "valid", "classstored_1_1_variable.html#a076118df9f13c23eba93d0f63627e3d2", null ]
+    [ "valid", "classstored_1_1_variable.html#a076118df9f13c23eba93d0f63627e3d2", null ],
+    [ "Variant< Container >", "classstored_1_1_variable.html#a75e7ee2aa66b65ef87a7ed2ffcc475b0", null ]
 ];

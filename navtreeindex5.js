@@ -1,5 +1,13 @@
 var NAVTREEINDEX5 =
 {
+"structstored_1_1_example_basic_data.html#ab9bceb3d6bf2777f7bbd5f9566cad9f9":[3,0,2,12,0],
+"structstored_1_1_example_debug_another_store_data.html":[3,0,2,15],
+"structstored_1_1_example_debug_another_store_data.html#a09a2866980835fa5a588edbb98f22132":[3,0,2,15,1],
+"structstored_1_1_example_debug_another_store_data.html#a7a6ce7bb9daca2a0359fdb5253f4ca7a":[3,0,2,15,0],
+"structstored_1_1_example_debug_some_store_data.html":[3,0,2,18],
+"structstored_1_1_example_debug_some_store_data.html#a53155940ad6c7cef9d0cab0d67670e03":[3,0,2,18,1],
+"structstored_1_1_example_debug_some_store_data.html#af320e40dae349ce7a24540c7301010c4":[3,0,2,18,0],
+"structstored_1_1_example_function_data.html":[3,0,2,21],
 "structstored_1_1_example_function_data.html#abe60f88e092360582aa6d4f7a72c95a1":[3,0,2,21,1],
 "structstored_1_1_example_function_data.html#acd32b5084d12cf23c7b27d3c4c26b1e9":[3,0,2,21,0],
 "structstored_1_1_example_hello_data.html":[3,0,2,24],
