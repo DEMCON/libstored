@@ -2,6 +2,7 @@ var searchData=
 [
   ['s',['s',['../classstored_1_1_example_basic_base.html#a7f84a0b9dcef6f7f3719b77fc5d8d3d9',1,'stored::ExampleBasicBase']]],
   ['saturated_5fcast',['saturated_cast',['../group__libstored__util.html#gacf36670c6952f79aef87c1ed7b610074',1,'util.h']]],
+  ['savestate',['saveState',['../classed2_1_1zmq__client_1_1_zmq_client.html#af5b18d3f5996c9288ae33b777052a987',1,'ed2::zmq_client::ZmqClient']]],
   ['scope_5f_5fan_5fint',['scope__an_int',['../classstored_1_1_example_scope_base.html#a7c578f17841204d85cdb6ce96ba7f218',1,'stored::ExampleScopeBase']]],
   ['scope_5f_5fsome_5fbool',['scope__some_bool',['../classstored_1_1_example_scope_base.html#afb53bc4d7a897fdc4133da9112dba0c4',1,'stored::ExampleScopeBase']]],
   ['scope_5f_5fsubscope_5f_5fanother_5fbool',['scope__subscope__another_bool',['../classstored_1_1_example_scope_base.html#a867a095766a46e1529d5cbb1c1e311a4',1,'stored::ExampleScopeBase']]],

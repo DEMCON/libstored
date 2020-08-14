@@ -11,6 +11,7 @@ var searchData=
   ['saturated_5fcast_5fhelper_3c_20double_20_3e',['saturated_cast_helper&lt; double &gt;',['../structstored_1_1impl_1_1saturated__cast__helper_3_01double_01_4.html',1,'stored::impl']]],
   ['saturated_5fcast_5fhelper_3c_20float_20_3e',['saturated_cast_helper&lt; float &gt;',['../structstored_1_1impl_1_1saturated__cast__helper_3_01float_01_4.html',1,'stored::impl']]],
   ['saturated_5fcast_5fhelper_3c_20long_20double_20_3e',['saturated_cast_helper&lt; long double &gt;',['../structstored_1_1impl_1_1saturated__cast__helper_3_01long_01double_01_4.html',1,'stored::impl']]],
+  ['savestate',['saveState',['../classed2_1_1zmq__client_1_1_zmq_client.html#af5b18d3f5996c9288ae33b777052a987',1,'ed2::zmq_client::ZmqClient']]],
   ['scope_5f_5fan_5fint',['scope__an_int',['../classstored_1_1_example_scope_base.html#a7c578f17841204d85cdb6ce96ba7f218',1,'stored::ExampleScopeBase']]],
   ['scope_5f_5fsome_5fbool',['scope__some_bool',['../classstored_1_1_example_scope_base.html#afb53bc4d7a897fdc4133da9112dba0c4',1,'stored::ExampleScopeBase']]],
   ['scope_5f_5fsubscope_5f_5fanother_5fbool',['scope__subscope__another_bool',['../classstored_1_1_example_scope_base.html#a867a095766a46e1529d5cbb1c1e311a4',1,'stored::ExampleScopeBase']]],

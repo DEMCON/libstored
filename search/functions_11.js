@@ -13,6 +13,7 @@ var searchData=
   ['req',['req',['../classed2_1_1stream2zmq_1_1_stream2_zmq.html#acca6a4ad316700d253a5cc30ffef47b9',1,'ed2.stream2zmq.Stream2Zmq.req()'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a31e419e67341264e3c6a6729988d04f2',1,'ed2.zmq_client.ZmqClient.req()'],['../classed2_1_1zmq__server_1_1_zmq_server.html#a9237569a612e3ac29266d3631220e3a1',1,'ed2.zmq_server.ZmqServer.req()']]],
   ['reserve',['reserve',['../classstored_1_1_scratch_pad.html#ad3e9e7e31a07008f6778195dd16a0f25',1,'stored::ScratchPad']]],
   ['reset',['reset',['../classstored_1_1_scratch_pad.html#a8d3a5d82c00b68acbcef90b69ab31a09',1,'stored::ScratchPad::reset()'],['../classstored_1_1_scratch_pad_1_1_snapshot.html#aee8de8330874ebb26743e397aee42563',1,'stored::ScratchPad::Snapshot::reset()']]],
+  ['restorestate',['restoreState',['../classed2_1_1zmq__client_1_1_zmq_client.html#a554fb3bdc6aaaea1a1c6bac4a294b52a',1,'ed2::zmq_client::ZmqClient']]],
   ['rolenames',['roleNames',['../classgui__client_1_1_object_list_model.html#ac56dd412b5fadf2abb49e701b16a31cc',1,'gui_client::ObjectListModel']]],
   ['rowcount',['rowCount',['../classgui__client_1_1_object_list_model.html#ae54720ae6de1ff02cb0abf6e105aa5be',1,'gui_client::ObjectListModel']]],
   ['run',['run',['../classed2_1_1zmq__client_1_1_macro.html#a01ec6921bbffa741da8a7ae179036b02',1,'ed2::zmq_client::Macro']]],

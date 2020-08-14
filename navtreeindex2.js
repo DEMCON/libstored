@@ -1,5 +1,9 @@
 var NAVTREEINDEX2 =
 {
+"classstored_1_1_example_debug_some_store_base.html#adae6811cb65c314fecd88cb254491a7c":[1,0,5,5,6],
+"classstored_1_1_example_debug_some_store_base.html#adb932b890bc777c97b974306e181f08c":[1,0,5,5,26],
+"classstored_1_1_example_debug_some_store_base.html#ae8544927b6a76ae05267aedaf0dcc5d4":[1,0,5,5,9],
+"classstored_1_1_example_debug_some_store_base.html#af22131ba0d77ce20c6ad21a1ae84a666":[1,0,5,5,15],
 "classstored_1_1_example_function.html":[1,0,5,6],
 "classstored_1_1_example_function.html#a26cf0f4efac41b211f3383c0fa9295ff":[1,0,5,6,6],
 "classstored_1_1_example_function.html#a342f59ed89132b4aa7b02b8ddec39299":[1,0,5,6,3],
@@ -245,9 +249,5 @@ var NAVTREEINDEX2 =
 "classstored_1_1_protocol_layer.html#a22cfb4269bef0178b554ddf4119f218d":[1,0,4,1,10],
 "classstored_1_1_protocol_layer.html#a2b2523892617a43cf7421a654bfc3b6c":[1,0,4,1,11],
 "classstored_1_1_protocol_layer.html#a357b029311be09df61e019682a848ab5":[1,0,4,1,4],
-"classstored_1_1_protocol_layer.html#a3c582466de07553928d4801c705af2fa":[1,0,4,1,1],
-"classstored_1_1_protocol_layer.html#a3f34a83e488add9a3f459fb8ebed8e34":[1,0,4,1,13],
-"classstored_1_1_protocol_layer.html#a43ca79c4b9503ce51f817ddc7fcd1cb5":[1,0,4,1,12],
-"classstored_1_1_protocol_layer.html#a66c24cec6a17c44fac68213d358a5aa8":[1,0,4,1,6],
-"classstored_1_1_protocol_layer.html#a71e9e3a8315078dbf17c3056f185fc76":[1,0,4,1,9]
+"classstored_1_1_protocol_layer.html#a3c582466de07553928d4801c705af2fa":[1,0,4,1,1]
 };

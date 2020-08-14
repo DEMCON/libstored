@@ -34,6 +34,7 @@ var searchData=
   ['defaultpollinterval',['defaultPollInterval',['../classed2_1_1zmq__client_1_1_zmq_client.html#a8fde0cdd69a67cdfeeceb5d8411e7bda',1,'ed2::zmq_client::ZmqClient']]],
   ['defaultpollintervalchanged',['defaultPollIntervalChanged',['../classed2_1_1zmq__client_1_1_zmq_client.html#a896f99ece15b22d1affd26eb3ebf0899',1,'ed2::zmq_client::ZmqClient']]],
   ['defaultport',['DefaultPort',['../classstored_1_1_zmq_layer.html#a85b0bcce7b341cbf8a83329539503d78ad52e94f30d1d2877bdcc5205b8884861',1,'stored::ZmqLayer']]],
+  ['defaultstatefile',['defaultStateFile',['../classed2_1_1zmq__client_1_1_zmq_client.html#adc6c89d646e8627d7553f1fe8e32c404',1,'ed2::zmq_client::ZmqClient']]],
   ['dest',['dest',['../namespacecli__client.html#a5d3c8bde6186ebcaf37743a4b6463af2',1,'cli_client.dest()'],['../namespacegui__client.html#abf56608af8b80e7ecb67d55485a4db0d',1,'gui_client.dest()'],['../namespaceserial__wrapper.html#ac07129cd06228c8d43f2226a9b101d37',1,'serial_wrapper.dest()'],['../namespacestdio__wrapper.html#ac29482f355ebfad430961548ae5f8664',1,'stdio_wrapper.dest()']]],
   ['directory_2ecpp',['directory.cpp',['../directory_8cpp.html',1,'']]],
   ['directory_2eh',['directory.h',['../directory_8h.html',1,'']]],

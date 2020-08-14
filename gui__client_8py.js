@@ -21,6 +21,7 @@ var gui__client_8py =
     [ "o", "gui__client_8py.html#a3132f1b7ea2ece4b1d2e4b2f001cb2f4", null ],
     [ "parser", "gui__client_8py.html#a9f0ba9396abcfc1b5b72566c7f09c259", null ],
     [ "polledObjects", "gui__client_8py.html#acb4e9b8970e15e83ac92615e61161470", null ],
+    [ "res", "gui__client_8py.html#a05ee8cf804e8c9ef3a4c71b5ae42ed91", null ],
     [ "str", "gui__client_8py.html#a4ae3ef3888e3fb18f40d862e0c1dafbc", null ],
     [ "type", "gui__client_8py.html#aa63d82a848df33fba3f578374aed8bb7", null ]
 ];

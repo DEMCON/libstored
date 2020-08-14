@@ -12,5 +12,6 @@ var searchData=
   ['decodehex',['decodeHex',['../classstored_1_1_debugger.html#ab8b61a7802026c5edb802e33e9e679e4',1,'stored::Debugger']]],
   ['decodereadrep',['decodeReadRep',['../classed2_1_1zmq__client_1_1_object.html#af63ad6dc07299a031fefc65a9fad1d26',1,'ed2::zmq_client::Object']]],
   ['defaultpollinterval',['defaultPollInterval',['../classed2_1_1zmq__client_1_1_zmq_client.html#a8fde0cdd69a67cdfeeceb5d8411e7bda',1,'ed2::zmq_client::ZmqClient']]],
+  ['defaultstatefile',['defaultStateFile',['../classed2_1_1zmq__client_1_1_zmq_client.html#adc6c89d646e8627d7553f1fe8e32c404',1,'ed2::zmq_client::ZmqClient']]],
   ['down',['down',['../classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a',1,'stored::ProtocolLayer']]]
 ];

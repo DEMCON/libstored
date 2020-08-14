@@ -34,5 +34,6 @@ var searchData=
   ['assignmacro',['assignMacro',['../classed2_1_1zmq__client_1_1_zmq_client.html#a000bc8e750844d720f7615bd1c188a6d',1,'ed2::zmq_client::ZmqClient']]],
   ['asyncread',['asyncRead',['../classed2_1_1zmq__client_1_1_object.html#a8b25a80ca45b5c07ae7e56ca1a4a2b8c',1,'ed2::zmq_client::Object']]],
   ['asyncreadevent',['AsyncReadEvent',['../classed2_1_1zmq__client_1_1_object.html#a4ec273e745fde623d1986cdac804013c',1,'ed2::zmq_client::Object']]],
-  ['at',['at',['../classgui__client_1_1_object_list_model.html#ac8d64748864872e55a9f779eb9cba082',1,'gui_client::ObjectListModel']]]
+  ['at',['at',['../classgui__client_1_1_object_list_model.html#ac8d64748864872e55a9f779eb9cba082',1,'gui_client::ObjectListModel']]],
+  ['autosavestate',['autoSaveState',['../classed2_1_1zmq__client_1_1_zmq_client.html#a9e07b33d0325ed9b24ce3a3cedf6a037',1,'ed2::zmq_client::ZmqClient']]]
 ];
