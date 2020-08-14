@@ -246,8 +246,8 @@ var NAVTREEINDEX0 =
 "classed2_1_1zmq__server_1_1_zmq_server.html#ae960caf03780ee6b419d1af72949eefa":[1,0,0,9,0],
 "classed2_1_1zmq__server_1_1_zmq_server.html#aea10a1f7017c5ff3ade55f3b9c9d648d":[1,0,0,9,11],
 "classes.html":[3,1],
-"classgui__client_1_1_object_list_model.html":[3,0,1,0],
-"classgui__client_1_1_object_list_model.html#a1e57508a456d934864674a9a1dc11da5":[3,0,1,0,2],
-"classgui__client_1_1_object_list_model.html#ac56dd412b5fadf2abb49e701b16a31cc":[3,0,1,0,3],
-"classgui__client_1_1_object_list_model.html#ac8d64748864872e55a9f779eb9cba082":[3,0,1,0,1]
+"classgui__client_1_1_nat_sort.html":[3,0,1,0],
+"classgui__client_1_1_nat_sort.html#a2cc6311c04f6f6d24d6f8d5a9602bf8d":[3,0,1,0,1],
+"classgui__client_1_1_nat_sort.html#aba0fdf3dc6e7cbb0b68dcb215016cf6c":[3,0,1,0,0],
+"classgui__client_1_1_object_list_model.html":[3,0,1,1]
 };

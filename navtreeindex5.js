@@ -1,5 +1,8 @@
 var NAVTREEINDEX5 =
 {
+"structstored_1_1_default_config.html":[1,0,1,1],
+"structstored_1_1_example_basic_data.html":[3,0,2,12],
+"structstored_1_1_example_basic_data.html#a988bead94177c15780d0fd9fd0efeb87":[3,0,2,12,1],
 "structstored_1_1_example_basic_data.html#ab9bceb3d6bf2777f7bbd5f9566cad9f9":[3,0,2,12,0],
 "structstored_1_1_example_debug_another_store_data.html":[3,0,2,15],
 "structstored_1_1_example_debug_another_store_data.html#a09a2866980835fa5a588edbb98f22132":[3,0,2,15,1],

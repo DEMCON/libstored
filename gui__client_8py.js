@@ -1,5 +1,6 @@
 var gui__client_8py =
 [
+    [ "NatSort", "classgui__client_1_1_nat_sort.html", "classgui__client_1_1_nat_sort" ],
     [ "ObjectListModel", "classgui__client_1_1_object_list_model.html", "classgui__client_1_1_object_list_model" ],
     [ "lognplot_send", "gui__client_8py.html#a7ad0c3db4e3e524cdf24037a30b96d2e", null ],
     [ "app", "gui__client_8py.html#aa326b2c7b838ecc003be2e95611c07a4", null ],

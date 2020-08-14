@@ -165,5 +165,8 @@ var hierarchy =
     [ "QObject", null, [
       [ "ed2.zmq_client.Object", "classed2_1_1zmq__client_1_1_object.html", null ],
       [ "ed2.zmq_client.ZmqClient", "classed2_1_1zmq__client_1_1_zmq_client.html", null ]
+    ] ],
+    [ "QSortFilterProxyModel", null, [
+      [ "gui_client.NatSort", "classgui__client_1_1_nat_sort.html", null ]
     ] ]
 ];
