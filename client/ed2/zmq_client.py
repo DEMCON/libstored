@@ -22,8 +22,9 @@ import datetime
 import struct
 import re
 import sys
+import os
 
-from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, QEvent, QCoreApplication
+from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, QEvent, QCoreApplication, QStandardPaths
 from .zmq_server import ZmqServer
 
 ##
@@ -51,6 +52,7 @@ class Object(QObject):
         self._alias = None
         self._polling = False
         self._pollTimer = None
+        self._pollInterval_s = None
         self._format = None
         self._format_set(self.formats[0])
 
@@ -427,6 +429,8 @@ class Object(QObject):
 
         self.formatChanged.emit()
         self.valueChanged.emit()
+        if self._client != None:
+            self._client._autoSaveStateNow()
 
     def _formatBytes(self, value):
         value = self._encode(value).decode()
@@ -471,6 +475,7 @@ class Object(QObject):
 
     def _pollSlow(self, interval_s):
         self._pollSetFlag(True)
+        self._pollInterval_s = interval_s
 
         self._read()
 
@@ -489,6 +494,7 @@ class Object(QObject):
 
     def _pollFast(self, interval_s):
         self._pollSetFlag(True)
+        self._pollInterval_s = interval_s
         if self._pollTimer != None:
             self._pollTimer.stop()
 
@@ -496,6 +502,21 @@ class Object(QObject):
         if self._polling != enable:
             self._polling = enable
             self.pollingChanged.emit()
+
+    def _state(self):
+        res = ''
+        if self.polling:
+            res += f'   o.poll({repr(self._pollInterval_s)})\n'
+        if self._format != 'default':
+            res += f'   o.format = {repr(self._format)}\n'
+        
+        if len(res) > 0:
+            return \
+                f'o = client.find({repr(self.name)})\n' + \
+                f'if o != None:\n' + \
+                res
+        else:
+            return ''
 
 ##
 # \brief Macro object as returned by ZmqClient.acquireMacro()
@@ -729,6 +750,8 @@ class ZmqClient(QObject):
         self._timestampToTime = lambda x: x
         self._t0 = 0
         self._tracingTimer = None
+        self._autoSaveState = False
+        self._identification = None
 
         try:
             self._tracing = Tracing(self)
@@ -888,7 +911,11 @@ class ZmqClient(QObject):
     
     @Slot(result=str)
     def identification(self):
-        return self.req(b'i').decode()
+        try:
+            self._identification = self.req(b'i').decode()
+        except:
+            self._identification = None
+        return self._identification
 
     @Slot(result=str)
     def version(self):
@@ -1144,6 +1171,7 @@ class ZmqClient(QObject):
     def poll(self, obj, interval_s=0):
         if interval_s == None:
             self._pollStop(obj)
+            self._autoSaveStateNow()
             return
 
         if interval_s <= 0:
@@ -1155,6 +1183,8 @@ class ZmqClient(QObject):
             self._pollFast(obj, interval_s)
         else:
             self._pollSlow(obj, interval_s)
+
+        self._autoSaveStateNow()
 
     def _pollFast(self, obj, interval_s):
         if self._fastPollMacro == None:
@@ -1214,3 +1244,51 @@ class ZmqClient(QObject):
         if self._tracing:
             self._tracing.decimate = decimate
 
+    def autoSaveState(self, enable=True):
+        if not self._autoSaveState and enable:
+            self.saveState()
+        self._autoSaveState = enable
+
+    def _autoSaveStateNow(self):
+        if self._autoSaveState:
+            self.saveState()
+
+    @Slot()
+    @Slot(str)
+    def saveState(self, f=None):
+        if f == None:
+            f = self.defaultStateFile()
+
+        os.makedirs(os.path.dirname(f), exist_ok=True)
+
+        with open(f, 'w') as f:
+            res = ''
+            f.write('# This file is auto-generated.\n')
+            if self._identification == None:
+                self.identification()
+            if self._identification != None:
+                f.write(f'if client.identification() != {repr(self._identification)}:\n   raise NameError()\n')
+
+            for o in self._objects:
+                f.write(o._state())
+
+    @Slot()
+    @Slot(str)
+    def restoreState(self, f=None):
+        if f == None:
+            f = self.defaultStateFile()
+
+        autoSaveState = self._autoSaveState
+        self._autoSaveState = False
+
+        try:
+            exec(open(f).read(), {'client': self})
+        except:
+            # Ignore all errors, restoring is best-effort.
+            pass
+
+        if autoSaveState:
+            self.autoSaveState()
+
+    def defaultStateFile(self):
+        return os.path.join(QStandardPaths.standardLocations(QStandardPaths.AppDataLocation)[0], "state.conf")

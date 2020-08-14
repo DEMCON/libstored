@@ -30,7 +30,7 @@ import natsort
 
 from PySide2.QtGui import QGuiApplication, QIcon
 from PySide2.QtQml import QQmlApplicationEngine
-from PySide2.QtCore import QUrl, QAbstractListModel, QModelIndex, Qt, Slot, QSortFilterProxyModel 
+from PySide2.QtCore import QUrl, QAbstractListModel, QModelIndex, Qt, Slot, QSortFilterProxyModel, QCoreApplication
 
 from lognplot.client import LognplotTcpClient
 
@@ -103,6 +103,8 @@ def lognplot_send(lognplot, o):
     lognplot.send_sample(o.name, o.t, float(o.value))
 
 if __name__ == '__main__':
+    QCoreApplication.setApplicationName("Embedded Debugger")
+
     parser = argparse.ArgumentParser(description='ZMQ command line client')
     parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
     parser.add_argument('-p', dest='port', type=int, default=ed2.ZmqServer.default_port, help='port')
@@ -146,5 +148,11 @@ if __name__ == '__main__':
     engine.load(QUrl.fromLocalFile(os.path.join(os.path.dirname(os.path.realpath(__file__)), "gui_client.qml")))
     if not engine.rootObjects():
         sys.exit(-1)
-    sys.exit(app.exec_())
+
+    client.restoreState()
+
+    res = app.exec_()
+
+    client.saveState()
+    sys.exit(res)
 
