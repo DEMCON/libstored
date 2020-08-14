@@ -935,6 +935,9 @@ namespace stored {
 		 * \details Only call this function when it #isVariable() and the #type() matches \p T.
 		 */
 		template <typename T> Variable<T,Container> variable() const {
+			if(unlikely(!valid()))
+				return Variable<T,Container>();
+
 			stored_assert(isVariable());
 			stored_assert(Type::isFixed(type()));
 			stored_assert(toType<T>::type == type());
@@ -948,6 +951,9 @@ namespace stored {
 		 * \details Only call this function when it #isFunction() and the #type() matches \p T.
 		 */
 		template <typename T> Function<T,Container> function() const {
+			if(unlikely(!valid()))
+				return Function<T,Container>();
+
 			stored_assert(isFunction());
 			stored_assert(Type::isFixed(type()));
 			stored_assert(toType<T>::type == (type() & ~Type::FlagFunction));

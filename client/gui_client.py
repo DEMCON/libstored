@@ -26,12 +26,28 @@ import sys
 import ed2
 import argparse
 import os
+import natsort
 
 from PySide2.QtGui import QGuiApplication, QIcon
 from PySide2.QtQml import QQmlApplicationEngine
 from PySide2.QtCore import QUrl, QAbstractListModel, QModelIndex, Qt, Slot, QSortFilterProxyModel 
 
 from lognplot.client import LognplotTcpClient
+
+class NatSort(QSortFilterProxyModel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def lessThan(self, left, right):
+        left_data = self.sourceModel().data(left, role=self.sortRole())
+        right_data = self.sourceModel().data(right, role=self.sortRole())
+
+        alg = natsort.ns.REAL | natsort.ns.LOCALE
+        if self.sortCaseSensitivity() == Qt.CaseInsensitive:
+            alg = alg | natsort.ns.IGNORECASE
+            
+        sorted_data = natsort.natsorted([left_data, right_data], alg=alg)
+        return left_data == sorted_data[0]
 
 class ObjectListModel(QAbstractListModel):
     NameRole = Qt.UserRole + 1000
@@ -102,13 +118,13 @@ if __name__ == '__main__':
     engine.rootContext().setContextProperty("client", client)
 
     model = ObjectListModel(client.list(), parent=app)
-    filteredObjects = QSortFilterProxyModel(parent=app)
+    filteredObjects = NatSort(parent=app)
     filteredObjects.setSourceModel(model)
     filteredObjects.setSortRole(model.NameRole)
     filteredObjects.setFilterRole(model.NameRole)
     filteredObjects.setSortCaseSensitivity(Qt.CaseInsensitive)
     filteredObjects.sort(0)
-    polledObjects = QSortFilterProxyModel(parent=app)
+    polledObjects = NatSort(parent=app)
     polledObjects.setSourceModel(model)
     polledObjects.setSortRole(model.NameRole)
     polledObjects.setFilterRole(model.PollingRole)

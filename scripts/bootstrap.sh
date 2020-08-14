@@ -13,7 +13,7 @@ case `uname -s` in
 			gdb-multiarch clang-tidy doxygen \
 			python3 python3-pip python3-setuptools \
 			python3-pyqt5 python3-pyqt5.qtquick
-		/usr/bin/pip3 install jinja2 textx pyzmq pyside2 pyserial lognplot
+		/usr/bin/pip3 install jinja2 textx pyzmq pyside2 pyserial lognplot natsort
 
 		if ! python3 -V | awk '$2~/^3.[0-6]/{exit 1}'; then
 			# lognplot's server needs python 3.7+
@@ -36,7 +36,7 @@ case `uname -s` in
 		install_or_upgrade pyqt
 		install_or_upgrade pkgconfig
 		install_or_upgrade gnutls
-		pip3 install jinja2 textx pyzmq pyside2 pyserial lognplot
+		pip3 install jinja2 textx pyzmq pyside2 pyserial lognplot natsort
 		;;
 	*)
 		echo "Unknown OS"

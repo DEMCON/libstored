@@ -32,7 +32,7 @@ call refreshenv
 python.exe -m ensurepip
 if errorlevel 1 goto error
 
-pip3 install textx jinja2 pyzmq pyside2 pyserial lognplot PyQt5
+pip3 install textx jinja2 pyzmq pyside2 pyserial lognplot PyQt5 natsort
 if errorlevel 1 goto error
 
 :done
