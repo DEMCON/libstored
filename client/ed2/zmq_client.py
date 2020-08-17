@@ -506,15 +506,16 @@ class Object(QObject):
     def _state(self):
         res = ''
         if self.polling:
-            res += f'   o.poll({repr(self._pollInterval_s)})\n'
+            res += f'    o.poll({repr(self._pollInterval_s)})\n'
         if self._format != 'default':
-            res += f'   o.format = {repr(self._format)}\n'
+            res += f'    o.format = {repr(self._format)}\n'
         
         if len(res) > 0:
             return \
                 f'o = client.find({repr(self.name)})\n' + \
-                f'if o != None:\n' + \
-                res
+                f'try:\n' + \
+                res + \
+                f'except:\n    pass\n'
         else:
             return ''
 
@@ -887,25 +888,74 @@ class ZmqClient(QObject):
 
         self._objects = res
 
-    def find(self, name):
+    def find(self, name, all=False):
         chunks = name.split('/')
-        obj = []
+        obj1 = set()
+        obj2 = set()
+        obj3 = set()
+        obj4 = set()
         self._list_init()
         for o in self._objects:
             ochunks = o.name.split('/')
             if len(chunks) != len(ochunks):
                 continue
+
+            # There are several cases:
+            # 1. The given name is an unambiguous full name, and the target has full names too. Expect exact match.
+            # 2. The given name is an unambiguous full name, while the target has abbreviated names.
+            # 3. The given name matches multiple objects, having full names, as it was ambiguous.
+            # 4. The object names are abbreviated, and the given name was ambiguous.
+
+            # Case 1.
             match = True
             for i in range(0, len(ochunks)):
-                if not (chunks[i].startswith(ochunks[i]) or ochunks[i].startswith(chunks[i])):
+                # Assume abbreviated names.
+                if ochunks[i] != chunks[i]:
                     match = False
             if match:
-                obj.append(o)
+                obj1.add(o)
+#                print('1', o.name)
 
-        if obj == []:
+            # Case 2.
+            match = True
+            for i in range(0, len(ochunks)):
+                if re.fullmatch(re.sub(r'\\\?', '.', re.escape(ochunks[i])) + r'.*', chunks[i]) == None:
+                    match = False
+                # It seems to match. Additional check: the object's chunk should not be longer, as it makes name ambiguous.
+                elif len(ochunks[i]) > len(chunks[i]):
+                    match = False
+            if match:
+                obj2.add(o)
+#                print('2', o.name)
+
+            # Case 3.
+            match = True
+            for i in range(0, len(ochunks)):
+                if not ochunks[i].startswith(chunks[i]):
+                    match = False
+            if match:
+                obj3.add(o)
+#                print('3', o.name)
+            
+            # Case 4.
+            match = True
+            for i in range(0, len(ochunks)):
+                if re.fullmatch(re.sub(r'\\\?', '.', re.escape(ochunks[i])) + r'.*', chunks[i]) == None:
+                    match = False
+            if match:
+                obj4.add(o)
+#                print('4', o.name)
+
+        obj = obj1 | obj2 | obj3 | obj4
+        if all:
+            return obj
+        if len(obj1) == 1:
+            # Best result.
+            return obj1.pop()
+        elif len(obj) == 0:
             return None
         elif len(obj) == 1:
-            return obj[0]
+            return obj.pop()
         else:
             return obj
     
