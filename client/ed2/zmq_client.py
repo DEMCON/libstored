@@ -23,6 +23,7 @@ import struct
 import re
 import sys
 import os
+import math
 
 from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, QEvent, QCoreApplication, QStandardPaths
 from .zmq_server import ZmqServer
@@ -340,7 +341,10 @@ class Object(QObject):
         self._t = t
         self.tUpdated.emit()
 
-        if value != self._value:
+        if isinstance(value, float) and math.isnan(value) and isinstance(self._value, float) and math.isnan(self._value):
+            # Not updated, even though value != self._value would be True
+            pass
+        elif value != self._value:
             self._value = value
             self.valueChanged.emit()
 
@@ -424,6 +428,8 @@ class Object(QObject):
             self._formatter = bin
         elif f == 'bytes':
             self._formatter = self._formatBytes
+        elif self._type == self.Float:
+            self._formatter = lambda x: f'{x:.6g}'
         else:
             self._formatter = str
 
@@ -558,6 +564,10 @@ class Macro(object):
         self._update()
 
         # Check if it still works...
+        if cb == None:
+            # No response expected
+            return True
+
         if self.run():
             # Success.
             return True
@@ -591,18 +601,21 @@ class Macro(object):
             return self.decode(self._client.req(self._macro))
         else:
             for c in self._cmds.values():
-                c[1](self._client.req(c[0]))
+                if c[1] != None:
+                    c[1](self._client.req(c[0]))
+                else:
+                    self._client.req(c[0])
 
         return True
 
     def decode(self, rep, t = None):
-        cb = list(self._cmds.values())
+        cb = [x[1] for x in self._cmds.values() if x[1] != None]
         values = rep.split(self._repsep)
         if len(cb) != len(values):
             return False
 
         for i in range(0, len(values)):
-            cb[i][1](values[i], t)
+            cb[i](values[i], t)
 
         return True
 
@@ -631,7 +644,7 @@ class Tracing(Macro):
         self._stream = stream
         
         # Start with sample separator.
-        self.add('e\n', lambda x, t=None: None, 'e')
+        self.add('e\n', None, 'e')
 
         # We must have a macro, not a simulated Macro instance.
         if self.macro == None:
@@ -641,7 +654,7 @@ class Tracing(Macro):
         if t == None:
             raise ValueError('Cannot determine time stamp variable')
 
-        self.add(f'r{t.shortName()}', lambda x, t: None, 't')
+        self.add(f'r{t.shortName()}', None, 't')
         self._enabled = False
         self._updateTracing(True);
 
@@ -712,7 +725,7 @@ class Tracing(Macro):
                 continue
             ts = self.client.timestampToTime(t)
             time.set(t, ts)
-            super().decode(s, ts)
+            super().decode(t_data[1], ts)
 
     def __len__(self):
         # Don't count sample separator and time stamp.
