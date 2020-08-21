@@ -116,3 +116,4 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0")
 	endif()
 endif()
 
+add_subdirectory(client)
