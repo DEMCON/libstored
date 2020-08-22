@@ -3,8 +3,11 @@ var hierarchy =
     [ "ed2.zmq_server.ZmqServer", "classed2_1_1zmq__server_1_1_zmq_server.html", [
       [ "ed2.stream2zmq.Stream2Zmq", "classed2_1_1stream2zmq_1_1_stream2_zmq.html", [
         [ "ed2.serial2zmq.Serial2Zmq", "classed2_1_1serial2zmq_1_1_serial2_zmq.html", null ],
+        [ "ed2.serial2zmq.Serial2Zmq", "classed2_1_1serial2zmq_1_1_serial2_zmq.html", null ],
+        [ "ed2.stdio2zmq.Stdio2Zmq", "classed2_1_1stdio2zmq_1_1_stdio2_zmq.html", null ],
         [ "ed2.stdio2zmq.Stdio2Zmq", "classed2_1_1stdio2zmq_1_1_stdio2_zmq.html", null ]
-      ] ]
+      ] ],
+      [ "ed2.stream2zmq.Stream2Zmq", "classed2_1_1stream2zmq_1_1_stream2_zmq.html", null ]
     ] ],
     [ "stored::ExampleBasicBase< ExampleBasic >", "classstored_1_1_example_basic_base.html", [
       [ "stored::ExampleBasic", "classstored_1_1_example_basic.html", null ]
@@ -34,8 +37,10 @@ var hierarchy =
     [ "stored::ExampleTerminalBase< ExampleTerminal >", "classstored_1_1_example_terminal_base.html", null ],
     [ "object", null, [
       [ "ed2.zmq_client.Macro", "classed2_1_1zmq__client_1_1_macro.html", [
+        [ "ed2.zmq_client.Tracing", "classed2_1_1zmq__client_1_1_tracing.html", null ],
         [ "ed2.zmq_client.Tracing", "classed2_1_1zmq__client_1_1_tracing.html", null ]
-      ] ]
+      ] ],
+      [ "ed2.zmq_client.Macro", "classed2_1_1zmq__client_1_1_macro.html", null ]
     ] ],
     [ "stored::Debugger::StorePrefixComparator", "structstored_1_1_debugger_1_1_store_prefix_comparator.html", null ],
     [ "stored::DebugStoreBase", "classstored_1_1_debug_store_base.html", [
@@ -164,6 +169,8 @@ var hierarchy =
     ] ],
     [ "QObject", null, [
       [ "ed2.zmq_client.Object", "classed2_1_1zmq__client_1_1_object.html", null ],
+      [ "ed2.zmq_client.Object", "classed2_1_1zmq__client_1_1_object.html", null ],
+      [ "ed2.zmq_client.ZmqClient", "classed2_1_1zmq__client_1_1_zmq_client.html", null ],
       [ "ed2.zmq_client.ZmqClient", "classed2_1_1zmq__client_1_1_zmq_client.html", null ]
     ] ],
     [ "QSortFilterProxyModel", null, [

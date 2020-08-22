@@ -4,7 +4,7 @@ var searchData=
   ['object',['Object',['../classed2_1_1zmq__client_1_1_object.html',1,'ed2.zmq_client.Object'],['../classed2_1_1zmq__client_1_1_object.html#a0a7e68925504fc4fd139a2d5d3d01d1b',1,'ed2.zmq_client.Object.object()']]],
   ['objectlistmodel',['ObjectListModel',['../classgui__client_1_1_object_list_model.html',1,'gui_client']]],
   ['objectrole',['ObjectRole',['../classgui__client_1_1_object_list_model.html#a750054b4dc521126fb732c9e25a8a6ed',1,'gui_client::ObjectListModel']]],
-  ['objects',['objects',['../classed2_1_1zmq__client_1_1_zmq_client.html#a9291e707bc759c346e59f10b1ad48cd9',1,'ed2::zmq_client::ZmqClient']]],
+  ['objects',['objects',['../classed2_1_1zmq__client_1_1_zmq_client.html#a9291e707bc759c346e59f10b1ad48cd9',1,'ed2.zmq_client.ZmqClient.objects(self)'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a9291e707bc759c346e59f10b1ad48cd9',1,'ed2.zmq_client.ZmqClient.objects(self)']]],
   ['oh_5fgosh',['oh_gosh',['../classstored_1_1_example_terminal_base.html#ae9aaf42eb24ca868695ad669eb1d3023',1,'stored::ExampleTerminalBase']]],
   ['operator_20type',['operator type',['../classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#af9213e27085f5c810f56a1c01d0c8900',1,'stored::Variable&lt; T, Container, true &gt;']]],
   ['operator_20type_20const_20_26',['operator type const &amp;',['../classstored_1_1_variable.html#a225c82f6e27ecc18b652f03b722c5ec3',1,'stored::Variable::operator type const &amp;()'],['../classstored_1_1_function.html#ac614b9383f3bccec197fb4291ccf2f3b',1,'stored::Function::operator type const &amp;()']]],
