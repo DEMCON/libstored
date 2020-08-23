@@ -21,7 +21,7 @@ import serial
 import logging
 
 from ...zmq_server import ZmqServer
-from ...zmq_client import ZmqClient
+from ...serial2zmq import Serial2Zmq
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='stdin/stdout wrapper to ZMQ server',
