@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # vim:et
 
 # libstored, a Store for Embedded Debugger.
@@ -23,7 +22,6 @@
 # \ingroup libstored_client
 
 import sys
-import ed2
 import argparse
 import os
 import natsort
@@ -33,6 +31,9 @@ from PySide2.QtQml import QQmlApplicationEngine
 from PySide2.QtCore import QUrl, QAbstractListModel, QModelIndex, Qt, Slot, QSortFilterProxyModel, QCoreApplication
 
 from lognplot.client import LognplotTcpClient
+
+from ..zmq_client import ZmqClient
+from ..zmq_server import ZmqServer
 
 class NatSort(QSortFilterProxyModel):
     def __init__(self, *args, **kwargs):
@@ -107,7 +108,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='ZMQ command line client')
     parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
-    parser.add_argument('-p', dest='port', type=int, default=ed2.ZmqServer.default_port, help='port')
+    parser.add_argument('-p', dest='port', type=int, default=ZmqServer.default_port, help='port')
     parser.add_argument('-l', dest='lognplot', type=str, nargs='?', default=None, help='Connect to lognplot server', const='localhost')
     parser.add_argument('-P', dest='lognplotport', type=int, default=12345, help='Lognplot port to connect to')
 
@@ -116,7 +117,7 @@ if __name__ == '__main__':
     app.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "twotone_bug_report_black_48dp.png")))
     engine = QQmlApplicationEngine(parent=app)
 
-    client = ed2.ZmqClient(args.server, args.port)
+    client = ZmqClient(args.server, args.port)
     engine.rootContext().setContextProperty("client", client)
 
     model = ObjectListModel(client.list(), parent=app)

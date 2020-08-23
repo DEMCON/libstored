@@ -22,18 +22,20 @@
 # \brief A stdin/stdout frame grabber to ZmqServer wrapper for a to-be-started process.
 # \ingroup libstored_client
 
-import ed2
 import argparse
+
+from ...zmq_server import ZmqServer
+from ...stdio2zmq import Stdio2Zmq
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='stdin/stdout wrapper to ZMQ server')
-    parser.add_argument('-p', dest='port', type=int, default=ed2.ZmqServer.default_port, help='port')
+    parser.add_argument('-p', dest='port', type=int, default=ZmqServer.default_port, help='port')
     parser.add_argument('command')
     parser.add_argument('args', nargs='*')
 
     args = parser.parse_args()
 
-    bridge = ed2.Stdio2Zmq([args.command] + args.args, args.port)
+    bridge = Stdio2Zmq([args.command] + args.args, args.port)
 
     try:
         while True:

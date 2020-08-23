@@ -150,17 +150,17 @@ To get a grasp how debugging feels like, try the following.
 - Run `examples/zmqserver/zmqserver`. This starts an application with a store
   with all kinds of object types, and provides a ZMQ server interface for
   debugging.
-- Run `python3 client/gui_client.py -l`. This GUI connects to both the
-  `zmqserver` application via ZMQ, and to the `lognplot` instance.
+- Run `python3 -m ed2.gui -l` with in the `client` directory. This GUI connects
+  to both the `zmqserver` application via ZMQ, and to the `lognplot` instance.
 - The GUI window will pop up and show the objects of the `zmqserver` example.
   If polling is enabled of one of the objects, the values are forwarded to
   `lognplot`.
 
 The structure of this setup is:
 
-	+------------+        +----------+
-	| gui_client | -----> | lognplot |
-	+------------+        +----------+
+	+---------+        +----------+
+	| ed2.gui | -----> | lognplot |
+	+---------+        +----------+
 	      |
 	      | ZeroMQ REQ/REP channel
 	      |
@@ -172,16 +172,17 @@ The Embedded Debugger client connects via ZeroMQ.
 If you application does not have it, you must implement is somehow.
 The `examples/terminal/terminal` application could be debugged as follows:
 
-- Run `python3 ../client/stdio_wrapper.py examples/terminal/terminal` from the `build` directory.
-  This starts the `terminal` example, and extracts escaped debugger frames from
-  `stdout`, which are forwarded to a ZeroMQ interface.
-- Connect a client, such as `client/gui_client.py`.
+- Run `python3 -m ed2.wrapper.stdio` ../build/examples/terminal/terminal` from
+  the `client` directory.  This starts the `terminal` example, and extracts
+  escaped debugger frames from `stdout`, which are forwarded to a ZeroMQ
+  interface.
+- Connect a client, such as `python3 -m ed2.gui`.
 
 The structure of this setup is:
 
-	+------------+
-	| gui_client |                 terminal interface
-	+------------+                         |
+	+---------+
+	| ed2.gui |                    terminal interface
+	+---------+                            |
 	      |                                |
 	      | ZeroMQ REQ/REP channel         |
 	      |                                |
@@ -213,7 +214,7 @@ This stack depends on your application. A few standard protocol layers are
 available.
 
 To get a grasp about the protocol, I had a short chat with the `zmqserver`
-example using the `cli_client.py`.  See the transcript below. Lines starting
+example using the `ed2.cli`.  See the transcript below. Lines starting
 with `>` are requests, entered by me, lines starting with `<` are responses
 from the application.
 
