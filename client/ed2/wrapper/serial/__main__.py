@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # vim:et
 
 # libstored, a Store for Embedded Debugger.
@@ -17,23 +16,28 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-##
-# \file
-# \brief A stdin/stdout frame grabber to ZmqServer wrapper for a to-be-started process.
-# \ingroup libstored_client
-
-import ed2
 import argparse
+import serial
+import logging
+
+from ...zmq_server import ZmqServer
+from ...zmq_client import ZmqClient
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='stdin/stdout wrapper to ZMQ server')
-    parser.add_argument('-p', dest='port', type=int, default=ed2.ZmqServer.default_port, help='port')
-    parser.add_argument('command')
-    parser.add_argument('args', nargs='*')
+    parser = argparse.ArgumentParser(description='stdin/stdout wrapper to ZMQ server',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-p', dest='zmqport', type=int, default=ZmqServer.default_port, help='ZMQ port')
+    parser.add_argument('port', help='serial port')
+    parser.add_argument('baud', nargs='?', type=int, default=115200, help='baud rate')
+    parser.add_argument('-r', dest='rtscts', default=False, help='RTS/CTS flow control', action='store_true')
+    parser.add_argument('-v', dest='verbose', default=False, help='Enable verbose output', action='store_true')
 
     args = parser.parse_args()
 
-    bridge = ed2.Stdio2Zmq([args.command] + args.args, args.port)
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+
+    bridge = Serial2Zmq(args.port, port=args.port, baudrate=args.baud, rtscts=args.rtscts)
 
     try:
         while True:
@@ -42,4 +46,5 @@ if __name__ == '__main__':
         pass
 
     bridge.close()
+
 

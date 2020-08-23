@@ -4,6 +4,7 @@
 import sys
 import os
 import setuptools
+import ed2
 
 here = os.path.dirname(os.path.realpath(__file__))
 
@@ -12,19 +13,29 @@ here = os.path.dirname(os.path.realpath(__file__))
 
 setuptools.setup(
 	name = 'ed2',
-	version = '0.1',
+	version = ed2.__version__,
     description = 'Embedded Debugger protocol as used by libstored',
+    author = 'Jochem Rutgers',
+    author_email = 'jochem.rutgers@demcon.com',
 #    long_description=long_description,
 #    long_description_content_type="text/markdown",
     url = 'https://github.com/DEMCON/libstored',
-    license = 'LGPL3',
+    license = 'LGPL3+',
 	packages = setuptools.find_packages(where=here),
     install_requires = [
         'pyside2',
         'pyserial',
         'argparse',
         'pyzmq',
+        'lognplot',
     ],
     python_requires='>=3.6',
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+        "Intended Audience :: Developers",
+        "Topic :: Software Development :: Debuggers",
+        "Topic :: Software Development :: Embedded Systems",
+    ],
 )
 

@@ -17,26 +17,25 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import ed2
+##
+# \file
+# \brief A stdin/stdout frame grabber to ZmqServer wrapper for a to-be-started process.
+# \ingroup libstored_client
+
 import argparse
-import serial
-import logging
+
+from ...zmq_server import ZmqServer
+from ...stdio2zmq import Stdio2Zmq
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='stdin/stdout wrapper to ZMQ server',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-p', dest='zmqport', type=int, default=ed2.ZmqServer.default_port, help='ZMQ port')
-    parser.add_argument('port', help='serial port')
-    parser.add_argument('baud', nargs='?', type=int, default=115200, help='baud rate')
-    parser.add_argument('-r', dest='rtscts', default=False, help='RTS/CTS flow control', action='store_true')
-    parser.add_argument('-v', dest='verbose', default=False, help='Enable verbose output', action='store_true')
+    parser = argparse.ArgumentParser(description='stdin/stdout wrapper to ZMQ server')
+    parser.add_argument('-p', dest='port', type=int, default=ZmqServer.default_port, help='port')
+    parser.add_argument('command')
+    parser.add_argument('args', nargs='*')
 
     args = parser.parse_args()
 
-    if args.verbose:
-        logging.basicConfig(level=logging.DEBUG)
-
-    bridge = ed2.Serial2Zmq(args.port, port=args.port, baudrate=args.baud, rtscts=args.rtscts)
+    bridge = Stdio2Zmq([args.command] + args.args, args.port)
 
     try:
         while True:
@@ -45,5 +44,4 @@ if __name__ == '__main__':
         pass
 
     bridge.close()
-
 
