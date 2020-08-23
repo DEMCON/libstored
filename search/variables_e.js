@@ -9,7 +9,7 @@ var searchData=
   ['stdout_5fbuffer',['stdout_buffer',['../classed2_1_1stream2zmq_1_1_stream2_zmq.html#a64659543f6041f183f6640f6213c3252',1,'ed2::stream2zmq::Stream2Zmq']]],
   ['stdout_5fmsg',['stdout_msg',['../classed2_1_1stream2zmq_1_1_stream2_zmq.html#ac07c2ddd85974ba74205ab7df3342332',1,'ed2::stream2zmq::Stream2Zmq']]],
   ['stdout_5fsocket',['stdout_socket',['../classed2_1_1stdio2zmq_1_1_stdio2_zmq.html#a654e8e07006d050c1da27dd71075daa6',1,'ed2::stdio2zmq::Stdio2Zmq']]],
-  ['str',['str',['../classed2_1_1zmq__client_1_1_object.html#a3322938fd0aa9c055e60ce51fecdf4bd',1,'ed2.zmq_client.Object.str()'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a6bad21013ccf50234c91fd489b33e66d',1,'ed2.zmq_client.ZmqClient.str()'],['../namespacecli__client.html#aa7c644d0fcdba1ca57096b4311642bbe',1,'cli_client.str()'],['../namespacegui__client.html#a4ae3ef3888e3fb18f40d862e0c1dafbc',1,'gui_client.str()']]],
+  ['str',['str',['../classed2_1_1zmq__client_1_1_object.html#a3322938fd0aa9c055e60ce51fecdf4bd',1,'ed2.zmq_client.Object.str()'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a6bad21013ccf50234c91fd489b33e66d',1,'ed2.zmq_client.ZmqClient.str()'],['../namespaceed2_1_1cli_1_1____main____.html#a403747d8070f86d3d65b1a22a4095f48',1,'ed2.cli.__main__.str()'],['../namespaceed2_1_1gui_1_1____main____.html#a16219872c4d782ea8e98ae56fe072753',1,'ed2.gui.__main__.str()']]],
   ['streams',['streams',['../classed2_1_1zmq__server_1_1_zmq_server.html#a31e7683121913d1a3925d83708e33a4d',1,'ed2::zmq_server::ZmqServer']]],
   ['string',['String',['../classed2_1_1zmq__client_1_1_object.html#ae782a52ad2be2abeeec4eb7237b029ec',1,'ed2::zmq_client::Object']]]
 ];

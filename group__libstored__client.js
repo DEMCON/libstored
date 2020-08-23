@@ -1,8 +1,11 @@
 var group__libstored__client =
 [
-    [ "cli_client.py", "cli__client_8py.html", null ],
-    [ "gui_client.py", "gui__client_8py.html", null ],
-    [ "stdio_wrapper.py", "stdio__wrapper_8py.html", null ],
+    [ "__main__.py", "ed2_2wrapper_2stdio_2____main_____8py.html", null ],
+    [ "__main__.py", "ed2_2gui_2____main_____8py.html", null ],
+    [ "__main__.py", "ed2_2cli_2____main_____8py.html", null ],
+    [ "__main__.py", "build_2lib_2ed2_2wrapper_2stdio_2____main_____8py.html", null ],
+    [ "__main__.py", "build_2lib_2ed2_2gui_2____main_____8py.html", null ],
+    [ "__main__.py", "build_2lib_2ed2_2cli_2____main_____8py.html", null ],
     [ "Serial2Zmq", "classed2_1_1serial2zmq_1_1_serial2_zmq.html", [
       [ "__init__", "classed2_1_1serial2zmq_1_1_serial2_zmq.html#a116abb514d4212d6997842f5bc02c6e8", null ],
       [ "__init__", "classed2_1_1serial2zmq_1_1_serial2_zmq.html#a116abb514d4212d6997842f5bc02c6e8", null ],

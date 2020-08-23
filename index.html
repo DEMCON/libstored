@@ -160,12 +160,12 @@ mystore.scope__s().set("hello");
 <li>If you use Windows, execute <code>scripts/env.cmd</code> to set your environment properly. In the instructions below, use <code>python</code> instead of <code>python3</code>.</li>
 <li>Run your favorite <code>lognplot</code> instance, e.g., by running <code>python3 -m lognplot</code>.</li>
 <li>Run <code>examples/zmqserver/zmqserver</code>. This starts an application with a store with all kinds of object types, and provides a ZMQ server interface for debugging.</li>
-<li>Run <code>python3 <a class="el" href="gui__client_8py.html" title="A Pyside2/QtQuick GUI client. ">client/gui_client.py</a> -l</code>. This GUI connects to both the <code>zmqserver</code> application via ZMQ, and to the <code>lognplot</code> instance.</li>
+<li>Run <code>python3 -m <a class="el" href="namespaceed2_1_1gui.html">ed2.gui</a> -l</code> with in the <code>client</code> directory. This GUI connects to both the <code>zmqserver</code> application via ZMQ, and to the <code>lognplot</code> instance.</li>
 <li>The GUI window will pop up and show the objects of the <code>zmqserver</code> example. If polling is enabled of one of the objects, the values are forwarded to <code>lognplot</code>.</li>
 </ul>
-<p>The structure of this setup is: </p><pre class="fragment">+------------+        +----------+
-| gui_client | -----&gt; | lognplot |
-+------------+        +----------+
+<p>The structure of this setup is: </p><pre class="fragment">+---------+        +----------+
+| ed2.gui | -----&gt; | lognplot |
++---------+        +----------+
       |
       | ZeroMQ REQ/REP channel
       |
@@ -174,12 +174,12 @@ mystore.scope__s().set("hello");
 +-----------+
 </pre><p>The Embedded Debugger client connects via ZeroMQ. If you application does not have it, you must implement is somehow. The <code>examples/terminal/terminal</code> application could be debugged as follows:</p>
 <ul>
-<li>Run <code>python3 ../client/stdio_wrapper.py examples/terminal/terminal</code> from the <code>build</code> directory. This starts the <code>terminal</code> example, and extracts escaped debugger frames from <code>stdout</code>, which are forwarded to a ZeroMQ interface.</li>
-<li>Connect a client, such as <code><a class="el" href="gui__client_8py.html" title="A Pyside2/QtQuick GUI client. ">client/gui_client.py</a></code>.</li>
+<li>Run <code>python3 -m <a class="el" href="namespaceed2_1_1wrapper_1_1stdio.html">ed2.wrapper.stdio</a></code> ../build/examples/terminal/terminal<code>from the</code>client<code>directory. This starts the</code>terminal<code>example, and extracts escaped debugger frames from</code>stdout`, which are forwarded to a ZeroMQ interface.</li>
+<li>Connect a client, such as <code>python3 -m <a class="el" href="namespaceed2_1_1gui.html">ed2.gui</a></code>.</li>
 </ul>
-<p>The structure of this setup is: </p><pre class="fragment">+------------+
-| gui_client |                 terminal interface
-+------------+                         |
+<p>The structure of this setup is: </p><pre class="fragment">+---------+
+| ed2.gui |                    terminal interface
++---------+                            |
       |                                |
       | ZeroMQ REQ/REP channel         |
       |                                |
@@ -197,7 +197,7 @@ mystore.scope__s().set("hello");
 <h2><a class="anchor" id="protocol"></a>Embedded Debugger protocol</h2>
 <p>Communication with the debugger implementation in the application follows a request-response pattern. A full description of the commands can be found in the <a href="https://demcon.github.io/libstored/group__libstored__debugger.html">doxygen documentation</a>. These commands are implemented in the <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> class and ready to be used in your application.</p>
 <p>However, the request/response messages should be wrapped in a OSI-like protocol stack, which is described in more detail in the <a href="https://demcon.github.io/libstored/group__libstored__protocol.html">documentation too</a>). This stack depends on your application. A few standard protocol layers are available.</p>
-<p>To get a grasp about the protocol, I had a short chat with the <code>zmqserver</code> example using the <code><a class="el" href="cli__client_8py.html" title="A Command line interface client to enter Embedded Debugger commands. ">cli_client.py</a></code>. See the transcript below. Lines starting with <code>&gt;</code> are requests, entered by me, lines starting with <code>&lt;</code> are responses from the application.</p>
+<p>To get a grasp about the protocol, I had a short chat with the <code>zmqserver</code> example using the <code><a class="el" href="namespaceed2_1_1cli.html">ed2.cli</a></code>. See the transcript below. Lines starting with <code>&gt;</code> are requests, entered by me, lines starting with <code>&lt;</code> are responses from the application.</p>
 <p>In the example below, I used the following commands:</p>
 <ul>
 <li><code>?</code>: request capabilities of the target</li>

@@ -14,8 +14,8 @@ var searchData=
   ['reserve',['reserve',['../classstored_1_1_scratch_pad.html#ad3e9e7e31a07008f6778195dd16a0f25',1,'stored::ScratchPad']]],
   ['reset',['reset',['../classstored_1_1_scratch_pad.html#a8d3a5d82c00b68acbcef90b69ab31a09',1,'stored::ScratchPad::reset()'],['../classstored_1_1_scratch_pad_1_1_snapshot.html#aee8de8330874ebb26743e397aee42563',1,'stored::ScratchPad::Snapshot::reset()']]],
   ['restorestate',['restoreState',['../classed2_1_1zmq__client_1_1_zmq_client.html#a554fb3bdc6aaaea1a1c6bac4a294b52a',1,'ed2.zmq_client.ZmqClient.restoreState(self, f=None)'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a554fb3bdc6aaaea1a1c6bac4a294b52a',1,'ed2.zmq_client.ZmqClient.restoreState(self, f=None)']]],
-  ['rolenames',['roleNames',['../classgui__client_1_1_object_list_model.html#ac56dd412b5fadf2abb49e701b16a31cc',1,'gui_client::ObjectListModel']]],
-  ['rowcount',['rowCount',['../classgui__client_1_1_object_list_model.html#ae54720ae6de1ff02cb0abf6e105aa5be',1,'gui_client::ObjectListModel']]],
+  ['rolenames',['roleNames',['../classed2_1_1gui_1_1____main_____1_1_object_list_model.html#ad23c32d8a83fd62ff257bc3116eece7b',1,'ed2.gui.__main__.ObjectListModel.roleNames(self)'],['../classed2_1_1gui_1_1____main_____1_1_object_list_model.html#ad23c32d8a83fd62ff257bc3116eece7b',1,'ed2.gui.__main__.ObjectListModel.roleNames(self)']]],
+  ['rowcount',['rowCount',['../classed2_1_1gui_1_1____main_____1_1_object_list_model.html#a15414c9f8bd85e943aa268c06254f963',1,'ed2.gui.__main__.ObjectListModel.rowCount(self, parent=QModelIndex())'],['../classed2_1_1gui_1_1____main_____1_1_object_list_model.html#a15414c9f8bd85e943aa268c06254f963',1,'ed2.gui.__main__.ObjectListModel.rowCount(self, parent=QModelIndex())']]],
   ['run',['run',['../classed2_1_1zmq__client_1_1_macro.html#a01ec6921bbffa741da8a7ae179036b02',1,'ed2.zmq_client.Macro.run(self)'],['../classed2_1_1zmq__client_1_1_macro.html#a01ec6921bbffa741da8a7ae179036b02',1,'ed2.zmq_client.Macro.run(self)']]],
   ['runmacro',['runMacro',['../classstored_1_1_debugger.html#a642487febda638590ce42b9b5a1234f7',1,'stored::Debugger']]]
 ];

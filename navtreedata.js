@@ -41,12 +41,12 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "1__hello_2main_8cpp.html",
-"classed2_1_1zmq__client_1_1_object.html#ad36e0801d8e917725b44106816066479",
-"classstored_1_1_example_basic_base.html#a68c1c41492f33d787da5865430857a79",
-"classstored_1_1_example_sync.html#ab80701a0301ad3132519c78aff2c2ddb",
-"classstored_1_1_variant_3_01void_01_4.html#ab7134583d1f40894491681124901011f",
-"group__libstored__directory.html#ga5e143634b654c86fb8a4df10cc1ffc33",
-"structstored_1_1to_type_3_01unsigned_01long_01_4.html"
+"classed2_1_1stdio2zmq_1_1_stdio2_zmq.html#a892433d2841078a38471e70c2aaa9a9a",
+"classstored_1_1_debug_variant_base.html#a4de9ebcf989242ce1176f46f34c599a3",
+"classstored_1_1_example_hello.html#ade2bdb040fc94424a74bd6a896efe785",
+"classstored_1_1_variable.html#a225c82f6e27ecc18b652f03b722c5ec3",
+"ed2_2cli_2____init_____8py_source.html",
+"structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eaf9ff92ab1c4a60d1660ed3cf430acf8c"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

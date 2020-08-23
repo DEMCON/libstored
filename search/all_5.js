@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['_5f_5fmain_5f_5f',['__main__',['../namespaceed2_1_1cli_1_1____main____.html',1,'ed2.cli.__main__'],['../namespaceed2_1_1gui_1_1____main____.html',1,'ed2.gui.__main__'],['../namespaceed2_1_1wrapper_1_1serial_1_1____main____.html',1,'ed2.wrapper.serial.__main__'],['../namespaceed2_1_1wrapper_1_1stdio_1_1____main____.html',1,'ed2.wrapper.stdio.__main__']]],
+  ['cli',['cli',['../namespaceed2_1_1cli.html',1,'ed2']]],
   ['echo',['echo',['../classed2_1_1zmq__client_1_1_zmq_client.html#a53175cd6999725c178977576727454a0',1,'ed2.zmq_client.ZmqClient.echo(self, s)'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a53175cd6999725c178977576727454a0',1,'ed2.zmq_client.ZmqClient.echo(self, s)']]],
   ['echo_5f0',['echo_0',['../classstored_1_1_example_function_base.html#a893f98974201e2a67b10acc193103a67',1,'stored::ExampleFunctionBase']]],
   ['echo_5f1',['echo_1',['../classstored_1_1_example_function_base.html#a03761d1b912ff771432d52fd0d684c51',1,'stored::ExampleFunctionBase']]],
@@ -13,7 +15,7 @@ var searchData=
   ['encodeend',['encodeEnd',['../classstored_1_1_terminal_layer.html#a553f973e434533d14c48f898cc9d6d36',1,'stored::TerminalLayer']]],
   ['encodehex',['encodeHex',['../classstored_1_1_debugger.html#a06427217cb0ee60ba6124f9a991648e4',1,'stored::Debugger::encodeHex(T value, B *&amp;buf, bool shortest=true)'],['../classstored_1_1_debugger.html#ae93585d717651de0c5e93ffcc2b36bf4',1,'stored::Debugger::encodeHex(Type::type type, void *&amp;data, size_t &amp;len, bool shortest=true)']]],
   ['encodestart',['encodeStart',['../classstored_1_1_terminal_layer.html#ac734cdbc0cc6331ae456a530485d619a',1,'stored::TerminalLayer']]],
-  ['engine',['engine',['../namespacegui__client.html#ac6d360d0a0fd9f06aede2c34b20b83d3',1,'gui_client']]],
+  ['engine',['engine',['../namespaceed2_1_1gui_1_1____main____.html#afb1bc6b8f8fd1a69aee7c7a40bc15ee6',1,'ed2::gui::__main__']]],
   ['entryro',['entryRO',['../classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#abffb3bf5b1adca3cd05fe0ddd088db6d',1,'stored::Variable&lt; T, Container, true &gt;::entryRO()'],['../classstored_1_1_variant.html#af5c35ba6765297b8c29337182ccd86c0',1,'stored::Variant::entryRO() const'],['../classstored_1_1_variant.html#a3bbe79fb81c9efb52f6852b6ed3f8583',1,'stored::Variant::entryRO(size_t len) const'],['../classstored_1_1_variant_3_01void_01_4.html#a8777dbfe50ad5dd37c573d63e0deff19',1,'stored::Variant&lt; void &gt;::entryRO()']]],
   ['entryx',['entryX',['../classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a1d805297c83f0d0ea6345dc767b79eba',1,'stored::Variable&lt; T, Container, true &gt;::entryX()'],['../classstored_1_1_variant.html#ae04279e825a318bb2b496fe7e98f9afd',1,'stored::Variant::entryX() const'],['../classstored_1_1_variant.html#aa340c13bb494b0dc3305162d81f1b577',1,'stored::Variant::entryX(size_t len) const'],['../classstored_1_1_variant_3_01void_01_4.html#a4ddc013b031c1b61cf3216ad8efbdfb2',1,'stored::Variant&lt; void &gt;::entryX()']]],
   ['esc',['Esc',['../classstored_1_1_ascii_escape_layer.html#a3387a996b07c01ff22e8fadecda9277d',1,'stored::AsciiEscapeLayer::Esc()'],['../classstored_1_1_terminal_layer.html#a892633ca69a59684c9a964600c0cc181',1,'stored::TerminalLayer::Esc()']]],
@@ -75,9 +77,13 @@ var searchData=
   ['exitro',['exitRO',['../classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#ab3d64d2dae9d3af434363b465c3773a4',1,'stored::Variable&lt; T, Container, true &gt;::exitRO()'],['../classstored_1_1_variant.html#ae0c9e7d4778eeffc91560c97c33d4e24',1,'stored::Variant::exitRO() const'],['../classstored_1_1_variant.html#ad23b7a85463617d98028377bb64b5c1e',1,'stored::Variant::exitRO(size_t len) const'],['../classstored_1_1_variant_3_01void_01_4.html#ae37b47e7bd00056453c6c1087a377904',1,'stored::Variant&lt; void &gt;::exitRO()']]],
   ['exitx',['exitX',['../classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a855d4b5b2822877d70f617ebaf568ae9',1,'stored::Variable&lt; T, Container, true &gt;::exitX()'],['../classstored_1_1_variant.html#a2763f5fbc30d177be75c7187e4bc8fd6',1,'stored::Variant::exitX(bool changed) const'],['../classstored_1_1_variant.html#a9b389c7235a90f013e98b84d0617d352',1,'stored::Variant::exitX(bool changed, size_t len) const'],['../classstored_1_1_variant_3_01void_01_4.html#abfa526c3a04d2085465170928ff7c139',1,'stored::Variant&lt; void &gt;::exitX()']]],
   ['extendeddebugger',['ExtendedDebugger',['../class_extended_debugger.html',1,'ExtendedDebugger'],['../class_extended_debugger.html#a259f75d08ccb90118cfcbc1504bfe8aa',1,'ExtendedDebugger::ExtendedDebugger(ExtendedDebugger const &amp;)=delete'],['../class_extended_debugger.html#acfe6b2fa805886d6446bfb280d4bab71',1,'ExtendedDebugger::ExtendedDebugger(ExtendedDebugger &amp;&amp;)=delete'],['../class_extended_debugger.html#a1041fd7337ff46f34262de03a28fe4eb',1,'ExtendedDebugger::ExtendedDebugger(char const *identification=nullptr)']]],
+  ['gui',['gui',['../namespaceed2_1_1gui.html',1,'ed2']]],
+  ['serial',['serial',['../namespaceed2_1_1wrapper_1_1serial.html',1,'ed2::wrapper']]],
   ['serial2zmq',['serial2zmq',['../namespaceed2_1_1serial2zmq.html',1,'ed2']]],
+  ['stdio',['stdio',['../namespaceed2_1_1wrapper_1_1stdio.html',1,'ed2::wrapper']]],
   ['stdio2zmq',['stdio2zmq',['../namespaceed2_1_1stdio2zmq.html',1,'ed2']]],
   ['stream2zmq',['stream2zmq',['../namespaceed2_1_1stream2zmq.html',1,'ed2']]],
+  ['wrapper',['wrapper',['../namespaceed2_1_1wrapper.html',1,'ed2']]],
   ['zmq_5fclient',['zmq_client',['../namespaceed2_1_1zmq__client.html',1,'ed2']]],
   ['zmq_5fserver',['zmq_server',['../namespaceed2_1_1zmq__server.html',1,'ed2']]]
 ];

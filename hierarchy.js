@@ -165,7 +165,8 @@ var hierarchy =
       [ "ZmqServerStore", "class_zmq_server_store.html", null ]
     ] ],
     [ "QAbstractListModel", null, [
-      [ "gui_client.ObjectListModel", "classgui__client_1_1_object_list_model.html", null ]
+      [ "ed2.gui.__main__.ObjectListModel", "classed2_1_1gui_1_1____main_____1_1_object_list_model.html", null ],
+      [ "ed2.gui.__main__.ObjectListModel", "classed2_1_1gui_1_1____main_____1_1_object_list_model.html", null ]
     ] ],
     [ "QObject", null, [
       [ "ed2.zmq_client.Object", "classed2_1_1zmq__client_1_1_object.html", null ],
@@ -174,6 +175,7 @@ var hierarchy =
       [ "ed2.zmq_client.ZmqClient", "classed2_1_1zmq__client_1_1_zmq_client.html", null ]
     ] ],
     [ "QSortFilterProxyModel", null, [
-      [ "gui_client.NatSort", "classgui__client_1_1_nat_sort.html", null ]
+      [ "ed2.gui.__main__.NatSort", "classed2_1_1gui_1_1____main_____1_1_nat_sort.html", null ],
+      [ "ed2.gui.__main__.NatSort", "classed2_1_1gui_1_1____main_____1_1_nat_sort.html", null ]
     ] ]
 ];

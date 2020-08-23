@@ -1,7 +1,6 @@
 var annotated_dup =
 [
     [ "ed2", "namespaceed2.html", "namespaceed2" ],
-    [ "gui_client", "namespacegui__client.html", "namespacegui__client" ],
     [ "stored", "namespacestored.html", "namespacestored" ],
     [ "CaseInverter", "class_case_inverter.html", "class_case_inverter" ],
     [ "ExtendedDebugger", "class_extended_debugger.html", "class_extended_debugger" ],

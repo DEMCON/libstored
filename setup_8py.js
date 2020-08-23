@@ -1,5 +1,8 @@
 var setup_8py =
 [
+    [ "author", "setup_8py.html#a3a57a4772d418a06835249cbade0d86a", null ],
+    [ "author_email", "setup_8py.html#a5b08034343aa2be607722a8b315f3625", null ],
+    [ "classifiers", "setup_8py.html#abe96a9c38c1c61f9f0fdb002c482f785", null ],
     [ "description", "setup_8py.html#aedf461ec52a946bda975938ba0b93ec0", null ],
     [ "here", "setup_8py.html#a9c076537d899ffd8096e58c282bb7b02", null ],
     [ "install_requires", "setup_8py.html#abead4f26b530856f858f0d44c7cf2588", null ],

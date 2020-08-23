@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['o',['o',['../namespacegui__client.html#a3132f1b7ea2ece4b1d2e4b2f001cb2f4',1,'gui_client']]],
+  ['o',['o',['../namespaceed2_1_1gui_1_1____main____.html#ac31a0270fddeda6a3fb62f37c8c87fbe',1,'ed2::gui::__main__']]],
   ['object',['Object',['../classed2_1_1zmq__client_1_1_object.html',1,'ed2.zmq_client.Object'],['../classed2_1_1zmq__client_1_1_object.html#a0a7e68925504fc4fd139a2d5d3d01d1b',1,'ed2.zmq_client.Object.object()']]],
-  ['objectlistmodel',['ObjectListModel',['../classgui__client_1_1_object_list_model.html',1,'gui_client']]],
-  ['objectrole',['ObjectRole',['../classgui__client_1_1_object_list_model.html#a750054b4dc521126fb732c9e25a8a6ed',1,'gui_client::ObjectListModel']]],
+  ['objectlistmodel',['ObjectListModel',['../classed2_1_1gui_1_1____main_____1_1_object_list_model.html',1,'ed2::gui::__main__']]],
+  ['objectrole',['ObjectRole',['../classed2_1_1gui_1_1____main_____1_1_object_list_model.html#a3ad7403f72a10d9546ac11bc832328b7',1,'ed2::gui::__main__::ObjectListModel']]],
   ['objects',['objects',['../classed2_1_1zmq__client_1_1_zmq_client.html#a9291e707bc759c346e59f10b1ad48cd9',1,'ed2.zmq_client.ZmqClient.objects(self)'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a9291e707bc759c346e59f10b1ad48cd9',1,'ed2.zmq_client.ZmqClient.objects(self)']]],
   ['oh_5fgosh',['oh_gosh',['../classstored_1_1_example_terminal_base.html#ae9aaf42eb24ca868695ad669eb1d3023',1,'stored::ExampleTerminalBase']]],
   ['operator_20type',['operator type',['../classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#af9213e27085f5c810f56a1c01d0c8900',1,'stored::Variable&lt; T, Container, true &gt;']]],

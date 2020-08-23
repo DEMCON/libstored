@@ -110,16 +110,16 @@ Classes</h2></td></tr>
 <p>Not every device supports ZeroMQ, or even TCP. For this, several bridges are required. Different configurations may be possible:</p>
 <ul>
 <li>In case of a Linux/Windows application: embed ZeroMQ server into the application, such that the application binds to a REP socket. A client can connect to the application directly.</li>
-<li>Terminal application with only stdin/stdout: use escape sequences in the stdin/stdout stream. <code><a class="el" href="stdio__wrapper_8py.html" title="A stdin/stdout frame grabber to ZmqServer wrapper for a to-be-started process. ">client/stdio_wrapper.py</a></code> is provided to inject/extract these messages from those streams and prove a ZeroMQ interface.</li>
-<li>Application over CAN: like a <code><a class="el" href="stdio__wrapper_8py.html" title="A stdin/stdout frame grabber to ZmqServer wrapper for a to-be-started process. ">client/stdio_wrapper.py</a></code>, a CAN extractor to ZeroMQ bridge is required.</li>
+<li>Terminal application with only stdin/stdout: use escape sequences in the stdin/stdout stream. <code>client/stdio_wrapper.py</code> is provided to inject/extract these messages from those streams and prove a ZeroMQ interface.</li>
+<li>Application over CAN: like a <code>client/stdio_wrapper.py</code>, a CAN extractor to ZeroMQ bridge is required.</li>
 </ul>
 <p>Then, the client can be connected to the ZeroMQ interface. The following clients are provided:</p>
 <ul>
 <li><code>client/ed2.ZmqClient</code>: a python class that allows easy access to all objects of the connected store. This is the basis of the clients below.</li>
-<li><code><a class="el" href="cli__client_8py.html" title="A Command line interface client to enter Embedded Debugger commands. ">client/cli_client.py</a></code>: a command line tool that lets you directly enter the protocol messages as defined above.</li>
-<li><code><a class="el" href="gui__client_8py.html" title="A Pyside2/QtQuick GUI client. ">client/gui_client.py</a></code>: a simple GUI that shows the list of objects and lets you manipulate the values. The GUI has support to send samples to <code>lognplot</code>.</li>
+<li><code>client/cli_client.py</code>: a command line tool that lets you directly enter the protocol messages as defined above.</li>
+<li><code>client/gui_client.py</code>: a simple GUI that shows the list of objects and lets you manipulate the values. The GUI has support to send samples to <code>lognplot</code>.</li>
 </ul>
-<p>Test it using the <code>terminal</code> example, started using the <code><a class="el" href="stdio__wrapper_8py.html" title="A stdin/stdout frame grabber to ZmqServer wrapper for a to-be-started process. ">client/stdio_wrapper.py</a></code>. Then connect one of the clients above to it.</p>
+<p>Test it using the <code>terminal</code> example, started using the <code>client/stdio_wrapper.py</code>. Then connect one of the clients above to it.</p>
 <h3>Application layer</h3>
 <p>See <a class="el" href="group__libstored__debugger.html">debugger</a>.</p>
 <h3>Presentation layer</h3>
