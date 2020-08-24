@@ -2,8 +2,8 @@ var searchData=
 [
   ['zmq_2ecpp',['zmq.cpp',['../zmq_8cpp.html',1,'']]],
   ['zmq_2eh',['zmq.h',['../zmq_8h.html',1,'']]],
-  ['zmq_5fclient_2epy',['zmq_client.py',['../build_2bdist_8linux-x86__64_2wheel_2ed2_2zmq__client_8py.html',1,'(Global Namespace)'],['../build_2lib_2ed2_2zmq__client_8py.html',1,'(Global Namespace)'],['../ed2_2zmq__client_8py.html',1,'(Global Namespace)']]],
-  ['zmq_5fserver_2epy',['zmq_server.py',['../build_2bdist_8linux-x86__64_2wheel_2ed2_2zmq__server_8py.html',1,'(Global Namespace)'],['../build_2lib_2ed2_2zmq__server_8py.html',1,'(Global Namespace)'],['../ed2_2zmq__server_8py.html',1,'(Global Namespace)']]],
+  ['zmq_5fclient_2epy',['zmq_client.py',['../build_2lib_2ed2_2zmq__client_8py.html',1,'(Global Namespace)'],['../ed2_2zmq__client_8py.html',1,'(Global Namespace)']]],
+  ['zmq_5fserver_2epy',['zmq_server.py',['../build_2lib_2ed2_2zmq__server_8py.html',1,'(Global Namespace)'],['../ed2_2zmq__server_8py.html',1,'(Global Namespace)']]],
   ['zmqclient',['ZmqClient',['../classed2_1_1zmq__client_1_1_zmq_client.html',1,'ed2::zmq_client']]],
   ['zmqlayer',['ZmqLayer',['../classstored_1_1_zmq_layer.html',1,'stored::ZmqLayer'],['../classstored_1_1_zmq_layer.html#a3b0bfc533e88ce093a2a7db76c7a4c92',1,'stored::ZmqLayer::ZmqLayer(ZmqLayer const &amp;)=delete'],['../classstored_1_1_zmq_layer.html#a11c565900c68485a9c4d66d081dfbe76',1,'stored::ZmqLayer::ZmqLayer(ZmqLayer &amp;&amp;)=delete'],['../classstored_1_1_zmq_layer.html#a1547e0d2bde5b9dfd7d17170849d72a4',1,'stored::ZmqLayer::ZmqLayer(void *context=nullptr, int port=DefaultPort, ProtocolLayer *up=nullptr, ProtocolLayer *down=nullptr)']]],
   ['zmqserver',['ZmqServer',['../classed2_1_1zmq__server_1_1_zmq_server.html',1,'ed2::zmq_server']]],
