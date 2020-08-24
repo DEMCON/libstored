@@ -154,13 +154,16 @@ mystore.scope__numbers_0().set(0.1);
 mystore.scope__numbers_1().set(1.1);
 mystore.scope__s().set("hello");
 </pre><h2><a class="anchor" id="debugging"></a>Debugging example</h2>
+<p>The host tools to debug your application are written in python, as the <code><a class="el" href="namespaceed2.html">ed2</a></code> package, and are located the <code>client</code> directory. You can run the example below by running python from the <code>client</code> directory, but you can also install the <code><a class="el" href="namespaceed2.html">ed2</a></code> package on your system. To do this, execute the <code>ed2-install</code> cmake target, such as: </p><pre class="fragment">cd build
+make ed2-install
+</pre><p>This builds a wheel from the <code>client</code> directory and installs it locally using <code>pip</code>. Now you can just fire up python and do <code>import <a class="el" href="namespaceed2.html">ed2</a></code>.</p>
 <p>To get a grasp how debugging feels like, try the following.</p>
 <ul>
 <li>Build the examples, as discussed above.</li>
 <li>If you use Windows, execute <code>scripts/env.cmd</code> to set your environment properly. In the instructions below, use <code>python</code> instead of <code>python3</code>.</li>
 <li>Run your favorite <code>lognplot</code> instance, e.g., by running <code>python3 -m lognplot</code>.</li>
-<li>Run <code>examples/zmqserver/zmqserver</code>. This starts an application with a store with all kinds of object types, and provides a ZMQ server interface for debugging.</li>
-<li>Run <code>python3 -m <a class="el" href="namespaceed2_1_1gui.html">ed2.gui</a> -l</code> with in the <code>client</code> directory. This GUI connects to both the <code>zmqserver</code> application via ZMQ, and to the <code>lognplot</code> instance.</li>
+<li>Run <code>examples/zmqserver/zmqserver</code>. This starts an application with a store with all kinds of object types, and provides a ZeroMQ server interface for debugging.</li>
+<li>Run <code>python3 -m <a class="el" href="namespaceed2_1_1gui.html">ed2.gui</a> -l</code> within the <code>client</code> directory. This GUI connects to both the <code>zmqserver</code> application via ZeroMQ, and to the <code>lognplot</code> instance.</li>
 <li>The GUI window will pop up and show the objects of the <code>zmqserver</code> example. If polling is enabled of one of the objects, the values are forwarded to <code>lognplot</code>.</li>
 </ul>
 <p>The structure of this setup is: </p><pre class="fragment">+---------+        +----------+
@@ -174,7 +177,7 @@ mystore.scope__s().set("hello");
 +-----------+
 </pre><p>The Embedded Debugger client connects via ZeroMQ. If you application does not have it, you must implement is somehow. The <code>examples/terminal/terminal</code> application could be debugged as follows:</p>
 <ul>
-<li>Run <code>python3 -m <a class="el" href="namespaceed2_1_1wrapper_1_1stdio.html">ed2.wrapper.stdio</a></code> ../build/examples/terminal/terminal<code>from the</code>client<code>directory. This starts the</code>terminal<code>example, and extracts escaped debugger frames from</code>stdout`, which are forwarded to a ZeroMQ interface.</li>
+<li>Run <code>python3 -m <a class="el" href="namespaceed2_1_1wrapper_1_1stdio.html">ed2.wrapper.stdio</a> ../build/examples/terminal/terminal</code> from the <code>client</code> directory. This starts the <code>terminal</code> example, and extracts escaped debugger frames from <code>stdout</code>, which are forwarded to a ZeroMQ interface.</li>
 <li>Connect a client, such as <code>python3 -m <a class="el" href="namespaceed2_1_1gui.html">ed2.gui</a></code>.</li>
 </ul>
 <p>The structure of this setup is: </p><pre class="fragment">+---------+
@@ -183,9 +186,9 @@ mystore.scope__s().set("hello");
       |                                |
       | ZeroMQ REQ/REP channel         |
       |                                |
-+---------------+                      |
-| stdio_wrapper | ---------------------+
-+---------------+
++-------------------+                  |
+| ed2.wrapper.stdio | -----------------+
++-------------------+
       |
       | stdin/stdout (mixed terminal interface
       | with Embedded Debugger messages)
