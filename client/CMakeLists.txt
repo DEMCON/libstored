@@ -28,23 +28,26 @@ execute_process(
 	OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
+set(ed2_wheel_file "ed2-${ed2_version}-py3-none-any.whl" CACHE INTERNAL "")
+set(ed2_wheel "${CMAKE_CURRENT_SOURCE_DIR}/dist/${ed2_wheel_file}" CACHE INTERNAL "")
+
 add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/ed2-dist.timestamp
-	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/dist/ed2-${ed2_version}-py3-none-any.whl
+	OUTPUT ${ed2_wheel}
 	DEPENDS ${ed2_src}
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/setup.py -q sdist bdist_wheel
-	COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_SOURCE_DIR}/ed2-dist.timestamp
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	COMMENT "Generate ed2 distributables"
 	VERBATIM
 )
 
 add_custom_target(ed2-dist ALL
-	DEPENDS ed2-dist.timestamp
+	DEPENDS ${ed2_wheel}
 )
 
 add_custom_target(ed2-install
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/ed2-dist.timestamp
-	COMMAND ${PYTHON_EXECUTABLE} -m pip install --upgrade --no-deps --force-reinstall ${CMAKE_CURRENT_SOURCE_DIR}/dist/ed2-${ed2_version}-py3-none-any.whl
+	DEPENDS ${ed2_wheel}
+	COMMAND ${PYTHON_EXECUTABLE} -m pip install --upgrade --no-deps --force-reinstall ${ed2_wheel}
 )
+
+install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ed2-install)")
 

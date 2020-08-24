@@ -141,6 +141,18 @@ The generated store has variables that can be accessed like this:
 
 ## <a name="debugging"></a>Debugging example
 
+The host tools to debug your application are written in python, as the `ed2`
+package, and are located the `client` directory. You can run the example below
+by running python from the `client` directory, but you can also install the
+`ed2` package on your system. To do this, execute the `ed2-install` cmake
+target, such as:
+
+	cd build
+	make ed2-install
+
+This builds a wheel from the `client` directory and installs it locally using
+`pip`.  Now you can just fire up python and do `import ed2`.
+
 To get a grasp how debugging feels like, try the following.
 
 - Build the examples, as discussed above.
@@ -148,10 +160,10 @@ To get a grasp how debugging feels like, try the following.
   properly.  In the instructions below, use `python` instead of `python3`.
 - Run your favorite `lognplot` instance, e.g., by running `python3 -m lognplot`.
 - Run `examples/zmqserver/zmqserver`. This starts an application with a store
-  with all kinds of object types, and provides a ZMQ server interface for
+  with all kinds of object types, and provides a ZeroMQ server interface for
   debugging.
-- Run `python3 -m ed2.gui -l` with in the `client` directory. This GUI connects
-  to both the `zmqserver` application via ZMQ, and to the `lognplot` instance.
+- Run `python3 -m ed2.gui -l` within the `client` directory. This GUI connects
+  to both the `zmqserver` application via ZeroMQ, and to the `lognplot` instance.
 - The GUI window will pop up and show the objects of the `zmqserver` example.
   If polling is enabled of one of the objects, the values are forwarded to
   `lognplot`.
@@ -172,7 +184,7 @@ The Embedded Debugger client connects via ZeroMQ.
 If you application does not have it, you must implement is somehow.
 The `examples/terminal/terminal` application could be debugged as follows:
 
-- Run `python3 -m ed2.wrapper.stdio` ../build/examples/terminal/terminal` from
+- Run `python3 -m ed2.wrapper.stdio ../build/examples/terminal/terminal` from
   the `client` directory.  This starts the `terminal` example, and extracts
   escaped debugger frames from `stdout`, which are forwarded to a ZeroMQ
   interface.
@@ -186,9 +198,9 @@ The structure of this setup is:
 	      |                                |
 	      | ZeroMQ REQ/REP channel         |
 	      |                                |
-	+---------------+                      |
-	| stdio_wrapper | ---------------------+
-	+---------------+
+	+-------------------+                  |
+	| ed2.wrapper.stdio | -----------------+
+	+-------------------+
 	      |
 	      | stdin/stdout (mixed terminal interface
 	      | with Embedded Debugger messages)
