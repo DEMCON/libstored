@@ -174,6 +174,12 @@ class Directory(object):
         else:
             # Choose pivot to compare to
             pivot = int(len(names) / 2)
+            if names[pivot] == '/':
+                if pivot > 0:
+                    pivot -= 1
+                else:
+                    pivot += 1
+            assert(names[pivot] != '/')
             expr = self.generateDict(h[names[pivot]])
 
             # Elements less than pivot
