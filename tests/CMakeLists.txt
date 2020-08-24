@@ -32,4 +32,5 @@ libstored_add_test(test_types test_types.cpp)
 libstored_add_test(test_init test_init.cpp)
 libstored_add_test(test_function test_function.cpp)
 libstored_add_test(test_array test_array.cpp)
+libstored_add_test(test_directory test_directory.cpp)
 

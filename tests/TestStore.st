@@ -34,8 +34,18 @@ float=-Infinity	init float neg inf
 (string:4)		f write-only
 
 bool[2]=True	array bool
+bool=False		array bool[2]
 string:4[3]		array string
 (int32)[4]		array f int
 (blob:2)[2]		array f blob
 float[1]=3		array single
+
+{
+	bool inner bool
+	int32 inner int
+} scope
+
+{
+	bool some other inner bool
+} some other scope
 
