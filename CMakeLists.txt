@@ -103,6 +103,13 @@ function(libstored_generate target) # add all other models as varargs
     endif()
 endfunction()
 
+option(LIBSTORED_EXAMPLES "Build examples" ON)
+if(LIBSTORED_EXAMPLES)
+    add_subdirectory(examples)
+endif()
+
+add_subdirectory(client)
+
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0")
 	option(LIBSTORED_TESTS "Build the tests" ON)
 	if(LIBSTORED_TESTS)
@@ -112,9 +119,3 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0")
 	endif()
 endif()
 
-option(LIBSTORED_EXAMPLES "Build examples" ON)
-if(LIBSTORED_EXAMPLES)
-    add_subdirectory(examples)
-endif()
-
-add_subdirectory(client)
