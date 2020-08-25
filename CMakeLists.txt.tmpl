@@ -5,27 +5,27 @@ include(CheckIncludeFileCXX)
 file(TO_CMAKE_PATH "{{libstored_dir|escapebs}}" libstored_dir)
 
 add_library({{libprefix}}libstored
-    ${libstored_dir}/include/stored
-    ${libstored_dir}/include/stored.h
-    ${libstored_dir}/include/libstored/macros.h
-    ${libstored_dir}/include/libstored/types.h
-    ${libstored_dir}/include/libstored/directory.h
-    ${libstored_dir}/include/libstored/util.h
-    ${libstored_dir}/include/libstored/zmq.h
-    ${libstored_dir}/src/directory.cpp
-    ${libstored_dir}/src/debugger.cpp
-    ${libstored_dir}/src/protocol.cpp
-    ${libstored_dir}/src/util.cpp
-    ${libstored_dir}/src/zmq.cpp
+	${libstored_dir}/include/stored
+	${libstored_dir}/include/stored.h
+	${libstored_dir}/include/libstored/macros.h
+	${libstored_dir}/include/libstored/types.h
+	${libstored_dir}/include/libstored/directory.h
+	${libstored_dir}/include/libstored/util.h
+	${libstored_dir}/include/libstored/zmq.h
+	${libstored_dir}/src/directory.cpp
+	${libstored_dir}/src/debugger.cpp
+	${libstored_dir}/src/protocol.cpp
+	${libstored_dir}/src/util.cpp
+	${libstored_dir}/src/zmq.cpp
 {% for m in models %}
-    ${CMAKE_CURRENT_SOURCE_DIR}/{{m|header}}
-    ${CMAKE_CURRENT_SOURCE_DIR}/{{m|src}}
+	${CMAKE_CURRENT_SOURCE_DIR}/{{m|header}}
+	${CMAKE_CURRENT_SOURCE_DIR}/{{m|src}}
 {% endfor %}
 )
 
 target_include_directories({{libprefix}}libstored
-    PUBLIC ${libstored_dir}/include
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+	PUBLIC ${libstored_dir}/include
+	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 set_target_properties({{libprefix}}libstored PROPERTIES OUTPUT_NAME "stored")
@@ -60,41 +60,41 @@ if(LIBSTORED_HAVE_LIBZMQ)
 endif()
 
 if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
-    find_program(CLANG_TIDY_EXE NAMES "clang-tidy" DOC "Path to clang-tidy executable")
-    if(CLANG_TIDY_EXE AND NOT CMAKE_CROSSCOMPILING)
-        option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ON)
-        if(LIBSTORED_CLANG_TIDY)
-            string(CONCAT CLANG_TIDY_CHECKS "-checks="
-                "cppcoreguidelines-*,"
-                "-cppcoreguidelines-pro-bounds-array-to-pointer-decay,"
-                "-cppcoreguidelines-pro-type-union-access,"
-                "-cppcoreguidelines-pro-bounds-pointer-arithmetic,"
+	find_program(CLANG_TIDY_EXE NAMES "clang-tidy" DOC "Path to clang-tidy executable")
+	if(CLANG_TIDY_EXE AND NOT CMAKE_CROSSCOMPILING)
+		option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ON)
+		if(LIBSTORED_CLANG_TIDY)
+			string(CONCAT CLANG_TIDY_CHECKS "-checks="
+				"cppcoreguidelines-*,"
+				"-cppcoreguidelines-pro-bounds-array-to-pointer-decay,"
+				"-cppcoreguidelines-pro-type-union-access,"
+				"-cppcoreguidelines-pro-bounds-pointer-arithmetic,"
 
-                "hicpp-*,"
-                "-hicpp-braces-around-statements,"
-                "-hicpp-no-array-decay,"
-                "-hicpp-member-init,"
-                "-hicpp-use-auto,"
-                "-hicpp-no-malloc,"
-                "-hicpp-use-override,"
+				"hicpp-*,"
+				"-hicpp-braces-around-statements,"
+				"-hicpp-no-array-decay,"
+				"-hicpp-member-init,"
+				"-hicpp-use-auto,"
+				"-hicpp-no-malloc,"
+				"-hicpp-use-override,"
 
-                "performance-*,"
-                "clang-analyzer-*,"
-                "bugprone-*,"
-                "portability-*,"
-                "misc-*,"
+				"performance-*,"
+				"clang-analyzer-*,"
+				"bugprone-*,"
+				"portability-*,"
+				"misc-*,"
 
-                "readability-*,"
-                "-readability-braces-around-statements,"
-                "-readability-implicit-bool-conversion,"
-                "-readability-else-after-return,"
-            )
-            set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
-                "-header-filter=.*includ/libstored.*")
-        endif()
+				"readability-*,"
+				"-readability-braces-around-statements,"
+				"-readability-implicit-bool-conversion,"
+				"-readability-else-after-return,"
+			)
+			set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
+				"-header-filter=.*includ/libstored.*")
+		endif()
 
-        set_target_properties({{libprefix}}libstored
-            PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}" )
-    endif()
+		set_target_properties({{libprefix}}libstored
+			PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}" )
+	endif()
 endif()
 

@@ -1,6 +1,10 @@
 #include "TestStore.h"
 #include "gtest/gtest.h"
 
+#include <algorithm>
+#include <list>
+#include <functional>
+
 namespace {
 
 TEST(Directory, FullMatch) {
@@ -34,6 +38,64 @@ TEST(Directory, Bogus) {
 	EXPECT_FALSE(store.find("/").valid());
 	EXPECT_FALSE(store.find("asdf").valid());
 	EXPECT_FALSE(store.find("/zzz").valid());
+}
+
+static int objects;
+static void list_cb_templ(stored::TestStore*, char const*, stored::Type::type, void*, size_t) { objects++; }
+static void list_cb_arg(void*, char const*, stored::Type::type, void*, size_t, void*) { objects++; }
+
+TEST(Directory, ListFunctions) {
+	stored::TestStore store;
+
+	// list() using an rvalue lambda (>= C++11)
+	objects = 0;
+	store.list([&](stored::TestStore*, char const*, stored::Type::type, void*, size_t) { objects++; });
+	EXPECT_GT(objects, 1);
+
+	// list() using an lvalue lambda (>= C++11)
+	objects = 0;
+	auto l = [&](stored::TestStore*, char const*, stored::Type::type, void*, size_t) { objects++; };
+	store.list(l);
+	EXPECT_GT(objects, 1);
+
+	// list() using an std::function (>= C++11)
+	objects = 0;
+	std::function<void(stored::TestStore*, char const*, stored::Type::type, void*, size_t)> f =
+		[&](stored::TestStore*, char const*, stored::Type::type, void*, size_t) { objects++; };
+	store.list(f);
+	EXPECT_GT(objects, 1);
+
+	// list() using a static function (>= C++11)
+	objects = 0;
+	store.list(&list_cb_templ);
+	EXPECT_GT(objects, 1);
+
+	// list() using a static function with argument (< C++11)
+	objects = 0;
+	store.list(&list_cb_arg, nullptr);
+	EXPECT_GT(objects, 1);
+}
+
+TEST(Directory, List) {
+	stored::TestStore store;
+
+	std::list<std::string> names;
+	store.list([&](stored::TestStore*, char const* name, stored::Type::type, void*, size_t) { names.push_back(name); });
+
+	// We should find something.
+	EXPECT_GT(names.size(), 10);
+
+	// Check a few names.
+	EXPECT_TRUE(std::find(names.begin(), names.end(), "/default int8") != names.end());
+	EXPECT_TRUE(std::find(names.begin(), names.end(), "/f read/write") != names.end());
+	EXPECT_TRUE(std::find(names.begin(), names.end(), "/f read-only") != names.end());
+	EXPECT_TRUE(std::find(names.begin(), names.end(), "/array bool[0]") != names.end());
+	EXPECT_TRUE(std::find(names.begin(), names.end(), "/scope/inner int") != names.end());
+	EXPECT_TRUE(std::find(names.begin(), names.end(), "/non existent object") == names.end());
+
+	// Check all collected names.
+	for(auto const& n : names)
+		EXPECT_TRUE(std::find(names.begin(), names.end(), n.c_str()) != names.end());
 }
 
 } // namespace

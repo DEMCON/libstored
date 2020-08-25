@@ -9,7 +9,7 @@ trap gotErr ERR
 
 case `uname -s` in
 	Linux*)
-		sudo apt install -y build-essential git-core gcc-multilib cmake \
+		sudo apt install -y build-essential valgrind git-core gcc-multilib cmake \
 			gdb-multiarch clang-tidy doxygen \
 			python3 python3-pip python3-setuptools \
 			python3-pyqt5 python3-pyqt5.qtquick

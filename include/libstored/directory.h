@@ -3,17 +3,17 @@
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -25,7 +25,7 @@
  * \defgroup libstored_directory directory
  * \brief Directory with names, types and buffer offsets.
  *
- * The directory is a description in binary. While parsing the pointer starts at the 
+ * The directory is a description in binary. While parsing the pointer starts at the
  * beginning of the directory and scans over the bytes. While scanning, a name is searched.
  * In principle, the directory is a binary tree of characters the name must match.
  *
@@ -39,7 +39,7 @@
  *      '/' expr |
  *      # Match current char in the name. If it compress less or greater, add the jmp_l or
  *      # jmp_g to the pointer. Otherwise continue with the first expression.
- *      # If there is no object for a specific jump, jmp_* can be 0, in which case the 
+ *      # If there is no object for a specific jump, jmp_* can be 0, in which case the
  *      # expr_* is omitted.
  *      char jmp_l jmp_g expr expr_l ? expr_g ? |
  *      # Skip the next n non-/ characters of the name.
@@ -105,7 +105,7 @@ namespace stored {
 	 * and the \c arg parameter of \c list().
 	 */
 	typedef void(ListCallbackArg)(void*, char const*, Type::type, void*, size_t, void*);
-	
+
 	void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr);
 
 #if __cplusplus >= 201103L
@@ -119,11 +119,13 @@ namespace stored {
 	 */
 	template <typename Container, typename F>
 	SFINAE_IS_FUNCTION(F, void(Container*, char const*, Type::type, void*, size_t), void)
-	list(Container* container, void* buffer, uint8_t const* directory, F& f) {
+	list(Container* container, void* buffer, uint8_t const* directory, F&& f) {
+		typedef void(ListCallback)(Container*, char const*, Type::type, void*, size_t);
+		std::function<ListCallback> f_ = f;
 		auto cb = [](void* container, char const* name, Type::type type, void* buffer, size_t len, void* f) {
-			(*(F*)f)((Container*)container, name, type, buffer, len);
+			(*(std::function<ListCallback>*)f)((Container*)container, name, type, buffer, len);
 		};
-		list(container, buffer, directory, static_cast<ListCallbackArg*>(cb), &f);
+		list(container, buffer, directory, static_cast<ListCallbackArg*>(cb), &f_);
 	}
 #endif
 

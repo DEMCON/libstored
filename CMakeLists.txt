@@ -35,6 +35,7 @@ if(WIN32)
 	find_program(PYTHON_EXECUTABLE python)
 else()
 	find_program(PYTHON_EXECUTABLE python3)
+	find_program(HAVE_VALGRIND valgrind)
 endif()
 
 if(NOT PYTHON_EXECUTABLE)
@@ -60,7 +61,7 @@ function(libstored_generate target) # add all other models as varargs
             COMMAND ${PYTHON_EXECUTABLE} ${LIBSTORED_SOURCE_DIR}/generator/generate.py -p ${target}- ${models} ${CMAKE_CURRENT_SOURCE_DIR}/libstored
         )
     endif()
-    
+
     add_subdirectory(libstored)
 
     add_custom_command(
@@ -107,6 +108,8 @@ if(LIBSTORED_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
+add_subdirectory(client)
+
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0")
 	option(LIBSTORED_TESTS "Build the tests" ON)
 	if(LIBSTORED_TESTS)
@@ -116,4 +119,3 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0")
 	endif()
 endif()
 
-add_subdirectory(client)

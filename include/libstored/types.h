@@ -3,17 +3,17 @@
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -138,7 +138,7 @@ namespace stored {
 	template <> struct toType<double> { static Type::type const type = Type::Double; };
 	template <> struct toType<char*> { static Type::type const type = Type::String; };
 	template <typename T> struct toType<T*> { static Type::type const type = Type::Pointer; };
-	
+
 	template <typename Container = void> class Variant;
 
 	/*!
@@ -305,7 +305,7 @@ namespace stored {
 		typedef Variable<T,Container,false> base;
 		/*! \copydoc stored::Variable::type */
 		typedef typename base::type type;
-		
+
 		/*! \copydoc stored::Variable::Variable(Container&, type&) */
 		Variable(Container& container, type& buffer)
 			: base(container, buffer)
@@ -322,7 +322,7 @@ namespace stored {
 #else
 			is_default;
 #endif
-		
+
 		/*! \copydoc stored::Variable::Variable(Variable const&) */
 		Variable(Variable const& v)
 			: base()
@@ -397,11 +397,11 @@ namespace stored {
 		}
 
 		/*! \copydoc stored::Variable::operator=(type) */
-		Variable& operator=(type v) { 
+		Variable& operator=(type v) {
 			set(v);
 			return *this;
 		}
-		
+
 		/*! \copydoc stored::Variable::size() */
 		static size_t size() { return sizeof(type); }
 
@@ -410,7 +410,7 @@ namespace stored {
 			stored_assert(this->valid());
 			return *m_container;
 		}
-		
+
 		/*!
 		 * \brief Returns the key that belongs to this Variable.
 		 * \see your store's bufferToKey()
@@ -496,7 +496,7 @@ namespace stored {
 		 * \brief Constructor for a valid Function.
 		 */
 		Function(Container& container, unsigned int f) : m_container(&container), m_f(f) {}
-		
+
 		/*!
 		 * \brief Constructor for an invalid Function.
 		 */
@@ -568,7 +568,7 @@ namespace stored {
 		void operator()(type value) const { set(value); }
 		/*! \copydoc Variable::operator=(type) */
 		Function& operator=(type v) { set(v); return *this; }
-		
+
 		/*!
 		 * \brief Checks if this Function is valid.
 		 */
@@ -607,7 +607,7 @@ namespace stored {
 			stored_assert(valid());
 			return m_f;
 		}
-		
+
 		/*!
 		 * \brief Checks if this Function points to the same Function as the given one.
 		 */
@@ -666,13 +666,13 @@ namespace stored {
 			stored_assert(!Type::isFixed(this->type()) ||
 				(reinterpret_cast<uintptr_t>(buffer) & (Type::size(this->type()) - 1)) == 0);
 		}
-		
+
 		/*!
 		 * \brief Constructor for a function.
 		 */
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant(Container& container, Type::type type, unsigned int f, size_t len)
-			: m_container(&container), m_f((uintptr_t)f), m_len(len), m_type((uint8_t)type) 
+			: m_container(&container), m_f((uintptr_t)f), m_len(len), m_type((uint8_t)type)
 #ifdef _DEBUG
 			, m_entry()
 #endif
@@ -707,7 +707,7 @@ namespace stored {
 			, m_entry()
 #endif
 		{}
-		
+
 		/*!
 		 * \brief Constructor for a Function.
 		 */
@@ -960,7 +960,7 @@ namespace stored {
 			stored_assert(sizeof(T) == size());
 			return Function<T,Container>(container(), (unsigned int)m_f);
 		}
-		
+
 		/*!
 		 * \brief Returns the key of this variable.
 		 * \details Only call this function when it #isVariable().
@@ -1007,7 +1007,7 @@ namespace stored {
 		mutable uint8_t m_entry;
 #endif
 	};
-	
+
 	/*!
 	 * \brief A store-independent untyped wrapper for an object.
 	 *
@@ -1029,7 +1029,7 @@ namespace stored {
 			: m_buffer(buffer), m_len(len), m_type((uint8_t)type)
 		{
 		}
-		
+
 		/*!
 		 * \brief Constructor for a function.
 		 */
@@ -1065,11 +1065,15 @@ namespace stored {
 				return Variant<Container>(container, (Type::type)m_type, m_buffer, m_len);
 			}
 		}
-		
+
 		/*! \brief Don't use. */
 		size_t get(void* UNUSED_PAR(dst), size_t UNUSED_PAR(len) = 0) const { stored_assert(valid()); return 0; }
 		/*! \brief Don't use. */
+		template <typename T> T get() const { stored_assert(valid()); return T(); }
+		/*! \brief Don't use. */
 		size_t set(void const* UNUSED_PAR(src), size_t UNUSED_PAR(len) = 0) { stored_assert(valid()); return 0; }
+		/*! \brief Don't use. */
+		template <typename T> void set(T UNUSED_PAR(value)) { stored_assert(valid()); }
 		/*! \brief Don't use. */
 		void entryX(size_t UNUSED_PAR(len) = 0) const {}
 		/*! \brief Don't use. */

@@ -1,17 +1,17 @@
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -114,7 +114,7 @@ notfound:
 		// Don't compare prefix, just forward to the only mapped store.
 		return m_map.begin()->second->find(name, len);
 	}
-	
+
 	// name contains '/prefix/object', where '/prefix' equals he mapped name of
 	// a store.
 
@@ -240,7 +240,7 @@ void Debugger::list(ListCallbackArg* f, void* arg) const {
 
 /*!
  * \brief Get the capabilities as supported by this Debugger.
- * 
+ *
  * The \p list is allocated on the #spm().
  * The pointer and the length are returned through the \p list and \p len arguments.
  *
@@ -350,8 +350,8 @@ void Debugger::decode(void* buffer, size_t len) {
 void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 	if(unlikely(!frame || len == 0))
 		return;
-	
-	ScratchPad::Snapshot snapshot = spm().snapshot();
+
+	ScratchPad<>::Snapshot snapshot = spm().snapshot();
 
 	char const* p = static_cast<char const*>(frame);
 
@@ -539,7 +539,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 
 		if(!Config::DebuggerIdentification)
 			goto error;
-	
+
 		char const* id = identification();
 		if(!id || !*id)
 			// Not supported, apparently.
@@ -555,7 +555,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 
 		if(!Config::DebuggerVersion)
 			goto error;
-	
+
 		if(!version(response))
 			// No version output.
 			goto error;
@@ -570,7 +570,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 
 		if(!Config::DebuggerReadMem)
 			goto error;
-	
+
 		if(len < 2)
 			goto error;
 
@@ -585,7 +585,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		void const* buffer = addrhex;
 		if(!decodeHex(Type::Pointer, buffer, bufferlen))
 			goto error;
-		
+
 		stored_assert(bufferlen == sizeof(void*));
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 		char* addr = *reinterpret_cast<char* const*>(buffer);
@@ -606,7 +606,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 
 		// Go read the memory in chunks
 		while(datalen > 0) {
-			ScratchPad::Snapshot chunk_snapshot = spm().snapshot();
+			ScratchPad<>::Snapshot chunk_snapshot = spm().snapshot();
 
 			size_t chunk = std::min<size_t>(64u, datalen);
 			void* r = addr;
@@ -627,10 +627,10 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		//
 		if(!Config::DebuggerWriteMem)
 			goto error;
-	
+
 		if(len < 2)
 			goto error;
-	
+
 		char const* addrhex = ++p;
 
 		// Find length of address
@@ -642,7 +642,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		void const* buffer = addrhex;
 		if(!decodeHex(Type::Pointer, buffer, bufferlen))
 			goto error;
-		
+
 		stored_assert(bufferlen == sizeof(void*));
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 		char* addr = *reinterpret_cast<char* const*>(buffer);
@@ -660,7 +660,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 
 		// Process data in chunks.
 		while(len > 0) {
-			ScratchPad::Snapshot chunk_snapshot = spm().snapshot();
+			ScratchPad<>::Snapshot chunk_snapshot = spm().snapshot();
 
 			size_t chunk = std::min<size_t>(64u, len);
 			void const* w = p;
@@ -686,7 +686,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 
 		if(Config::DebuggerStreams < 1)
 			goto error;
-	
+
 		if(len == 1) {
 			void const* buffer;
 			size_t bufferlen;
@@ -714,7 +714,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 	}
 	case CmdTrace: {
 		// Configure trace
-		// 
+		//
 		// Enable:
 		// Request: 't' <macro> <stream> ( <decimate in hex> ) ?
 		//
@@ -874,7 +874,7 @@ void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortes
 		data = hex;
 		return;
 	}
-	
+
 	char* hex = spm().alloc<char>(len * 2 + 1);
 
 	if(Type::isFixed(type)) {
@@ -931,7 +931,7 @@ static uint8_t decodeNibble(char c, bool& ok) {
 bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len) {
 	if(len == 0 || !data)
 		return false;
-	
+
 	char const* src = static_cast<char const*>(data);
 	size_t binlen;
 	uint8_t* bin;
@@ -980,7 +980,7 @@ bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len) {
 /*!
  * \brief Returns a scratch pad memory.
  */
-ScratchPad& Debugger::spm() {
+ScratchPad<>& Debugger::spm() {
 	return m_scratchpad;
 }
 
@@ -993,7 +993,7 @@ void Debugger::listCmdCallback(char const* name, DebugVariant& variant, void* ar
 	ListCmdCallbackArg* a = (ListCmdCallbackArg*)arg;
 
 	// encodeHex() uses the spm for its result.
-	ScratchPad::Snapshot snapshot = a->that->spm().snapshot();
+	ScratchPad<>::Snapshot snapshot = a->that->spm().snapshot();
 	char const* buf;
 	size_t buflen;
 
@@ -1044,7 +1044,7 @@ size_t Debugger::stream(char s, char const* data, size_t len) {
 		return 0;
 
 	len = std::min(len, Config::DebuggerStreamBuffer - str->size());
-	
+
 	str->append(data, len);
 
 	return len;
@@ -1170,7 +1170,7 @@ void Debugger::trace() {
 
 	// Note that runMacro() may overrun the defined maximum buffer size,
 	// but samples are never truncated.
-	
+
 	StringEncoder stringEncoder(*str);
 	if(!runMacro(m_traceMacro, stringEncoder)) {
 		// Revert.
