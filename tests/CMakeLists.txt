@@ -33,4 +33,18 @@ libstored_add_test(test_init test_init.cpp)
 libstored_add_test(test_function test_function.cpp)
 libstored_add_test(test_array test_array.cpp)
 libstored_add_test(test_directory test_directory.cpp)
+libstored_add_test(test_spm test_spm.cpp)
+
+if(HAVE_VALGRIND AND LIBSTORED_EXAMPLES)
+	macro(libstored_example_test EXAMPLE)
+		add_test(NAME ${EXAMPLE} COMMAND valgrind --error-exitcode=1 --leak-check=full ${CMAKE_CURRENT_BINARY_DIR}/../examples/${EXAMPLE}/${EXAMPLE})
+	endmacro()
+
+	libstored_example_test(1_hello)
+	libstored_example_test(2_basic)
+	libstored_example_test(3_scope)
+	libstored_example_test(4_function)
+	libstored_example_test(5_debug)
+	libstored_example_test(6_sync)
+endif()
 

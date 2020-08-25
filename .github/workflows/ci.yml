@@ -18,7 +18,12 @@ jobs:
         uses: actions/checkout@v2
       - name: bootstrap
         run: scripts/bootstrap.sh
-      - name: build
+      - name: build Debug
+        run: scripts/build.sh
+      - name: test
+        run: cmake --build . -- test
+        working-directory: build
+      - name: build Release
         run: scripts/build.sh
       - name: test
         run: cmake --build . -- test
@@ -30,7 +35,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./doxygen/html
-    
+
   build-windows-gcc:
     runs-on: windows-latest
     steps:
@@ -39,11 +44,16 @@ jobs:
       - name: bootstrap
         run: scripts\bootstrap.cmd
       - name: build
-        run: scripts\build.cmd
+        run: scripts\build.cmd Debug
       - name: test
         run: cmake --build . -- test
         working-directory: build
-  
+      - name: build
+        run: scripts\build.cmd Release
+      - name: test
+        run: cmake --build . -- test
+        working-directory: build
+
   build-mac:
     runs-on: macos-latest
     steps:
@@ -52,7 +62,12 @@ jobs:
       - name: bootstrap
         run: scripts/bootstrap.sh
       - name: build
-        run: scripts/build.sh
+        run: scripts/build.sh Debug
+      - name: test
+        run: cmake --build . -- test
+        working-directory: build
+      - name: build
+        run: scripts/build.sh Release
       - name: test
         run: cmake --build . -- test
         working-directory: build

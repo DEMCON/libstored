@@ -4,17 +4,17 @@
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -37,78 +37,78 @@
  * requests and responses are usually plain ASCII (or UTF-8 for strings), to
  * simplify processing it over a terminal or by humans. However, it does not
  * have to be the case.
- * 
+ *
  * ### Capabilities
- * 
+ *
  * Request: `?`
- * 
+ *
  * 	?
- * 
+ *
  * Response: a list of command characters.
- * 
+ *
  * 	?rwe
- * 
+ *
  * This command is mandatory for every debugging target.
  *
  * ### Echo
- * 
+ *
  * Request: `e` \<any data\>
- * 
+ *
  * 	eHello World
- * 
+ *
  * Response: \<the same data\>
- * 
+ *
  * 	Hello World
- * 
+ *
  * ### Read
- * 
+ *
  * Request: `r` \<name of object\>
- * 
+ *
  * (Every scope within) the name of the object may be abbreviated, as long as it is unambiguous.
  * In case there is a alias created for the object (see Alias below), the alias
  * character can be used instead of the name.
- * 
+ *
  * 	r/bla/asdf
- * 
+ *
  * Response: `?` | \<ASCII hex value of object\>
- * 
+ *
  * For values with fixed length (int, float), the byte order is big/network
  * endian.  For ints, the initial zeros can be omitted. For other data, all bytes
  * are encoded.
- * 
+ *
  * 	123abc
- * 
- * ### Write 
- * 
+ *
+ * ### Write
+ *
  * Request: `w` \<value in ASCII hex\> \<name of object\>
- * 
+ *
  * See Read for details about the hex value and object name.
- * 
+ *
  * 	w10/b/a
- * 
+ *
  * Response: `!` | `?`
- * 
+ *
  * 	!
- * 
+ *
  * ### List
- * 
+ *
  * Requests a full list of all objects of all registered stores to the current Embedded Debugger.
- * 
+ *
  * Request: `l`
- * 
+ *
  * 	l
- * 
+ *
  * Response: ( \<type byte in hex\> \<length in hex\> \<name of object\> `\n` ) * | `?`
- * 
+ *
  * 	3b4/b/i8
  * 	201/b/b
- * 
+ *
  * See #stored::Type for the type byte. The type byte is always two hex
  * characters.  The number of characters of the length of the object depends on
  * the value; leading zeros may be removed.
  *
  * ### Alias
- * 
+ *
  * Assigns a character to a object path.  An alias can be everywhere where an
  * object path is expected.  Creating aliases skips parsing the object path
  * repeatedly, so makes debugging more efficient.  If no object is specified, the
@@ -117,15 +117,15 @@
  * The alias name can be any char in the range 0x20 (`␣`) - 0x7e (`~`), except for 0x2f (`/`).
  *
  * Request: `a` \<char\> ( \<name of object\> ) ?
- * 
+ *
  * 	a0/bla/a
- * 
+ *
  * Response: `!` | `?`
- * 
+ *
  * 	!
- * 
+ *
  * ### Macro
- * 
+ *
  * Saves a sequence of commands and assigns a name to it.  The macro name can be
  * any char in the range 0x20 (`␣`) - 0x7e (`~`).  In case of a name clash with an
  * existing non-macro command, the command is executed; the macro cannot hide or
@@ -141,13 +141,13 @@
  *
  * The responses of the commands are merged into one response frame, without
  * separators. The Echo command can be used to inject separators in the output.
- * 
+ *
  * Request: `m` \<char\> ( \<separator\> \<command\> ) *
- * 
+ *
  * 	mZ r/bla/a e; r/bla/z
- * 
+ *
  * Response: `!` | `?`
- * 
+ *
  * 	!
  *
  * If the `Z` command is now executed, the result could be something like:
@@ -155,107 +155,107 @@
  * 	123;456
  *
  * ### Identification
- * 
+ *
  * Returns a fixed string that identifies the application.
- * 
+ *
  * Request: `i`
- * 
+ *
  * 	i
- * 
+ *
  * Response: `?` | \<UTF-8 encoded application name\>
- * 
+ *
  * 	libstored
- * 
+ *
  * ### Version
- * 
+ *
  * Returns a list of versions.
- * 
+ *
  * Request: `v`
- * 
+ *
  * 	v
- * 
+ *
  * Response: `?` | \<protocol version\> ( `␣` \<application-specific version\> ) *
- * 
+ *
  * 	2 r243+trunk beta
- * 
+ *
  * ### Read memory
- * 
+ *
  * Read a memory via a pointer instead of the store.  Returns the number of
  * requested bytes. If no length is specified, a word is returned.
- * 
+ *
  * Request: `R` \<pointer in hex\> ( `␣` \<length\> ) ?
- * 
+ *
  * 	R1ffefff7cc 4
- * 
+ *
  * Response: `?` | \<bytes in hex\>
- * 
+ *
  * 	efbe0000
  *
  * Bytes are just concatenated as they occur in memory, having the byte at the
  * lowest address first.
- * 
+ *
  * ### Write memory
- * 
+ *
  * Write a memory via a pointer instead of the store.
- * 
+ *
  * Request: `W` \<pointer in hex\> `␣` \<bytes in hex\>
- * 
+ *
  * 	W1ffefff7cc 0123
- * 
+ *
  * Response: `?` | `!`
- * 
+ *
  * 	!
- * 
+ *
  * ### Streams
- * 
+ *
  * Read all available data from a stream. Streams are application-defined
  * sequences of bytes, like stdout and stderr. They may contain binary data.
  * There are an arbitrary number of streams, with an arbitrary single-char name,
  * except for `?`, as it makes the response ambiguous.
- * 
+ *
  * To list all streams with data:
- * 
+ *
  * Request: `s`
- * 
+ *
  * To request all data from a stream, where the optional suffix is appended to the response:
- * 
+ *
  * Request: `s` \<char\> \<suffix\> ?
- * 
+ *
  * 	sA/
- * 
+ *
  * Response: `?` | \<data\> \<suffix\>
- * 
+ *
  * 	Hello World!!1/
- * 
+ *
  * Once data has been read from the stream, it is removed. The next call will
  * return new data.  If a stream was never used, `?` is returned. If it was used,
  * but it is empty now, the stream char does not show up in the `s` call, but does
  * respond with the suffix. If no suffix was provided, and there is no data, the
  * response is empty.
- * 
+ *
  * The number of streams and the maximum buffer size of a stream may be limited.
- * 
+ *
  * ### Tracing
- * 
+ *
  * Executes a macro every time the application invokes stored::Debugger::trace().
  * A stream is filled with the macro output.
- * 
+ *
  * Request: `t` ( \<macro\> \<stream\> ( \<decimate in hex\> ) ? ) ?
- * 
+ *
  * 	tms64
- * 
+ *
  * This executes macro output of `m` to the stream `s`, but only one in every
  * 100 calls to trace().  If the output does not fit in the stream buffer, it
  * is silently dropped.
- * 
+ *
  * `t` without arguments disables tracing. If the decimate argument is omitted,
  * 1 is assumed (no decimate).  Only one tracing configuration is supported;
  * another `t` command with arguments overwrites the previous configuration.
- * 
+ *
  * Response: `?` | `!`
- * 
+ *
  * 	!
- * 
+ *
  * The buffer collects samples over time, which is read out by the client possibly
  * at irregular intervals.  Therefore, you probably want to know the time stamp of
  * the sample. For this, include reading the time in the macro definition. By
@@ -263,14 +263,14 @@
  * It is implementation-defined what the offset is of `t`, which can be since the
  * epoch or since the last boot, for example.  For example, your store can have
  * one of the following time variables:
- * 
+ *
  * 	// Nice resolution, wraps around after 500 millennia.
  * 	(uint64) t (us)
  * 	// Typical ARM systick counter, wraps around after 49 days.
  * 	(uint32) t (ms)
  * 	// Pythonic time. Watch out with significant bits.
  * 	(double) t (s)
- * 
+ *
  * The time is usually a function type, as it is read-only and reading it should
  * invoke some time-keeping functions.
  *
@@ -303,7 +303,7 @@
  *
  * Depending on the buffer size, reading the buffer may be orders of magnitude slower
  * than the actual tracing speed.
- * 
+ *
  * \ingroup libstored
  */
 
@@ -415,7 +415,7 @@ namespace stored {
 	/*!
 	 * \brief A wrapper for any type of object in a store.
 	 *
-	 * This is a template-type-independent container for a #stored::DebugVariantTyped. 
+	 * This is a template-type-independent container for a #stored::DebugVariantTyped.
 	 *
 	 * Even though the \c DebugVariantTyped uses virtual functions,
 	 * inheritance, and templates, the allocation is done within this object.
@@ -490,7 +490,7 @@ namespace stored {
 	private:
 		/*!
 		 * \brief The buffer to create the contained #stored::DebugVariantTyped into.
-		 * 
+		 *
 		 * The destructor is never called for this object, and it must be
 		 * trivially copyable and assignable. Moreover, all DebugVariantTyped
 		 * instances must have equal size. These properties are checked in our
@@ -596,7 +596,7 @@ namespace stored {
 		 * \brief Destructor.
 		 */
 		virtual ~DebugStore() override is_default;
-		
+
 		char const* name() const final { return store().name(); }
 
 		DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) final {
@@ -707,7 +707,7 @@ namespace stored {
 
 		void unmap(char const* name);
 		StoreMap const& stores() const;
-	
+
 	protected:
 		void map(DebugStoreBase* store, char const* name);
 
@@ -717,7 +717,7 @@ namespace stored {
 
 
 
-	
+
 	public:
 		////////////////////////////
 		// Variable access
@@ -745,7 +745,7 @@ namespace stored {
 		static void listCmdCallback(char const* name, DebugVariant& variant, void* arg);
 
 
-	
+
 	public:
 		////////////////////////////
 		// Protocol
@@ -786,13 +786,13 @@ namespace stored {
 		virtual void decode(void* buffer, size_t len) override;
 
 	protected:
-		ScratchPad& spm();
+		ScratchPad<>& spm();
 
 		/*! \brief Type of alias map. */
 		typedef std::map<char, DebugVariant> AliasMap;
 		AliasMap& aliases();
 		AliasMap const& aliases() const;
-		
+
 		/*! \brief Type of macro map. */
 		typedef std::map<char, std::string> MacroMap;
 		MacroMap& macros();
@@ -816,7 +816,7 @@ namespace stored {
 
 	private:
 		/*! \brief A scratch pad memory for any Debugger operation. */
-		ScratchPad m_scratchpad;
+		ScratchPad<> m_scratchpad;
 
 		/*! \brief The identification. */
 		char const* m_identification;

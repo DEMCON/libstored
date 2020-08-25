@@ -3,17 +3,17 @@
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -156,6 +156,24 @@ namespace stored {
 #else
 #  define stored_assert(expr)	do { if(::stored::Config::EnableAssert) { assert(expr); } } while(false)
 #endif
+
+	/*!
+	 * \brief Determine the number of bytes to save the given unsigned value.
+	 */
+	template <uint64_t N>
+	struct value_bytes { enum { value = value_bytes<(N >> 8u)>::value + 1u }; };
+	template <> struct value_bytes<0> { enum { value = 0 }; };
+
+	/*!
+	 * \brief Determines a type that can hold the given unsigned value.
+	 */
+	template <uint64_t N, int bytes = value_bytes<N>::value>
+	struct value_type { typedef uint64_t type; };
+	template <uint64_t N> struct value_type<N, 4> { typedef uint32_t type; };
+	template <uint64_t N> struct value_type<N, 3> { typedef uint32_t type; };
+	template <uint64_t N> struct value_type<N, 2> { typedef uint16_t type; };
+	template <uint64_t N> struct value_type<N, 1> { typedef uint8_t type; };
+	template <uint64_t N> struct value_type<N, 0> { typedef uint8_t type; };
 
 	/*!
 	 * \private
