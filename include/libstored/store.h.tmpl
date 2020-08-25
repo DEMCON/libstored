@@ -4,17 +4,17 @@ vim:filetype=cpp
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -54,7 +54,7 @@ namespace stored {
 
 	/*!
 	 * \brief Base class with default interface of all {{store.name}} implementations.
-	 * 
+	 *
 	 * Although there are no virtual functions in the base class, subclasses
 	 * can override them.  The (lowest) subclass must pass the \p
 	 * Implementation_ template paramater to its base, such that all calls from
@@ -66,7 +66,7 @@ namespace stored {
 	 * so it can be large.  So, be aware when instantiating it on the stack.
 	 * Heap is fine. Static allocations is fine too, as the constructor and
 	 * destructor are trivial.
-	 * 
+	 *
 	 * \see #stored::{{store.name}}
 	 * \see #stored::{{store.name}}Data
 	 * \ingroup libstored_stores
@@ -120,7 +120,7 @@ namespace stored {
 		template <typename T> Function<T,Implementation> function(unsigned int f) {
 			return Function<T,Implementation>(implementation(), f);
 		}
-        
+
 		/*!
 		 * \brief Returns the Variant for a variable.
 		 */
@@ -129,7 +129,7 @@ namespace stored {
 			stored_assert(!Type::isFunction(type));
 			return Variant<Implementation>(implementation(), type, &buffer()[offset], len);
 		}
-		
+
 		/*!
 		 * \brief Returns the Variant for a function.
 		 */
@@ -137,7 +137,7 @@ namespace stored {
 			stored_assert(Type::isFunction(type));
 			return Variant<Implementation>(implementation(), type, f, len);
 		}
-		
+
 		// Variable/Function/Variant must be able to call callback() and the hooks.
 		// However, these functions should normally not be used from outside the class.
 		// Therefore, they are protected, and make these classes a friend.
@@ -347,10 +347,10 @@ namespace stored {
 		 * \see stored::list()
 		 */
 		template <typename F>
-		void list(F& f) { stored::list<Implementation,F>(&implementation(), buffer(), longDirectory(), f); }
+		void list(F&& f) { stored::list<Implementation,F>(&implementation(), buffer(), longDirectory(), std::forward<F>(f)); }
 #endif
 	};
-	
+
 	/*!
 	 * \brief Default {{store.name}}Base implementation.
 	 * \ingroup libstored_stores
