@@ -208,6 +208,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protocol layer base class.  <a href="classstored_1_1_protocol_layer.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_scratch_pad.html">ScratchPad</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Memory that uses bump-alloc for a very fast short-lived heap.  <a href="classstored_1_1_scratch_pad.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_string_encoder.html">StringEncoder</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper layer to encode into std::string.  <a href="classstored_1_1_string_encoder.html#details">More...</a><br /></td></tr>
@@ -255,6 +256,24 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1_type.html">Type</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type traits of objects in a store.  <a href="structstored_1_1_type.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1value__bytes.html">value_bytes</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine the number of bytes to save the given unsigned value.  <a href="structstored_1_1value__bytes.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1value__bytes_3_010_01_4.html">value_bytes&lt; 0 &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1value__type.html">value_type</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines a type that can hold the given unsigned value.  <a href="structstored_1_1value__type.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1value__type_3_01_n_00_010_01_4.html">value_type&lt; N, 0 &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1value__type_3_01_n_00_011_01_4.html">value_type&lt; N, 1 &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1value__type_3_01_n_00_012_01_4.html">value_type&lt; N, 2 &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1value__type_3_01_n_00_013_01_4.html">value_type&lt; N, 3 &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1value__type_3_01_n_00_014_01_4.html">value_type&lt; N, 4 &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_variable.html">Variable</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A typed variable in a store.  <a href="classstored_1_1_variable.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -295,10 +314,10 @@ Functions</h2></td></tr>
 <tr class="memitem:ga12a9855cf4121da642f3d961192c1758"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758">list</a> (void *container, void *buffer, uint8_t const  *directory, <a class="el" href="namespacestored.html#a8e940c5c65235c63db58bd1ae4003a84">ListCallbackArg</a> *f, void *arg, char const  *prefix)</td></tr>
 <tr class="memdesc:ga12a9855cf4121da642f3d961192c1758"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterates over all objects in the directory and invoke a callback for every object.  <a href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758">More...</a><br /></td></tr>
 <tr class="separator:ga12a9855cf4121da642f3d961192c1758"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5e143634b654c86fb8a4df10cc1ffc33"><td class="memTemplParams" colspan="2">template&lt;typename Container , typename F &gt; </td></tr>
-<tr class="memitem:ga5e143634b654c86fb8a4df10cc1ffc33"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__libstored__directory.html#ga5e143634b654c86fb8a4df10cc1ffc33">list</a> (Container *container, void *buffer, uint8_t const *directory, F &amp;f)</td></tr>
-<tr class="memdesc:ga5e143634b654c86fb8a4df10cc1ffc33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterates over all objects in the directory and invoke a callback for every object.  <a href="group__libstored__directory.html#ga5e143634b654c86fb8a4df10cc1ffc33">More...</a><br /></td></tr>
-<tr class="separator:ga5e143634b654c86fb8a4df10cc1ffc33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac114ce9f7ddd1f5abb2055d84ce1fe53"><td class="memTemplParams" colspan="2">template&lt;typename Container , typename F &gt; </td></tr>
+<tr class="memitem:gac114ce9f7ddd1f5abb2055d84ce1fe53"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__libstored__directory.html#gac114ce9f7ddd1f5abb2055d84ce1fe53">list</a> (Container *container, void *buffer, uint8_t const *directory, F &amp;&amp;f)</td></tr>
+<tr class="memdesc:gac114ce9f7ddd1f5abb2055d84ce1fe53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterates over all objects in the directory and invoke a callback for every object.  <a href="group__libstored__directory.html#gac114ce9f7ddd1f5abb2055d84ce1fe53">More...</a><br /></td></tr>
+<tr class="separator:gac114ce9f7ddd1f5abb2055d84ce1fe53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a732691fa4769154b74f9b71d24a10ad8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestored.html#a732691fa4769154b74f9b71d24a10ad8">strncmp</a> (char const  *__restrict__ str1, size_t len1, char const  *__restrict__ str2, size_t len2)</td></tr>
 <tr class="memdesc:a732691fa4769154b74f9b71d24a10ad8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Like <code><a class="el" href="namespacestored.html#a732691fa4769154b74f9b71d24a10ad8" title="Like strncmp(), but handles non zero-terminated strings. ">strncmp()</a></code>, but handles non zero-terminated strings.  <a href="#a732691fa4769154b74f9b71d24a10ad8">More...</a><br /></td></tr>
 <tr class="separator:a732691fa4769154b74f9b71d24a10ad8"><td class="memSeparator" colspan="2">&#160;</td></tr>

@@ -20,7 +20,7 @@ var searchData=
   ['aliaschanged',['aliasChanged',['../classed2_1_1zmq__client_1_1_object.html#ad769b03e6e0341949fc97595c077982d',1,'ed2::zmq_client::Object']]],
   ['aliases',['aliases',['../classstored_1_1_debugger.html#aeb1bb029f2b0087b68870eee0103f9db',1,'stored::Debugger::aliases()'],['../classstored_1_1_debugger.html#aab224e39c0f3c6dd34a0775385e778b1',1,'stored::Debugger::aliases() const']]],
   ['aliasmap',['AliasMap',['../classstored_1_1_debugger.html#af2ab24dd88c3fb0259c60856b2671293',1,'stored::Debugger']]],
-  ['alloc',['alloc',['../classstored_1_1_scratch_pad.html#a43c226923812baa5562611994a97414a',1,'stored::ScratchPad']]],
+  ['alloc',['alloc',['../classstored_1_1_scratch_pad.html#a0d2ebf84b297dfaf3b74bf8e2f15a750',1,'stored::ScratchPad']]],
   ['an_5fint16',['an_int16',['../classstored_1_1_zmq_server_store_base.html#a8c084b2857236e3f2e21df350c464f59',1,'stored::ZmqServerStoreBase']]],
   ['an_5fint32',['an_int32',['../classstored_1_1_zmq_server_store_base.html#a3eafa5ec42c205bbc3f0d6fa092c2707',1,'stored::ZmqServerStoreBase']]],
   ['an_5fint64',['an_int64',['../classstored_1_1_zmq_server_store_base.html#a28e0f21bc713c56e903efda6859f9894',1,'stored::ZmqServerStoreBase']]],

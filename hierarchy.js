@@ -111,8 +111,8 @@ var hierarchy =
       ] ],
       [ "stored::ZmqLayer", "classstored_1_1_zmq_layer.html", null ]
     ] ],
-    [ "stored::ScratchPad", "classstored_1_1_scratch_pad.html", null ],
-    [ "stored::ScratchPad::Snapshot", "classstored_1_1_scratch_pad_1_1_snapshot.html", null ],
+    [ "stored::ScratchPad< MaxSize >", "classstored_1_1_scratch_pad.html", null ],
+    [ "stored::ScratchPad< MaxSize >::Snapshot", "classstored_1_1_scratch_pad_1_1_snapshot.html", null ],
     [ "stored::toType< T >", "structstored_1_1to_type.html", null ],
     [ "stored::toType< bool >", "structstored_1_1to_type_3_01bool_01_4.html", null ],
     [ "stored::toType< char * >", "structstored_1_1to_type_3_01char_01_5_01_4.html", null ],
@@ -121,6 +121,14 @@ var hierarchy =
     [ "stored::toType< T * >", "structstored_1_1to_type_3_01_t_01_5_01_4.html", null ],
     [ "stored::toType< void >", "structstored_1_1to_type_3_01void_01_4.html", null ],
     [ "stored::Type", "structstored_1_1_type.html", null ],
+    [ "stored::value_bytes< N >", "structstored_1_1value__bytes.html", null ],
+    [ "stored::value_bytes< 0 >", "structstored_1_1value__bytes_3_010_01_4.html", null ],
+    [ "stored::value_type< N, bytes >", "structstored_1_1value__type.html", null ],
+    [ "stored::value_type< N, 0 >", "structstored_1_1value__type_3_01_n_00_010_01_4.html", null ],
+    [ "stored::value_type< N, 1 >", "structstored_1_1value__type_3_01_n_00_011_01_4.html", null ],
+    [ "stored::value_type< N, 2 >", "structstored_1_1value__type_3_01_n_00_012_01_4.html", null ],
+    [ "stored::value_type< N, 3 >", "structstored_1_1value__type_3_01_n_00_013_01_4.html", null ],
+    [ "stored::value_type< N, 4 >", "structstored_1_1value__type_3_01_n_00_014_01_4.html", null ],
     [ "stored::Variable< T, Container, Hooks >", "classstored_1_1_variable.html", null ],
     [ "stored::Variant< Container >", "classstored_1_1_variant.html", null ],
     [ "stored::Variant< void >", "classstored_1_1_variant_3_01void_01_4.html", null ],
@@ -157,6 +165,7 @@ var hierarchy =
     [ "stored::impl::toIntType< true, sizeof(short)>", "structstored_1_1impl_1_1to_int_type.html", [
       [ "stored::toType< short >", "structstored_1_1to_type_3_01short_01_4.html", null ]
     ] ],
+    [ "stored::value_type< MaxSize >", "structstored_1_1value__type.html", null ],
     [ "stored::Variable< T, Container, false >", "classstored_1_1_variable.html", [
       [ "stored::Variable< T, Container, true >", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html", null ]
     ] ],

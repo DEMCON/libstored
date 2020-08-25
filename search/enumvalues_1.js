@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['defaultport',['DefaultPort',['../classstored_1_1_zmq_layer.html#a85b0bcce7b341cbf8a83329539503d78ad52e94f30d1d2877bdcc5205b8884861',1,'stored::ZmqLayer']]],
-  ['double',['Double',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea23d8caab7b40cd54402fdb7c2a146f31',1,'stored::Type']]]
+  ['chunkheader',['chunkHeader',['../classstored_1_1_scratch_pad.html#abe5e3a67e8f85f78699cfbae9d72d2e5a93c50596b9a5c2f5e24bfbbfc8c04581',1,'stored::ScratchPad']]]
 ];

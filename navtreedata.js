@@ -44,9 +44,9 @@ var NAVTREEINDEX =
 "classed2_1_1stdio2zmq_1_1_stdio2_zmq.html#a892433d2841078a38471e70c2aaa9a9a",
 "classstored_1_1_debug_variant_base.html#a4de9ebcf989242ce1176f46f34c599a3",
 "classstored_1_1_example_hello.html#ade2bdb040fc94424a74bd6a896efe785",
-"classstored_1_1_variable.html#a225c82f6e27ecc18b652f03b722c5ec3",
-"ed2_2cli_2____init_____8py_source.html",
-"structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eaf9ff92ab1c4a60d1660ed3cf430acf8c"
+"classstored_1_1_terminal_layer.html#ab147064c411754aa941dec30c8d44c5c",
+"directory_8h.html",
+"structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea81bc50d2bf18bbb89613f750b3db4dde"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

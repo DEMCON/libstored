@@ -130,7 +130,17 @@ var menudata={children:[
 {text:"t",url:"functions_type.html#index_t"},
 {text:"u",url:"functions_type.html#index_u"}]},
 {text:"Enumerations",url:"functions_enum.html"},
-{text:"Enumerator",url:"functions_eval.html"},
+{text:"Enumerator",url:"functions_eval.html",children:[
+{text:"b",url:"functions_eval.html#index_b"},
+{text:"c",url:"functions_eval.html#index_c"},
+{text:"d",url:"functions_eval.html#index_d"},
+{text:"f",url:"functions_eval.html#index_f"},
+{text:"i",url:"functions_eval.html#index_i"},
+{text:"m",url:"functions_eval.html#index_m"},
+{text:"p",url:"functions_eval.html#index_p"},
+{text:"s",url:"functions_eval.html#index_s"},
+{text:"u",url:"functions_eval.html#index_u"},
+{text:"v",url:"functions_eval.html#index_v"}]},
 {text:"Related Functions",url:"functions_rela.html",children:[
 {text:"e",url:"functions_rela.html#index_e"},
 {text:"f",url:"functions_rela.html#index_f"},

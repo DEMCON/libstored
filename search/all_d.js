@@ -11,7 +11,9 @@ var searchData=
   ['map',['map',['../classstored_1_1_debugger.html#ae9f2965b44b4549ee4d05a48477c7655',1,'stored::Debugger::map(Store &amp;store, char const *name=nullptr)'],['../classstored_1_1_debugger.html#a862e81a67d3b860adb6b35a16743181b',1,'stored::Debugger::map(DebugStoreBase *store, char const *name)']]],
   ['maskflags',['MaskFlags',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea2d5518f85bf6c81f968e7262933e3b7d',1,'stored::Type']]],
   ['masksize',['MaskSize',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eafab8b14d23add4c4a4921c971ead9c0a',1,'stored::Type']]],
+  ['max',['max',['../classstored_1_1_scratch_pad.html#a20062937c98d739633df8e5347bf21ad',1,'stored::ScratchPad']]],
   ['maxbuffer',['MaxBuffer',['../classstored_1_1_terminal_layer.html#a18e520b233aa224854f48695f9ce350dac2e5fe6228ece37b246ab755b987f59f',1,'stored::TerminalLayer']]],
+  ['maxsize',['maxSize',['../classstored_1_1_scratch_pad.html#abe5e3a67e8f85f78699cfbae9d72d2e5a62424ce21ef05ba377086fb28696171c',1,'stored::ScratchPad']]],
   ['model',['model',['../namespaceed2_1_1gui_1_1____main____.html#adeda9ea5c04e4385151766cce2112349',1,'ed2::gui::__main__']]],
   ['myexample',['MyExample',['../class_my_example.html',1,'MyExample'],['../class_my_example.html#a8857f29d278fcc5f5b278c332bde9217',1,'MyExample::MyExample()']]]
 ];
