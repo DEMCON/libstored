@@ -88,7 +88,7 @@ TEST(ScratchPad, Alignment) {
 	EXPECT_EQ((uintptr_t)i & (sizeof(int) - 1), 0);
 	EXPECT_EQ(spm.size(), sizeof(int) * 2);
 
-	// Another few byte
+	// Another few bytes
 	c = spm.alloc<char>();
 	EXPECT_NE(c, nullptr);
 	c = spm.alloc<char>();
@@ -98,9 +98,9 @@ TEST(ScratchPad, Alignment) {
 
 	// More padding for double
 	double* d = spm.alloc<double>();
-	EXPECT_NE(i, nullptr);
+	EXPECT_NE(d, nullptr);
 	EXPECT_EQ((uintptr_t)d & (sizeof(double) - 1), 0);
-	EXPECT_EQ(spm.size(), sizeof(int) * 2 + sizeof(double) * 2);
+	EXPECT_EQ(spm.size(), sizeof(int) * 2 + sizeof(void*) + sizeof(double));
 }
 
 TEST(ScratchPad, Snapshot) {
@@ -121,7 +121,7 @@ TEST(ScratchPad, Snapshot) {
 
 	auto d = spm.alloc<double>();
 	EXPECT_NE(d, nullptr);
-	EXPECT_EQ(spm.size(), sizeof(double) * 2);
+	EXPECT_EQ(spm.size(), sizeof(void*) + sizeof(double));
 	s1.rollback();
 	EXPECT_EQ(spm.size(), 1);
 

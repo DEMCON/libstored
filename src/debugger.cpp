@@ -30,7 +30,7 @@ static void cleanup(T* t) {
 	delete t;
 }
 
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 template <typename T>
 static void cleanup(std::unique_ptr<T>& UNUSED_PAR(t)) {
 }
@@ -76,7 +76,7 @@ Debugger::Debugger(char const* identification, char const* versions)
  * \brief Destructor.
  */
 Debugger::~Debugger()
-#if __cplusplus < 201103L
+#if STORED_cplusplus < 201103L
 {
 	for(StoreMap::iterator it = m_map.begin(); it != m_map.end(); ++it)
 		cleanup(it->second);
@@ -155,14 +155,14 @@ void Debugger::map(DebugStoreBase* store, char const* name) {
 
 	if(it == m_map.end()) {
 		// New; insert.
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 		m_map.insert(StoreMap::value_type(name, std::unique_ptr<DebugStoreBase>(store)));
 #else
 		m_map.insert(StoreMap::value_type(name, store));
 #endif
 	} else {
 		// Replace previous mapping.
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 		it->second.reset(store);
 #else
 		cleanup(it->second);
@@ -1078,10 +1078,10 @@ std::string* Debugger::stream(char s, bool alloc) {
 			bool cleaned = true;
 			while(cleaned) {
 				cleaned = false;
-				for(StreamMap::iterator it = m_streams.begin(); it != m_streams.end(); ++it)
-					if(it->second.empty()) {
+				for(StreamMap::iterator it2 = m_streams.begin(); it2 != m_streams.end(); ++it2)
+					if(it2->second.empty()) {
 						// Got one.
-						m_streams.erase(it);
+						m_streams.erase(it2);
 						cleaned = true;
 						break;
 					}

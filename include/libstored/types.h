@@ -34,7 +34,7 @@
 #include <cstring>
 #include <algorithm>
 
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 #  include <cinttypes>
 #else
 #  include <inttypes.h>
@@ -187,7 +187,7 @@ namespace stored {
 			return *this;
 		}
 
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 		/*!
 		 * \brief Move-construct.
 		 */
@@ -226,7 +226,7 @@ namespace stored {
 		/*!
 		 * \brief Returns the value, which is identical to #get().
 		 */
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 		explicit
 #endif
 		operator type const&() const { return get(); }
@@ -248,7 +248,7 @@ namespace stored {
 		/*!
 		 * \brief Checks if this Variable points to a valid buffer.
 		 */
-		bool valid() const { return m_buffer; }
+		bool valid() const { return m_buffer != nullptr; }
 
 		/*!
 		 * \brief Returns the container this Variable belongs to.
@@ -341,7 +341,7 @@ namespace stored {
 			return *this;
 		}
 
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 		/*! \copydoc stored::Variable::Variable(Variable&&) */
 		Variable(Variable&& v) noexcept
 #  ifdef _DEBUG
@@ -379,7 +379,7 @@ namespace stored {
 		/*!
 		 * \brief Returns the value, which is identical to #get().
 		 */
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 		explicit
 #endif
 		operator type() const { return get(); }
@@ -520,7 +520,7 @@ namespace stored {
 		/*!
 		 * \brief Returns the value, which is identical to #get().
 		 */
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 		explicit
 #endif
 		operator type const&() const { return get(); }
@@ -913,7 +913,7 @@ namespace stored {
 		/*!
 		 * \brief Checks if this Variant is valid.
 		 */
-		bool valid() const { return m_buffer; }
+		bool valid() const { return m_buffer != nullptr; }
 		/*!
 		 * \brief Checks if the #type() is a function.
 		 * \details Only call this function when it is #valid().

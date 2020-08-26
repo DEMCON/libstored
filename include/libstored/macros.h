@@ -3,17 +3,17 @@
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -34,7 +34,9 @@
 #  define _DEBUG
 #endif
 
-
+#ifdef __cplusplus
+#  define STORED_cplusplus __cplusplus
+#endif
 
 
 
@@ -73,6 +75,9 @@
 #  define NOMINMAX
 #  define _USE_MATH_DEFINES
 #  pragma warning(disable: 4068 4100 4127 4324 4514 4571 4625 4626 4710 4711 4774 4820 5026 5027 5039 5045)
+#  if _MSC_VER >= 1925
+#    pragma warning(disable: 5204)
+#  endif
 #  pragma warning(push)
 #  pragma warning(disable: 4668)
 #  include <Windows.h>
@@ -82,6 +87,11 @@ typedef SSIZE_T ssize_t;
 #  define __attribute__(...)
 #  ifndef __restrict__
 #    define __restrict__ __restrict
+#  endif
+// MSVC always defines __cplusplus as 199711L, even though it actually compiles a different language version.
+#  ifdef __cplusplus
+#    undef STORED_cplusplus
+#    define STORED_cplusplus _MSVC_LANG
 #  endif
 #else
 #  error Unsupported compiler.
@@ -93,7 +103,7 @@ typedef SSIZE_T ssize_t;
 // Misc
 //
 
-#if defined(__cplusplus) && __cplusplus >= 201703L
+#if defined(STORED_cplusplus) && STORED_cplusplus >= 201703L
 #  define STORED_FALLTHROUGH [[fallthrough]];
 #elif defined(GCC_VERSION) && GCC_VERSION >= 70000L
 #  define STORED_FALLTHROUGH __attribute__ ((fallthrough));
@@ -127,13 +137,13 @@ typedef SSIZE_T ssize_t;
 #  else
 #    define STORED_BIG_ENDIAN
 #  endif
-#elif defined(_M_IX86)
+#elif defined(_M_IX86) || defined(_M_X64)
 #  define STORED_LITTLE_ENDIAN
 #else
 #  error Unknown byte order
 #endif
 
-#if !defined(STORED_HAVE_VALGRIND) && defined(ZTH_HAVE_VALGRIND) 
+#if !defined(STORED_HAVE_VALGRIND) && defined(ZTH_HAVE_VALGRIND)
 #  define STORED_HAVE_VALGRIND
 #endif
 
@@ -159,7 +169,7 @@ typedef SSIZE_T ssize_t;
 #  endif
 #endif
 
-#if defined(__cplusplus) && __cplusplus < 201103L
+#if defined(STORED_cplusplus) && STORED_cplusplus < 201103L
 #  ifndef STORED_COMPILER_MSVC
 #    ifndef constexpr
 #      define constexpr

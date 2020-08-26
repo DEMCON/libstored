@@ -85,7 +85,7 @@
 #include <list>
 #include <cstring>
 
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 #  include <functional>
 #  include <type_traits>
 
@@ -105,7 +105,7 @@
 #  define SFINAE_IS_FUNCTION(T, F, T_OK) T_OK
 #endif
 
-#if defined(__cplusplus) && __cplusplus < 201103L && !defined(static_assert) && !defined(STORED_COMPILER_MSVC)
+#if defined(STORED_cplusplus) && STORED_cplusplus < 201103L && !defined(static_assert) && !defined(STORED_COMPILER_MSVC)
 #  define static_assert(expr, msg)	do { typedef __attribute__((unused)) int static_assert_[(expr) ? 1 : -1]; } while(0)
 #endif
 
@@ -116,7 +116,7 @@
  * \details Put this macro inside the private section of your class.
  * \param Class the class this macro is embedded in
  */
-#  if __cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 #    define CLASS_NOCOPY(Class) \
 	public: \
 		/*! \brief Deleted copy constructor. */ \
@@ -138,7 +138,7 @@
 #endif
 
 #ifndef is_default
-#  if __cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 #    define is_default = default;
 #  else
 #    define is_default {}

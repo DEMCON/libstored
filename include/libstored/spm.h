@@ -187,7 +187,7 @@ namespace stored {
 					m_spm->rollback(m_buffer, m_size);
 			}
 
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 			/*!
 			 * \brief Move ctor.
 			 */
@@ -217,7 +217,7 @@ namespace stored {
 			 */
 			void reset() const { m_spm = nullptr; }
 
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 		public:
 			Snapshot& operator=(Snapshot const& s) = delete;
 #else
