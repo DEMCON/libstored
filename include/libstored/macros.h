@@ -134,7 +134,7 @@ typedef SSIZE_T ssize_t;
 #  else
 #    define STORED_BIG_ENDIAN
 #  endif
-#elif defined(_M_IX86)
+#elif defined(_M_IX86) || defined(_M_X64)
 #  define STORED_LITTLE_ENDIAN
 #else
 #  error Unknown byte order
