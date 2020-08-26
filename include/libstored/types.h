@@ -248,7 +248,7 @@ namespace stored {
 		/*!
 		 * \brief Checks if this Variable points to a valid buffer.
 		 */
-		bool valid() const { return m_buffer; }
+		bool valid() const { return m_buffer != nullptr; }
 
 		/*!
 		 * \brief Returns the container this Variable belongs to.
@@ -913,7 +913,7 @@ namespace stored {
 		/*!
 		 * \brief Checks if this Variant is valid.
 		 */
-		bool valid() const { return m_buffer; }
+		bool valid() const { return m_buffer != nullptr; }
 		/*!
 		 * \brief Checks if the #type() is a function.
 		 * \details Only call this function when it is #valid().
