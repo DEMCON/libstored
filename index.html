@@ -114,7 +114,8 @@ $(document).ready(function(){initNavTree('index.html','');});
 cd build
 cmake ..
 cmake --build .
-</pre><p>By default, all examples are built. For example, notice that sources are generated under <code>examples/1_hello</code>, while the example itself is built in the <code>build</code> directory. The documentation can be viewed at <code>doxygen/html/index.html</code>.</p>
+</pre><p><code>scripts/build</code> takes an optional argument, which allows you to specify the <code>CMAKE_BUILD_TYPE</code>. If not specified, Debug is assumed.</p>
+<p>By default, all examples are built. For example, notice that sources are generated under <code>examples/1_hello</code>, while the example itself is built in the <code>build</code> directory. The documentation can be viewed at <code>doxygen/html/index.html</code>.</p>
 <p>To run all tests: </p><pre class="fragment">cmake --build . -- test
 </pre><h3><a class="anchor" id="integrate"></a>How to integrate in your build</h3>
 <p>Building libstored on itself is not too interesting, it is about how it can generate stuff for you. This is how to integrate it in your project:</p>
