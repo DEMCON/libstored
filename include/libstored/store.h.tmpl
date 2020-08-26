@@ -341,7 +341,7 @@ namespace stored {
 		template <typename F>
 		void list(F f, void* arg, char const* prefix = nullptr) { stored::list(&implementation(), buffer(), longDirectory(), f, arg, prefix); }
 
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 		/*!
 		 * \brief Calls a callback for every object in the #longDirectory().
 		 * \see stored::list()

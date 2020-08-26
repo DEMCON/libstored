@@ -379,7 +379,7 @@ namespace stored {
 		explicit DebugVariantTyped(Variant<Container> const& variant)
 			: m_variant(variant)
 		{
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 			static_assert(std::is_trivially_destructible<Variant<Container>>::value, "");
 #elif defined(__GCC__)
 			static_assert(__has_trivial_destructor(Variant<Container>), "");
@@ -445,7 +445,7 @@ namespace stored {
 			static_assert(sizeof(DebugVariantTyped<Container>) == sizeof(DebugVariantTyped<>), "");
 
 			// Check if our default copy constructor works properly.
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 			static_assert(std::is_trivially_copyable<Variant<Container>>::value, "");
 			static_assert(std::is_trivially_destructible<Variant<Container>>::value, "");
 #elif defined(__GCC__)
@@ -551,7 +551,7 @@ namespace stored {
 		 */
 		virtual void list(ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr) const = 0;
 
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 		/*!
 		 * \brief Callback function prototype as supplied to \c list().
 		 *
@@ -685,7 +685,7 @@ namespace stored {
 		 * \brief The map to used by #map(), which maps names to stores.
 		 */
 		typedef std::map<char const*,
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 			std::unique_ptr<DebugStoreBase>
 #else
 			DebugStoreBase*
@@ -728,7 +728,7 @@ namespace stored {
 		typedef DebugStoreBase::ListCallbackArg ListCallbackArg;
 		void list(ListCallbackArg* f, void* arg = nullptr) const;
 
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 		/*! \copydoc stored::DebugStoreBase::ListCallback */
 		typedef DebugStoreBase::ListCallback ListCallback;
 

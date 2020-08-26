@@ -108,7 +108,7 @@ namespace stored {
 
 	void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr);
 
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 	/*!
 	 * \brief Iterates over all objects in the directory and invoke a callback for every object.
 	 * \param container the container that contains \p buffer and \p directory

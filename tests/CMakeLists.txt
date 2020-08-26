@@ -6,11 +6,14 @@ if(MSVC)
 	else()
 		add_compile_options(/MT)
 	endif()
+
+	# MSVC does not have C++11.
+	set(CMAKE_CXX_STANDARD 14)
 else()
 	add_compile_options(-Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wconversion -ffunction-sections -fdata-sections)
+	set(CMAKE_CXX_STANDARD 11)
 endif()
 
-set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory("${PROJECT_SOURCE_DIR}/extern/googletest" "extern/googletest")

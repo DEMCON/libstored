@@ -56,6 +56,31 @@ jobs:
         run: cmake --build . -- test
         working-directory: build
 
+  build-windows-msvc:
+    runs-on: windows-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: bootstrap
+        run: scripts\bootstrap.cmd
+      - name: build Debug
+        run: |
+          mkdir build-msvc
+          cd build-msvc
+          cmake -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Debug ..
+          cmake --build .
+      - name: test
+        run: cmake --build . --target RUN_TESTS --config Debug
+        working-directory: build-msvc
+      - name: build Release
+        run: |
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+          cmake --build .
+        working-directory: build-msvc
+      - name: test
+        run: cmake --build . --target RUN_TESTS --config Release
+        working-directory: build-msvc
+
   build-mac:
     runs-on: macos-latest
     steps:
