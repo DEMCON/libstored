@@ -1,5 +1,6 @@
 var NAVTREEINDEX6 =
 {
+"structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea8162286bfc05e98454e6d04a0bdd23a3":[1,0,6,2,0,25],
 "structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea81bc50d2bf18bbb89613f750b3db4dde":[1,0,6,2,0,3],
 "structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea9ff50bbf1154550b120e6a9a34cfe4a3":[1,0,6,2,0,8],
 "structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eaaa27e7cc812c3e37f4bb04a7ba18ee1e":[1,0,6,2,0,16],

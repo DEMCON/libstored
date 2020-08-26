@@ -70,6 +70,7 @@ var searchData=
   ['stored_5fassert',['stored_assert',['../group__libstored__util.html#gab750e51b876450a0a4ad419588a82a4d',1,'util.h']]],
   ['stored_5fcompiler_5fgcc',['STORED_COMPILER_GCC',['../macros_8h.html#a22853abde64473a82b5cec3360a93e19',1,'macros.h']]],
   ['stored_5fconfig_2eh',['stored_config.h',['../stored__config_8h.html',1,'']]],
+  ['stored_5fcplusplus',['STORED_cplusplus',['../macros_8h.html#aa64cd2b6d63a68c9c8ec5fba4000cf8f',1,'macros.h']]],
   ['stored_5ffallthrough',['STORED_FALLTHROUGH',['../macros_8h.html#a0e76e6ecc7ecbc3d8d14b92c8c7f1b34',1,'macros.h']]],
   ['stored_5fos_5flinux',['STORED_OS_LINUX',['../macros_8h.html#a8ff17800de5afd1a6b14fb6e46dbb61f',1,'macros.h']]],
   ['stored_5fyield',['stored_yield',['../util_8h.html#ab87f43bb221663fb973421055ae96d08',1,'util.h']]],
