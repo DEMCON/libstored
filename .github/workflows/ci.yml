@@ -62,8 +62,9 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: bootstrap
-        run: scripts\bootstrap.cmd
-        run: git submodule update --init --recursive
+        run: |
+          scripts\bootstrap.cmd
+          git submodule update --init --recursive
       - name: build Debug
         run: |
           mkdir build-msvc
