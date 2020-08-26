@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Usage: build.sh [CMAKE_BUILD_TYPE]
+
+
 function gotErr {
 	echo -e "\nError occurred, stopping\n"
 	exit 1
@@ -20,18 +23,29 @@ trap gotErr ERR
 
 pushd "$( cd "$(dirname "$0")"/..; pwd -P )" > /dev/null
 
-if [ -z "$1" ]; then
-	BUILD_TYPE=Debug
+git submodule update --init --recursive
+
+if [ -e build ]; then
+	if [ ! -z "$1" ]; then
+		# Override build type
+		pushd build > /dev/null
+		cmake -DCMAKE_BUILD_TYPE="$1" ..
+		popd > /dev/null
+	fi
 else
-	BUILD_TYPE=$1
+	if [ -z "$1" ]; then
+		BUILD_TYPE=Debug
+	else
+		BUILD_TYPE="$1"
+	fi
+
+	mkdir build
+	pushd build > /dev/null
+	cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" ..
+	popd > /dev/null
 fi
 
-git submodule init
-git submodule update
-
-mkdir -p build
 pushd build > /dev/null
-cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE ..
 cmake --build . -- -j`numproc` all
 popd > /dev/null
 

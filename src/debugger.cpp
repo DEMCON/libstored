@@ -321,6 +321,9 @@ bool Debugger::version(ProtocolLayer& response) {
 		response.encode(m_versions, strlen(m_versions), false);
 	}
 
+	if(Config::Debug)
+		response.encode(" debug", 6, false);
+
 	return true;
 }
 
