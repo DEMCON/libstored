@@ -70,6 +70,9 @@ effectively:
 	cmake ..
 	cmake --build .
 
+`scripts/build` takes an optional argument, which allows you to specify the
+`CMAKE_BUILD_TYPE`.  If not specified, Debug is assumed.
+
 By default, all examples are built.  For example, notice that sources are
 generated under `examples/1_hello`, while the example itself is built in the
 `build` directory. The documentation can be viewed at

@@ -483,11 +483,12 @@ public:
 				m_size = (size_type)(m_size + padding);
 				// Now reserve the size, which still may add a new chunk.
 				if(unlikely(m_size + size > bs))
-					reserve(size);
+					// Reserve all we probably need, if we are reserving anyway.
+					reserve(std::max(max() - this->size(), size));
 			} else {
 				// Not enough room for the padding, let alone the size.
 				// Just create a new buffer, which has always the correct alignment.
-				bufferPush(size + spare);
+				bufferPush(std::max(max() - this->size(), size + spare));
 			}
 
 			char* p = m_buffer + m_size;
