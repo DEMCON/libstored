@@ -425,7 +425,7 @@ namespace stored {
 	 *
 	 * \ingroup libstored_debugger
 	 */
-	class DebugVariant : public DebugVariantBase {
+	class DebugVariant final : public DebugVariantBase {
 	public:
 		/*!
 		 * \brief Constructor for an invalid #stored::Variant wrapper.
