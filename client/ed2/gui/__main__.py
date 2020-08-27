@@ -2,17 +2,17 @@
 
 # libstored, a Store for Embedded Debugger.
 # Copyright (C) 2020  Jochem Rutgers
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
@@ -46,7 +46,7 @@ class NatSort(QSortFilterProxyModel):
         alg = natsort.ns.REAL | natsort.ns.LOCALE
         if self.sortCaseSensitivity() == Qt.CaseInsensitive:
             alg = alg | natsort.ns.IGNORECASE
-            
+
         sorted_data = natsort.natsorted([left_data, right_data], alg=alg)
         return left_data == sorted_data[0]
 
@@ -60,7 +60,7 @@ class ObjectListModel(QAbstractListModel):
         self._objects = objects
         for i in range(0, len(objects)):
             objects[i].pollingChanged.connect(lambda i=i: self._pollingChanged(i))
-    
+
     def _pollingChanged(self, i):
         index = self.createIndex(i, 0)
         self.dataChanged.emit(index, index, [self.PollingRole])
@@ -101,7 +101,16 @@ def lognplot_send(lognplot, o):
         # Not supported
         return
 
-    lognplot.send_sample(o.name, o.t, float(o.value))
+    try:
+        lognplot.send_sample(o.name, o.t, float(o.value))
+    except ConnectionResetError:
+        print(f'Reconnecting to lognplot...')
+        try:
+            lognplot.connect()
+        except:
+            pass
+
+
 
 if __name__ == '__main__':
     QCoreApplication.setApplicationName("Embedded Debugger")
