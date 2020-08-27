@@ -1,27 +1,29 @@
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <libstored/protocol.h>
 
-#ifdef STORED_COMPILER_MSVC
-#  include <io.h>
-#else
-#  include <unistd.h>
+#ifndef STORED_OS_BAREMETAL
+#  ifdef STORED_COMPILER_MSVC
+#    include <io.h>
+#  else
+#    include <unistd.h>
+#  endif
 #endif
 
 #if defined(STORED_OS_WINDOWS)
@@ -177,11 +179,11 @@ TerminalLayer::TerminalLayer(int nonDebugDecodeFd, int encodeFd, ProtocolLayer* 
 /*!
  * \copydoc stored::ProtocolLayer::~ProtocolLayer()
  */
-TerminalLayer::~TerminalLayer() is_default;
+TerminalLayer::~TerminalLayer() is_default
 
 void TerminalLayer::decode(void* buffer, size_t len) {
 	size_t nonDebugOffset = m_decodeState < StateDebug ? 0 : len;
-	
+
 	for(size_t i = 0; i < len; i++) {
 		char c = (static_cast<char*>(buffer))[i];
 
@@ -225,13 +227,14 @@ void TerminalLayer::decode(void* buffer, size_t len) {
 
 /*!
  * \brief Receptor of non-debug data during decode().
- * 
+ *
  * Default implementation writes to the \c nonDebugDecodeFd, as supplied to the constructor.
  */
 void TerminalLayer::nonDebugDecode(void* buffer, size_t len) {
 	writeToFd(m_nonDebugDecodeFd, buffer, len);
 }
 
+#ifndef STORED_OS_BAREMETAL
 /*!
  * \brief Helper function to write a buffer to a file descriptor.
  */
@@ -243,6 +246,7 @@ void TerminalLayer::writeToFd(int fd, void const* buffer, size_t len) {
 	for(size_t i = 0; res >= 0 && i < len; i += (size_t)res)
 		res = write(fd, static_cast<char const*>(buffer) + i, (len - i));
 }
+#endif
 
 void TerminalLayer::encode(void* buffer, size_t len, bool last) {
 	encodeStart();
@@ -262,13 +266,13 @@ void TerminalLayer::encode(void const* buffer, size_t len, bool last) {
 
 /*!
  * \brief Emits a start-of-frame sequence if it hasn't done yet.
- * 
+ *
  * Call #encodeEnd() to finish the current frame.
  */
 void TerminalLayer::encodeStart() {
 	if(m_encodeState)
 		return;
-	
+
 	m_encodeState = true;
 	char start[2] = {Esc, EscStart};
 	writeToFd(m_encodeFd, start, sizeof(start));

@@ -3,17 +3,17 @@
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -27,10 +27,10 @@
  * layer are often different, the layers in between are often different too.
  * To provide a common Embedded Debugger interface, the client (e.g., GUI, CLI,
  * python scripts), we standardize on ZeroMQ REQ/REP over TCP.
- * 
+ *
  * Not every device supports ZeroMQ, or even TCP. For this, several bridges are
  * required. Different configurations may be possible:
- * 
+ *
  * - In case of a Linux/Windows application: embed ZeroMQ server into the
  *   application, such that the application binds to a REP socket.  A client can
  *   connect to the application directly.
@@ -39,66 +39,66 @@
  *   these messages from those streams and prove a ZeroMQ interface.
  * - Application over CAN: like a `client/stdio_wrapper.py`, a CAN extractor to
  *   ZeroMQ bridge is required.
- * 
+ *
  * Then, the client can be connected to the ZeroMQ interface. The following
  * clients are provided:
- * 
+ *
  * - `client/ed2.ZmqClient`: a python class that allows easy access to all objects
  *   of the connected store. This is the basis of the clients below.
  * - `client/cli_client.py`: a command line tool that lets you directly enter the
  *   protocol messages as defined above.
  * - `client/gui_client.py`: a simple GUI that shows the list of objects and lets
  *   you manipulate the values. The GUI has support to send samples to `lognplot`.
- * 
+ *
  * Test it using the `terminal` example, started using the
  * `client/stdio_wrapper.py`. Then connect one of the clients above to it.
- * 
+ *
  * ### Application layer
- * 
+ *
  * See \ref libstored_debugger.
- * 
+ *
  * ### Presentation layer
- * 
+ *
  * For terminal or UART: In case of binary data, escape all bytes < 0x20 as
  * follows: the sequence `DEL` (0x7f) removes the 3 MSb of the successive byte.
  * For example, the sequence `DEL ;` (0x7f 0x3b) decodes as `ESC` (0x1b).
  * To encode `DEL` itself, repeat it.
  * See stored::AsciiEscapeLayer.
- * 
+ *
  * For CAN/ZeroMQ: nothing required.
- * 
+ *
  * ### Session layer:
- * 
+ *
  * For terminal/UART/CAN: no session support, there is only one (implicit) session.
- * 
+ *
  * For ZeroMQ: use REQ/REP sockets, where the application-layer request and
  * response are exactly one ZeroMQ message. All layers below are managed by ZeroMQ.
- * 
+ *
  * ### Transport layer
- * 
+ *
  * For terminal or UART: out-of-band message are captured using `ESC _` (APC) and
  * `ESC \` (ST).  A message consists of the bytes in between these sequences.
  * See stored::TerminalLayer.
- * 
+ *
  * In case of lossly channels (UART/CAN), CRC, message sequence number, and
  * retransmits should be implemented.  This depends on the specific transport
  * hardware and embedded device.
- * 
+ *
  * ### Network layer
- * 
+ *
  * For terminal/UART/ZeroMQ, nothing has to be done.
- * 
+ *
  * For CAN: packet fragmentation/reassembling/routing is done here.
- * 
+ *
  * ### Datalink layer
- * 
+ *
  * Depends on the device.
- * 
+ *
  * ### Physical layer
- * 
+ *
  * Depends on the device.
- * 
- * 
+ *
+ *
  * \ingroup libstored
  */
 
@@ -201,7 +201,7 @@ namespace stored {
 
 		/*!
 		 * \brief Decode a frame and forward the decoded frame to the upper layer.
-		 * 
+		 *
 		 * The given buffer may be decoded in-place.
 		 */
 		virtual void decode(void* buffer, size_t len) {
@@ -213,7 +213,7 @@ namespace stored {
 		 * \brief Encodes the last part of the current frame.
 		 */
 		void encode() {
-			encode((void const*)nullptr, 0, true);
+			encode(static_cast<void const*>(nullptr), 0, true);
 		}
 
 		/*!
@@ -261,7 +261,7 @@ namespace stored {
 		/*!
 		 * \copydoc stored::ProtocolLayer::~ProtocolLayer()
 		 */
-		virtual ~AsciiEscapeLayer() override is_default;
+		virtual ~AsciiEscapeLayer() override is_default
 
 		virtual void decode(void* buffer, size_t len) override;
 		virtual void encode(void* buffer, size_t len, bool last = true) override;
@@ -297,7 +297,14 @@ namespace stored {
 		void encodeStart();
 		void encodeEnd();
 
+#ifdef STORED_OS_BAREMETAL
+		/*!
+		 * \brief Write a buffer to a file descriptor.
+		 */
+		virtual void writeToFd(int fd, void const* buffer, size_t len) = 0;
+#else
 		void writeToFd(int fd, void const* buffer, size_t len);
+#endif
 
 	private:
 		/*! \brief The file descriptor to write non-debug decoded data to. */

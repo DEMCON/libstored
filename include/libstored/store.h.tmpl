@@ -76,7 +76,7 @@ namespace stored {
 		CLASS_NOCOPY({{store.name}}Base)
 	protected:
 		/*! \brief Default constructor. */
-		{{store.name}}Base() is_default;
+		{{store.name}}Base() is_default
 
 	public:
 		/*! \brief Type of the actual implementation, which is the (lowest) subclass. */
@@ -361,7 +361,7 @@ namespace stored {
 		typedef {{store.name}}Base<{{store.name}}> base;
 		friend class {{store.name}}Base<{{store.name}}>;
 		/*! \copydoc stored::{{store.name}}Base::{{store.name}}Base() */
-		{{store.name}}() is_default;
+		{{store.name}}() is_default
 	protected:
 {% for o in store.objects %}
 {%   if o is function %}
@@ -377,3 +377,4 @@ namespace stored {
 } // namespace
 #endif // __cplusplus
 #endif // __LIBSTORED_STORE_H_{{store.name}}
+

@@ -324,10 +324,15 @@
 
 namespace stored {
 
+#ifdef STORED_COMPILER_ARMCC
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wnon-virtual-dtor"
+#endif
 	/*!
 	 * \brief Container-template-type-invariant base class of a wrapper for #stored::Variant.
 	 */
 	class DebugVariantBase {
+		CLASS_NO_WEAK_VTABLE
 	public:
 		/*!
 		 * \brief Retrieve data from the object.
@@ -389,7 +394,7 @@ namespace stored {
 		/*!
 		 * \brief Constructs an invalid wrapper.
 		 */
-		DebugVariantTyped() is_default;
+		DebugVariantTyped() is_default
 
 		size_t get(void* dst, size_t len = 0) const final {
 			return variant().get(dst, len); }
@@ -426,6 +431,7 @@ namespace stored {
 	 * \ingroup libstored_debugger
 	 */
 	class DebugVariant final : public DebugVariantBase {
+		CLASS_NO_WEAK_VTABLE
 	public:
 		/*!
 		 * \brief Constructor for an invalid #stored::Variant wrapper.
@@ -498,6 +504,9 @@ namespace stored {
 		 */
 		char m_buffer[sizeof(DebugVariantTyped<>)];
 	};
+#ifdef STORED_COMPILER_ARMCC
+#  pragma clang diagnostic pop
+#endif
 
 	/*!
 	 * \brief Wrapper for a store, that hides the store's template parameters.
@@ -510,13 +519,14 @@ namespace stored {
 	 */
 	class DebugStoreBase {
 		CLASS_NOCOPY(DebugStoreBase)
+		CLASS_NO_WEAK_VTABLE
 	protected:
 		/*! \brief Constructor. */
-		DebugStoreBase() is_default;
+		DebugStoreBase() is_default
 
 	public:
 		/*! \brief Destructor. */
-		virtual ~DebugStoreBase() is_default;
+		virtual ~DebugStoreBase() is_default
 
 		/*!
 		 * \brief Returns the name of this store.
@@ -569,8 +579,8 @@ namespace stored {
 		template <typename F>
 		SFINAE_IS_FUNCTION(F, ListCallback, void)
 		list(F& f) const {
-			auto cb = [](char const* name, DebugVariant& variant, void* f) {
-				(*static_cast<F*>(f))(name, variant);
+			auto cb = [](char const* name, DebugVariant& variant, void* f_) {
+				(*static_cast<F*>(f_))(name, variant);
 			};
 			list(static_cast<ListCallbackArg*>(cb), &f);
 		}
@@ -595,7 +605,7 @@ namespace stored {
 		/*!
 		 * \brief Destructor.
 		 */
-		virtual ~DebugStore() override is_default;
+		virtual ~DebugStore() override is_default
 
 		char const* name() const final { return store().name(); }
 
@@ -735,8 +745,8 @@ namespace stored {
 		/*! \copydoc stored::DebugStoreBase::list(F&) const */
 		template <typename F>
 		void list(F& f) const {
-			auto cb = [](char const* name, DebugVariant& variant, void* f) {
-				(*static_cast<F*>(f))(name, variant);
+			auto cb = [](char const* name, DebugVariant& variant, void* f_) {
+				(*static_cast<F*>(f_))(name, variant);
 			};
 			list(static_cast<ListCallbackArg*>(cb), &f);
 		}

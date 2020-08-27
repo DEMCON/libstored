@@ -61,7 +61,7 @@ namespace stored {
 			/*! \brief Size of the header of a chunk. */
 			chunkHeader = sizeof(size_t),
 			/*! \brief Extra amount to reserve when the chunk is allocated. */
-			spare = 8 * sizeof(void*),
+			spare = 8 * sizeof(void*)
 		};
 		/*! \brief Type of all internally used size counters. */
 		typedef typename value_type<MaxSize>::type size_type;
@@ -293,8 +293,13 @@ private:
 
 			// NOLINTNEXTLINE(cppcoreguidelines-no-malloc,cppcoreguidelines-owning-memory)
 			void* p = malloc(size + chunkHeader);
-			if(!p)
+			if(!p) {
+#ifdef __cpp_exceptions
 				throw std::bad_alloc();
+#else
+				abort();
+#endif
+			}
 
 			m_buffer = buffer(p);
 			setBufferSize(size);
@@ -343,8 +348,13 @@ private:
 			// clang-analyzer-unix.API: clang-tidy thinks new_cap can be 0, but that's not true.
 			// NOLINTNEXTLINE(cppcoreguidelines-no-malloc,cppcoreguidelines-owning-memory,clang-analyzer-unix.API)
 			void* p = realloc(chunk(m_buffer), size + chunkHeader);
-			if(!p)
+			if(!p) {
+#ifdef __cpp_exceptions
 				throw std::bad_alloc();
+#else
+				abort();
+#endif
+			}
 
 			m_buffer = buffer(p);
 			setBufferSize(size);
@@ -473,9 +483,14 @@ public:
 			if(padding == align)
 				padding = 0;
 
-			if(unlikely(m_total + size + padding < m_total))
+			if(unlikely(m_total + size + padding < m_total)) {
 				// Wrap around -> overflow.
+#ifdef __cpp_exceptions
 				throw std::bad_alloc();
+#else
+				abort();
+#endif
+			}
 
 			size_t bs = bufferSize();
 			if(likely(m_size + padding <= bs)) {

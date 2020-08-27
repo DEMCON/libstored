@@ -21,22 +21,30 @@
 #include <cstring>
 #include <string>
 
+#ifdef STORED_COMPILER_ARMCC
+#  pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
+
 /*!
  * \brief Cleanup of a given object.
  */
+#if STORED_cplusplus < 201103L
 template <typename T>
 static void cleanup(T* t) {
 	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 	delete t;
 }
-
-#if STORED_cplusplus >= 201103L
+#else
 template <typename T>
 static void cleanup(std::unique_ptr<T>& UNUSED_PAR(t)) {
 }
 #endif
 
 namespace stored {
+
+CLASS_NO_WEAK_VTABLE_DEF(DebugVariantBase)
+CLASS_NO_WEAK_VTABLE_DEF(DebugVariant)
+CLASS_NO_WEAK_VTABLE_DEF(DebugStoreBase)
 
 /*!
  * \brief Arguments passed to \c listCmdCallback().
@@ -526,7 +534,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 			m_macroSize = newlen;
 		} else {
 			// Update existing macro.
-			size_t newlen = len + m_macroSize - it->second.size();;
+			size_t newlen = len + m_macroSize - it->second.size();
 			if(newlen > Config::DebuggerMacro)
 				goto error;
 
