@@ -137,6 +137,22 @@
 #  endif
 #endif
 
+#ifndef CLASS_NO_WEAK_VTABLE
+/*!
+ * \brief Macro to make sure that the containing class emits its vtable in one translation unit.
+ * \details Use CLASS_NO_WEAK_VTABLE_DEF() in one .cpp file.
+ */
+#  define CLASS_NO_WEAK_VTABLE \
+	protected: \
+		virtual void force_to_translation_unit();
+/*!
+ * \see CLASS_NO_WEAK_VTABLE
+ */
+#  define CLASS_NO_WEAK_VTABLE_DEF(Class) \
+	/*! \brief Dummy function to force the vtable of this class to this translation unit. Don't call. */ \
+	void Class::force_to_translation_unit() { abort(); }
+#endif
+
 #ifndef is_default
 #  if STORED_cplusplus >= 201103L
 #    define is_default = default;
@@ -186,8 +202,11 @@ namespace stored {
 		template <> struct signedness_helper<unsigned int> { typedef int signed_type; typedef unsigned int unsigned_type; };
 		template <> struct signedness_helper<long> { typedef long signed_type; typedef unsigned long unsigned_type; };
 		template <> struct signedness_helper<unsigned long> { typedef long signed_type; typedef unsigned long unsigned_type; };
+#ifdef ULLONG_MAX
+		// long long only exist since C99 and C++11, but many compilers do support them anyway.
 		template <> struct signedness_helper<long long> { typedef long long signed_type; typedef unsigned long long unsigned_type; };
 		template <> struct signedness_helper<unsigned long long> { typedef long long signed_type; typedef unsigned long long unsigned_type; };
+#endif
 
 		template <typename R> struct saturated_cast_helper
 		{

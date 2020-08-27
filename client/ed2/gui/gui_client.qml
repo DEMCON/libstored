@@ -3,17 +3,17 @@
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -100,7 +100,7 @@ Window {
                         obj.format = currentText
                     }
                 }
-                
+
                 Text {
                     Layout.fillHeight: true
                     Layout.preferredWidth: root.fontSize * 5.5
@@ -120,7 +120,7 @@ Window {
                     font.pixelSize: root.fontSize
                     horizontalAlignment: TextInput.AlignRight
                     text: obj.valueString
-                    placeholderText: obj.t ? "" : "value?"
+                    placeholderText: obj && obj.t ? "" : "value?"
                     readOnly: format.currentText === 'bytes'
 
                     onAccepted: {
@@ -128,7 +128,7 @@ Window {
                         Qt.callLater(function() { text = obj.valueString })
                     }
 
-                    property bool editing: activeFocus && text != obj.valueString 
+                    property bool editing: activeFocus && text != obj.valueString
                     property bool refreshed: false
                     color: editing ? "red" : refreshed ? "blue" : "black"
 
@@ -142,11 +142,11 @@ Window {
                         interval: 1100
                         onTriggered: valueField.refreshed = false
                     }
-                    
+
                     Connections {
                         target: obj
                         function onValueChanged() {
-                            if(!valueField.editing) {
+                            if(obj && !valueField.editing) {
                                 valueField.text = obj.valueString
                                 valueField.refreshed = true
                                 updatedTimer.restart()
@@ -154,8 +154,8 @@ Window {
                         }
                     }
 
-                    ToolTip.text: obj.name + "\nLast update: " + obj.tString
-                    ToolTip.visible: hovered && obj.tString
+                    ToolTip.text: obj ? obj.name + "\nLast update: " + obj.tString : ""
+                    ToolTip.visible: hovered && obj && obj.tString
                     ToolTip.delay: 1000
                 }
 
@@ -209,7 +209,7 @@ Window {
                     onTriggered: objects.setFilterRegularExpression("(?i)" + filter.text)
                 }
             }
-            
+
             TextField {
                 id: defaultPollField
                 Layout.fillHeight: true
@@ -229,7 +229,7 @@ Window {
                     Qt.callLater(function() { text = valueString })
                 }
 
-                property bool editing: activeFocus && text != valueString 
+                property bool editing: activeFocus && text != valueString
                 color: editing ? "red" : "black"
 
                 onActiveFocusChanged: {

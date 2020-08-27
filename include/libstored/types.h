@@ -84,7 +84,7 @@ namespace stored {
 			Blob = 1u,
 			String = 2u,
 
-			Invalid = 0xffu,
+			Invalid = 0xffu
 		};
 
 		/*! \brief Checks if the given type is a function. */
@@ -132,8 +132,11 @@ namespace stored {
 	template <> struct toType<unsigned int> : public impl::toIntType<false,sizeof(int)> {};
 	template <> struct toType<long> : public impl::toIntType<true,sizeof(long)> {};
 	template <> struct toType<unsigned long> : public impl::toIntType<false,sizeof(long)> {};
+#ifdef ULLONG_MAX
+	// long long only exist since C99 and C++11, but many compilers do support them anyway.
 	template <> struct toType<long long> : public impl::toIntType<true,sizeof(long long)> {};
 	template <> struct toType<unsigned long long> : public impl::toIntType<false,sizeof(long long)> {};
+#endif
 	template <> struct toType<float> { static Type::type const type = Type::Float; };
 	template <> struct toType<double> { static Type::type const type = Type::Double; };
 	template <> struct toType<char*> { static Type::type const type = Type::String; };
@@ -320,7 +323,7 @@ namespace stored {
 #ifdef _DEBUG
 			: m_entry() {}
 #else
-			is_default;
+			is_default
 #endif
 
 		/*! \copydoc stored::Variable::Variable(Variable const&) */

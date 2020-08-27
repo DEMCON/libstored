@@ -45,7 +45,16 @@
 //
 
 #ifdef __GNUC__
-#  ifdef __clang__
+#  ifdef __ARMCC_VERSION
+#    define STORED_COMPILER_ARMCC
+// This is ARMCC/Keil
+#    pragma clang diagnostic ignored "-Wold-style-cast"
+#    pragma clang diagnostic ignored "-Wused-but-marked-unused"
+#    pragma clang diagnostic ignored "-Wpadded"
+#    if STORED_cplusplus >= 201103L
+#      pragma clang diagnostic ignored "-Wc++98-compat"
+#    endif
+#  elif defined(__clang__)
 #    define STORED_COMPILER_CLANG
 // This is clang, which looks a lot like gcc
 #    pragma clang diagnostic ignored "-Wunused-local-typedef"
@@ -125,6 +134,8 @@ typedef SSIZE_T ssize_t;
 #  endif
 #elif defined(__linux__)
 #  define STORED_OS_LINUX 1
+#elif defined(STORED_COMPILER_ARMCC)
+#  define STORED_OS_BAREMETAL 1
 #else
 #  define STORED_OS_GENERIC 1
 #endif

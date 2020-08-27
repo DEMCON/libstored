@@ -122,8 +122,8 @@ namespace stored {
 	list(Container* container, void* buffer, uint8_t const* directory, F&& f) {
 		typedef void(ListCallback)(Container*, char const*, Type::type, void*, size_t);
 		std::function<ListCallback> f_ = f;
-		auto cb = [](void* container, char const* name, Type::type type, void* buffer, size_t len, void* f) {
-			(*(std::function<ListCallback>*)f)((Container*)container, name, type, buffer, len);
+		auto cb = [](void* container_, char const* name, Type::type type, void* buffer_, size_t len, void* f__) {
+			(*(std::function<ListCallback>*)f__)((Container*)container_, name, type, buffer_, len);
 		};
 		list(container, buffer, directory, static_cast<ListCallbackArg*>(cb), &f_);
 	}
