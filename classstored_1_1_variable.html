@@ -179,7 +179,7 @@ class stored::Variable&lt; T, Container, Hooks &gt;</h3>
 <p>This class only works for fixed-length variables (see <a class="el" href="structstored_1_1_type.html#a2c988ab827562d9bcd7f99506c765cd1" title="Checks if the given type has a fixed length, or is a function with such an argument. ">stored::Type::isFixed()</a>). Otherwise, use <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">stored::Variant</a>.</p>
 <p>A <a class="el" href="classstored_1_1_variable.html" title="A typed variable in a store. ">Variable</a> is very small (it contains only a pointer). It is copyable and assignable, so it is fine to pass it by value. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00156">156</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00159">159</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a2f3d59f2244ac9444f4576af63dd9df4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2f3d59f2244ac9444f4576af63dd9df4">&#9670;&nbsp;</a></span>type</h2>
@@ -197,7 +197,7 @@ template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;
 
 <p>The (fixed-length) type of this variable. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00159">159</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00162">162</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -247,7 +247,7 @@ template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00166">166</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00169">169</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -278,7 +278,7 @@ template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;
 
 <p>Constructor for an invalid <a class="el" href="classstored_1_1_variable.html" title="A typed variable in a store. ">Variable</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00175">175</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00178">178</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -310,7 +310,7 @@ template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;
 
 <p>Copy construct, such that this <a class="el" href="classstored_1_1_variable.html" title="A typed variable in a store. ">Variable</a> points to the same buffer the given <a class="el" href="classstored_1_1_variable.html" title="A typed variable in a store. ">Variable</a> does. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00180">180</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00183">183</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -342,7 +342,7 @@ template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;
 
 <p>Move-construct. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00194">194</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00197">197</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -406,7 +406,7 @@ template&lt;typename U &gt; </div>
 <p>Returns the value, like <a class="el" href="classstored_1_1_variable.html#abe98a22f7309a1945f7e493cc10380ae" title="Returns the value. ">get()</a>, cast to the given type. </p>
 <p>Only call this function when it is <a class="el" href="classstored_1_1_variable.html#a076118df9f13c23eba93d0f63627e3d2" title="Checks if this Variable points to a valid buffer. ">valid()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00224">224</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00227">227</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -438,7 +438,7 @@ template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;
 <p>Returns the buffer this <a class="el" href="classstored_1_1_variable.html" title="A typed variable in a store. ">Variable</a> points to. </p>
 <p>Only call this function when it is <a class="el" href="classstored_1_1_variable.html#a076118df9f13c23eba93d0f63627e3d2" title="Checks if this Variable points to a valid buffer. ">valid()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00278">278</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00281">281</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -491,7 +491,7 @@ template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;
 <p>Returns the value. </p>
 <p>Only call this function when it is <a class="el" href="classstored_1_1_variable.html#a076118df9f13c23eba93d0f63627e3d2" title="Checks if this Variable points to a valid buffer. ">valid()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00214">214</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00217">217</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -522,7 +522,7 @@ template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;
 
 <p>Returns the value, which is identical to <a class="el" href="classstored_1_1_variable.html#abe98a22f7309a1945f7e493cc10380ae" title="Returns the value. ">get()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00232">232</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00235">235</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -554,7 +554,7 @@ template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;
 
 <p>Checks if two Variables do not point to the same buffer. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00266">266</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00269">269</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -586,7 +586,7 @@ template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;
 
 <p>Let this <a class="el" href="classstored_1_1_variable.html" title="A typed variable in a store. ">Variable</a> point to the same buffer as the given <a class="el" href="classstored_1_1_variable.html" title="A typed variable in a store. ">Variable</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00185">185</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00188">188</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -618,7 +618,7 @@ template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;
 
 <p>Move-assign. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00198">198</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00201">201</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -650,7 +650,7 @@ template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;
 
 <p>Sets the value, which is identical to <a class="el" href="classstored_1_1_variable.html#a36bd45168cb1f51b2af6780e17d4230f" title="Sets the value. ">set()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00246">246</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00249">249</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -682,7 +682,7 @@ template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;
 
 <p>Checks if two Variables point to the same buffer, or are both invalid. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00261">261</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00264">264</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -715,7 +715,7 @@ template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;
 <p>Sets the value. </p>
 <p>Only call this function when it is <a class="el" href="classstored_1_1_variable.html#a076118df9f13c23eba93d0f63627e3d2" title="Checks if this Variable points to a valid buffer. ">valid()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00238">238</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00241">241</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -746,7 +746,7 @@ template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;
 
 <p>Returns the size of the data. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00271">271</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00274">274</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -777,7 +777,7 @@ template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;
 
 <p>Checks if this <a class="el" href="classstored_1_1_variable.html" title="A typed variable in a store. ">Variable</a> points to a valid buffer. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00251">251</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00254">254</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>
@@ -804,7 +804,7 @@ template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00284">284</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00287">287</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
 
 </div>
 </div>

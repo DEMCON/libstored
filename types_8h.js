@@ -16,14 +16,12 @@ var types_8h =
     [ "toType< float >", "structstored_1_1to_type_3_01float_01_4.html", null ],
     [ "toType< int >", "structstored_1_1to_type_3_01int_01_4.html", null ],
     [ "toType< long >", "structstored_1_1to_type_3_01long_01_4.html", null ],
-    [ "toType< long long >", "structstored_1_1to_type_3_01long_01long_01_4.html", null ],
     [ "toType< short >", "structstored_1_1to_type_3_01short_01_4.html", null ],
     [ "toType< signed char >", "structstored_1_1to_type_3_01signed_01char_01_4.html", null ],
     [ "toType< T * >", "structstored_1_1to_type_3_01_t_01_5_01_4.html", null ],
     [ "toType< unsigned char >", "structstored_1_1to_type_3_01unsigned_01char_01_4.html", null ],
     [ "toType< unsigned int >", "structstored_1_1to_type_3_01unsigned_01int_01_4.html", null ],
     [ "toType< unsigned long >", "structstored_1_1to_type_3_01unsigned_01long_01_4.html", null ],
-    [ "toType< unsigned long long >", "structstored_1_1to_type_3_01unsigned_01long_01long_01_4.html", null ],
     [ "toType< unsigned short >", "structstored_1_1to_type_3_01unsigned_01short_01_4.html", null ],
     [ "toType< void >", "structstored_1_1to_type_3_01void_01_4.html", null ]
 ];

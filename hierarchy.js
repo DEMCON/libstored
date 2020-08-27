@@ -82,11 +82,9 @@ var hierarchy =
     [ "stored::impl::signedness_helper< T >", "structstored_1_1impl_1_1signedness__helper.html", null ],
     [ "stored::impl::signedness_helper< int >", "structstored_1_1impl_1_1signedness__helper_3_01int_01_4.html", null ],
     [ "stored::impl::signedness_helper< long >", "structstored_1_1impl_1_1signedness__helper_3_01long_01_4.html", null ],
-    [ "stored::impl::signedness_helper< long long >", "structstored_1_1impl_1_1signedness__helper_3_01long_01long_01_4.html", null ],
     [ "stored::impl::signedness_helper< short >", "structstored_1_1impl_1_1signedness__helper_3_01short_01_4.html", null ],
     [ "stored::impl::signedness_helper< unsigned int >", "structstored_1_1impl_1_1signedness__helper_3_01unsigned_01int_01_4.html", null ],
     [ "stored::impl::signedness_helper< unsigned long >", "structstored_1_1impl_1_1signedness__helper_3_01unsigned_01long_01_4.html", null ],
-    [ "stored::impl::signedness_helper< unsigned long long >", "structstored_1_1impl_1_1signedness__helper_3_01unsigned_01long_01long_01_4.html", null ],
     [ "stored::impl::signedness_helper< unsigned short >", "structstored_1_1impl_1_1signedness__helper_3_01unsigned_01short_01_4.html", null ],
     [ "stored::impl::toIntType< signd, size >", "structstored_1_1impl_1_1to_int_type.html", null ],
     [ "stored::impl::toIntType< false, 1 >", "structstored_1_1impl_1_1to_int_type_3_01false_00_011_01_4.html", null ],
@@ -141,9 +139,6 @@ var hierarchy =
     [ "stored::impl::toIntType< false, sizeof(int)>", "structstored_1_1impl_1_1to_int_type.html", [
       [ "stored::toType< unsigned int >", "structstored_1_1to_type_3_01unsigned_01int_01_4.html", null ]
     ] ],
-    [ "stored::impl::toIntType< false, sizeof(long long)>", "structstored_1_1impl_1_1to_int_type.html", [
-      [ "stored::toType< unsigned long long >", "structstored_1_1to_type_3_01unsigned_01long_01long_01_4.html", null ]
-    ] ],
     [ "stored::impl::toIntType< false, sizeof(long)>", "structstored_1_1impl_1_1to_int_type.html", [
       [ "stored::toType< unsigned long >", "structstored_1_1to_type_3_01unsigned_01long_01_4.html", null ]
     ] ],
@@ -155,9 +150,6 @@ var hierarchy =
     ] ],
     [ "stored::impl::toIntType< true, sizeof(int)>", "structstored_1_1impl_1_1to_int_type.html", [
       [ "stored::toType< int >", "structstored_1_1to_type_3_01int_01_4.html", null ]
-    ] ],
-    [ "stored::impl::toIntType< true, sizeof(long long)>", "structstored_1_1impl_1_1to_int_type.html", [
-      [ "stored::toType< long long >", "structstored_1_1to_type_3_01long_01long_01_4.html", null ]
     ] ],
     [ "stored::impl::toIntType< true, sizeof(long)>", "structstored_1_1impl_1_1to_int_type.html", [
       [ "stored::toType< long >", "structstored_1_1to_type_3_01long_01_4.html", null ]

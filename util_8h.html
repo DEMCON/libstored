@@ -118,15 +118,11 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1impl_1_1signedness__helper_3_01long_01_4.html">stored::impl::signedness_helper&lt; long &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1impl_1_1signedness__helper_3_01long_01long_01_4.html">stored::impl::signedness_helper&lt; long long &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1impl_1_1signedness__helper_3_01short_01_4.html">stored::impl::signedness_helper&lt; short &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1impl_1_1signedness__helper_3_01unsigned_01int_01_4.html">stored::impl::signedness_helper&lt; unsigned int &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1impl_1_1signedness__helper_3_01unsigned_01long_01_4.html">stored::impl::signedness_helper&lt; unsigned long &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1impl_1_1signedness__helper_3_01unsigned_01long_01long_01_4.html">stored::impl::signedness_helper&lt; unsigned long long &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1impl_1_1signedness__helper_3_01unsigned_01short_01_4.html">stored::impl::signedness_helper&lt; unsigned short &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -158,6 +154,11 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
+<tr class="memitem:ae6d06be09cbce14f4d9ebd7fce942221"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="util_8h.html#ae6d06be09cbce14f4d9ebd7fce942221">CLASS_NO_WEAK_VTABLE</a></td></tr>
+<tr class="memdesc:ae6d06be09cbce14f4d9ebd7fce942221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro to make sure that the containing class emits its vtable in one translation unit.  <a href="#ae6d06be09cbce14f4d9ebd7fce942221">More...</a><br /></td></tr>
+<tr class="separator:ae6d06be09cbce14f4d9ebd7fce942221"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac56d4e0f94ae6fa721af21e4f11c4ec5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="util_8h.html#ac56d4e0f94ae6fa721af21e4f11c4ec5">CLASS_NO_WEAK_VTABLE_DEF</a>(Class)</td></tr>
+<tr class="separator:ac56d4e0f94ae6fa721af21e4f11c4ec5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51b700a941b8d8d0f4c446dc2af5ce79"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="util_8h.html#a51b700a941b8d8d0f4c446dc2af5ce79">CLASS_NOCOPY</a>(Class)</td></tr>
 <tr class="memdesc:a51b700a941b8d8d0f4c446dc2af5ce79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emits the copy/move constructor/assignment such that copy/move is not allowed.  <a href="#a51b700a941b8d8d0f4c446dc2af5ce79">More...</a><br /></td></tr>
 <tr class="separator:a51b700a941b8d8d0f4c446dc2af5ce79"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -192,6 +193,46 @@ Functions</h2></td></tr>
 <tr class="separator:ab35f3536f6df038d221bf13ebab7a454"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="ae6d06be09cbce14f4d9ebd7fce942221"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6d06be09cbce14f4d9ebd7fce942221">&#9670;&nbsp;</a></span>CLASS_NO_WEAK_VTABLE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CLASS_NO_WEAK_VTABLE</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">protected</span>: \</div><div class="line">        virtual <span class="keywordtype">void</span> force_to_translation_unit();</div></div><!-- fragment -->
+<p>Macro to make sure that the containing class emits its vtable in one translation unit. </p>
+<p>Use <a class="el" href="util_8h.html#ac56d4e0f94ae6fa721af21e4f11c4ec5">CLASS_NO_WEAK_VTABLE_DEF()</a> in one .cpp file. </p>
+
+<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00145">145</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+
+</div>
+</div>
+<a id="ac56d4e0f94ae6fa721af21e4f11c4ec5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac56d4e0f94ae6fa721af21e4f11c4ec5">&#9670;&nbsp;</a></span>CLASS_NO_WEAK_VTABLE_DEF</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CLASS_NO_WEAK_VTABLE_DEF</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Class</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"> \</div><div class="line">    void Class::force_to_translation_unit() { abort(); }</div></div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="util_8h.html#ae6d06be09cbce14f4d9ebd7fce942221" title="Macro to make sure that the containing class emits its vtable in one translation unit. ">CLASS_NO_WEAK_VTABLE</a> </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00151">151</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+
+</div>
+</div>
 <a id="a51b700a941b8d8d0f4c446dc2af5ce79"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a51b700a941b8d8d0f4c446dc2af5ce79">&#9670;&nbsp;</a></span>CLASS_NOCOPY</h2>
 
@@ -234,7 +275,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a13">5_debug/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#a6">terminal/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00142">142</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00158">158</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
 
 </div>
 </div>
