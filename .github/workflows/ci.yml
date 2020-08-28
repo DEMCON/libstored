@@ -31,6 +31,7 @@ jobs:
         working-directory: build
       - name: cppcheck
         run: make cppcheck
+        working-directory: build
 
       # If everything is OK, publish documentation
       - name: deploy
