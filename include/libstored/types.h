@@ -1028,6 +1028,7 @@ namespace stored {
 	 * \ingroup libstored_types
 	 */
 	template <>
+	// cppcheck-suppress noConstructor
 	class Variant<void> {
 	public:
 		/*!

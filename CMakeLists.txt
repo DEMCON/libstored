@@ -48,22 +48,6 @@ endif()
 
 option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
 
-option(LIBSTORED_CPPCHECK "Enable cppcheck" OFF)
-if(LIBSTORED_CPPCHECK)
-	find_program(CMAKE_CXX_CPPCHECK NAMES cppcheck)
-	if(CMAKE_CXX_CPPCHECK)
-		list(APPEND CMAKE_CXX_CPPCHECK
-			"--enable=warning,style,information"
-			"--force"
-			"--inline-suppr"
-#			"--quiet"
-			"--suppressions-list=${CMAKE_CURRENT_SOURCE_DIR}/.cppcheck_suppr"
-			"--error-exitcode=2"
-#			"--xml"
-		)
-	endif()
-endif()
-
 add_subdirectory(extern)
 
 set(LIBSTORED_SOURCE_DIR ${PROJECT_SOURCE_DIR} CACHE STRING "Path to the libstored sources" FORCE)
@@ -135,5 +119,34 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0")
 		include(GoogleTest)
 		add_subdirectory(tests)
 	endif()
+endif()
+
+find_program(CPPCHECK_CMD NAMES cppcheck)
+if(CPPCHECK_CMD)
+	add_custom_target(cppcheck ALL
+		COMMAND
+			${CPPCHECK_CMD}
+			--enable=warning,style,information
+			--force
+			--inline-suppr
+			--quiet
+			--suppressions-list=${CMAKE_CURRENT_SOURCE_DIR}/.cppcheck_suppr
+			--error-exitcode=1
+#			--xml
+			-I include
+			-I examples/1_hello/libstored/include
+			-I examples/2_basic/libstored/include
+			-I examples/3_scope/libstored/include
+			-I examples/4_function/libstored/include
+			-I examples/5_debug/libstored/include
+			-I examples/6_sync/libstored/include
+			-I examples/terminal/libstored/include
+			-I examples/zmqserver/libstored/include
+			src
+			examples
+#			--check-config
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		VERBATIM
+	)
 endif()
 
