@@ -56,9 +56,9 @@ if(LIBSTORED_CPPCHECK)
 			"--enable=warning,style,information"
 			"--force"
 			"--inline-suppr"
-			"--quiet"
+#			"--quiet"
 			"--suppressions-list=${CMAKE_CURRENT_SOURCE_DIR}/.cppcheck_suppr"
-			"--error-exitcode=1"
+			"--error-exitcode=2"
 #			"--xml"
 		)
 	endif()

@@ -32,6 +32,7 @@ jobs:
       - name: cppcheck
         run: |
           cd build
+          make clean
           cmake -DLIBSTORED_CPPCHECK=ON ..
           ../scripts/build.sh Debug
 
