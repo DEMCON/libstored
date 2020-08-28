@@ -11,7 +11,7 @@ class ZmqServerStore : public stored::ZmqServerStoreBase<ZmqServerStore> {
 	friend class stored::ZmqServerStoreBase<ZmqServerStore>;
 
 public:
-	ZmqServerStore() : m_messages() {}
+	ZmqServerStore() : m_messages(), m_writes() {}
 
 protected:
 	void __compute__an_int8_an_int16(bool set, int32_t& value) {

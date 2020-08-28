@@ -1,0 +1,8 @@
+*:*/extern/libzmq/*
+*:*/extern/googletest/*
+missingIncludeSystem:*
+syntaxError:*/tests/test_*
+noConstructor:*
+cstyleCast:*
+unmatchedSuppression:*
+missingInclude:*

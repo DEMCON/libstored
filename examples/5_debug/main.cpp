@@ -13,7 +13,7 @@ class PrintfPhysical : public stored::ProtocolLayer {
 public:
 	typedef stored::ProtocolLayer base;
 
-	PrintfPhysical(ProtocolLayer& up)
+	explicit PrintfPhysical(ProtocolLayer& up)
 		: base(&up)
 		, m_encoding()
 	{
@@ -76,7 +76,7 @@ public:
 	virtual void process(void const* frame, size_t len, ProtocolLayer& response) override {
 		if(unlikely(!frame || len == 0))
 			return;
-		
+
 		char const* p = static_cast<char const*>(frame);
 
 		switch(p[0]) {
@@ -115,7 +115,7 @@ int main() {
 	i++;
 	i1.set(&i, sizeof(i));
 	printf("/SomeStore/i = %" PRId32 "\n", someStore1.i().get());
-	
+
 	stored::DebugVariant i2 = debugger.find("/OtherInstanceOfSomeStore/i");
 	i2.get(&i, sizeof(i));
 	printf("/OtherInstanceOfSomeStore/i = %" PRId32 "\n", i);
@@ -150,7 +150,7 @@ int main() {
 	char buffer[32] = {};
 	snprintf(buffer, sizeof(buffer), "R%" PRIxPTR " %zu", (uintptr_t)&mem, sizeof(mem));
 	phy.decode(buffer);
-	
+
 	snprintf(buffer, sizeof(buffer), "W%" PRIxPTR " cafe", (uintptr_t)&mem);
 	phy.decode(buffer);
 

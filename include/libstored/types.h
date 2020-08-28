@@ -166,6 +166,7 @@ namespace stored {
 		 * \param container the Container this Variable belongs to
 		 * \param buffer the reference to this Variable's buffer inside container's buffer
 		 */
+		// cppcheck-suppress uninitMemberVar
 		Variable(Container& UNUSED_PAR(container), type& buffer)
 			: m_buffer(&buffer)
 		{
@@ -175,6 +176,7 @@ namespace stored {
 		/*!
 		 * \brief Constructor for an invalid Variable.
 		 */
+		// cppcheck-suppress uninitMemberVar
 		Variable() : m_buffer() {}
 
 		/*!
@@ -185,6 +187,7 @@ namespace stored {
 		/*!
 		 * \brief Let this Variable point to the same buffer as the given Variable.
 		 */
+		// cppcheck-suppress operatorEqVarError
 		Variable& operator=(Variable const& v) {
 			m_buffer = v.m_buffer;
 			return *this;
@@ -319,6 +322,7 @@ namespace stored {
 		{}
 
 		/*! \copydoc stored::Variable::Variable() */
+		// cppcheck-suppress uninitMemberVar
 		Variable()
 #ifdef _DEBUG
 			: m_entry() {}
@@ -335,6 +339,7 @@ namespace stored {
 		{ (*this) = v; }
 
 		/*! \copydoc stored::Variable::operator=(Variable const&) */
+		// cppcheck-suppress operatorEqVarError
 		Variable& operator=(Variable const& v) {
 #ifdef _DEBUG
 			stored_assert(m_entry == EntryNone);
@@ -503,6 +508,7 @@ namespace stored {
 		/*!
 		 * \brief Constructor for an invalid Function.
 		 */
+		// cppcheck-suppress uninitMemberVar
 		Function() : m_f() {}
 
 		/*!

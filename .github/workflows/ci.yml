@@ -29,6 +29,11 @@ jobs:
       - name: test
         run: cmake --build . -- test
         working-directory: build
+      - name: cppcheck
+        run: |
+          cd build
+          cmake -DLIBSTORED_CPPCHECK=ON ..
+          ../scripts/build.sh Debug
 
       # If everything is OK, publish documentation
       - name: deploy

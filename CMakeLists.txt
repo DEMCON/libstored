@@ -48,6 +48,22 @@ endif()
 
 option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
 
+option(LIBSTORED_CPPCHECK "Enable cppcheck" OFF)
+if(LIBSTORED_CPPCHECK)
+	find_program(CMAKE_CXX_CPPCHECK NAMES cppcheck)
+	if(CMAKE_CXX_CPPCHECK)
+		list(APPEND CMAKE_CXX_CPPCHECK
+			"--enable=warning,style,information"
+			"--force"
+			"--inline-suppr"
+			"--quiet"
+			"--suppressions-list=${CMAKE_CURRENT_SOURCE_DIR}/.cppcheck_suppr"
+			"--error-exitcode=1"
+#			"--xml"
+		)
+	endif()
+endif()
+
 add_subdirectory(extern)
 
 set(LIBSTORED_SOURCE_DIR ${PROJECT_SOURCE_DIR} CACHE STRING "Path to the libstored sources" FORCE)
