@@ -292,5 +292,87 @@ void TerminalLayer::encodeEnd() {
 	m_encodeState = false;
 }
 
+
+
+
+
+
+//////////////////////////////
+// SegmentationLayer
+//
+
+/*!
+ * \brief Ctor.
+ */
+SegmentationLayer::SegmentationLayer(size_t mtu, ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_mtu(mtu)
+	, m_encoded()
+{
+	stored_assert(mtu > 0);
+}
+
+/*!
+ * \brief Returns the MTU used to split messages into.
+ */
+size_t SegmentationLayer::mtu() const {
+	return m_mtu;
+}
+
+void SegmentationLayer::decode(void* buffer, size_t len) {
+	if(len == 0)
+		return;
+
+	char* buffer_ = static_cast<char*>(buffer);
+	if(!m_decode.empty() || buffer_[len - 1] != EndMarker) {
+		// Save for later packet reassembling.
+		size_t start = m_decode.size();
+		m_decode.resize(start + len);
+		memcpy(&m_decode[start], buffer_, len);
+
+		size_t size = m_decode.size();
+		if(m_decode[size - 1] == EndMarker) {
+			// Got it.
+			base::decode(&m_decode[0], size - 1);
+			m_decode.clear();
+		}
+	} else {
+		// Full packet is in buffer. Forward immediately.
+		base::decode(buffer, len - 1);
+	}
+}
+
+void SegmentationLayer::encode(void* buffer, size_t len, bool last) {
+	// For now, assume other layers don't do in-place processing.
+	encode((void const*)buffer, len, last);
+}
+
+void SegmentationLayer::encode(void const* buffer, size_t len, bool last) {
+	char const* buffer_ = static_cast<char const*>(buffer);
+
+	while(len) {
+		size_t remaining = mtu() - m_encoded;
+		size_t chunk = std::min(len, remaining);
+		base::encode(buffer_, chunk, chunk == remaining);
+		len -= chunk;
+		buffer_ += chunk;
+
+		if(chunk == remaining) {
+			// Full MTU.
+			m_encoded = 0;
+		} else {
+			// Partial MTU. Record that we already filled some of the packet.
+			m_encoded = chunk;
+		}
+	}
+
+	if(last) {
+		// The marker always ends the packet.
+		char end = EndMarker;
+		base::encode(&end, 1, true);
+		m_encoded = 0;
+	}
+}
+
 } // namespace
 

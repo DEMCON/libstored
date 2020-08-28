@@ -322,6 +322,42 @@ namespace stored {
 		/*! \brief State of frame injection. */
 		bool m_encodeState;
 	};
+
+	/*!
+	 * \brief A layer that performs segmentation of the messages.
+	 *
+	 * Messages to be encoded are split with a maximum chunk size (MTU). At the
+	 * end of the packet, the #EndMarker is inserted.  Incoming messages are
+	 * reassembled until the #EndMarker is encountered.
+	 *
+	 * This layer assumes a lossless channel; all messages are received in
+	 * order.  Moreover, the #stored::AsciiEscapeLayer must be somewhere above
+	 * this layer, such that #EndMarker cannot occur in the data.
+	 *
+	 * \ingroup libstored_protocol
+	 */
+	class SegmentationLayer : public ProtocolLayer {
+		CLASS_NOCOPY(SegmentationLayer)
+	public:
+		typedef ProtocolLayer base;
+
+		static char const EndMarker = '\x17';	// ETB
+
+		SegmentationLayer(size_t mtu, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~SegmentationLayer() override is_default
+
+		virtual void decode(void* buffer, size_t len) override;
+		virtual void encode(void* buffer, size_t len, bool last = true) override;
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+
+		size_t mtu() const;
+
+	private:
+		size_t m_mtu;
+		std::vector<char> m_decode;
+		size_t m_encoded;
+	};
+
 } // namespace
 #endif // __cplusplus
 
