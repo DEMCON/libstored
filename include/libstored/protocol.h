@@ -119,6 +119,7 @@
 #include <libstored/util.h>
 
 #include <vector>
+#include <string>
 
 namespace stored {
 

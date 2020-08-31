@@ -133,7 +133,7 @@ void AsciiEscapeLayer::encode(void const* buffer, size_t len, bool last) {
 			if(chunk < p + i)
 				base::encode(chunk, (size_t)(p + i - chunk), false);
 
-			uint8_t const esc[2] = { AsciiEscapeLayer::Esc, (uint8_t const)escaped };
+			uint8_t const esc[2] = { AsciiEscapeLayer::Esc, (uint8_t)escaped };
 			base::encode(esc, sizeof(esc), last && i + 1 == len);
 			chunk = p + i + 1;
 		}
