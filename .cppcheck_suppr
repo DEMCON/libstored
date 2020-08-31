@@ -1,0 +1,5 @@
+*:*/extern/libzmq/*
+*:*/extern/googletest/*
+missingIncludeSystem:*
+cstyleCast:*
+unmatchedSuppression:*

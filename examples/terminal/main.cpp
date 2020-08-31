@@ -55,11 +55,6 @@ protected:
 	}
 
 #ifdef PRINT_TO_STDERR
-	void encode(void* buffer, size_t len, bool last) final {
-		base::encode(buffer, len, last);
-		writeToFd(STDERR_FILENO, buffer, len);
-	}
-
 	void encode(void const* buffer, size_t len, bool last) final {
 		base::encode(buffer, len, last);
 		writeToFd(STDERR_FILENO, buffer, len);

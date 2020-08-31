@@ -1,3 +1,5 @@
+[![CI](https://github.com/DEMCON/libstored/workflows/CI/badge.svg)](https://github.com/DEMCON/libstored/actions?query=workflow%3ACI)
+
 # libstored - Store for Embedded Debugger
 
 If you have an embedded system, you probably want to debug it on-target.  One
@@ -43,12 +45,10 @@ The store has a few other interesting properties:
   Using threads is troubling anyway, use [fibers](https://github.com/jhrutgers/zth) instead.
 - All code is normal C++, there are no platform-dependent constructs used.
   Therefore, all platforms are supported: Windows/Linux/Mac/bare
-  metal (newlib), x86/ARM, gcc/clang/MSVC).
+  metal (newlib), x86/ARM, gcc/clang/MSVC/armcc).
 
 Have a look in the `examples` directory for further in-depth reading.
 Refer to the [Doxygen documentation](https://demcon.github.io/libstored) for the C++ API.
-
-[![CI](https://github.com/DEMCON/libstored/workflows/CI/badge.svg)](https://github.com/DEMCON/libstored/actions?query=workflow%3ACI)
 
 ## Table of contents
 
@@ -182,6 +182,8 @@ The structure of this setup is:
 	+-----------+
 	| zmqserver |
 	+-----------+
+
+![zmqserver debugging screenshot](examples/zmqserver/zmqserver_screenshot.png)
 
 The Embedded Debugger client connects via ZeroMQ.
 If you application does not have it, you must implement is somehow.

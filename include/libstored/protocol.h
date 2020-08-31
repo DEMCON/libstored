@@ -53,11 +53,19 @@
  * Test it using the `terminal` example, started using the
  * `client/stdio_wrapper.py`. Then connect one of the clients above to it.
  *
- * ### Application layer
+ * libstored suggests to use the protocol layers below, where applicable.
+ * Standard layer implementations can be used to construct the following stacks (top-down):
+ *
+ * - Lossless UART: stored::Debugger, stored::AsciiEscapeLayer, stored::TerminalLayer
+ * - Lossy UART: stored::Debugger, stored::AsciiEscapeLayer, stored::ArqLayer, stored::CrcLayer, stored::TerminalLayer
+ * - CAN: stored::Debugger, stored::AsciiEscapeLayer, stored::SegmentationLayer, stored::ArqLayer, CAN driver
+ * - ZMQ: stored::Debugger, stored::ZmqLayer
+ *
+ * ## Application layer
  *
  * See \ref libstored_debugger.
  *
- * ### Presentation layer
+ * ## Presentation layer
  *
  * For terminal or UART: In case of binary data, escape all bytes < 0x20 as
  * follows: the sequence `DEL` (0x7f) removes the 3 MSb of the successive byte.
@@ -67,37 +75,40 @@
  *
  * For CAN/ZeroMQ: nothing required.
  *
- * ### Session layer:
+ * ## Session layer:
  *
  * For terminal/UART/CAN: no session support, there is only one (implicit) session.
  *
  * For ZeroMQ: use REQ/REP sockets, where the application-layer request and
  * response are exactly one ZeroMQ message. All layers below are managed by ZeroMQ.
  *
- * ### Transport layer
+ * ## Transport layer
  *
  * For terminal or UART: out-of-band message are captured using `ESC _` (APC) and
  * `ESC \` (ST).  A message consists of the bytes in between these sequences.
  * See stored::TerminalLayer.
  *
- * In case of lossly channels (UART/CAN), CRC, message sequence number, and
- * retransmits should be implemented.  This depends on the specific transport
- * hardware and embedded device.
+ * If the MTU is limited of the hardware, like for CAN, packet segmentation
+ * should be used (see stored::SegmentationLayer).
  *
- * ### Network layer
+ * In case of lossy channels (UART/CAN), CRC (see stored::CrcLayer), message
+ * sequence number, and retransmits (see stored::ArqLayer) should be
+ * implemented. Default implementations are provided, but may be dependent on
+ * the specific transport hardware and embedded device.
+ *
+ * ## Network layer
  *
  * For terminal/UART/ZeroMQ, nothing has to be done.
  *
- * For CAN: packet fragmentation/reassembling/routing is done here.
+ * For CAN: packet routing is done here.
  *
- * ### Datalink layer
- *
- * Depends on the device.
- *
- * ### Physical layer
+ * ## Datalink layer
  *
  * Depends on the device.
  *
+ * ## Physical layer
+ *
+ * Depends on the device.
  *
  * \ingroup libstored
  */
@@ -108,6 +119,7 @@
 #include <libstored/util.h>
 
 #include <vector>
+#include <string>
 
 namespace stored {
 
@@ -219,22 +231,44 @@ namespace stored {
 		/*!
 		 * \brief Encode a (partial) frame and forward it to the lower layer.
 		 *
-		 * The given buffer may be encoded in-place.
-		 */
-		virtual void encode(void* buffer, size_t len, bool last = true) {
-			if(down())
-				down()->encode(buffer, len, last);
-		}
-
-		/*!
-		 * \brief Encode a (partial) frame and forward it to the lower layer.
-		 *
 		 * The given buffer will not be modified.
 		 * A new buffer is allocated when required.
 		 */
 		virtual void encode(void const* buffer, size_t len, bool last = true) {
 			if(down())
 				down()->encode(buffer, len, last);
+		}
+
+		/*!
+		 * \brief Flags the current response as purgeable.
+		 *
+		 * This may influence how a response is handled.  Especially, in case
+		 * of retransmits of lost packets, one may decide to either reexecute
+		 * the command, or to save the first response and resend it when the
+		 * command was retransmitted. In that sense, a precious response
+		 * (default) means that every layer should handle the data with case,
+		 * as it cannot be recovered once it is lost. When the response is
+		 * flagged purgeeble, the response may be thrown away after the first
+		 * try to transmit it to the client.
+		 *
+		 * By default, all responses are precious.
+		 */
+		virtual void setPurgeableResponse(bool purgeable = true) {
+			if(down())
+				down()->setPurgeableResponse(purgeable);
+		}
+
+		/*!
+		 * \brief Returns the maximum amount of data to be put in one message that is encoded.
+		 *
+		 * If there is a MTU applicable to the physical transport (like a CAN bus),
+		 * override this method to reflect that value. Layers on top will decrease the MTU
+		 * when there protocol adds headers, for example.
+		 *
+		 * \return the number of bytes, or 0 for infinity
+		 */
+		virtual size_t mtu() const {
+			return down() ? down()->mtu() : 0;
 		}
 
 	private:
@@ -264,8 +298,9 @@ namespace stored {
 		virtual ~AsciiEscapeLayer() override is_default
 
 		virtual void decode(void* buffer, size_t len) override;
-		virtual void encode(void* buffer, size_t len, bool last = true) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+		virtual size_t mtu() const override;
 	};
 
 	/*!
@@ -289,8 +324,9 @@ namespace stored {
 		virtual ~TerminalLayer() override;
 
 		virtual void decode(void* buffer, size_t len) override;
-		virtual void encode(void* buffer, size_t len, bool last = true) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+		virtual size_t mtu() const override;
 
 	protected:
 		virtual void nonDebugDecode(void* buffer, size_t len);
@@ -322,6 +358,142 @@ namespace stored {
 		/*! \brief State of frame injection. */
 		bool m_encodeState;
 	};
+
+	/*!
+	 * \brief A layer that performs segmentation of the messages.
+	 *
+	 * Messages to be encoded are split with a maximum chunk size (MTU). At the
+	 * end of the packet, the #EndMarker is inserted.  Incoming messages are
+	 * reassembled until the #EndMarker is encountered.
+	 *
+	 * This layer assumes a lossless channel; all messages are received in
+	 * order. If that is not the case for your transport, wrap this layer in
+	 * the #stored::ArqLayer. Moreover, the #stored::AsciiEscapeLayer must be
+	 * somewhere above this layer, such that #EndMarker cannot occur in the
+	 * data.
+	 *
+	 * \ingroup libstored_protocol
+	 */
+	class SegmentationLayer : public ProtocolLayer {
+		CLASS_NOCOPY(SegmentationLayer)
+	public:
+		typedef ProtocolLayer base;
+
+		static char const EndMarker = '\x17';	// ETB
+
+		SegmentationLayer(size_t mtu = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~SegmentationLayer() override is_default
+
+		virtual void decode(void* buffer, size_t len) override;
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+
+		size_t mtu() const final;
+		size_t lowerMtu() const;
+
+	private:
+		size_t m_mtu;
+		std::vector<char> m_decode;
+		size_t m_encoded;
+	};
+
+	/*!
+	 * \brief A layer that performs Automatic Repeat Request operations on messages.
+	 *
+	 * This layer allows messages that are lost, to be retransmitted on both
+	 * the request and response side. The implementation assumes that lost
+	 * message is possible, but rare. It optimizes on the normal case that
+	 * message arrive.  Retransmits may be relatively expensive.
+	 *
+	 * Messages must be either lost or arrive correctly. Make sure to do
+	 * checksumming in the layer below.  Moreover, you probably want the
+	 * #stored::SegmentationLayer on top of this layer to make sure that
+	 * packets have a deterministic (small) size.
+	 *
+	 * Every message is prefixed with a byte that indicates the sequence number
+	 * in the range 0-255.  The number 0 is a special value; it resets the
+	 * state machines tracking sequence numbers.  It can be used to reset the
+	 * connection after a reconnect, for example.  Sequence numbers are
+	 * incremented and wrapped around from 255 to 1.
+	 *
+	 * In contrast to TCP, for example, messages are not ACKed individually.
+	 * If the host receives the response, it can assume that the request was
+	 * completely received.  If the host does not receive the response (or only
+	 * partly), it must resend the full request.  Then, it will receive the
+	 * full response (again). The overhead of retransmitting messages that were
+	 * already received properly is accepted; we assume packet loss is rare, it
+	 * reduces the message count of ack/nack of individual messages, and it
+	 * makes the state machines easier.
+	 *
+	 * Reponses are buffered till the maximum buffer size is reached.  If the
+	 * response it too large, it is dropped. Then, a retransmit of the request
+	 * will reexecute the request.
+	 *
+	 * \ingroup libstored_protocol
+	 */
+	class ArqLayer : public ProtocolLayer {
+		CLASS_NOCOPY(ArqLayer)
+	public:
+		typedef ProtocolLayer base;
+
+		ArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~ArqLayer() override is_default
+
+		virtual void decode(void* buffer, size_t len) override;
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+
+		virtual void setPurgeableResponse(bool purgeable = true) override;
+		virtual size_t mtu() const override;
+
+	private:
+		enum { DecodeStateIdle, DecodeStateDecoding, DecodeStateDecoded, DecodeStateRetransmit } m_decodeState;
+		uint8_t m_decodeSeq;
+		uint8_t m_decodeSeqStart;
+
+		enum { EncodeStateIdle, EncodeStateEncoding, EncodeStateUnbufferedIdle, EncodeStateUnbufferedEncoding } m_encodeState;
+		uint8_t m_encodeSeq;
+
+		size_t m_maxEncodeBuffer;
+		std::vector<std::string> m_encodeBuffer;
+		size_t m_encodeBufferSize;
+	};
+
+	/*!
+	 * \brief A layer that adds CRC to messages.
+	 *
+	 * If the CRC does not match during decoding, it is silently dropped.
+	 * You probably want #stored::ArqLayer somewhere higher in the stack.
+	 *
+	 * An 8-bit CRC is used with polynomial 0xA6.  This polynomial seems to be
+	 * a good choice according to <i>Cyclic Redundancy Code (CRC) Polynomial
+	 * Selection For Embedded Networks</i> (Koopman et al., 2004).
+	 *
+	 * \ingroup libstored_protocol
+	 */
+	class CrcLayer : public ProtocolLayer {
+		CLASS_NOCOPY(CrcLayer)
+	public:
+		typedef ProtocolLayer base;
+
+		enum { polynomial = 0xa6, init = 0xff };
+
+		CrcLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~CrcLayer() override is_default
+
+		virtual void decode(void* buffer, size_t len) override;
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+
+		virtual size_t mtu() const override;
+
+	protected:
+		static uint8_t compute(uint8_t input, uint8_t crc = init);
+
+	private:
+		uint8_t m_crc;
+	};
+
 } // namespace
 #endif // __cplusplus
 

@@ -12,7 +12,7 @@ class MyExample : public stored::ExampleFunctionBase<MyExample> {
 public:
 	typedef stored::ExampleFunctionBase<MyExample> base;
 	friend class stored::ExampleFunctionBase<MyExample>;
-	MyExample() {}
+	MyExample() : m_echo() {}
 
 protected:
 	// Override the default functions from base. Even though they are not
