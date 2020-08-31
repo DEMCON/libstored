@@ -219,22 +219,44 @@ namespace stored {
 		/*!
 		 * \brief Encode a (partial) frame and forward it to the lower layer.
 		 *
-		 * The given buffer may be encoded in-place.
-		 */
-		virtual void encode(void* buffer, size_t len, bool last = true) {
-			if(down())
-				down()->encode(buffer, len, last);
-		}
-
-		/*!
-		 * \brief Encode a (partial) frame and forward it to the lower layer.
-		 *
 		 * The given buffer will not be modified.
 		 * A new buffer is allocated when required.
 		 */
 		virtual void encode(void const* buffer, size_t len, bool last = true) {
 			if(down())
 				down()->encode(buffer, len, last);
+		}
+
+		/*!
+		 * \brief Flags the current response as purgeable.
+		 *
+		 * This may influence how a response is handled.  Especially, in case
+		 * of retransmits of lost packets, one may decide to either reexecute
+		 * the command, or to save the first response and resend it when the
+		 * command was retransmitted. In that sense, a precious response
+		 * (default) means that every layer should handle the data with case,
+		 * as it cannot be recovered once it is lost. When the response is
+		 * flagged purgeeble, the response may be thrown away after the first
+		 * try to transmit it to the client.
+		 *
+		 * By default, all responses are precious.
+		 */
+		virtual void setPurgeableResponse(bool purgeable = true) {
+			if(down())
+				down()->setPurgeableResponse(purgeable);
+		}
+
+		/*!
+		 * \brief Returns the maximum amount of data to be put in one message that is encoded.
+		 *
+		 * If there is a MTU applicable to the physical transport (like a CAN bus),
+		 * override this method to reflect that value. Layers on top will decrease the MTU
+		 * when there protocol adds headers, for example.
+		 *
+		 * \return the number of bytes, or 0 for infinity
+		 */
+		virtual size_t mtu() const {
+			return down() ? down()->mtu() : 0;
 		}
 
 	private:
@@ -264,8 +286,9 @@ namespace stored {
 		virtual ~AsciiEscapeLayer() override is_default
 
 		virtual void decode(void* buffer, size_t len) override;
-		virtual void encode(void* buffer, size_t len, bool last = true) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+		virtual size_t mtu() const override;
 	};
 
 	/*!
@@ -289,8 +312,9 @@ namespace stored {
 		virtual ~TerminalLayer() override;
 
 		virtual void decode(void* buffer, size_t len) override;
-		virtual void encode(void* buffer, size_t len, bool last = true) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+		virtual size_t mtu() const override;
 
 	protected:
 		virtual void nonDebugDecode(void* buffer, size_t len);
@@ -331,8 +355,10 @@ namespace stored {
 	 * reassembled until the #EndMarker is encountered.
 	 *
 	 * This layer assumes a lossless channel; all messages are received in
-	 * order.  Moreover, the #stored::AsciiEscapeLayer must be somewhere above
-	 * this layer, such that #EndMarker cannot occur in the data.
+	 * order. If that is not the case for your transport, wrap this layer in
+	 * the #stored::ArqLayer. Moreover, the #stored::AsciiEscapeLayer must be
+	 * somewhere above this layer, such that #EndMarker cannot occur in the
+	 * data.
 	 *
 	 * \ingroup libstored_protocol
 	 */
@@ -343,19 +369,83 @@ namespace stored {
 
 		static char const EndMarker = '\x17';	// ETB
 
-		SegmentationLayer(size_t mtu, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		SegmentationLayer(size_t mtu = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~SegmentationLayer() override is_default
 
 		virtual void decode(void* buffer, size_t len) override;
-		virtual void encode(void* buffer, size_t len, bool last = true) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
 
-		size_t mtu() const;
+		size_t mtu() const final;
+		size_t lowerMtu() const;
 
 	private:
 		size_t m_mtu;
 		std::vector<char> m_decode;
 		size_t m_encoded;
+	};
+
+	/*!
+	 * \brief A layer that performs Automatic Repeat Request operations on messages.
+	 *
+	 * This layer allows messages that are lost, to be retransmitted on both
+	 * the request and response side. The implementation assumes that lost
+	 * message is possible, but rare. It optimizes on the normal case that
+	 * message arrive.  Retransmits may be relatively expensive.
+	 *
+	 * Messages must be either lost or arrive correctly. Make sure to do
+	 * checksumming in the layer below.  Moreover, you probably want the
+	 * #stored::SegmentationLayer on top of this layer to make sure that
+	 * packets have a deterministic (small) size.
+	 *
+	 * Every message is prefixed with a byte that indicates the sequence number
+	 * in the range.  The id 0 is a special value; it resets the state machines
+	 * tracking sequence numbers.  It can be used to reset the connection after
+	 * a reconnect, for example.  Sequence numbers are incremented and wrapped
+	 * around from 255 to 1.
+	 *
+	 * In contrast to TCP, for example, messages are not ACKed individually.
+	 * If the host receives the response, it can assume that the request was
+	 * completely received.  If the host does not receive the response (or only
+	 * partly), it must resend the full request.  Then, it will receive the
+	 * full response (again). The overhead of retransmitting messages that were
+	 * already received properly is accepted; we assume packet loss is rare, it
+	 * reduces the message count of ack/nack of individual messages, and it
+	 * makes the state machines easier.
+	 *
+	 * Reponses are buffered till the maximum buffer size is reached.  If the
+	 * response it too large, it is dropped. Then, a retransmit of the request
+	 * will reexecute the request.
+	 *
+	 * \ingroup libstored_protocol
+	 */
+	class ArqLayer : public ProtocolLayer {
+		CLASS_NOCOPY(ArqLayer)
+	public:
+		typedef ProtocolLayer base;
+
+		ArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~ArqLayer() override is_default
+
+		virtual void decode(void* buffer, size_t len) override;
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+
+		virtual void setPurgeableResponse(bool purgeable = true) override;
+		virtual size_t mtu() const override;
+
+	private:
+		enum { DecodeStateIdle, DecodeStateDecoding, DecodeStateDecoded, DecodeStateRetransmit } m_decodeState;
+		uint8_t m_decodeId;
+		uint8_t m_decodeIdStart;
+
+		enum { EncodeStateIdle, EncodeStateEncoding, EncodeStateUnbufferedIdle, EncodeStateUnbufferedEncoding } m_encodeState;
+		uint8_t m_encodeId;
+		uint8_t m_encodeIdStart;
+
+		size_t m_maxEncodeBuffer;
+		std::vector<std::string> m_encodeBuffer;
+		size_t m_encodeBufferSize;
 	};
 
 } // namespace

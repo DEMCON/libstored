@@ -32,10 +32,6 @@ public:
 		base::decode(buffer, len);
 	}
 
-	void encode(void* buffer, size_t len, bool last = true) final {
-		encode((void const*)buffer, len, last);
-	}
-
 	void encode(void const* buffer, size_t len, bool last = true) final {
 		if(!m_encoding) {
 			printf("<<   ");

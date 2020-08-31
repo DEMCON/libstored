@@ -1,17 +1,17 @@
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -63,7 +63,7 @@ ZmqLayer::ZmqLayer(void* context, int port, ProtocolLayer* up, ProtocolLayer* do
 
 /*!
  * \copydoc stored::ProtocolLayer::~ProtocolLayer()
- * 
+ *
  * The sockets are closed (which may block).
  * If a ZeroMQ context was allocated, it is terminated here.
  */
@@ -160,7 +160,7 @@ int ZmqLayer::recv(bool block) {
 		memcpy(static_cast<char*>(m_buffer) + m_bufferSize, zmq_msg_data(&msg), msgSize);
 		m_bufferSize = newBufferSize;
 	}
-	
+
 	if(likely(!more)) {
 		if(likely(!m_bufferSize)) {
 			// Process immediately, without copying to the buffer.
@@ -181,12 +181,6 @@ error_recv:
 error_msg:
 	return res ? res : EIO;
 }
-
-#ifndef DOXYGEN
-void ZmqLayer::encode(void* buffer, size_t len, bool last) {
-	encode((void const*)buffer, len, last);
-}
-#endif
 
 /*!
  * \copydoc stored::ProtocolLayer::encode(void const*, size_t, bool)

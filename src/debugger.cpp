@@ -799,10 +799,6 @@ public:
 	void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
 		base::encode(buffer, len, false);
 	}
-
-	void encode(void* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
-		base::encode(buffer, len, false);
-	}
 };
 
 /*!
@@ -1138,10 +1134,6 @@ public:
 
 	void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
 		m_s.append(static_cast<char const*>(buffer), len);
-	}
-
-	void encode(void* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
-		m_s.append(static_cast<char*>(buffer), len);
 	}
 
 private:
