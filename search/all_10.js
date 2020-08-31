@@ -12,6 +12,7 @@ var searchData=
   ['polling',['polling',['../classed2_1_1zmq__client_1_1_object.html#a933b2ce55e834fa5a535b2d24bb32bc6',1,'ed2.zmq_client.Object.polling(self)'],['../classed2_1_1zmq__client_1_1_object.html#a933b2ce55e834fa5a535b2d24bb32bc6',1,'ed2.zmq_client.Object.polling(self)']]],
   ['pollingchanged',['pollingChanged',['../classed2_1_1zmq__client_1_1_object.html#a474a5215c6916c5f1384564f912d28ac',1,'ed2::zmq_client::Object']]],
   ['pollingrole',['PollingRole',['../classed2_1_1gui_1_1____main_____1_1_object_list_model.html#aa850bd4afc31a95c779a807bc4d977da',1,'ed2::gui::__main__::ObjectListModel']]],
+  ['polynomial',['polynomial',['../classstored_1_1_crc_layer.html#ace8d0da64d2b7a9dbb35678230218543a5398a4103a8cd37ded9d2cc4e5984d5d',1,'stored::CrcLayer']]],
   ['prefix',['prefix',['../namespaceed2_1_1cli_1_1____main____.html#a7dd4a7db291fe246593191db75b1fdca',1,'ed2::cli::__main__']]],
   ['print_5fto_5fstderr',['PRINT_TO_STDERR',['../terminal_2main_8cpp.html#a30a5e2be3979e50f5008597e46546e84',1,'main.cpp']]],
   ['printfphysical',['PrintfPhysical',['../class_printf_physical.html',1,'PrintfPhysical'],['../class_printf_physical.html#a507c13d3f98dcd037339c6ec07e6498a',1,'PrintfPhysical::PrintfPhysical(PrintfPhysical const &amp;)=delete'],['../class_printf_physical.html#af5307ef001e3a6ec97014fe57b1ff1d0',1,'PrintfPhysical::PrintfPhysical(PrintfPhysical &amp;&amp;)=delete'],['../class_printf_physical.html#a1ee4ab0e015ac43535d28504b2bbbce6',1,'PrintfPhysical::PrintfPhysical(ProtocolLayer &amp;up)']]],

@@ -225,12 +225,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a66c24cec6a17c44fac68213d358a5aa8 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a66c24cec6a17c44fac68213d358a5aa8">encode</a> ()</td></tr>
 <tr class="memdesc:a66c24cec6a17c44fac68213d358a5aa8 inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encodes the last part of the current frame.  <a href="classstored_1_1_protocol_layer.html#a66c24cec6a17c44fac68213d358a5aa8">More...</a><br /></td></tr>
 <tr class="separator:a66c24cec6a17c44fac68213d358a5aa8 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd11604afb6d1f3fc1fa1ae35e1dcedf inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#abd11604afb6d1f3fc1fa1ae35e1dcedf">encode</a> (void *buffer, size_t len, bool last=true)</td></tr>
-<tr class="memdesc:abd11604afb6d1f3fc1fa1ae35e1dcedf inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode a (partial) frame and forward it to the lower layer.  <a href="classstored_1_1_protocol_layer.html#abd11604afb6d1f3fc1fa1ae35e1dcedf">More...</a><br /></td></tr>
-<tr class="separator:abd11604afb6d1f3fc1fa1ae35e1dcedf inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae5dab6177c1448d1ce5ac04a69c9b4e4 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#ae5dab6177c1448d1ce5ac04a69c9b4e4">encode</a> (void const *buffer, size_t len, bool last=true)</td></tr>
 <tr class="memdesc:ae5dab6177c1448d1ce5ac04a69c9b4e4 inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode a (partial) frame and forward it to the lower layer.  <a href="classstored_1_1_protocol_layer.html#ae5dab6177c1448d1ce5ac04a69c9b4e4">More...</a><br /></td></tr>
 <tr class="separator:ae5dab6177c1448d1ce5ac04a69c9b4e4 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88195d7cdb7129ac7bc625ffeb24d449 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a88195d7cdb7129ac7bc625ffeb24d449">mtu</a> () const</td></tr>
+<tr class="memdesc:a88195d7cdb7129ac7bc625ffeb24d449 inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the maximum amount of data to be put in one message that is encoded.  <a href="classstored_1_1_protocol_layer.html#a88195d7cdb7129ac7bc625ffeb24d449">More...</a><br /></td></tr>
+<tr class="separator:a88195d7cdb7129ac7bc625ffeb24d449 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22cfb4269bef0178b554ddf4119f218d inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a22cfb4269bef0178b554ddf4119f218d">operator=</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> &amp;&amp;)=delete</td></tr>
 <tr class="memdesc:a22cfb4269bef0178b554ddf4119f218d inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted move assignment operator.  <a href="classstored_1_1_protocol_layer.html#a22cfb4269bef0178b554ddf4119f218d">More...</a><br /></td></tr>
 <tr class="separator:a22cfb4269bef0178b554ddf4119f218d inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -240,6 +240,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2b2523892617a43cf7421a654bfc3b6c inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a2b2523892617a43cf7421a654bfc3b6c">setDown</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a>)</td></tr>
 <tr class="memdesc:a2b2523892617a43cf7421a654bfc3b6c inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the layer that receives our encoded frames.  <a href="classstored_1_1_protocol_layer.html#a2b2523892617a43cf7421a654bfc3b6c">More...</a><br /></td></tr>
 <tr class="separator:a2b2523892617a43cf7421a654bfc3b6c inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e8b913345f11bf3cf3999c305905681 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a8e8b913345f11bf3cf3999c305905681">setPurgeableResponse</a> (bool purgeable=true)</td></tr>
+<tr class="memdesc:a8e8b913345f11bf3cf3999c305905681 inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flags the current response as purgeable.  <a href="classstored_1_1_protocol_layer.html#a8e8b913345f11bf3cf3999c305905681">More...</a><br /></td></tr>
+<tr class="separator:a8e8b913345f11bf3cf3999c305905681 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43ca79c4b9503ce51f817ddc7fcd1cb5 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a43ca79c4b9503ce51f817ddc7fcd1cb5">setUp</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40">up</a>)</td></tr>
 <tr class="memdesc:a43ca79c4b9503ce51f817ddc7fcd1cb5 inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the layer that receives our decoded frames.  <a href="classstored_1_1_protocol_layer.html#a43ca79c4b9503ce51f817ddc7fcd1cb5">More...</a><br /></td></tr>
 <tr class="separator:a43ca79c4b9503ce51f817ddc7fcd1cb5 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -788,7 +791,7 @@ Protected Member Functions</h2></td></tr>
 <p>Decode ASCII hex. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debugger.html#ae93585d717651de0c5e93ffcc2b36bf4" title="Encode data to ASCII hex. ">encodeHex(Type::type, void*&amp;, size_t&amp;, bool)</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00942">942</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00938">938</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -900,7 +903,7 @@ template&lt;typename T , typename B &gt; </div>
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debugger.html#ab8b61a7802026c5edb802e33e9e679e4" title="Decode ASCII hex. ">decodeHex()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00868">868</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00864">864</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1342,7 +1345,7 @@ template&lt;typename Store &gt; </div>
 <p>Execute the given macro, and produce the results in the given response. </p>
 <dl class="section return"><dt>Returns</dt><dd><code>false</code> when the macro does not exist </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00812">812</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00808">808</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1420,7 +1423,7 @@ template&lt;typename Store &gt; </div>
 
 <p>Returns a scratch pad memory. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00994">994</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00990">990</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1475,7 +1478,7 @@ template&lt;typename Store &gt; </div>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debugger.html#ae5984c100fffd78efdb1364d077bfbb8" title="Adds a buffer to the given stream. ">stream(char, char const*, size_t)</a> </dd></dl>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a27">5_debug/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01030">1030</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01026">1026</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1523,7 +1526,7 @@ template&lt;typename Store &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The length that was appended. On success, this equals <code>len</code>, but may be less if the buffer was full. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01045">1045</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01041">1041</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1563,7 +1566,7 @@ template&lt;typename Store &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01078">1078</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01074">1074</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1586,7 +1589,7 @@ template&lt;typename Store &gt; </div>
 <p>Returns the stream buffer given a stream name. </p>
 <dl class="section return"><dt>Returns</dt><dd>the stream or <code>nullptr</code> when there is no stream with the given name </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01068">1068</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01064">1064</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1626,7 +1629,7 @@ template&lt;typename Store &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0-terminated string of stream names (which equals <code>buffer</code>) </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01115">1115</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01111">1111</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1650,7 +1653,7 @@ template&lt;typename Store &gt; </div>
 <p>The output of the macro is either completely or not at all put in the stream buffer; it is not truncated. </p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="zmqserver_2main_8cpp-example.html#a26">zmqserver/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01162">1162</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01154">1154</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1671,7 +1674,7 @@ template&lt;typename Store &gt; </div>
 
 <p>Checks if tracing is currently enabled and configured. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01198">1198</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01190">1190</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>

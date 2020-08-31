@@ -1,7 +1,6 @@
 var NAVTREE =
 [
   [ "libstored", "index.html", [
-    [ "libstored - Store for Embedded Debugger", "index.html", null ],
     [ "Modules", "modules.html", "modules" ],
     [ "Namespaces", null, [
       [ "Namespace List", "namespaces.html", "namespaces" ],
@@ -41,12 +40,12 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "1__hello_2main_8cpp.html",
-"classed2_1_1stdio2zmq_1_1_stdio2_zmq.html#a892433d2841078a38471e70c2aaa9a9a",
-"classstored_1_1_debug_variant_base.html#a4de9ebcf989242ce1176f46f34c599a3",
-"classstored_1_1_example_hello.html#ade2bdb040fc94424a74bd6a896efe785",
-"classstored_1_1_terminal_layer.html#ab147064c411754aa941dec30c8d44c5c",
-"directory_8h.html",
-"structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea8162286bfc05e98454e6d04a0bdd23a3"
+"classed2_1_1stdio2zmq_1_1_stdio2_zmq.html#a9c8ec071b6eb3036812e7a855ce50416",
+"classstored_1_1_debug_store_base.html#a3f407c6d3f3a304925176ea0ab6337dc",
+"classstored_1_1_example_function_base.html#a918f042893f4685bcf34f4d855ad5969",
+"classstored_1_1_scratch_pad_1_1_snapshot.html#a08dbf02e3042e2b60676a7cea644c0e0",
+"dir_7c9e5e4a5bc8fd18f444ae1cf5f1f7ae.html",
+"structstored_1_1_example_function_data.html#acd32b5084d12cf23c7b27d3c4c26b1e9"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

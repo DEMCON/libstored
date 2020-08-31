@@ -13,7 +13,8 @@ var searchData=
   ['masksize',['MaskSize',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eafab8b14d23add4c4a4921c971ead9c0a',1,'stored::Type']]],
   ['max',['max',['../classstored_1_1_scratch_pad.html#a20062937c98d739633df8e5347bf21ad',1,'stored::ScratchPad']]],
   ['maxbuffer',['MaxBuffer',['../classstored_1_1_terminal_layer.html#a18e520b233aa224854f48695f9ce350dac2e5fe6228ece37b246ab755b987f59f',1,'stored::TerminalLayer']]],
-  ['maxsize',['maxSize',['../classstored_1_1_scratch_pad.html#abe5e3a67e8f85f78699cfbae9d72d2e5a62424ce21ef05ba377086fb28696171c',1,'stored::ScratchPad']]],
+  ['maxsize',['maxSize',['../classstored_1_1_scratch_pad.html#a46b991332ae8c926ff93505ed7a8e2dda62424ce21ef05ba377086fb28696171c',1,'stored::ScratchPad']]],
   ['model',['model',['../namespaceed2_1_1gui_1_1____main____.html#adeda9ea5c04e4385151766cce2112349',1,'ed2::gui::__main__']]],
+  ['mtu',['mtu',['../classstored_1_1_protocol_layer.html#a88195d7cdb7129ac7bc625ffeb24d449',1,'stored::ProtocolLayer::mtu()'],['../classstored_1_1_ascii_escape_layer.html#ac773513d7ef5330f9fc7b46f08e79442',1,'stored::AsciiEscapeLayer::mtu()'],['../classstored_1_1_terminal_layer.html#a0a19f65b341e78a98dca4f13747fb2a7',1,'stored::TerminalLayer::mtu()'],['../classstored_1_1_segmentation_layer.html#a5cd64512cd57378cf25bd2890266919a',1,'stored::SegmentationLayer::mtu()'],['../classstored_1_1_arq_layer.html#a1efacad0bccc60d7d202663ce984aab2',1,'stored::ArqLayer::mtu()'],['../classstored_1_1_crc_layer.html#a15a59f037380fed7c39e2f259bd24e91',1,'stored::CrcLayer::mtu()']]],
   ['myexample',['MyExample',['../class_my_example.html',1,'MyExample'],['../class_my_example.html#a8857f29d278fcc5f5b278c332bde9217',1,'MyExample::MyExample()']]]
 ];

@@ -11,8 +11,7 @@ var indexSectionsWithContent =
   8: "bcdfimpsuv",
   9: "efsvz",
   10: "_cgipsu",
-  11: "cdlpstu",
-  12: "l"
+  11: "cdlpstu"
 };
 
 var indexSectionNames =
@@ -28,8 +27,7 @@ var indexSectionNames =
   8: "enumvalues",
   9: "related",
   10: "defines",
-  11: "groups",
-  12: "pages"
+  11: "groups"
 };
 
 var indexSectionLabels =
@@ -45,7 +43,6 @@ var indexSectionLabels =
   8: "Enumerator",
   9: "Friends",
   10: "Macros",
-  11: "Modules",
-  12: "Pages"
+  11: "Modules"
 };
 

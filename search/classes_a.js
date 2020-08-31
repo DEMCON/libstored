@@ -6,6 +6,7 @@ var searchData=
   ['saturated_5fcast_5fhelper_3c_20float_20_3e',['saturated_cast_helper&lt; float &gt;',['../structstored_1_1impl_1_1saturated__cast__helper_3_01float_01_4.html',1,'stored::impl']]],
   ['saturated_5fcast_5fhelper_3c_20long_20double_20_3e',['saturated_cast_helper&lt; long double &gt;',['../structstored_1_1impl_1_1saturated__cast__helper_3_01long_01double_01_4.html',1,'stored::impl']]],
   ['scratchpad',['ScratchPad',['../classstored_1_1_scratch_pad.html',1,'stored']]],
+  ['segmentationlayer',['SegmentationLayer',['../classstored_1_1_segmentation_layer.html',1,'stored']]],
   ['serial2zmq',['Serial2Zmq',['../classed2_1_1serial2zmq_1_1_serial2_zmq.html',1,'ed2::serial2zmq']]],
   ['signedness_5fhelper',['signedness_helper',['../structstored_1_1impl_1_1signedness__helper.html',1,'stored::impl']]],
   ['signedness_5fhelper_3c_20int_20_3e',['signedness_helper&lt; int &gt;',['../structstored_1_1impl_1_1signedness__helper_3_01int_01_4.html',1,'stored::impl']]],

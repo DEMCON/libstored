@@ -1,5 +1,18 @@
 var group__libstored__protocol =
 [
+    [ "ArqLayer", "classstored_1_1_arq_layer.html", [
+      [ "base", "classstored_1_1_arq_layer.html#af614b4f50851434d0ffa0dc9f7388f20", null ],
+      [ "ArqLayer", "classstored_1_1_arq_layer.html#a8424408abd1c64b603fef6bf1d2b5052", null ],
+      [ "ArqLayer", "classstored_1_1_arq_layer.html#a6d4b79b13986e05ff2e2132f734eca2b", null ],
+      [ "ArqLayer", "classstored_1_1_arq_layer.html#a38bd267c41bd6d7fd9b5231b398ac176", null ],
+      [ "~ArqLayer", "classstored_1_1_arq_layer.html#aba7be7e51474cae2f192458aad0369c1", null ],
+      [ "decode", "classstored_1_1_arq_layer.html#aae0973f22504fbff0b98fefec8d53013", null ],
+      [ "encode", "classstored_1_1_arq_layer.html#a156d3e684ca880a6d5a4e57da36d585e", null ],
+      [ "mtu", "classstored_1_1_arq_layer.html#a1efacad0bccc60d7d202663ce984aab2", null ],
+      [ "operator=", "classstored_1_1_arq_layer.html#adde2a92812c75681e4789a302717ee7e", null ],
+      [ "operator=", "classstored_1_1_arq_layer.html#a315e70b02f9ad26a581b3cdb7e19b345", null ],
+      [ "setPurgeableResponse", "classstored_1_1_arq_layer.html#aebc97053e2dbcf03acbc1ea8f3c3664d", null ]
+    ] ],
     [ "AsciiEscapeLayer", "classstored_1_1_ascii_escape_layer.html", [
       [ "base", "classstored_1_1_ascii_escape_layer.html#ad942b156ae7ac142b44f742ed5dca3a9", null ],
       [ "AsciiEscapeLayer", "classstored_1_1_ascii_escape_layer.html#ab8b4f9f1ff917b09cb8853f8605a467c", null ],
@@ -7,10 +20,24 @@ var group__libstored__protocol =
       [ "AsciiEscapeLayer", "classstored_1_1_ascii_escape_layer.html#a85474bb11c01686c5e44f9ba4cefb5e6", null ],
       [ "~AsciiEscapeLayer", "classstored_1_1_ascii_escape_layer.html#afa36c84c34abaaafeff11862f610860c", null ],
       [ "decode", "classstored_1_1_ascii_escape_layer.html#a5acfb59ed33a8f0f3e27556421ff5245", null ],
-      [ "encode", "classstored_1_1_ascii_escape_layer.html#ac79cf25b2b20c482d65b50f841a8c6a3", null ],
       [ "encode", "classstored_1_1_ascii_escape_layer.html#a3db26741f80800ade6a58055dc89b5ee", null ],
+      [ "mtu", "classstored_1_1_ascii_escape_layer.html#ac773513d7ef5330f9fc7b46f08e79442", null ],
       [ "operator=", "classstored_1_1_ascii_escape_layer.html#a7dcc38422a0a43d76d5c2cc7706f0724", null ],
       [ "operator=", "classstored_1_1_ascii_escape_layer.html#a761638029c05f18dcc581d72c2d2f97f", null ]
+    ] ],
+    [ "CrcLayer", "classstored_1_1_crc_layer.html", [
+      [ "base", "classstored_1_1_crc_layer.html#a8e90d7c81ba6fc263a3fa258a5a65e33", null ],
+      [ "polynomial", "classstored_1_1_crc_layer.html#ace8d0da64d2b7a9dbb35678230218543a5398a4103a8cd37ded9d2cc4e5984d5d", null ],
+      [ "init", "classstored_1_1_crc_layer.html#ace8d0da64d2b7a9dbb35678230218543a8cdb659fc6383250cd5fbe526794d2fe", null ],
+      [ "CrcLayer", "classstored_1_1_crc_layer.html#a1276f037fd2476758b587e403f1ff5a9", null ],
+      [ "CrcLayer", "classstored_1_1_crc_layer.html#a1d33b7f0ff79f257d48b8cbf34ad430e", null ],
+      [ "CrcLayer", "classstored_1_1_crc_layer.html#a1ae2b14465c079543919a4f9a121bd20", null ],
+      [ "~CrcLayer", "classstored_1_1_crc_layer.html#abe9ff7290e1031ef2e341a73cd0f3fd7", null ],
+      [ "decode", "classstored_1_1_crc_layer.html#ad19f7cb8159bff0bb9aeb801dd3c56d0", null ],
+      [ "encode", "classstored_1_1_crc_layer.html#ab4b9b9ab2a3b891f524a66568b4461a4", null ],
+      [ "mtu", "classstored_1_1_crc_layer.html#a15a59f037380fed7c39e2f259bd24e91", null ],
+      [ "operator=", "classstored_1_1_crc_layer.html#a56dcecac212529849c48f27e600c5ac3", null ],
+      [ "operator=", "classstored_1_1_crc_layer.html#a05d9e59c0decb7f9499d526dda26d8ef", null ]
     ] ],
     [ "ProtocolLayer", "classstored_1_1_protocol_layer.html", [
       [ "ProtocolLayer", "classstored_1_1_protocol_layer.html#a04eadf44cf520838107498fa87ad4ff1", null ],
@@ -20,15 +47,29 @@ var group__libstored__protocol =
       [ "decode", "classstored_1_1_protocol_layer.html#a357b029311be09df61e019682a848ab5", null ],
       [ "down", "classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a", null ],
       [ "encode", "classstored_1_1_protocol_layer.html#a66c24cec6a17c44fac68213d358a5aa8", null ],
-      [ "encode", "classstored_1_1_protocol_layer.html#abd11604afb6d1f3fc1fa1ae35e1dcedf", null ],
       [ "encode", "classstored_1_1_protocol_layer.html#ae5dab6177c1448d1ce5ac04a69c9b4e4", null ],
+      [ "mtu", "classstored_1_1_protocol_layer.html#a88195d7cdb7129ac7bc625ffeb24d449", null ],
       [ "operator=", "classstored_1_1_protocol_layer.html#a71e9e3a8315078dbf17c3056f185fc76", null ],
       [ "operator=", "classstored_1_1_protocol_layer.html#a22cfb4269bef0178b554ddf4119f218d", null ],
       [ "setDown", "classstored_1_1_protocol_layer.html#a2b2523892617a43cf7421a654bfc3b6c", null ],
+      [ "setPurgeableResponse", "classstored_1_1_protocol_layer.html#a8e8b913345f11bf3cf3999c305905681", null ],
       [ "setUp", "classstored_1_1_protocol_layer.html#a43ca79c4b9503ce51f817ddc7fcd1cb5", null ],
       [ "stack", "classstored_1_1_protocol_layer.html#a3f34a83e488add9a3f459fb8ebed8e34", null ],
       [ "up", "classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40", null ],
       [ "wrap", "classstored_1_1_protocol_layer.html#a7d2f0987462196f77ca9067c050db09d", null ]
+    ] ],
+    [ "SegmentationLayer", "classstored_1_1_segmentation_layer.html", [
+      [ "base", "classstored_1_1_segmentation_layer.html#a3843bb7c02a848cf6f2f427731572edd", null ],
+      [ "SegmentationLayer", "classstored_1_1_segmentation_layer.html#aba07293a3674e525d3ee929eebd3db10", null ],
+      [ "SegmentationLayer", "classstored_1_1_segmentation_layer.html#a475c908b5b2a0aa9c7f929fa8974c9e3", null ],
+      [ "SegmentationLayer", "classstored_1_1_segmentation_layer.html#a792bbe3ab3e8c859078e654fbff856ab", null ],
+      [ "~SegmentationLayer", "classstored_1_1_segmentation_layer.html#ac169d87edf16d2ddf16a7c4573829649", null ],
+      [ "decode", "classstored_1_1_segmentation_layer.html#adee6ee8d098ff67655b36c1ab269d490", null ],
+      [ "encode", "classstored_1_1_segmentation_layer.html#a07d8192a0db41389735cb012fc231ba0", null ],
+      [ "lowerMtu", "classstored_1_1_segmentation_layer.html#a67b205f77f8a2517e16db48cc052ea27", null ],
+      [ "mtu", "classstored_1_1_segmentation_layer.html#a5cd64512cd57378cf25bd2890266919a", null ],
+      [ "operator=", "classstored_1_1_segmentation_layer.html#a4501316fb6d63ff74e1ef3e22c391c88", null ],
+      [ "operator=", "classstored_1_1_segmentation_layer.html#a608c41a2f2335bdde2587b6047c2ee8b", null ]
     ] ],
     [ "TerminalLayer", "classstored_1_1_terminal_layer.html", [
       [ "base", "classstored_1_1_terminal_layer.html#afd194e848a7d83c42e50a7254cf8a640", null ],
@@ -38,10 +79,10 @@ var group__libstored__protocol =
       [ "TerminalLayer", "classstored_1_1_terminal_layer.html#a3aae8bd600dea82390da7d94a9be1b7f", null ],
       [ "~TerminalLayer", "classstored_1_1_terminal_layer.html#a9c91e6d99a16671d0e78c120288a1bda", null ],
       [ "decode", "classstored_1_1_terminal_layer.html#a189c272877b09b93aac1b1ddc96fe58c", null ],
-      [ "encode", "classstored_1_1_terminal_layer.html#a3ec65326a6b12a297c69dc1ff8b0b23e", null ],
       [ "encode", "classstored_1_1_terminal_layer.html#a8e4eb065c098959fb740a9862cf59164", null ],
       [ "encodeEnd", "classstored_1_1_terminal_layer.html#a553f973e434533d14c48f898cc9d6d36", null ],
       [ "encodeStart", "classstored_1_1_terminal_layer.html#ac734cdbc0cc6331ae456a530485d619a", null ],
+      [ "mtu", "classstored_1_1_terminal_layer.html#a0a19f65b341e78a98dca4f13747fb2a7", null ],
       [ "nonDebugDecode", "classstored_1_1_terminal_layer.html#a3708a9baaf0751fd543e8290f6b008c3", null ],
       [ "operator=", "classstored_1_1_terminal_layer.html#a9d0ada0f0a79116bac64fb4662c537e6", null ],
       [ "operator=", "classstored_1_1_terminal_layer.html#a2969d7fd01f719e7afde4cd8e7632cc5", null ],
@@ -50,7 +91,7 @@ var group__libstored__protocol =
     [ "ZmqLayer", "classstored_1_1_zmq_layer.html", [
       [ "base", "classstored_1_1_zmq_layer.html#ada2937cfb799e920d2dd394b248881cb", null ],
       [ "socket_type", "classstored_1_1_zmq_layer.html#af26be4cada09535cc494ac4b5ebe2cfd", null ],
-      [ "DefaultPort", "classstored_1_1_zmq_layer.html#a700c262c94349c7994a7fdfebe43e3cbad52e94f30d1d2877bdcc5205b8884861", null ],
+      [ "DefaultPort", "classstored_1_1_zmq_layer.html#a355a665e013ba5e608188313af1a6a31ad52e94f30d1d2877bdcc5205b8884861", null ],
       [ "ZmqLayer", "classstored_1_1_zmq_layer.html#a3b0bfc533e88ce093a2a7db76c7a4c92", null ],
       [ "ZmqLayer", "classstored_1_1_zmq_layer.html#a11c565900c68485a9c4d66d081dfbe76", null ],
       [ "ZmqLayer", "classstored_1_1_zmq_layer.html#a1547e0d2bde5b9dfd7d17170849d72a4", null ],

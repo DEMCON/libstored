@@ -98,11 +98,14 @@ var hierarchy =
     [ "stored::ListCmdCallbackArg", "structstored_1_1_list_cmd_callback_arg.html", null ],
     [ "stored::ProtocolLayer", "classstored_1_1_protocol_layer.html", [
       [ "PrintfPhysical", "class_printf_physical.html", null ],
+      [ "stored::ArqLayer", "classstored_1_1_arq_layer.html", null ],
       [ "stored::AsciiEscapeLayer", "classstored_1_1_ascii_escape_layer.html", null ],
+      [ "stored::CrcLayer", "classstored_1_1_crc_layer.html", null ],
       [ "stored::Debugger", "classstored_1_1_debugger.html", [
         [ "ExtendedDebugger", "class_extended_debugger.html", null ]
       ] ],
       [ "stored::FrameMerger", "classstored_1_1_frame_merger.html", null ],
+      [ "stored::SegmentationLayer", "classstored_1_1_segmentation_layer.html", null ],
       [ "stored::StringEncoder", "classstored_1_1_string_encoder.html", null ],
       [ "stored::TerminalLayer", "classstored_1_1_terminal_layer.html", [
         [ "CaseInverter", "class_case_inverter.html", null ]

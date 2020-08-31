@@ -89,17 +89,27 @@ $(document).ready(function(){initNavTree('protocol_8h.html','');});
 <div class="textblock"><code>#include &lt;<a class="el" href="macros_8h_source.html">libstored/macros.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="util_8h_source.html">libstored/util.h</a>&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
 <code>#include &lt;<a class="el" href="zmq_8h_source.html">libstored/zmq.h</a>&gt;</code><br />
 </div>
 <p><a href="protocol_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html">stored::ArqLayer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A layer that performs Automatic Repeat Request operations on messages.  <a href="classstored_1_1_arq_layer.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_ascii_escape_layer.html">stored::AsciiEscapeLayer</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Escape non-ASCII bytes.  <a href="classstored_1_1_ascii_escape_layer.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc_layer.html">stored::CrcLayer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A layer that adds CRC to messages.  <a href="classstored_1_1_crc_layer.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html">stored::ProtocolLayer</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protocol layer base class.  <a href="classstored_1_1_protocol_layer.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_segmentation_layer.html">stored::SegmentationLayer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A layer that performs segmentation of the messages.  <a href="classstored_1_1_segmentation_layer.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_terminal_layer.html">stored::TerminalLayer</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts and injects Embedded <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">Debugger</a> messages in a stream of data, such as a terminal.  <a href="classstored_1_1_terminal_layer.html#details">More...</a><br /></td></tr>

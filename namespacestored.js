@@ -1,8 +1,10 @@
 var namespacestored =
 [
     [ "impl", "namespacestored_1_1impl.html", "namespacestored_1_1impl" ],
+    [ "ArqLayer", "classstored_1_1_arq_layer.html", "classstored_1_1_arq_layer" ],
     [ "AsciiEscapeLayer", "classstored_1_1_ascii_escape_layer.html", "classstored_1_1_ascii_escape_layer" ],
     [ "Config", "structstored_1_1_config.html", null ],
+    [ "CrcLayer", "classstored_1_1_crc_layer.html", "classstored_1_1_crc_layer" ],
     [ "Debugger", "classstored_1_1_debugger.html", "classstored_1_1_debugger" ],
     [ "DebugStore", "classstored_1_1_debug_store.html", "classstored_1_1_debug_store" ],
     [ "DebugStoreBase", "classstored_1_1_debug_store_base.html", "classstored_1_1_debug_store_base" ],
@@ -39,6 +41,7 @@ var namespacestored =
     [ "ListCmdCallbackArg", "structstored_1_1_list_cmd_callback_arg.html", "structstored_1_1_list_cmd_callback_arg" ],
     [ "ProtocolLayer", "classstored_1_1_protocol_layer.html", "classstored_1_1_protocol_layer" ],
     [ "ScratchPad", "classstored_1_1_scratch_pad.html", "classstored_1_1_scratch_pad" ],
+    [ "SegmentationLayer", "classstored_1_1_segmentation_layer.html", "classstored_1_1_segmentation_layer" ],
     [ "StringEncoder", "classstored_1_1_string_encoder.html", "classstored_1_1_string_encoder" ],
     [ "TerminalLayer", "classstored_1_1_terminal_layer.html", "classstored_1_1_terminal_layer" ],
     [ "toType", "structstored_1_1to_type.html", null ],

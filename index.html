@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>libstored: libstored - Store for Embedded Debugger</title>
+<title>libstored: Main Page</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -80,10 +80,12 @@ $(document).ready(function(){initNavTree('index.html','');});
 
 <div class="header">
   <div class="headertitle">
-<div class="title">libstored - Store for Embedded Debugger </div>  </div>
+<div class="title">libstored Documentation</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>If you have an embedded system, you probably want to debug it on-target. One of the questions you often have, is what is the value of internal variables of the program, and how can I change them. Debugging using <code>gdb</code> is great, but it pauses the application, which also stops control loops, for example.</p>
+<div class="textblock"><p><a href="https://github.com/DEMCON/libstored/actions?query=workflow%3ACI"></a></p>
+<h1>libstored - Store for Embedded Debugger</h1>
+<p>If you have an embedded system, you probably want to debug it on-target. One of the questions you often have, is what is the value of internal variables of the program, and how can I change them. Debugging using <code>gdb</code> is great, but it pauses the application, which also stops control loops, for example.</p>
 <p>libstored helps you to access internal variables. These variables are part of a <em>store</em>. A store is defined in a simple language, and libstored provides a generator to produce a C++ class (as cmake library) with the variables you want. This generated C++ class is very efficient when accessed by the C++ application. However, it adds interesting functionality: all variables can be accessed remotely.</p>
 <p>The (OSI-stack) Application layer of this debugging interface is provided by libstored. You have to add all other (usually hardware-specific) layers of the OSI stack to get the debugging protocol in and out of your system. Although the protocol fits nicely to ZeroMQ, a TCP stream, or <code>stdio</code> via terminal, the complexity of integrating this depends on your embedded device. However, once you implemented this data transport, you can access the store, and observe and manipulate it using an Embedded Debugger (PC) client, where libstored provides Python classes, a CLI and GUI interface.</p>
 <p>Your application can have one store with one debugging interface, but also multiple stores with one debugging interface, or one store with multiple debugging interfaces &ndash; any combination is possible.</p>
@@ -94,10 +96,9 @@ $(document).ready(function(){initNavTree('index.html','');});
 <li>The Embedded Debugger has a standard set of commands, which can be disabled for your specific project. Moreover, you can also easily add custom commands by adding another capability in a subclass of <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>.</li>
 <li>There are sufficient hooks by the store to implement any application-specific synchronization method, other than the Embedded Debugger.</li>
 <li>The store and all other libstored classes are not thread-safe. Using threads is troubling anyway, use <a href="https://github.com/jhrutgers/zth">fibers</a> instead.</li>
-<li>All code is normal C++, there are no platform-dependent constructs used. Therefore, all platforms are supported: Windows/Linux/Mac/bare metal (newlib), x86/ARM, gcc/clang/MSVC).</li>
+<li>All code is normal C++, there are no platform-dependent constructs used. Therefore, all platforms are supported: Windows/Linux/Mac/bare metal (newlib), x86/ARM, gcc/clang/MSVC/armcc).</li>
 </ul>
 <p>Have a look in the <code>examples</code> directory for further in-depth reading. Refer to the <a href="https://demcon.github.io/libstored">Doxygen documentation</a> for the C++ API.</p>
-<p><a href="https://github.com/DEMCON/libstored/actions?query=workflow%3ACI"></a></p>
 <h2>Table of contents</h2>
 <ul>
 <li><a href="#build">How to build</a><ul>
@@ -176,7 +177,10 @@ make ed2-install
 +-----------+
 | zmqserver |
 +-----------+
-</pre><p>The Embedded Debugger client connects via ZeroMQ. If you application does not have it, you must implement is somehow. The <code>examples/terminal/terminal</code> application could be debugged as follows:</p>
+</pre><div class="image">
+<img src="examples/zmqserver/zmqserver_screenshot.png" alt="zmqserver debugging screenshot"/>
+</div>
+<p>The Embedded Debugger client connects via ZeroMQ. If you application does not have it, you must implement is somehow. The <code>examples/terminal/terminal</code> application could be debugged as follows:</p>
 <ul>
 <li>Run <code>python3 -m <a class="el" href="namespaceed2_1_1wrapper_1_1stdio.html">ed2.wrapper.stdio</a> ../build/examples/terminal/terminal</code> from the <code>client</code> directory. This starts the <code>terminal</code> example, and extracts escaped debugger frames from <code>stdout</code>, which are forwarded to a ZeroMQ interface.</li>
 <li>Connect a client, such as <code>python3 -m <a class="el" href="namespaceed2_1_1gui.html">ed2.gui</a></code>.</li>
