@@ -170,7 +170,7 @@ TEST(SegmentationLayer, MultiChunkDecode) {
 
 TEST(ArqLayer, SingleChunk) {
 	LoggingLayer top;
-	stored::ArqLayer l(4);
+	stored::ArqLayer l;
 	l.wrap(top);
 	LoggingLayer bottom;
 	bottom.wrap(l);
@@ -182,7 +182,7 @@ TEST(ArqLayer, SingleChunk) {
 	EXPECT_EQ(top.decoded().at(0), "123");
 	top.encode("abc", 3);
 	EXPECT_EQ(bottom.encoded().size(), 1);
-	EXPECT_TRUE(memcmp(bottom.encoded().at(0).data(), "\x00""abc", 4) == 0);
+	EXPECT_EQ(bottom.encoded().at(0), std::string("\x00""abc", 4));
 
 	top.decoded().clear();
 	bottom.encoded().clear();
@@ -191,7 +191,7 @@ TEST(ArqLayer, SingleChunk) {
 	EXPECT_EQ(top.decoded().at(0), "123");
 	top.encode("abc", 3);
 	EXPECT_EQ(bottom.encoded().size(), 1);
-	EXPECT_EQ(bottom.encoded().at(0), "\x01""abc");
+	EXPECT_EQ(bottom.encoded().at(0), std::string("\x00""abc", 4));
 
 	top.decoded().clear();
 	bottom.encoded().clear();
@@ -200,7 +200,7 @@ TEST(ArqLayer, SingleChunk) {
 	EXPECT_EQ(top.decoded().at(0), "123");
 	top.encode("abc", 3);
 	EXPECT_EQ(bottom.encoded().size(), 1);
-	EXPECT_TRUE(memcmp(bottom.encoded().at(0).data(), "\x00""abc", 4) == 0);
+	EXPECT_EQ(bottom.encoded().at(0), std::string("\x00""abc", 4));
 
 	top.decoded().clear();
 	bottom.encoded().clear();
@@ -208,14 +208,15 @@ TEST(ArqLayer, SingleChunk) {
 	{ char s[] = "\x01""123"; l.decode(s, sizeof(s) - 1); }
 	EXPECT_EQ(top.decoded().size(), 1);
 	EXPECT_EQ(top.decoded().at(0), "123");
-	top.encode("abc", 3);
+	top.encode("abc", 3, false);
+	top.encode("def", 3);
 	EXPECT_EQ(bottom.encoded().size(), 1);
-	EXPECT_TRUE(memcmp(bottom.encoded().at(0).data(), "\x00""abc", 4) == 0);
+	EXPECT_EQ(bottom.encoded().at(0), std::string("\x00""abcdef", 7));
 }
 
 TEST(ArqLayer, MultiChunk) {
 	LoggingLayer top;
-	stored::ArqLayer l(4);
+	stored::ArqLayer l;
 	l.wrap(top);
 	LoggingLayer bottom;
 	bottom.wrap(l);
@@ -243,10 +244,234 @@ TEST(ArqLayer, MultiChunk) {
 	top.encode("abc", 3, false);
 	top.encode("defg", 4);
 	top.encode("hi", 2);
-	EXPECT_EQ(bottom.encoded().size(), 3);
-	EXPECT_EQ(bottom.encoded().at(0), "\x02""abc");
-	EXPECT_EQ(bottom.encoded().at(1), "defg");
-	EXPECT_EQ(bottom.encoded().at(2), "\x03""hi");
+	EXPECT_EQ(bottom.encoded().size(), 2);
+	EXPECT_EQ(bottom.encoded().at(0), std::string("\x00""abcdefg", 8));
+	EXPECT_EQ(bottom.encoded().at(1), "\x01""hi");
 }
+
+TEST(ArqLayer, LostRequest) {
+	LoggingLayer top;
+	stored::ArqLayer l;
+	l.wrap(top);
+	LoggingLayer bottom;
+	bottom.wrap(l);
+
+	top.decoded().clear();
+	bottom.encoded().clear();
+	{ char s[] = "\x00""123"; l.decode(s, sizeof(s) - 1); }
+	{ char s[] = "\x01""456"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 2);
+	EXPECT_EQ(top.decoded().at(0), "123");
+	EXPECT_EQ(top.decoded().at(1), "456");
+	// Assume last part is lost.
+	// Retransmit random packets.
+	{ char s[] = "\x01""456"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 2);
+	{ char s[] = "\x03""zzz"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 2);
+	{ char s[] = "\x42""..."; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 2);
+	// Reset and retransmit full request
+	{ char s[] = "\x00""123"; l.decode(s, sizeof(s) - 1); }
+	{ char s[] = "\x01""456"; l.decode(s, sizeof(s) - 1); }
+	{ char s[] = "\x02""567"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 5);
+	EXPECT_EQ(top.decoded().at(2), "123");
+	EXPECT_EQ(top.decoded().at(3), "456");
+	EXPECT_EQ(top.decoded().at(4), "567");
+
+	top.encode("abc", 3);
+	EXPECT_EQ(bottom.encoded().size(), 1);
+	EXPECT_EQ(bottom.encoded().at(0), std::string("\x00""abc", 4));
+
+	top.decoded().clear();
+	bottom.encoded().clear();
+	{ char s[] = "\x00"; l.decode(s, sizeof(s) - 1); }
+	{ char s[] = "\x01""123"; l.decode(s, sizeof(s) - 1); }
+	{ char s[] = "\x02""456"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 2);
+	EXPECT_EQ(top.decoded().at(0), "123");
+	EXPECT_EQ(top.decoded().at(1), "456");
+	// Do some retransmit
+	{ char s[] = "\x02""456"; l.decode(s, sizeof(s) - 1); }
+	{ char s[] = "\x12""zzz"; l.decode(s, sizeof(s) - 1); }
+	{ char s[] = "\x01""123"; l.decode(s, sizeof(s) - 1); }
+	{ char s[] = "\x02""456"; l.decode(s, sizeof(s) - 1); }
+	{ char s[] = "\x03""567"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 3);
+	EXPECT_EQ(top.decoded().at(2), "567");
+}
+
+TEST(ArqLayer, LostResponse) {
+	LoggingLayer top;
+	stored::ArqLayer l;
+	l.wrap(top);
+	LoggingLayer bottom;
+	bottom.wrap(l);
+
+	top.decoded().clear();
+	bottom.encoded().clear();
+	{ char s[] = "\x00"; l.decode(s, sizeof(s) - 1); }
+	{ char s[] = "\x01""123"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 1);
+	EXPECT_EQ(top.decoded().at(0), "123");
+
+	top.encode("abc", 3);
+	EXPECT_EQ(bottom.encoded().size(), 1);
+	EXPECT_EQ(bottom.encoded().at(0), std::string("\x00""abc", 4));
+
+	// Assume response was lost. Retransmit request.
+	{ char s[] = "\x01""123"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 1);
+	EXPECT_EQ(bottom.encoded().size(), 2);
+	EXPECT_EQ(bottom.encoded().at(1), std::string("\x00""abc", 4));
+
+	{ char s[] = "\x02""456"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 2);
+	EXPECT_EQ(top.decoded().at(1), "456");
+	top.encode("def", 3, false);
+	top.encode("g", 1);
+	top.encode("hi", 2);
+	EXPECT_EQ(bottom.encoded().size(), 4);
+	EXPECT_EQ(bottom.encoded().at(2), std::string("\x00""defg", 5));
+	EXPECT_EQ(bottom.encoded().at(3), "\x01""hi");
+	{ char s[] = "\x02""456"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(bottom.encoded().size(), 6);
+	EXPECT_EQ(bottom.encoded().at(4), std::string("\x00""defg", 5));
+	EXPECT_EQ(bottom.encoded().at(5), "\x01""hi");
+}
+
+TEST(ArqLayer, Purgeable) {
+	LoggingLayer top;
+	stored::ArqLayer l;
+	l.wrap(top);
+	LoggingLayer bottom;
+	bottom.wrap(l);
+
+	top.decoded().clear();
+	bottom.encoded().clear();
+	{ char s[] = "\x00"; l.decode(s, sizeof(s) - 1); }
+	{ char s[] = "\x01""123"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 1);
+	EXPECT_EQ(top.decoded().at(0), "123");
+
+	top.setPurgeableResponse();
+	top.encode("abc", 3);
+	EXPECT_EQ(bottom.encoded().size(), 1);
+	EXPECT_EQ(bottom.encoded().at(0), std::string("\x00""abc", 4));
+
+	// Retransmit response, expect decoded again.
+	{ char s[] = "\x01""123"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 2);
+	EXPECT_EQ(top.decoded().at(1), "123");
+	// Default to precious.
+	top.encode("def", 3);
+	EXPECT_EQ(bottom.encoded().size(), 2);
+	EXPECT_EQ(bottom.encoded().at(1), std::string("\x00""def", 4));
+
+	{ char s[] = "\x01""123"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 2);
+	// Default to precious.
+	EXPECT_EQ(bottom.encoded().size(), 3);
+	EXPECT_EQ(bottom.encoded().at(2), std::string("\x00""def", 4));
+}
+
+TEST(ArqLayer, Overflow) {
+	LoggingLayer top;
+	stored::ArqLayer l(4);
+	l.wrap(top);
+	LoggingLayer bottom;
+	bottom.wrap(l);
+
+	top.decoded().clear();
+	bottom.encoded().clear();
+	{ char s[] = "\x00"; l.decode(s, sizeof(s) - 1); }
+	{ char s[] = "\x01""123"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 1);
+	top.encode("abcde", 5);
+	EXPECT_EQ(bottom.encoded().size(), 1);
+	EXPECT_EQ(bottom.encoded().at(0), std::string("\x00""abcde", 6));
+
+	{ char s[] = "\x01""123"; l.decode(s, sizeof(s) - 1); }
+	// Behave like purgeable.
+	EXPECT_EQ(top.decoded().size(), 2);
+	top.encode("fghij", 5);
+	EXPECT_EQ(bottom.encoded().size(), 2);
+	EXPECT_EQ(bottom.encoded().at(1), std::string("\x00""fghij", 6));
+
+	{ char s[] = "\x02""456"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 3);
+	top.encode("klm", 3);
+	EXPECT_EQ(bottom.encoded().size(), 3);
+	EXPECT_EQ(bottom.encoded().at(2), std::string("\x00""klm", 4));
+
+	{ char s[] = "\x02""456"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 3);
+	EXPECT_EQ(bottom.encoded().size(), 4);
+	EXPECT_EQ(bottom.encoded().at(3), std::string("\x00""klm", 4));
+}
+
+TEST(CrcLayer, Encode) {
+	stored::CrcLayer l;
+	LoggingLayer ll;
+	ll.wrap(l);
+
+	ll.encoded().clear();
+	l.encode();
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "\xff");
+
+	ll.encoded().clear();
+	l.encode("1", 1);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "1\x5e");
+
+	ll.encoded().clear();
+	l.encode("12", 2);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "12\x54");
+
+	ll.encoded().clear();
+	l.encode("123", 3);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "123\xfc");
+}
+
+TEST(CrcLayer, Decode) {
+	LoggingLayer ll;
+	stored::CrcLayer l;
+	l.wrap(ll);
+
+	ll.decoded().clear();
+	{ char s[] = "\xff"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(ll.decoded().size(), 1);
+	EXPECT_EQ(ll.decoded().at(0), "");
+
+	ll.decoded().clear();
+	{ char s[] = "1\x5e"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(ll.decoded().size(), 1);
+	EXPECT_EQ(ll.decoded().at(0), "1");
+
+	ll.decoded().clear();
+	{ char s[] = "12\x54"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(ll.decoded().size(), 1);
+	EXPECT_EQ(ll.decoded().at(0), "12");
+
+	ll.decoded().clear();
+	{ char s[] = "123\xfc"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(ll.decoded().size(), 1);
+	EXPECT_EQ(ll.decoded().at(0), "123");
+
+	ll.decoded().clear();
+	{ char s[] = "1234\xfc"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(ll.decoded().size(), 0);
+
+	ll.decoded().clear();
+	{ char s[] = "\x00""123\xfc"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(ll.decoded().size(), 0);
+}
+
+
+
 
 }

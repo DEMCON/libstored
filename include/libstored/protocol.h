@@ -53,11 +53,19 @@
  * Test it using the `terminal` example, started using the
  * `client/stdio_wrapper.py`. Then connect one of the clients above to it.
  *
- * ### Application layer
+ * libstored suggests to use the protocol layers below, where applicable.
+ * Standard layer implementations can be used to construct the following stacks (top-down):
+ *
+ * - Lossless UART: stored::Debugger, stored::AsciiEscapeLayer, stored::TerminalLayer
+ * - Lossy UART: stored::Debugger, stored::AsciiEscapeLayer, stored::ArqLayer, stored::CrcLayer, stored::TerminalLayer
+ * - CAN: stored::Debugger, stored::AsciiEscapeLayer, stored::SegmentationLayer, stored::ArqLayer, CAN driver
+ * - ZMQ: stored::Debugger, stored::ZmqLayer
+ *
+ * ## Application layer
  *
  * See \ref libstored_debugger.
  *
- * ### Presentation layer
+ * ## Presentation layer
  *
  * For terminal or UART: In case of binary data, escape all bytes < 0x20 as
  * follows: the sequence `DEL` (0x7f) removes the 3 MSb of the successive byte.
@@ -67,37 +75,40 @@
  *
  * For CAN/ZeroMQ: nothing required.
  *
- * ### Session layer:
+ * ## Session layer:
  *
  * For terminal/UART/CAN: no session support, there is only one (implicit) session.
  *
  * For ZeroMQ: use REQ/REP sockets, where the application-layer request and
  * response are exactly one ZeroMQ message. All layers below are managed by ZeroMQ.
  *
- * ### Transport layer
+ * ## Transport layer
  *
  * For terminal or UART: out-of-band message are captured using `ESC _` (APC) and
  * `ESC \` (ST).  A message consists of the bytes in between these sequences.
  * See stored::TerminalLayer.
  *
- * In case of lossly channels (UART/CAN), CRC, message sequence number, and
- * retransmits should be implemented.  This depends on the specific transport
- * hardware and embedded device.
+ * If the MTU is limited of the hardware, like for CAN, packet segmentation
+ * should be used (see stored::SegmentationLayer).
  *
- * ### Network layer
+ * In case of lossy channels (UART/CAN), CRC (see stored::CrcLayer), message
+ * sequence number, and retransmits (see stored::ArqLayer) should be
+ * implemented. Default implementations are provided, but may be dependent on
+ * the specific transport hardware and embedded device.
+ *
+ * ## Network layer
  *
  * For terminal/UART/ZeroMQ, nothing has to be done.
  *
- * For CAN: packet fragmentation/reassembling/routing is done here.
+ * For CAN: packet routing is done here.
  *
- * ### Datalink layer
- *
- * Depends on the device.
- *
- * ### Physical layer
+ * ## Datalink layer
  *
  * Depends on the device.
  *
+ * ## Physical layer
+ *
+ * Depends on the device.
  *
  * \ingroup libstored
  */
@@ -399,10 +410,10 @@ namespace stored {
 	 * packets have a deterministic (small) size.
 	 *
 	 * Every message is prefixed with a byte that indicates the sequence number
-	 * in the range.  The id 0 is a special value; it resets the state machines
-	 * tracking sequence numbers.  It can be used to reset the connection after
-	 * a reconnect, for example.  Sequence numbers are incremented and wrapped
-	 * around from 255 to 1.
+	 * in the range 0-255.  The number 0 is a special value; it resets the
+	 * state machines tracking sequence numbers.  It can be used to reset the
+	 * connection after a reconnect, for example.  Sequence numbers are
+	 * incremented and wrapped around from 255 to 1.
 	 *
 	 * In contrast to TCP, for example, messages are not ACKed individually.
 	 * If the host receives the response, it can assume that the request was
@@ -436,16 +447,50 @@ namespace stored {
 
 	private:
 		enum { DecodeStateIdle, DecodeStateDecoding, DecodeStateDecoded, DecodeStateRetransmit } m_decodeState;
-		uint8_t m_decodeId;
-		uint8_t m_decodeIdStart;
+		uint8_t m_decodeSeq;
+		uint8_t m_decodeSeqStart;
 
 		enum { EncodeStateIdle, EncodeStateEncoding, EncodeStateUnbufferedIdle, EncodeStateUnbufferedEncoding } m_encodeState;
-		uint8_t m_encodeId;
-		uint8_t m_encodeIdStart;
+		uint8_t m_encodeSeq;
 
 		size_t m_maxEncodeBuffer;
 		std::vector<std::string> m_encodeBuffer;
 		size_t m_encodeBufferSize;
+	};
+
+	/*!
+	 * \brief A layer that adds CRC to messages.
+	 *
+	 * If the CRC does not match during decoding, it is silently dropped.
+	 * You probably want #stored::ArqLayer somewhere higher in the stack.
+	 *
+	 * An 8-bit CRC is used with polynomial 0xA6.  This polynomial seems to be
+	 * a good choice according to <i>Cyclic Redundancy Code (CRC) Polynomial
+	 * Selection For Embedded Networks</i> (Koopman et al., 2004).
+	 *
+	 * \ingroup libstored_protocol
+	 */
+	class CrcLayer : public ProtocolLayer {
+		CLASS_NOCOPY(CrcLayer)
+	public:
+		typedef ProtocolLayer base;
+
+		enum { polynomial = 0xa6, init = 0xff };
+
+		CrcLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~CrcLayer() override is_default
+
+		virtual void decode(void* buffer, size_t len) override;
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+
+		virtual size_t mtu() const override;
+
+	protected:
+		static uint8_t compute(uint8_t input, uint8_t crc = init);
+
+	private:
+		uint8_t m_crc;
 	};
 
 } // namespace

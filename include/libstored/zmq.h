@@ -61,6 +61,7 @@ namespace stored {
 		socket_type fd();
 
 		void encode(void const* buffer, size_t len, bool last = true) final;
+		using base::encode;
 
 	private:
 		/*! \brief The ZeroMQ context. */

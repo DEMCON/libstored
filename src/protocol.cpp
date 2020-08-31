@@ -385,11 +385,10 @@ void SegmentationLayer::encode(void const* buffer, size_t len, bool last) {
 ArqLayer::ArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_decodeState(DecodeStateIdle)
-	, m_decodeId(1)
-	, m_decodeIdStart()
+	, m_decodeSeq(1)
+	, m_decodeSeqStart()
 	, m_encodeState(EncodeStateIdle)
-	, m_encodeId()
-	, m_encodeIdStart()
+	, m_encodeSeq()
 	, m_maxEncodeBuffer(maxEncodeBuffer)
 	, m_encodeBufferSize()
 {
@@ -400,15 +399,15 @@ void ArqLayer::decode(void* buffer, size_t len) {
 		return;
 
 	char* buffer_ = static_cast<char*>(buffer);
-	uint8_t id = (uint8_t)buffer_[0];
-	if(unlikely(id == 0)) {
+	uint8_t seq = (uint8_t)buffer_[0];
+	if(unlikely(seq == 0)) {
 		// Reset communication state.
 		m_decodeState = DecodeStateIdle;
 		m_encodeState = EncodeStateIdle;
 		m_encodeBuffer.clear();
 		m_encodeBufferSize = 0;
-		m_decodeId = 0;
-		m_encodeId = 0;
+		m_decodeSeq = 0;
+		m_encodeSeq = 0;
 		setPurgeableResponse(false);
 	}
 
@@ -416,20 +415,21 @@ void ArqLayer::decode(void* buffer, size_t len) {
 	case DecodeStateDecoded:
 		stored_assert(m_encodeState == EncodeStateIdle || m_encodeState == EncodeStateUnbufferedIdle);
 
-		if(id == m_decodeId) {
+		if(seq == m_decodeSeq) {
 			// This is the next command. The previous one was received, apparently.
 			m_decodeState = DecodeStateIdle;
 			m_encodeState = EncodeStateIdle;
 			m_encodeBuffer.clear();
 			m_encodeBufferSize = 0;
 			setPurgeableResponse(false);
-		} else if(id == m_decodeIdStart) {
+		} else if(seq == m_decodeSeqStart) {
 			// This seems to be a retransmit of the current command.
 			switch(m_encodeState) {
 			case EncodeStateUnbufferedIdle:
-				// We must reexecute the command, so revert to previous decode start state
+				// We must reexecute the command. Reset the sequence number, as the content may change.
+				setPurgeableResponse(false);
+				m_decodeSeq = m_decodeSeqStart;
 				m_decodeState = DecodeStateIdle;
-				m_decodeId = m_decodeIdStart;
 				break;
 			case EncodeStateIdle:
 				// Wait for full retransmit of the command, but do not actually decode.
@@ -438,40 +438,42 @@ void ArqLayer::decode(void* buffer, size_t len) {
 			default:
 				stored_assert(false); // NOLINT(hicpp-static-assert,misc-static-assert)
 			}
-		} // else: unexpected id; ignore.
+		} // else: unexpected seq; ignore.
 		break;
 	default:;
 	}
 
 	switch(m_decodeState) {
-	case DecodeStateRetransmit:
-		if(id == m_decodeId) {
+	case DecodeStateRetransmit: {
+		uint8_t nextSeq = (uint8_t)(seq + 1u);
+		if(nextSeq == 0)
+			nextSeq = 1;
+		if(nextSeq == m_decodeSeq) {
 			// Got the last part of the command. Retransmit the response buffer.
 			for(std::vector<std::string>::const_iterator it = m_encodeBuffer.cbegin(); it != m_encodeBuffer.cend(); ++it)
-				encode(it->data(), it->size(), true);
+				base::encode(it->data(), it->size(), true);
 			m_decodeState = DecodeStateDecoded;
 		}
-		break;
+		break; }
 	case DecodeStateIdle:
 		if(unlikely(len == 1)) {
 			// Ignore empty packets.
-			m_decodeId++;
+			if(++m_decodeSeq == 0)
+				m_decodeSeq = 1;
 			break;
 		}
-		m_decodeIdStart = m_decodeId;
-		m_encodeIdStart = m_encodeId;
+		m_decodeSeqStart = m_decodeSeq;
 		m_decodeState = DecodeStateDecoding;
 		// fall-through
 	case DecodeStateDecoding:
-		if(likely(id == m_decodeId)) {
+		if(likely(seq == m_decodeSeq)) {
 			// Properly in sequence.
 			base::decode(buffer_ + 1, len - 1);
-			m_decodeId++;
-			if(m_decodeId == 0)
-				m_decodeId = 1;
+			if(++m_decodeSeq == 0)
+				m_decodeSeq = 1;
 
 			// Should not wrap-around during a request.
-			stored_assert(m_decodeId != m_decodeIdStart);
+			stored_assert(m_decodeSeq != m_decodeSeqStart);
 		}
 		break;
 	default:;
@@ -483,8 +485,8 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 		// This seems to be the first part of the response.
 		// So, the request message must have been complete.
 		m_decodeState = DecodeStateDecoded;
-		stored_assert(m_encodeState == EncodeStateIdle);
-		m_encodeState = EncodeStateIdle;
+		stored_assert(m_encodeState == EncodeStateIdle || m_encodeState == EncodeStateUnbufferedIdle);
+		m_encodeSeq = 0;
 	}
 
 	switch(m_encodeState) {
@@ -500,8 +502,9 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 
 	switch(m_encodeState) {
 	case EncodeStateUnbufferedIdle:
-		base::encode((void const*)&m_encodeId, 1, false);
-		m_encodeId++;
+		base::encode((void const*)&m_encodeSeq, 1, false);
+		if(++m_encodeSeq == 0)
+			m_encodeSeq = 1;
 		m_encodeState = EncodeStateUnbufferedEncoding;
 		// fall-through
 	case EncodeStateUnbufferedEncoding:
@@ -512,14 +515,15 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 
 	case EncodeStateIdle:
 		{
-			char encodeId = (char)m_encodeId;
+			char encodeSeq = (char)m_encodeSeq;
 #if STORED_cplusplus >= 201103L
-			m_encodeBuffer.emplace_back(&encodeId, 1);
+			m_encodeBuffer.emplace_back(&encodeSeq, 1);
 #else
-			m_encodeBuffer.push_back(std::string(&encodeId, 1));
+			m_encodeBuffer.push_back(std::string(&encodeSeq, 1));
 #endif
 		}
-		m_encodeId++;
+		if(++m_encodeSeq == 0)
+			m_encodeSeq = 1;
 		m_encodeState = EncodeStateEncoding;
 		m_encodeBufferSize++;
 		// fall-through
@@ -546,10 +550,11 @@ void ArqLayer::setPurgeableResponse(bool purgeable) {
 		base::setPurgeableResponse(true);
 
 		switch(m_encodeState) {
-		case EncodeStateEncoding:
-			base::encode(m_encodeBuffer.back().data(), false);
+		case EncodeStateEncoding: {
+			std::string const& s = m_encodeBuffer.back();
+			base::encode(s.data(), s.size(), false);
 			m_encodeState = EncodeStateUnbufferedEncoding;
-			break;
+			break; }
 		case EncodeStateIdle:
 			m_encodeState = EncodeStateUnbufferedIdle;
 			break;
@@ -577,6 +582,83 @@ void ArqLayer::setPurgeableResponse(bool purgeable) {
 }
 
 size_t ArqLayer::mtu() const {
+	size_t mtu = base::mtu();
+	stored_assert(mtu == 0 || mtu > 1);
+	return mtu <= 1 ? 0 : mtu - 1;
+}
+
+
+
+
+
+//////////////////////////////
+// CrcLayer
+//
+
+// Generated by http://www.sunshine2k.de/coding/javascript/crc/crc_js.html
+static const uint8_t crc_table[] = {
+	0x00, 0xA6, 0xEA, 0x4C, 0x72, 0xD4, 0x98, 0x3E, 0xE4, 0x42, 0x0E, 0xA8, 0x96, 0x30, 0x7C, 0xDA,
+	0x6E, 0xC8, 0x84, 0x22, 0x1C, 0xBA, 0xF6, 0x50, 0x8A, 0x2C, 0x60, 0xC6, 0xF8, 0x5E, 0x12, 0xB4,
+	0xDC, 0x7A, 0x36, 0x90, 0xAE, 0x08, 0x44, 0xE2, 0x38, 0x9E, 0xD2, 0x74, 0x4A, 0xEC, 0xA0, 0x06,
+	0xB2, 0x14, 0x58, 0xFE, 0xC0, 0x66, 0x2A, 0x8C, 0x56, 0xF0, 0xBC, 0x1A, 0x24, 0x82, 0xCE, 0x68,
+	0x1E, 0xB8, 0xF4, 0x52, 0x6C, 0xCA, 0x86, 0x20, 0xFA, 0x5C, 0x10, 0xB6, 0x88, 0x2E, 0x62, 0xC4,
+	0x70, 0xD6, 0x9A, 0x3C, 0x02, 0xA4, 0xE8, 0x4E, 0x94, 0x32, 0x7E, 0xD8, 0xE6, 0x40, 0x0C, 0xAA,
+	0xC2, 0x64, 0x28, 0x8E, 0xB0, 0x16, 0x5A, 0xFC, 0x26, 0x80, 0xCC, 0x6A, 0x54, 0xF2, 0xBE, 0x18,
+	0xAC, 0x0A, 0x46, 0xE0, 0xDE, 0x78, 0x34, 0x92, 0x48, 0xEE, 0xA2, 0x04, 0x3A, 0x9C, 0xD0, 0x76,
+	0x3C, 0x9A, 0xD6, 0x70, 0x4E, 0xE8, 0xA4, 0x02, 0xD8, 0x7E, 0x32, 0x94, 0xAA, 0x0C, 0x40, 0xE6,
+	0x52, 0xF4, 0xB8, 0x1E, 0x20, 0x86, 0xCA, 0x6C, 0xB6, 0x10, 0x5C, 0xFA, 0xC4, 0x62, 0x2E, 0x88,
+	0xE0, 0x46, 0x0A, 0xAC, 0x92, 0x34, 0x78, 0xDE, 0x04, 0xA2, 0xEE, 0x48, 0x76, 0xD0, 0x9C, 0x3A,
+	0x8E, 0x28, 0x64, 0xC2, 0xFC, 0x5A, 0x16, 0xB0, 0x6A, 0xCC, 0x80, 0x26, 0x18, 0xBE, 0xF2, 0x54,
+	0x22, 0x84, 0xC8, 0x6E, 0x50, 0xF6, 0xBA, 0x1C, 0xC6, 0x60, 0x2C, 0x8A, 0xB4, 0x12, 0x5E, 0xF8,
+	0x4C, 0xEA, 0xA6, 0x00, 0x3E, 0x98, 0xD4, 0x72, 0xA8, 0x0E, 0x42, 0xE4, 0xDA, 0x7C, 0x30, 0x96,
+	0xFE, 0x58, 0x14, 0xB2, 0x8C, 0x2A, 0x66, 0xC0, 0x1A, 0xBC, 0xF0, 0x56, 0x68, 0xCE, 0x82, 0x24,
+	0x90, 0x36, 0x7A, 0xDC, 0xE2, 0x44, 0x08, 0xAE, 0x74, 0xD2, 0x9E, 0x38, 0x06, 0xA0, 0xEC, 0x4A
+};
+
+/*!
+ * \brief Ctor.
+ */
+CrcLayer::CrcLayer(ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_crc(init)
+{
+}
+
+void CrcLayer::decode(void* buffer, size_t len) {
+	if(len < 1)
+		return;
+
+	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
+	uint8_t crc = init;
+	for(size_t i = 0; i < len - 1; i++)
+		crc = compute(crc, buffer_[i]);
+
+	if(crc != buffer_[len - 1])
+		// Invalid.
+		return;
+
+	base::decode(buffer, len - 1);
+}
+
+void CrcLayer::encode(void const* buffer, size_t len, bool last) {
+	uint8_t const* buffer_ = static_cast<uint8_t const*>(buffer);
+	for(size_t i = 0; i < len; i++)
+		m_crc = compute(m_crc, buffer_[i]);
+
+	base::encode(buffer, len, false);
+
+	if(last) {
+		base::encode(&m_crc, 1, true);
+		m_crc = init;
+	}
+}
+
+uint8_t CrcLayer::compute(uint8_t input, uint8_t crc) {
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
+	return crc_table[(uint8_t)(input ^ crc)];
+}
+
+size_t CrcLayer::mtu() const {
 	size_t mtu = base::mtu();
 	stored_assert(mtu == 0 || mtu > 1);
 	return mtu <= 1 ? 0 : mtu - 1;
