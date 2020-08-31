@@ -517,9 +517,9 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 		{
 			char encodeSeq = (char)m_encodeSeq;
 #if STORED_cplusplus >= 201103L
-			m_encodeBuffer.emplace_back(&encodeSeq, 1);
+			m_encodeBuffer.emplace_back(&encodeSeq, 1u);
 #else
-			m_encodeBuffer.push_back(std::string(&encodeSeq, 1));
+			m_encodeBuffer.push_back(std::string(&encodeSeq, 1u));
 #endif
 		}
 		if(++m_encodeSeq == 0)
