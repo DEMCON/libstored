@@ -364,6 +364,16 @@ namespace stored {
 		 * \brief Returns if this wrapper points to a valid object.
 		 */
 		virtual bool valid() const = 0;
+
+		/*!
+		 * \brief Checks if the object is a function.
+		 */
+		bool isFunction() const { return valid() && Type::isFunction(type()); }
+
+		/*!
+		 * \brief Checks if the object is a variable.
+		 */
+		bool isVariable() const { return valid() && !Type::isFunction(type()); }
 	};
 
 	/*!

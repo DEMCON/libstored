@@ -375,6 +375,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		char* c;
 		size_t cs;
 		capabilities(c, cs);
+		response.setPurgeableResponse();
 		response.encode(c, cs, true);
 		return;
 	}
@@ -389,6 +390,9 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		DebugVariant v = find(++p, --len);
 		if(unlikely(!v.valid()))
 			goto error;
+
+		if(v.isVariable())
+			response.setPurgeableResponse();
 
 		size_t size = v.size();
 		void* data = spm().alloc<char>(size);
@@ -432,6 +436,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		if(!Config::DebuggerEcho)
 			goto error;
 
+		response.setPurgeableResponse();
 		response.encode(p + 1, len - 1, true);
 		return;
 	}
@@ -443,6 +448,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		if(!Config::DebuggerList)
 			goto error;
 
+		response.setPurgeableResponse();
 		ListCmdCallbackArg arg = {this, &response, 0};
 
 		list(&listCmdCallback, &arg);
@@ -556,6 +562,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 			// Not supported, apparently.
 			goto error;
 
+		response.setPurgeableResponse();
 		response.encode(id, strlen(id), true);
 		return;
 	}
@@ -567,6 +574,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		if(!Config::DebuggerVersion)
 			goto error;
 
+		response.setPurgeableResponse();
 		if(!version(response))
 			// No version output.
 			goto error;
@@ -614,6 +622,8 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 
 		if(datalen == 0)
 			goto error;
+
+		response.setPurgeableResponse();
 
 		// Go read the memory in chunks
 		while(datalen > 0) {
@@ -717,6 +727,9 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		if(!str)
 			goto error;
 
+		if(tracing() && s == m_traceStream)
+			response.setPurgeableResponse();
+
 		response.encode(str->data(), str->size(), false);
 		str->clear();
 
@@ -799,6 +812,10 @@ public:
 	void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
 		base::encode(buffer, len, false);
 	}
+
+	using base::encode;
+
+	void setPurgeableResponse(bool UNUSED_PAR(purgeable) = true) final {}
 };
 
 /*!
@@ -1128,6 +1145,8 @@ char const* Debugger::streams(void const*& buffer, size_t& len) {
  */
 class StringEncoder : public ProtocolLayer {
 public:
+	typedef ProtocolLayer base;
+
 	explicit StringEncoder(std::string& s)
 		: m_s(s)
 	{}
@@ -1135,6 +1154,10 @@ public:
 	void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
 		m_s.append(static_cast<char const*>(buffer), len);
 	}
+
+	using base::encode;
+
+	void setPurgeableResponse(bool UNUSED_PAR(purgeable) = true) final {}
 
 private:
 	std::string& m_s;
