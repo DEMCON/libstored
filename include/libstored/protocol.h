@@ -57,8 +57,8 @@
  * Standard layer implementations can be used to construct the following stacks (top-down):
  *
  * - Lossless UART: stored::Debugger, stored::AsciiEscapeLayer, stored::TerminalLayer
- * - Lossy UART: stored::Debugger, stored::AsciiEscapeLayer, stored::ArqLayer, stored::CrcLayer, stored::TerminalLayer
- * - CAN: stored::Debugger, stored::AsciiEscapeLayer, stored::SegmentationLayer, stored::ArqLayer, CAN driver
+ * - Lossy UART: stored::Debugger, tored::ArqLayer, stored::CrcLayer, stored::AsciiEscapeLayer, stored::TerminalLayer
+ * - CAN: stored::Debugger, stored::SegmentationLayer, stored::ArqLayer, CAN driver
  * - ZMQ: stored::Debugger, stored::ZmqLayer
  *
  * ## Application layer
@@ -66,12 +66,6 @@
  * See \ref libstored_debugger.
  *
  * ## Presentation layer
- *
- * For terminal or UART: In case of binary data, escape all bytes < 0x20 as
- * follows: the sequence `DEL` (0x7f) removes the 3 MSb of the successive byte.
- * For example, the sequence `DEL ;` (0x7f 0x3b) decodes as `ESC` (0x1b).
- * To encode `DEL` itself, repeat it.
- * See stored::AsciiEscapeLayer.
  *
  * For CAN/ZeroMQ: nothing required.
  *
@@ -84,17 +78,13 @@
  *
  * ## Transport layer
  *
- * For terminal or UART: out-of-band message are captured using `ESC _` (APC) and
- * `ESC \` (ST).  A message consists of the bytes in between these sequences.
- * See stored::TerminalLayer.
- *
  * If the MTU is limited of the hardware, like for CAN, packet segmentation
  * should be used (see stored::SegmentationLayer).
  *
- * In case of lossy channels (UART/CAN), CRC (see stored::CrcLayer), message
- * sequence number, and retransmits (see stored::ArqLayer) should be
- * implemented. Default implementations are provided, but may be dependent on
- * the specific transport hardware and embedded device.
+ * In case of lossy channels (UART/CAN), message sequence number, and
+ * retransmits (see stored::ArqLayer) should be implemented, and CRC (see
+ * stored::CrcLayer). Default implementations are provided, but may be
+ * dependent on the specific transport hardware and embedded device.
  *
  * ## Network layer
  *
@@ -104,7 +94,15 @@
  *
  * ## Datalink layer
  *
- * Depends on the device.
+ * For terminal or UART: In case of binary data, escape bytes < 0x20 that
+ * conflict with other procotols, as follows: the sequence `DEL` (0x7f) removes
+ * the 3 MSb of the successive byte.  For example, the sequence `DEL ;` (0x7f
+ * 0x3b) decodes as `ESC` (0x1b).  To encode `DEL` itself, repeat it.  See
+ * stored::AsciiEscapeLayer.
+ *
+ * For terminal or UART: out-of-band message are captured using `ESC _` (APC) and
+ * `ESC \` (ST).  A message consists of the bytes in between these sequences.
+ * See stored::TerminalLayer.
  *
  * ## Physical layer
  *
@@ -290,7 +288,7 @@ namespace stored {
 		static char const Esc      = '\x7f'; // DEL
 		static char const EscMask  = '\x1f'; // data bits of the next char
 
-		explicit AsciiEscapeLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		AsciiEscapeLayer(bool all = false, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 
 		/*!
 		 * \copydoc stored::ProtocolLayer::~ProtocolLayer()
@@ -301,6 +299,12 @@ namespace stored {
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
 		using base::encode;
 		virtual size_t mtu() const override;
+
+	protected:
+		char needEscape(char c);
+
+	private:
+		bool const m_all;
 	};
 
 	/*!
@@ -363,14 +367,13 @@ namespace stored {
 	 * \brief A layer that performs segmentation of the messages.
 	 *
 	 * Messages to be encoded are split with a maximum chunk size (MTU). At the
-	 * end of the packet, the #EndMarker is inserted.  Incoming messages are
-	 * reassembled until the #EndMarker is encountered.
+	 * end of each chunk, either #ContinueMarker or the #EndMarker is inserted,
+	 * depending of this was the last chunk.  Incoming messages are reassembled
+	 * until the #EndMarker is encountered.
 	 *
 	 * This layer assumes a lossless channel; all messages are received in
 	 * order. If that is not the case for your transport, wrap this layer in
-	 * the #stored::ArqLayer. Moreover, the #stored::AsciiEscapeLayer must be
-	 * somewhere above this layer, such that #EndMarker cannot occur in the
-	 * data.
+	 * the #stored::ArqLayer.
 	 *
 	 * \ingroup libstored_protocol
 	 */
@@ -379,7 +382,9 @@ namespace stored {
 	public:
 		typedef ProtocolLayer base;
 
-		static char const EndMarker = '\x17';	// ETB
+		// Pick markers outside of ASCII control, as it might imply escaping.
+		static char const ContinueMarker = 'C';
+		static char const EndMarker = 'E';
 
 		SegmentationLayer(size_t mtu = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~SegmentationLayer() override is_default
@@ -411,10 +416,13 @@ namespace stored {
 	 * packets have a deterministic (small) size.
 	 *
 	 * Every message is prefixed with a byte that indicates the sequence number
-	 * in the range 0-255.  The number 0 is a special value; it resets the
+	 * in the range 0-255.  The number 32 is a special value; it resets the
 	 * state machines tracking sequence numbers.  It can be used to reset the
 	 * connection after a reconnect, for example.  Sequence numbers are
-	 * incremented and wrapped around from 255 to 1.
+	 * incremented and wrapped around from 255 to 0. While incrementing, 32 is
+	 * skipped. These values are chosen such that the common case is that it
+	 * does not require ASCII control character escaping, which would increase
+	 * the overhead significantly.
 	 *
 	 * In contrast to TCP, for example, messages are not ACKed individually.
 	 * If the host receives the response, it can assume that the request was
@@ -429,6 +437,12 @@ namespace stored {
 	 * response it too large, it is dropped. Then, a retransmit of the request
 	 * will reexecute the request.
 	 *
+	 * Note that there is no timeout specified. As libstored does not have a
+	 * notion of time, it is up to the client to determine if it has waited
+	 * long enough and wants to try a retransmit; libstored will not retransmit
+	 * by itself. It may depend on the target hardware what a suitable timeout
+	 * is.
+	 *
 	 * \ingroup libstored_protocol
 	 */
 	class ArqLayer : public ProtocolLayer {
@@ -439,12 +453,16 @@ namespace stored {
 		ArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~ArqLayer() override is_default
 
+		static uint8_t const ResetSeq = 32;
+
 		virtual void decode(void* buffer, size_t len) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
 		using base::encode;
 
 		virtual void setPurgeableResponse(bool purgeable = true) override;
 		virtual size_t mtu() const override;
+
+		static uint8_t nextSeq(uint8_t seq);
 
 	private:
 		enum { DecodeStateIdle, DecodeStateDecoding, DecodeStateDecoded, DecodeStateRetransmit } m_decodeState;
