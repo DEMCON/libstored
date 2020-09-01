@@ -344,6 +344,9 @@ namespace stored {
 		virtual void writeToFd(int fd, void const* buffer, size_t len) = 0;
 #else
 		void writeToFd(int fd, void const* buffer, size_t len);
+
+public:
+		static void writeToFd_(int fd, void const* buffer, size_t len);
 #endif
 
 	private:

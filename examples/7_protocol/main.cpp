@@ -42,6 +42,8 @@ public:
 		char* buffer_ = (char*)alloca(len);
 		for(size_t i = 0; i < len; i++)
 			buffer_[i] = lossyByte(static_cast<char const*>(buffer)[i]);
+
+		stored::TerminalLayer::writeToFd_(STDOUT_FILENO, buffer_, len);
 		base::encode(buffer_, len, last);
 	}
 
@@ -63,6 +65,7 @@ public:
 
 			// Inject an error.
 			b = b ^ (char)(1 << (rand() % 8));
+			store.injected_errors() = store.injected_errors().get() + 1;
 		}
 	}
 

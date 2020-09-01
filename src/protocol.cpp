@@ -237,8 +237,17 @@ void TerminalLayer::nonDebugDecode(void* buffer, size_t len) {
 #ifndef STORED_OS_BAREMETAL
 /*!
  * \brief Helper function to write a buffer to a file descriptor.
+ *
+ * By default calls #writeToFd_().
  */
 void TerminalLayer::writeToFd(int fd, void const* buffer, size_t len) {
+	writeToFd_(fd, buffer, len);
+}
+
+/*!
+ * \brief Write the given buffer to a file descriptor.
+ */
+void TerminalLayer::writeToFd_(int fd, void const* buffer, size_t len) {
 	if(fd < 0)
 		return;
 
