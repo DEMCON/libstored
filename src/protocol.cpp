@@ -30,6 +30,8 @@
 #  define write(fd, buffer, count) _write(fd, buffer, (unsigned int)(count))
 #endif
 
+#include <algorithm>
+
 namespace stored {
 
 
@@ -343,9 +345,11 @@ void SegmentationLayer::decode(void* buffer, size_t len) {
 	char* buffer_ = static_cast<char*>(buffer);
 	if(!m_decode.empty() || buffer_[len - 1] != EndMarker) {
 		// Save for later packet reassembling.
-		size_t start = m_decode.size();
-		m_decode.resize(start + len - 1);
-		memcpy(&m_decode[start], buffer_, len - 1);
+		if(len > 1) {
+			size_t start = m_decode.size();
+			m_decode.resize(start + len - 1);
+			memcpy(&m_decode[start], buffer_, len - 1);
+		}
 
 		if(buffer_[len - 1] == EndMarker) {
 			// Got it.
