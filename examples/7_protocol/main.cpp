@@ -8,10 +8,14 @@
 #  define STDERR_FILENO		_fileno(stderr)
 #  define STDOUT_FILENO		_fileno(stdout)
 #  define STDIN_FILENO		_fileno(stdin)
+#else
+#  include <unistd.h>
+#endif
+
+#ifdef STORED_OS_WINDOWS
 #  include <malloc.h>
 #  define alloca(x) _alloca(x)
 #else
-#  include <unistd.h>
 #  include <alloca.h>
 #endif
 
