@@ -171,9 +171,9 @@ int main() {
 	setvbuf(stdout, NULL, _IONBF, 0);
 
 #ifdef STORED_OS_WINDOWS
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 #else
-	srand48(time(NULL));
+	srand48((long)time(NULL));
 #endif
 
 	char buf[16];
