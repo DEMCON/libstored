@@ -688,5 +688,52 @@ size_t CrcLayer::mtu() const {
 	return mtu <= 1 ? 0 : mtu - 1;
 }
 
+
+
+//////////////////////////////
+// BufferLayer
+//
+
+BufferLayer::BufferLayer(size_t size, ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_size(size ? size : std::numeric_limits<size_t>::max())
+{}
+
+void BufferLayer::encode(void const* buffer, size_t len, bool last) {
+	char const* buffer_ = static_cast<char const*>(buffer);
+
+	size_t remaining = m_size - m_buffer.size();
+
+	while(remaining < len) {
+		// Does not fit in our buffer. Forward immediately.
+		if(m_buffer.empty()) {
+			base::encode(buffer_, remaining, false);
+		} else {
+			m_buffer.append(buffer_, remaining);
+			base::encode(m_buffer.data(), m_buffer.size(), false);
+			m_buffer.clear();
+		}
+		buffer_ += remaining;
+		len -= remaining;
+		remaining = m_size;
+	}
+
+	if(last || len == remaining) {
+		if(m_buffer.empty()) {
+			// Pass through immediately.
+			base::encode(buffer_, len, last);
+		} else {
+			// Got already something in the buffer. Concat and forward.
+			m_buffer.append(buffer_, len);
+			base::encode(m_buffer.data(), m_buffer.size(), last);
+			m_buffer.clear();
+		}
+	} else {
+		// Save for later.
+		m_buffer.append(buffer_, len);
+	}
+}
+
+
 } // namespace
 

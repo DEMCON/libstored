@@ -58,7 +58,7 @@
  *
  * - Lossless UART: stored::Debugger, stored::AsciiEscapeLayer, stored::TerminalLayer
  * - Lossy UART: stored::Debugger, tored::ArqLayer, stored::CrcLayer, stored::AsciiEscapeLayer, stored::TerminalLayer
- * - CAN: stored::Debugger, stored::SegmentationLayer, stored::ArqLayer, CAN driver
+ * - CAN: stored::Debugger, stored::SegmentationLayer, stored::ArqLayer, stored::BufferLayer, CAN driver
  * - ZMQ: stored::Debugger, stored::ZmqLayer
  *
  * ## Application layer
@@ -513,6 +513,30 @@ public:
 
 	private:
 		uint8_t m_crc;
+	};
+
+	/*!
+	 * \brief Buffer partial encoding frames.
+	 *
+	 * By default, layers pass encoded data immediately to lower layers.
+	 * However, one might collect as much data as possible to reduce overhead
+	 * of the actual transport.  This layer buffers partial messages until the
+	 * maximum buffer capacity is reached, or the \c last flag is encountered.
+	 */
+	class BufferLayer : public ProtocolLayer {
+		CLASS_NOCOPY(BufferLayer)
+	public:
+		typedef ProtocolLayer base;
+
+		BufferLayer(size_t size = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~BufferLayer() override is_default
+
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+
+	private:
+		size_t m_size;
+		std::string m_buffer;
 	};
 
 } // namespace

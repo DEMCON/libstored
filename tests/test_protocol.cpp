@@ -26,7 +26,7 @@ public:
 	std::deque<std::string> const & decoded() const { return m_decoded; }
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override {
-		if(m_partial)
+		if(m_partial && !m_encoded.empty())
 			m_encoded.back().append(static_cast<char const*>(buffer), len);
 		else
 			m_encoded.emplace_back(static_cast<char const*>(buffer), len);
@@ -472,6 +472,56 @@ TEST(CrcLayer, Decode) {
 	EXPECT_EQ(ll.decoded().size(), 0);
 }
 
+TEST(BufferLayer, Encode) {
+	stored::BufferLayer l(4);
+	LoggingLayer ll;
+	ll.wrap(l);
+
+	ll.encoded().clear();
+	l.encode("123", 3);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "123");
+
+	ll.encoded().clear();
+	l.encode("12", 2, false);
+	l.encode("3", 1);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "123");
+
+	ll.encoded().clear();
+	l.encode("12", 2, false);
+	l.encode("3", 1, false);
+	l.encode();
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "123");
+
+	ll.encoded().clear();
+	l.encode("1234", 4, true);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "1234");
+
+	ll.encoded().clear();
+	l.encode("1234", 4, false);
+	l.encode();
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "1234");
+
+	ll.encoded().clear();
+	l.encode("12345", 5, true);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "12345");
+
+	ll.encoded().clear();
+	l.encode("12345", 5, false);
+	l.encode("67", 2, true);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "1234567");
+
+	ll.encoded().clear();
+	l.encode("1234567890", 10, true);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "1234567890");
+}
 
 
 
