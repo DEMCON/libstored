@@ -532,7 +532,7 @@ namespace stored {
 #if STORED_cplusplus >= 201103L
 		explicit
 #endif
-		operator type const&() const { return get(); }
+		operator type() const { return get(); }
 
 		/*!
 		 * \brief Calls the function and write its value in the given buffer.
@@ -1145,6 +1145,151 @@ namespace stored {
 #  endif
 #endif
 	};
+
+
+	namespace impl {
+		template <typename StoreBase, typename T>
+		static inline StoreBase& objectToStore(T& o) {
+			static_assert(sizeof(T) == sizeof(typename StoreBase::Objects), "");
+			void* o_ = (void*)&o;
+			return *static_cast<StoreBase*>(reinterpret_cast<typename StoreBase::Objects*>(o_));
+		}
+
+		/*!
+		 * \brief Variable class as used in the *Objects base class of a store.
+		 *
+		 * Do not use. Only the *Objects class is allowed to use it.
+		 */
+		template <typename Store, typename Implementation, typename T, size_t offset, size_t size_>
+		class StoreVariable {
+		public:
+			typedef T type;
+			typedef Variable<type,Implementation> Variable_type;
+			typedef Variant<Implementation> Variant_type;
+
+			Variable_type variable() const {
+				static_assert(size_ == sizeof(type), "");
+				return objectToStore<Store>(*this).template _variable<type>(offset);
+			}
+			operator Variable_type() const { return variable(); }
+
+			Variant_type variant() const { return Variant_type(variable()); }
+			operator Variant_type() const { return variant(); }
+
+			type get() const { return variable().get(); }
+			operator type() const { return get(); }
+
+			template <typename U>
+			U as() const { return saturated_cast<U>(get()); }
+
+			void set(type value) { variable().set(value); }
+			Variable_type operator=(type value) {
+				Variable_type v = variable();
+				v.set(value);
+				return v;
+			}
+
+			static size_t size() { return sizeof(type); }
+		};
+
+		/*!
+		 * \brief Function class as used in the *Objects base class of a store.
+		 *
+		 * Do not use. Only the *Objects class is allowed to use it.
+		 */
+		template <typename Store, typename Implementation, typename T, unsigned int F>
+		class StoreFunction {
+		public:
+			typedef T type;
+			typedef Function<type,Implementation> Function_type;
+			typedef Variant<Implementation> Variant_type;
+
+			Function_type function() const {
+				return objectToStore<Store>(*this).template _function<type>(F);
+			}
+			operator Function_type() const { return function(); }
+
+			Variant_type variant() const { return Variant_type(function()); }
+			operator Variant_type() const { return variant(); }
+
+			type get() const { return function().get(); }
+#if STORED_cplusplus >= 201103L
+			explicit
+#endif
+			operator type() const { return get(); }
+
+			template <typename U>
+			U as() const { return saturated_cast<U>(get()); }
+
+			size_t get(void* dst, size_t len) const {
+				return function().get(dst, len);
+			}
+			type operator()() const { return get(); }
+
+			void set(type value) { function().set(value); }
+			size_t set(void* src, size_t len) { return function().set(src, len); }
+			void operator()(type value) { function()(value); }
+
+			Function_type operator=(type value) {
+				Function_type f = function();
+				f.set(value);
+				return f;
+			}
+
+			static size_t size() { return sizeof(type); }
+		};
+
+		/*!
+		 * \brief Variant class for a variable as used in the *Objects base class of a store.
+		 *
+		 * Do not use. Only the *Objects class is allowed to use it.
+		 */
+		template <typename Store, typename Implementation, Type::type type_, size_t offset, size_t size_>
+		class StoreVariantV {
+		public:
+			typedef Variant<Implementation> Variant_type;
+
+			Variant_type variant() const {
+				return objectToStore<Store>(*this)._variantv(type_, offset, size_);
+			}
+			operator Variant_type() const { return variant(); }
+
+			size_t get(void* dst, size_t len = 0) const { return variant().get(dst, len); }
+			template <typename T> T get() const { return variant().template get<T>(); }
+
+			size_t set(void const* src, size_t len = 0) { return variant().set(src, len); }
+			template <typename T> void set(T value) { variant().template set<T>(value); }
+
+			static Type::type type() { return type_; }
+			static size_t size() { return size_; }
+			void* buffer() const { return variant().buffer(); }
+		};
+
+		/*!
+		 * \brief Variant class for a variable as used in the *Objects base class of a store.
+		 *
+		 * Do not use. Only the *Objects class is allowed to use it.
+		 */
+		template <typename Store, typename Implementation, Type::type type_, unsigned int F, size_t size_>
+		class StoreVariantF {
+		public:
+			typedef Variant<Implementation> Variant_type;
+
+			Variant_type variant() const {
+				return objectToStore<Store>(*this)._variantf(type_, F, size_);
+			}
+			operator Variant_type() const { return variant(); }
+
+			size_t get(void* dst, size_t len = 0) const { return variant().get(dst, len); }
+			template <typename T> T get() const { return variant().template get<T>(); }
+
+			size_t set(void const* src, size_t len = 0) { return variant().set(src, len); }
+			template <typename T> void set(T value) { variant().template set<T>(value); }
+
+			static Type::type type() { return type_; }
+			static size_t size() { return size_; }
+		};
+	}
 
 } // namespace
 #endif // __cplusplus

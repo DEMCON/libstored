@@ -3,6 +3,8 @@
 #include "ExampleDebugSomeStore.h"
 #include "ExampleDebugAnotherStore.h"
 
+#include <cstdio>
+
 #ifdef STORED_COMPILER_MSVC
 #  define strdup(s) _strdup(s)
 #endif
@@ -110,7 +112,7 @@ int main() {
 	printf("/SomeStore/i = %" PRId32 "\n", i);
 	i++;
 	i1.set(&i, sizeof(i));
-	printf("/SomeStore/i = %" PRId32 "\n", someStore1.i().get());
+	printf("/SomeStore/i = %" PRId32 "\n", someStore1.i.get());
 
 	stored::DebugVariant i2 = debugger.find("/OtherInstanceOfSomeStore/i");
 	i2.get(&i, sizeof(i));

@@ -27,6 +27,12 @@
 #include <libstored/macros.h>
 #include <libstored/config.h>
 
+#if STORED_cplusplus < 201103L
+#  include <stdint.h>
+#else
+#  include <cstdint>
+#endif
+
 #ifdef STORED_HAVE_ZTH
 #  include <libzth/util.h>
 #  include <libzth/worker.h>
@@ -176,20 +182,20 @@ namespace stored {
 	/*!
 	 * \brief Determine the number of bytes to save the given unsigned value.
 	 */
-	template <uint64_t N>
+	template <uintmax_t N>
 	struct value_bytes { enum { value = value_bytes<(N >> 8u)>::value + 1u }; };
 	template <> struct value_bytes<0> { enum { value = 0 }; };
 
 	/*!
 	 * \brief Determines a type that can hold the given unsigned value.
 	 */
-	template <uint64_t N, int bytes = value_bytes<N>::value>
-	struct value_type { typedef uint64_t type; };
-	template <uint64_t N> struct value_type<N, 4> { typedef uint32_t type; };
-	template <uint64_t N> struct value_type<N, 3> { typedef uint32_t type; };
-	template <uint64_t N> struct value_type<N, 2> { typedef uint16_t type; };
-	template <uint64_t N> struct value_type<N, 1> { typedef uint8_t type; };
-	template <uint64_t N> struct value_type<N, 0> { typedef uint8_t type; };
+	template <uintmax_t N, int bytes = value_bytes<N>::value>
+	struct value_type { typedef uintmax_t type; };
+	template <uintmax_t N> struct value_type<N, 4> { typedef uint32_t type; };
+	template <uintmax_t N> struct value_type<N, 3> { typedef uint32_t type; };
+	template <uintmax_t N> struct value_type<N, 2> { typedef uint16_t type; };
+	template <uintmax_t N> struct value_type<N, 1> { typedef uint8_t type; };
+	template <uintmax_t N> struct value_type<N, 0> { typedef uint8_t type; };
 
 	/*!
 	 * \private
@@ -225,11 +231,20 @@ namespace stored {
 							return std::numeric_limits<R>::min();
 					}
 				} else {
+#ifdef STORED_COMPILER_MSVC
+#  pragma warning( push )
+#  pragma warning( disable : 4146 ) // This code path is not triggered in case of unsigned ints.
+#endif
+
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Woverflow" // This error triggers when R is integer, but this code path is not trigger then.
+#pragma GCC diagnostic ignored "-Woverflow" // This error triggers when R is integer, but this code path is not triggered then.
 					if(value <= -std::numeric_limits<R>::max())
 						return -std::numeric_limits<R>::max();
 #pragma GCC diagnostic pop
+
+#ifdef STORED_COMPILER_MSVC
+#  pragma warning( pop )
+#endif
 				}
 
 				// Upper bound check

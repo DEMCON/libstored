@@ -14,6 +14,7 @@ add_subdirectory(3_scope)
 add_subdirectory(4_function)
 add_subdirectory(5_debug)
 add_subdirectory(6_sync)
+add_subdirectory(7_protocol)
 add_subdirectory(terminal)
 
 if(LIBSTORED_HAVE_LIBZMQ)

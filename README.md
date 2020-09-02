@@ -15,13 +15,15 @@ application. However, it adds interesting functionality: all variables can be
 accessed remotely.
 
 The (OSI-stack) Application layer of this debugging interface is provided by
-libstored.  You have to add all other (usually hardware-specific) layers of
-the OSI stack to get the debugging protocol in and out of your system.
-Although the protocol fits nicely to ZeroMQ, a TCP stream, or `stdio` via
-terminal, the complexity of integrating this depends on your embedded device.
-However, once you implemented this data transport, you can access the store,
-and observe and manipulate it using an Embedded Debugger (PC) client, where
-libstored provides Python classes, a CLI and GUI interface.
+libstored. Additionally, other layers are available to support lossless and
+lossy channels, which fit to common UART and CAN interfaces.  You have to
+combine, and possibly add, and configure other (usually hardware-specific)
+layers of the OSI stack to get the debugging protocol in and out of your
+system.  Although the protocol fits nicely to ZeroMQ, a TCP stream, or `stdio`
+via terminal, the complexity of integrating this depends on your embedded
+device.  However, once you implemented this data transport, you can access the
+store, and observe and manipulate it using an Embedded Debugger (PC) client,
+where libstored provides Python classes, a CLI and GUI interface.
 
 Your application can have one store with one debugging interface, but also
 multiple stores with one debugging interface, or one store with multiple
@@ -134,13 +136,13 @@ for more explanation. This is just an impression of the syntax.
 
 The generated store has variables that can be accessed like this:
 
-	mystore.some_int() = 10;
-	mystore.another_int_which_is_initialized().get();
-	mystore.time_s().get();
-	mystore.scope__b() = false;
-	mystore.scope__numbers_0().set(0.1);
-	mystore.scope__numbers_1().set(1.1);
-	mystore.scope__s().set("hello");
+	mystore.some_int = 10;
+	int i = mystore.another_int_which_is_initialized;
+	mystore.time_s.get();
+	mystore.scope__b = false;
+	mystore.scope__numbers_0.set(0.1);
+	mystore.scope__numbers_1.set(1.1);
+	mystore.scope__s.set("hello");
 
 ## <a name="debugging"></a>Debugging example
 
@@ -228,7 +230,10 @@ used in your application.
 However, the request/response messages should be wrapped in a OSI-like protocol stack, which is described in more detail in the
 [documentation too](https://demcon.github.io/libstored/group__libstored__protocol.html)).
 This stack depends on your application. A few standard protocol layers are
-available.
+available, which allow to build a stack for lossless channels (stdio/TCP/some
+UART) and lossy channels (some UART/CAN). These stacks are configurable in
+having auto retransmit on packet loss, CRC, segmentation, buffering, MTU size,
+ASCII escaping and encapsulation. See also `examples/7_protocol`.
 
 To get a grasp about the protocol, I had a short chat with the `zmqserver`
 example using the `ed2.cli`.  See the transcript below. Lines starting

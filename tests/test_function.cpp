@@ -43,23 +43,23 @@ private:
 
 TEST(Function, ReadWrite) {
 	FunctionTestStore store;
-	EXPECT_DOUBLE_EQ(store.f_read__write()(), 4.0);
-	store.f_read__write()(5.0);
-	EXPECT_DOUBLE_EQ(store.f_read__write()(), 5.0);
+	EXPECT_DOUBLE_EQ(store.f_read__write(), 4.0);
+	store.f_read__write(5.0);
+	EXPECT_DOUBLE_EQ(store.f_read__write(), 5.0);
 }
 
 TEST(Function, ReadOnly) {
 	FunctionTestStore store;
-	EXPECT_EQ(store.f_read_only()(), 4u);
-	store.f_read__write()(5.6);
-	EXPECT_EQ(store.f_read_only()(), 6u);
+	EXPECT_EQ(store.f_read_only(), 4u);
+	store.f_read__write(5.6);
+	EXPECT_EQ(store.f_read_only(), 6u);
 }
 
 TEST(Function, WriteOnly) {
 	FunctionTestStore store;
 	char buffer[] = "hi all!";
-	EXPECT_EQ(store.f_write_only().get(buffer, sizeof(buffer)), 0);
-	EXPECT_EQ(store.f_write_only().set(buffer, strlen(buffer)), 4u);
+	EXPECT_EQ(store.f_write_only.get(buffer, sizeof(buffer)), 0);
+	EXPECT_EQ(store.f_write_only.set(buffer, strlen(buffer)), 4u);
 }
 
 } // namespace

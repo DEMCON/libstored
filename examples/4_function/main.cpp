@@ -1,6 +1,7 @@
 #include "ExampleFunction.h"
 
 #include <ctime>
+#include <cstdio>
 
 #ifdef STORED_COMPILER_MSVC
 #  pragma warning(disable: 4996)
@@ -50,12 +51,12 @@ private:
 int main() {
 	MyExample e;
 
-	time_t now = (time_t)e.time_s().get();
+	time_t now = (time_t)e.time_s.get();
 	printf("time = %s\n", ctime(&now));
 
-	e.echo_0().set(10);
-	e.echo_1().set(11);
-	printf("echo[0] returned %" PRId32 "\n", e.echo_0().get());
+	e.echo_0.set(10);
+	e.echo_1.set(11);
+	printf("echo[0] returned %" PRId32 "\n", e.echo_0.get());
 	printf("echo[1] returned %" PRId32 "\n", e.find("/echo[1]").function<int32_t>().get());
 
 	return 0;

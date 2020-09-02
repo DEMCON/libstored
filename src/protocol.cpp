@@ -30,6 +30,8 @@
 #  define write(fd, buffer, count) _write(fd, buffer, (unsigned int)(count))
 #endif
 
+#include <algorithm>
+
 namespace stored {
 
 
@@ -60,8 +62,9 @@ ProtocolLayer::~ProtocolLayer() {
 /*!
  * \copydoc stored::ProtocolLayer::ProtocolLayer()
  */
-AsciiEscapeLayer::AsciiEscapeLayer(ProtocolLayer* up, ProtocolLayer* down)
+AsciiEscapeLayer::AsciiEscapeLayer(bool all, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
+	, m_all(all)
 {}
 
 void AsciiEscapeLayer::decode(void* buffer, size_t len) {
@@ -100,21 +103,27 @@ escape:
 	base::decode(p, decodeOffset);
 }
 
-static char needEscape(char c) {
+char AsciiEscapeLayer::needEscape(char c) {
 	if(!((uint8_t)c & (uint8_t)~(uint8_t)AsciiEscapeLayer::EscMask)) {
-		switch(c) {
-		case '\t':
-		case '\n':
-			// Don't escape.
-			return 0;
+		if(!m_all) {
+			// Only escape what conflicts with other protocols.
+			switch(c) {
+			case '\0':
+			case '\x11': // XON
+			case '\x13': // XOFF
+			case '\x1b': // ESC
+			case '\r':
+				// Do escape \r, as Windows may inject it automatically.  So, if \r
+				// is meant to be sent, escape it, such that the client may remove
+				// all (unescaped) \r's automatically.
+				break;
 
-		case '\r':
-			// Do escape \r, as Windows may inject it automatically.  So, if \r
-			// is meant to be sent, escape it, such that the client may remove
-			// all (unescaped) \r's automatically.
-		default:
-			return (char)((uint8_t)c | 0x40u);
+			default:
+				// Don't escape.
+				return 0;
+			}
 		}
+		return (char)((uint8_t)c | 0x40u);
 	} else if(c == AsciiEscapeLayer::Esc) {
 		return c;
 	} else {
@@ -230,8 +239,17 @@ void TerminalLayer::nonDebugDecode(void* buffer, size_t len) {
 #ifndef STORED_OS_BAREMETAL
 /*!
  * \brief Helper function to write a buffer to a file descriptor.
+ *
+ * By default calls #writeToFd_().
  */
 void TerminalLayer::writeToFd(int fd, void const* buffer, size_t len) {
+	writeToFd_(fd, buffer, len);
+}
+
+/*!
+ * \brief Write the given buffer to a file descriptor.
+ */
+void TerminalLayer::writeToFd_(int fd, void const* buffer, size_t len) {
 	if(fd < 0)
 		return;
 
@@ -327,14 +345,15 @@ void SegmentationLayer::decode(void* buffer, size_t len) {
 	char* buffer_ = static_cast<char*>(buffer);
 	if(!m_decode.empty() || buffer_[len - 1] != EndMarker) {
 		// Save for later packet reassembling.
-		size_t start = m_decode.size();
-		m_decode.resize(start + len);
-		memcpy(&m_decode[start], buffer_, len);
+		if(len > 1) {
+			size_t start = m_decode.size();
+			m_decode.resize(start + len - 1);
+			memcpy(&m_decode[start], buffer_, len - 1);
+		}
 
-		size_t size = m_decode.size();
-		if(m_decode[size - 1] == EndMarker) {
+		if(buffer_[len - 1] == EndMarker) {
 			// Got it.
-			base::decode(&m_decode[0], size - 1);
+			base::decode(&m_decode[0], m_decode.size());
 			m_decode.clear();
 		}
 	} else {
@@ -347,15 +366,22 @@ void SegmentationLayer::encode(void const* buffer, size_t len, bool last) {
 	char const* buffer_ = static_cast<char const*>(buffer);
 
 	size_t mtu = lowerMtu();
-	while(len) {
-		size_t remaining = mtu - m_encoded;
-		size_t chunk = std::min(len, remaining);
-		base::encode(buffer_, chunk, chunk == remaining);
-		len -= chunk;
-		buffer_ += chunk;
+	stored_assert(mtu > 1);
 
-		if(chunk == remaining) {
+	while(len) {
+		size_t remaining = mtu - m_encoded - 1;
+		size_t chunk = std::min(len, remaining);
+
+		if(chunk) {
+			base::encode(buffer_, chunk, false);
+			len -= chunk;
+			buffer_ += chunk;
+		}
+
+		if(chunk == remaining && len) {
 			// Full MTU.
+			char cont = ContinueMarker;
+			base::encode(&cont, 1, true);
 			m_encoded = 0;
 		} else {
 			// Partial MTU. Record that we already filled some of the packet.
@@ -385,10 +411,10 @@ void SegmentationLayer::encode(void const* buffer, size_t len, bool last) {
 ArqLayer::ArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_decodeState(DecodeStateIdle)
-	, m_decodeSeq(1)
+	, m_decodeSeq(nextSeq(ResetSeq))
 	, m_decodeSeqStart()
 	, m_encodeState(EncodeStateIdle)
-	, m_encodeSeq()
+	, m_encodeSeq(ResetSeq)
 	, m_maxEncodeBuffer(maxEncodeBuffer)
 	, m_encodeBufferSize()
 {
@@ -400,14 +426,14 @@ void ArqLayer::decode(void* buffer, size_t len) {
 
 	char* buffer_ = static_cast<char*>(buffer);
 	uint8_t seq = (uint8_t)buffer_[0];
-	if(unlikely(seq == 0)) {
+	if(unlikely(seq == ResetSeq)) {
 		// Reset communication state.
 		m_decodeState = DecodeStateIdle;
 		m_encodeState = EncodeStateIdle;
 		m_encodeBuffer.clear();
 		m_encodeBufferSize = 0;
-		m_decodeSeq = 0;
-		m_encodeSeq = 0;
+		m_decodeSeq = ResetSeq;
+		m_encodeSeq = ResetSeq;
 		setPurgeableResponse(false);
 	}
 
@@ -444,22 +470,18 @@ void ArqLayer::decode(void* buffer, size_t len) {
 	}
 
 	switch(m_decodeState) {
-	case DecodeStateRetransmit: {
-		uint8_t nextSeq = (uint8_t)(seq + 1u);
-		if(nextSeq == 0)
-			nextSeq = 1;
-		if(nextSeq == m_decodeSeq) {
+	case DecodeStateRetransmit:
+		if(nextSeq(seq) == m_decodeSeq) {
 			// Got the last part of the command. Retransmit the response buffer.
-			for(std::vector<std::string>::const_iterator it = m_encodeBuffer.cbegin(); it != m_encodeBuffer.cend(); ++it)
+			for(std::vector<std::string>::const_iterator it = m_encodeBuffer.begin(); it != m_encodeBuffer.end(); ++it)
 				base::encode(it->data(), it->size(), true);
 			m_decodeState = DecodeStateDecoded;
 		}
-		break; }
+		break;
 	case DecodeStateIdle:
 		if(unlikely(len == 1)) {
 			// Ignore empty packets.
-			if(++m_decodeSeq == 0)
-				m_decodeSeq = 1;
+			m_decodeSeq = nextSeq(m_decodeSeq);
 			break;
 		}
 		m_decodeSeqStart = m_decodeSeq;
@@ -469,8 +491,7 @@ void ArqLayer::decode(void* buffer, size_t len) {
 		if(likely(seq == m_decodeSeq)) {
 			// Properly in sequence.
 			base::decode(buffer_ + 1, len - 1);
-			if(++m_decodeSeq == 0)
-				m_decodeSeq = 1;
+			m_decodeSeq = nextSeq(m_decodeSeq);
 
 			// Should not wrap-around during a request.
 			stored_assert(m_decodeSeq != m_decodeSeqStart);
@@ -486,7 +507,7 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 		// So, the request message must have been complete.
 		m_decodeState = DecodeStateDecoded;
 		stored_assert(m_encodeState == EncodeStateIdle || m_encodeState == EncodeStateUnbufferedIdle);
-		m_encodeSeq = 0;
+		m_encodeSeq = ResetSeq;
 	}
 
 	switch(m_encodeState) {
@@ -503,8 +524,7 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 	switch(m_encodeState) {
 	case EncodeStateUnbufferedIdle:
 		base::encode((void const*)&m_encodeSeq, 1, false);
-		if(++m_encodeSeq == 0)
-			m_encodeSeq = 1;
+		m_encodeSeq = nextSeq(m_encodeSeq);
 		m_encodeState = EncodeStateUnbufferedEncoding;
 		// fall-through
 	case EncodeStateUnbufferedEncoding:
@@ -522,8 +542,7 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 			m_encodeBuffer.push_back(std::string(&encodeSeq, 1u));
 #endif
 		}
-		if(++m_encodeSeq == 0)
-			m_encodeSeq = 1;
+		m_encodeSeq = nextSeq(m_encodeSeq);
 		m_encodeState = EncodeStateEncoding;
 		m_encodeBufferSize++;
 		// fall-through
@@ -585,6 +604,11 @@ size_t ArqLayer::mtu() const {
 	size_t mtu = base::mtu();
 	stored_assert(mtu == 0 || mtu > 1);
 	return mtu <= 1 ? 0 : mtu - 1;
+}
+
+uint8_t ArqLayer::nextSeq(uint8_t seq) {
+	seq = (uint8_t)(seq + 1u);
+	return seq == ResetSeq ? (uint8_t)(ResetSeq + 1u) : seq;
 }
 
 
@@ -663,6 +687,53 @@ size_t CrcLayer::mtu() const {
 	stored_assert(mtu == 0 || mtu > 1);
 	return mtu <= 1 ? 0 : mtu - 1;
 }
+
+
+
+//////////////////////////////
+// BufferLayer
+//
+
+BufferLayer::BufferLayer(size_t size, ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_size(size ? size : std::numeric_limits<size_t>::max())
+{}
+
+void BufferLayer::encode(void const* buffer, size_t len, bool last) {
+	char const* buffer_ = static_cast<char const*>(buffer);
+
+	size_t remaining = m_size - m_buffer.size();
+
+	while(remaining < len) {
+		// Does not fit in our buffer. Forward immediately.
+		if(m_buffer.empty()) {
+			base::encode(buffer_, remaining, false);
+		} else {
+			m_buffer.append(buffer_, remaining);
+			base::encode(m_buffer.data(), m_buffer.size(), false);
+			m_buffer.clear();
+		}
+		buffer_ += remaining;
+		len -= remaining;
+		remaining = m_size;
+	}
+
+	if(last || len == remaining) {
+		if(m_buffer.empty()) {
+			// Pass through immediately.
+			base::encode(buffer_, len, last);
+		} else {
+			// Got already something in the buffer. Concat and forward.
+			m_buffer.append(buffer_, len);
+			base::encode(m_buffer.data(), m_buffer.size(), last);
+			m_buffer.clear();
+		}
+	} else {
+		// Save for later.
+		m_buffer.append(buffer_, len);
+	}
+}
+
 
 } // namespace
 
