@@ -23,6 +23,7 @@
 
 #include <cstdio>
 #include <cinttypes>
+#include <ctime>
 
 static stored::ExampleProtocol store;
 
@@ -48,7 +49,7 @@ static void printBuffer(void const* buffer, size_t len, char const* prefix = nul
 				snprintf(buf, sizeof(buf), "\\x%02" PRIx8, b[i]);
 				s += buf;
 			} else {
-				s += b[i];
+				s += (char)b[i];
 			}
 		}
 	}
