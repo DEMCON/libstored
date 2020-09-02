@@ -1,5 +1,8 @@
 #include <stored>
+
 #include "ExampleSync.h"
+
+#include <cstdio>
 
 class SyncedExampleSync : public stored::ExampleSyncBase<SyncedExampleSync> {
 	CLASS_NOCOPY(SyncedExampleSync)

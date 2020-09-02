@@ -950,7 +950,7 @@ static uint8_t decodeNibble(char c, bool& ok) {
 
 /*!
  * \brief Decode ASCII hex.
- * \see #encodeHex(Type::type, void*&, size_t&, bool)
+ * \see #encodeHex(stored::Type::type, void*&, size_t&, bool)
  */
 bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len) {
 	if(len == 0 || !data)

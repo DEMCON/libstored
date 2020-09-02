@@ -21,7 +21,7 @@
 #  include <alloca.h>
 #endif
 
-#include <stdio.h>
+#include <cstdio>
 
 static stored::ExampleProtocol store;
 

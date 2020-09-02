@@ -1,5 +1,7 @@
 #include "ExampleBasic.h"
 
+#include <cstdio>
+
 int main()
 {
     stored::ExampleBasic e;

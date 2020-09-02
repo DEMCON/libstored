@@ -821,7 +821,7 @@ namespace stored {
 
 		/*!
 		 * \brief Encode a given value to ASCII hex.
-		 * \see #encodeHex(Type::type, void*&, size_t&, bool)
+		 * \see #encodeHex(stored::Type::type, void*&, size_t&, bool)
 		 */
 		template <typename T, typename B>
 		size_t encodeHex(T value, B*& buf, bool shortest = true) {

@@ -1,5 +1,7 @@
 #include "ExampleScope.h"
 
+#include <cstdio>
+
 int main() {
 	stored::ExampleScope e;
 

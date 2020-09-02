@@ -1,6 +1,7 @@
 #include "ExampleFunction.h"
 
 #include <ctime>
+#include <cstdio>
 
 #ifdef STORED_COMPILER_MSVC
 #  pragma warning(disable: 4996)

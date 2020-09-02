@@ -3,17 +3,17 @@
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -22,7 +22,6 @@
 
 #ifdef __cplusplus
 #include <cstddef>
-#include <cstdint>
 
 /*!
  * \defgroup libstored_config config
@@ -49,7 +48,7 @@ namespace stored {
 		 * This may include additional (and possibly slow) code for debugging,
 		 * which can safely left out for release builds.
 		 */
-		static bool const Debug = 
+		static bool const Debug =
 #ifndef NDEBUG
 			true;
 #else
@@ -59,7 +58,7 @@ namespace stored {
 		/*!
 		 * \brief When \c true, enable #stored_assert() checks.
 		 */
-		static bool const EnableAssert = 
+		static bool const EnableAssert =
 #ifndef NDEBUG
 			Debug;
 #else
@@ -119,7 +118,7 @@ namespace stored {
 		static int const DebuggerStreams = 1;
 		/*! \brief Size of one stream buffer in bytes. */
 		static size_t const DebuggerStreamBuffer = 1024;
-		
+
 		/*! \brief When \c true, stored::Debugger implements the trace capability. */
 		static bool const DebuggerTrace = DebuggerStreams > 0 && DebuggerMacro > 0;
 	};

@@ -473,7 +473,7 @@ void ArqLayer::decode(void* buffer, size_t len) {
 	case DecodeStateRetransmit:
 		if(nextSeq(seq) == m_decodeSeq) {
 			// Got the last part of the command. Retransmit the response buffer.
-			for(std::vector<std::string>::const_iterator it = m_encodeBuffer.cbegin(); it != m_encodeBuffer.cend(); ++it)
+			for(std::vector<std::string>::const_iterator it = m_encodeBuffer.begin(); it != m_encodeBuffer.end(); ++it)
 				base::encode(it->data(), it->size(), true);
 			m_decodeState = DecodeStateDecoded;
 		}

@@ -3,6 +3,8 @@
 #include "ExampleDebugSomeStore.h"
 #include "ExampleDebugAnotherStore.h"
 
+#include <cstdio>
+
 #ifdef STORED_COMPILER_MSVC
 #  define strdup(s) _strdup(s)
 #endif

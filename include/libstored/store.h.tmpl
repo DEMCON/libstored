@@ -58,7 +58,8 @@ namespace stored {
 
 	/*!
 	 * \brief All {{store.name}}Base's objects.
-	 *
+	 */
+	/*
 	 * Objects do not have memory themselves, they point to the buffer.
 	 * Therefore, a union is used to map all objects over each other.
 	 * Moreover, the objects now about this union, so they can recover the
@@ -84,7 +85,11 @@ namespace stored {
 		typedef Implementation_ Implementation;
 
 		// Type-specific object accessors.
+#ifndef DOXYGEN
+		// Doxygen gets confused about this union. And it does not matter for the
+		// user to know that it is a union anyway. So hide it from the docs.
 		union {
+#endif
 {% for o in store.objects %}
 {%   if o is blob %}
 {%     if o is variable %}
@@ -104,7 +109,9 @@ namespace stored {
 {%     endif %}
 {%   endif %}
 {% endfor %}
+#ifndef DOXYGEN
 		};
+#endif
 	};
 
 	/*!
