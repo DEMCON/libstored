@@ -45,6 +45,7 @@ public:
 	}
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override {
+		// cppcheck-suppress allocaCalled
 		char* buffer_ = (char*)alloca(len);
 		for(size_t i = 0; i < len; i++)
 			buffer_[i] = lossyByte(static_cast<char const*>(buffer)[i]);
