@@ -30,6 +30,10 @@ vim:filetype=cpp
 #include <libstored/types.h>
 #include <libstored/directory.h>
 
+#if STORED_cplusplus >= 201103L
+#  include <type_traits>
+#endif
+
 namespace stored {
 
 	/*!
@@ -53,6 +57,57 @@ namespace stored {
 	;
 
 	/*!
+	 * \brief All {{store.name}}Base's objects.
+	 *
+	 * Objects do not have memory themselves, they point to the buffer.
+	 * Therefore, a union is used to map all objects over each other.
+	 * Moreover, the objects now about this union, so they can recover the
+	 * pointer to the store by looking at their \c this pointer.  It is kind of
+	 * tricky, but by using this base class, we can assert on all memory
+	 * alignment assumptions.
+	 */
+	template <typename Base_, typename Implementation_>
+	class {{store.name}}Objects {
+	protected:
+		{{store.name}}Objects() {
+			// Empty objects sill take one byte.
+			// This check ensures that all objects in the union below
+			// have the same address as this.
+			static_assert(sizeof(*this) == 1);
+#if STORED_cplusplus >= 201103L
+			static_assert(std::is_standard_layout<{{store.name}}Objects>::value, "");
+#endif
+		}
+
+	public:
+		typedef Base_ Base;
+		typedef Implementation_ Implementation;
+
+		// Type-specific object accessors.
+		union {
+{% for o in store.objects %}
+{%   if o is blob %}
+{%     if o is variable %}
+			/*! \brief {{o}} */
+			impl::StoreVariantV<Base,Implementation,{{o|stype}},{{o.offset}}u,{{o.size}}u> {{o.cname}};
+{%     elif o is function %}
+			/*! \brief {{o}} */
+			impl::StoreVariantF<Base,Implementation,{{o|stype}},{{o.f}}u,{{o.size}}u> {{o.cname}};
+{%     endif %}
+{%   else %}
+{%     if o is variable %}
+			/*! \brief {{o}} */
+			impl::StoreVariable<Base,Implementation,{{o|ctype}},{{o.offset}}u,{{o.size}}> {{o.cname}};
+{%     elif o is function %}
+			/*! \brief {{o}} */
+			impl::StoreFunction<Base,Implementation,{{o|ctype}},{{o.f}}u> {{o.cname}};
+{%     endif %}
+{%   endif %}
+{% endfor %}
+		};
+	};
+
+	/*!
 	 * \brief Base class with default interface of all {{store.name}} implementations.
 	 *
 	 * Although there are no virtual functions in the base class, subclasses
@@ -72,13 +127,14 @@ namespace stored {
 	 * \ingroup libstored_stores
 	 */
 	template <typename Implementation_>
-	class {{store.name}}Base {
+	class {{store.name}}Base : public {{store.name}}Objects<{{store.name}}Base<Implementation_> , Implementation_> {
 		CLASS_NOCOPY({{store.name}}Base)
 	protected:
 		/*! \brief Default constructor. */
 		{{store.name}}Base() is_default
 
 	public:
+		typedef {{store.name}}Objects<{{store.name}}Base, Implementation_> Objects;
 		/*! \brief Type of the actual implementation, which is the (lowest) subclass. */
 		typedef Implementation_ Implementation;
 		/*! \brief Returns the name of store, which can be used as prefix for #stored::Debugger. */
@@ -105,11 +161,14 @@ namespace stored {
 		 * This only works for fixed-length types.
 		 * For other types, use #variantv(Type::type, size_t, size_t).
 		 */
-		template <typename T> Variable<T,Implementation> variable(size_t offset) {
+		template <typename T> Variable<T,Implementation> _variable(size_t offset) {
 			stored_assert(offset + sizeof(T) <= sizeof(m_data.buffer));
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return Variable<T,Implementation>(implementation(), *reinterpret_cast<T*>(&buffer()[offset]));
 		}
+
+		template <typename Store_, typename Implementation__, typename T_, size_t offset_, size_t size_>
+		friend class impl::StoreVariable;
 
 		/*!
 		 * \brief Returns a typed Function object, given the function identifier.
@@ -117,26 +176,35 @@ namespace stored {
 		 * This only works for fixed-length types.
 		 * For other types, use #variantf(Type::type, unsigned int).
 		 */
-		template <typename T> Function<T,Implementation> function(unsigned int f) {
+		template <typename T> Function<T,Implementation> _function(unsigned int f) {
 			return Function<T,Implementation>(implementation(), f);
 		}
+
+		template <typename Store, typename Implementation, typename T, unsigned int F>
+		friend class impl::StoreFunction;
 
 		/*!
 		 * \brief Returns the Variant for a variable.
 		 */
-		Variant<Implementation> variantv(Type::type type, size_t offset, size_t len) {
+		Variant<Implementation> _variantv(Type::type type, size_t offset, size_t len) {
 			stored_assert(offset + len < sizeof(m_data.buffer));
 			stored_assert(!Type::isFunction(type));
 			return Variant<Implementation>(implementation(), type, &buffer()[offset], len);
 		}
 
+		template <typename Store, typename Implementation, Type::type type_, size_t offset, size_t size_>
+		friend class impl::StoreVariantV;
+
 		/*!
 		 * \brief Returns the Variant for a function.
 		 */
-		Variant<Implementation> variantf(Type::type type, unsigned int f, size_t len) {
+		Variant<Implementation> _variantf(Type::type type, unsigned int f, size_t len) {
 			stored_assert(Type::isFunction(type));
 			return Variant<Implementation>(implementation(), type, f, len);
 		}
+
+		template <typename Store, typename Implementation, Type::type type_, unsigned int F, size_t size_>
+		friend class impl::StoreVariantF;
 
 		// Variable/Function/Variant must be able to call callback() and the hooks.
 		// However, these functions should normally not be used from outside the class.
@@ -282,31 +350,6 @@ namespace stored {
 		void __hookExitRO(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) {}
 
 	public:
-		// Type-specific object accessors.
-
-{% for o in store.objects %}
-{%   if o is blob %}
-{%     if o is variable %}
-		/*! \brief {{o}} */
-		Variant<Implementation> {{o.cname}}() { return variantv({{o|stype}}, {{o.offset}}u, {{o.size}}u); }
-{%     elif o is function %}
-		/*! \brief {{o}} */
-		Variant<Implementation> {{o.cname}}() { return variantf({{o|stype}}, {{o.f}}u, {{o.size}}u); }
-{%     endif %}
-{%   else %}
-{%     if o is variable %}
-		/*! \brief {{o}} */
-		Variable<{{o|ctype}},Implementation> {{o.cname}}() {
-			stored_assert({{o.size}}u == sizeof({{o|ctype}})); // NOLINT(hicpp-static-assert,misc-static-assert)
-			return variable<{{o|ctype}}>({{o.offset}}u); }
-{%     elif o is function %}
-		/*! \brief {{o}} */
-		Function<{{o|ctype}},Implementation> {{o.cname}}() {
-			return function<{{o|ctype}}>({{o.f}}u); }
-{%     endif %}
-{%   endif %}
-{% endfor %}
-
 {% for a in store.arrays %}
 		/*!
 		 * \brief Array-lookup accessor for {{a.name}}

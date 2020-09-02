@@ -50,7 +50,7 @@ public:
 	using base::encode;
 
 	// Byte error rate
-	double ber() const { return store.ber().get(); }
+	double ber() const { return store.ber; }
 
 	char lossyByte(char b) {
 		while(true) {
@@ -65,11 +65,11 @@ public:
 
 			// Inject an error.
 			b = b ^ (char)(1 << (rand() % 8));
-			store.injected_errors() = store.injected_errors().get() + 1;
+			store.injected_errors = store.injected_errors + 1;
 		}
 	}
 
-	virtual size_t mtu() const override { return store.MTU().get(); }
+	virtual size_t mtu() const override { return store.MTU.as<size_t>(); }
 };
 
 int main() {

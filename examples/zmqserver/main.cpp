@@ -16,15 +16,15 @@ public:
 protected:
 	void __compute__an_int8_an_int16(bool set, int32_t& value) {
 		if(!set)
-			value = an_int8().get() + an_int16().get();
+			value = an_int8.get() + an_int16.get();
 	}
 	void __compute__circle_area_r__a_double(bool set, double& value) {
 		if(!set)
-			value = M_PI * a_double().get() * a_double().get();
+			value = M_PI * a_double.get() * a_double.get();
 	}
 	void __compute__length_of__a_string(bool set, uint32_t& value) {
 		if(!set)
-			value = (uint32_t)strlen(static_cast<char*>(a_string().buffer()));
+			value = (uint32_t)strlen(static_cast<char*>(a_string.buffer()));
 
 	}
 	void __stats__ZMQ_messages(bool set, uint32_t& value) {

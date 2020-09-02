@@ -36,18 +36,18 @@ int main() {
 	SyncedExampleSync store;
 
 	printf("Function access (no hooks)\n");
-	store.function().get();
-	store.function().set(10);
+	store.function.get();
+	store.function.set(10);
 
 	printf("\nRead-only access to typed object\n");
-	store.variable_1().get();
+	store.variable_1.get();
 
 	printf("\nRead-only access to variant object\n");
 	int32_t v;
 	store.find("/variable 2").get(&v, sizeof(v));
 
 	printf("\nExclusive access to typed object\n");
-	store.variable_1() = 11;
+	store.variable_1 = 11;
 
 	printf("\nExclusive access to variant object\n");
 	v = 3;

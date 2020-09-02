@@ -2,17 +2,17 @@
 
 # libstored, a Store for Embedded Debugger.
 # Copyright (C) 2020  Jochem Rutgers
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
@@ -287,7 +287,7 @@ class Buffer(object):
         if size % a == 0:
             return size
         else:
-            return size + a - (size % a) 
+            return size + a - (size % a)
 
     def generate(self, initvars, defaultvars, littleEndian = True):
         self.init = []
@@ -363,13 +363,13 @@ class ArrayLookup(object):
 
     def c_impl(self):
         return self._c_impl(self.tree, 0, self.placeholders(), '\t\t\t')
-    
+
     def _c_impl(self, tree, index, placeholders, indent):
         if tree == None:
             return f'{indent}return Variant<Implementation>();\n'
         if not isinstance(tree, dict):
-            return f'{indent}return Variant<Implementation>({tree.cname}());\n'
-        
+            return f'{indent}return this->{tree.cname}.variant();\n'
+
         res  = f'{indent}switch({placeholders[index]}) {{\n'
         for i in tree.keys():
             res += f'{indent}case {i}:\n'
@@ -394,7 +394,7 @@ class Store(object):
         self.generateBuffer()
         self.generateDirectory()
         self.extractArrayAccessors()
-    
+
     def flattenScope(self, scope):
         res = []
         for i in range(0, len(scope)):
@@ -459,7 +459,7 @@ class Store(object):
 
     def generateDirectory(self):
         self.directory.generate(self.objects)
-    
+
     def extractArrayAccessors(self):
         # Find all objects that look like having one or more arrays
         split_objects = []
@@ -489,7 +489,7 @@ class Object(object):
     def __init__(self, parent, name, len = 0):
         self.setName(name)
         self.len = len if isinstance(len, int) and len > 1 else 1
-    
+
     def setName(self, name):
         self.name = object_name(name)
         self.cname = cname(self.name)
@@ -578,10 +578,10 @@ class Function(Object):
         else:
             self.type = type.blob.type
             self.size = type.blob.size
-    
+
     def isBlob(self):
         return self.type in ['blob', 'string']
-    
+
     def bump(self):
         self.f = Function.f
         Function.f += 1

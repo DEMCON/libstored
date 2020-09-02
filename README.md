@@ -134,13 +134,13 @@ for more explanation. This is just an impression of the syntax.
 
 The generated store has variables that can be accessed like this:
 
-	mystore.some_int() = 10;
-	mystore.another_int_which_is_initialized().get();
-	mystore.time_s().get();
-	mystore.scope__b() = false;
-	mystore.scope__numbers_0().set(0.1);
-	mystore.scope__numbers_1().set(1.1);
-	mystore.scope__s().set("hello");
+	mystore.some_int = 10;
+	int i = mystore.another_int_which_is_initialized;
+	mystore.time_s.get();
+	mystore.scope__b = false;
+	mystore.scope__numbers_0.set(0.1);
+	mystore.scope__numbers_1.set(1.1);
+	mystore.scope__s.set("hello");
 
 ## <a name="debugging"></a>Debugging example
 
