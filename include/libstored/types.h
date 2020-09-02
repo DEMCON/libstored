@@ -1250,7 +1250,7 @@ namespace stored {
 			typedef Variant<Implementation> Variant_type;
 
 			Variant_type variant() const {
-				return objectToStore<Store>(*this).template _variantv(type_, offset, size_);
+				return objectToStore<Store>(*this)._variantv(type_, offset, size_);
 			}
 			operator Variant_type() const { return variant(); }
 
@@ -1276,7 +1276,7 @@ namespace stored {
 			typedef Variant<Implementation> Variant_type;
 
 			Variant_type variant() const {
-				return objectToStore<Store>(*this).template _variantf(type_, F, size_);
+				return objectToStore<Store>(*this)._variantf(type_, F, size_);
 			}
 			operator Variant_type() const { return variant(); }
 
