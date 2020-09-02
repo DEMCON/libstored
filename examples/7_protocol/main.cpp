@@ -14,7 +14,9 @@
 
 #ifdef STORED_OS_WINDOWS
 #  include <malloc.h>
-#  define alloca(x) _alloca(x)
+#  ifndef alloca
+#    define alloca(x) _alloca(x)
+#  endif
 #else
 #  include <alloca.h>
 #endif
