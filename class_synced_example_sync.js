@@ -1,6 +1,10 @@
 var class_synced_example_sync =
 [
     [ "base", "class_synced_example_sync.html#a2423e19b804a928a970f210e9b4affa8", null ],
+    [ "Base", "class_synced_example_sync.html#a939d81580c84ac637b57497a7455371b", null ],
+    [ "Implementation", "class_synced_example_sync.html#a937b1f7288e8c64ca69bf2a6996b5d87", null ],
+    [ "Key", "class_synced_example_sync.html#aa6b550dce4f6a49a1aaa1109c79544e6", null ],
+    [ "Objects", "class_synced_example_sync.html#a63df5af764f754083524464ef893e943", null ],
     [ "SyncedExampleSync", "class_synced_example_sync.html#a6df6e0ef4d2b86494485ea9e1f891da1", null ],
     [ "SyncedExampleSync", "class_synced_example_sync.html#a5d1a2a02488e3a6bc9763f9f326b5551", null ],
     [ "SyncedExampleSync", "class_synced_example_sync.html#ad6413890e3af8b354197665e51c79a53", null ],
@@ -9,7 +13,24 @@ var class_synced_example_sync =
     [ "__hookEntryX", "class_synced_example_sync.html#ae796e8a749f7dc9431b7b08bd5d197a5", null ],
     [ "__hookExitRO", "class_synced_example_sync.html#ab48f1772681020a5f50f0260565f6511", null ],
     [ "__hookExitX", "class_synced_example_sync.html#a1b835857e95dfddf8dabe7c5b94f3c7f", null ],
-    [ "operator=", "class_synced_example_sync.html#aca2afc178027c219a6cafd052615b01e", null ],
+    [ "bufferToKey", "class_synced_example_sync.html#ac770c6853a6fad5a8929bd88953e7ae6", null ],
+    [ "callback", "class_synced_example_sync.html#a0e7418484c4bdfdd34fa4513338f9399", null ],
+    [ "find", "class_synced_example_sync.html#a09e1d95037a71812ca4d39b8f300853a", null ],
+    [ "hookEntryRO", "class_synced_example_sync.html#ad8cbc82bc6f7e399aa9e2dcf982174c4", null ],
+    [ "hookEntryX", "class_synced_example_sync.html#a5e2e4c3d15b5e92dacc6566bcb8e9e31", null ],
+    [ "hookExitRO", "class_synced_example_sync.html#a9404e5ea4bb08dd48078714f8afad990", null ],
+    [ "hookExitX", "class_synced_example_sync.html#a2a0dce0711b9b9d66033265c6e1fe307", null ],
+    [ "implementation", "class_synced_example_sync.html#a872855e7c881e3bae3fc08a66b519b48", null ],
+    [ "implementation", "class_synced_example_sync.html#adf75d00128b481789d3b6d0fbb3c7962", null ],
+    [ "list", "class_synced_example_sync.html#ac83cedae74d83129e40f6349dcadd439", null ],
+    [ "list", "class_synced_example_sync.html#ae4d98128808bf3def3122fccb7642afb", null ],
+    [ "longDirectory", "class_synced_example_sync.html#a855fdaa2fd7c546651f3290e4d6197a5", null ],
+    [ "name", "class_synced_example_sync.html#acfe5926e3a5cb60965be6e1a142d3309", null ],
     [ "operator=", "class_synced_example_sync.html#a230c5af9cfd1a9c2623a3e9db6867399", null ],
-    [ "stored::ExampleSyncBase< SyncedExampleSync >", "class_synced_example_sync.html#a3ce01cefa18551c78cc2e0aace5ebd83", null ]
+    [ "operator=", "class_synced_example_sync.html#aca2afc178027c219a6cafd052615b01e", null ],
+    [ "shortDirectory", "class_synced_example_sync.html#ab684a98e82b5b12c178a9a960c643f74", null ],
+    [ "stored::ExampleSyncBase< SyncedExampleSync >", "class_synced_example_sync.html#a3ce01cefa18551c78cc2e0aace5ebd83", null ],
+    [ "function", "class_synced_example_sync.html#ad3e9c3e741de02d331e59e9d3e79e9bd", null ],
+    [ "variable_1", "class_synced_example_sync.html#a4fb8eaf6eb9efe05a90d7b7072735964", null ],
+    [ "variable_2", "class_synced_example_sync.html#adf36732c57b08cc9604725cdc4c7d327", null ]
 ];

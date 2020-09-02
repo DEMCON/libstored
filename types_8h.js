@@ -1,5 +1,9 @@
 var types_8h =
 [
+    [ "StoreFunction", "classstored_1_1impl_1_1_store_function.html", "classstored_1_1impl_1_1_store_function" ],
+    [ "StoreVariable", "classstored_1_1impl_1_1_store_variable.html", "classstored_1_1impl_1_1_store_variable" ],
+    [ "StoreVariantF", "classstored_1_1impl_1_1_store_variant_f.html", "classstored_1_1impl_1_1_store_variant_f" ],
+    [ "StoreVariantV", "classstored_1_1impl_1_1_store_variant_v.html", "classstored_1_1impl_1_1_store_variant_v" ],
     [ "toIntType", "structstored_1_1impl_1_1to_int_type.html", null ],
     [ "toIntType< false, 1 >", "structstored_1_1impl_1_1to_int_type_3_01false_00_011_01_4.html", null ],
     [ "toIntType< false, 2 >", "structstored_1_1impl_1_1to_int_type_3_01false_00_012_01_4.html", null ],

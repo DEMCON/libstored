@@ -11,7 +11,7 @@ var group__libstored__types =
       [ "get", "classstored_1_1_function.html#a39f22004ddfac92cd4705149d4ce48c1", null ],
       [ "get", "classstored_1_1_function.html#a44ccd9da05980b113716a0ffbdcc4a82", null ],
       [ "id", "classstored_1_1_function.html#a82b3ad994d1f9c3e9e4a036e1bcefc6e", null ],
-      [ "operator type const &", "classstored_1_1_function.html#ac614b9383f3bccec197fb4291ccf2f3b", null ],
+      [ "operator type", "classstored_1_1_function.html#a8f3d915259a9e9550b2b18bf8b7b3091", null ],
       [ "operator!=", "classstored_1_1_function.html#a060db4a420f5b45c7a879885a7530e8b", null ],
       [ "operator()", "classstored_1_1_function.html#ad38ea6976af6ff9acd2c882acc11b10d", null ],
       [ "operator()", "classstored_1_1_function.html#a4b71b4d55444953d2d0385382d6542cb", null ],
@@ -82,6 +82,7 @@ var group__libstored__types =
       [ "Variable", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a6d93ee9fa32b72ce34df71460e87b3a4", null ],
       [ "~Variable", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#add1653ddc0c12d28fc16be54bdfc7b52", null ],
       [ "as", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#ad113c31111bd19b381b6d8f6602dc15f", null ],
+      [ "buffer", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a83c2b3edb571af796c6b10f03bb84660", null ],
       [ "container", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#abd1b197c853b98e3def7321932cdf829", null ],
       [ "entryRO", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#abffb3bf5b1adca3cd05fe0ddd088db6d", null ],
       [ "entryX", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a1d805297c83f0d0ea6345dc767b79eba", null ],
@@ -90,10 +91,15 @@ var group__libstored__types =
       [ "get", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#aa4ee2991fb6b65047995c2c3e7021dfb", null ],
       [ "key", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#ad6fd56a852d3ba19cfbb7a9d0b201d40", null ],
       [ "operator type", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#af9213e27085f5c810f56a1c01d0c8900", null ],
+      [ "operator type const &", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a225c82f6e27ecc18b652f03b722c5ec3", null ],
+      [ "operator!=", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a7188076759ca90268abf257b290cf5f1", null ],
       [ "operator=", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a3ba5a27338e9cce5a2d6aa24d40ad867", null ],
       [ "operator=", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#aaab104480432d1b1e6015ec7ee081698", null ],
       [ "operator=", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#ad703889deb9d8d4f11f5db2585fc0f81", null ],
-      [ "set", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a39373a6d45352373fb4bc59098fc1a1d", null ]
+      [ "operator==", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a43a3106ff73012cd677cb7cfcc0317e4", null ],
+      [ "set", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a36bd45168cb1f51b2af6780e17d4230f", null ],
+      [ "set", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a39373a6d45352373fb4bc59098fc1a1d", null ],
+      [ "valid", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a076118df9f13c23eba93d0f63627e3d2", null ]
     ] ],
     [ "Variant", "classstored_1_1_variant.html", [
       [ "Variant", "classstored_1_1_variant.html#a365a13995c58f15697ed2ed8c72c0b96", null ],

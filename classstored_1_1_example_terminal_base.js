@@ -1,7 +1,9 @@
 var classstored_1_1_example_terminal_base =
 [
+    [ "Base", "classstored_1_1_example_terminal_base.html#aa9dff727a83eb1886c5b18baedaa08f7", null ],
     [ "Implementation", "classstored_1_1_example_terminal_base.html#a46584576907e79c528625c514dfe3a7c", null ],
     [ "Key", "classstored_1_1_example_terminal_base.html#ab2a1f9bd2834b206c2eed1623a2e247d", null ],
+    [ "Objects", "classstored_1_1_example_terminal_base.html#ae43819d9b08280d8f6116c9f8acac8e8", null ],
     [ "ExampleTerminalBase", "classstored_1_1_example_terminal_base.html#a0d9c91ec4b8d18344ce709d75ccd4f67", null ],
     [ "ExampleTerminalBase", "classstored_1_1_example_terminal_base.html#adb1ae380d7f703dc27ad9ed904d697a1", null ],
     [ "ExampleTerminalBase", "classstored_1_1_example_terminal_base.html#aadaae69ef5f175e5a938ef4fa80c83b8", null ],
@@ -22,13 +24,17 @@ var classstored_1_1_example_terminal_base =
     [ "list", "classstored_1_1_example_terminal_base.html#aafb54cfc9d31d8d4abf51da9eb11170c", null ],
     [ "longDirectory", "classstored_1_1_example_terminal_base.html#a37c0427d252f27509b64ef0577ccd82c", null ],
     [ "name", "classstored_1_1_example_terminal_base.html#a21963aa4970099e36a066583119a2c13", null ],
-    [ "oh_gosh", "classstored_1_1_example_terminal_base.html#ae9aaf42eb24ca868695ad669eb1d3023", null ],
     [ "operator=", "classstored_1_1_example_terminal_base.html#ad8bfbc667e18142f2c0d6775ec3ee12c", null ],
     [ "operator=", "classstored_1_1_example_terminal_base.html#a68810b7c0247343607051fa6715d78d9", null ],
     [ "shortDirectory", "classstored_1_1_example_terminal_base.html#ad9779d8c0954fdedb0aa29065224f681", null ],
-    [ "small__world", "classstored_1_1_example_terminal_base.html#acc811e323a293b30a59a18cf95fb864b", null ],
-    [ "supercalifragilisticexpialidocious", "classstored_1_1_example_terminal_base.html#aea7f08a0a2c826c1644d1488093ec73a", null ],
     [ "Function", "classstored_1_1_example_terminal_base.html#adb932b890bc777c97b974306e181f08c", null ],
+    [ "impl::StoreFunction", "classstored_1_1_example_terminal_base.html#a11fa7358d30f19edf2c2f160c3e8c5e5", null ],
+    [ "impl::StoreVariable", "classstored_1_1_example_terminal_base.html#a03a0466da9c6306019b6fade66ede53a", null ],
+    [ "impl::StoreVariantF", "classstored_1_1_example_terminal_base.html#a152e05c52977188a3f6eb98ffcfbdf3b", null ],
+    [ "impl::StoreVariantV", "classstored_1_1_example_terminal_base.html#ab0d8a22c0775980fea583c73d70f3b07", null ],
     [ "Variable", "classstored_1_1_example_terminal_base.html#a467cf6e18c62552461715c542ce587fc", null ],
-    [ "Variant< Implementation >", "classstored_1_1_example_terminal_base.html#aac6d4804615302b3ff620cbd2c0484ad", null ]
+    [ "Variant< Implementation >", "classstored_1_1_example_terminal_base.html#aac6d4804615302b3ff620cbd2c0484ad", null ],
+    [ "oh_gosh", "classstored_1_1_example_terminal_base.html#a93c648d67749c0d82d491bb0727cd01b", null ],
+    [ "small__world", "classstored_1_1_example_terminal_base.html#abb03d99231dbca8fda16db3550db58b0", null ],
+    [ "supercalifragilisticexpialidocious", "classstored_1_1_example_terminal_base.html#aee5aeae8b2df25f220a186ca6c640823", null ]
 ];

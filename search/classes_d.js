@@ -1,10 +1,17 @@
 var searchData=
 [
-  ['zmqclient',['ZmqClient',['../classed2_1_1zmq__client_1_1_zmq_client.html',1,'ed2::zmq_client']]],
-  ['zmqlayer',['ZmqLayer',['../classstored_1_1_zmq_layer.html',1,'stored']]],
-  ['zmqserver',['ZmqServer',['../classed2_1_1zmq__server_1_1_zmq_server.html',1,'ed2::zmq_server']]],
-  ['zmqserverstore',['ZmqServerStore',['../classstored_1_1_zmq_server_store.html',1,'stored::ZmqServerStore'],['../class_zmq_server_store.html',1,'ZmqServerStore']]],
-  ['zmqserverstorebase',['ZmqServerStoreBase',['../classstored_1_1_zmq_server_store_base.html',1,'stored']]],
-  ['zmqserverstorebase_3c_20zmqserverstore_20_3e',['ZmqServerStoreBase&lt; ZmqServerStore &gt;',['../classstored_1_1_zmq_server_store_base.html',1,'stored']]],
-  ['zmqserverstoredata',['ZmqServerStoreData',['../structstored_1_1_zmq_server_store_data.html',1,'stored']]]
+  ['value_5fbytes',['value_bytes',['../structstored_1_1value__bytes.html',1,'stored']]],
+  ['value_5fbytes_3c_200_20_3e',['value_bytes&lt; 0 &gt;',['../structstored_1_1value__bytes_3_010_01_4.html',1,'stored']]],
+  ['value_5ftype',['value_type',['../structstored_1_1value__type.html',1,'stored']]],
+  ['value_5ftype_3c_20maxsize_20_3e',['value_type&lt; MaxSize &gt;',['../structstored_1_1value__type.html',1,'stored']]],
+  ['value_5ftype_3c_20n_2c_200_20_3e',['value_type&lt; N, 0 &gt;',['../structstored_1_1value__type_3_01_n_00_010_01_4.html',1,'stored']]],
+  ['value_5ftype_3c_20n_2c_201_20_3e',['value_type&lt; N, 1 &gt;',['../structstored_1_1value__type_3_01_n_00_011_01_4.html',1,'stored']]],
+  ['value_5ftype_3c_20n_2c_202_20_3e',['value_type&lt; N, 2 &gt;',['../structstored_1_1value__type_3_01_n_00_012_01_4.html',1,'stored']]],
+  ['value_5ftype_3c_20n_2c_203_20_3e',['value_type&lt; N, 3 &gt;',['../structstored_1_1value__type_3_01_n_00_013_01_4.html',1,'stored']]],
+  ['value_5ftype_3c_20n_2c_204_20_3e',['value_type&lt; N, 4 &gt;',['../structstored_1_1value__type_3_01_n_00_014_01_4.html',1,'stored']]],
+  ['variable',['Variable',['../classstored_1_1_variable.html',1,'stored']]],
+  ['variable_3c_20t_2c_20container_2c_20false_20_3e',['Variable&lt; T, Container, false &gt;',['../classstored_1_1_variable.html',1,'stored']]],
+  ['variable_3c_20t_2c_20container_2c_20true_20_3e',['Variable&lt; T, Container, true &gt;',['../classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html',1,'stored']]],
+  ['variant',['Variant',['../classstored_1_1_variant.html',1,'stored']]],
+  ['variant_3c_20void_20_3e',['Variant&lt; void &gt;',['../classstored_1_1_variant_3_01void_01_4.html',1,'stored']]]
 ];

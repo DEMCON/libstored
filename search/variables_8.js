@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['level',['level',['../namespaceed2_1_1cli_1_1____main____.html#abc73c8f5d171f92026bb9b56bcab38c7',1,'ed2.cli.__main__.level()'],['../namespaceed2_1_1wrapper_1_1serial_1_1____main____.html#a10e4e679095d69be911098a11c06d521',1,'ed2.wrapper.serial.__main__.level()']]],
-  ['license',['license',['../namespacesetup.html#a8ed6f50a28bd6a8794f8e1153baa6de9',1,'setup']]],
-  ['logger',['logger',['../classed2_1_1serial2zmq_1_1_serial2_zmq.html#a6131e1dfb12f4f1d5ecb2cccf0055b28',1,'ed2.serial2zmq.Serial2Zmq.logger()'],['../classed2_1_1stream2zmq_1_1_stream2_zmq.html#aa1f09a7a661b2835711c4db6b69c0c0c',1,'ed2.stream2zmq.Stream2Zmq.logger()']]],
-  ['lognplot',['lognplot',['../namespaceed2_1_1gui_1_1____main____.html#a085b0dd18bbdc4d327ae0d9932881b2d',1,'ed2::gui::__main__']]]
+  ['hello',['hello',['../classstored_1_1_example_hello_objects.html#a231c7f29480e740bf33dac5a2dfcceb0',1,'stored::ExampleHelloObjects']]],
+  ['help',['help',['../namespaceed2_1_1cli_1_1____main____.html#acf044e6f4cd1236cd82cbe95b066f659',1,'ed2.cli.__main__.help()'],['../namespaceed2_1_1gui_1_1____main____.html#a4bcfc2c0c9529ab5cddaa749bd793e0f',1,'ed2.gui.__main__.help()'],['../namespaceed2_1_1wrapper_1_1serial_1_1____main____.html#a808a952fd136689bb0770489e0d83687',1,'ed2.wrapper.serial.__main__.help()'],['../namespaceed2_1_1wrapper_1_1stdio_1_1____main____.html#a5fa67bb8a0bc1866b4a8275db445db90',1,'ed2.wrapper.stdio.__main__.help()']]],
+  ['here',['here',['../namespacesetup.html#a9c076537d899ffd8096e58c282bb7b02',1,'setup']]]
 ];

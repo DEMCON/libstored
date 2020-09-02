@@ -109,63 +109,44 @@ Public Types</h2></td></tr>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad0780e281f194b856563fd55a1d504fd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_frame_merger.html#ad0780e281f194b856563fd55a1d504fd">FrameMerger</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> &amp;<a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a>)</td></tr>
 <tr class="separator:ad0780e281f194b856563fd55a1d504fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a357b029311be09df61e019682a848ab5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a357b029311be09df61e019682a848ab5">decode</a> (void *buffer, size_t len)</td></tr>
+<tr class="memdesc:a357b029311be09df61e019682a848ab5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode a frame and forward the decoded frame to the upper layer.  <a href="#a357b029311be09df61e019682a848ab5">More...</a><br /></td></tr>
+<tr class="separator:a357b029311be09df61e019682a848ab5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9a6113262899388f922a6d466e9245a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a> () const</td></tr>
+<tr class="memdesc:ac9a6113262899388f922a6d466e9245a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the layer below this one.  <a href="#ac9a6113262899388f922a6d466e9245a">More...</a><br /></td></tr>
+<tr class="separator:ac9a6113262899388f922a6d466e9245a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66c24cec6a17c44fac68213d358a5aa8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a66c24cec6a17c44fac68213d358a5aa8">encode</a> ()</td></tr>
+<tr class="memdesc:a66c24cec6a17c44fac68213d358a5aa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encodes the last part of the current frame.  <a href="#a66c24cec6a17c44fac68213d358a5aa8">More...</a><br /></td></tr>
+<tr class="separator:a66c24cec6a17c44fac68213d358a5aa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a388b28ac5690f83bbbdf1b48557786a7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_frame_merger.html#a388b28ac5690f83bbbdf1b48557786a7">encode</a> (void const *buffer, size_t len, bool last=true) final</td></tr>
 <tr class="memdesc:a388b28ac5690f83bbbdf1b48557786a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode a (partial) frame and forward it to the lower layer.  <a href="#a388b28ac5690f83bbbdf1b48557786a7">More...</a><br /></td></tr>
 <tr class="separator:a388b28ac5690f83bbbdf1b48557786a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classstored_1_1_protocol_layer"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classstored_1_1_protocol_layer')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classstored_1_1_protocol_layer.html">stored::ProtocolLayer</a></td></tr>
-<tr class="memitem:a04eadf44cf520838107498fa87ad4ff1 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a04eadf44cf520838107498fa87ad4ff1">ProtocolLayer</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> const &amp;)=delete</td></tr>
-<tr class="memdesc:a04eadf44cf520838107498fa87ad4ff1 inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted copy constructor.  <a href="classstored_1_1_protocol_layer.html#a04eadf44cf520838107498fa87ad4ff1">More...</a><br /></td></tr>
-<tr class="separator:a04eadf44cf520838107498fa87ad4ff1 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c582466de07553928d4801c705af2fa inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a3c582466de07553928d4801c705af2fa">ProtocolLayer</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> &amp;&amp;)=delete</td></tr>
-<tr class="memdesc:a3c582466de07553928d4801c705af2fa inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted move constructor.  <a href="classstored_1_1_protocol_layer.html#a3c582466de07553928d4801c705af2fa">More...</a><br /></td></tr>
-<tr class="separator:a3c582466de07553928d4801c705af2fa inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a01e053123817f8f52dc9217590d5f3b9 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a01e053123817f8f52dc9217590d5f3b9">ProtocolLayer</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40">up</a>=nullptr, <a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a>=nullptr)</td></tr>
-<tr class="memdesc:a01e053123817f8f52dc9217590d5f3b9 inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <a href="classstored_1_1_protocol_layer.html#a01e053123817f8f52dc9217590d5f3b9">More...</a><br /></td></tr>
-<tr class="separator:a01e053123817f8f52dc9217590d5f3b9 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a900026e43f2374c28e0cefcb6e002751 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a900026e43f2374c28e0cefcb6e002751">~ProtocolLayer</a> ()</td></tr>
-<tr class="memdesc:a900026e43f2374c28e0cefcb6e002751 inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <a href="classstored_1_1_protocol_layer.html#a900026e43f2374c28e0cefcb6e002751">More...</a><br /></td></tr>
-<tr class="separator:a900026e43f2374c28e0cefcb6e002751 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a357b029311be09df61e019682a848ab5 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a357b029311be09df61e019682a848ab5">decode</a> (void *buffer, size_t len)</td></tr>
-<tr class="memdesc:a357b029311be09df61e019682a848ab5 inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode a frame and forward the decoded frame to the upper layer.  <a href="classstored_1_1_protocol_layer.html#a357b029311be09df61e019682a848ab5">More...</a><br /></td></tr>
-<tr class="separator:a357b029311be09df61e019682a848ab5 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9a6113262899388f922a6d466e9245a inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a> () const</td></tr>
-<tr class="memdesc:ac9a6113262899388f922a6d466e9245a inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the layer below this one.  <a href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">More...</a><br /></td></tr>
-<tr class="separator:ac9a6113262899388f922a6d466e9245a inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66c24cec6a17c44fac68213d358a5aa8 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a66c24cec6a17c44fac68213d358a5aa8">encode</a> ()</td></tr>
-<tr class="memdesc:a66c24cec6a17c44fac68213d358a5aa8 inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encodes the last part of the current frame.  <a href="classstored_1_1_protocol_layer.html#a66c24cec6a17c44fac68213d358a5aa8">More...</a><br /></td></tr>
-<tr class="separator:a66c24cec6a17c44fac68213d358a5aa8 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88195d7cdb7129ac7bc625ffeb24d449 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a88195d7cdb7129ac7bc625ffeb24d449">mtu</a> () const</td></tr>
-<tr class="memdesc:a88195d7cdb7129ac7bc625ffeb24d449 inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the maximum amount of data to be put in one message that is encoded.  <a href="classstored_1_1_protocol_layer.html#a88195d7cdb7129ac7bc625ffeb24d449">More...</a><br /></td></tr>
-<tr class="separator:a88195d7cdb7129ac7bc625ffeb24d449 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22cfb4269bef0178b554ddf4119f218d inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a22cfb4269bef0178b554ddf4119f218d">operator=</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> &amp;&amp;)=delete</td></tr>
-<tr class="memdesc:a22cfb4269bef0178b554ddf4119f218d inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted move assignment operator.  <a href="classstored_1_1_protocol_layer.html#a22cfb4269bef0178b554ddf4119f218d">More...</a><br /></td></tr>
-<tr class="separator:a22cfb4269bef0178b554ddf4119f218d inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71e9e3a8315078dbf17c3056f185fc76 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a71e9e3a8315078dbf17c3056f185fc76">operator=</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> const &amp;)=delete</td></tr>
-<tr class="memdesc:a71e9e3a8315078dbf17c3056f185fc76 inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted assignment operator.  <a href="classstored_1_1_protocol_layer.html#a71e9e3a8315078dbf17c3056f185fc76">More...</a><br /></td></tr>
-<tr class="separator:a71e9e3a8315078dbf17c3056f185fc76 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b2523892617a43cf7421a654bfc3b6c inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a2b2523892617a43cf7421a654bfc3b6c">setDown</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a>)</td></tr>
-<tr class="memdesc:a2b2523892617a43cf7421a654bfc3b6c inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the layer that receives our encoded frames.  <a href="classstored_1_1_protocol_layer.html#a2b2523892617a43cf7421a654bfc3b6c">More...</a><br /></td></tr>
-<tr class="separator:a2b2523892617a43cf7421a654bfc3b6c inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e8b913345f11bf3cf3999c305905681 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a8e8b913345f11bf3cf3999c305905681">setPurgeableResponse</a> (bool purgeable=true)</td></tr>
-<tr class="memdesc:a8e8b913345f11bf3cf3999c305905681 inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flags the current response as purgeable.  <a href="classstored_1_1_protocol_layer.html#a8e8b913345f11bf3cf3999c305905681">More...</a><br /></td></tr>
-<tr class="separator:a8e8b913345f11bf3cf3999c305905681 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a43ca79c4b9503ce51f817ddc7fcd1cb5 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a43ca79c4b9503ce51f817ddc7fcd1cb5">setUp</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40">up</a>)</td></tr>
-<tr class="memdesc:a43ca79c4b9503ce51f817ddc7fcd1cb5 inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the layer that receives our decoded frames.  <a href="classstored_1_1_protocol_layer.html#a43ca79c4b9503ce51f817ddc7fcd1cb5">More...</a><br /></td></tr>
-<tr class="separator:a43ca79c4b9503ce51f817ddc7fcd1cb5 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f34a83e488add9a3f459fb8ebed8e34 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a3f34a83e488add9a3f459fb8ebed8e34">stack</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> &amp;<a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a>)</td></tr>
-<tr class="memdesc:a3f34a83e488add9a3f459fb8ebed8e34 inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the up/down layers of this layer and the given layer, such that this layer is stacked on (or wrapped by) the given one.  <a href="classstored_1_1_protocol_layer.html#a3f34a83e488add9a3f459fb8ebed8e34">More...</a><br /></td></tr>
-<tr class="separator:a3f34a83e488add9a3f459fb8ebed8e34 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7cbd80b10e74166c661582027158b40 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40">up</a> () const</td></tr>
-<tr class="memdesc:ac7cbd80b10e74166c661582027158b40 inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the layer above this one.  <a href="classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40">More...</a><br /></td></tr>
-<tr class="separator:ac7cbd80b10e74166c661582027158b40 inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d2f0987462196f77ca9067c050db09d inherit pub_methods_classstored_1_1_protocol_layer"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a7d2f0987462196f77ca9067c050db09d">wrap</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> &amp;<a class="el" href="classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40">up</a>)</td></tr>
-<tr class="memdesc:a7d2f0987462196f77ca9067c050db09d inherit pub_methods_classstored_1_1_protocol_layer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the up/down layers of this layer and the given layer, such that this layer wraps the given one.  <a href="classstored_1_1_protocol_layer.html#a7d2f0987462196f77ca9067c050db09d">More...</a><br /></td></tr>
-<tr class="separator:a7d2f0987462196f77ca9067c050db09d inherit pub_methods_classstored_1_1_protocol_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88195d7cdb7129ac7bc625ffeb24d449"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a88195d7cdb7129ac7bc625ffeb24d449">mtu</a> () const</td></tr>
+<tr class="memdesc:a88195d7cdb7129ac7bc625ffeb24d449"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the maximum amount of data to be put in one message that is encoded.  <a href="#a88195d7cdb7129ac7bc625ffeb24d449">More...</a><br /></td></tr>
+<tr class="separator:a88195d7cdb7129ac7bc625ffeb24d449"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b2523892617a43cf7421a654bfc3b6c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a2b2523892617a43cf7421a654bfc3b6c">setDown</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a>)</td></tr>
+<tr class="memdesc:a2b2523892617a43cf7421a654bfc3b6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the layer that receives our encoded frames.  <a href="#a2b2523892617a43cf7421a654bfc3b6c">More...</a><br /></td></tr>
+<tr class="separator:a2b2523892617a43cf7421a654bfc3b6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5800ec4cd54027d1dcfb0fde99ae140"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_frame_merger.html#ae5800ec4cd54027d1dcfb0fde99ae140">setPurgeableResponse</a> (bool purgeable=true) final</td></tr>
+<tr class="memdesc:ae5800ec4cd54027d1dcfb0fde99ae140"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flags the current response as purgeable.  <a href="#ae5800ec4cd54027d1dcfb0fde99ae140">More...</a><br /></td></tr>
+<tr class="separator:ae5800ec4cd54027d1dcfb0fde99ae140"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43ca79c4b9503ce51f817ddc7fcd1cb5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a43ca79c4b9503ce51f817ddc7fcd1cb5">setUp</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40">up</a>)</td></tr>
+<tr class="memdesc:a43ca79c4b9503ce51f817ddc7fcd1cb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the layer that receives our decoded frames.  <a href="#a43ca79c4b9503ce51f817ddc7fcd1cb5">More...</a><br /></td></tr>
+<tr class="separator:a43ca79c4b9503ce51f817ddc7fcd1cb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f34a83e488add9a3f459fb8ebed8e34"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a3f34a83e488add9a3f459fb8ebed8e34">stack</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> &amp;<a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a>)</td></tr>
+<tr class="memdesc:a3f34a83e488add9a3f459fb8ebed8e34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the up/down layers of this layer and the given layer, such that this layer is stacked on (or wrapped by) the given one.  <a href="#a3f34a83e488add9a3f459fb8ebed8e34">More...</a><br /></td></tr>
+<tr class="separator:a3f34a83e488add9a3f459fb8ebed8e34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7cbd80b10e74166c661582027158b40"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40">up</a> () const</td></tr>
+<tr class="memdesc:ac7cbd80b10e74166c661582027158b40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the layer above this one.  <a href="#ac7cbd80b10e74166c661582027158b40">More...</a><br /></td></tr>
+<tr class="separator:ac7cbd80b10e74166c661582027158b40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d2f0987462196f77ca9067c050db09d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a7d2f0987462196f77ca9067c050db09d">wrap</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> &amp;<a class="el" href="classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40">up</a>)</td></tr>
+<tr class="memdesc:a7d2f0987462196f77ca9067c050db09d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the up/down layers of this layer and the given layer, such that this layer wraps the given one.  <a href="#a7d2f0987462196f77ca9067c050db09d">More...</a><br /></td></tr>
+<tr class="separator:a7d2f0987462196f77ca9067c050db09d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Helper layer to merge responses for the macro response. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00791">791</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00804">804</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a6e71c7324c89bda1024234d9148cd43c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6e71c7324c89bda1024234d9148cd43c">&#9670;&nbsp;</a></span>base</h2>
@@ -179,7 +160,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00793">793</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00806">806</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -208,13 +189,117 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00795">795</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00808">808</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a357b029311be09df61e019682a848ab5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a357b029311be09df61e019682a848ab5">&#9670;&nbsp;</a></span>decode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void stored::ProtocolLayer::decode </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>len</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Decode a frame and forward the decoded frame to the upper layer. </p>
+<p>The given buffer may be decoded in-place. </p>
+
+<p>Reimplemented in <a class="el" href="classstored_1_1_debugger.html#ab898cc1ca7b88385ea50b39aa9d310ee">stored::Debugger</a>, <a class="el" href="classstored_1_1_crc_layer.html#ad19f7cb8159bff0bb9aeb801dd3c56d0">stored::CrcLayer</a>, <a class="el" href="classstored_1_1_arq_layer.html#aae0973f22504fbff0b98fefec8d53013">stored::ArqLayer</a>, <a class="el" href="classstored_1_1_segmentation_layer.html#adee6ee8d098ff67655b36c1ab269d490">stored::SegmentationLayer</a>, <a class="el" href="classstored_1_1_terminal_layer.html#a189c272877b09b93aac1b1ddc96fe58c">stored::TerminalLayer</a>, <a class="el" href="classstored_1_1_ascii_escape_layer.html#a5acfb59ed33a8f0f3e27556421ff5245">stored::AsciiEscapeLayer</a>, <a class="el" href="class_lossy_channel.html#a60989db2a2ad55091267c1810761d169">LossyChannel</a>, and <a class="el" href="class_printf_physical.html#afc3eb3f0ca598dd287a6022f3121a458">PrintfPhysical</a>.</p>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a9">5_debug/main.cpp</a>.</dd>
+</dl>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00217">217</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="ac9a6113262899388f922a6d466e9245a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9a6113262899388f922a6d466e9245a">&#9670;&nbsp;</a></span>down()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a>* stored::ProtocolLayer::down </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the layer below this one. </p>
+<dl class="section return"><dt>Returns</dt><dd>the layer, or <code>nullptr</code> if there is none. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00210">210</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a66c24cec6a17c44fac68213d358a5aa8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66c24cec6a17c44fac68213d358a5aa8">&#9670;&nbsp;</a></span>encode() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void stored::ProtocolLayer::encode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Encodes the last part of the current frame. </p>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a10">5_debug/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#a8">terminal/main.cpp</a>.</dd>
+</dl>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00225">225</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
 <a id="a388b28ac5690f83bbbdf1b48557786a7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a388b28ac5690f83bbbdf1b48557786a7">&#9670;&nbsp;</a></span>encode()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a388b28ac5690f83bbbdf1b48557786a7">&#9670;&nbsp;</a></span>encode() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -258,7 +343,241 @@ Public Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#ae5dab6177c1448d1ce5ac04a69c9b4e4">stored::ProtocolLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00799">799</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00812">812</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a88195d7cdb7129ac7bc625ffeb24d449"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88195d7cdb7129ac7bc625ffeb24d449">&#9670;&nbsp;</a></span>mtu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual size_t stored::ProtocolLayer::mtu </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the maximum amount of data to be put in one message that is encoded. </p>
+<p>If there is a MTU applicable to the physical transport (like a CAN bus), override this method to reflect that value. Layers on top will decrease the MTU when there protocol adds headers, for example.</p>
+<dl class="section return"><dt>Returns</dt><dd>the number of bytes, or 0 for infinity </dd></dl>
+
+<p>Reimplemented in <a class="el" href="classstored_1_1_crc_layer.html#a15a59f037380fed7c39e2f259bd24e91">stored::CrcLayer</a>, <a class="el" href="classstored_1_1_arq_layer.html#a1efacad0bccc60d7d202663ce984aab2">stored::ArqLayer</a>, <a class="el" href="classstored_1_1_segmentation_layer.html#a5cd64512cd57378cf25bd2890266919a">stored::SegmentationLayer</a>, <a class="el" href="classstored_1_1_terminal_layer.html#a0a19f65b341e78a98dca4f13747fb2a7">stored::TerminalLayer</a>, <a class="el" href="classstored_1_1_ascii_escape_layer.html#ac773513d7ef5330f9fc7b46f08e79442">stored::AsciiEscapeLayer</a>, and <a class="el" href="class_lossy_channel.html#a6967348e03e7d69ecf1a40dcc549a13d">LossyChannel</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00268">268</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a2b2523892617a43cf7421a654bfc3b6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b2523892617a43cf7421a654bfc3b6c">&#9670;&nbsp;</a></span>setDown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void stored::ProtocolLayer::setDown </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *&#160;</td>
+          <td class="paramname"><em>down</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Change the layer that receives our encoded frames. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">down</td><td>the layer, which can be <code>nullptr</code> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a7">5_debug/main.cpp</a>.</dd>
+</dl>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00164">164</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="ae5800ec4cd54027d1dcfb0fde99ae140"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5800ec4cd54027d1dcfb0fde99ae140">&#9670;&nbsp;</a></span>setPurgeableResponse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void stored::FrameMerger::setPurgeableResponse </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>purgeable</em> = <code>true</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">final</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flags the current response as purgeable. </p>
+<p>This may influence how a response is handled. Especially, in case of retransmits of lost packets, one may decide to either reexecute the command, or to save the first response and resend it when the command was retransmitted. In that sense, a precious response (default) means that every layer should handle the data with case, as it cannot be recovered once it is lost. When the response is flagged purgeeble, the response may be thrown away after the first try to transmit it to the client.</p>
+<p>By default, all responses are precious. </p>
+
+<p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a8e8b913345f11bf3cf3999c305905681">stored::ProtocolLayer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00818">818</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a43ca79c4b9503ce51f817ddc7fcd1cb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43ca79c4b9503ce51f817ddc7fcd1cb5">&#9670;&nbsp;</a></span>setUp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void stored::ProtocolLayer::setUp </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *&#160;</td>
+          <td class="paramname"><em>up</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Change the layer that receives our decoded frames. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">up</td><td>the layer, which can be <code>nullptr</code> </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00158">158</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a3f34a83e488add9a3f459fb8ebed8e34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f34a83e488add9a3f459fb8ebed8e34">&#9670;&nbsp;</a></span>stack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void stored::ProtocolLayer::stack </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> &amp;&#160;</td>
+          <td class="paramname"><em>down</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the up/down layers of this layer and the given layer, such that this layer is stacked on (or wrapped by) the given one. </p>
+<p>If the given layer was not the top of the stack, this layer injects itself between the given layer and its stacked one. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00189">189</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="ac7cbd80b10e74166c661582027158b40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7cbd80b10e74166c661582027158b40">&#9670;&nbsp;</a></span>up()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a>* stored::ProtocolLayer::up </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the layer above this one. </p>
+<dl class="section return"><dt>Returns</dt><dd>the layer, or <code>nullptr</code> if there is none. </dd></dl>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a6">5_debug/main.cpp</a>.</dd>
+</dl>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00204">204</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a7d2f0987462196f77ca9067c050db09d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d2f0987462196f77ca9067c050db09d">&#9670;&nbsp;</a></span>wrap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void stored::ProtocolLayer::wrap </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> &amp;&#160;</td>
+          <td class="paramname"><em>up</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the up/down layers of this layer and the given layer, such that this layer wraps the given one. </p>
+<p>If the given layer was not the bottom of the stack, this layer injects itself in between the given layer and its wrapper. </p>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="terminal_2main_8cpp-example.html#a14">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#a27">zmqserver/main.cpp</a>.</dd>
+</dl>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00172">172</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>

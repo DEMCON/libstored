@@ -107,6 +107,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6730848b8d1b68684612aa2a431a7e3f"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_variant_base.html#a6730848b8d1b68684612aa2a431a7e3f">get</a> (void *dst, size_t len=0) const =0</td></tr>
 <tr class="memdesc:a6730848b8d1b68684612aa2a431a7e3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve data from the object.  <a href="#a6730848b8d1b68684612aa2a431a7e3f">More...</a><br /></td></tr>
 <tr class="separator:a6730848b8d1b68684612aa2a431a7e3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af039bf565656df9a09ab23400b655c89"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_variant_base.html#af039bf565656df9a09ab23400b655c89">isFunction</a> () const</td></tr>
+<tr class="memdesc:af039bf565656df9a09ab23400b655c89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the object is a function.  <a href="#af039bf565656df9a09ab23400b655c89">More...</a><br /></td></tr>
+<tr class="separator:af039bf565656df9a09ab23400b655c89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cc2380c06aefc37bde3f2a1ce6c0fb2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_variant_base.html#a1cc2380c06aefc37bde3f2a1ce6c0fb2">isVariable</a> () const</td></tr>
+<tr class="memdesc:a1cc2380c06aefc37bde3f2a1ce6c0fb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the object is a variable.  <a href="#a1cc2380c06aefc37bde3f2a1ce6c0fb2">More...</a><br /></td></tr>
+<tr class="separator:a1cc2380c06aefc37bde3f2a1ce6c0fb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add607ece06f94e14bac2e158e529151a"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_variant_base.html#add607ece06f94e14bac2e158e529151a">set</a> (void const *src, size_t len=0)=0</td></tr>
 <tr class="memdesc:add607ece06f94e14bac2e158e529151a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set data to the buffer.  <a href="#add607ece06f94e14bac2e158e529151a">More...</a><br /></td></tr>
 <tr class="separator:add607ece06f94e14bac2e158e529151a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -170,6 +176,64 @@ Public Member Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>the number of bytes written into <code>dst</code> </dd></dl>
 
 <p>Implemented in <a class="el" href="classstored_1_1_debug_variant.html#abb3c7c13ab41a060eef1f35ec290d1e6">stored::DebugVariant</a>, and <a class="el" href="classstored_1_1_debug_variant_typed.html#a8a7f7d15b733eba30f64a56809c49aa0">stored::DebugVariantTyped&lt; Container &gt;</a>.</p>
+
+</div>
+</div>
+<a id="af039bf565656df9a09ab23400b655c89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af039bf565656df9a09ab23400b655c89">&#9670;&nbsp;</a></span>isFunction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool stored::DebugVariantBase::isFunction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if the object is a function. </p>
+
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00371">371</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+
+</div>
+</div>
+<a id="a1cc2380c06aefc37bde3f2a1ce6c0fb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cc2380c06aefc37bde3f2a1ce6c0fb2">&#9670;&nbsp;</a></span>isVariable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool stored::DebugVariantBase::isVariable </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if the object is a variable. </p>
+
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00376">376</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>

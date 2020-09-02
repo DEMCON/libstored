@@ -1,28 +1,6 @@
 var searchData=
 [
-  ['t',['t',['../classed2_1_1zmq__client_1_1_object.html#a3d66ba43564e6a225c07eaab22d9f330',1,'ed2.zmq_client.Object.t(self)'],['../classed2_1_1zmq__client_1_1_object.html#a3d66ba43564e6a225c07eaab22d9f330',1,'ed2.zmq_client.Object.t(self)']]],
-  ['t_5fus',['t_us',['../classstored_1_1_zmq_server_store_base.html#a358706c2129f0658da56a10576492ae8',1,'stored::ZmqServerStoreBase']]],
-  ['terminallayer',['TerminalLayer',['../classstored_1_1_terminal_layer.html#ae159ad7d286f1f1f456f4fe42e9955b7',1,'stored::TerminalLayer::TerminalLayer(TerminalLayer const &amp;)=delete'],['../classstored_1_1_terminal_layer.html#aca51711c2c62bc1ccaf6f3d5ba5baf1f',1,'stored::TerminalLayer::TerminalLayer(TerminalLayer &amp;&amp;)=delete'],['../classstored_1_1_terminal_layer.html#a3aae8bd600dea82390da7d94a9be1b7f',1,'stored::TerminalLayer::TerminalLayer(int nonDebugDecodeFd=-1, int encodeFd=-1, ProtocolLayer *up=nullptr, ProtocolLayer *down=nullptr)']]],
-  ['test42',['test42',['../classstored_1_1_example_basic_base.html#ab498465429a1c36d8fbae6efa7d3b2ee',1,'stored::ExampleBasicBase']]],
-  ['three_5fints_5f0',['three_ints_0',['../classstored_1_1_example_basic_base.html#a68c1c41492f33d787da5865430857a79',1,'stored::ExampleBasicBase']]],
-  ['three_5fints_5f1',['three_ints_1',['../classstored_1_1_example_basic_base.html#aadb8aa27f193e6098aace7eb6f3deb83',1,'stored::ExampleBasicBase']]],
-  ['three_5fints_5f2',['three_ints_2',['../classstored_1_1_example_basic_base.html#aaeb6b1b3b34b6a5ac84bc0c39fd65860',1,'stored::ExampleBasicBase']]],
-  ['three_5fints_5fa',['three_ints_a',['../classstored_1_1_example_basic_base.html#af785945f6963daf71d76d450bdd23c60',1,'stored::ExampleBasicBase']]],
-  ['time',['time',['../classed2_1_1zmq__client_1_1_zmq_client.html#a9f9f8b3419ceb98b46b3f6b09961a31c',1,'ed2.zmq_client.ZmqClient.time(self)'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a9f9f8b3419ceb98b46b3f6b09961a31c',1,'ed2.zmq_client.ZmqClient.time(self)']]],
-  ['time_5fs',['time_s',['../classstored_1_1_example_function_base.html#aa0aedc464528e474fdb55e5b9394920e',1,'stored::ExampleFunctionBase']]],
-  ['timestamptotime',['timestampToTime',['../classed2_1_1zmq__client_1_1_zmq_client.html#a8eb0533de908386f60b4d5db4d921e3e',1,'ed2.zmq_client.ZmqClient.timestampToTime(self, t=None)'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a8eb0533de908386f60b4d5db4d921e3e',1,'ed2.zmq_client.ZmqClient.timestampToTime(self, t=None)']]],
-  ['top_5f_5flevel1_5f_5fb',['top__level1__b',['../classstored_1_1_example_scope_base.html#a7e762104eb63cbb4152b7f4623f0a36e',1,'stored::ExampleScopeBase']]],
-  ['top_5f_5flevel1_5f_5fb2',['top__level1__b2',['../classstored_1_1_example_scope_base.html#a7ff3500bbf6790c5aeeacabffb081481',1,'stored::ExampleScopeBase']]],
-  ['trace',['trace',['../classstored_1_1_debugger.html#a65e235d57bae057514396431c97db437',1,'stored::Debugger']]],
-  ['tracedecimate',['traceDecimate',['../classed2_1_1zmq__client_1_1_zmq_client.html#ad76366222534e802a94ea6e0ed5d4fcc',1,'ed2.zmq_client.ZmqClient.traceDecimate(self, decimate)'],['../classed2_1_1zmq__client_1_1_zmq_client.html#ad76366222534e802a94ea6e0ed5d4fcc',1,'ed2.zmq_client.ZmqClient.traceDecimate(self, decimate)']]],
-  ['tracing',['tracing',['../classstored_1_1_debugger.html#a03a04acf4a0ebf7003a473d9c1951e65',1,'stored::Debugger']]],
-  ['tstring',['tString',['../classed2_1_1zmq__client_1_1_object.html#a55a84ded66c6edb5ba56326796189c7f',1,'ed2.zmq_client.Object.tString(self)'],['../classed2_1_1zmq__client_1_1_object.html#a55a84ded66c6edb5ba56326796189c7f',1,'ed2.zmq_client.Object.tString(self)']]],
-  ['two_5fscopes_5f0_5f_5fi',['two_scopes_0__i',['../classstored_1_1_example_scope_base.html#a7d3375a74758fb1579444c5f99080ac0',1,'stored::ExampleScopeBase']]],
-  ['two_5fscopes_5f1_5f_5fi',['two_scopes_1__i',['../classstored_1_1_example_scope_base.html#abf24469da3190703b42b5f812647de39',1,'stored::ExampleScopeBase']]],
-  ['two_5fscopes_5fa_5f_5fi',['two_scopes_a__i',['../classstored_1_1_example_scope_base.html#af025b44469a901868d51f41636a07866',1,'stored::ExampleScopeBase']]],
-  ['two_5fstrings_5f0',['two_strings_0',['../classstored_1_1_example_basic_base.html#a0746a5dbbd0938985516307902201464',1,'stored::ExampleBasicBase']]],
-  ['two_5fstrings_5f1',['two_strings_1',['../classstored_1_1_example_basic_base.html#a0723822124c808f97bdd6170ea41d8c6',1,'stored::ExampleBasicBase']]],
-  ['two_5fstrings_5fa',['two_strings_a',['../classstored_1_1_example_basic_base.html#acc1ae4d43fb8492d170a369856f3d7df',1,'stored::ExampleBasicBase']]],
-  ['type',['type',['../classstored_1_1_debug_variant_base.html#a15083a445b89fde89ef7aa82fbc8298e',1,'stored::DebugVariantBase::type()'],['../classstored_1_1_debug_variant_typed.html#a1ba59f8d4db371eae40f99efaeed66c2',1,'stored::DebugVariantTyped::type()'],['../classstored_1_1_debug_variant.html#aa3c3a6a5dcb317b00a67265f09aa7f81',1,'stored::DebugVariant::type()'],['../classstored_1_1_variant.html#a78e3fd98101ec8709e6dff620ca37f22',1,'stored::Variant::type()'],['../classstored_1_1_variant_3_01void_01_4.html#a22a9c2672cdc46fa73cdd042098d5d6f',1,'stored::Variant&lt; void &gt;::type()'],['../classed2_1_1zmq__client_1_1_object.html#a1d973a2d88b860ae5e43d25891c29544',1,'ed2.zmq_client.Object.type(self)'],['../classed2_1_1zmq__client_1_1_object.html#a1d973a2d88b860ae5e43d25891c29544',1,'ed2.zmq_client.Object.type(self)']]],
-  ['typename',['typeName',['../classed2_1_1zmq__client_1_1_object.html#a43e805a5cd8692efc7b17fb166e07160',1,'ed2.zmq_client.Object.typeName(self)'],['../classed2_1_1zmq__client_1_1_object.html#a43e805a5cd8692efc7b17fb166e07160',1,'ed2.zmq_client.Object.typeName(self)']]]
+  ['unmap',['unmap',['../classstored_1_1_debugger.html#ab7970bba0c51897467aa260705a22965',1,'stored::Debugger']]],
+  ['unregister',['unregister',['../classed2_1_1zmq__server_1_1_zmq_server.html#ad851afb76b369ff7bd296a0fb5d0f069',1,'ed2.zmq_server.ZmqServer.unregister(self, socket)'],['../classed2_1_1zmq__server_1_1_zmq_server.html#ad851afb76b369ff7bd296a0fb5d0f069',1,'ed2.zmq_server.ZmqServer.unregister(self, socket)']]],
+  ['up',['up',['../classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40',1,'stored::ProtocolLayer']]]
 ];

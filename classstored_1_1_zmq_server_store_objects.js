@@ -1,0 +1,28 @@
+var classstored_1_1_zmq_server_store_objects =
+[
+    [ "Base", "classstored_1_1_zmq_server_store_objects.html#aa35d17e837c34e20db1f4054d5ce98c1", null ],
+    [ "Implementation", "classstored_1_1_zmq_server_store_objects.html#ab82b306fb745d3efee8d787de462ec30", null ],
+    [ "ZmqServerStoreObjects", "classstored_1_1_zmq_server_store_objects.html#ac6796f2baf60daa073773a47f088619c", null ],
+    [ "a_blob", "classstored_1_1_zmq_server_store_objects.html#af2550c9e6ec50753d6117110968e5f55", null ],
+    [ "a_bool", "classstored_1_1_zmq_server_store_objects.html#a091fee96885c58b22b69091baa4d48ee", null ],
+    [ "a_double", "classstored_1_1_zmq_server_store_objects.html#abfc6cf7d1573a329807cd68ee30fe9d7", null ],
+    [ "a_float", "classstored_1_1_zmq_server_store_objects.html#a0ca4304dc8f948b13ed04b58b42ac3bd", null ],
+    [ "a_ptr32", "classstored_1_1_zmq_server_store_objects.html#a5d0fc2ec2ae467074e00eb29b51ada46", null ],
+    [ "a_ptr64", "classstored_1_1_zmq_server_store_objects.html#a993467ebfa86ee44b7d1c05a4727f89c", null ],
+    [ "a_string", "classstored_1_1_zmq_server_store_objects.html#a2fde06526bdaa90338837a2aeedf6f75", null ],
+    [ "a_uint16", "classstored_1_1_zmq_server_store_objects.html#aa9778b7ea88bb8ec8a120f24d86885e9", null ],
+    [ "a_uint32", "classstored_1_1_zmq_server_store_objects.html#afc31bae77bf21afa98cbe46fac38addb", null ],
+    [ "a_uint64", "classstored_1_1_zmq_server_store_objects.html#a0d4a990f67c1dbb97ca921b25cb36e20", null ],
+    [ "a_uint8", "classstored_1_1_zmq_server_store_objects.html#ab507cd5b73333e1baa1d3dbe9ea132e3", null ],
+    [ "an_int16", "classstored_1_1_zmq_server_store_objects.html#a31df02863659abad95d50684b6a507b4", null ],
+    [ "an_int32", "classstored_1_1_zmq_server_store_objects.html#a7f679e15c3688ae1b5c41e1b64e92547", null ],
+    [ "an_int64", "classstored_1_1_zmq_server_store_objects.html#a5a4c484a359b1baeb00ea57210ef5c76", null ],
+    [ "an_int8", "classstored_1_1_zmq_server_store_objects.html#a50ffedbe1b2ec0d3ebc1f3b00b2ad73e", null ],
+    [ "compute__an_int8_an_int16", "classstored_1_1_zmq_server_store_objects.html#a3a78653b653bab4b268450e98f1bab67", null ],
+    [ "compute__circle_area_r__a_double", "classstored_1_1_zmq_server_store_objects.html#ab9e9bb4e73a56b3587479efc041307c2", null ],
+    [ "compute__length_of__a_string", "classstored_1_1_zmq_server_store_objects.html#a5b0601645131f7b0c2f85248aebc567a", null ],
+    [ "rand", "classstored_1_1_zmq_server_store_objects.html#afd0dca6acba4e7bde2c9122b498f34b6", null ],
+    [ "stats__object_writes", "classstored_1_1_zmq_server_store_objects.html#a011ecccd65898668cd7b496a32fb7459", null ],
+    [ "stats__ZMQ_messages", "classstored_1_1_zmq_server_store_objects.html#a3679c31731680c9c86116dc5cab60a71", null ],
+    [ "t_us", "classstored_1_1_zmq_server_store_objects.html#acf0663ca658e0ff759487ddc35ce0dcb", null ]
+];

@@ -10,7 +10,7 @@ var classstored_1_1_function =
     [ "get", "classstored_1_1_function.html#a39f22004ddfac92cd4705149d4ce48c1", null ],
     [ "get", "classstored_1_1_function.html#a44ccd9da05980b113716a0ffbdcc4a82", null ],
     [ "id", "classstored_1_1_function.html#a82b3ad994d1f9c3e9e4a036e1bcefc6e", null ],
-    [ "operator type const &", "classstored_1_1_function.html#ac614b9383f3bccec197fb4291ccf2f3b", null ],
+    [ "operator type", "classstored_1_1_function.html#a8f3d915259a9e9550b2b18bf8b7b3091", null ],
     [ "operator!=", "classstored_1_1_function.html#a060db4a420f5b45c7a879885a7530e8b", null ],
     [ "operator()", "classstored_1_1_function.html#ad38ea6976af6ff9acd2c882acc11b10d", null ],
     [ "operator()", "classstored_1_1_function.html#a4b71b4d55444953d2d0385382d6542cb", null ],

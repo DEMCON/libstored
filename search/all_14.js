@@ -1,10 +1,10 @@
 var searchData=
 [
   ['util',['util',['../group__libstored__util.html',1,'']]],
-  ['u16',['u16',['../classstored_1_1_example_basic_base.html#a483f1896185e18cbdf81681ff519d61c',1,'stored::ExampleBasicBase']]],
-  ['u32',['u32',['../classstored_1_1_example_basic_base.html#a4979ac72b164fa75a796b4603ae2902b',1,'stored::ExampleBasicBase']]],
-  ['u64',['u64',['../classstored_1_1_example_basic_base.html#afdf1723a679ca626619d8c33ee078748',1,'stored::ExampleBasicBase']]],
-  ['u8',['u8',['../classstored_1_1_example_basic_base.html#a3af46b86ea2595d763950df3d82cc317',1,'stored::ExampleBasicBase']]],
+  ['u16',['u16',['../classstored_1_1_example_basic_objects.html#a751fe97d5e737ca856995a9e7d1078e9',1,'stored::ExampleBasicObjects']]],
+  ['u32',['u32',['../classstored_1_1_example_basic_objects.html#afc4b54b1819ded23dc59ba14245365ce',1,'stored::ExampleBasicObjects']]],
+  ['u64',['u64',['../classstored_1_1_example_basic_objects.html#a31e5f96ba94053b33edfa44d11d1b8bd',1,'stored::ExampleBasicObjects']]],
+  ['u8',['u8',['../classstored_1_1_example_basic_objects.html#a0a49bc1d32cc1c92a11d28714a56abe2',1,'stored::ExampleBasicObjects']]],
   ['uint',['Uint',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eab9b0b201890bf93aba4e1cf7cadfec86',1,'stored::Type']]],
   ['uint16',['Uint16',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea51f3812aa1a51ebc9b878bd0a42c9c4c',1,'stored::Type::Uint16()'],['../classed2_1_1zmq__client_1_1_object.html#a2cc39d0e833e472f0f179426d7637d3c',1,'ed2.zmq_client.Object.Uint16()']]],
   ['uint32',['Uint32',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea32c316971229118266e60e4789a857b6',1,'stored::Type::Uint32()'],['../classed2_1_1zmq__client_1_1_object.html#a6cd69435d9beb9873509c098f3c396c5',1,'ed2.zmq_client.Object.Uint32()']]],

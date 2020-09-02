@@ -1,7 +1,9 @@
 var searchData=
 [
-  ['rep_5fqueue',['rep_queue',['../classed2_1_1serial2zmq_1_1_serial2_zmq.html#a33c52f81d72d62b53a02c984fbd0d7ce',1,'ed2.serial2zmq.Serial2Zmq.rep_queue()'],['../classed2_1_1stdio2zmq_1_1_stdio2_zmq.html#a70714a27f255edddba16535b4872eb7a',1,'ed2.stdio2zmq.Stdio2Zmq.rep_queue()'],['../classed2_1_1stream2zmq_1_1_stream2_zmq.html#a32ef1bd8fb023384ba50ba46c239ac76',1,'ed2.stream2zmq.Stream2Zmq.rep_queue()']]],
-  ['res',['res',['../namespaceed2_1_1gui_1_1____main____.html#a11587f112b0486278fe041290b1db064',1,'ed2::gui::__main__']]],
-  ['response',['response',['../structstored_1_1_list_cmd_callback_arg.html#a3e0554416bf2d281bd13aacae9722808',1,'stored::ListCmdCallbackArg']]],
-  ['result',['result',['../classed2_1_1gui_1_1____main_____1_1_object_list_model.html#ae23d33fd5a5e1f758de85c78b408dd44',1,'ed2.gui.__main__.ObjectListModel.result()'],['../classed2_1_1zmq__client_1_1_object.html#a24bc34eaf380e4aa37a218fdbdb7ecd3',1,'ed2.zmq_client.Object.result()'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a612ec43085c34a4667148e2b5587f349',1,'ed2.zmq_client.ZmqClient.result()']]]
+  ['nack',['Nack',['../classstored_1_1_debugger.html#a03cb96ff01407440864c76a10828dc42',1,'stored::Debugger']]],
+  ['name',['name',['../namespacesetup.html#ab3a7a0638d76a01367c5bc3cc699447f',1,'setup']]],
+  ['namerole',['NameRole',['../classed2_1_1gui_1_1____main_____1_1_object_list_model.html#a13269166366cf5c093d901674151667f',1,'ed2::gui::__main__::ObjectListModel']]],
+  ['nargs',['nargs',['../namespaceed2_1_1gui_1_1____main____.html#ae9ec81bc94e56bbf14580e1ca5d48a44',1,'ed2.gui.__main__.nargs()'],['../namespaceed2_1_1wrapper_1_1serial_1_1____main____.html#abf4813b506c59547838c43597b30729a',1,'ed2.wrapper.serial.__main__.nargs()'],['../namespaceed2_1_1wrapper_1_1stdio_1_1____main____.html#ad4f33c9bf0bbe4cf8bb6528631293afb',1,'ed2.wrapper.stdio.__main__.nargs()']]],
+  ['none',['None',['../namespaceed2_1_1gui_1_1____main____.html#ac30709acdee6322ed2f6c6ed1af018fa',1,'ed2::gui::__main__']]],
+  ['notify',['notify',['../classed2_1_1zmq__client_1_1_object.html#adbd24755c4cf1eec9fd7f6016e533d13',1,'ed2.zmq_client.Object.notify()'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a34f12a35a8b57a637216fe6b2338e478',1,'ed2.zmq_client.ZmqClient.notify()']]]
 ];

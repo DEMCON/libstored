@@ -112,6 +112,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8a7f7d15b733eba30f64a56809c49aa0"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_variant_typed.html#a8a7f7d15b733eba30f64a56809c49aa0">get</a> (void *dst, size_t len=0) const final</td></tr>
 <tr class="memdesc:a8a7f7d15b733eba30f64a56809c49aa0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve data from the object.  <a href="#a8a7f7d15b733eba30f64a56809c49aa0">More...</a><br /></td></tr>
 <tr class="separator:a8a7f7d15b733eba30f64a56809c49aa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af039bf565656df9a09ab23400b655c89"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_variant_base.html#af039bf565656df9a09ab23400b655c89">isFunction</a> () const</td></tr>
+<tr class="memdesc:af039bf565656df9a09ab23400b655c89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the object is a function.  <a href="#af039bf565656df9a09ab23400b655c89">More...</a><br /></td></tr>
+<tr class="separator:af039bf565656df9a09ab23400b655c89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cc2380c06aefc37bde3f2a1ce6c0fb2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_variant_base.html#a1cc2380c06aefc37bde3f2a1ce6c0fb2">isVariable</a> () const</td></tr>
+<tr class="memdesc:a1cc2380c06aefc37bde3f2a1ce6c0fb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the object is a variable.  <a href="#a1cc2380c06aefc37bde3f2a1ce6c0fb2">More...</a><br /></td></tr>
+<tr class="separator:a1cc2380c06aefc37bde3f2a1ce6c0fb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a31868f81baca357e17bc4ad73864b8"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_variant_typed.html#a7a31868f81baca357e17bc4ad73864b8">set</a> (void const *src, size_t len=0) final</td></tr>
 <tr class="memdesc:a7a31868f81baca357e17bc4ad73864b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set data to the buffer.  <a href="#a7a31868f81baca357e17bc4ad73864b8">More...</a><br /></td></tr>
 <tr class="separator:a7a31868f81baca357e17bc4ad73864b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -139,7 +145,7 @@ class stored::DebugVariantTyped&lt; Container &gt;</h3>
 <p>This object is trivially copyable and assignable. You probably don't want to use this object directly, use <a class="el" href="classstored_1_1_debug_variant.html" title="A wrapper for any type of object in a store. ">stored::DebugVariant</a> instead.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debug_variant.html" title="A wrapper for any type of object in a store. ">stored::DebugVariant</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00379">379</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00389">389</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a1dab9c4d93bc6476b497286cc5ec9e97"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1dab9c4d93bc6476b497286cc5ec9e97">&#9670;&nbsp;</a></span>DebugVariantTyped() <span class="overload">[1/2]</span></h2>
@@ -169,7 +175,7 @@ template&lt;typename Container  = void&gt; </div>
 
 <p>Construct a wrapper around the given variant. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00384">384</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00394">394</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -251,7 +257,65 @@ template&lt;typename Container  = void&gt; </div>
 
 <p>Implements <a class="el" href="classstored_1_1_debug_variant_base.html#a6730848b8d1b68684612aa2a431a7e3f">stored::DebugVariantBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00399">399</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00409">409</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+
+</div>
+</div>
+<a id="af039bf565656df9a09ab23400b655c89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af039bf565656df9a09ab23400b655c89">&#9670;&nbsp;</a></span>isFunction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool stored::DebugVariantBase::isFunction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if the object is a function. </p>
+
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00371">371</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+
+</div>
+</div>
+<a id="a1cc2380c06aefc37bde3f2a1ce6c0fb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cc2380c06aefc37bde3f2a1ce6c0fb2">&#9670;&nbsp;</a></span>isVariable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool stored::DebugVariantBase::isVariable </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if the object is a variable. </p>
+
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00376">376</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -303,7 +367,7 @@ template&lt;typename Container  = void&gt; </div>
 
 <p>Implements <a class="el" href="classstored_1_1_debug_variant_base.html#add607ece06f94e14bac2e158e529151a">stored::DebugVariantBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00401">401</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00411">411</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -336,7 +400,7 @@ template&lt;typename Container  = void&gt; </div>
 
 <p>Implements <a class="el" href="classstored_1_1_debug_variant_base.html#a4de9ebcf989242ce1176f46f34c599a3">stored::DebugVariantBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00405">405</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00415">415</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -369,7 +433,7 @@ template&lt;typename Container  = void&gt; </div>
 
 <p>Implements <a class="el" href="classstored_1_1_debug_variant_base.html#a15083a445b89fde89ef7aa82fbc8298e">stored::DebugVariantBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00403">403</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00413">413</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -402,7 +466,7 @@ template&lt;typename Container  = void&gt; </div>
 
 <p>Implements <a class="el" href="classstored_1_1_debug_variant_base.html#a0c8680ce13a188f4788c5e1db607bc00">stored::DebugVariantBase</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00407">407</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00417">417</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -433,7 +497,7 @@ template&lt;typename Container  = void&gt; </div>
 
 <p>Returns the variant this object is a wrapper of. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00411">411</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00421">421</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -464,7 +528,7 @@ template&lt;typename Container  = void&gt; </div>
 
 <p>Returns the variant this object is a wrapper of. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00413">413</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00423">423</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>

@@ -1,23 +1,9 @@
 var searchData=
 [
-  ['callbacks',['callbacks',['../structstored_1_1_list_cmd_callback_arg.html#ac50206b16b5f2491676955687967c676',1,'stored::ListCmdCallbackArg']]],
-  ['classifiers',['classifiers',['../namespacesetup.html#abe96a9c38c1c61f9f0fdb002c482f785',1,'setup']]],
-  ['client',['client',['../namespaceed2_1_1cli_1_1____main____.html#ae5ad80077f1e8dd4e658e417663f1d5d',1,'ed2.cli.__main__.client()'],['../namespaceed2_1_1gui_1_1____main____.html#ad5e4f2251ff774e63c6298b13b08f489',1,'ed2.gui.__main__.client()']]],
-  ['closing',['closing',['../classed2_1_1zmq__server_1_1_zmq_server.html#ad42de0c64669f181205f54c40cf2e03a',1,'ed2::zmq_server::ZmqServer']]],
-  ['cmdalias',['CmdAlias',['../classstored_1_1_debugger.html#a431fef6fe27b92d4bed592a2ea70db78',1,'stored::Debugger']]],
-  ['cmdcapabilities',['CmdCapabilities',['../classstored_1_1_debugger.html#ad6ed2056bcebe092cc284524664a1baa',1,'stored::Debugger']]],
-  ['cmdecho',['CmdEcho',['../classstored_1_1_debugger.html#a1dd47c1cff6290b6186eab05566c038a',1,'stored::Debugger']]],
-  ['cmdidentification',['CmdIdentification',['../classstored_1_1_debugger.html#a314defdb44af77074a652a530de76222',1,'stored::Debugger']]],
-  ['cmdlist',['CmdList',['../classstored_1_1_debugger.html#a72886151c808cee9d126675349b602c5',1,'stored::Debugger']]],
-  ['cmdmacro',['CmdMacro',['../classstored_1_1_debugger.html#a2901fcc18b3cec21c506b0fc30948063',1,'stored::Debugger']]],
-  ['cmdread',['CmdRead',['../classstored_1_1_debugger.html#a55d5fb1ac11bd741f5bc7974b1eddad1',1,'stored::Debugger']]],
-  ['cmdreadmem',['CmdReadMem',['../classstored_1_1_debugger.html#a32be09384b1099b0f0f432f5fe5229e4',1,'stored::Debugger']]],
-  ['cmdstream',['CmdStream',['../classstored_1_1_debugger.html#aee36a94c73ea14531b664c5885c27247',1,'stored::Debugger']]],
-  ['cmdtrace',['CmdTrace',['../classstored_1_1_debugger.html#a110a177a178e9090c45830074e14d02b',1,'stored::Debugger']]],
-  ['cmdversion',['CmdVersion',['../classstored_1_1_debugger.html#a4a0cc435bd4d9d2cde9623ef29c2b98e',1,'stored::Debugger']]],
-  ['cmdwrite',['CmdWrite',['../classstored_1_1_debugger.html#aa8059debdaef039b212fbce8b2c01adf',1,'stored::Debugger']]],
-  ['cmdwritemem',['CmdWriteMem',['../classstored_1_1_debugger.html#a6a2a664ce598714e5a0bce09cbea4e9f',1,'stored::Debugger']]],
-  ['const',['const',['../namespaceed2_1_1gui_1_1____main____.html#a3c1fe823c9bbaf7e7dcef9ecc9fcb915',1,'ed2::gui::__main__']]],
-  ['constant',['constant',['../classed2_1_1zmq__client_1_1_object.html#aaff36a39e5ead81694a533ee699351c2',1,'ed2::zmq_client::Object']]],
-  ['context',['context',['../classed2_1_1zmq__server_1_1_zmq_server.html#a5bf247fee8b931ab87514940c7e43a0f',1,'ed2::zmq_server::ZmqServer']]]
+  ['b',['b',['../classstored_1_1_example_basic_objects.html#a63724119739d071a9bf240aef975b82a',1,'stored::ExampleBasicObjects']]],
+  ['ber',['ber',['../classstored_1_1_example_protocol_objects.html#a700110f39b4a0c5c77851bc0fe96a1e8',1,'stored::ExampleProtocolObjects']]],
+  ['blob',['blob',['../classstored_1_1_example_basic_objects.html#aff512989f4d31cea2f990549171340d7',1,'stored::ExampleBasicObjects::blob()'],['../classed2_1_1zmq__client_1_1_object.html#a7faf67d157b81f242c021dbc15716509',1,'ed2.zmq_client.Object.Blob()']]],
+  ['bool',['Bool',['../classed2_1_1zmq__client_1_1_object.html#a8bfad9fac46488633b286ef1f396e6b5',1,'ed2.zmq_client.Object.Bool()'],['../classed2_1_1zmq__client_1_1_object.html#a56c5ee731e7561abf4214525d453164a',1,'ed2.zmq_client.Object.bool()']]],
+  ['bridge',['bridge',['../namespaceed2_1_1wrapper_1_1serial_1_1____main____.html#ace9c92e46a137a3c9bbfb80f32c1c7ce',1,'ed2.wrapper.serial.__main__.bridge()'],['../namespaceed2_1_1wrapper_1_1stdio_1_1____main____.html#af17613572b78d530348488f28b504894',1,'ed2.wrapper.stdio.__main__.bridge()']]],
+  ['buffer',['buffer',['../structstored_1_1_example_hello_data.html#aea76f0c0e97a2ae01c5cdd555ad6a4d6',1,'stored::ExampleHelloData::buffer()'],['../structstored_1_1_example_basic_data.html#a988bead94177c15780d0fd9fd0efeb87',1,'stored::ExampleBasicData::buffer()'],['../structstored_1_1_example_scope_data.html#a23dc8c201f59444a16c7266e78bc4ba6',1,'stored::ExampleScopeData::buffer()'],['../structstored_1_1_example_function_data.html#abe60f88e092360582aa6d4f7a72c95a1',1,'stored::ExampleFunctionData::buffer()'],['../structstored_1_1_example_debug_another_store_data.html#a09a2866980835fa5a588edbb98f22132',1,'stored::ExampleDebugAnotherStoreData::buffer()'],['../structstored_1_1_example_debug_some_store_data.html#a53155940ad6c7cef9d0cab0d67670e03',1,'stored::ExampleDebugSomeStoreData::buffer()'],['../structstored_1_1_example_sync_data.html#a72301d3228d070d130b1cc43e8a6094b',1,'stored::ExampleSyncData::buffer()'],['../structstored_1_1_example_protocol_data.html#af88d5121aab31f3ba8cb2ff08cf020e0',1,'stored::ExampleProtocolData::buffer()'],['../structstored_1_1_example_terminal_data.html#af690907c3de1c4a3521eea54d56e0ba5',1,'stored::ExampleTerminalData::buffer()'],['../structstored_1_1_zmq_server_store_data.html#a3628a7cec9ad32d527b9a1ee09304e95',1,'stored::ZmqServerStoreData::buffer()']]]
 ];

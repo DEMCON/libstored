@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['rand',['rand',['../classstored_1_1_zmq_server_store_base.html#af6ff4399b7169bc4cee2e86539c64e4c',1,'stored::ZmqServerStoreBase']]],
+  ['rand',['rand',['../classstored_1_1_zmq_server_store_objects.html#afd0dca6acba4e7bde2c9122b498f34b6',1,'stored::ZmqServerStoreObjects']]],
   ['read',['read',['../classed2_1_1zmq__client_1_1_object.html#a07dce26d633545af02bc560528f5938d',1,'ed2.zmq_client.Object.read(self, tryToGetAlias=True)'],['../classed2_1_1zmq__client_1_1_object.html#a07dce26d633545af02bc560528f5938d',1,'ed2.zmq_client.Object.read(self, tryToGetAlias=True)']]],
   ['readme_2emd',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
   ['readmem',['readMem',['../classed2_1_1zmq__client_1_1_zmq_client.html#ad69cc28a3d398cfc4921e2a2e540e93d',1,'ed2.zmq_client.ZmqClient.readMem(self, pointer, size)'],['../classed2_1_1zmq__client_1_1_zmq_client.html#ad69cc28a3d398cfc4921e2a2e540e93d',1,'ed2.zmq_client.ZmqClient.readMem(self, pointer, size)']]],
@@ -16,6 +16,7 @@ var searchData=
   ['res',['res',['../namespaceed2_1_1gui_1_1____main____.html#a11587f112b0486278fe041290b1db064',1,'ed2::gui::__main__']]],
   ['reserve',['reserve',['../classstored_1_1_scratch_pad.html#a8a41c6838e3c51e52f1abb4e5f2bb176',1,'stored::ScratchPad']]],
   ['reset',['reset',['../classstored_1_1_scratch_pad.html#aad566f5ccddfbf90dd6357bb4084ea57',1,'stored::ScratchPad::reset()'],['../classstored_1_1_scratch_pad_1_1_snapshot.html#ad9b8e55051f45fce2d2db50657d792e7',1,'stored::ScratchPad::Snapshot::reset()']]],
+  ['resetseq',['ResetSeq',['../classstored_1_1_arq_layer.html#a7c05acb1930a8b7ce794e4e4f9c95e7d',1,'stored::ArqLayer']]],
   ['response',['response',['../structstored_1_1_list_cmd_callback_arg.html#a3e0554416bf2d281bd13aacae9722808',1,'stored::ListCmdCallbackArg']]],
   ['restorestate',['restoreState',['../classed2_1_1zmq__client_1_1_zmq_client.html#a554fb3bdc6aaaea1a1c6bac4a294b52a',1,'ed2.zmq_client.ZmqClient.restoreState(self, f=None)'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a554fb3bdc6aaaea1a1c6bac4a294b52a',1,'ed2.zmq_client.ZmqClient.restoreState(self, f=None)']]],
   ['result',['result',['../classed2_1_1gui_1_1____main_____1_1_object_list_model.html#ae23d33fd5a5e1f758de85c78b408dd44',1,'ed2.gui.__main__.ObjectListModel.result()'],['../classed2_1_1zmq__client_1_1_object.html#a24bc34eaf380e4aa37a218fdbdb7ecd3',1,'ed2.zmq_client.Object.result()'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a612ec43085c34a4667148e2b5587f349',1,'ed2.zmq_client.ZmqClient.result()']]],

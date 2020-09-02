@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['caseinverter',['CaseInverter',['../class_case_inverter.html',1,'']]],
-  ['config',['Config',['../structstored_1_1_config.html',1,'stored']]],
-  ['crclayer',['CrcLayer',['../classstored_1_1_crc_layer.html',1,'stored']]]
+  ['bufferlayer',['BufferLayer',['../classstored_1_1_buffer_layer.html',1,'stored']]]
 ];

@@ -1,7 +1,9 @@
 var classstored_1_1_example_hello_base =
 [
+    [ "Base", "classstored_1_1_example_hello_base.html#adbfdee62d10a740df1c6ca0d08182c4a", null ],
     [ "Implementation", "classstored_1_1_example_hello_base.html#a8f50d1afe556633cf4b566eb5ec087eb", null ],
     [ "Key", "classstored_1_1_example_hello_base.html#a370c9853912760c94f4e0b9b4aff94ff", null ],
+    [ "Objects", "classstored_1_1_example_hello_base.html#a0ab97350df1412d601253ebdec8b9e2f", null ],
     [ "ExampleHelloBase", "classstored_1_1_example_hello_base.html#aca14607cf3a4253e5c4ee2c2bdbcc3c6", null ],
     [ "ExampleHelloBase", "classstored_1_1_example_hello_base.html#a07fb133d80951d1d2c30fef073b651a0", null ],
     [ "ExampleHelloBase", "classstored_1_1_example_hello_base.html#ab1613baff5a66b57bfe4e5d08e5cc7e4", null ],
@@ -12,7 +14,6 @@ var classstored_1_1_example_hello_base =
     [ "bufferToKey", "classstored_1_1_example_hello_base.html#a43ae9f71a534ad8736f5ec5a85733ae8", null ],
     [ "callback", "classstored_1_1_example_hello_base.html#a229baf53a2a255dd42559c341652730f", null ],
     [ "find", "classstored_1_1_example_hello_base.html#ae94c654f83ecedc1235461f3cccccdb8", null ],
-    [ "hello", "classstored_1_1_example_hello_base.html#a871fef9e997a2f70277b17596d75f588", null ],
     [ "hookEntryRO", "classstored_1_1_example_hello_base.html#a2684d04142fab7b238d901c92a0e71dc", null ],
     [ "hookEntryX", "classstored_1_1_example_hello_base.html#ac43892ef0caa277990336f7893f31495", null ],
     [ "hookExitRO", "classstored_1_1_example_hello_base.html#a4d4e9d109bcd012ed5c68e0e20e6241a", null ],
@@ -23,11 +24,16 @@ var classstored_1_1_example_hello_base =
     [ "list", "classstored_1_1_example_hello_base.html#acf3d2c88f9c7539a7854197fc5d245a5", null ],
     [ "longDirectory", "classstored_1_1_example_hello_base.html#ac8b16136ede13a352241ea27d7ce5a2a", null ],
     [ "name", "classstored_1_1_example_hello_base.html#a2c48e6f22c30fa750a99de5199f84d3b", null ],
-    [ "operator=", "classstored_1_1_example_hello_base.html#a71d028ff34e0bc4dd6d3babf0ad1c626", null ],
     [ "operator=", "classstored_1_1_example_hello_base.html#ab7671ed07eb31d892f02a422993508df", null ],
+    [ "operator=", "classstored_1_1_example_hello_base.html#a71d028ff34e0bc4dd6d3babf0ad1c626", null ],
     [ "shortDirectory", "classstored_1_1_example_hello_base.html#ae7f8e67b36ad7759d4e2a01be97eefa4", null ],
-    [ "world", "classstored_1_1_example_hello_base.html#a1a9c6a15fadc3b4f50d30822dcdebe4a", null ],
     [ "Function", "classstored_1_1_example_hello_base.html#adb932b890bc777c97b974306e181f08c", null ],
+    [ "impl::StoreFunction", "classstored_1_1_example_hello_base.html#a11fa7358d30f19edf2c2f160c3e8c5e5", null ],
+    [ "impl::StoreVariable", "classstored_1_1_example_hello_base.html#a03a0466da9c6306019b6fade66ede53a", null ],
+    [ "impl::StoreVariantF", "classstored_1_1_example_hello_base.html#a152e05c52977188a3f6eb98ffcfbdf3b", null ],
+    [ "impl::StoreVariantV", "classstored_1_1_example_hello_base.html#ab0d8a22c0775980fea583c73d70f3b07", null ],
     [ "Variable", "classstored_1_1_example_hello_base.html#a467cf6e18c62552461715c542ce587fc", null ],
-    [ "Variant< Implementation >", "classstored_1_1_example_hello_base.html#aac6d4804615302b3ff620cbd2c0484ad", null ]
+    [ "Variant< Implementation >", "classstored_1_1_example_hello_base.html#aac6d4804615302b3ff620cbd2c0484ad", null ],
+    [ "hello", "classstored_1_1_example_hello_base.html#a231c7f29480e740bf33dac5a2dfcceb0", null ],
+    [ "world", "classstored_1_1_example_hello_base.html#a988ce01f2aa6253b40448f97d4ab5ffe", null ]
 ];

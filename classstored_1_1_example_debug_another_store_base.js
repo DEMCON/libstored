@@ -1,7 +1,9 @@
 var classstored_1_1_example_debug_another_store_base =
 [
+    [ "Base", "classstored_1_1_example_debug_another_store_base.html#a4dfa832f7a6fc073a8e834fac410853f", null ],
     [ "Implementation", "classstored_1_1_example_debug_another_store_base.html#a390b5f26c441c74fdb89e675d9fe5870", null ],
     [ "Key", "classstored_1_1_example_debug_another_store_base.html#af312c2fc20cef8708c707de015c87551", null ],
+    [ "Objects", "classstored_1_1_example_debug_another_store_base.html#ae1fceb12a1e9d82a242a2450a879e376", null ],
     [ "ExampleDebugAnotherStoreBase", "classstored_1_1_example_debug_another_store_base.html#a9e2b93edbd4cfc0fef42791efb68360f", null ],
     [ "ExampleDebugAnotherStoreBase", "classstored_1_1_example_debug_another_store_base.html#abcff1cc47ff7b2054abd30a4ab6c2928", null ],
     [ "ExampleDebugAnotherStoreBase", "classstored_1_1_example_debug_another_store_base.html#af7790fd0248695e3f058c3e45bd3f7c1", null ],
@@ -18,7 +20,6 @@ var classstored_1_1_example_debug_another_store_base =
     [ "hookExitX", "classstored_1_1_example_debug_another_store_base.html#a4c918690791d0c2608b050ac606863b8", null ],
     [ "implementation", "classstored_1_1_example_debug_another_store_base.html#a8e96cdbdb0b505ac99e91c443b4efd09", null ],
     [ "implementation", "classstored_1_1_example_debug_another_store_base.html#a0712c88bc9b15fa24f593009241d95e7", null ],
-    [ "j", "classstored_1_1_example_debug_another_store_base.html#a3f93ad08003dc93e1d121ab73fed1edb", null ],
     [ "list", "classstored_1_1_example_debug_another_store_base.html#a036977a1a766af2f980910e218aea9ae", null ],
     [ "list", "classstored_1_1_example_debug_another_store_base.html#a9812815969780da0d380b0a6e2d0b625", null ],
     [ "longDirectory", "classstored_1_1_example_debug_another_store_base.html#ae84a3597f951194ce7c0d79a0711c94f", null ],
@@ -27,6 +28,11 @@ var classstored_1_1_example_debug_another_store_base =
     [ "operator=", "classstored_1_1_example_debug_another_store_base.html#a2c0fa92d5c85389eb785b9d15e9ae2d0", null ],
     [ "shortDirectory", "classstored_1_1_example_debug_another_store_base.html#a33073c61c52816847b07b1dece846daa", null ],
     [ "Function", "classstored_1_1_example_debug_another_store_base.html#adb932b890bc777c97b974306e181f08c", null ],
+    [ "impl::StoreFunction", "classstored_1_1_example_debug_another_store_base.html#a11fa7358d30f19edf2c2f160c3e8c5e5", null ],
+    [ "impl::StoreVariable", "classstored_1_1_example_debug_another_store_base.html#a03a0466da9c6306019b6fade66ede53a", null ],
+    [ "impl::StoreVariantF", "classstored_1_1_example_debug_another_store_base.html#a152e05c52977188a3f6eb98ffcfbdf3b", null ],
+    [ "impl::StoreVariantV", "classstored_1_1_example_debug_another_store_base.html#ab0d8a22c0775980fea583c73d70f3b07", null ],
     [ "Variable", "classstored_1_1_example_debug_another_store_base.html#a467cf6e18c62552461715c542ce587fc", null ],
-    [ "Variant< Implementation >", "classstored_1_1_example_debug_another_store_base.html#aac6d4804615302b3ff620cbd2c0484ad", null ]
+    [ "Variant< Implementation >", "classstored_1_1_example_debug_another_store_base.html#aac6d4804615302b3ff620cbd2c0484ad", null ],
+    [ "j", "classstored_1_1_example_debug_another_store_base.html#aacbbd684787041a163f2dc13c710e496", null ]
 ];
