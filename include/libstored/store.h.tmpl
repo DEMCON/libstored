@@ -73,7 +73,7 @@ namespace stored {
 			// Empty objects sill take one byte.
 			// This check ensures that all objects in the union below
 			// have the same address as this.
-			static_assert(sizeof(*this) == 1);
+			static_assert(sizeof(*this) == 1, "");
 #if STORED_cplusplus >= 201103L
 			static_assert(std::is_standard_layout<{{store.name}}Objects>::value, "");
 #endif
