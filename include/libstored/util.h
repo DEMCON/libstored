@@ -225,11 +225,20 @@ namespace stored {
 							return std::numeric_limits<R>::min();
 					}
 				} else {
+#ifdef STORED_COMPILER_MSVC
+#  pragma warning( push )
+#  pragma warning( disable : 4146 ) // This code path is not triggered in case of unsigned ints.
+#endif
+
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Woverflow" // This error triggers when R is integer, but this code path is not trigger then.
+#pragma GCC diagnostic ignored "-Woverflow" // This error triggers when R is integer, but this code path is not triggered then.
 					if(value <= -std::numeric_limits<R>::max())
 						return -std::numeric_limits<R>::max();
 #pragma GCC diagnostic pop
+
+#ifdef STORED_COMPILER_MSVC
+#  pragma warning( pop )
+#endif
 				}
 
 				// Upper bound check
