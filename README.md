@@ -15,7 +15,7 @@ application.
 **Does it work on my platform?**  
 Yes.
 
-**How to I use it?**  
+**How do I use it?**  
 Have a look at the [examples](examples).
 
 ## Table of contents
