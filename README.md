@@ -2,6 +2,34 @@
 
 # libstored - Store for Embedded Debugger
 
+## TL;DR
+
+**What is it?**  
+A generator for a C++ class (store) with your application's variables, and a
+tool to access it remotely.
+
+**When do I need it?**  
+When you want to be able to inspect and modify internal data of a running
+application.
+
+**Does it work on my platform?**  
+Yes.
+
+**How to I use it?**  
+Have a look at the [examples](examples).
+
+## Table of contents
+
+- [Introduction](#intro)
+- [How to build](#build)
+	- [How to integrate in your build](#integrate)
+- [Syntax example](#syntax)
+- [Debugging example](#debugging)
+- [Embedded Debugger protocol](#protocol)
+- [License](#license)
+
+## <a name="intro"></a>Introduction
+
 If you have an embedded system, you probably want to debug it on-target.  One
 of the questions you often have, is what is the value of internal variables of
 the program, and how can I change them.  Debugging using `gdb` is great, but it
@@ -51,15 +79,6 @@ The store has a few other interesting properties:
 
 Have a look in the `examples` directory for further in-depth reading.
 Refer to the [Doxygen documentation](https://demcon.github.io/libstored) for the C++ API.
-
-## Table of contents
-
-- [How to build](#build)
-	- [How to integrate in your build](#integrate)
-- [Syntax example](#syntax)
-- [Debugging example](#debugging)
-- [Embedded Debugger protocol](#protocol)
-- [License](#license)
 
 ## <a name="build"></a>How to build
 
