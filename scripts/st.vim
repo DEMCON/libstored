@@ -12,7 +12,7 @@ let b:current_syntax = "st"
 syn keyword stTypes contained bool int8 uint8 int16 uint16 int32 uint32 int64 uint64 float double string blob ptr32 ptr64
 hi def link stTypes Keyword
 
-syn match stFloat contained '\([-+]\?[0-9]*\.[0-9]\([eE][-+]\?[0-9]\+\)\?\|[Nn]a[Nn]\|[-+]\?[Ii]nf\(inity\)\?\)\>'
+syn match stFloat contained '\([-+]\?[0-9]*\(\.[0-9]\+\|\(\.[0-9]\+\)\?[eE][-+]\?[0-9]\+\)\|[Nn]a[Nn]\|[-+]\?[Ii]nf\(inity\)\?\)\>'
 hi def link stFloat Float
 
 syn match stInt contained '\<\([0-9]\+\|0x[0-9A-Fa-f]\+\|0b[01]\+\)\>'
