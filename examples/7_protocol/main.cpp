@@ -92,6 +92,7 @@ public:
 			buffer_[i] = lossyByte(static_cast<char const*>(buffer)[i]);
 
 		printBuffer(buffer_, len, "< ");
+		stored::TerminalLayer::writeToFd_(STDOUT_FILENO, buffer_, len);
 		base::encode(buffer_, len, last);
 	}
 
@@ -101,20 +102,20 @@ public:
 	double ber() const { return store.ber; }
 
 	char lossyByte(char b) {
-		while(true) {
+		for(int i = 0; i < 8; i++) {
 			double p =
 #ifdef STORED_OS_WINDOWS
 				(double)::rand() / RAND_MAX;
 #else
 				drand48();
 #endif
-			if(p >= ber())
-				return b;
-
-			// Inject an error.
-			b = b ^ (char)(1 << (rand() % 8));
-			store.injected_errors = store.injected_errors + 1;
+			if(p < ber()) {
+				// Inject an error.
+				b = b ^ (char)(1 << (rand() % 8));
+				store.injected_errors = store.injected_errors + 1;
+			}
 		}
+		return b;
 	}
 
 	virtual size_t mtu() const override { return store.MTU.as<size_t>(); }
@@ -142,6 +143,10 @@ int main() {
 	  echo -e -n '\x1b_ ?E\xc0\x1b\\' | 7_protocol
 
 	*/
+
+	printf("Demo of a lossy channel.\n");
+	printf("Run this example using ed2.wrapper.stdio with the flag\n");
+	printf("  -S segment,arq,crc,ascii,term\n\n");
 
 	stored::Debugger debugger;
 	debugger.map(store);

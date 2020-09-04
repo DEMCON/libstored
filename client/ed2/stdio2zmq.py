@@ -28,7 +28,7 @@ from .stream2zmq import Stream2Zmq
 # \ingroup libstored_client
 class Stdio2Zmq(Stream2Zmq):
     def __init__(self, args, stack='ascii,term', port=Stream2Zmq.default_port, **kwargs):
-        super().__init__(stack, port)
+        super().__init__(stack=stack, port=port)
         self.process = subprocess.Popen(args=args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, **kwargs)
         self.stdout_socket = self.registerStream(self.process.stdout)
         self.stdin_socket = self.registerStream(sys.stdin)
@@ -41,7 +41,7 @@ class Stdio2Zmq(Stream2Zmq):
         if events.get(self.stdin_socket, 0) & zmq.POLLIN:
             self.sendToApp(self.stdin_socket.recv())
         if events.get(self.stdout_socket, 0) & zmq.POLLIN:
-            self.recvFromApp(self.stdout_socket.recv())
+            self.decode(self.stdout_socket.recv())
         if self.process.poll() != None:
             sys.exit(self.process.returncode)
 
@@ -52,6 +52,11 @@ class Stdio2Zmq(Stream2Zmq):
         else:
             self.process.stdin.write(data)
             self.process.stdin.flush()
+
+    def encode(self, data):
+        if len(data) > 0:
+            self.sendToApp(data)
+            super().encode(data)
 
     def close(self):
         self.process.terminate()

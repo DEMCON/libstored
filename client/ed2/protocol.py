@@ -150,7 +150,14 @@ class TerminalLayer(ProtocolLayer):
         super().encode(self.start + data + self.end)
 
     def decode(self, data):
+        if len(data) == 0:
+            return
+
         self._data += data
+
+        if data[-1] == self.start[0]:
+            # Got partial escape code. Wait for more data.
+            return
 
         while True:
             if not self._inMsg:
@@ -174,7 +181,9 @@ class TerminalLayer(ProtocolLayer):
                     # Got a full message.
                     # Remove \r as they can be inserted automatically by Windows.
                     # If \r is meant to be sent, escape it.
-                    super().decode(c[0].replace(b'\r', b''))
+                    msg = c[0].replace(b'\r', b'')
+                    self.logger.debug('extracted ' + str(bytes(msg)))
+                    super().decode(msg)
                     self._data = c[1]
                     self._inMsg = False
 
@@ -198,6 +207,7 @@ class SegmentationLayer(ProtocolLayer):
     def decode(self, data):
         self._buffer += data[:-1]
         if data[-1:] == self.end:
+            self.logger.debug('reassembled ' + str(bytes(self._buffer)))
             super().decode(self._buffer)
             self._buffer = bytearray()
 
@@ -248,7 +258,7 @@ class ArqLayer(ProtocolLayer):
             if len(data) > 1:
                 super().decode(data[1:])
         else:
-            self.logger.debug(f'Unexpected seq {data[0]}; dropped')
+            self.logger.debug(f'unexpected seq {data[0]} instead of {self._decode_seq}; dropped')
 
     def encode(self, data):
         if self._reset:
@@ -280,6 +290,7 @@ class ArqLayer(ProtocolLayer):
         self._request = []
 
     def retransmit(self):
+        self.logger.debug('retransmit')
         for r in self._request:
             super().encode(r)
 
@@ -312,9 +323,10 @@ class CrcLayer(ProtocolLayer):
             return
 
         if self.crc(data[0:-1]) != data[-1]:
-            self.logger.debug('invalid CRC, dropped ' + str(data))
+#            self.logger.debug('invalid CRC, dropped ' + str(bytes(data)))
             return
 
+        self.logger.debug('valid CRC ' + str(bytes(data)))
         super().decode(data[0:-1])
 
     def crc(self, data):
@@ -389,6 +401,25 @@ class LoopbackLayer(ProtocolLayer):
             self._down_callback(data)
         self.decode(data)
 
+class RawLayer(ProtocolLayer):
+    name = 'raw'
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+layer_types = [
+    AsciiEscapeLayer,
+    TerminalLayer,
+    SegmentationLayer,
+    ArqLayer,
+    CrcLayer,
+    LoopbackLayer,
+    RawLayer,
+]
+
+def registerLayerType(layer_type):
+    layer_types.append(layer_type)
+
 ##
 # \brief Construct the protocol stack from a description.
 #
@@ -406,14 +437,6 @@ def buildStack(description):
         return ProtocolLayer()
 
     stack = []
-    layer_types = [
-        AsciiEscapeLayer,
-        TerminalLayer,
-        SegmentationLayer,
-        ArqLayer,
-        CrcLayer,
-        LoopbackLayer,
-    ]
 
     for l in layers:
         name_arg = l.split('=')
