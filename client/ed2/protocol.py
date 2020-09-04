@@ -17,6 +17,8 @@
 import logging
 import crcmod
 import sys
+import time
+import struct
 
 class ProtocolLayer:
     name = 'layer'
@@ -26,6 +28,7 @@ class ProtocolLayer:
         self._up = None
         self._down_callback = None
         self._up_callback = None
+        self._activity = 0
         self.logger = logging.getLogger(__name__)
 
     def wrap(self, layer):
@@ -71,6 +74,16 @@ class ProtocolLayer:
         if self.down != None:
             self.down.timeout()
 
+    def activity(self):
+        self._activity = time.time()
+
+    def lastActivity(self):
+        a = 0
+        if self.down != None:
+            a = self.down.lastActivity()
+
+        return max(a, self._activity)
+
 class AsciiEscapeLayer(ProtocolLayer):
     name = 'ascii'
 
@@ -92,6 +105,7 @@ class AsciiEscapeLayer(ProtocolLayer):
             else:
                 res.append(b)
 
+        self.activity()
         super().decode(res)
 
     def encode(self, data):
@@ -109,6 +123,7 @@ class AsciiEscapeLayer(ProtocolLayer):
                 res.append(b)
 
         super().encode(res)
+        self.activity()
 
     @property
     def mtu(self):
@@ -148,6 +163,7 @@ class TerminalLayer(ProtocolLayer):
             data = data.encode()
 
         super().encode(self.start + data + self.end)
+        self.activity()
 
     def decode(self, data):
         if len(data) == 0:
@@ -183,6 +199,7 @@ class TerminalLayer(ProtocolLayer):
                     # If \r is meant to be sent, escape it.
                     msg = c[0].replace(b'\r', b'')
                     self.logger.debug('extracted ' + str(bytes(msg)))
+                    self.activity()
                     super().decode(msg)
                     self._data = c[1]
                     self._inMsg = False
@@ -206,6 +223,7 @@ class SegmentationLayer(ProtocolLayer):
 
     def decode(self, data):
         self._buffer += data[:-1]
+        self.activity()
         if data[-1:] == self.end:
             self.logger.debug('reassembled ' + str(bytes(self._buffer)))
             super().decode(self._buffer)
@@ -224,6 +242,7 @@ class SegmentationLayer(ProtocolLayer):
                     super().encode(data[i:i+mtu] + self.end)
                 else:
                     super().encode(data[i:i+mtu] + self.cont)
+        self.activity()
 
     def timeout(self):
         # A retransmit is pending. Clear partial data.
@@ -244,6 +263,8 @@ class ArqLayer(ProtocolLayer):
         self._request = []
         self._reset = True
         self._decode_seq = self.nextSeq(self.reset_seq)
+        self._decode_seq_last = None
+        self._suppress_auto_retransmit = False
 
     def decode(self, data):
         if len(data) == 0:
@@ -253,9 +274,11 @@ class ArqLayer(ProtocolLayer):
         self._req = False
         if data[0] == self.reset_seq:
             self._decode_seq = self.reset_seq
+
         if data[0] == self._decode_seq:
             self._decode_seq = self.nextSeq(self._decode_seq)
             if len(data) > 1:
+                self.activity()
                 super().decode(data[1:])
         else:
             self.logger.debug(f'unexpected seq {data[0]} instead of {self._decode_seq}; dropped')
@@ -280,6 +303,7 @@ class ArqLayer(ProtocolLayer):
         request = bytes([self._encode_seq]) + data
         self._request.append(request)
         super().encode(request)
+        self.activity()
 
     def timeout(self):
         super().timeout()
@@ -297,7 +321,7 @@ class ArqLayer(ProtocolLayer):
     def nextSeq(self, seq):
         seq = (seq + 1) % 256
         if seq == self.reset_seq:
-            return nextSeq(seq)
+            return self.nextSeq(seq)
         else:
             return seq
 
@@ -308,8 +332,8 @@ class ArqLayer(ProtocolLayer):
             return 0
         return max(1, m - 1)
 
-class CrcLayer(ProtocolLayer):
-    name = 'crc'
+class Crc8Layer(ProtocolLayer):
+    name = 'crc8'
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -317,6 +341,7 @@ class CrcLayer(ProtocolLayer):
 
     def encode(self, data):
         super().encode(data + bytes([self.crc(data)]))
+        self.activity()
 
     def decode(self, data):
         if len(data) == 0:
@@ -327,6 +352,7 @@ class CrcLayer(ProtocolLayer):
             return
 
         self.logger.debug('valid CRC ' + str(bytes(data)))
+        self.activity()
         super().decode(data[0:-1])
 
     def crc(self, data):
@@ -334,10 +360,45 @@ class CrcLayer(ProtocolLayer):
 
     @property
     def mtu(self):
+        # Limit MTU to 256 bytes to ensure proper 2 bit error detection.
         m = super().mtu
         if m == 0:
-            return 0
-        return max(1, m - 1)
+            return 256
+        return min(256, max(1, m - 1))
+
+class Crc16Layer(ProtocolLayer):
+    name = 'crc16'
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._crc = crcmod.mkCrcFun(0x1baad, 0xffff, False, 0)
+
+    def encode(self, data):
+        super().encode(data + struct.pack('>H', self.crc(data)))
+        self.activity()
+
+    def decode(self, data):
+        if len(data) < 2:
+            return
+
+        if self.crc(data[0:-2]) != struct.unpack('>H', data[-2:])[0]:
+#            self.logger.debug('invalid CRC, dropped ' + str(bytes(data)))
+            return
+
+        self.logger.debug('valid CRC ' + str(bytes(data)))
+        self.activity()
+        super().decode(data[0:-2])
+
+    def crc(self, data):
+        return self._crc(data)
+
+    @property
+    def mtu(self):
+        # Limit MTU to 256 bytes to ensure proper 4 bit error detection.
+        m = super().mtu
+        if m == 0:
+            return 256
+        return min(256, max(1, m - 1))
 
 class ProtocolStack(ProtocolLayer):
     name = 'stack'
@@ -390,6 +451,9 @@ class ProtocolStack(ProtocolLayer):
     def __iter__(self):
         return self.Iterator(self)
 
+    def lastActivity(self):
+        return self._stack._layers[0].lastActivity()
+
 class LoopbackLayer(ProtocolLayer):
     name = 'loop'
 
@@ -399,6 +463,7 @@ class LoopbackLayer(ProtocolLayer):
     def encode(self, data):
         if self._down_callback:
             self._down_callback(data)
+        self.activity()
         self.decode(data)
 
 class RawLayer(ProtocolLayer):
@@ -412,7 +477,8 @@ layer_types = [
     TerminalLayer,
     SegmentationLayer,
     ArqLayer,
-    CrcLayer,
+    Crc8Layer,
+    Crc16Layer,
     LoopbackLayer,
     RawLayer,
 ]

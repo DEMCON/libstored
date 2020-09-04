@@ -128,14 +128,14 @@ int main() {
 
 	/*
 	Consider the received string:
-		\x1b_ ?E\xc0\x1b\\
+		\x1b_ ?E\x99!\x1b\\
 
 	This is:
 		\x1b_       TerminalLayer: start of message
 		  (space)   ArqLayer: seq=32 (reset seq)
 		    ?       Debugger: capabilities
 		  E         SegmentationLayer: last chunk
-		  \xc0      CrcLayer: CRC
+		  \x99!     Crc16Layer: CRC=0x9921
 		\x1b\\      TerminalLayer: end of message
 
 
@@ -146,7 +146,7 @@ int main() {
 
 	printf("Demo of a lossy channel.\n");
 	printf("Run this example using ed2.wrapper.stdio with the flag\n");
-	printf("  -S segment,arq,crc,ascii,term\n\n");
+	printf("  -S segment,arq,crc16,ascii,term\n\n");
 
 	stored::Debugger debugger;
 	debugger.map(store);
@@ -157,7 +157,7 @@ int main() {
 	stored::ArqLayer arq;
 	arq.wrap(segmentation);
 
-	stored::CrcLayer crc;
+	stored::Crc16Layer crc;
 	crc.wrap(arq);
 
 	stored::AsciiEscapeLayer escape;

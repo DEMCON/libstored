@@ -251,8 +251,8 @@ However, the request/response messages should be wrapped in a OSI-like protocol 
 This stack depends on your application. A few standard protocol layers are
 available, which allow to build a stack for lossless channels (stdio/TCP/some
 UART) and lossy channels (some UART/CAN). These stacks are configurable in
-having auto retransmit on packet loss, CRC, segmentation, buffering, MTU size,
-ASCII escaping and encapsulation. See also `examples/7_protocol`.
+having auto retransmit on packet loss, CRC-8/16, segmentation, buffering, MTU
+size, ASCII escaping and encapsulation. See also `examples/7_protocol`.
 
 To get a grasp about the protocol, I had a short chat with the `zmqserver`
 example using the `ed2.cli`.  See the transcript below. Lines starting

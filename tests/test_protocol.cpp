@@ -44,6 +44,58 @@ private:
 	bool m_partial;
 };
 
+TEST(AsciiEscapeLayer, Encode) {
+	stored::AsciiEscapeLayer l;
+	LoggingLayer ll;
+	ll.wrap(l);
+
+	ll.encoded().clear();
+	l.encode("123", 3);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "123");
+
+	ll.encoded().clear();
+	l.encode("123\x00", 4);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "123\x7f@");
+
+	ll.encoded().clear();
+	l.encode("123\r""4", 5);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "123\x7f""M4");
+
+	ll.encoded().clear();
+	l.encode("123\x7f", 4);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "123\x7f\x7f");
+
+	ll.encoded().clear();
+	l.encode("\x7f""123", 4);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "\x7f\x7f""123");
+}
+
+TEST(AsciiEscapeLayer, Decode) {
+	stored::AsciiEscapeLayer l;
+	LoggingLayer ll;
+	l.wrap(ll);
+
+	ll.decoded().clear();
+	{ char s[] = "123\x7f""F"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(ll.decoded().size(), 1);
+	EXPECT_EQ(ll.decoded().at(0), "123\x06");
+
+	ll.decoded().clear();
+	{ char s[] = "123\x7f"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(ll.decoded().size(), 1);
+	EXPECT_EQ(ll.decoded().at(0), "123\x7f");
+
+	ll.decoded().clear();
+	{ char s[] = "\x7f""A123"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(ll.decoded().size(), 1);
+	EXPECT_EQ(ll.decoded().at(0), "\x01""123");
+}
+
 TEST(SegmentationLayer, SingleChunkEncode) {
 	stored::SegmentationLayer l(8);
 	LoggingLayer ll;
@@ -412,8 +464,8 @@ TEST(ArqLayer, Overflow) {
 	EXPECT_EQ(bottom.encoded().at(3), std::string("\x20""klm", 4));
 }
 
-TEST(CrcLayer, Encode) {
-	stored::CrcLayer l;
+TEST(Crc8Layer, Encode) {
+	stored::Crc8Layer l;
 	LoggingLayer ll;
 	ll.wrap(l);
 
@@ -438,9 +490,9 @@ TEST(CrcLayer, Encode) {
 	EXPECT_EQ(ll.encoded().at(0), "123\xfc");
 }
 
-TEST(CrcLayer, Decode) {
+TEST(Crc8Layer, Decode) {
 	LoggingLayer ll;
-	stored::CrcLayer l;
+	stored::Crc8Layer l;
 	l.wrap(ll);
 
 	ll.decoded().clear();
@@ -469,6 +521,66 @@ TEST(CrcLayer, Decode) {
 
 	ll.decoded().clear();
 	{ char s[] = "\x00""123\xfc"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(ll.decoded().size(), 0);
+}
+
+TEST(Crc16Layer, Encode) {
+	stored::Crc16Layer l;
+	LoggingLayer ll;
+	ll.wrap(l);
+
+	ll.encoded().clear();
+	l.encode();
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "\xff\xff");
+
+	ll.encoded().clear();
+	l.encode("1", 1);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "1\x49\xD6");
+
+	ll.encoded().clear();
+	l.encode("12", 2);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "12\x77\xA2");
+
+	ll.encoded().clear();
+	l.encode("123", 3);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "123\x1C\x84");
+}
+
+TEST(Crc16Layer, Decode) {
+	LoggingLayer ll;
+	stored::Crc16Layer l;
+	l.wrap(ll);
+
+	ll.decoded().clear();
+	{ char s[] = "\xff\xff"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(ll.decoded().size(), 1);
+	EXPECT_EQ(ll.decoded().at(0), "");
+
+	ll.decoded().clear();
+	{ char s[] = "1\x49\xd6"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(ll.decoded().size(), 1);
+	EXPECT_EQ(ll.decoded().at(0), "1");
+
+	ll.decoded().clear();
+	{ char s[] = "12\x77\xa2"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(ll.decoded().size(), 1);
+	EXPECT_EQ(ll.decoded().at(0), "12");
+
+	ll.decoded().clear();
+	{ char s[] = "123\x1c\x84"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(ll.decoded().size(), 1);
+	EXPECT_EQ(ll.decoded().at(0), "123");
+
+	ll.decoded().clear();
+	{ char s[] = "1234\x1c\x84"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(ll.decoded().size(), 0);
+
+	ll.decoded().clear();
+	{ char s[] = "\x00""123\x1c\x84"; l.decode(s, sizeof(s) - 1); }
 	EXPECT_EQ(ll.decoded().size(), 0);
 }
 

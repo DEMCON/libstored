@@ -30,7 +30,7 @@ from . import protocol
 class Stream2Zmq(protocol.ProtocolLayer):
     default_port = ZmqServer.default_port
 
-    def __init__(self, stack='ascii,term', port=default_port, timeout_s=5, **kwargs):
+    def __init__(self, stack='ascii,term', port=default_port, timeout_s=1, **kwargs):
         super().__init__()
         self.logger = logging.getLogger(__name__)
         self._stack_def = f'zmq={port},' + stack
@@ -47,7 +47,6 @@ class Stream2Zmq(protocol.ProtocolLayer):
     def encode(self, data):
         self.logger.debug('encode ' + str(bytes(data)))
         super().encode(data)
-        self._t_req = time.time()
 
     def decode(self, data):
         self.logger.debug('decode ' + str(bytes(data)))
@@ -55,7 +54,6 @@ class Stream2Zmq(protocol.ProtocolLayer):
 
     def timeout(self):
         self._stack.timeout()
-        self._t_req = time.time()
 
     def stdout(self, data):
         sys.stdout.write(data.decode(errors="replace"))
@@ -69,7 +67,7 @@ class Stream2Zmq(protocol.ProtocolLayer):
         if self.isWaiting():
             if timeout_s == None:
                 timeout_s = self._timeout_s
-            remaining = self._t_req + self._timeout_s - time.time()
+            remaining = self.zmq.lastActivity() + self._timeout_s - time.time()
             if remaining <= 0:
                 self.timeout()
             else:

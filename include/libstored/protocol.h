@@ -57,7 +57,7 @@
  * Standard layer implementations can be used to construct the following stacks (top-down):
  *
  * - Lossless UART: stored::Debugger, stored::AsciiEscapeLayer, stored::TerminalLayer
- * - Lossy UART: stored::Debugger, tored::ArqLayer, stored::CrcLayer, stored::AsciiEscapeLayer, stored::TerminalLayer
+ * - Lossy UART: stored::Debugger, tored::ArqLayer, stored::Crc16Layer, stored::AsciiEscapeLayer, stored::TerminalLayer
  * - CAN: stored::Debugger, stored::SegmentationLayer, stored::ArqLayer, stored::BufferLayer, CAN driver
  * - ZMQ: stored::Debugger, stored::ZmqLayer
  *
@@ -83,7 +83,7 @@
  *
  * In case of lossy channels (UART/CAN), message sequence number, and
  * retransmits (see stored::ArqLayer) should be implemented, and CRC (see
- * stored::CrcLayer). Default implementations are provided, but may be
+ * stored::Crc8Layer). Default implementations are provided, but may be
  * dependent on the specific transport hardware and embedded device.
  *
  * ## Network layer
@@ -481,7 +481,7 @@ public:
 	};
 
 	/*!
-	 * \brief A layer that adds CRC to messages.
+	 * \brief A layer that adds a CRC-8 to messages.
 	 *
 	 * If the CRC does not match during decoding, it is silently dropped.
 	 * You probably want #stored::ArqLayer somewhere higher in the stack.
@@ -490,17 +490,22 @@ public:
 	 * a good choice according to <i>Cyclic Redundancy Code (CRC) Polynomial
 	 * Selection For Embedded Networks</i> (Koopman et al., 2004).
 	 *
+	 * 8-bit is quite short, so it works only reliable on short messages.  For
+	 * proper two bit error detection, the message can be 256 bytes.  For three
+	 * bits, messages should only be up to 30 bytes.  Use an approprate
+	 * SegmentationLayer somewhere higher in the stack to accomplish this.
+	 *
 	 * \ingroup libstored_protocol
 	 */
-	class CrcLayer : public ProtocolLayer {
-		CLASS_NOCOPY(CrcLayer)
+	class Crc8Layer : public ProtocolLayer {
+		CLASS_NOCOPY(Crc8Layer)
 	public:
 		typedef ProtocolLayer base;
 
 		enum { polynomial = 0xa6, init = 0xff };
 
-		CrcLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
-		virtual ~CrcLayer() override is_default
+		Crc8Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~Crc8Layer() override is_default
 
 		virtual void decode(void* buffer, size_t len) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
@@ -513,6 +518,34 @@ public:
 
 	private:
 		uint8_t m_crc;
+	};
+
+	/*!
+	 * \brief A layer that adds a CRC-16 to messages.
+	 *
+	 * Like #stored::Crc8Layer, but using a 0xbaad as polynomial.
+	 */
+	class Crc16Layer : public ProtocolLayer {
+		CLASS_NOCOPY(Crc16Layer)
+	public:
+		typedef ProtocolLayer base;
+
+		enum { polynomial = 0xbaad, init = 0xffff };
+
+		Crc16Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~Crc16Layer() override is_default
+
+		virtual void decode(void* buffer, size_t len) override;
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+
+		virtual size_t mtu() const override;
+
+	protected:
+		static uint16_t compute(uint8_t input, uint16_t crc = init);
+
+	private:
+		uint16_t m_crc;
 	};
 
 	/*!
