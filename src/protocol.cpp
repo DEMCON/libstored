@@ -424,10 +424,10 @@ void SegmentationLayer::encode(void const* buffer, size_t len, bool last) {
 ArqLayer::ArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_decodeState(DecodeStateIdle)
-	, m_decodeSeq(nextSeq(ResetSeq))
+	, m_decodeSeq(1)
 	, m_decodeSeqStart()
 	, m_encodeState(EncodeStateIdle)
-	, m_encodeSeq(ResetSeq)
+	, m_encodeSeq(1)
 	, m_maxEncodeBuffer(maxEncodeBuffer)
 	, m_encodeBufferSize()
 {
@@ -437,17 +437,20 @@ void ArqLayer::decode(void* buffer, size_t len) {
 	if(len == 0)
 		return;
 
-	char* buffer_ = static_cast<char*>(buffer);
-	uint8_t seq = (uint8_t)buffer_[0];
-	if(unlikely(seq == ResetSeq)) {
+	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
+	uint8_t flags = *buffer_;
+	uint32_t seq = decodeSeq(buffer_, len);
+	if(unlikely(flags & ResetFlag)) {
 		// Reset communication state.
 		m_decodeState = DecodeStateIdle;
 		m_encodeState = EncodeStateIdle;
 		m_encodeBuffer.clear();
 		m_encodeBufferSize = 0;
-		m_decodeSeq = ResetSeq;
-		m_encodeSeq = ResetSeq;
+		m_decodeSeq = nextSeq(seq);
+		m_encodeSeq = 1;
 		setPurgeableResponse(false);
+		uint8_t ack = ResetFlag;
+		base::encode(&ack, sizeof(ack), true);
 	}
 
 	switch(m_decodeState) {
@@ -492,18 +495,13 @@ void ArqLayer::decode(void* buffer, size_t len) {
 		}
 		break;
 	case DecodeStateIdle:
-		if(unlikely(len == 1)) {
-			// Ignore empty packets.
-			m_decodeSeq = nextSeq(m_decodeSeq);
-			break;
-		}
 		m_decodeSeqStart = m_decodeSeq;
 		m_decodeState = DecodeStateDecoding;
 		// fall-through
 	case DecodeStateDecoding:
 		if(likely(seq == m_decodeSeq)) {
 			// Properly in sequence.
-			base::decode(buffer_ + 1, len - 1);
+			base::decode(buffer_, len);
 			m_decodeSeq = nextSeq(m_decodeSeq);
 
 			// Should not wrap-around during a request.
@@ -520,7 +518,6 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 		// So, the request message must have been complete.
 		m_decodeState = DecodeStateDecoded;
 		stored_assert(m_encodeState == EncodeStateIdle || m_encodeState == EncodeStateUnbufferedIdle);
-		m_encodeSeq = ResetSeq;
 	}
 
 	switch(m_encodeState) {
@@ -534,10 +531,23 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 	default:;
 	}
 
+	uint8_t seq[4];
+	size_t seqlen;
+
 	switch(m_encodeState) {
 	case EncodeStateUnbufferedIdle:
-		base::encode((void const*)&m_encodeSeq, 1, false);
+	case EncodeStateIdle:
+		seqlen = encodeSeq(m_encodeSeq, seq);
+		stored_assert(seqlen <= sizeof(seq));
 		m_encodeSeq = nextSeq(m_encodeSeq);
+		break;
+	default:;
+	}
+
+	switch(m_encodeState) {
+	case EncodeStateUnbufferedIdle:
+		seq[0] = seq[0] | ResetFlag;
+		base::encode(seq, seqlen, false);
 		m_encodeState = EncodeStateUnbufferedEncoding;
 		// fall-through
 	case EncodeStateUnbufferedEncoding:
@@ -547,17 +557,15 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 		break;
 
 	case EncodeStateIdle:
-		{
-			char encodeSeq = (char)m_encodeSeq;
 #if STORED_cplusplus >= 201103L
-			m_encodeBuffer.emplace_back(&encodeSeq, 1u);
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+		m_encodeBuffer.emplace_back(reinterpret_cast<char*>(seq), seqlen);
 #else
-			m_encodeBuffer.push_back(std::string(&encodeSeq, 1u));
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+		m_encodeBuffer.push_back(std::string(reinterpret_cast<char*>(seq), seqlen));
 #endif
-		}
-		m_encodeSeq = nextSeq(m_encodeSeq);
 		m_encodeState = EncodeStateEncoding;
-		m_encodeBufferSize++;
+		m_encodeBufferSize += seqlen;
 		// fall-through
 	case EncodeStateEncoding:
 		stored_assert(!m_encodeBuffer.empty());
@@ -622,9 +630,47 @@ size_t ArqLayer::mtu() const {
 	return mtu - 1u;
 }
 
-uint8_t ArqLayer::nextSeq(uint8_t seq) {
-	seq = (uint8_t)(seq + 1u);
-	return seq == ResetSeq ? (uint8_t)(ResetSeq + 1u) : seq;
+uint32_t ArqLayer::nextSeq(uint32_t seq) {
+	return (uint32_t)((seq + 1u) % 0x8000000);
+}
+
+uint32_t ArqLayer::decodeSeq(uint8_t*& buffer, size_t& len) {
+	uint32_t seq = 0;
+	uint8_t flag = 0x40;
+
+	while(true) {
+		if(!len--)
+			return ~0u;
+		seq = (seq << 7U) | (*buffer & (flag - 1u));
+		if(!(*buffer++ & flag))
+			return seq;
+		flag = 0x80;
+	}
+}
+
+size_t ArqLayer::encodeSeq(uint32_t seq, void* buffer) {
+	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
+	if(seq < 0x40u) {
+		buffer_[0] = (uint8_t)(seq & 0x3fu);
+		return 1;
+	} else if(seq < 0x2000) {
+		buffer_[0] = (uint8_t)(0x40u | ((seq >> 7u) & 0x3fu));
+		buffer_[1] = (uint8_t)(seq & 0x7fu);
+		return 2;
+	} else if(seq < 0x100000) {
+		buffer_[0] = (uint8_t)(0x40u | ((seq >> 14u) & 0x3fu));
+		buffer_[1] = (uint8_t)(0x80u | ((seq >> 7u) & 0x7fu));
+		buffer_[2] = (uint8_t)(seq & 0x7fu);
+		return 3;
+	} else if(seq < 0x8000000) {
+		buffer_[0] = (uint8_t)(0x40u | ((seq >> 21u) & 0x3fu));
+		buffer_[1] = (uint8_t)(0x80u | ((seq >> 14u) & 0x7fu));
+		buffer_[2] = (uint8_t)(0x80u | ((seq >> 7u) & 0x7fu));
+		buffer_[3] = (uint8_t)(seq & 0x7fu);
+		return 4;
+	} else {
+		return encodeSeq(seq % 0x8000000, buffer);
+	}
 }
 
 
