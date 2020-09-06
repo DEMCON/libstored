@@ -477,6 +477,7 @@ public:
 
 		enum { EncodeStateIdle, EncodeStateEncoding, EncodeStateUnbufferedIdle, EncodeStateUnbufferedEncoding } m_encodeState;
 		uint32_t m_encodeSeq;
+		bool m_encodeSeqReset;
 
 		size_t m_maxEncodeBuffer;
 		std::vector<std::string> m_encodeBuffer;

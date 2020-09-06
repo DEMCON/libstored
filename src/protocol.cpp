@@ -428,6 +428,7 @@ ArqLayer::ArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* dow
 	, m_decodeSeqStart()
 	, m_encodeState(EncodeStateIdle)
 	, m_encodeSeq(1)
+	, m_encodeSeqReset(true)
 	, m_maxEncodeBuffer(maxEncodeBuffer)
 	, m_encodeBufferSize()
 {
@@ -451,6 +452,7 @@ void ArqLayer::decode(void* buffer, size_t len) {
 		setPurgeableResponse(false);
 		uint8_t ack = ResetFlag;
 		base::encode(&ack, sizeof(ack), true);
+		m_encodeSeqReset = false;
 	}
 
 	switch(m_decodeState) {
@@ -472,6 +474,7 @@ void ArqLayer::decode(void* buffer, size_t len) {
 				setPurgeableResponse(false);
 				m_decodeSeq = m_decodeSeqStart;
 				m_decodeState = DecodeStateIdle;
+				m_encodeSeqReset = true;
 				break;
 			case EncodeStateIdle:
 				// Wait for full retransmit of the command, but do not actually decode.
@@ -540,13 +543,17 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 		seqlen = encodeSeq(m_encodeSeq, seq);
 		stored_assert(seqlen <= sizeof(seq));
 		m_encodeSeq = nextSeq(m_encodeSeq);
+		// Assume a wrap-around will be noticed, as it contains at least 128 MB of data.
+		if(m_encodeSeqReset) {
+			seq[0] = seq[0] | ResetFlag;
+			m_encodeSeqReset = false;
+		}
 		break;
 	default:;
 	}
 
 	switch(m_encodeState) {
 	case EncodeStateUnbufferedIdle:
-		seq[0] = seq[0] | ResetFlag;
 		base::encode(seq, seqlen, false);
 		m_encodeState = EncodeStateUnbufferedEncoding;
 		// fall-through
@@ -625,13 +632,14 @@ size_t ArqLayer::mtu() const {
 	size_t mtu = base::mtu();
 	if(mtu == 0)
 		return 0;
-	if(mtu <= 2u)
+	if(mtu <= 4u)
 		return 1u;
-	return mtu - 1u;
+	return mtu - 4u;
 }
 
 uint32_t ArqLayer::nextSeq(uint32_t seq) {
-	return (uint32_t)((seq + 1u) % 0x8000000);
+	seq = (uint32_t)((seq + 1u) % 0x8000000);
+	return seq ? seq : 1u;
 }
 
 uint32_t ArqLayer::decodeSeq(uint8_t*& buffer, size_t& len) {
@@ -641,7 +649,7 @@ uint32_t ArqLayer::decodeSeq(uint8_t*& buffer, size_t& len) {
 	while(true) {
 		if(!len--)
 			return ~0u;
-		seq = (seq << 7U) | (*buffer & (flag - 1u));
+		seq = (seq << 7u) | (*buffer & (flag - 1u));
 		if(!(*buffer++ & flag))
 			return seq;
 		flag = 0x80;

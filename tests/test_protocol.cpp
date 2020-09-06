@@ -235,7 +235,7 @@ TEST(ArqLayer, SingleChunk) {
 	EXPECT_EQ(top.decoded().at(0), "123");
 	top.encode("abc", 3);
 	EXPECT_EQ(bottom.encoded().size(), 1);
-	EXPECT_EQ(bottom.encoded().at(0), std::string("\x01""abc", 4));
+	EXPECT_EQ(bottom.encoded().at(0), std::string("\x81""abc", 4));
 
 	top.decoded().clear();
 	bottom.encoded().clear();
@@ -426,22 +426,38 @@ TEST(ArqLayer, Purgeable) {
 	top.setPurgeableResponse();
 	top.encode("abc", 3);
 	EXPECT_EQ(bottom.encoded().size(), 1);
-	EXPECT_EQ(bottom.encoded().at(0), std::string("\x81""abc", 4));
+	EXPECT_EQ(bottom.encoded().at(0), std::string("\x01""abc", 4));
 
 	// Retransmit response, expect decoded again.
 	{ char s[] = "\x01""123"; l.decode(s, sizeof(s) - 1); }
 	EXPECT_EQ(top.decoded().size(), 2);
 	EXPECT_EQ(top.decoded().at(1), "123");
-	// Default to precious.
+	top.setPurgeableResponse();
 	top.encode("def", 3);
 	EXPECT_EQ(bottom.encoded().size(), 2);
-	EXPECT_EQ(bottom.encoded().at(1), std::string("\x02""def", 4));
+	EXPECT_EQ(bottom.encoded().at(1), std::string("\x82""def", 4));
+
+	// Retransmit response, expect decoded again.
+	{ char s[] = "\x01""123"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 3);
+	EXPECT_EQ(top.decoded().at(2), "123");
+	// Default to precious, but reset flag remains.
+	top.encode("ghi", 3);
+	EXPECT_EQ(bottom.encoded().size(), 3);
+	EXPECT_EQ(bottom.encoded().at(2), std::string("\x83""ghi", 4));
 
 	{ char s[] = "\x01""123"; l.decode(s, sizeof(s) - 1); }
-	EXPECT_EQ(top.decoded().size(), 2);
+	EXPECT_EQ(top.decoded().size(), 3);
+	// Default to precious, but reset flag remains.
+	EXPECT_EQ(bottom.encoded().size(), 4);
+	EXPECT_EQ(bottom.encoded().at(3), std::string("\x83""ghi", 4));
+
+	{ char s[] = "\x02""123"; l.decode(s, sizeof(s) - 1); }
+	EXPECT_EQ(top.decoded().size(), 4);
 	// Default to precious.
-	EXPECT_EQ(bottom.encoded().size(), 3);
-	EXPECT_EQ(bottom.encoded().at(2), std::string("\x02""def", 4));
+	top.encode("jkl", 3);
+	EXPECT_EQ(bottom.encoded().size(), 5);
+	EXPECT_EQ(bottom.encoded().at(4), std::string("\x04""jkl", 4));
 }
 
 TEST(ArqLayer, Overflow) {
@@ -461,7 +477,7 @@ TEST(ArqLayer, Overflow) {
 	EXPECT_EQ(top.decoded().size(), 1);
 	top.encode("abcde", 5);
 	EXPECT_EQ(bottom.encoded().size(), 1);
-	EXPECT_EQ(bottom.encoded().at(0), std::string("\x81""abcde", 6));
+	EXPECT_EQ(bottom.encoded().at(0), std::string("\x01""abcde", 6));
 
 	{ char s[] = "\x01""123"; l.decode(s, sizeof(s) - 1); }
 	// Behave like purgeable.

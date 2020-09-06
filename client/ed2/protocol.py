@@ -255,14 +255,15 @@ class SegmentationLayer(ProtocolLayer):
 
 class ArqLayer(ProtocolLayer):
     name = 'arq'
-    reset_seq = 32
+    reset_flag = 0x80
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._req = False
         self._request = []
         self._reset = True
-        self._decode_seq = self.nextSeq(self.reset_seq)
+        self._syncing = False
+        self._decode_seq = 1
         self._decode_seq_last = None
         self._suppress_auto_retransmit = False
 
@@ -272,25 +273,81 @@ class ArqLayer(ProtocolLayer):
 
         # We got a response, so the request should be finished now.
         self._req = False
-        if data[0] == self.reset_seq:
-            self._decode_seq = self.reset_seq
+        (seq, msg) = self.decode_seq(data)
+        if data[0] & self.reset_flag:
+            self._decode_seq = seq
 
-        if data[0] == self._decode_seq:
+        if seq == self._decode_seq:
             self._decode_seq = self.nextSeq(self._decode_seq)
-            if len(data) > 1:
+            if len(msg) > 0:
                 self.activity()
-                super().decode(data[1:])
+                super().decode(msg)
         else:
-            self.logger.debug(f'unexpected seq {data[0]} instead of {self._decode_seq}; dropped')
+            self.logger.debug(f'unexpected seq {seq} instead of {self._decode_seq}; dropped')
+
+        if self._syncing and data[0] == self.reset_flag:
+            self._syncing = False
+            for r in self._request:
+                super().encode(r)
+            self.activity()
+
+    def decode_seq(self, data):
+        seq = 0
+        if len(data) == 0:
+            raise ValueError
+        seq = data[0] & 0x3f
+        if data[0] & 0x40:
+            if len(data) == 1:
+                raise ValueError
+            seq = (seq << 7) | data[1] & 0x7f
+            if data[1] & 0x80:
+                if len(data) == 2:
+                    raise ValueError
+                seq = (seq << 7) | data[2] & 0x7f
+                if data[2] & 0x80:
+                    if len(data) == 3:
+                        raise ValueError
+                    seq = (seq << 7) | data[3] & 0x7f
+                    if data[3] & 0x80:
+                        raise ValueError
+                    return (seq, data[4:])
+                else:
+                    return (seq, data[3:])
+            else:
+                return (seq, data[2:])
+        else:
+            return (seq, data[1:])
+
+    def encode_seq(self, seq):
+        if seq < 0x40:
+            return bytes([seq & 0x3f])
+        if seq < 0x2000:
+            return bytes([
+                0x40 | ((seq >> 7) & 0x3f),
+                seq & 0x7f])
+        if seq < 0x100000:
+            return bytes([
+                0x40 | ((seq >> 14) & 0x3f),
+                0x80 | ((seq >> 7) & 0x7f),
+                seq & 0x7f])
+        if seq < 0x8000000:
+            return bytes([
+                0x40 | ((seq >> 21) & 0x3f),
+                0x80 | ((seq >> 14) & 0x7f),
+                0x80 | ((seq >> 7) & 0x7f),
+                seq & 0x7f])
+        return self.encode_seq(seq % 0x8000000)
 
     def encode(self, data):
         if self._reset:
-            super().encode(bytes([self.reset_seq]))
             self._reset = False
-            self._encode_seq = self.reset_seq
+            self._sync()
 
         if not self._req:
             self._request = []
+#            if self._encode_seq >= 0x2000:
+#                # Try to keep the seq value low.
+#                self._sync()
             self._encode_seq_start = self._encode_seq
 
         self._req = True
@@ -300,10 +357,18 @@ class ArqLayer(ProtocolLayer):
         # Make sure the MTU is big enough to transmit the full request in 255 chunks.
         assert self._encode_seq != self._encode_seq_start
 
-        request = bytes([self._encode_seq]) + data
+        request = self.encode_seq(self._encode_seq) + data
         self._request.append(request)
-        super().encode(request)
-        self.activity()
+        if not self._syncing:
+            super().encode(request)
+            self.activity()
+
+    def _sync(self):
+        if self._syncing:
+            return
+        self._syncing = True
+        self._encode_seq = 0
+        super().encode(bytes([self.reset_flag]))
 
     def timeout(self):
         super().timeout()
@@ -315,22 +380,22 @@ class ArqLayer(ProtocolLayer):
 
     def retransmit(self):
         self.logger.debug('retransmit')
-        for r in self._request:
-            super().encode(r)
+        if self._syncing:
+            super().encode(bytes([self.reset_flag]))
+        else:
+            for r in self._request:
+                super().encode(r)
 
     def nextSeq(self, seq):
-        seq = (seq + 1) % 256
-        if seq == self.reset_seq:
-            return self.nextSeq(seq)
-        else:
-            return seq
+        seq = (seq + 1) % 0x8000000
+        return 1 if seq == 0 else seq
 
     @property
     def mtu(self):
         m = super().mtu
         if m == 0:
             return 0
-        return max(1, m - 1)
+        return max(1, m - 4)
 
 class Crc8Layer(ProtocolLayer):
     name = 'crc8'
