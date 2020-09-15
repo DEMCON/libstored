@@ -38,5 +38,6 @@ setuptools.setup(
         "Topic :: Software Development :: Debuggers",
         "Topic :: Software Development :: Embedded Systems",
     ],
+    include_package_data=True,
 )
 
