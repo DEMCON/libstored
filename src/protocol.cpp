@@ -456,6 +456,7 @@ void ArqLayer::decode(void* buffer, size_t len) {
 	}
 
 	switch(m_decodeState) {
+	case DecodeStateRetransmit:
 	case DecodeStateDecoded:
 		stored_assert(m_encodeState == EncodeStateIdle || m_encodeState == EncodeStateUnbufferedIdle);
 

@@ -52,3 +52,18 @@ if(HAVE_VALGRIND AND LIBSTORED_EXAMPLES)
 	libstored_example_test(6_sync)
 endif()
 
+find_program(SPIN_EXECUTABLE spin)
+
+if(SPIN_EXECUTABLE)
+	add_custom_target(
+		arq-spin-run
+		COMMAND ${SPIN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/ArqLayer.pml
+	)
+
+	add_custom_target(
+		arq-spin-verify
+		COMMAND ${SPIN_EXECUTABLE} -search -DBITSTATE -O3 -b -v -bitstate ${CMAKE_CURRENT_SOURCE_DIR}/ArqLayer.pml
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+	)
+endif()
+
