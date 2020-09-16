@@ -1,3 +1,8 @@
+/*!
+ * \file
+ * \brief Hello world example.
+ */
+
 // Include the generated model, based on Hello.st.
 #include "ExampleHello.h"
 

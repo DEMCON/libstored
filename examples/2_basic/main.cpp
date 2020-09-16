@@ -1,3 +1,8 @@
+/*!
+ * \file
+ * \brief Basic variable example.
+ */
+
 #include "ExampleBasic.h"
 
 #include <cstdio>

@@ -1,3 +1,8 @@
+/*!
+ * \file
+ * \brief Example with a debugger instance and two stores.
+ */
+
 #include <stored>
 
 #include "ExampleDebugSomeStore.h"

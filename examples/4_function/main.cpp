@@ -1,3 +1,8 @@
+/*!
+ * \file
+ * \brief Example to show how functions work.
+ */
+
 #include "ExampleFunction.h"
 
 #include <ctime>

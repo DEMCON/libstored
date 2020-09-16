@@ -42,6 +42,12 @@ ExampleDebugAnotherStore.st:
 */
 
 /*!
+\example 7_protocol/main.cpp
+\brief Protocol stack over a lossy channel.
+\verbinclude 7_protocol/ExampleProtocol.st
+*/
+
+/*!
 \example terminal/main.cpp
 \brief A stdin/stdout terminal application to test hand-injected Embedded Debugger messages.
 \verbinclude terminal/ExampleTerminal.st

@@ -1,3 +1,8 @@
+/*!
+ * \file
+ * \brief Example to show the get/set synchronization hooks.
+ */
+
 #include <stored>
 
 #include "ExampleSync.h"

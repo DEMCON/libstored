@@ -1,3 +1,14 @@
+/*!
+ * \file
+ * \brief Example with a stack of all default supplied protocol layers.
+ *
+ * This example simulates a lossy channel by generating random bit errors.  The
+ * bit error rate can be configured using the \c ber store variable.  Moreover,
+ * the MTU can also dynamically changed.
+ *
+ * Start this example using the \c stdio wrapper and connect the GUI to it.
+ */
+
 #include "ExampleProtocol.h"
 
 #include <stored>
@@ -45,7 +56,7 @@ static void printBuffer(void const* buffer, size_t len, char const* prefix = nul
 		case '\t': s += "\\t"; break;
 		case '\\': s += "\\\\"; break;
 		default:
-			if(b[i] < 0x20 || b[i] > 0x7f) {
+			if(b[i] < 0x20 || b[i] >= 0x7f) {
 				snprintf(buf, sizeof(buf), "\\x%02" PRIx8, b[i]);
 				s += buf;
 			} else {
@@ -98,7 +109,7 @@ public:
 
 	using base::encode;
 
-	// Byte error rate
+	// Bit error rate
 	double ber() const { return store.ber; }
 
 	char lossyByte(char b) {
@@ -128,19 +139,20 @@ int main() {
 
 	/*
 	Consider the received string:
-		\x1b_ ?E\x99!\x1b\\
+		\x1b_@Y?Ez\x7fI\x1b\\
 
 	This is:
 		\x1b_       TerminalLayer: start of message
-		  (space)   ArqLayer: seq=32 (reset seq)
+		  @Y        ArqLayer: seq=89
 		    ?       Debugger: capabilities
 		  E         SegmentationLayer: last chunk
-		  \x99!     Crc16Layer: CRC=0x9921
+		  z\7fI     AsciiEscapeLayer: z<tab>
+                      Crc16Layer: CRC=0x7a09
 		\x1b\\      TerminalLayer: end of message
 
 
 	To test, run in a shell:
-	  echo -e -n '\x1b_ ?E\xc0\x1b\\' | 7_protocol
+	  echo -e -n '\x1b_\xc0X\xe4\x1c\x1b\\\x1b_@Y?Ez\x7fI\x1b\\' | 7_protocol
 
 	*/
 
