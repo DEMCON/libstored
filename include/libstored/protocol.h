@@ -57,7 +57,7 @@
  * Standard layer implementations can be used to construct the following stacks (top-down):
  *
  * - Lossless UART: stored::Debugger, stored::AsciiEscapeLayer, stored::TerminalLayer
- * - Lossy UART: stored::Debugger, tored::ArqLayer, stored::CrcLayer, stored::AsciiEscapeLayer, stored::TerminalLayer
+ * - Lossy UART: stored::Debugger, stored::ArqLayer, stored::Crc16Layer, stored::AsciiEscapeLayer, stored::TerminalLayer
  * - CAN: stored::Debugger, stored::SegmentationLayer, stored::ArqLayer, stored::BufferLayer, CAN driver
  * - ZMQ: stored::Debugger, stored::ZmqLayer
  *
@@ -83,7 +83,7 @@
  *
  * In case of lossy channels (UART/CAN), message sequence number, and
  * retransmits (see stored::ArqLayer) should be implemented, and CRC (see
- * stored::CrcLayer). Default implementations are provided, but may be
+ * stored::Crc8Layer). Default implementations are provided, but may be
  * dependent on the specific transport hardware and embedded device.
  *
  * ## Network layer
@@ -414,37 +414,75 @@ public:
 	 * message arrive.  Retransmits may be relatively expensive.
 	 *
 	 * Messages must be either lost or arrive correctly. Make sure to do
-	 * checksumming in the layer below.  Moreover, you probably want the
+	 * checksumming in the layer below.  Moreover, you might want the
 	 * #stored::SegmentationLayer on top of this layer to make sure that
 	 * packets have a deterministic (small) size.
 	 *
-	 * Every message is prefixed with a byte that indicates the sequence number
-	 * in the range 0-255.  The number 32 is a special value; it resets the
-	 * state machines tracking sequence numbers.  It can be used to reset the
-	 * connection after a reconnect, for example.  Sequence numbers are
-	 * incremented and wrapped around from 255 to 0. While incrementing, 32 is
-	 * skipped. These values are chosen such that the common case is that it
-	 * does not require ASCII control character escaping, which would increase
-	 * the overhead significantly.
+	 * Every message is prefixed with a sequence number in the range 0-0x7ffffff.
+	 * Sequence numbers are normally incremented after every message.
+	 * It can wrap around, but if it does, 0 should be skipped. So, the next
+	 * sequence number after 0x7ffffff is 1.
 	 *
-	 * In contrast to TCP, for example, messages are not ACKed individually.
-	 * If the host receives the response, it can assume that the request was
-	 * completely received.  If the host does not receive the response (or only
-	 * partly), it must resend the full request.  Then, it will receive the
-	 * full response (again). The overhead of retransmitting messages that were
-	 * already received properly is accepted; we assume packet loss is rare, it
-	 * reduces the message count of ack/nack of individual messages, and it
-	 * makes the state machines easier.
+	 * This sequence number is encoded like VLQ (Variable-length quantity, see
+	 * https://en.wikipedia.org/wiki/Variable-length_quantity), with the exception
+	 * that the most significant bit of the first byte is a reset flag.
+	 * So, the prefix is one to four bytes.
 	 *
-	 * Reponses are buffered till the maximum buffer size is reached.  If the
-	 * response it too large, it is dropped. Then, a retransmit of the request
-	 * will reexecute the request.
+	 * A request (to be received by the target) transmits every chunk with
+	 * increasing sequence number. When the target has received all messages of
+	 * the request (probably determined by a stored::SegmentationLayer on top),
+	 * the request is executed and the response is sent. When everything is OK,
+	 * the next request can be sent, continuing with the sequence number. There
+	 * should be no gap in these numbers.
 	 *
-	 * Note that there is no timeout specified. As libstored does not have a
-	 * notion of time, it is up to the client to determine if it has waited
-	 * long enough and wants to try a retransmit; libstored will not retransmit
-	 * by itself. It may depend on the target hardware what a suitable timeout
-	 * is.
+	 * The client can decide to reset the sequence numbers.  To do this, send a
+	 * message with only the new sequence number that the client will use from
+	 * now on, but with the reset flag set. There is no payload.  The target
+	 * will respond with a message containing 0x80 (and no further payload).
+	 * This can be used to recover the connection if the client lost track of
+	 * the sequence numbers (e.g., it restarted). After this reset operation,
+	 * the next request shall use the sequence number used to reset + 1. The
+	 * response will start with sequence number 1.
+	 *
+	 * Individual messages are not ACKed, like TCP does. If the client does not
+	 * receive a response to its request, either the request or the response
+	 * has been lost.  In any case, it has to resend its full request, using
+	 * the same sequence numbers as used with the first attempt. The target
+	 * will (re)send its response.  There is no timeout specified. Use a
+	 * timeout value that fits the infrastructure of your device. There is no
+	 * limit in how often a retransmit can occur.
+	 *
+	 * The application has limited buffering. So, neither the request nor the
+	 * full response may be buffered for (partial) retransmission. Therefore,
+	 * it may be the case that when the response was lost, the request is
+	 * reexecuted. It is up to the buffer size as specified in ArqLayer's
+	 * constructor and stored::Debugger to determine when it is safe or
+	 * required to reexected upon every retransmit. For example, writes are not
+	 * reexecuted, as a write may have unexpected side-effects, while it is
+	 * safe to reexecute a read of a normal variable. When the directory is
+	 * requested, the response is often too long to buffer, and the response is
+	 * constant, so it is not buffered either and just reexecuted. Note that if
+	 * the buffer is too small, reading from a stream (s command) will do a
+	 * destructive read, but this data may be lost if the response is lost.
+	 * Configure the stream size and ArqLayer's buffer appropriate if that is
+	 * unacceptable for you.
+	 *
+	 * Because of this limited buffering, the response may reset the sequence
+	 * numbers more often. Upon retransmission of the same data, the same
+	 * sequence numbers are used, just like the retransmission of the request.
+	 * However, if the data may have been changed, as the response was not
+	 * buffered and the request was reexecuted, the reset flag is set of the
+	 * first response message, while it has a new sequence number. The client
+	 * should accept this new sequence number and discard all previously
+	 * collected response messages.
+	 *
+	 * Within one request or response, the same sequence number should be used
+	 * twice; even if the request or response is very long. Worst-case,
+	 * when there is only one payload byte per message, this limits the
+	 * request and response to 128 MB.  As the payload is allowed to be
+	 * of any size, this should not be a real limitation in practice.
+	 *
+	 * This protocol is verified by the Promela model in tests/ArqLayer.pml.
 	 *
 	 * \ingroup libstored_protocol
 	 */
@@ -456,7 +494,7 @@ public:
 		ArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~ArqLayer() override is_default
 
-		static uint8_t const ResetSeq = 32;
+		static uint8_t const ResetFlag = 0x80;
 
 		virtual void decode(void* buffer, size_t len) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
@@ -465,15 +503,19 @@ public:
 		virtual void setPurgeableResponse(bool purgeable = true) override;
 		virtual size_t mtu() const override;
 
-		static uint8_t nextSeq(uint8_t seq);
+	protected:
+		static uint32_t nextSeq(uint32_t seq);
+		static uint32_t decodeSeq(uint8_t*& buffer, size_t& len);
+		static size_t encodeSeq(uint32_t seq, void* buffer);
 
 	private:
 		enum { DecodeStateIdle, DecodeStateDecoding, DecodeStateDecoded, DecodeStateRetransmit } m_decodeState;
-		uint8_t m_decodeSeq;
-		uint8_t m_decodeSeqStart;
+		uint32_t m_decodeSeq;
+		uint32_t m_decodeSeqStart;
 
 		enum { EncodeStateIdle, EncodeStateEncoding, EncodeStateUnbufferedIdle, EncodeStateUnbufferedEncoding } m_encodeState;
-		uint8_t m_encodeSeq;
+		uint32_t m_encodeSeq;
+		bool m_encodeSeqReset;
 
 		size_t m_maxEncodeBuffer;
 		std::vector<std::string> m_encodeBuffer;
@@ -481,7 +523,7 @@ public:
 	};
 
 	/*!
-	 * \brief A layer that adds CRC to messages.
+	 * \brief A layer that adds a CRC-8 to messages.
 	 *
 	 * If the CRC does not match during decoding, it is silently dropped.
 	 * You probably want #stored::ArqLayer somewhere higher in the stack.
@@ -490,17 +532,23 @@ public:
 	 * a good choice according to <i>Cyclic Redundancy Code (CRC) Polynomial
 	 * Selection For Embedded Networks</i> (Koopman et al., 2004).
 	 *
+	 * 8-bit is quite short, so it works only reliable on short messages.  For
+	 * proper two bit error detection, the message can be 256 bytes.  For three
+	 * bits, messages should only be up to 30 bytes.  Use an appropriate
+	 * stored::SegmentationLayer somewhere higher in the stack to accomplish
+	 * this. Consider using stored::Crc16Layer instead.
+	 *
 	 * \ingroup libstored_protocol
 	 */
-	class CrcLayer : public ProtocolLayer {
-		CLASS_NOCOPY(CrcLayer)
+	class Crc8Layer : public ProtocolLayer {
+		CLASS_NOCOPY(Crc8Layer)
 	public:
 		typedef ProtocolLayer base;
 
 		enum { polynomial = 0xa6, init = 0xff };
 
-		CrcLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
-		virtual ~CrcLayer() override is_default
+		Crc8Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~Crc8Layer() override is_default
 
 		virtual void decode(void* buffer, size_t len) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
@@ -513,6 +561,34 @@ public:
 
 	private:
 		uint8_t m_crc;
+	};
+
+	/*!
+	 * \brief A layer that adds a CRC-16 to messages.
+	 *
+	 * Like #stored::Crc8Layer, but using a 0xbaad as polynomial.
+	 */
+	class Crc16Layer : public ProtocolLayer {
+		CLASS_NOCOPY(Crc16Layer)
+	public:
+		typedef ProtocolLayer base;
+
+		enum { polynomial = 0xbaad, init = 0xffff };
+
+		Crc16Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~Crc16Layer() override is_default
+
+		virtual void decode(void* buffer, size_t len) override;
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+
+		virtual size_t mtu() const override;
+
+	protected:
+		static uint16_t compute(uint8_t input, uint16_t crc = init);
+
+	private:
+		uint16_t m_crc;
 	};
 
 	/*!

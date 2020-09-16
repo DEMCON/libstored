@@ -1,4 +1,5 @@
 list(APPEND ed2_src
+	MANIFEST.in
 	LICENSE
 	README.md
 	ed2/__init__.py

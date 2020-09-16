@@ -2,6 +2,34 @@
 
 # libstored - Store for Embedded Debugger
 
+## TL;DR
+
+**What is it?**  
+A generator for a C++ class (store) with your application's variables, and a
+tool to access it remotely.
+
+**When do I need it?**  
+When you want to be able to inspect and modify internal data of a running
+application.
+
+**Does it work on my platform?**  
+Yes.
+
+**How do I use it?**  
+Have a look at the [examples](examples).
+
+## Table of contents
+
+- [Introduction](#intro)
+- [How to build](#build)
+	- [How to integrate in your build](#integrate)
+- [Syntax example](#syntax)
+- [Debugging example](#debugging)
+- [Embedded Debugger protocol](#protocol)
+- [License](#license)
+
+## <a name="intro"></a>Introduction
+
 If you have an embedded system, you probably want to debug it on-target.  One
 of the questions you often have, is what is the value of internal variables of
 the program, and how can I change them.  Debugging using `gdb` is great, but it
@@ -51,15 +79,6 @@ The store has a few other interesting properties:
 
 Have a look in the `examples` directory for further in-depth reading.
 Refer to the [Doxygen documentation](https://demcon.github.io/libstored) for the C++ API.
-
-## Table of contents
-
-- [How to build](#build)
-	- [How to integrate in your build](#integrate)
-- [Syntax example](#syntax)
-- [Debugging example](#debugging)
-- [Embedded Debugger protocol](#protocol)
-- [License](#license)
 
 ## <a name="build"></a>How to build
 
@@ -232,8 +251,8 @@ However, the request/response messages should be wrapped in a OSI-like protocol 
 This stack depends on your application. A few standard protocol layers are
 available, which allow to build a stack for lossless channels (stdio/TCP/some
 UART) and lossy channels (some UART/CAN). These stacks are configurable in
-having auto retransmit on packet loss, CRC, segmentation, buffering, MTU size,
-ASCII escaping and encapsulation. See also `examples/7_protocol`.
+having auto retransmit on packet loss, CRC-8/16, segmentation, buffering, MTU
+size, ASCII escaping and encapsulation. See also `examples/7_protocol`.
 
 To get a grasp about the protocol, I had a short chat with the `zmqserver`
 example using the `ed2.cli`.  See the transcript below. Lines starting

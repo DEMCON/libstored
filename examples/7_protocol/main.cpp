@@ -1,3 +1,14 @@
+/*!
+ * \file
+ * \brief Example with a stack of all default supplied protocol layers.
+ *
+ * This example simulates a lossy channel by generating random bit errors.  The
+ * bit error rate can be configured using the \c ber store variable.  Moreover,
+ * the MTU can also dynamically changed.
+ *
+ * Start this example using the \c stdio wrapper and connect the GUI to it.
+ */
+
 #include "ExampleProtocol.h"
 
 #include <stored>
@@ -45,7 +56,7 @@ static void printBuffer(void const* buffer, size_t len, char const* prefix = nul
 		case '\t': s += "\\t"; break;
 		case '\\': s += "\\\\"; break;
 		default:
-			if(b[i] < 0x20 || b[i] > 0x7f) {
+			if(b[i] < 0x20 || b[i] >= 0x7f) {
 				snprintf(buf, sizeof(buf), "\\x%02" PRIx8, b[i]);
 				s += buf;
 			} else {
@@ -92,29 +103,30 @@ public:
 			buffer_[i] = lossyByte(static_cast<char const*>(buffer)[i]);
 
 		printBuffer(buffer_, len, "< ");
+		stored::TerminalLayer::writeToFd_(STDOUT_FILENO, buffer_, len);
 		base::encode(buffer_, len, last);
 	}
 
 	using base::encode;
 
-	// Byte error rate
+	// Bit error rate
 	double ber() const { return store.ber; }
 
 	char lossyByte(char b) {
-		while(true) {
+		for(int i = 0; i < 8; i++) {
 			double p =
 #ifdef STORED_OS_WINDOWS
 				(double)::rand() / RAND_MAX;
 #else
 				drand48();
 #endif
-			if(p >= ber())
-				return b;
-
-			// Inject an error.
-			b = b ^ (char)(1 << (rand() % 8));
-			store.injected_errors = store.injected_errors + 1;
+			if(p < ber()) {
+				// Inject an error.
+				b = b ^ (char)(1 << (rand() % 8));
+				store.injected_errors = store.injected_errors + 1;
+			}
 		}
+		return b;
 	}
 
 	virtual size_t mtu() const override { return store.MTU.as<size_t>(); }
@@ -127,21 +139,26 @@ int main() {
 
 	/*
 	Consider the received string:
-		\x1b_ ?E\xc0\x1b\\
+		\x1b_@Y?Ez\x7fI\x1b\\
 
 	This is:
 		\x1b_       TerminalLayer: start of message
-		  (space)   ArqLayer: seq=32 (reset seq)
+		  @Y        ArqLayer: seq=89
 		    ?       Debugger: capabilities
 		  E         SegmentationLayer: last chunk
-		  \xc0      CrcLayer: CRC
+		  z\7fI     AsciiEscapeLayer: z<tab>
+                      Crc16Layer: CRC=0x7a09
 		\x1b\\      TerminalLayer: end of message
 
 
 	To test, run in a shell:
-	  echo -e -n '\x1b_ ?E\xc0\x1b\\' | 7_protocol
+	  echo -e -n '\x1b_\xc0X\xe4\x1c\x1b\\\x1b_@Y?Ez\x7fI\x1b\\' | 7_protocol
 
 	*/
+
+	printf("Demo of a lossy channel.\n");
+	printf("Run this example using ed2.wrapper.stdio with the flag\n");
+	printf("  -S segment,arq,crc16,ascii,term\n\n");
 
 	stored::Debugger debugger;
 	debugger.map(store);
@@ -152,7 +169,7 @@ int main() {
 	stored::ArqLayer arq;
 	arq.wrap(segmentation);
 
-	stored::CrcLayer crc;
+	stored::Crc16Layer crc;
 	crc.wrap(arq);
 
 	stored::AsciiEscapeLayer escape;

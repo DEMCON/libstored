@@ -2,23 +2,26 @@
 
 # libstored, a Store for Embedded Debugger.
 # Copyright (C) 2020  Jochem Rutgers
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import zmq
 import threading
 import io
+import logging
+
+from . import protocol
 
 ##
 # \brief A ZMQ Server
@@ -29,10 +32,13 @@ import io
 # Instantiate as ed2.ZmqServer().
 #
 # \ingroup libstored_client
-class ZmqServer:
+class ZmqServer(protocol.ProtocolLayer):
     default_port = 19026
+    name = 'zmq'
 
     def __init__(self, port=default_port):
+        super().__init__()
+        self.logger = logging.getLogger(__name__)
         self.sockets = set()
         self.context = zmq.Context()
         self.poller = zmq.Poller()
@@ -41,12 +47,13 @@ class ZmqServer:
         self.socket.bind(f'tcp://*:{port}')
         self.register(self.socket, zmq.POLLIN)
         self.closing = False
-    
+        self._rep_queue = []
+
     def register(self, socket, flags):
         self.poller.register(socket, flags)
         if flags & zmq.POLLIN:
             self.sockets.add(socket)
-    
+
     def unregister(self, socket):
         try:
             self.poller.unregister(socket)
@@ -80,7 +87,7 @@ class ZmqServer:
         finally:
             socket.close()
             self.sockets.remove(socket)
-    
+
     def registerStream(self, stream, f=True):
         reader = self.context.socket(zmq.PAIR)
         reader.bind(f'inproc://stream-{self.streams}')
@@ -99,9 +106,20 @@ class ZmqServer:
             return (reader, writer)
 
     def req(self, message, rep):
-        # Default implementation. As there is no backend to handle requests,
-        # answer with an error response.
-        rep(b'?')
+        self._rep_queue.append(rep)
+        self.encode(message)
+
+    def decode(self, data):
+        if self._rep_queue != []:
+            self.logger.debug('rep ' + str(bytes(data)))
+            self._rep_queue.pop(0)(data)
+        else:
+            self.logger.debug('unexpected rep ' + str(bytes(data)))
+
+        super().decode(data)
+
+    def isWaiting(self):
+        return self._rep_queue != []
 
     def close(self):
         self.closing = True

@@ -1,3 +1,8 @@
+/*!
+ * \file
+ * \brief Example to show scoping in the store's objects.
+ */
+
 #include "ExampleScope.h"
 
 #include <cstdio>

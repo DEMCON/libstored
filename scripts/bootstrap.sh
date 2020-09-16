@@ -9,11 +9,13 @@ trap gotErr ERR
 
 case `uname -s` in
 	Linux*)
+		sudo apt update
 		sudo apt install -y build-essential valgrind git-core gcc-multilib cmake \
 			gdb-multiarch clang-tidy cppcheck doxygen \
 			python3 python3-pip python3-setuptools \
-			python3-pyqt5 python3-pyqt5.qtquick
-		/usr/bin/pip3 install jinja2 textx pyzmq pyside2 pyserial lognplot natsort wheel
+			python3-pyqt5 python3-pyqt5.qtquick \
+			spin
+		/usr/bin/pip3 install jinja2 textx pyzmq pyside2 pyserial lognplot natsort wheel crcmod
 
 		if ! python3 -V | awk '$2~/^3.[0-6]/{exit 1}'; then
 			# lognplot's server needs python 3.7+
@@ -36,7 +38,7 @@ case `uname -s` in
 		install_or_upgrade pyqt
 		install_or_upgrade pkgconfig
 		install_or_upgrade gnutls
-		pip3 install jinja2 textx pyzmq pyside2 pyserial lognplot natsort wheel
+		pip3 install jinja2 textx pyzmq pyside2 pyserial lognplot natsort wheel crcmod
 		;;
 	*)
 		echo "Unknown OS"
