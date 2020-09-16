@@ -548,7 +548,7 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 		m_encodeSeq = nextSeq(m_encodeSeq);
 		// Assume a wrap-around will be noticed, as it contains at least 128 MB of data.
 		if(m_encodeSeqReset) {
-			seq[0] = seq[0] | ResetFlag;
+			seq[0] = (uint8_t)(seq[0] | ResetFlag);
 			m_encodeSeqReset = false;
 		}
 		break;
