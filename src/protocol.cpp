@@ -456,7 +456,6 @@ void ArqLayer::decode(void* buffer, size_t len) {
 	}
 
 	switch(m_decodeState) {
-	case DecodeStateRetransmit:
 	case DecodeStateDecoded:
 		stored_assert(m_encodeState == EncodeStateIdle || m_encodeState == EncodeStateUnbufferedIdle);
 
@@ -467,7 +466,10 @@ void ArqLayer::decode(void* buffer, size_t len) {
 			m_encodeBuffer.clear();
 			m_encodeBufferSize = 0;
 			setPurgeableResponse(false);
-		} else if(seq == m_decodeSeqStart) {
+		} else
+			// fall-through
+	case DecodeStateRetransmit:
+		if(seq == m_decodeSeqStart) {
 			// This seems to be a retransmit of the current command.
 			switch(m_encodeState) {
 			case EncodeStateUnbufferedIdle:

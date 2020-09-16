@@ -62,10 +62,11 @@ proctype target(chan i; chan o)
 			// Prepare for next request.
 			state = idle;
 			encodeRst = false;
-		:: rst == false && state == decoded && seq == decodeSeqStart ->
+		:: rst == false && (state == decoded || state == retransmit) && seq == decodeSeqStart ->
 			state = retransmit;
 			printf("target prepare retransmit\n");
-		:: rst == false && state == retransmit && nextSeq(seq) == decodeSeq && last ->
+		:: rst == false && state == retransmit && nextSeq(seq) == decodeSeq ->
+			assert(last)
 			// Retransmit previous request.
 			printf("target retransmit %d -> %d (%d)\n", seq, encodeSeq, encodeRst);
 			o!encodeSeq,encodeRst,true;
