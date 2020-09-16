@@ -9,6 +9,7 @@ trap gotErr ERR
 
 case `uname -s` in
 	Linux*)
+		sudo apt update
 		sudo apt install -y build-essential valgrind git-core gcc-multilib cmake \
 			gdb-multiarch clang-tidy cppcheck doxygen \
 			python3 python3-pip python3-setuptools \
