@@ -231,8 +231,8 @@ Public Member Functions</h2></td></tr>
 <p>Decode a frame and forward the decoded frame to the upper layer. </p>
 <p>The given buffer may be decoded in-place. </p>
 
-<p>Reimplemented in <a class="el" href="classstored_1_1_debugger.html#ab898cc1ca7b88385ea50b39aa9d310ee">stored::Debugger</a>, <a class="el" href="classstored_1_1_crc_layer.html#ad19f7cb8159bff0bb9aeb801dd3c56d0">stored::CrcLayer</a>, <a class="el" href="classstored_1_1_arq_layer.html#aae0973f22504fbff0b98fefec8d53013">stored::ArqLayer</a>, <a class="el" href="classstored_1_1_segmentation_layer.html#adee6ee8d098ff67655b36c1ab269d490">stored::SegmentationLayer</a>, <a class="el" href="classstored_1_1_terminal_layer.html#a189c272877b09b93aac1b1ddc96fe58c">stored::TerminalLayer</a>, <a class="el" href="classstored_1_1_ascii_escape_layer.html#a5acfb59ed33a8f0f3e27556421ff5245">stored::AsciiEscapeLayer</a>, <a class="el" href="class_lossy_channel.html#a60989db2a2ad55091267c1810761d169">LossyChannel</a>, and <a class="el" href="class_printf_physical.html#afc3eb3f0ca598dd287a6022f3121a458">PrintfPhysical</a>.</p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a9">5_debug/main.cpp</a>.</dd>
+<p>Reimplemented in <a class="el" href="classstored_1_1_debugger.html#ab898cc1ca7b88385ea50b39aa9d310ee">stored::Debugger</a>, <a class="el" href="classstored_1_1_crc16_layer.html#afc268baaaa18446a10a8ab23bf04e967">stored::Crc16Layer</a>, <a class="el" href="classstored_1_1_crc8_layer.html#a53910dd8cb7f74db64011b5918c8c52a">stored::Crc8Layer</a>, <a class="el" href="classstored_1_1_arq_layer.html#aae0973f22504fbff0b98fefec8d53013">stored::ArqLayer</a>, <a class="el" href="classstored_1_1_segmentation_layer.html#adee6ee8d098ff67655b36c1ab269d490">stored::SegmentationLayer</a>, <a class="el" href="classstored_1_1_terminal_layer.html#a189c272877b09b93aac1b1ddc96fe58c">stored::TerminalLayer</a>, <a class="el" href="classstored_1_1_ascii_escape_layer.html#a5acfb59ed33a8f0f3e27556421ff5245">stored::AsciiEscapeLayer</a>, <a class="el" href="class_lossy_channel.html#a60989db2a2ad55091267c1810761d169">LossyChannel</a>, and <a class="el" href="class_printf_physical.html#afc3eb3f0ca598dd287a6022f3121a458">PrintfPhysical</a>.</p>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a9">5_debug/main.cpp</a>, and <a class="el" href="7_protocol_2main_8cpp-example.html#a15">7_protocol/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00217">217</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
@@ -263,7 +263,8 @@ Public Member Functions</h2></td></tr>
 
 <p>Returns the layer below this one. </p>
 <dl class="section return"><dt>Returns</dt><dd>the layer, or <code>nullptr</code> if there is none. </dd></dl>
-
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a10">7_protocol/main.cpp</a>.</dd>
+</dl>
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00210">210</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
@@ -292,7 +293,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Encodes the last part of the current frame. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a10">5_debug/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#a8">terminal/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a10">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#a16">7_protocol/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#a8">terminal/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00225">225</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
@@ -374,7 +375,7 @@ Public Member Functions</h2></td></tr>
 <p>If there is a MTU applicable to the physical transport (like a CAN bus), override this method to reflect that value. Layers on top will decrease the MTU when there protocol adds headers, for example.</p>
 <dl class="section return"><dt>Returns</dt><dd>the number of bytes, or 0 for infinity </dd></dl>
 
-<p>Reimplemented in <a class="el" href="classstored_1_1_crc_layer.html#a15a59f037380fed7c39e2f259bd24e91">stored::CrcLayer</a>, <a class="el" href="classstored_1_1_arq_layer.html#a1efacad0bccc60d7d202663ce984aab2">stored::ArqLayer</a>, <a class="el" href="classstored_1_1_segmentation_layer.html#a5cd64512cd57378cf25bd2890266919a">stored::SegmentationLayer</a>, <a class="el" href="classstored_1_1_terminal_layer.html#a0a19f65b341e78a98dca4f13747fb2a7">stored::TerminalLayer</a>, <a class="el" href="classstored_1_1_ascii_escape_layer.html#ac773513d7ef5330f9fc7b46f08e79442">stored::AsciiEscapeLayer</a>, and <a class="el" href="class_lossy_channel.html#a6967348e03e7d69ecf1a40dcc549a13d">LossyChannel</a>.</p>
+<p>Reimplemented in <a class="el" href="classstored_1_1_crc16_layer.html#a82d88b7503bdb383c9416e2a0cad8503">stored::Crc16Layer</a>, <a class="el" href="classstored_1_1_crc8_layer.html#ac3bb509c6ebf1a8c9c98f4985ea91bde">stored::Crc8Layer</a>, <a class="el" href="classstored_1_1_arq_layer.html#a1efacad0bccc60d7d202663ce984aab2">stored::ArqLayer</a>, <a class="el" href="classstored_1_1_segmentation_layer.html#a5cd64512cd57378cf25bd2890266919a">stored::SegmentationLayer</a>, <a class="el" href="classstored_1_1_terminal_layer.html#a0a19f65b341e78a98dca4f13747fb2a7">stored::TerminalLayer</a>, <a class="el" href="classstored_1_1_ascii_escape_layer.html#ac773513d7ef5330f9fc7b46f08e79442">stored::AsciiEscapeLayer</a>, and <a class="el" href="class_lossy_channel.html#a6967348e03e7d69ecf1a40dcc549a13d">LossyChannel</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00268">268</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
@@ -543,7 +544,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Returns the layer above this one. </p>
 <dl class="section return"><dt>Returns</dt><dd>the layer, or <code>nullptr</code> if there is none. </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a6">5_debug/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a6">5_debug/main.cpp</a>, and <a class="el" href="7_protocol_2main_8cpp-example.html#a9">7_protocol/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00204">204</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
@@ -575,7 +576,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Sets the up/down layers of this layer and the given layer, such that this layer wraps the given one. </p>
 <p>If the given layer was not the bottom of the stack, this layer injects itself in between the given layer and its wrapper. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="terminal_2main_8cpp-example.html#a14">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#a27">zmqserver/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a28">7_protocol/main.cpp</a>, <a class="el" href="terminal_2main_8cpp-example.html#a14">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#a27">zmqserver/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00172">172</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 

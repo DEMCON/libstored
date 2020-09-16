@@ -12,5 +12,6 @@ var build_2lib_2ed2_2wrapper_2serial_2____main_____8py =
     [ "level", "build_2lib_2ed2_2wrapper_2serial_2____main_____8py.html#a10e4e679095d69be911098a11c06d521", null ],
     [ "nargs", "build_2lib_2ed2_2wrapper_2serial_2____main_____8py.html#abf4813b506c59547838c43597b30729a", null ],
     [ "parser", "build_2lib_2ed2_2wrapper_2serial_2____main_____8py.html#a4d7b2256b3926a580ba8bca92d389d83", null ],
+    [ "str", "build_2lib_2ed2_2wrapper_2serial_2____main_____8py.html#ae6c8b92a34b18cfd8576e2f2bf859374", null ],
     [ "type", "build_2lib_2ed2_2wrapper_2serial_2____main_____8py.html#aa6f5167e637c076e98d80a4427517212", null ]
 ];

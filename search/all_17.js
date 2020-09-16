@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['zmq',['zmq',['../classed2_1_1stream2zmq_1_1_stream2_zmq.html#a94d353a3c90684f42020f7402f076a94',1,'ed2.stream2zmq.Stream2Zmq.zmq(self)'],['../classed2_1_1stream2zmq_1_1_stream2_zmq.html#a94d353a3c90684f42020f7402f076a94',1,'ed2.stream2zmq.Stream2Zmq.zmq(self)']]],
   ['zmq_2ecpp',['zmq.cpp',['../zmq_8cpp.html',1,'']]],
   ['zmq_2eh',['zmq.h',['../zmq_8h.html',1,'']]],
   ['zmq_5fclient_2epy',['zmq_client.py',['../build_2lib_2ed2_2zmq__client_8py.html',1,'(Global Namespace)'],['../ed2_2zmq__client_8py.html',1,'(Global Namespace)']]],

@@ -1,14 +1,35 @@
 var hierarchy =
 [
-    [ "ed2.zmq_server.ZmqServer", "classed2_1_1zmq__server_1_1_zmq_server.html", [
+    [ "ed2.protocol.ProtocolLayer", "classed2_1_1protocol_1_1_protocol_layer.html", [
+      [ "ed2.protocol.ArqLayer", "classed2_1_1protocol_1_1_arq_layer.html", null ],
+      [ "ed2.protocol.ArqLayer", "classed2_1_1protocol_1_1_arq_layer.html", null ],
+      [ "ed2.protocol.AsciiEscapeLayer", "classed2_1_1protocol_1_1_ascii_escape_layer.html", null ],
+      [ "ed2.protocol.AsciiEscapeLayer", "classed2_1_1protocol_1_1_ascii_escape_layer.html", null ],
+      [ "ed2.protocol.Crc16Layer", "classed2_1_1protocol_1_1_crc16_layer.html", null ],
+      [ "ed2.protocol.Crc16Layer", "classed2_1_1protocol_1_1_crc16_layer.html", null ],
+      [ "ed2.protocol.Crc8Layer", "classed2_1_1protocol_1_1_crc8_layer.html", null ],
+      [ "ed2.protocol.Crc8Layer", "classed2_1_1protocol_1_1_crc8_layer.html", null ],
+      [ "ed2.protocol.LoopbackLayer", "classed2_1_1protocol_1_1_loopback_layer.html", null ],
+      [ "ed2.protocol.LoopbackLayer", "classed2_1_1protocol_1_1_loopback_layer.html", null ],
+      [ "ed2.protocol.ProtocolStack", "classed2_1_1protocol_1_1_protocol_stack.html", null ],
+      [ "ed2.protocol.ProtocolStack", "classed2_1_1protocol_1_1_protocol_stack.html", null ],
+      [ "ed2.protocol.RawLayer", "classed2_1_1protocol_1_1_raw_layer.html", null ],
+      [ "ed2.protocol.RawLayer", "classed2_1_1protocol_1_1_raw_layer.html", null ],
+      [ "ed2.protocol.SegmentationLayer", "classed2_1_1protocol_1_1_segmentation_layer.html", null ],
+      [ "ed2.protocol.SegmentationLayer", "classed2_1_1protocol_1_1_segmentation_layer.html", null ],
+      [ "ed2.protocol.TerminalLayer", "classed2_1_1protocol_1_1_terminal_layer.html", null ],
+      [ "ed2.protocol.TerminalLayer", "classed2_1_1protocol_1_1_terminal_layer.html", null ],
       [ "ed2.stream2zmq.Stream2Zmq", "classed2_1_1stream2zmq_1_1_stream2_zmq.html", [
         [ "ed2.serial2zmq.Serial2Zmq", "classed2_1_1serial2zmq_1_1_serial2_zmq.html", null ],
         [ "ed2.serial2zmq.Serial2Zmq", "classed2_1_1serial2zmq_1_1_serial2_zmq.html", null ],
         [ "ed2.stdio2zmq.Stdio2Zmq", "classed2_1_1stdio2zmq_1_1_stdio2_zmq.html", null ],
         [ "ed2.stdio2zmq.Stdio2Zmq", "classed2_1_1stdio2zmq_1_1_stdio2_zmq.html", null ]
       ] ],
-      [ "ed2.stream2zmq.Stream2Zmq", "classed2_1_1stream2zmq_1_1_stream2_zmq.html", null ]
+      [ "ed2.stream2zmq.Stream2Zmq", "classed2_1_1stream2zmq_1_1_stream2_zmq.html", null ],
+      [ "ed2.zmq_server.ZmqServer", "classed2_1_1zmq__server_1_1_zmq_server.html", null ],
+      [ "ed2.zmq_server.ZmqServer", "classed2_1_1zmq__server_1_1_zmq_server.html", null ]
     ] ],
+    [ "ed2.protocol.ProtocolStack.Iterator", "classed2_1_1protocol_1_1_protocol_stack_1_1_iterator.html", null ],
     [ "stored::ExampleBasicObjects< ExampleBasicBase< ExampleBasic >, ExampleBasic >", "classstored_1_1_example_basic_objects.html", [
       [ "stored::ExampleBasicBase< ExampleBasic >", "classstored_1_1_example_basic_base.html", [
         [ "stored::ExampleBasic", "classstored_1_1_example_basic.html", null ]
@@ -160,7 +181,8 @@ var hierarchy =
       [ "stored::ArqLayer", "classstored_1_1_arq_layer.html", null ],
       [ "stored::AsciiEscapeLayer", "classstored_1_1_ascii_escape_layer.html", null ],
       [ "stored::BufferLayer", "classstored_1_1_buffer_layer.html", null ],
-      [ "stored::CrcLayer", "classstored_1_1_crc_layer.html", null ],
+      [ "stored::Crc16Layer", "classstored_1_1_crc16_layer.html", null ],
+      [ "stored::Crc8Layer", "classstored_1_1_crc8_layer.html", null ],
       [ "stored::Debugger", "classstored_1_1_debugger.html", [
         [ "ExtendedDebugger", "class_extended_debugger.html", null ]
       ] ],

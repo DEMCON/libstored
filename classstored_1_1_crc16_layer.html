@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>libstored: stored::CrcLayer Class Reference</title>
+<title>libstored: stored::Crc16Layer Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -61,7 +61,7 @@ $(function() {
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('classstored_1_1_crc_layer.html','');});
+$(document).ready(function(){initNavTree('classstored_1_1_crc16_layer.html','');});
 </script>
 <div id="doc-content">
 <!-- window showing the filter options -->
@@ -83,69 +83,69 @@ $(document).ready(function(){initNavTree('classstored_1_1_crc_layer.html','');})
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-static-methods">Static Protected Member Functions</a> &#124;
-<a href="classstored_1_1_crc_layer-members.html">List of all members</a>  </div>
+<a href="classstored_1_1_crc16_layer-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">stored::CrcLayer Class Reference<div class="ingroups"><a class="el" href="group__libstored.html">libstored</a> &raquo; <a class="el" href="group__libstored__protocol.html">protocol</a></div></div>  </div>
+<div class="title">stored::Crc16Layer Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>A layer that adds CRC to messages.  
- <a href="classstored_1_1_crc_layer.html#details">More...</a></p>
+<p>A layer that adds a CRC-16 to messages.  
+ <a href="classstored_1_1_crc16_layer.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="protocol_8h_source.html">protocol.h</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for stored::CrcLayer:</div>
+Inheritance diagram for stored::Crc16Layer:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="classstored_1_1_crc_layer.png" usemap="#stored::CrcLayer_map" alt=""/>
-  <map id="stored::CrcLayer_map" name="stored::CrcLayer_map">
+  <img src="classstored_1_1_crc16_layer.png" usemap="#stored::Crc16Layer_map" alt=""/>
+  <map id="stored::Crc16Layer_map" name="stored::Crc16Layer_map">
 <area href="classstored_1_1_protocol_layer.html" title="Protocol layer base class. " alt="stored::ProtocolLayer" shape="rect" coords="0,0,133,24"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ace8d0da64d2b7a9dbb35678230218543"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="classstored_1_1_crc_layer.html#ace8d0da64d2b7a9dbb35678230218543a5398a4103a8cd37ded9d2cc4e5984d5d">polynomial</a> = 0xa6, 
-<a class="el" href="classstored_1_1_crc_layer.html#ace8d0da64d2b7a9dbb35678230218543a8cdb659fc6383250cd5fbe526794d2fe">init</a> = 0xff
+<tr class="memitem:a1695e0aded59c2f14c92c49e64e4f106"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="classstored_1_1_crc16_layer.html#a1695e0aded59c2f14c92c49e64e4f106aee711989700375651ca8a9c3cc313fa9">polynomial</a> = 0xbaad, 
+<a class="el" href="classstored_1_1_crc16_layer.html#a1695e0aded59c2f14c92c49e64e4f106aeb8e182958fd03c1968f253e0bcb11c6">init</a> = 0xffff
  }</td></tr>
-<tr class="separator:ace8d0da64d2b7a9dbb35678230218543"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e90d7c81ba6fc263a3fa258a5a65e33"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc_layer.html#a8e90d7c81ba6fc263a3fa258a5a65e33">base</a></td></tr>
-<tr class="separator:a8e90d7c81ba6fc263a3fa258a5a65e33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a1695e0aded59c2f14c92c49e64e4f106"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4465a77b90af4bc3c5f8d7f9816a376"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#ae4465a77b90af4bc3c5f8d7f9816a376">base</a></td></tr>
+<tr class="separator:ae4465a77b90af4bc3c5f8d7f9816a376"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a1276f037fd2476758b587e403f1ff5a9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc_layer.html#a1276f037fd2476758b587e403f1ff5a9">CrcLayer</a> (<a class="el" href="classstored_1_1_crc_layer.html">CrcLayer</a> const &amp;)=delete</td></tr>
-<tr class="memdesc:a1276f037fd2476758b587e403f1ff5a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted copy constructor.  <a href="#a1276f037fd2476758b587e403f1ff5a9">More...</a><br /></td></tr>
-<tr class="separator:a1276f037fd2476758b587e403f1ff5a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d33b7f0ff79f257d48b8cbf34ad430e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc_layer.html#a1d33b7f0ff79f257d48b8cbf34ad430e">CrcLayer</a> (<a class="el" href="classstored_1_1_crc_layer.html">CrcLayer</a> &amp;&amp;)=delete</td></tr>
-<tr class="memdesc:a1d33b7f0ff79f257d48b8cbf34ad430e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted move constructor.  <a href="#a1d33b7f0ff79f257d48b8cbf34ad430e">More...</a><br /></td></tr>
-<tr class="separator:a1d33b7f0ff79f257d48b8cbf34ad430e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ae2b14465c079543919a4f9a121bd20"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc_layer.html#a1ae2b14465c079543919a4f9a121bd20">CrcLayer</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40">up</a>=nullptr, <a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a>=nullptr)</td></tr>
-<tr class="memdesc:a1ae2b14465c079543919a4f9a121bd20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ctor.  <a href="#a1ae2b14465c079543919a4f9a121bd20">More...</a><br /></td></tr>
-<tr class="separator:a1ae2b14465c079543919a4f9a121bd20"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe9ff7290e1031ef2e341a73cd0f3fd7"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc_layer.html#abe9ff7290e1031ef2e341a73cd0f3fd7">~CrcLayer</a> () override=default</td></tr>
-<tr class="separator:abe9ff7290e1031ef2e341a73cd0f3fd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad19f7cb8159bff0bb9aeb801dd3c56d0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc_layer.html#ad19f7cb8159bff0bb9aeb801dd3c56d0">decode</a> (void *buffer, size_t len) override</td></tr>
-<tr class="memdesc:ad19f7cb8159bff0bb9aeb801dd3c56d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode a frame and forward the decoded frame to the upper layer.  <a href="#ad19f7cb8159bff0bb9aeb801dd3c56d0">More...</a><br /></td></tr>
-<tr class="separator:ad19f7cb8159bff0bb9aeb801dd3c56d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af23ed68b74cf787171cf53ba75214b79"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#af23ed68b74cf787171cf53ba75214b79">Crc16Layer</a> (<a class="el" href="classstored_1_1_crc16_layer.html">Crc16Layer</a> const &amp;)=delete</td></tr>
+<tr class="memdesc:af23ed68b74cf787171cf53ba75214b79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted copy constructor.  <a href="#af23ed68b74cf787171cf53ba75214b79">More...</a><br /></td></tr>
+<tr class="separator:af23ed68b74cf787171cf53ba75214b79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae66d540b57828de03a564e6384ab220e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#ae66d540b57828de03a564e6384ab220e">Crc16Layer</a> (<a class="el" href="classstored_1_1_crc16_layer.html">Crc16Layer</a> &amp;&amp;)=delete</td></tr>
+<tr class="memdesc:ae66d540b57828de03a564e6384ab220e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted move constructor.  <a href="#ae66d540b57828de03a564e6384ab220e">More...</a><br /></td></tr>
+<tr class="separator:ae66d540b57828de03a564e6384ab220e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac332e25fb8984cdc0c95dc2905e3cb62"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#ac332e25fb8984cdc0c95dc2905e3cb62">Crc16Layer</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40">up</a>=nullptr, <a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a>=nullptr)</td></tr>
+<tr class="memdesc:ac332e25fb8984cdc0c95dc2905e3cb62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ctor.  <a href="#ac332e25fb8984cdc0c95dc2905e3cb62">More...</a><br /></td></tr>
+<tr class="separator:ac332e25fb8984cdc0c95dc2905e3cb62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b1420d3d3c69c129962c8ece9052ad3"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#a0b1420d3d3c69c129962c8ece9052ad3">~Crc16Layer</a> () override=default</td></tr>
+<tr class="separator:a0b1420d3d3c69c129962c8ece9052ad3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc268baaaa18446a10a8ab23bf04e967"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#afc268baaaa18446a10a8ab23bf04e967">decode</a> (void *buffer, size_t len) override</td></tr>
+<tr class="memdesc:afc268baaaa18446a10a8ab23bf04e967"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode a frame and forward the decoded frame to the upper layer.  <a href="#afc268baaaa18446a10a8ab23bf04e967">More...</a><br /></td></tr>
+<tr class="separator:afc268baaaa18446a10a8ab23bf04e967"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9a6113262899388f922a6d466e9245a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a> () const</td></tr>
 <tr class="memdesc:ac9a6113262899388f922a6d466e9245a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the layer below this one.  <a href="#ac9a6113262899388f922a6d466e9245a">More...</a><br /></td></tr>
 <tr class="separator:ac9a6113262899388f922a6d466e9245a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66c24cec6a17c44fac68213d358a5aa8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a66c24cec6a17c44fac68213d358a5aa8">encode</a> ()</td></tr>
 <tr class="memdesc:a66c24cec6a17c44fac68213d358a5aa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encodes the last part of the current frame.  <a href="#a66c24cec6a17c44fac68213d358a5aa8">More...</a><br /></td></tr>
 <tr class="separator:a66c24cec6a17c44fac68213d358a5aa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4b9b9ab2a3b891f524a66568b4461a4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc_layer.html#ab4b9b9ab2a3b891f524a66568b4461a4">encode</a> (void const *buffer, size_t len, bool last=true) override</td></tr>
-<tr class="memdesc:ab4b9b9ab2a3b891f524a66568b4461a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode a (partial) frame and forward it to the lower layer.  <a href="#ab4b9b9ab2a3b891f524a66568b4461a4">More...</a><br /></td></tr>
-<tr class="separator:ab4b9b9ab2a3b891f524a66568b4461a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15a59f037380fed7c39e2f259bd24e91"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc_layer.html#a15a59f037380fed7c39e2f259bd24e91">mtu</a> () const override</td></tr>
-<tr class="memdesc:a15a59f037380fed7c39e2f259bd24e91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the maximum amount of data to be put in one message that is encoded.  <a href="#a15a59f037380fed7c39e2f259bd24e91">More...</a><br /></td></tr>
-<tr class="separator:a15a59f037380fed7c39e2f259bd24e91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a05d9e59c0decb7f9499d526dda26d8ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc_layer.html#a05d9e59c0decb7f9499d526dda26d8ef">operator=</a> (<a class="el" href="classstored_1_1_crc_layer.html">CrcLayer</a> &amp;&amp;)=delete</td></tr>
-<tr class="memdesc:a05d9e59c0decb7f9499d526dda26d8ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted move assignment operator.  <a href="#a05d9e59c0decb7f9499d526dda26d8ef">More...</a><br /></td></tr>
-<tr class="separator:a05d9e59c0decb7f9499d526dda26d8ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56dcecac212529849c48f27e600c5ac3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc_layer.html#a56dcecac212529849c48f27e600c5ac3">operator=</a> (<a class="el" href="classstored_1_1_crc_layer.html">CrcLayer</a> const &amp;)=delete</td></tr>
-<tr class="memdesc:a56dcecac212529849c48f27e600c5ac3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted assignment operator.  <a href="#a56dcecac212529849c48f27e600c5ac3">More...</a><br /></td></tr>
-<tr class="separator:a56dcecac212529849c48f27e600c5ac3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa370f1466d22991713a951f1a8e9bfd"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#aaa370f1466d22991713a951f1a8e9bfd">encode</a> (void const *buffer, size_t len, bool last=true) override</td></tr>
+<tr class="memdesc:aaa370f1466d22991713a951f1a8e9bfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode a (partial) frame and forward it to the lower layer.  <a href="#aaa370f1466d22991713a951f1a8e9bfd">More...</a><br /></td></tr>
+<tr class="separator:aaa370f1466d22991713a951f1a8e9bfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82d88b7503bdb383c9416e2a0cad8503"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#a82d88b7503bdb383c9416e2a0cad8503">mtu</a> () const override</td></tr>
+<tr class="memdesc:a82d88b7503bdb383c9416e2a0cad8503"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the maximum amount of data to be put in one message that is encoded.  <a href="#a82d88b7503bdb383c9416e2a0cad8503">More...</a><br /></td></tr>
+<tr class="separator:a82d88b7503bdb383c9416e2a0cad8503"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34b11e7ace13de97aefcb90f12552b61"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#a34b11e7ace13de97aefcb90f12552b61">operator=</a> (<a class="el" href="classstored_1_1_crc16_layer.html">Crc16Layer</a> &amp;&amp;)=delete</td></tr>
+<tr class="memdesc:a34b11e7ace13de97aefcb90f12552b61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted move assignment operator.  <a href="#a34b11e7ace13de97aefcb90f12552b61">More...</a><br /></td></tr>
+<tr class="separator:a34b11e7ace13de97aefcb90f12552b61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63dfa7cb6832d146859bcd07a26705f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#a63dfa7cb6832d146859bcd07a26705f0">operator=</a> (<a class="el" href="classstored_1_1_crc16_layer.html">Crc16Layer</a> const &amp;)=delete</td></tr>
+<tr class="memdesc:a63dfa7cb6832d146859bcd07a26705f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted assignment operator.  <a href="#a63dfa7cb6832d146859bcd07a26705f0">More...</a><br /></td></tr>
+<tr class="separator:a63dfa7cb6832d146859bcd07a26705f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b2523892617a43cf7421a654bfc3b6c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a2b2523892617a43cf7421a654bfc3b6c">setDown</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a>)</td></tr>
 <tr class="memdesc:a2b2523892617a43cf7421a654bfc3b6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the layer that receives our encoded frames.  <a href="#a2b2523892617a43cf7421a654bfc3b6c">More...</a><br /></td></tr>
 <tr class="separator:a2b2523892617a43cf7421a654bfc3b6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -167,35 +167,35 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-methods"></a>
 Static Protected Member Functions</h2></td></tr>
-<tr class="memitem:a1cd409a6fbb81a53df68c4c0a10675e6"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc_layer.html#a1cd409a6fbb81a53df68c4c0a10675e6">compute</a> (uint8_t input, uint8_t crc=<a class="el" href="classstored_1_1_crc_layer.html#ace8d0da64d2b7a9dbb35678230218543a8cdb659fc6383250cd5fbe526794d2fe">init</a>)</td></tr>
-<tr class="separator:a1cd409a6fbb81a53df68c4c0a10675e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b48d4c95eb8f590ab7428e94221197b"><td class="memItemLeft" align="right" valign="top">static uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#a4b48d4c95eb8f590ab7428e94221197b">compute</a> (uint8_t input, uint16_t crc=<a class="el" href="classstored_1_1_crc16_layer.html#a1695e0aded59c2f14c92c49e64e4f106aeb8e182958fd03c1968f253e0bcb11c6">init</a>)</td></tr>
+<tr class="separator:a4b48d4c95eb8f590ab7428e94221197b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A layer that adds CRC to messages. </p>
-<p>If the CRC does not match during decoding, it is silently dropped. You probably want <a class="el" href="classstored_1_1_arq_layer.html" title="A layer that performs Automatic Repeat Request operations on messages. ">stored::ArqLayer</a> somewhere higher in the stack.</p>
-<p>An 8-bit CRC is used with polynomial 0xA6. This polynomial seems to be a good choice according to <em>Cyclic Redundancy Code (CRC) Polynomial Selection For Embedded Networks</em> (Koopman et al., 2004). </p>
-
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00495">495</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<div class="textblock"><p>A layer that adds a CRC-16 to messages. </p>
+<p>Like <a class="el" href="classstored_1_1_crc8_layer.html" title="A layer that adds a CRC-8 to messages. ">stored::Crc8Layer</a>, but using a 0xbaad as polynomial. </p>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#_a30">7_protocol/main.cpp</a>.</dd>
+</dl>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00571">571</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a8e90d7c81ba6fc263a3fa258a5a65e33"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8e90d7c81ba6fc263a3fa258a5a65e33">&#9670;&nbsp;</a></span>base</h2>
+<a id="ae4465a77b90af4bc3c5f8d7f9816a376"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4465a77b90af4bc3c5f8d7f9816a376">&#9670;&nbsp;</a></span>base</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> <a class="el" href="classstored_1_1_crc_layer.html#a8e90d7c81ba6fc263a3fa258a5a65e33">stored::CrcLayer::base</a></td>
+          <td class="memname">typedef <a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> <a class="el" href="classstored_1_1_crc16_layer.html#ae4465a77b90af4bc3c5f8d7f9816a376">stored::Crc16Layer::base</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00498">498</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00574">574</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Enumeration Documentation</h2>
-<a id="ace8d0da64d2b7a9dbb35678230218543"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ace8d0da64d2b7a9dbb35678230218543">&#9670;&nbsp;</a></span>anonymous enum</h2>
+<a id="a1695e0aded59c2f14c92c49e64e4f106"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1695e0aded59c2f14c92c49e64e4f106">&#9670;&nbsp;</a></span>anonymous enum</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -206,17 +206,17 @@ Static Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ace8d0da64d2b7a9dbb35678230218543a5398a4103a8cd37ded9d2cc4e5984d5d"></a>polynomial&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ace8d0da64d2b7a9dbb35678230218543a8cdb659fc6383250cd5fbe526794d2fe"></a>init&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a1695e0aded59c2f14c92c49e64e4f106aee711989700375651ca8a9c3cc313fa9"></a>polynomial&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a1695e0aded59c2f14c92c49e64e4f106aeb8e182958fd03c1968f253e0bcb11c6"></a>init&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00500">500</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00576">576</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a1276f037fd2476758b587e403f1ff5a9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1276f037fd2476758b587e403f1ff5a9">&#9670;&nbsp;</a></span>CrcLayer() <span class="overload">[1/3]</span></h2>
+<a id="af23ed68b74cf787171cf53ba75214b79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af23ed68b74cf787171cf53ba75214b79">&#9670;&nbsp;</a></span>Crc16Layer() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -225,9 +225,9 @@ Static Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">stored::CrcLayer::CrcLayer </td>
+          <td class="memname">stored::Crc16Layer::Crc16Layer </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classstored_1_1_crc_layer.html">CrcLayer</a> const &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classstored_1_1_crc16_layer.html">Crc16Layer</a> const &amp;&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
@@ -243,8 +243,8 @@ Static Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a1d33b7f0ff79f257d48b8cbf34ad430e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d33b7f0ff79f257d48b8cbf34ad430e">&#9670;&nbsp;</a></span>CrcLayer() <span class="overload">[2/3]</span></h2>
+<a id="ae66d540b57828de03a564e6384ab220e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae66d540b57828de03a564e6384ab220e">&#9670;&nbsp;</a></span>Crc16Layer() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -253,9 +253,9 @@ Static Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">stored::CrcLayer::CrcLayer </td>
+          <td class="memname">stored::Crc16Layer::Crc16Layer </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classstored_1_1_crc_layer.html">CrcLayer</a> &amp;&amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classstored_1_1_crc16_layer.html">Crc16Layer</a> &amp;&amp;&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
@@ -271,14 +271,14 @@ Static Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a1ae2b14465c079543919a4f9a121bd20"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1ae2b14465c079543919a4f9a121bd20">&#9670;&nbsp;</a></span>CrcLayer() <span class="overload">[3/3]</span></h2>
+<a id="ac332e25fb8984cdc0c95dc2905e3cb62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac332e25fb8984cdc0c95dc2905e3cb62">&#9670;&nbsp;</a></span>Crc16Layer() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">stored::CrcLayer::CrcLayer </td>
+          <td class="memname">stored::Crc16Layer::Crc16Layer </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *&#160;</td>
           <td class="paramname"><em>up</em> = <code>nullptr</code>, </td>
@@ -299,12 +299,12 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Ctor. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00645">645</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00798">798</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
-<a id="abe9ff7290e1031ef2e341a73cd0f3fd7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abe9ff7290e1031ef2e341a73cd0f3fd7">&#9670;&nbsp;</a></span>~CrcLayer()</h2>
+<a id="a0b1420d3d3c69c129962c8ece9052ad3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b1420d3d3c69c129962c8ece9052ad3">&#9670;&nbsp;</a></span>~Crc16Layer()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -313,7 +313,7 @@ Static Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual stored::CrcLayer::~CrcLayer </td>
+          <td class="memname">virtual stored::Crc16Layer::~Crc16Layer </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -329,8 +329,8 @@ Static Protected Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a1cd409a6fbb81a53df68c4c0a10675e6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1cd409a6fbb81a53df68c4c0a10675e6">&#9670;&nbsp;</a></span>compute()</h2>
+<a id="a4b48d4c95eb8f590ab7428e94221197b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b48d4c95eb8f590ab7428e94221197b">&#9670;&nbsp;</a></span>compute()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -339,7 +339,7 @@ Static Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t stored::CrcLayer::compute </td>
+          <td class="memname">uint16_t stored::Crc16Layer::compute </td>
           <td>(</td>
           <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>input</em>, </td>
@@ -347,8 +347,8 @@ Static Protected Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>crc</em> = <code><a class="el" href="classstored_1_1_crc_layer.html#ace8d0da64d2b7a9dbb35678230218543a8cdb659fc6383250cd5fbe526794d2fe">init</a></code>&#160;</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>crc</em> = <code><a class="el" href="classstored_1_1_crc16_layer.html#a1695e0aded59c2f14c92c49e64e4f106aeb8e182958fd03c1968f253e0bcb11c6">init</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -363,12 +363,12 @@ Static Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00680">680</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00834">834</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
-<a id="ad19f7cb8159bff0bb9aeb801dd3c56d0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad19f7cb8159bff0bb9aeb801dd3c56d0">&#9670;&nbsp;</a></span>decode()</h2>
+<a id="afc268baaaa18446a10a8ab23bf04e967"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc268baaaa18446a10a8ab23bf04e967">&#9670;&nbsp;</a></span>decode()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -377,7 +377,7 @@ Static Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void stored::CrcLayer::decode </td>
+          <td class="memname">void stored::Crc16Layer::decode </td>
           <td>(</td>
           <td class="paramtype">void *&#160;</td>
           <td class="paramname"><em>buffer</em>, </td>
@@ -406,7 +406,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a357b029311be09df61e019682a848ab5">stored::ProtocolLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00651">651</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00804">804</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -435,7 +435,8 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Returns the layer below this one. </p>
 <dl class="section return"><dt>Returns</dt><dd>the layer, or <code>nullptr</code> if there is none. </dd></dl>
-
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a10">7_protocol/main.cpp</a>.</dd>
+</dl>
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00210">210</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
@@ -464,14 +465,14 @@ Static Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Encodes the last part of the current frame. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a10">5_debug/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#a8">terminal/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a10">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#a16">7_protocol/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#a8">terminal/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00225">225</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
-<a id="ab4b9b9ab2a3b891f524a66568b4461a4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab4b9b9ab2a3b891f524a66568b4461a4">&#9670;&nbsp;</a></span>encode() <span class="overload">[2/2]</span></h2>
+<a id="aaa370f1466d22991713a951f1a8e9bfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa370f1466d22991713a951f1a8e9bfd">&#9670;&nbsp;</a></span>encode() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -480,7 +481,7 @@ Static Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void stored::CrcLayer::encode </td>
+          <td class="memname">void stored::Crc16Layer::encode </td>
           <td>(</td>
           <td class="paramtype">void const *&#160;</td>
           <td class="paramname"><em>buffer</em>, </td>
@@ -515,12 +516,12 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#ae5dab6177c1448d1ce5ac04a69c9b4e4">stored::ProtocolLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00667">667</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00820">820</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a15a59f037380fed7c39e2f259bd24e91"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a15a59f037380fed7c39e2f259bd24e91">&#9670;&nbsp;</a></span>mtu()</h2>
+<a id="a82d88b7503bdb383c9416e2a0cad8503"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82d88b7503bdb383c9416e2a0cad8503">&#9670;&nbsp;</a></span>mtu()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -529,7 +530,7 @@ Static Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">size_t stored::CrcLayer::mtu </td>
+          <td class="memname">size_t stored::Crc16Layer::mtu </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -548,12 +549,12 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a88195d7cdb7129ac7bc625ffeb24d449">stored::ProtocolLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00685">685</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00839">839</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a05d9e59c0decb7f9499d526dda26d8ef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a05d9e59c0decb7f9499d526dda26d8ef">&#9670;&nbsp;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+<a id="a34b11e7ace13de97aefcb90f12552b61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34b11e7ace13de97aefcb90f12552b61">&#9670;&nbsp;</a></span>operator=() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -562,9 +563,9 @@ Static Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void stored::CrcLayer::operator= </td>
+          <td class="memname">void stored::Crc16Layer::operator= </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classstored_1_1_crc_layer.html">CrcLayer</a> &amp;&amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classstored_1_1_crc16_layer.html">Crc16Layer</a> &amp;&amp;&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
@@ -580,8 +581,8 @@ Static Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a56dcecac212529849c48f27e600c5ac3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a56dcecac212529849c48f27e600c5ac3">&#9670;&nbsp;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+<a id="a63dfa7cb6832d146859bcd07a26705f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63dfa7cb6832d146859bcd07a26705f0">&#9670;&nbsp;</a></span>operator=() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -590,9 +591,9 @@ Static Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void stored::CrcLayer::operator= </td>
+          <td class="memname">void stored::Crc16Layer::operator= </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classstored_1_1_crc_layer.html">CrcLayer</a> const &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classstored_1_1_crc16_layer.html">Crc16Layer</a> const &amp;&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
@@ -771,7 +772,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Returns the layer above this one. </p>
 <dl class="section return"><dt>Returns</dt><dd>the layer, or <code>nullptr</code> if there is none. </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a6">5_debug/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a6">5_debug/main.cpp</a>, and <a class="el" href="7_protocol_2main_8cpp-example.html#a9">7_protocol/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00204">204</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
@@ -803,7 +804,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Sets the up/down layers of this layer and the given layer, such that this layer wraps the given one. </p>
 <p>If the given layer was not the bottom of the stack, this layer injects itself in between the given layer and its wrapper. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="terminal_2main_8cpp-example.html#a14">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#a27">zmqserver/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a28">7_protocol/main.cpp</a>, <a class="el" href="terminal_2main_8cpp-example.html#a14">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#a27">zmqserver/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00172">172</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
@@ -818,7 +819,7 @@ Static Protected Member Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacestored.html">stored</a></li><li class="navelem"><a class="el" href="classstored_1_1_crc_layer.html">CrcLayer</a></li>
+    <li class="navelem"><a class="el" href="namespacestored.html">stored</a></li><li class="navelem"><a class="el" href="classstored_1_1_crc16_layer.html">Crc16Layer</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>

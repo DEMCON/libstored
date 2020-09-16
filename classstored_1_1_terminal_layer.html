@@ -201,7 +201,7 @@ Protected Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Extracts and injects Embedded <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">Debugger</a> messages in a stream of data, such as a terminal. </p>
 <p>The frame's boundaries are marked with APC and ST C1 control characters. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="terminal_2main_8cpp-example.html#_a1">terminal/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#_a32">7_protocol/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#_a1">terminal/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00317">317</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
@@ -355,7 +355,7 @@ Protected Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00173">173</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00180">180</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -428,7 +428,7 @@ Protected Member Functions</h2></td></tr>
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a357b029311be09df61e019682a848ab5">stored::ProtocolLayer</a>.</p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="terminal_2main_8cpp-example.html#a17">terminal/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00186">186</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00193">193</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -457,7 +457,8 @@ Protected Member Functions</h2></td></tr>
 
 <p>Returns the layer below this one. </p>
 <dl class="section return"><dt>Returns</dt><dd>the layer, or <code>nullptr</code> if there is none. </dd></dl>
-
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a10">7_protocol/main.cpp</a>.</dd>
+</dl>
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00210">210</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
@@ -486,7 +487,7 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Encodes the last part of the current frame. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a10">5_debug/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#a8">terminal/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a10">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#a16">7_protocol/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#a8">terminal/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00225">225</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
@@ -539,7 +540,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="class_case_inverter.html#a566eb23f69cd661052b16fadd42ca059">CaseInverter</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00262">262</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00269">269</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -568,7 +569,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Emits an end-of-frame sequence of the frame started using <a class="el" href="classstored_1_1_terminal_layer.html#ac734cdbc0cc6331ae456a530485d619a" title="Emits a start-of-frame sequence if it hasn&#39;t done yet. ">encodeStart()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00288">288</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00295">295</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -598,7 +599,7 @@ Protected Member Functions</h2></td></tr>
 <p>Emits a start-of-frame sequence if it hasn't done yet. </p>
 <p>Call <a class="el" href="classstored_1_1_terminal_layer.html#a553f973e434533d14c48f898cc9d6d36" title="Emits an end-of-frame sequence of the frame started using encodeStart(). ">encodeEnd()</a> to finish the current frame. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00275">275</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00282">282</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -631,7 +632,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a88195d7cdb7129ac7bc625ffeb24d449">stored::ProtocolLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00298">298</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00305">305</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -674,7 +675,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="class_case_inverter.html#a863aced80886402edb697d679e6af0ff">CaseInverter</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00235">235</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00242">242</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -897,7 +898,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Returns the layer above this one. </p>
 <dl class="section return"><dt>Returns</dt><dd>the layer, or <code>nullptr</code> if there is none. </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a6">5_debug/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a6">5_debug/main.cpp</a>, and <a class="el" href="7_protocol_2main_8cpp-example.html#a9">7_protocol/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00204">204</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
@@ -929,7 +930,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Sets the up/down layers of this layer and the given layer, such that this layer wraps the given one. </p>
 <p>If the given layer was not the bottom of the stack, this layer injects itself in between the given layer and its wrapper. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="terminal_2main_8cpp-example.html#a14">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#a27">zmqserver/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a28">7_protocol/main.cpp</a>, <a class="el" href="terminal_2main_8cpp-example.html#a14">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#a27">zmqserver/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00172">172</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
@@ -979,7 +980,7 @@ Protected Member Functions</h2></td></tr>
 <p>By default calls <a class="el" href="classstored_1_1_terminal_layer.html#adae08fc72951dc13f4f491890970586f" title="Write the given buffer to a file descriptor. ">writeToFd_()</a>. </p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="terminal_2main_8cpp-example.html#a9">terminal/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00245">245</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00252">252</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -1024,8 +1025,9 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Write the given buffer to a file descriptor. </p>
-
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00252">252</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a17">7_protocol/main.cpp</a>.</dd>
+</dl>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00259">259</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>

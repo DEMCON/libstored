@@ -4,6 +4,7 @@ var searchData=
   ['cli',['cli',['../namespaceed2_1_1cli.html',1,'ed2']]],
   ['ed2',['ed2',['../namespaceed2.html',1,'']]],
   ['gui',['gui',['../namespaceed2_1_1gui.html',1,'ed2']]],
+  ['protocol',['protocol',['../namespaceed2_1_1protocol.html',1,'ed2']]],
   ['serial',['serial',['../namespaceed2_1_1wrapper_1_1serial.html',1,'ed2::wrapper']]],
   ['serial2zmq',['serial2zmq',['../namespaceed2_1_1serial2zmq.html',1,'ed2']]],
   ['stdio',['stdio',['../namespaceed2_1_1wrapper_1_1stdio.html',1,'ed2::wrapper']]],

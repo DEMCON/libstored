@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['natsort',['NatSort',['../classed2_1_1gui_1_1____main_____1_1_nat_sort.html',1,'ed2::gui::__main__']]]
+  ['macro',['Macro',['../classed2_1_1zmq__client_1_1_macro.html',1,'ed2::zmq_client']]],
+  ['myexample',['MyExample',['../class_my_example.html',1,'']]]
 ];

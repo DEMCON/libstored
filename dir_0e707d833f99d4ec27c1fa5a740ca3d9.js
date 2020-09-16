@@ -10,7 +10,8 @@ var dir_0e707d833f99d4ec27c1fa5a740ca3d9 =
     [ "directory.h", "directory_8h.html", "directory_8h" ],
     [ "macros.h", "macros_8h.html", "macros_8h" ],
     [ "protocol.h", "protocol_8h.html", [
-      [ "BufferLayer", "classstored_1_1_buffer_layer.html", "classstored_1_1_buffer_layer" ]
+      [ "BufferLayer", "classstored_1_1_buffer_layer.html", "classstored_1_1_buffer_layer" ],
+      [ "Crc16Layer", "classstored_1_1_crc16_layer.html", "classstored_1_1_crc16_layer" ]
     ] ],
     [ "spm.h", "spm_8h.html", [
       [ "Snapshot", "classstored_1_1_scratch_pad_1_1_snapshot.html", "classstored_1_1_scratch_pad_1_1_snapshot" ]

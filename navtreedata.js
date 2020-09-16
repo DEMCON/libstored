@@ -40,16 +40,17 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "1__hello_2main_8cpp.html",
-"class_lossy_channel.html#ac7cbd80b10e74166c661582027158b40",
-"classed2_1_1stream2zmq_1_1_stream2_zmq.html#a785105338c3f6946df14d84de60f0d23",
-"classstored_1_1_buffer_layer.html#a3f34a83e488add9a3f459fb8ebed8e34",
-"classstored_1_1_example_basic_base.html#abc554e37c4f44d2ea64983638706b674",
-"classstored_1_1_example_function_base.html#a8eddfce928885715e71844169517b227",
-"classstored_1_1_example_scope_base.html#a8117443a869be441739ac810e43d0560",
-"classstored_1_1_scratch_pad.html#a46b991332ae8c926ff93505ed7a8e2dda93c50596b9a5c2f5e24bfbbfc8c04581",
-"classstored_1_1_zmq_server_store.html#aaeffef9b175b459f51d138456020112e",
-"ed2_2wrapper_2serial_2____main_____8py_source.html",
-"structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eac0380d5b750e07de135dff4ace5e5466"
+"class_lossy_channel.html#a394f93245c61a3bb3d337b3017e4a880",
+"classed2_1_1protocol_1_1_crc16_layer.html#a6b7035d39d94d75fdf9a84efcaf30bd1",
+"classed2_1_1serial2zmq_1_1_serial2_zmq.html#acf7dfe0464fd1e012122ef59b97dc448",
+"classed2_1_1zmq__client_1_1_zmq_client.html#ae9b801419eab010532a7a20e6f7258cb",
+"classstored_1_1_debugger.html#ab898cc1ca7b88385ea50b39aa9d310ee",
+"classstored_1_1_example_debug_some_store.html#a349bf32ea241c379a0de566ced3f91f8",
+"classstored_1_1_example_protocol.html#abd207cca7b8c750fe0c86b5d0180e98c",
+"classstored_1_1_example_terminal.html#aa9dff727a83eb1886c5b18baedaa08f7",
+"classstored_1_1_variant.html#a22e669c7be876f140dac35bb1199f32a",
+"classstored_1_1impl_1_1_store_variable.html#a625db219ece4a9001a0aeadeb13d012e",
+"modules.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

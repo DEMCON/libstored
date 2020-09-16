@@ -85,6 +85,24 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="contents">
 <div class="textblock"><p><a href="https://github.com/DEMCON/libstored/actions?query=workflow%3ACI"></a></p>
 <h1>libstored - Store for Embedded Debugger</h1>
+<h2>TL;DR</h2>
+<p><b>What is it?</b> A generator for a C++ class (store) with your application's variables, and a tool to access it remotely.</p>
+<p><b>When do I need it?</b> When you want to be able to inspect and modify internal data of a running application.</p>
+<p><b>Does it work on my platform?</b> Yes.</p>
+<p><b>How do I use it?</b> Have a look at the [examples](examples).</p>
+<h2>Table of contents</h2>
+<ul>
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#build">How to build</a><ul>
+<li><a href="#integrate">How to integrate in your build</a></li>
+</ul>
+</li>
+<li><a href="#syntax">Syntax example</a></li>
+<li><a href="#debugging">Debugging example</a></li>
+<li><a href="#protocol">Embedded Debugger protocol</a></li>
+<li><a href="#license">License</a></li>
+</ul>
+<h2><a class="anchor" id="intro"></a>Introduction</h2>
 <p>If you have an embedded system, you probably want to debug it on-target. One of the questions you often have, is what is the value of internal variables of the program, and how can I change them. Debugging using <code>gdb</code> is great, but it pauses the application, which also stops control loops, for example.</p>
 <p>libstored helps you to access internal variables. These variables are part of a <em>store</em>. A store is defined in a simple language, and libstored provides a generator to produce a C++ class (as cmake library) with the variables you want. This generated C++ class is very efficient when accessed by the C++ application. However, it adds interesting functionality: all variables can be accessed remotely.</p>
 <p>The (OSI-stack) Application layer of this debugging interface is provided by libstored. Additionally, other layers are available to support lossless and lossy channels, which fit to common UART and CAN interfaces. You have to combine, and possibly add, and configure other (usually hardware-specific) layers of the OSI stack to get the debugging protocol in and out of your system. Although the protocol fits nicely to ZeroMQ, a TCP stream, or <code>stdio</code> via terminal, the complexity of integrating this depends on your embedded device. However, once you implemented this data transport, you can access the store, and observe and manipulate it using an Embedded Debugger (PC) client, where libstored provides Python classes, a CLI and GUI interface.</p>
@@ -99,17 +117,6 @@ $(document).ready(function(){initNavTree('index.html','');});
 <li>All code is normal C++, there are no platform-dependent constructs used. Therefore, all platforms are supported: Windows/Linux/Mac/bare metal (newlib), x86/ARM, gcc/clang/MSVC/armcc).</li>
 </ul>
 <p>Have a look in the <code>examples</code> directory for further in-depth reading. Refer to the <a href="https://demcon.github.io/libstored">Doxygen documentation</a> for the C++ API.</p>
-<h2>Table of contents</h2>
-<ul>
-<li><a href="#build">How to build</a><ul>
-<li><a href="#integrate">How to integrate in your build</a></li>
-</ul>
-</li>
-<li><a href="#syntax">Syntax example</a></li>
-<li><a href="#debugging">Debugging example</a></li>
-<li><a href="#protocol">Embedded Debugger protocol</a></li>
-<li><a href="#license">License</a></li>
-</ul>
 <h2><a class="anchor" id="build"></a>How to build</h2>
 <p>Run <code>scripts/bootstrap</code> (as Administrator under Windows) once to install all build dependencies. Then run <code>scripts/build</code> to build the project. This does effectively: </p><pre class="fragment">mkdir build
 cd build
@@ -204,7 +211,7 @@ make ed2-install
 </pre><p>There are some more ready-to-use clients, and a Python module in the <a href="https://github.com/DEMCON/libstored/tree/master/client">client</a> directory.</p>
 <h2><a class="anchor" id="protocol"></a>Embedded Debugger protocol</h2>
 <p>Communication with the debugger implementation in the application follows a request-response pattern. A full description of the commands can be found in the <a href="https://demcon.github.io/libstored/group__libstored__debugger.html">doxygen documentation</a>. These commands are implemented in the <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> class and ready to be used in your application.</p>
-<p>However, the request/response messages should be wrapped in a OSI-like protocol stack, which is described in more detail in the <a href="https://demcon.github.io/libstored/group__libstored__protocol.html">documentation too</a>). This stack depends on your application. A few standard protocol layers are available, which allow to build a stack for lossless channels (stdio/TCP/some UART) and lossy channels (some UART/CAN). These stacks are configurable in having auto retransmit on packet loss, CRC, segmentation, buffering, MTU size, ASCII escaping and encapsulation. See also <code>examples/7_protocol</code>.</p>
+<p>However, the request/response messages should be wrapped in a OSI-like protocol stack, which is described in more detail in the <a href="https://demcon.github.io/libstored/group__libstored__protocol.html">documentation too</a>). This stack depends on your application. A few standard protocol layers are available, which allow to build a stack for lossless channels (stdio/TCP/some UART) and lossy channels (some UART/CAN). These stacks are configurable in having auto retransmit on packet loss, CRC-8/16, segmentation, buffering, MTU size, ASCII escaping and encapsulation. See also <code>examples/7_protocol</code>.</p>
 <p>To get a grasp about the protocol, I had a short chat with the <code>zmqserver</code> example using the <code><a class="el" href="namespaceed2_1_1cli.html">ed2.cli</a></code>. See the transcript below. Lines starting with <code>&gt;</code> are requests, entered by me, lines starting with <code>&lt;</code> are responses from the application.</p>
 <p>In the example below, I used the following commands:</p>
 <ul>

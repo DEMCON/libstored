@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['listcmdcallbackarg',['ListCmdCallbackArg',['../structstored_1_1_list_cmd_callback_arg.html',1,'stored']]],
-  ['lossychannel',['LossyChannel',['../class_lossy_channel.html',1,'']]]
+  ['iterator',['Iterator',['../classed2_1_1protocol_1_1_protocol_stack_1_1_iterator.html',1,'ed2::protocol::ProtocolStack']]]
 ];
