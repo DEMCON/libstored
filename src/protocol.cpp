@@ -538,7 +538,7 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 	}
 
 	uint8_t seq[4];
-	size_t seqlen;
+	size_t seqlen = 0;
 
 	switch(m_encodeState) {
 	case EncodeStateUnbufferedIdle:
