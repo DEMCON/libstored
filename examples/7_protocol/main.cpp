@@ -146,7 +146,7 @@ int main() {
 		  @Y        ArqLayer: seq=89
 		    ?       Debugger: capabilities
 		  E         SegmentationLayer: last chunk
-		  z\7fI     AsciiEscapeLayer: z<tab>
+		  z\x7fI    AsciiEscapeLayer: z<tab>
                       Crc16Layer: CRC=0x7a09
 		\x1b\\      TerminalLayer: end of message
 
