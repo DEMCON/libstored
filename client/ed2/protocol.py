@@ -264,18 +264,22 @@ class ArqLayer(ProtocolLayer):
         self._reset = True
         self._syncing = False
         self._decode_seq = 1
-        self._decode_seq_last = None
+        self._decode_seq_start = None
         self._suppress_auto_retransmit = False
 
     def decode(self, data):
         if len(data) == 0:
             return
 
-        # We got a response, so the request should be finished now.
-        self._req = False
         (seq, msg) = self.decode_seq(data)
         if data[0] & self.reset_flag:
             self._decode_seq = seq
+
+        if self._req:
+            # We got a response, so the request should be finished now.
+            self._req = False
+            # This is the first part of the response.
+            self._decode_seq_start = self._decode_seq
 
         if seq == self._decode_seq:
             self._decode_seq = self.nextSeq(self._decode_seq)
@@ -372,6 +376,8 @@ class ArqLayer(ProtocolLayer):
 
     def timeout(self):
         super().timeout()
+        if not self._req:
+            self._decode_seq = self._decode_seq_start
         self.retransmit()
 
     def reset(self):
