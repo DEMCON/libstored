@@ -2,17 +2,17 @@
 
 # libstored, a Store for Embedded Debugger.
 # Copyright (C) 2020  Jochem Rutgers
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
@@ -24,8 +24,11 @@ import re
 import sys
 import os
 import math
+import logging
 
-from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, QEvent, QCoreApplication, QStandardPaths
+from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, \
+    QEvent, QCoreApplication, QStandardPaths, QSocketNotifier, QEventLoop
+
 from .zmq_server import ZmqServer
 
 ##
@@ -199,9 +202,13 @@ class Object(QObject):
         event = QEvent(self.AsyncReadEvent)
         QCoreApplication.postEvent(self, event, Qt.LowEventPriority - 1)
 
+    def _asyncRead(self):
+        if self._client != None:
+            self._client.reqAsync(b'r' + self.shortName(False).encode(), self.decodeReadRep)
+
     def event(self, event):
         if event.type() == self.AsyncReadEvent:
-            self.read(False)
+            self._asyncRead()
             return True
         else:
             return super().event(event)
@@ -209,7 +216,7 @@ class Object(QObject):
     def _read(self, tryToGetAlias=True):
         if self._client == None:
             return None
-        
+
         rep = self._client.req(b'r' + self.shortName(tryToGetAlias).encode())
         return self.decodeReadRep(rep)
 
@@ -280,7 +287,20 @@ class Object(QObject):
             self.set(value)
         return self._write(value)
 
-    def _write(self, value):
+    @Slot(object)
+    def asyncWrite(self, value = None):
+        if value != None:
+            self.set(value)
+        self._write(value, lambda rep, value=value: self._asyncWriteCallback(value, rep))
+
+    def _asyncWriteCallback(self, value, rep):
+        if rep == b'!':
+            # A concurrent async read may have overwritten our value,
+            # which was just set. Set it here again.
+            if value != None:
+                self.set(value)
+
+    def _write(self, value, asyncCallback=None):
         if self._client == None:
             return False
 
@@ -290,9 +310,16 @@ class Object(QObject):
         if data == None:
             return False
 
-        rep = self._client.req(b'w' + data + self.shortName().encode())
-        return rep == b'!'
-    
+        req = b'w' + data + self.shortName().encode()
+
+        if asyncCallback != None:
+            self._client.reqAsync(req, asyncCallback)
+            # Assume it was successful.
+            return True
+        else:
+            rep = self._client.req(req)
+            return rep == b'!'
+
 
     def _encodeHex(self, data, zerostrip = False):
         s = ''.join(['%02x' % b for b in data])
@@ -392,7 +419,12 @@ class Object(QObject):
     @value.setter
     def _value_set(self, v):
         try:
-            return self.write(self.interpret(v))
+            v = self.interpret(v)
+            if self._client and self._client.useEventLoop:
+                self.asyncWrite(v)
+                return True
+            else:
+                return self.write(v)
         except ValueError:
             return False
 
@@ -487,7 +519,7 @@ class Object(QObject):
 
         if self._pollTimer == None:
             self._pollTimer = QTimer(parent=self)
-            self._pollTimer.timeout.connect(self._read)
+            self._pollTimer.timeout.connect(self._pollRead)
             self._pollTimer.setSingleShot(False)
 
         self._pollTimer.setInterval(interval_s * 1000)
@@ -497,6 +529,14 @@ class Object(QObject):
             self._pollTimer.setTimerType(Qt.VeryCoarseTimer)
 
         self._pollTimer.start()
+
+    def _pollRead(self):
+        if self.alias == None:
+            # Do a sequenial read to get an alias.
+            self._read(True)
+        else:
+            # Now we have an alias, do async reads.
+            self._asyncRead()
 
     def _pollFast(self, interval_s):
         self._pollSetFlag(True)
@@ -515,7 +555,7 @@ class Object(QObject):
             res += f'    o.poll({repr(self._pollInterval_s)})\n'
         if self._format != 'default':
             res += f'    o.format = {repr(self._format)}\n'
-        
+
         if len(res) > 0:
             return \
                 f'o = client.find({repr(self.name)})\n' + \
@@ -548,6 +588,8 @@ class Macro(object):
         if isinstance(repsep, str):
             repsep = repsep.encode()
         self._repsep = repsep
+
+        self._pending = False
 
     @property
     def macro(self):
@@ -596,9 +638,15 @@ class Macro(object):
 
         self._client.assignMacro(self._macro, cmds, self._reqsep)
 
-    def run(self):
+    def run(self, asyncDecode=False):
         if self._macro != None:
-            return self.decode(self._client.req(self._macro))
+            if asyncDecode:
+                if not self._pending:
+                    self._pending = True
+                    self._client.reqAsync(self._macro, self.decode)
+                return True
+            else:
+                return self.decode(self._client.req(self._macro))
         else:
             for c in self._cmds.values():
                 if c[1] != None:
@@ -609,6 +657,7 @@ class Macro(object):
         return True
 
     def decode(self, rep, t = None):
+        self._pending = False
         cb = [x[1] for x in self._cmds.values() if x[1] != None]
         values = rep.split(self._repsep)
         if len(cb) != len(values):
@@ -627,7 +676,7 @@ class Macro(object):
 class Tracing(Macro):
     def __init__(self, client, t=None, stream='t'):
         super().__init__(client=client, reqsep=b'\r', repsep=';')
-        
+
         self._enabled = None
         self._decimate = 1
 
@@ -642,7 +691,7 @@ class Tracing(Macro):
             raise ValueError('Stream capability missing')
 
         self._stream = stream
-        
+
         # Start with sample separator.
         self.add('e\n', None, 'e')
 
@@ -712,7 +761,9 @@ class Tracing(Macro):
         return self._stream
 
     def process(self):
-        s = self.client.stream(self._stream, raw=True)
+        self.client.stream(self._stream, raw=True, callback=self._process)
+
+    def _process(self, s):
         time = self.client.time()
         for sample in s.split(b'\n;'):
             # The first value is the time stamp.
@@ -740,7 +791,7 @@ class Tracing(Macro):
 #
 # \ingroup libstored_client
 class ZmqClient(QObject):
-    
+
     traceThreshold_s = 0.1
     fastPollThreshold_s = 0.9
     slowPollInterval_s = 2.0
@@ -748,6 +799,7 @@ class ZmqClient(QObject):
 
     def __init__(self, address='localhost', port=ZmqServer.default_port, parent=None, t=None):
         super().__init__(parent=parent)
+        self.logger = logging.getLogger(__name__)
         self._context = zmq.Context()
         self._socket = self._context.socket(zmq.REQ)
         self._socket.connect(f'tcp://{address}:{port}')
@@ -766,13 +818,27 @@ class ZmqClient(QObject):
         self._tracingTimer = None
         self._autoSaveState = False
         self._identification = None
+        self._reqQueue = []
+        self._socketNotifier = QSocketNotifier(self._socket.fileno(), QSocketNotifier.Read, parent=self)
+        self._socketNotifier.setEnabled(False)
+        self._socketNotifier.activated.connect(self._reqAsyncCheckResponse)
+        self._useEventLoop = False
+        QTimer.singleShot(0, self._haveEventLoop)
 
         try:
             self._tracing = Tracing(self)
         except:
             # Not available.
             self._tracing = None
-    
+
+    def _haveEventLoop(self):
+        self.logger.debug('event loop running')
+        self._useEventLoop = True
+
+    @property
+    def useEventLoop(self):
+        return self._useEventLoop
+
     @property
     def context(self):
         return self._context
@@ -789,10 +855,69 @@ class ZmqClient(QObject):
     def req(self, message):
         if isinstance(message,str):
             return self.req(message.encode()).decode()
-#        print(message)
 
+        while self._reqQueue != []:
+            # Wait for all outstanding requests first.
+            QCoreApplication.processEvents(QEventLoop.AllEvents, 100)
+
+        self.logger.debug('req %s', message)
         self._socket.send(message)
-        return b''.join(self._socket.recv_multipart())
+        rep = b''.join(self._socket.recv_multipart())
+        self.logger.debug('rep %s', rep)
+        return rep
+
+    def reqAsync(self, message, callback=None):
+        if isinstance(message,str):
+            self.reqAsync(message.encode()).decode()
+
+        if not self.useEventLoop:
+            # Without event loop, async does not work.
+            # Forward to blocking req instead.
+            rep = self.req(message)
+            if callback != None:
+                callback(rep)
+            elif rep == b'?':
+                self.logger.warning('Req %s returned an error, which was not handled', req)
+            return
+
+        self._reqQueue.append((message, callback))
+        if len(self._reqQueue) == 1:
+            self._socketNotifier.setEnabled(True)
+            self._reqAsyncSendNext()
+        else:
+            self.logger.debug('req async queued %s', message)
+
+    def _reqAsyncSendNext(self):
+        if self._reqQueue != []:
+            req, _ = self._reqQueue[0]
+            self.logger.debug('req async send %s', req)
+            self._socket.send(req)
+        else:
+            self._socketNotifier.setEnabled(False)
+
+    @Slot()
+    def _reqAsyncCheckResponse(self):
+        res = False
+        try:
+            while True:
+                resp = b''.join(self._socket.recv_multipart(zmq.NOBLOCK))
+                self._reqAsyncHandleResponse(resp)
+                res = True
+        except zmq.ZMQError:
+            pass
+        return res
+
+    def _reqAsyncHandleResponse(self, resp):
+        self.logger.debug('req async recv %s', resp)
+        assert(self._reqQueue != [])
+        req, callback = self._reqQueue.pop(0)
+        if callback != None:
+            callback(resp)
+        elif resp == b'?':
+            # We got an error back, but no callback was specified. Report it anyway.
+            self.logger.warning('Req %s returned an error, which was not handled', req)
+
+        self._reqAsyncSendNext()
 
     def time(self):
         if self._t == False:
@@ -831,7 +956,7 @@ class ZmqClient(QObject):
         else:
             # One found
             pass
-       
+
         try:
             t0 = t.read()
             self._t0 = time.time()
@@ -851,7 +976,7 @@ class ZmqClient(QObject):
             self._timestampToType = lambda t: float(t - t0) / 1e9 + self._t0
         else:
             # Don't know a conversion, just use the raw value.
-            self._timestampToType = lambda t: t - t0 
+            self._timestampToType = lambda t: t - t0
 
         # Make alias permanent.
         self.acquireAlias(t, t.alias, False)
@@ -872,7 +997,7 @@ class ZmqClient(QObject):
         if self._tracingTimer:
             self._tracingTimer.stop()
         self._socket.close(0)
-    
+
     def __del__(self):
         self._socket.close(0)
 
@@ -927,7 +1052,6 @@ class ZmqClient(QObject):
                     match = False
             if match:
                 obj1.add(o)
-#                print('1', o.name)
 
             # Case 2.
             match = True
@@ -939,7 +1063,6 @@ class ZmqClient(QObject):
                     match = False
             if match:
                 obj2.add(o)
-#                print('2', o.name)
 
             # Case 3.
             match = True
@@ -948,8 +1071,7 @@ class ZmqClient(QObject):
                     match = False
             if match:
                 obj3.add(o)
-#                print('3', o.name)
-            
+
             # Case 4.
             match = True
             for i in range(0, len(ochunks)):
@@ -957,7 +1079,6 @@ class ZmqClient(QObject):
                     match = False
             if match:
                 obj4.add(o)
-#                print('4', o.name)
 
         obj = obj1 | obj2 | obj3 | obj4
         if all:
@@ -971,7 +1092,7 @@ class ZmqClient(QObject):
             return obj.pop()
         else:
             return obj
-    
+
     @Slot(result=str)
     def identification(self):
         try:
@@ -1013,13 +1134,19 @@ class ZmqClient(QObject):
         else:
             return list(map(lambda b: chr(b), rep))
 
-    def stream(self, s, suffix='', raw=False):
+    def stream(self, s, suffix='', raw=False, callback=None):
         if not isinstance(s, str) or len(s) != 1:
             raise ValueError('Invalid stream name ' + s)
-        data = self.req(b's' + (s + suffix).encode())
-        if not raw:
-            data = data.decode()
-        return data
+
+        req = b's' + (s + suffix).encode()
+        if callback == None:
+            data = self.req(req)
+            if not raw:
+                data = data.decode()
+            return data
+        else:
+            self.reqAsync(req, lambda x, raw=raw, callback=callback: callback(x if raw else x.decode()))
+            return None
 
     @Property(float, notify=defaultPollIntervalChanged)
     def defaultPollInterval(self):
@@ -1058,7 +1185,7 @@ class ZmqClient(QObject):
                 self._availableAliases.remove('/')
             else:
                 self._availableAliases = []
-        
+
         if prefer != None:
             if self._isAliasAvailable(prefer):
                 return self._acquireAlias(prefer, obj, temporary)
@@ -1078,7 +1205,7 @@ class ZmqClient(QObject):
 
     def _isAliasAvailable(self, a):
         return a in self._availableAliases
-    
+
     def _isTemporaryAlias(self, a):
         return a in self._temporaryAliases
 
@@ -1135,7 +1262,7 @@ class ZmqClient(QObject):
             self._permanentAliases[a] = obj
         obj._alias_set(a)
         return a
-    
+
     def _releaseAlias(self, alias):
         obj = None
         if alias in self._temporaryAliases:
@@ -1253,7 +1380,7 @@ class ZmqClient(QObject):
         if self._fastPollMacro == None:
             self._fastPollMacro = Macro(self)
             self._fastPollTimer = QTimer(parent=self)
-            self._fastPollTimer.timeout.connect(lambda: self._fastPollMacro.run())
+            self._fastPollTimer.timeout.connect(lambda: self._fastPollMacro.run(True))
             self._fastPollTimer.setInterval(self.fastPollThreshold_s * 1000)
             self._fastPollTimer.setSingleShot(False)
             self._fastPollTimer.setTimerType(Qt.PreciseTimer)
@@ -1264,10 +1391,10 @@ class ZmqClient(QObject):
             obj._pollFast(interval_s)
             self._fastPollTimer.setInterval(min(self._fastPollTimer.interval(), interval_s * 1000))
             self._fastPollTimer.start()
-        
+
     def _pollSlow(self, obj, interval_s):
         obj._pollSlow(max(self.slowPollInterval_s, interval_s))
-    
+
     def _pollStop(self, obj):
         if self._fastPollMacro != None:
             self._fastPollMacro.remove(obj)
@@ -1278,14 +1405,14 @@ class ZmqClient(QObject):
         if self._tracing != None:
             if self._tracing.remove(obj) and not self._tracing.enabled:
                 self._tracingTimer.stop()
-            
+
         obj._pollStop()
-        
+
     def _trace(self, obj, interval_s):
         if self._tracing == None:
             self._pollFast(obj, interval_s)
             return
-        
+
         if self._tracingTimer == None:
             self._tracingTimer = QTimer(parent=self)
             self._tracingTimer.timeout.connect(self._tracing.process)

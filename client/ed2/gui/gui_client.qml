@@ -180,7 +180,7 @@ Window {
                     Layout.preferredWidth: implicitWidth
                     text: "Refresh"
                     onClicked: {
-                        obj.read()
+                        obj.asyncRead()
                     }
                 }
             }
