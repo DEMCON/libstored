@@ -656,15 +656,16 @@ class Macro(object):
 
         return True
 
-    def decode(self, rep, t = None):
+    def decode(self, rep, t=None, skip=0):
         self._pending = False
-        cb = [x[1] for x in self._cmds.values() if x[1] != None]
+        cb = [x[1] for x in self._cmds.values()]
         values = rep.split(self._repsep)
-        if len(cb) != len(values):
+        if len(cb) != len(values) + skip:
             return False
 
         for i in range(0, len(values)):
-            cb[i](values[i], t)
+            if cb[i + skip] != None:
+                cb[i + skip](values[i], t)
 
         return True
 
@@ -776,7 +777,7 @@ class Tracing(Macro):
                 continue
             ts = self.client.timestampToTime(t)
             time.set(t, ts)
-            super().decode(t_data[1], ts)
+            super().decode(t_data[1], ts, skip=2)
 
     def __len__(self):
         # Don't count sample separator and time stamp.
@@ -824,10 +825,14 @@ class ZmqClient(QObject):
         self._socketNotifier.activated.connect(self._reqAsyncCheckResponse)
         self._useEventLoop = False
         QTimer.singleShot(0, self._haveEventLoop)
+        app = QCoreApplication.instance()
+        if app != None:
+            app.aboutToQuit.connect(self._aboutToQuit)
 
         try:
             self._tracing = Tracing(self)
-        except:
+        except Exception as e:
+            self.logger.info('Tracing not available; %s', e)
             # Not available.
             self._tracing = None
 
@@ -919,6 +924,16 @@ class ZmqClient(QObject):
 
         self._reqAsyncSendNext()
 
+    def _reqAsyncFlush(self):
+        while self._reqQueue != []:
+            self._reqAsyncHandleResponse(b''.join(self._socket.recv_multipart()))
+
+    @Slot()
+    def _aboutToQuit(self):
+        self.logger.debug('aboutToQuit')
+        self._useEventLoop = False
+        self._reqAsyncFlush()
+
     def time(self):
         if self._t == False:
             # Not found
@@ -982,6 +997,7 @@ class ZmqClient(QObject):
         self.acquireAlias(t, t.alias, False)
         # All set.
         self._t = t
+        self.logger.info('time object: %s', t.name)
         return self._t
 
     def timestampToTime(self, t = None):
@@ -992,6 +1008,7 @@ class ZmqClient(QObject):
             return self._timestampToType(t)
 
     def close(self):
+        self.logger.debug('closing')
         if self._fastPollTimer:
             self._fastPollTimer.stop()
         if self._tracingTimer:
@@ -1421,6 +1438,7 @@ class ZmqClient(QObject):
             self._tracingTimer.setTimerType(Qt.PreciseTimer)
 
         if not self._tracing.add(b'r' + obj.shortName().encode(), obj.decodeReadRep, obj):
+            self.logger.debug('Cannot add %s for tracing, use polling instead', obj.name)
             self._pollFast(obj, interval_s)
             return
 
