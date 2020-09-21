@@ -137,7 +137,7 @@ cmake --build .
 </pre></li>
 <li>Optional: install <code>scripts/st.vim</code> in <code>$HOME/.vim/syntax</code> to have proper syntax highlighting in vim.</li>
 <li>Add some store definition file to your project, let's say <code>MyStore.st</code>. Assume you have a target <code>app</code> (which can be any type of cmake target), which is going to use <code>MyStore.st</code>, generate all required files. This will generate the sources in the <code>libstored</code> subdirectory of the current source directory, a library named <code>app-libstored</code>, and set all the dependencies right. <pre class="fragment">  add_application(app main.cpp)
-  libstored_generate(app FumoStore.st)
+  libstored_generate(app MyStore.st)
 </pre></li>
 <li>Now, build your <code>app</code>. The generated libstored library is automatically built.</li>
 </ul>

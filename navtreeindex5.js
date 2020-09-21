@@ -1,5 +1,16 @@
 var NAVTREEINDEX5 =
 {
+"classstored_1_1_debugger.html#a8e8b913345f11bf3cf3999c305905681":[0,0,2,0,35],
+"classstored_1_1_debugger.html#a9beaf6ddceb7169484385623446ade8b":[0,0,2,0,41],
+"classstored_1_1_debugger.html#aa44e53fc3bc28e0161fe1bcaf3c14d94":[0,0,2,0,45],
+"classstored_1_1_debugger.html#aa5cdcafd35a4ed86e39426c5068a29cf":[0,0,2,0,20],
+"classstored_1_1_debugger.html#aa5d552f9924f8ebc4bb64d36bf48a2c8":[0,0,2,0,40],
+"classstored_1_1_debugger.html#aab224e39c0f3c6dd34a0775385e778b1":[0,0,2,0,11],
+"classstored_1_1_debugger.html#aad07c52d67d3737d915ffffc9eab766a":[0,0,2,0,2],
+"classstored_1_1_debugger.html#aad8407735aa0f2fcab2640c72c830537":[0,0,2,0,38],
+"classstored_1_1_debugger.html#ab6203b1226153a94c9ba87ae88931d6a":[0,0,2,0,50],
+"classstored_1_1_debugger.html#ab790d058db43fd5953758001e361cf3b":[0,0,2,0,31],
+"classstored_1_1_debugger.html#ab7970bba0c51897467aa260705a22965":[0,0,2,0,48],
 "classstored_1_1_debugger.html#ab898cc1ca7b88385ea50b39aa9d310ee":[0,0,2,0,13],
 "classstored_1_1_debugger.html#ab8b61a7802026c5edb802e33e9e679e4":[0,0,2,0,14],
 "classstored_1_1_debugger.html#ac10b90a3faa7a472eece7e16f1f31da6":[0,0,2,0,4],
@@ -238,16 +249,5 @@ var NAVTREEINDEX5 =
 "classstored_1_1_example_debug_another_store_objects.html":[2,0,1,21],
 "classstored_1_1_example_debug_another_store_objects.html#a008f457bdecf1d5c543854c7cc2646c7":[2,0,1,21,1],
 "classstored_1_1_example_debug_another_store_objects.html#a4dfa832f7a6fc073a8e834fac410853f":[2,0,1,21,0],
-"classstored_1_1_example_debug_another_store_objects.html#aa2aaea0bf8ad708f2428c845fc7f0121":[2,0,1,21,2],
-"classstored_1_1_example_debug_another_store_objects.html#aacbbd684787041a163f2dc13c710e496":[2,0,1,21,3],
-"classstored_1_1_example_debug_some_store.html":[0,0,5,4],
-"classstored_1_1_example_debug_some_store.html#a006857675bac310e8d47f2e5b327d831":[0,0,5,4,1],
-"classstored_1_1_example_debug_some_store.html#a0767b6afd0834bdfe2a420e71195a2f0":[0,0,5,4,26],
-"classstored_1_1_example_debug_some_store.html#a10c8320b0c253dc5f87385ff75eecdc9":[0,0,5,4,25],
-"classstored_1_1_example_debug_some_store.html#a132bdd64756e5862831dbaa115f5aa43":[0,0,5,4,5],
-"classstored_1_1_example_debug_some_store.html#a1a86f6e873eef3a1fb9c766f2a470038":[0,0,5,4,19],
-"classstored_1_1_example_debug_some_store.html#a235e4f32e32ddf713650dc7b377166ff":[0,0,5,4,2],
-"classstored_1_1_example_debug_some_store.html#a293519ff1b59b5c2a01b23e3ff68e5b0":[0,0,5,4,21],
-"classstored_1_1_example_debug_some_store.html#a2c5dd33be33d377c7e507b3089629b8b":[0,0,5,4,22],
-"classstored_1_1_example_debug_some_store.html#a33a31190e342f629df26a8b526934248":[0,0,5,4,10]
+"classstored_1_1_example_debug_another_store_objects.html#aa2aaea0bf8ad708f2428c845fc7f0121":[2,0,1,21,2]
 };

@@ -40,17 +40,17 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "1__hello_2main_8cpp.html",
-"class_lossy_channel.html#a394f93245c61a3bb3d337b3017e4a880",
-"classed2_1_1protocol_1_1_crc16_layer.html#a6b7035d39d94d75fdf9a84efcaf30bd1",
-"classed2_1_1serial2zmq_1_1_serial2_zmq.html#acf7dfe0464fd1e012122ef59b97dc448",
-"classed2_1_1zmq__client_1_1_zmq_client.html#ae9b801419eab010532a7a20e6f7258cb",
-"classstored_1_1_debugger.html#ab898cc1ca7b88385ea50b39aa9d310ee",
-"classstored_1_1_example_debug_some_store.html#a349bf32ea241c379a0de566ced3f91f8",
-"classstored_1_1_example_protocol.html#abd207cca7b8c750fe0c86b5d0180e98c",
-"classstored_1_1_example_terminal.html#aa9dff727a83eb1886c5b18baedaa08f7",
-"classstored_1_1_variant.html#a22e669c7be876f140dac35bb1199f32a",
-"classstored_1_1impl_1_1_store_variable.html#a625db219ece4a9001a0aeadeb13d012e",
-"modules.html"
+"class_lossy_channel.html#a0eb82cf1123bc235d538ecc658a7eb59",
+"classed2_1_1protocol_1_1_crc16_layer.html#a67756467fdd3727bd8011795283462b8",
+"classed2_1_1serial2zmq_1_1_serial2_zmq.html#ac29147a170f54b1a6da3b8b09321c9f6",
+"classed2_1_1zmq__client_1_1_zmq_client.html#ad69cc28a3d398cfc4921e2a2e540e93d",
+"classstored_1_1_debugger.html#a8e8b913345f11bf3cf3999c305905681",
+"classstored_1_1_example_debug_another_store_objects.html#aacbbd684787041a163f2dc13c710e496",
+"classstored_1_1_example_protocol.html#a828ffe2572882608606fdd590b5e7086",
+"classstored_1_1_example_terminal.html#a4757038ef0737a0d65aaa2909becb718",
+"classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#aa4ee2991fb6b65047995c2c3e7021dfb",
+"classstored_1_1impl_1_1_store_function.html#a614fe236bb132f448c42b73be863e1f8",
+"index.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

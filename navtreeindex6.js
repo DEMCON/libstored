@@ -1,5 +1,16 @@
 var NAVTREEINDEX6 =
 {
+"classstored_1_1_example_debug_another_store_objects.html#aacbbd684787041a163f2dc13c710e496":[2,0,1,21,3],
+"classstored_1_1_example_debug_some_store.html":[0,0,5,4],
+"classstored_1_1_example_debug_some_store.html#a006857675bac310e8d47f2e5b327d831":[0,0,5,4,1],
+"classstored_1_1_example_debug_some_store.html#a0767b6afd0834bdfe2a420e71195a2f0":[0,0,5,4,26],
+"classstored_1_1_example_debug_some_store.html#a10c8320b0c253dc5f87385ff75eecdc9":[0,0,5,4,25],
+"classstored_1_1_example_debug_some_store.html#a132bdd64756e5862831dbaa115f5aa43":[0,0,5,4,5],
+"classstored_1_1_example_debug_some_store.html#a1a86f6e873eef3a1fb9c766f2a470038":[0,0,5,4,19],
+"classstored_1_1_example_debug_some_store.html#a235e4f32e32ddf713650dc7b377166ff":[0,0,5,4,2],
+"classstored_1_1_example_debug_some_store.html#a293519ff1b59b5c2a01b23e3ff68e5b0":[0,0,5,4,21],
+"classstored_1_1_example_debug_some_store.html#a2c5dd33be33d377c7e507b3089629b8b":[0,0,5,4,22],
+"classstored_1_1_example_debug_some_store.html#a33a31190e342f629df26a8b526934248":[0,0,5,4,10],
 "classstored_1_1_example_debug_some_store.html#a349bf32ea241c379a0de566ced3f91f8":[0,0,5,4,4],
 "classstored_1_1_example_debug_some_store.html#a3dffeeae7c96ac6133f5214e4a2a001e":[0,0,5,4,8],
 "classstored_1_1_example_debug_some_store.html#a43f42f7d6ef19b62f1acdddeecf922e9":[0,0,5,4,15],
@@ -238,16 +249,5 @@ var NAVTREEINDEX6 =
 "classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d":[0,0,5,10,2],
 "classstored_1_1_example_protocol.html#a6a813b78ee738431b717cee82a5d4194":[0,0,5,10,24],
 "classstored_1_1_example_protocol.html#a700110f39b4a0c5c77851bc0fe96a1e8":[0,0,5,10,31],
-"classstored_1_1_example_protocol.html#a745a77d1218ec600fb62064663412055":[0,0,5,10,25],
-"classstored_1_1_example_protocol.html#a828ffe2572882608606fdd590b5e7086":[0,0,5,10,0],
-"classstored_1_1_example_protocol.html#a8452cfd8cf589bf7dd6c3b823cd8cdf8":[0,0,5,10,30],
-"classstored_1_1_example_protocol.html#a874598a03e4b0df90e1bbb2b35b948fe":[0,0,5,10,11],
-"classstored_1_1_example_protocol.html#a88425f42680f3f100b56f48662128f5a":[0,0,5,10,7],
-"classstored_1_1_example_protocol.html#a89d1ba0b428bbad18e46592ea3dbe58c":[0,0,5,10,33],
-"classstored_1_1_example_protocol.html#a8a674aed95fe0b379a53a6d074afe521":[0,0,5,10,16],
-"classstored_1_1_example_protocol.html#a9dd4807b3357d1057973e27968810da8":[0,0,5,10,13],
-"classstored_1_1_example_protocol.html#aa5f093411161eea64a9d9bbf4ac21522":[0,0,5,10,27],
-"classstored_1_1_example_protocol.html#aac028e7b395ddbe9dddd59a8fa2c7784":[0,0,5,10,29],
-"classstored_1_1_example_protocol.html#aaeafcf12001439e2499a59d597ca9659":[0,0,5,10,6],
-"classstored_1_1_example_protocol.html#ab85f7f77e50b5d5cc09df11bfbe97445":[0,0,5,10,22]
+"classstored_1_1_example_protocol.html#a745a77d1218ec600fb62064663412055":[0,0,5,10,25]
 };

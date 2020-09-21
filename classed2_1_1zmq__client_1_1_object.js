@@ -6,6 +6,8 @@ var classed2_1_1zmq__client_1_1_object =
     [ "alias", "classed2_1_1zmq__client_1_1_object.html#ab6d758ea78f3704093fac8f788b52b5c", null ],
     [ "asyncRead", "classed2_1_1zmq__client_1_1_object.html#a8b25a80ca45b5c07ae7e56ca1a4a2b8c", null ],
     [ "asyncRead", "classed2_1_1zmq__client_1_1_object.html#a8b25a80ca45b5c07ae7e56ca1a4a2b8c", null ],
+    [ "asyncWrite", "classed2_1_1zmq__client_1_1_object.html#a37990361faddc778c8497d3c9f2270f0", null ],
+    [ "asyncWrite", "classed2_1_1zmq__client_1_1_object.html#a37990361faddc778c8497d3c9f2270f0", null ],
     [ "client", "classed2_1_1zmq__client_1_1_object.html#ac92874b22eb8d95bfd872ba6f2fbf141", null ],
     [ "client", "classed2_1_1zmq__client_1_1_object.html#ac92874b22eb8d95bfd872ba6f2fbf141", null ],
     [ "decodeReadRep", "classed2_1_1zmq__client_1_1_object.html#af63ad6dc07299a031fefc65a9fad1d26", null ],
@@ -57,5 +59,6 @@ var classed2_1_1zmq__client_1_1_object =
     [ "valueString", "classed2_1_1zmq__client_1_1_object.html#ac0df10468a757eddf209aad4b85f3300", null ],
     [ "valueString", "classed2_1_1zmq__client_1_1_object.html#ac0df10468a757eddf209aad4b85f3300", null ],
     [ "write", "classed2_1_1zmq__client_1_1_object.html#a9f3d04184501446ef94ff9301bbd30c2", null ],
-    [ "write", "classed2_1_1zmq__client_1_1_object.html#a9f3d04184501446ef94ff9301bbd30c2", null ]
+    [ "write", "classed2_1_1zmq__client_1_1_object.html#a9f3d04184501446ef94ff9301bbd30c2", null ],
+    [ "alias", "classed2_1_1zmq__client_1_1_object.html#abba810d27f6ad3bc141ca9ca1f39aa6b", null ]
 ];

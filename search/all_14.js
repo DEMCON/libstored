@@ -17,6 +17,7 @@ var searchData=
   ['unused_5fpar',['UNUSED_PAR',['../macros_8h.html#af17ee1aea7e7e70c19dc325e02552ed0',1,'macros.h']]],
   ['up',['up',['../classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40',1,'stored::ProtocolLayer::up()'],['../classed2_1_1protocol_1_1_protocol_layer.html#a7c8e66b62dbad89ef3c9d82546b5bf20',1,'ed2.protocol.ProtocolLayer.up(self)'],['../classed2_1_1protocol_1_1_protocol_layer.html#ae94c3f5d4ccbdb720b5d60fb9736398f',1,'ed2.protocol.ProtocolLayer.up(self, cb)'],['../classed2_1_1protocol_1_1_protocol_layer.html#a7c8e66b62dbad89ef3c9d82546b5bf20',1,'ed2.protocol.ProtocolLayer.up(self)'],['../classed2_1_1protocol_1_1_protocol_layer.html#ae94c3f5d4ccbdb720b5d60fb9736398f',1,'ed2.protocol.ProtocolLayer.up(self, cb)']]],
   ['url',['url',['../namespacesetup.html#afc13124aa5c0124e84e1d965e3f4b0fb',1,'setup']]],
+  ['useeventloop',['useEventLoop',['../classed2_1_1zmq__client_1_1_zmq_client.html#aa0f098b0b019525738e3aaafc1a53756',1,'ed2.zmq_client.ZmqClient.useEventLoop(self)'],['../classed2_1_1zmq__client_1_1_zmq_client.html#aa0f098b0b019525738e3aaafc1a53756',1,'ed2.zmq_client.ZmqClient.useEventLoop(self)']]],
   ['util_2ecpp',['util.cpp',['../util_8cpp.html',1,'']]],
   ['util_2eh',['util.h',['../util_8h.html',1,'']]]
 ];
