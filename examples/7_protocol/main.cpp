@@ -146,7 +146,7 @@ int main() {
 		  @Y        ArqLayer: seq=89
 		    ?       Debugger: capabilities
 		  E         SegmentationLayer: last chunk
-		  z\7fI     AsciiEscapeLayer: z<tab>
+		  z\x7fI    AsciiEscapeLayer: z<tab>
                       Crc16Layer: CRC=0x7a09
 		\x1b\\      TerminalLayer: end of message
 
@@ -160,7 +160,7 @@ int main() {
 	printf("Run this example using ed2.wrapper.stdio with the flag\n");
 	printf("  -S segment,arq,crc16,ascii,term\n\n");
 
-	stored::Debugger debugger;
+	stored::Debugger debugger("7_protocol");
 	debugger.map(store);
 
 	stored::SegmentationLayer segmentation;

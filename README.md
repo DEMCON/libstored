@@ -127,7 +127,7 @@ generate stuff for you.  This is how to integrate it in your project:
   a library named `app-libstored`, and set all the dependencies right.
 
 		add_application(app main.cpp)
-		libstored_generate(app FumoStore.st)
+		libstored_generate(app MyStore.st)
 
 - Now, build your `app`. The generated libstored library is automatically
   built.

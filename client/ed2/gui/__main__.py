@@ -25,6 +25,7 @@ import sys
 import argparse
 import os
 import natsort
+import logging
 
 from PySide2.QtGui import QGuiApplication, QIcon
 from PySide2.QtQml import QQmlApplicationEngine
@@ -120,8 +121,13 @@ if __name__ == '__main__':
     parser.add_argument('-p', dest='port', type=int, default=ZmqServer.default_port, help='port')
     parser.add_argument('-l', dest='lognplot', type=str, nargs='?', default=None, help='Connect to lognplot server', const='localhost')
     parser.add_argument('-P', dest='lognplotport', type=int, default=12345, help='Lognplot port to connect to')
+    parser.add_argument('-v', dest='verbose', default=False, help='Enable verbose output', action='store_true')
 
     args = parser.parse_args()
+
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+
     app = QGuiApplication(sys.argv)
     app.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "twotone_bug_report_black_48dp.png")))
     engine = QQmlApplicationEngine(parent=app)

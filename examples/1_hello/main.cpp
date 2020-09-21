@@ -3,7 +3,7 @@
  * \brief Hello world example.
  */
 
-// Include the generated model, based on Hello.st.
+// Include the generated model, based on ExampleHello.st.
 #include "ExampleHello.h"
 
 #include <cstdio>
