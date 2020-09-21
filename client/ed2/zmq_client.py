@@ -680,6 +680,7 @@ class Tracing(Macro):
 
         self._enabled = None
         self._decimate = 1
+        self._pending = False
 
         cap = self.client.capabilities()
         if not 't' in cap:
@@ -762,9 +763,13 @@ class Tracing(Macro):
         return self._stream
 
     def process(self):
+        if self._pending:
+            return
+        self._pending = True
         self.client.stream(self._stream, raw=True, callback=self._process)
 
     def _process(self, s):
+        self._pending = False
         time = self.client.time()
         for sample in s.split(b'\n;'):
             # The first value is the time stamp.

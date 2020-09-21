@@ -160,7 +160,7 @@ int main() {
 	printf("Run this example using ed2.wrapper.stdio with the flag\n");
 	printf("  -S segment,arq,crc16,ascii,term\n\n");
 
-	stored::Debugger debugger;
+	stored::Debugger debugger("7_protocol");
 	debugger.map(store);
 
 	stored::SegmentationLayer segmentation;
