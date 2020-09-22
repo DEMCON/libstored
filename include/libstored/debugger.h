@@ -322,6 +322,10 @@
 #include <string>
 #include <memory>
 
+#if STORED_cplusplus >= 201103L
+#  include <functional>
+#endif
+
 namespace stored {
 
 #ifdef STORED_COMPILER_ARMCC
@@ -570,31 +574,6 @@ namespace stored {
 		 * \param prefix a prefix applied to the name passed to \p f
 		 */
 		virtual void list(ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr) const = 0;
-
-#if STORED_cplusplus >= 201103L
-		/*!
-		 * \brief Callback function prototype as supplied to \c list().
-		 *
-		 * It receives the name of the object, and the corresponding
-		 * #stored::DebugVariant of the object.
-		 *
-		 * \see #list<F>(F&) const
-		 */
-		typedef void(ListCallback)(char const*, DebugVariant&);
-
-		/*!
-		 * \brief Iterates over the directory and invoke a callback for every object.
-		 * \param f the callback to invoke, which can be any type, but must look like #ListCallback
-		 */
-		template <typename F>
-		SFINAE_IS_FUNCTION(F, ListCallback, void)
-		list(F& f) const {
-			auto cb = [](char const* name, DebugVariant& variant, void* f_) {
-				(*static_cast<F*>(f_))(name, variant);
-			};
-			list(static_cast<ListCallbackArg*>(cb), &f);
-		}
-#endif
 	};
 
 	/*!
@@ -749,16 +728,28 @@ namespace stored {
 		void list(ListCallbackArg* f, void* arg = nullptr) const;
 
 #if STORED_cplusplus >= 201103L
-		/*! \copydoc stored::DebugStoreBase::ListCallback */
-		typedef DebugStoreBase::ListCallback ListCallback;
+		/*!
+		 * \brief Callback function prototype as supplied to \c list().
+		 *
+		 * It receives the name of the object, and the corresponding
+		 * #stored::DebugVariant of the object.
+		 *
+		 * \see #list<F>(F&&) const
+		 */
+		typedef void(ListCallback)(char const*, DebugVariant&);
 
-		/*! \copydoc stored::DebugStoreBase::list(F&) const */
+		/*!
+		 * \brief Iterates over the directory and invoke a callback for every object.
+		 * \param f the callback to invoke, which can be any type, but must look like #ListCallback
+		 */
 		template <typename F>
-		void list(F& f) const {
-			auto cb = [](char const* name, DebugVariant& variant, void* f_) {
-				(*static_cast<F*>(f_))(name, variant);
+		SFINAE_IS_FUNCTION(F, ListCallback, void)
+		list(F&& f) const {
+			std::function<ListCallback> f_ = f;
+			auto cb = [](char const* name, DebugVariant& variant, void* f__) {
+				(*(std::function<ListCallback>*)f__)(name, variant);
 			};
-			list(static_cast<ListCallbackArg*>(cb), &f);
+			list(static_cast<ListCallbackArg*>(cb), &f_);
 		}
 #endif
 	private:

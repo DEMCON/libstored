@@ -317,6 +317,7 @@ void Debugger::setIdentification(char const* identification) {
 
 /*!
  * \brief Push the version string into the given response.
+ * \return \c true if the version is pushed, \c false if not available
  * \see #setVersions()
  */
 bool Debugger::version(ProtocolLayer& response) {
