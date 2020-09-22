@@ -378,6 +378,26 @@ namespace stored {
 		 * \brief Checks if the object is a variable.
 		 */
 		bool isVariable() const { return valid() && !Type::isFunction(type()); }
+
+	protected:
+		/*!
+		 * \brief Check if this and the given variant point to the same object.
+		 */
+		virtual bool operator==(DebugVariantBase const& rhs) const { return this == &rhs; }
+
+		/*!
+		 * \brief Check if this and the given variant do not point to the same object.
+		 */
+		bool operator!=(DebugVariantBase const& rhs) const { return !(*this == rhs); }
+
+		/*!
+		 * \brief Returns the container this object belongs to.
+		 */
+		virtual void* container() const = 0;
+
+		// For operator==().
+		template <typename Container> friend class DebugVariantTyped;
+		friend class DebugVariant;
 	};
 
 	/*!
@@ -425,6 +445,21 @@ namespace stored {
 		Variant<Container> const& variant() const { return m_variant; }
 		/*! \copydoc variant() const */
 		Variant<Container>& variant() { return m_variant; }
+
+	protected:
+		bool operator==(DebugVariantBase const& rhs) const final {
+			if(valid() != rhs.valid())
+				return false;
+			if(!valid())
+				return true;
+			if(container() != rhs.container())
+				return false;
+			return variant() == static_cast<DebugVariantTyped<Container> const&>(rhs).variant();
+		}
+
+		void* container() const final {
+			return variant().valid() ? &variant().container() : nullptr;
+		}
 
 	private:
 		/*! \brief The wrapped variant. */
@@ -489,6 +524,10 @@ namespace stored {
 			return variant().size(); }
 		bool valid() const final {
 			return variant().valid(); }
+		bool operator==(DebugVariant const& rhs) const {
+			return variant() == rhs.variant(); }
+		bool operator!=(DebugVariant const& rhs) const {
+			return !(*this == rhs); }
 
 	protected:
 		/*!
@@ -505,6 +544,10 @@ namespace stored {
 		DebugVariantBase& variant() {
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return *static_cast<DebugVariantBase*>(reinterpret_cast<DebugVariantTyped<>*>(m_buffer));
+		}
+
+		void* container() const final {
+			return variant().container();
 		}
 
 	private:

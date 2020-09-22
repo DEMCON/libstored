@@ -1103,7 +1103,7 @@ namespace stored {
 		/*! \copybrief Variant::isVariable() */
 		bool isVariable() const { stored_assert(valid()); return !isFunction(); }
 		/*! \brief Don't use. */
-		void* container() const;
+		int& container() const { return *(int*)nullptr; }
 
 		/*! \copybrief Variant::operator==() */
 		bool operator==(Variant const& rhs) const {
