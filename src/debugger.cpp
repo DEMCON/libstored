@@ -193,8 +193,11 @@ void Debugger::map(DebugStoreBase* store, char const* name) {
 	if(!name && store)
 		name = store->name();
 
-	if(!name || name[0] != '/' || strchr(name + 1, '/') || !store)
+	if(!name || name[0] != '/' || strchr(name + 1, '/') || !store) {
+		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+		delete store;
 		return;
+	}
 
 	StoreMap::iterator it = m_map.find(name);
 

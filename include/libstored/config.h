@@ -115,7 +115,7 @@ namespace stored {
 		 *
 		 * The defined number is the number of concurrent streams that are supported.
 		 */
-		static int const DebuggerStreams = 1;
+		static int const DebuggerStreams = 2; // by default two: one for the application, one for tracing
 		/*! \brief Size of one stream buffer in bytes. */
 		static size_t const DebuggerStreamBuffer = 1024;
 

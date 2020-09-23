@@ -216,6 +216,157 @@ TEST(Debugger, Alias) {
 	EXPECT_EQ(ll.encoded().at(6), "?");
 }
 
+TEST(Debugger, Macro) {
+	stored::Debugger d;
+	stored::TestStore store;
+	d.map(store);
+	LoggingLayer ll;
+	ll.wrap(d);
+
+	DECODE(d, "m1;r/default uint8");
+	EXPECT_EQ(ll.encoded().at(0), "!");
+	DECODE(d, "1");
+	EXPECT_EQ(ll.encoded().at(1), "0");
+	store.default_uint8 = 2;
+	DECODE(d, "1");
+	EXPECT_EQ(ll.encoded().at(2), "2");
+
+	DECODE(d, "m1|r/default uint8|e;|r/default uint16");
+	EXPECT_EQ(ll.encoded().at(3), "!");
+	DECODE(d, "1");
+	EXPECT_EQ(ll.encoded().at(4), "2;0");
+
+	DECODE(d, "m1");
+	EXPECT_EQ(ll.encoded().at(5), "!");
+	DECODE(d, "1");
+	EXPECT_EQ(ll.encoded().at(6), "?");
+}
+
+TEST(Debugger, ReadMem) {
+	stored::Debugger d;
+	stored::TestStore store;
+	d.map(store);
+	LoggingLayer ll;
+	ll.wrap(d);
+
+	uint32_t i = 0x12345678;
+	char buf[32];
+	snprintf(buf, sizeof(buf), "R%" PRIxPTR " 4", (uintptr_t)&i);
+	d.decode(buf, strlen(buf));
+#ifdef STORED_LITTLE_ENDIAN
+	EXPECT_EQ(ll.encoded().at(0), "78563412");
+#else
+	EXPECT_EQ(ll.encoded().at(0), "12345678");
+#endif
+}
+
+TEST(Debugger, WriteMem) {
+	stored::Debugger d;
+	stored::TestStore store;
+	d.map(store);
+	LoggingLayer ll;
+	ll.wrap(d);
+
+	uint32_t i = 0x12345678;
+	char buf[32];
+	snprintf(buf, sizeof(buf), "W%" PRIxPTR " abcdef01", (uintptr_t)&i);
+	d.decode(buf, strlen(buf));
+	EXPECT_EQ(ll.encoded().at(0), "!");
+#ifdef STORED_LITTLE_ENDIAN
+	EXPECT_EQ(i, 0x01efcdab);
+#else
+	EXPECT_EQ(i, 0xabcdef01);
+#endif
+}
+
+TEST(Debugger, Stream) {
+	stored::Debugger d;
+	stored::TestStore store;
+	d.map(store);
+	LoggingLayer ll;
+	ll.wrap(d);
+
+	ASSERT_TRUE(stored::Config::DebuggerStreams == 2);
+	// Use a stream, such that we have only room for one left.
+	d.stream('z', "oh gosh");
+
+	DECODE(d, "s1");
+	EXPECT_EQ(ll.encoded().at(0), "?");
+
+	d.stream('1', "it's ");
+	d.stream('2', "a "); // no room for this stream
+	d.stream('1', "small ");
+
+	DECODE(d, "s1");
+	EXPECT_EQ(ll.encoded().at(1), "it's small ");
+	DECODE(d, "s1");
+	EXPECT_EQ(ll.encoded().at(2), "");
+
+	d.stream('1', "world ");
+	DECODE(d, "s1");
+	EXPECT_EQ(ll.encoded().at(3), "world ");
+
+	d.stream('3', "after "); // stream 1 is empty, so 3 is using 1's space
+	d.stream('3', "all");
+	d.stream('1', "world "); // no room for this stream
+	DECODE(d, "s3");
+	EXPECT_EQ(ll.encoded().at(4), "after all");
+
+	DECODE(d, "s2");
+	EXPECT_EQ(ll.encoded().at(5), "?");
+	DECODE(d, "s1");
+	EXPECT_EQ(ll.encoded().at(6), "?");
+}
+
+TEST(Debugger, Trace) {
+	stored::Debugger d;
+	stored::TestStore store;
+	d.map(store);
+	LoggingLayer ll;
+	ll.wrap(d);
+
+	DECODE(d, "mt|r/default uint8|e;");
+	EXPECT_EQ(ll.encoded().at(0), "!");
+
+	DECODE(d, "ttT");
+	EXPECT_EQ(ll.encoded().at(1), "!");
+
+	d.trace();
+	DECODE(d, "sT");
+	EXPECT_EQ(ll.encoded().at(2), "0;");
+
+	store.default_uint8 = 1;
+	d.trace();
+	store.default_uint8 = 2;
+	d.trace();
+
+	DECODE(d, "sT");
+	EXPECT_EQ(ll.encoded().at(3), "1;2;");
+
+	// Set decimate
+	DECODE(d, "ttT3");
+	EXPECT_EQ(ll.encoded().at(4), "!");
+
+	for(int i = 4; i < 10; i++) {
+		store.default_uint8 = (uint8_t)i;
+		d.trace();
+	}
+
+	DECODE(d, "sT");
+	EXPECT_EQ(ll.encoded().at(5), "6;9;");
+
+	// Disable
+	DECODE(d, "t");
+	EXPECT_EQ(ll.encoded().at(6), "!");
+
+	d.trace();
+	d.trace();
+	d.trace();
+
+	DECODE(d, "sT");
+	EXPECT_EQ(ll.encoded().at(7), "");
+}
+
 
 } // namespace
 
