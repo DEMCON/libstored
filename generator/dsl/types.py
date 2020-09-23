@@ -387,6 +387,7 @@ class Store(object):
         self.buffer = Buffer()
         self.directory = Directory()
         self.littleEndian = True
+        self.hash = None
 
     def process(self):
         self.flattenScopes()

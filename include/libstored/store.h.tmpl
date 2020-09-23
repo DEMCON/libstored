@@ -146,6 +146,8 @@ namespace stored {
 		typedef Implementation_ Implementation;
 		/*! \brief Returns the name of store, which can be used as prefix for #stored::Debugger. */
 		char const* name() const { return "/{{store.name}}"; }
+		/*! \brief Returns a unique hash of the store. */
+		char const* hash() const { return "{{store.hash}}"; }
 
 		/*! \brief Returns the reference to the implementation.*/
 		Implementation const& implementation() const { return *static_cast<Implementation const*>(this); }
