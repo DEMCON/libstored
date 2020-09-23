@@ -76,3 +76,8 @@ if(SPIN_EXECUTABLE)
 	)
 endif()
 
+add_test(
+	NAME ZmqClient
+	COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/../client ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_ZmqClient.py $<TARGET_FILE:zmqserver>
+)
+
