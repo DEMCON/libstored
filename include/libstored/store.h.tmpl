@@ -154,13 +154,22 @@ namespace stored {
 		/*! \copydoc stored::{{store.name}}Base::implementation() const */
 		Implementation& implementation() { return *static_cast<Implementation*>(this); }
 
+	protected:
+		/*! \brief The type of the data structure. */
+		typedef {{store.name}}Data Data;
+		/*! \brief Returns the container for all the store's data. */
+		Data const& data() const { return m_data; }
+		/*! \copydoc data() const */
+		Data& data() { return m_data; }
+		/*! \brief Returns the buffer with all variable data. */
+		char const* buffer() const { return data().buffer; }
+		/*! \copydoc buffer() const */
+		char* buffer() { return data().buffer; }
+
 	private:
 		/*! \brief The store's data. */
-		{{store.name}}Data m_data;
-		/*! \brief Returns the buffer with all variable data. */
-		char const* buffer() const { return m_data.buffer; }
-		/*! \copydoc buffer() const */
-		char* buffer() { return m_data.buffer; }
+		Data m_data;
+
 
 		// Accessor generators.
 
@@ -260,10 +269,10 @@ namespace stored {
 {%   if o is function %}
 {%     if o is blob %}
 		/*! \brief Callback for {{o}} */
-		size_t __{{o.cname}}(bool set, {{o|ctype}}* value, size_t len);
+		size_t __{{o.cname}}(bool UNUSED_PAR(set), {{o|ctype}}* UNUSED_PAR(value), size_t UNUSED_PAR(len)) { return 0; }
 {%     else %}
 		/*! \brief Callback for {{o}} */
-		void __{{o.cname}}(bool set, {{o|ctype}}& value);
+		void __{{o.cname}}(bool set, {{o|ctype}}& value) { if(!set) value = ({{o|ctype}})0; }
 {%     endif %}
 {%   endif %}
 {% endfor %}
@@ -414,16 +423,6 @@ namespace stored {
 		friend class {{store.name}}Base<{{store.name}}>;
 		/*! \copydoc stored::{{store.name}}Base::{{store.name}}Base() */
 		{{store.name}}() is_default
-	protected:
-{% for o in store.objects %}
-{%   if o is function %}
-{%     if o is blob %}
-		size_t __{{o.cname}}(bool UNUSED_PAR(set), {{o|ctype}}* UNUSED_PAR(value), size_t UNUSED_PAR(len)) { return 0; }
-{%     else %}
-		void __{{o.cname}}(bool set, {{o|ctype}}& value) { if(!set) value = ({{o|ctype}})0; }
-{%     endif %}
-{%   endif %}
-{% endfor %}
 	};
 
 } // namespace

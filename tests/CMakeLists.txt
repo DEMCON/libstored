@@ -39,6 +39,7 @@ libstored_add_test(test_directory test_directory.cpp)
 libstored_add_test(test_spm test_spm.cpp)
 libstored_add_test(test_protocol test_protocol.cpp)
 libstored_add_test(test_debugger test_debugger.cpp)
+libstored_add_test(test_synchronizer test_synchronizer.cpp)
 
 if(HAVE_VALGRIND AND LIBSTORED_EXAMPLES)
 	macro(libstored_example_test EXAMPLE)
