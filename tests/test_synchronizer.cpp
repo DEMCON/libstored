@@ -28,6 +28,23 @@ class SyncTestStore : public stored::Synchronizable<stored::TestStoreBase<SyncTe
 	friend class stored::TestStoreBase<SyncTestStore>;
 };
 
+TEST(Synchronizer, Endianness) {
+	EXPECT_EQ(stored::swap_endian<uint8_t>(1), 1);
+	EXPECT_EQ(stored::swap_endian<uint16_t>(0x1234), 0x3412);
+	EXPECT_EQ(stored::swap_endian<uint32_t>(0x12345678), 0x89563412);
+
+	uint8_t b[] = {1,2,3};
+	stored::swap_endian_<3>(b);
+	EXPECT_EQ(b[0], 3);
+	EXPECT_EQ(b[1], 2);
+	EXPECT_EQ(b[2], 1);
+
+	stored::swap_endian(b, 2);
+	EXPECT_EQ(b[0], 2);
+	EXPECT_EQ(b[1], 1);
+	EXPECT_EQ(b[2], 3);
+}
+
 TEST(Synchronizer, Instantiate) {
 	SyncTestStore store1;
 	SyncTestStore store2;

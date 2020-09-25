@@ -71,5 +71,18 @@ int strncmp(char const* __restrict__ str1, size_t len1, char const* __restrict__
 		return str1[i] ? 1 : 0;
 }
 
+/*!
+ * \brief Swap endianness of the given buffer.
+ * \ingroup libstored_util
+ */
+void swap_endian(void* buffer, size_t len) {
+	char* buffer_ = static_cast<char*>(buffer);
+	for(size_t i = 0; i < S / 2; i++) {
+		char c = buffer_[i];
+		buffer_[i] = buffer_[S - i - 1];
+		buffer_[S - i - 1] = c;
+	}
+}
+
 } // namespace
 

@@ -22,20 +22,20 @@
 
 namespace stored {
 
-StoreJournal::Id StoreJournal::m_idNext;
 
-StoreJournal::StoreJournal(void* buffer, size_t size)
-	: m_buffer(buffer)
+/////////////////////////////
+// StoreJournal
+//
+
+StoreJournal::StoreJournal(char const* hash, void* buffer, size_t size)
+	: m_hash(hash)
+	, m_buffer(buffer)
 	, m_bufferSize(size)
 	, m_keySize(keySize(m_bufferSize))
-	, m_id(m_idNext++)
 	, m_seq()
 	, m_seqLower()
 	, m_partialSeq()
 {
-	// Should not wrap-around, as ids may not be unique anymore in that case.
-	stored_assert(m_idNext);
-
 	// Size is 32 bit, where size_t might be 64. But I guess that the
 	// store is never >4G in size...
 	stored_assert(size < std::numeric_limits<Size>::max());
@@ -50,8 +50,8 @@ uint8_t StoreJournal::keySize(size_t bufferSize) {
 	return s;
 }
 
-StoreJournal::Id StoreJournal::id() const {
-	return m_id;
+char const* StoreJournal::hash() const {
+	return m_hash;
 }
 
 StoreJournal::Seq StoreJournal::seq() const {
@@ -181,6 +181,14 @@ bool StoreJournal::hasChanged(Key key, Seq since) const {
 	return false;
 }
 
+bool StoreJournal::hasChanged(Seq since) const {
+	if(m_changes.empty())
+		return false;
+
+	size_t pivot = m_changes.size() / 2;
+	return m_changes[pivot].highest >= since;
+}
+
 void StoreJournal::clean(StoreJournal::Seq oldest) {
 	if(oldest == 0)
 		oldest = seq() - SeqCleanThreshold;
@@ -197,12 +205,43 @@ void StoreJournal::clean(StoreJournal::Seq oldest) {
 		regenerate();
 }
 
-void StoreJournal::encodeId(ProtocolLayer& p, bool last) {
-	p.encode(&m_id, sizeof(Id), last);
+void StoreJournal::encodeHash(ProtocolLayer& p, bool last) {
+	encodeHash(p, hash(), last);
+}
+
+void StoreJournal::encodeHash(ProtocolLayer& p, char const* hash, bool last) {
+	size_t len = strlen(hash) + 1;
+	stored_assert(len > sizeof(Id)); // Otherwise SyncConnection::Bye cannot see the difference.
+	p.encode(hash, len, last);
+}
+
+char const* StoreJournal::decodeHash(void*& buffer, size_t& len) {
+	char* buffer_ = static_cast<char*>(buffer);
+	for(size_t i = 0; i < len && buffer_[i]; i++);
+
+	if(i == len) {
+		// \0 not found
+		len = 0;
+		return "";
+	} else {
+		i++; // skip \0 too
+		len -= i;
+		buffer = (void*)(buffer_ + i);
+		return buffer_;
+	}
 }
 
 void StoreJournal::encodeBuffer(ProtocolLayer& p, bool last) {
 	p.encode(buffer(), bufferSize(), last);
+}
+
+bool decodeBuffer(void*& buffer, size_t& len) {
+	if(len < bufferSize())
+		return false;
+
+	memcpy(buffer(), buffer, bufferSize());
+	len -= bufferSize();
+	return true;
 }
 
 StoreJournal::Seq StoreJournal::encodeUpdates(ProtocolLayer& p, StoreJournal::Seq sinceSeq, bool last) {
@@ -253,14 +292,11 @@ bool StoreJournal::decodeUpdates(void* buffer, size_t len) {
 }
 
 void StoreJournal::encodeKey(ProtocolLayer& p, StoreJournal::Key key) {
-	uint8_t buffer[sizeof(Key)];
 	size_t keysize = keySize();
-
-	for(size_t i = 0; i < keysize; i++)
-		// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
-		buffer[i] = (uint8_t)(key >> ((keysize - i - 1) * 8));
-
-	p.encode(buffer, keysize, false);
+#ifdef STORED_LITTLE_ENDIAN
+	key = swap_endian(key);
+#endif
+	p.encode(reinterpret_cast<char*>(&key) + sizeof(key) - keysize, keysize, false);
 }
 
 StoreJournal::Key StoreJournal::decodeKey(uint8_t*& buffer, size_t& len, bool& ok) {
@@ -270,9 +306,12 @@ StoreJournal::Key StoreJournal::decodeKey(uint8_t*& buffer, size_t& len, bool& o
 		ok = false;
 		return 0;
 	}
+	memcpy(reinterpret_cast<char*>(&key) + sizeof(key) - keysize, buffer, keysize);
 	len -= i;
-	for(; i > 0; i--, buffer++)
-		key = (key << 8u) | *buffer;
+
+#ifdef STORED_LITTLE_ENDIAN
+	key = swap_endian(key);
+#endif
 	return key;
 }
 
@@ -284,6 +323,420 @@ void* StoreJournal::keyToBuffer(StoreJournal::Key key, StoreJournal::Size len, b
 	if(ok && len && key + len > bufferSize())
 		*ok = false;
 	return static_cast<char*>(m_buffer) + key;
+}
+
+
+
+/////////////////////////////
+// SyncConnection
+//
+
+SyncConnection::SyncConnection(Sychronizer& synchronizer, ProtocolLayer& connection)
+	: base()
+	, m_synchronizer(synchronizer)
+	, m_idInNext(1)
+{
+	connection.wrap(*this);
+}
+
+SyncConnection::~SyncConnection() {
+	bye();
+}
+
+Synchronizer& SyncConnection::synchronizer() const {
+	return m_synchronizer;
+}
+
+void SyncConnection::encodeCmd(char cmd, bool last) {
+	encode(&cmd, 1, last);
+}
+
+/*!
+ * \brief Use this connection as a source of the given store.
+ */
+void SyncConnection::source(StoreJournal& store) {
+	for(IdInMap::iterator it = m_idIn.begin(); it != m_idIn.end(); ++it)
+		if(it->second == &store)
+			// Already registered.
+			return;
+
+	encodeCmd(Hello);
+	store.encodeHash(*this, true);
+	Id id = nextId();
+	encodeId(id, true);
+	m_idIn.insert(std::make_pair(id, &store));
+}
+
+/*!
+ * \brief Determine a unique ID for others to send store updates to us.
+ */
+SyncConnection::Id SyncConnection::nextId() {
+	stored_assert(m_idIn.size() < std::numeric_limits<Id>::max() / 2);
+
+	while(true) {
+		Id id = m_idInNext++;
+
+		if(id == 0)
+			continue;
+		if(m_idInMap.find(id) != m_idInMap.end())
+			continue;
+
+		return id;
+	}
+}
+
+/*!
+ * \brief Deregister a given store.
+ */
+void SyncConnection::drop(StoreJournal& store) {
+	bool bye = false;
+
+	Id id = 0;
+	for(IdInMap::iterator it = m_idIn.begin(); !id && it != m_idIn.end(); ++it)
+		if(it->second == &store)
+			id = it->first;
+
+	if(id && m_id.erase(id))
+		bye = true;
+	if(m_idOut.erase(&store))
+		bye = true;
+	if(m_seq.erase(&store))
+		bye = true;
+
+	if(!bye)
+		return;
+
+	encodeCmd(Bye);
+	store.encodeHash(*this, true);
+}
+
+void SyncConnection::bye() {
+	encodeCmd(Bye, true);
+	m_seq.clear();
+	m_idIn.clear();
+	m_idOut.clear();
+}
+
+void SyncConnection::bye(char const* hash) {
+	if(!hash)
+		return;
+
+	encodeCmd(Bye);
+	StoreJournal::encodeHash(*this, hash, true);
+	erase(hash);
+}
+
+void SyncConnection::erase(char const* hash) {
+	if(!hash)
+		return;
+
+	StoreJournal* j = synchronizer().toJournal(hash);
+	if(!j)
+		return;
+
+	m_seq.erase(j);
+	m_idOut.erase(j);
+
+#if STORED_cplusplus >= 201103L
+	for(IdInMap::iterator it = m_idIn.begin(); it != m_idIn.end();)
+		if(it->second == j)
+			it = m_idIn.erase(it);
+		else
+			++it;
+#else
+	bool done;
+	do {
+		done = true;
+		for(IdInMap::iterator it = m_idIn.begin(); it != m_idIn.end(); ++it)
+			if(it->second == j) {
+				m_idIn.erase(it);
+				done = false;
+				break;
+			}
+	} while(!done);
+#endif
+}
+
+void SyncConnection::bye(SyncConnection::Id id) {
+	encodeCmd(Bye);
+	encodeId(id);
+	erase(id);
+}
+
+void SyncConnection::erase(SyncConnection::Id id) {
+	IdInMap::iterator it = m_idIn.find(id);
+	if(it != m_idIn.end()) {
+		m_seq.erase(it->second);
+		m_idOut.erase(it->second);
+	}
+	m_idIn.erase(it);
+
+	StoreJournal* j = nullptr;
+
+#if STORED_cplusplus >= 201103L
+	for(IdOutMap::iterator it = m_idOut.begin(); it != m_idOut.end();)
+		if(it->second == id) {
+			j = it->first;
+			it = m_idOut.erase(it);
+		} else
+			++it;
+#else
+	bool done;
+	do {
+		done = true;
+		for(IdOutMap::iterator it = m_idOut.begin(); it != m_idOut.end(); ++it)
+			if(it->second == id) {
+				j = it->first;
+				m_idOut.erase(it);
+				done = false;
+				break;
+			}
+	} while(!done);
+#endif
+
+	if(j)
+		erase(j->hash());
+}
+
+/*!
+ * \brief Send out all updates of te given store.
+ */
+void SyncConnection::process(StoreJournal& store) {
+	SeqMap::iterator seq = m_seq.find(&store);
+	if(seq == m_seq.end())
+		// Unknown store.
+		return;
+	if(!store.hasChanges(seq->second))
+		// No recent changes.
+		return;
+
+	SeqMap::iterator id = m_idOut.find(&store);
+	if(id == m_idOut.end())
+		// No id related to this store.
+		return;
+
+	encodeCmd(Update);
+	encodeId(id->second, false);
+	seq->second = store.encodeUpdates(*this, seq->second, true);
+}
+
+char SyncConnection::decodeCmd(void*& buffer, size_t& len) {
+	if(len == 0)
+		return 0;
+
+	len--;
+	char* buffer_ = static_cast<char*>(buffer);
+	buffer = buffer_ + 1;
+	return buffer[0];
+}
+
+void SyncConnection::decode(void* buffer, size_t len) {
+	switch(decodeCmd(buffer, len)) {
+	case Hello: {
+		/*
+		 * Hello
+		 *
+		 * "I would like to have the full state and future changes
+		 * of the given store (by hash). All updates, send to me
+		 * using this reference."
+		 *
+		 * 'h' hash id
+		 */
+		char const* hash = StoreJournal::decodeHash(buffer, len);
+		Id id = decodeId(buffer, len);
+		if(!hash || !id)
+			break;
+
+		StoreJournal* j = synchronizer().toJournal(hash);
+		if(!j) {
+			bye(hash);
+			break;
+		}
+
+		encodeCmd(Welcome);
+		encodeId(id);
+
+		m_seq.insert(std::make_pair(j, j->seq()));
+		m_idIn.insert(std::make_pair(id, j));
+		id = nextId();
+		m_idOut.insert(std::make_pair(j, id));
+
+		encodeId(id, false);
+		j->encodeBuffer(*this, true);
+		break;
+	}
+	case Welcome: {
+		/*
+		 * Welcome
+		 *
+		 * "You are welcome. Here is the full buffer state, upon your request, of the
+		 * store with given reference. Any updates to the store at your side,
+		 * provide them to me with my reference."
+		 *
+		 * 'w' hello_id welcome_id buffer
+		 */
+
+		Id id = decodeId(buffer, len);
+		if(!id)
+			break;
+
+		Id welcome_id = decodeId(buffer, len);
+		IdInMap j = m_idIn.find(id);
+
+		if(!welcome_id || j == m_idIn.end() ||
+			!j.decodeBuffer(buffer, len))
+		{
+			bye(id);
+			break;
+		}
+
+		m_idOut.insert(std::make_pair(j->second, welcome_id));
+		break;
+	}
+	case Update: {
+		/*
+		 * Update
+		 *
+		 * "Your store, with given reference, has changed.
+		 * The changes are attached."
+		 *
+		 * 'u' id updates
+		 */
+		Id id = decodeId(buffer, len);
+		if(!id)
+			return;
+
+		IdInMap::iterator it = m_idIn.find(id);
+		if(it == m_idIn.end()) {
+			bye(id);
+			break;
+		}
+
+		if(!it->second->decodeUpdates(buffer, len)) {
+			bye(id);
+			break;
+		}
+
+		break;
+	}
+	case Bye: {
+		/*
+		 * Bye
+		 *
+		 * "I do not need any more updates of the given store (by hash, by id or all)."
+		 *
+		 * 'b' hash
+		 * 'b' id
+		 * 'b'
+		 */
+		if(len == 0) {
+			m_seq.clear();
+			m_idIn.clear();
+			m_idOut.clear();
+		} else if(len == sizeof(Id)) {
+			Id id = decodeId(buffer, len);
+			if(!id)
+				break;
+
+			IdInMap::iterator it = m_idIn.find(id);
+			if(it == m_idIn.end())
+				break;
+
+			erase(id);
+		} else {
+			char const* hash = StoreJournal::decodeHash(buffer, len);
+			erase(hash);
+		}
+		break;
+	}
+	default:;
+		// Other; ignore.
+	}
+}
+
+void SyncConnection::encodeId(SyncConnection::Id id, bool last) {
+#ifdef STORED_BIG_ENDIAN
+	id = swap_endian(id);
+#endif
+	encode(&id, sizeof(Id), last);
+}
+
+SyncConnection::Id SyncConnection::decodeId(void*& buffer, size_t& len) {
+	if(len < sizeof(Id))
+		return 0;
+
+	Id id =
+#ifdef STORED_BIG_ENDIAN
+		swap_endian
+#endif
+		(*reinterpret_cast<Id*>(buffer));
+
+	len = sizeof(Id);
+	buffer = static_cast<char*>(buffer) + sizeof(Id);
+	return id;
+}
+
+
+
+
+/////////////////////////////
+// Synchronizer
+//
+
+StoreJournal* Synchronizer::toJournal(char const* hash) const {
+	if(!hash)
+		return nullptr;
+	StoreMap::const_iterator it = m_storeMap.find(hash);
+	return it == m_storeMap.end() ? nullptr : it->second;
+}
+
+void Synchronizer::connect(ProtocolLayer& connection) {
+	SyncConnection* c = new SyncConnection(*this, connection);
+	m_connections.insert(c);
+}
+
+void Synchronizer::disconnect(ProtocolLayer& connection) {
+	SyncConnection* c = toConnection(connection);
+	if(c) {
+		m_connectionMap.erase(c);
+		delete c;
+	}
+}
+
+SyncConnection* Synchronizer::toConnection(ProtocolLayer& connection) const {
+	ProtocolLayer* c = connections.up();
+	if(!c)
+		return nullptr;
+	if(m_connections.find(c) == m_connections.end())
+		return nullptr;
+
+	stored_assert(dynamic_cast<SyncConnection*>(c) != nullptr);
+	return static_cast<SyncConnection*>(c);
+}
+
+void Synchronizer::process() {
+	for(StoreMap::iterator it = m_storeMap.begin(); it != m_storeMap.end(); ++it)
+		process(*it->second);
+}
+
+void Synchronizer::process(StoreJournal& j) {
+	for(Connections::iterator it = m_connections.begin(); it != m_connections.end(); ++it)
+		static_cast<SyncConnection*>(*it)->process(j);
+}
+
+void Synchronizer::process(ProtocolLayer& connection) {
+	SyncConnected* c = toConnection(connection);
+	if(!c)
+		return;
+
+	for(StoreMap::iterator it = m_storeMap.begin(); it != m_storeMap.end(); ++it)
+		c->process(*it->second);
+}
+
+void Synchronizer::process(ProtocolLayer& connection, StoreJournal& j) {
+	SyncConnected* c = toConnection(connection);
+	if(c)
+		c->process(j);
 }
 
 } // namespace

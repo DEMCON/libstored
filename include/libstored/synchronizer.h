@@ -31,37 +31,14 @@
 #include <libstored/types.h>
 #include <libstored/protocol.h>
 
+#include <map>
+#include <set>
+
 namespace stored {
-
-#if 0
-	class Connection : public ProtocolLayer {
-		CLASS_NOCOPY(Connection)
-	public:
-		Connection(Synchronizer& synchronizer)
-			: m_synchronizer(synchronizer)
-		{}
-
-		void decode(void* buffer, size_t len) final {
-			m_synchronizer.decode(buffer, len, *this);
-		}
-
-		void link(StoreData store);
-		void unlink(StoreData store);
-		void process(StoreChanges changes) {
-			// for all changes newer than the seq of the given store,
-			// encode(changes)
-		}
-
-	private:
-		Synchronizer& m_synchronizer;
-		std::map<StoreData,int /*seq*/> m_stores;
-	};
-#endif
 
 	class StoreJournal {
 		CLASS_NOCOPY(StoreJournal)
 	public:
-		typedef uint16_t Id;
 		typedef uint64_t Seq;
 		typedef uint16_t ShortSeq;
 		typedef uint32_t Key;
@@ -72,23 +49,27 @@ namespace stored {
 			SeqCleanThreshold = SeqLowerMargin * 2u,
 		};
 
-		StoreJournal(void* buffer, size_t size);
+		StoreJournal(char const* hash, void* buffer, size_t size);
 
 		static uint8_t keySize(size_t bufferSize);
 		void* keyToBuffer(Key key, Size len = 0, bool* ok = nullptr) const;
 
-		Id id() const;
+		char const* hash() const;
 		Seq seq() const;
 
 		void clean(Seq oldest = 0);
 		void changed(Key key, size_t len);
 		bool hasChanged(Key key, Seq since) const;
+		bool hasChanged(Seq since) const;
 
-		void encodeId(ProtocolLayer& p, bool last = false);
+		void encodeHash(ProtocolLayer& p, bool last = false);
+		static void encodeHash(ProtocolLayer& p, char const* hash, bool last = false);
 		void encodeBuffer(ProtocolLayer& p, bool last = false);
 		Seq encodeUpdates(ProtocolLayer& p, Seq sinceSeq, bool last = false);
 
-		bool decodeUpdates(void* buffer, size_t len);
+		static char const* decodeHash(void*& buffer, size_t& len);
+		bool decodeBuffer(void*& buffer, size_t& len);
+		bool decodeUpdates(void*& buffer, size_t& len);
 
 	protected:
 		struct ObjectInfo {
@@ -129,11 +110,10 @@ namespace stored {
 		size_t keySize() const;
 
 	private:
+		char const* const m_hash;
 		void* const m_buffer;
 		size_t const m_bufferSize;
 		uint8_t const m_keySize;
-		static Id m_idNext;
-		Id const m_id;
 		Seq m_seq;
 		Seq m_seqLower;
 		bool m_partialSeq;
@@ -182,7 +162,7 @@ namespace stored {
 		Synchronizable()
 			: base()
 #endif
-			, m_journal(this->buffer(), sizeof(this->data().buffer))
+			, m_journal(this->hash(), this->buffer(), sizeof(this->data().buffer))
 		{
 			// Useless without hooks.
 			stored_assert(Config::EnableHooks);
@@ -212,93 +192,109 @@ namespace stored {
 		StoreJournal m_journal;
 	};
 
-#if 0
+	class Synchronizer;
+
+	/*!
+	 * \brief A one-to-one connection to synchronize one or more stores.
+	 */
+	class SyncConnection : public ProtocolLayer {
+		CLASS_NOCOPY(SyncConnection)
+	public:
+		typedef ProtocolLayer base;
+		typedef uint16_t Id;
+
+		static char const Hello = 'h';
+		static char const Welcome = 'w';
+		static char const Update = 'u';
+		static char const Bye = 'b';
+
+		SyncConnection(Synchronizer& synchronizer, ProtocolLayer& connection);
+		virtual ~SyncConnection() override;
+
+		Synchronizer& synchronizer() const;
+
+		void source(StoreJournal& store);
+		void drop(StoreJournal& store);
+		void process(StoreJournal& store);
+		void decode(void* buffer, size_t len) override final;
+
+	protected:
+		Id nextId();
+		void encodeCmd(char cmd, bool last = false);
+		void encodeId(Id id, bool last = false);
+		char decodeCmd(void*& buffer, size_t& len);
+		static Id decodeId(void*& buffer, size_t& len);
+
+		void bye();
+		void bye(char const* hash);
+		void bye(Id id);
+		void erase(char const* hash);
+		void erase(Id id);
+
+	private:
+		Synchronizer& m_synchronizer;
+
+		typedef std::map<StoreJournal*, StoreJournal::Seq> SeqMap;
+		SeqMap m_seq;
+
+		// Id determined by remote class (got via Hello message)
+		typedef std::map<StoreJournal*, Id> IdOutMap;
+		IdOutMap m_idOut;
+
+		// Id determined by this class (set in Hello message)
+		typedef std::map<Id, StoreJournal*> IdInMap;
+		IdInMap m_idIn;
+
+		Id m_idInNext;
+	};
+
 	class Synchronizer {
 		CLASS_NOCOPY(Synchronizer)
-	protected:
 	public:
 
 		template <typename Store>
-		void map(Store& store, char const* id = nullptr) {
-			if(!id)
-				id = store.hash();
-
-			StoreData storeData = { store.m_data.buffer, sizeof(store.m_data.buffer) };
-			m_storeMap.insert(std::make_pair(id, storeData));
-			store.notifyOnSet(this);
+		void map(Synchronizable<Store>& store) {
+			m_storeMap.insert(std::make_pair(store.hash(), &store.journal()));
 		}
 
 		template <typename Store>
-		void unmap(Store& store) {
-			unmap(store.hash());
+		void unmap(Synchronizable<Store>& store) {
+			m_storeMap.erase(store.hash());
+
+			for(Connections::iterator it = m_connections.begin(); it != m_connections.end(); ++it)
+				(*it)->drop(store.journal());
 		}
 
-		void unmap(char const* id) {
-			m_storeMap.erase(id);
+		StoreJournal* toJournal(char const* hash) const;
+
+		void connect(ProtocolLayer& connection);
+		void disconnect(ProtocolLayer& connection);
+
+		template <typename Store>
+		void process(Synchronizable<Store>& store) {
+			process(store.journal());
 		}
 
-		void connect(ProtocolLayer& connection) {
-			Connection* c = new Connection(*this);
-			connection.wrap(c);
-
-			m_connectionMap.insert(std::make_pair(c, NULL));
+		template <typename Store>
+		void process(ProtocolLayer& connection, Synchronizable<Store>& store) {
+			process(connection, store.journal());
 		}
 
-		void disconnect(ProtocolLayer& connection) {
-			m_connectionMap.erase(&connection.up());
-			delete connection.up();
-		}
-
-		void process() {
-			for(it : m_connectionMap)
-				process(it->second, it->first);
-		}
-
-		void process(ProtocolLayer& connection) {
-			for(it : m_connectionMap.find(&connection.up()))
-				process(it->second, connection);
-		}
-
-		void process(char const* id) {
-			for(it : m_connectionMap)
-				if(it->second == id)
-					process(it->second, it->first);
-		}
-
-		void process(char const* id, ProtocolLayer& connection) {
-			ProtocolLayer* c = connection.up();
-		}
-
-		void storeSet(char const* id, void* buffer, size_t len) {
-			m_changedMap[id].insert(make_pair(seq, buffer, len));
-		}
+		void process();
+		void process(StoreJournal& j);
+		void process(ProtocolLayer& connection);
+		void process(ProtocolLayer& connection, StoreJournal& j);
 
 	protected:
-		void decode(void* buffer, size_t len, ProtocolLayer& connection) {
-			switch(buffer[0]) {
-			case 'h':
-				m_connectionMap.insert(&connection, buffer[1:]);
-				encode("H", 1, false, connection);
-				encode(m_storeMap[id].buffer, m_storeMap[id].length, true, connection);
-				break;
-			case 'b':
-				m_connectionMap.erase(&connection, buffer[1:]);
-				encode("B", 1, true, connection);
-				break;
-			}
-		}
+		SyncConnection* toConnection(ProtocolLayer& connection) const;
 
-		void encode(void const* buffer, size_t len, bool last, ProtocolLayer& connection) {
-			connection.encode(buffer, len, last);
-		}
-
-		typedef std::map<char const*,StoreData> StoreMap;
+	private:
+		typedef std::map<char const*, StoreJournal> StoreMap;
 		StoreMap m_storeMap;
 
-		typedef std::multimap<ProtocolLayer*, char const* id> ConnectionMap;
-		ConnectionMap m_connectionMap;
+		typedef std::set<ProtocolLayer*> Connections;
+		Connections m_connections;
 	};
-#endif
 
 } // namespace
 #endif // __cplusplus
