@@ -186,26 +186,26 @@ namespace stored {
 	void swap_endian(void* buffer, size_t len);
 
 	template <size_t S>
-	void swap_endian_(void* buffer) {
+	static inline void swap_endian_(void* buffer) {
 		static_assert(S % 2 == 0, "");
 		swap_endian(buffer, S);
 	}
 
 #ifdef STORED_COMPILER_GCC
 	template <>
-	void swap_endian_<2>(void* buffer) {
+	inline void swap_endian_<2>(void* buffer) {
 		uint16_t* x = static_cast<uint16_t*>(buffer);
 		*x = __builtin_bswap16(*x);
 	}
 
 	template <>
-	void swap_endian_<4>(void* buffer) {
+	inline void swap_endian_<4>(void* buffer) {
 		uint32_t* x = static_cast<uint32_t*>(buffer);
 		*x = __builtin_bswap32(*x);
 	}
 
 	template <>
-	void swap_endian_<8>(void* buffer) {
+	inline void swap_endian_<8>(void* buffer) {
 		uint64_t* x = static_cast<uint64_t*>(buffer);
 		*x = __builtin_bswap64(*x);
 	}
@@ -213,19 +213,19 @@ namespace stored {
 
 #ifdef STORED_COMPILER_MSVC
 	template <>
-	void swap_endian_<sizeof(unsigned short)>(void* buffer) {
+	inline void swap_endian_<sizeof(unsigned short)>(void* buffer) {
 		unsigned short* x = static_cast<unsigned short*>(buffer);
 		*x = _byteswap_ushort(*x);
 	}
 
 	template <>
-	void swap_endian_<sizeof(unsigned long)>(void* buffer) {
+	inline void swap_endian_<sizeof(unsigned long)>(void* buffer) {
 		unsigned long* x = static_cast<unsigned long*>(buffer);
 		*x = _byteswap_ulong(*x);
 	}
 
 	template <>
-	void swap_endian_<sizeof(unsigned __int64)>(void* buffer) {
+	inline void swap_endian_<sizeof(unsigned __int64)>(void* buffer) {
 		unsigned __int64* x = static_cast<unsigned __int64*>(buffer);
 		*x = _byteswap_uint64(*x);
 	}

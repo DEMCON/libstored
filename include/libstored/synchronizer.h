@@ -252,6 +252,8 @@ namespace stored {
 		CLASS_NOCOPY(Synchronizer)
 	public:
 
+		~Synchronizer();
+
 		template <typename Store>
 		void map(Synchronizable<Store>& store) {
 			m_storeMap.insert(std::make_pair(store.hash(), &store.journal()));
@@ -262,7 +264,7 @@ namespace stored {
 			m_storeMap.erase(store.hash());
 
 			for(Connections::iterator it = m_connections.begin(); it != m_connections.end(); ++it)
-				(*it)->drop(store.journal());
+				static_cast<SyncConnection*>(*it)->drop(store.journal());
 		}
 
 		StoreJournal* toJournal(char const* hash) const;
@@ -289,7 +291,7 @@ namespace stored {
 		SyncConnection* toConnection(ProtocolLayer& connection) const;
 
 	private:
-		typedef std::map<char const*, StoreJournal> StoreMap;
+		typedef std::map<char const*, StoreJournal*> StoreMap;
 		StoreMap m_storeMap;
 
 		typedef std::set<ProtocolLayer*> Connections;

@@ -211,13 +211,14 @@ void StoreJournal::encodeHash(ProtocolLayer& p, bool last) {
 
 void StoreJournal::encodeHash(ProtocolLayer& p, char const* hash, bool last) {
 	size_t len = strlen(hash) + 1;
-	stored_assert(len > sizeof(Id)); // Otherwise SyncConnection::Bye cannot see the difference.
+	stored_assert(len > sizeof(SyncConnection::Id)); // Otherwise SyncConnection::Bye cannot see the difference.
 	p.encode(hash, len, last);
 }
 
 char const* StoreJournal::decodeHash(void*& buffer, size_t& len) {
 	char* buffer_ = static_cast<char*>(buffer);
-	for(size_t i = 0; i < len && buffer_[i]; i++);
+	size_t i;
+	for(i = 0; i < len && buffer_[i]; i++);
 
 	if(i == len) {
 		// \0 not found
@@ -235,11 +236,11 @@ void StoreJournal::encodeBuffer(ProtocolLayer& p, bool last) {
 	p.encode(buffer(), bufferSize(), last);
 }
 
-bool decodeBuffer(void*& buffer, size_t& len) {
+bool StoreJournal::decodeBuffer(void*& buffer, size_t& len) {
 	if(len < bufferSize())
 		return false;
 
-	memcpy(buffer(), buffer, bufferSize());
+	memcpy(this->buffer(), buffer, bufferSize());
 	len -= bufferSize();
 	return true;
 }
@@ -272,7 +273,7 @@ void StoreJournal::encodeUpdate(ProtocolLayer& p, StoreJournal::ObjectInfo& o) {
 	p.encode(keyToBuffer(o.key), o.len, false);
 }
 
-bool StoreJournal::decodeUpdates(void* buffer, size_t len) {
+bool StoreJournal::decodeUpdates(void*& buffer, size_t& len) {
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 	bool ok = true;
 
@@ -280,8 +281,10 @@ bool StoreJournal::decodeUpdates(void* buffer, size_t len) {
 		Key key = decodeKey(buffer_, len, ok);
 		Size size = (Size)decodeKey(buffer_, len, ok);
 		void* obj = keyToBuffer(key, size, &ok);
-		if(!ok || len < size)
+		if(!ok || len < size) {
+			buffer = buffer_;
 			return false;
+		}
 
 		memcpy(obj, buffer_, size);
 		buffer_ += size;
@@ -296,6 +299,7 @@ void StoreJournal::encodeKey(ProtocolLayer& p, StoreJournal::Key key) {
 #ifdef STORED_LITTLE_ENDIAN
 	key = swap_endian(key);
 #endif
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 	p.encode(reinterpret_cast<char*>(&key) + sizeof(key) - keysize, keysize, false);
 }
 
@@ -306,7 +310,8 @@ StoreJournal::Key StoreJournal::decodeKey(uint8_t*& buffer, size_t& len, bool& o
 		ok = false;
 		return 0;
 	}
-	memcpy(reinterpret_cast<char*>(&key) + sizeof(key) - keysize, buffer, keysize);
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+	memcpy(reinterpret_cast<char*>(&key) + sizeof(key) - i, buffer, i);
 	len -= i;
 
 #ifdef STORED_LITTLE_ENDIAN
@@ -331,9 +336,8 @@ void* StoreJournal::keyToBuffer(StoreJournal::Key key, StoreJournal::Size len, b
 // SyncConnection
 //
 
-SyncConnection::SyncConnection(Sychronizer& synchronizer, ProtocolLayer& connection)
-	: base()
-	, m_synchronizer(synchronizer)
+SyncConnection::SyncConnection(Synchronizer& synchronizer, ProtocolLayer& connection)
+	: m_synchronizer(synchronizer)
 	, m_idInNext(1)
 {
 	connection.wrap(*this);
@@ -378,7 +382,7 @@ SyncConnection::Id SyncConnection::nextId() {
 
 		if(id == 0)
 			continue;
-		if(m_idInMap.find(id) != m_idInMap.end())
+		if(m_idIn.find(id) != m_idIn.end())
 			continue;
 
 		return id;
@@ -396,7 +400,7 @@ void SyncConnection::drop(StoreJournal& store) {
 		if(it->second == &store)
 			id = it->first;
 
-	if(id && m_id.erase(id))
+	if(id && m_idIn.erase(id))
 		bye = true;
 	if(m_idOut.erase(&store))
 		bye = true;
@@ -506,11 +510,11 @@ void SyncConnection::process(StoreJournal& store) {
 	if(seq == m_seq.end())
 		// Unknown store.
 		return;
-	if(!store.hasChanges(seq->second))
+	if(!store.hasChanged(seq->second))
 		// No recent changes.
 		return;
 
-	SeqMap::iterator id = m_idOut.find(&store);
+	IdOutMap::iterator id = m_idOut.find(&store);
 	if(id == m_idOut.end())
 		// No id related to this store.
 		return;
@@ -527,7 +531,7 @@ char SyncConnection::decodeCmd(void*& buffer, size_t& len) {
 	len--;
 	char* buffer_ = static_cast<char*>(buffer);
 	buffer = buffer_ + 1;
-	return buffer[0];
+	return buffer_[0];
 }
 
 void SyncConnection::decode(void* buffer, size_t len) {
@@ -581,10 +585,10 @@ void SyncConnection::decode(void* buffer, size_t len) {
 			break;
 
 		Id welcome_id = decodeId(buffer, len);
-		IdInMap j = m_idIn.find(id);
+		IdInMap::iterator j = m_idIn.find(id);
 
 		if(!welcome_id || j == m_idIn.end() ||
-			!j.decodeBuffer(buffer, len))
+			!j->second->decodeBuffer(buffer, len))
 		{
 			bye(id);
 			break;
@@ -669,7 +673,7 @@ SyncConnection::Id SyncConnection::decodeId(void*& buffer, size_t& len) {
 #ifdef STORED_BIG_ENDIAN
 		swap_endian
 #endif
-		(*reinterpret_cast<Id*>(buffer));
+		(*reinterpret_cast<Id*>(buffer)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 
 	len = sizeof(Id);
 	buffer = static_cast<char*>(buffer) + sizeof(Id);
@@ -683,6 +687,13 @@ SyncConnection::Id SyncConnection::decodeId(void*& buffer, size_t& len) {
 // Synchronizer
 //
 
+Synchronizer::~Synchronizer() {
+	for(Connections::iterator it = m_connections.begin(); it != m_connections.end(); ++it)
+		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+		delete *it;
+	m_connections.clear();
+}
+
 StoreJournal* Synchronizer::toJournal(char const* hash) const {
 	if(!hash)
 		return nullptr;
@@ -691,6 +702,7 @@ StoreJournal* Synchronizer::toJournal(char const* hash) const {
 }
 
 void Synchronizer::connect(ProtocolLayer& connection) {
+	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 	SyncConnection* c = new SyncConnection(*this, connection);
 	m_connections.insert(c);
 }
@@ -698,19 +710,21 @@ void Synchronizer::connect(ProtocolLayer& connection) {
 void Synchronizer::disconnect(ProtocolLayer& connection) {
 	SyncConnection* c = toConnection(connection);
 	if(c) {
-		m_connectionMap.erase(c);
+		m_connections.erase(c);
+		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		delete c;
 	}
 }
 
 SyncConnection* Synchronizer::toConnection(ProtocolLayer& connection) const {
-	ProtocolLayer* c = connections.up();
+	ProtocolLayer* c = connection.up();
 	if(!c)
 		return nullptr;
 	if(m_connections.find(c) == m_connections.end())
 		return nullptr;
 
 	stored_assert(dynamic_cast<SyncConnection*>(c) != nullptr);
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
 	return static_cast<SyncConnection*>(c);
 }
 
@@ -721,11 +735,12 @@ void Synchronizer::process() {
 
 void Synchronizer::process(StoreJournal& j) {
 	for(Connections::iterator it = m_connections.begin(); it != m_connections.end(); ++it)
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
 		static_cast<SyncConnection*>(*it)->process(j);
 }
 
 void Synchronizer::process(ProtocolLayer& connection) {
-	SyncConnected* c = toConnection(connection);
+	SyncConnection* c = toConnection(connection);
 	if(!c)
 		return;
 
@@ -734,7 +749,7 @@ void Synchronizer::process(ProtocolLayer& connection) {
 }
 
 void Synchronizer::process(ProtocolLayer& connection, StoreJournal& j) {
-	SyncConnected* c = toConnection(connection);
+	SyncConnection* c = toConnection(connection);
 	if(c)
 		c->process(j);
 }
