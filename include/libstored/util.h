@@ -187,7 +187,6 @@ namespace stored {
 
 	template <size_t S>
 	static inline void swap_endian_(void* buffer) {
-		static_assert(S % 2 == 0, "");
 		swap_endian(buffer, S);
 	}
 

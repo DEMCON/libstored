@@ -49,10 +49,7 @@ TEST(Synchronizer, Instantiate) {
 	SyncTestStore store1;
 	SyncTestStore store2;
 
-	// The store is the same...
 	EXPECT_EQ(store1.hash(), store2.hash());
-	// ...but the instance id isn't.
-	EXPECT_NE(store1.journal().id(), store2.journal().id());
 }
 
 TEST(Synchronizer, Changes) {
