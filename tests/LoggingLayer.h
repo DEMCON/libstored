@@ -22,6 +22,7 @@
 #include "libstored/protocol.h"
 
 #include <deque>
+#include <cinttypes>
 
 #ifdef __cplusplus
 
