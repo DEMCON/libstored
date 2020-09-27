@@ -64,5 +64,37 @@ private:
 	bool m_partial;
 };
 
+void printBuffer(void const* buffer, size_t len, char const* prefix = nullptr, FILE* f = stdout) {
+	std::string s;
+	if(prefix)
+		s += prefix;
+
+	uint8_t const* b = static_cast<uint8_t const*>(buffer);
+	char buf[16];
+	for(size_t i = 0; i < len; i++) {
+		switch(b[i]) {
+		case '\0': s += "\\0"; break;
+		case '\r': s += "\\r"; break;
+		case '\n': s += "\\n"; break;
+		case '\t': s += "\\t"; break;
+		case '\\': s += "\\\\"; break;
+		default:
+			if(b[i] < 0x20 || b[i] >= 0x7f) {
+				snprintf(buf, sizeof(buf), "\\x%02" PRIx8, b[i]);
+				s += buf;
+			} else {
+				s += (char)b[i];
+			}
+		}
+	}
+
+	s += "\n";
+	fputs(s.c_str(), f);
+}
+
+void printBuffer(std::string const& s, char const* prefix = nullptr, FILE* f = stdout) {
+	printBuffer(s.data(), s.size(), prefix, f);
+}
+
 #endif // __cplusplus
 #endif // TESTS_LOGGING_LAYER_H

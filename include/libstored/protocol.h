@@ -170,11 +170,13 @@ namespace stored {
 		 * injects itself in between the given layer and its wrapper.
 		 */
 		void wrap(ProtocolLayer& up) {
-			ProtocolLayer* d = up.down();
+			if(!down()) {
+				ProtocolLayer* d = up.down();
 
-			setDown(d);
-			if(d)
-				d->setUp(this);
+				setDown(d);
+				if(d)
+					d->setUp(this);
+			}
 
 			up.setDown(this);
 			setUp(&up);
@@ -613,6 +615,36 @@ public:
 	private:
 		size_t m_size;
 		std::string m_buffer;
+	};
+
+	namespace impl {
+		class Loopback1 : public ProtocolLayer {
+			CLASS_NOCOPY(Loopback1)
+		public:
+			enum { ExtraAlloc = 32 };
+
+			Loopback1(ProtocolLayer& from, ProtocolLayer& to);
+			~Loopback1() override final;
+
+			void encode(void const* buffer, size_t len, bool last = true) override final;
+		private:
+			ProtocolLayer& m_to;
+			char* m_buffer;
+			size_t m_capacity;
+			size_t m_len;
+		};
+	}
+
+	/*!
+	 * \brief Loopback between two protocol stacks.
+	 */
+	class Loopback {
+		CLASS_NOCOPY(Loopback)
+	public:
+		Loopback(ProtocolLayer& a, ProtocolLayer& b);
+	private:
+		impl::Loopback1 m_a2b;
+		impl::Loopback1 m_b2a;
 	};
 
 } // namespace

@@ -32,7 +32,7 @@ StoreJournal::StoreJournal(char const* hash, void* buffer, size_t size)
 	, m_buffer(buffer)
 	, m_bufferSize(size)
 	, m_keySize(keySize(m_bufferSize))
-	, m_seq()
+	, m_seq(1)
 	, m_seqLower()
 	, m_partialSeq()
 {
@@ -54,6 +54,13 @@ char const* StoreJournal::hash() const {
 	return m_hash;
 }
 
+/*!
+ * \brief Returns the current update sequence number.
+ *
+ * This number indicates in which period objects have changed.
+ * Then, a SyncConnection can determine which objects have already and which
+ * have not yet been updated remotely.
+ */
 StoreJournal::Seq StoreJournal::seq() const {
 	return m_seq;
 }
@@ -102,10 +109,7 @@ StoreJournal::Seq StoreJournal::toLong(StoreJournal::ShortSeq seq) const {
 }
 
 void StoreJournal::changed(StoreJournal::Key key, size_t len) {
-	if(!m_partialSeq) {
-		m_partialSeq = true;
-		m_seq++;
-	}
+	m_partialSeq = true;
 
 	if(!update(key, len, seq(), 0, m_changes.size())) {
 		m_changes.
@@ -158,6 +162,11 @@ StoreJournal::Seq StoreJournal::regenerate(size_t lower, size_t upper) {
 	return highest;
 }
 
+/*!
+ * \brief Checks if the given object has changed since the given sequence number.
+ *
+ * The sequence number is the value returned by #encodeUpdates().
+ */
 bool StoreJournal::hasChanged(Key key, Seq since) const {
 	size_t lower = 0;
 	size_t upper = m_changes.size();
@@ -167,10 +176,10 @@ bool StoreJournal::hasChanged(Key key, Seq since) const {
 
 		ObjectInfo const& o = m_changes[pivot];
 
-		if(o.highest < since)
+		if(toLong(o.highest) < since)
 			return false;
 		if(o.key == key)
-			return o.seq >= since;
+			return toLong(o.seq) >= since;
 
 		if(o.key > key)
 			upper = pivot;
@@ -181,12 +190,36 @@ bool StoreJournal::hasChanged(Key key, Seq since) const {
 	return false;
 }
 
+/*!
+ * \brief Checks if any object has changed since the given sequence number.
+ *
+ * The sequence number is the value returned by #encodeUpdates().
+ */
 bool StoreJournal::hasChanged(Seq since) const {
 	if(m_changes.empty())
 		return false;
 
 	size_t pivot = m_changes.size() / 2;
 	return m_changes[pivot].highest >= since;
+}
+
+void StoreJournal::iterateChanged(StoreJournal::Seq since, IterateChangedCallback* cb, void* arg) {
+	iterateChanged(since, cb, arg, 0, m_changes.size());
+}
+
+void StoreJournal::iterateChanged(StoreJournal::Seq since, IterateChangedCallback* cb, void* arg, size_t lower, size_t upper) {
+	if(lower >= upper)
+		return;
+
+	size_t pivot = (upper - lower) / 2 + lower;
+	ObjectInfo& o = m_changes[pivot];
+	if(toLong(o.highest) < since)
+		return;
+
+	iterateChanged(since, cb, arg, lower, pivot);
+	if(toLong(o.seq) >= since)
+		cb(o.key, arg);
+	iterateChanged(since, cb, arg, pivot + 1, upper);
 }
 
 void StoreJournal::clean(StoreJournal::Seq oldest) {
@@ -232,19 +265,28 @@ char const* StoreJournal::decodeHash(void*& buffer, size_t& len) {
 	}
 }
 
-void StoreJournal::encodeBuffer(ProtocolLayer& p, bool last) {
+StoreJournal::Seq StoreJournal::encodeBuffer(ProtocolLayer& p, bool last) {
 	p.encode(buffer(), bufferSize(), last);
+	return bumpSeq();
 }
 
-bool StoreJournal::decodeBuffer(void*& buffer, size_t& len) {
+StoreJournal::Seq StoreJournal::decodeBuffer(void*& buffer, size_t& len) {
 	if(len < bufferSize())
-		return false;
+		return 0;
 
 	memcpy(this->buffer(), buffer, bufferSize());
 	len -= bufferSize();
-	return true;
+	m_partialSeq = true;
+	Seq seq = this->seq();
+	for(Changes::iterator it = m_changes.begin(); it != m_changes.end(); ++it)
+		it->seq = it->highest = toShort(seq);
+	return bumpSeq();
 }
 
+/*!
+ * \brief Encode all updates of changed objects since the given update sequence number (inclusive).
+ * \return The sequence number of the most recent update, to be passed to the next invocation of \c encodeUpdates().
+ */
 StoreJournal::Seq StoreJournal::encodeUpdates(ProtocolLayer& p, StoreJournal::Seq sinceSeq, bool last) {
 	encodeUpdates(p, sinceSeq, 0, m_changes.size());
 	if(last)
@@ -273,7 +315,7 @@ void StoreJournal::encodeUpdate(ProtocolLayer& p, StoreJournal::ObjectInfo& o) {
 	p.encode(keyToBuffer(o.key), o.len, false);
 }
 
-bool StoreJournal::decodeUpdates(void*& buffer, size_t& len) {
+StoreJournal::Seq StoreJournal::decodeUpdates(void*& buffer, size_t& len) {
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 	bool ok = true;
 
@@ -283,22 +325,21 @@ bool StoreJournal::decodeUpdates(void*& buffer, size_t& len) {
 		void* obj = keyToBuffer(key, size, &ok);
 		if(!ok || len < size) {
 			buffer = buffer_;
-			return false;
+			return 0;
 		}
 
 		memcpy(obj, buffer_, size);
 		buffer_ += size;
 		len -= size;
+		changed(key, size);
 	}
 
-	return true;
+	return bumpSeq();
 }
 
 void StoreJournal::encodeKey(ProtocolLayer& p, StoreJournal::Key key) {
 	size_t keysize = keySize();
-#ifdef STORED_LITTLE_ENDIAN
-	key = swap_endian(key);
-#endif
+	key = endian_h2n(key);
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 	p.encode(reinterpret_cast<char*>(&key) + sizeof(key) - keysize, keysize, false);
 }
@@ -306,17 +347,16 @@ void StoreJournal::encodeKey(ProtocolLayer& p, StoreJournal::Key key) {
 StoreJournal::Key StoreJournal::decodeKey(uint8_t*& buffer, size_t& len, bool& ok) {
 	Key key = 0;
 	size_t i = keySize();
-	if(i < len) {
+	if(i > len) {
 		ok = false;
 		return 0;
 	}
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 	memcpy(reinterpret_cast<char*>(&key) + sizeof(key) - i, buffer, i);
 	len -= i;
+	buffer += i;
 
-#ifdef STORED_LITTLE_ENDIAN
-	key = swap_endian(key);
-#endif
+	key = endian_n2h(key);
 	return key;
 }
 
@@ -365,10 +405,10 @@ void SyncConnection::source(StoreJournal& store) {
 			return;
 
 	encodeCmd(Hello);
-	store.encodeHash(*this, true);
+	store.encodeHash(*this, false);
 	Id id = nextId();
+	m_idIn[id] = &store;
 	encodeId(id, true);
-	m_idIn.insert(std::make_pair(id, &store));
 }
 
 /*!
@@ -425,9 +465,9 @@ void SyncConnection::bye(char const* hash) {
 	if(!hash)
 		return;
 
+	erase(hash);
 	encodeCmd(Bye);
 	StoreJournal::encodeHash(*this, hash, true);
-	erase(hash);
 }
 
 void SyncConnection::erase(char const* hash) {
@@ -462,9 +502,9 @@ void SyncConnection::erase(char const* hash) {
 }
 
 void SyncConnection::bye(SyncConnection::Id id) {
+	erase(id);
 	encodeCmd(Bye);
 	encodeId(id);
-	erase(id);
 }
 
 void SyncConnection::erase(SyncConnection::Id id) {
@@ -472,8 +512,8 @@ void SyncConnection::erase(SyncConnection::Id id) {
 	if(it != m_idIn.end()) {
 		m_seq.erase(it->second);
 		m_idOut.erase(it->second);
+		m_idIn.erase(it);
 	}
-	m_idIn.erase(it);
 
 	StoreJournal* j = nullptr;
 
@@ -560,13 +600,12 @@ void SyncConnection::decode(void* buffer, size_t len) {
 		encodeCmd(Welcome);
 		encodeId(id);
 
-		m_seq.insert(std::make_pair(j, j->seq()));
-		m_idIn.insert(std::make_pair(id, j));
+		m_idOut[j] = id;
 		id = nextId();
-		m_idOut.insert(std::make_pair(j, id));
+		m_idIn[id] = j;
 
 		encodeId(id, false);
-		j->encodeBuffer(*this, true);
+		m_seq[j] = j->encodeBuffer(*this, true);
 		break;
 	}
 	case Welcome: {
@@ -587,14 +626,17 @@ void SyncConnection::decode(void* buffer, size_t len) {
 		Id welcome_id = decodeId(buffer, len);
 		IdInMap::iterator j = m_idIn.find(id);
 
+		StoreJournal::Seq seq;
+
 		if(!welcome_id || j == m_idIn.end() ||
-			!j->second->decodeBuffer(buffer, len))
+			!(seq = j->second->decodeBuffer(buffer, len)))
 		{
 			bye(id);
 			break;
 		}
 
-		m_idOut.insert(std::make_pair(j->second, welcome_id));
+		m_seq[j->second] = seq;
+		m_idOut[j->second] = welcome_id;
 		break;
 	}
 	case Update: {
@@ -616,11 +658,16 @@ void SyncConnection::decode(void* buffer, size_t len) {
 			break;
 		}
 
-		if(!it->second->decodeUpdates(buffer, len)) {
+		// Make sure that local changes are flushed out first.
+		process(*it->second);
+
+		StoreJournal::Seq seq;
+		if(!(seq = it->second->decodeUpdates(buffer, len))) {
 			bye(id);
 			break;
 		}
 
+		m_seq[it->second] = seq;
 		break;
 	}
 	case Bye: {
@@ -659,9 +706,7 @@ void SyncConnection::decode(void* buffer, size_t len) {
 }
 
 void SyncConnection::encodeId(SyncConnection::Id id, bool last) {
-#ifdef STORED_BIG_ENDIAN
-	id = swap_endian(id);
-#endif
+	id = endian_h2n(id);
 	encode(&id, sizeof(Id), last);
 }
 
@@ -669,13 +714,10 @@ SyncConnection::Id SyncConnection::decodeId(void*& buffer, size_t& len) {
 	if(len < sizeof(Id))
 		return 0;
 
-	Id id =
-#ifdef STORED_BIG_ENDIAN
-		swap_endian
-#endif
-		(*reinterpret_cast<Id*>(buffer)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+	Id id = endian_n2h(*reinterpret_cast<Id*>(buffer));
 
-	len = sizeof(Id);
+	len -= sizeof(Id);
 	buffer = static_cast<char*>(buffer) + sizeof(Id);
 	return id;
 }

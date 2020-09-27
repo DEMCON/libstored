@@ -33,6 +33,7 @@
 
 #include <map>
 #include <set>
+#include <cstring>
 
 namespace stored {
 
@@ -56,20 +57,36 @@ namespace stored {
 
 		char const* hash() const;
 		Seq seq() const;
+		Seq bumpSeq();
 
 		void clean(Seq oldest = 0);
 		void changed(Key key, size_t len);
 		bool hasChanged(Key key, Seq since) const;
 		bool hasChanged(Seq since) const;
 
+		typedef void(IterateChangedCallback)(Key, void*);
+		void iterateChanged(Seq since, IterateChangedCallback* cb, void* arg = nullptr);
+
+#if STORED_cplusplus >= 201103L
+		template <typename F>
+		SFINAE_IS_FUNCTION(F, void(Key), void)
+		iterateChanged(Seq since, F&& cb) {
+			std::function<void(Key)> f = cb;
+			iterateChanged(since,
+				[](Key key, void* f_) {
+					(*static_cast<std::function<void(Key)>*>(f_))(key); },
+				&f);
+		}
+#endif
+
 		void encodeHash(ProtocolLayer& p, bool last = false);
 		static void encodeHash(ProtocolLayer& p, char const* hash, bool last = false);
-		void encodeBuffer(ProtocolLayer& p, bool last = false);
+		Seq encodeBuffer(ProtocolLayer& p, bool last = false);
 		Seq encodeUpdates(ProtocolLayer& p, Seq sinceSeq, bool last = false);
 
 		static char const* decodeHash(void*& buffer, size_t& len);
-		bool decodeBuffer(void*& buffer, size_t& len);
-		bool decodeUpdates(void*& buffer, size_t& len);
+		Seq decodeBuffer(void*& buffer, size_t& len);
+		Seq decodeUpdates(void*& buffer, size_t& len);
 
 	protected:
 		struct ObjectInfo {
@@ -89,7 +106,6 @@ namespace stored {
 			}
 		};
 
-		Seq bumpSeq();
 		ShortSeq toShort(Seq seq) const;
 		Seq toLong(ShortSeq seq) const;
 
@@ -109,6 +125,8 @@ namespace stored {
 		size_t bufferSize() const;
 		size_t keySize() const;
 
+		void iterateChanged(Seq since, IterateChangedCallback* cb, void* arg, size_t lower, size_t upper);
+
 	private:
 		char const* const m_hash;
 		void* const m_buffer;
@@ -124,7 +142,8 @@ namespace stored {
 		//      if new, full tree regeneration required (only startup effect)
 		// iterate with lower bound on seq: DFS through tree, stop at highest_seq < given seq
 		// no auto-remove objects (manual cleanup call required)
-		std::vector<ObjectInfo> m_changes;
+		typedef std::vector<ObjectInfo> Changes;
+		Changes m_changes;
 	};
 
 	/*!
@@ -252,6 +271,7 @@ namespace stored {
 		CLASS_NOCOPY(Synchronizer)
 	public:
 
+		Synchronizer() is_default
 		~Synchronizer();
 
 		template <typename Store>
@@ -273,6 +293,15 @@ namespace stored {
 		void disconnect(ProtocolLayer& connection);
 
 		template <typename Store>
+		void syncFrom(Synchronizable<Store>& store, ProtocolLayer& connection) {
+			StoreJournal* j = toJournal(store.hash());
+			SyncConnection* c = toConnection(connection);
+			if(!c || !j)
+				return;
+			c->source(*j);
+		}
+
+		template <typename Store>
 		void process(Synchronizable<Store>& store) {
 			process(store.journal());
 		}
@@ -291,7 +320,13 @@ namespace stored {
 		SyncConnection* toConnection(ProtocolLayer& connection) const;
 
 	private:
-		typedef std::map<char const*, StoreJournal*> StoreMap;
+		struct HashComparator {
+			bool operator()(char const* a, char const* b) const {
+				return strcmp(a, b) < 0;
+			}
+		};
+
+		typedef std::map<char const*, StoreJournal*, HashComparator> StoreMap;
 		StoreMap m_storeMap;
 
 		typedef std::set<ProtocolLayer*> Connections;

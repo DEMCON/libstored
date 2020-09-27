@@ -235,8 +235,30 @@ namespace stored {
 	 * \ingroup libstored_util
 	 */
 	template <typename T>
-	T swap_endian(T value) {
+	static inline T swap_endian(T value) {
 		swap_endian_<sizeof(T)>(&value);
+		return value;
+	}
+
+	/*!
+	 * \brief Swap host to network (big) endianness.
+	 */
+	template <typename T>
+	static inline T endian_h2n(T value) {
+#ifdef STORED_LITTLE_ENDIAN
+		swap_endian_<sizeof(T)>(&value);
+#endif
+		return value;
+	}
+
+	/*!
+	 * \brief Swap network (big) to host endianness.
+	 */
+	template <typename T>
+	static inline T endian_n2h(T value) {
+#ifdef STORED_LITTLE_ENDIAN
+		swap_endian_<sizeof(T)>(&value);
+#endif
 		return value;
 	}
 
