@@ -84,5 +84,34 @@ void swap_endian(void* buffer, size_t len) {
 	}
 }
 
+/*!
+ * \brief \c memcpy() with endianness swapping.
+ */
+void memcpy_swap(void* __restrict__ dst, void const* __restrict__ src, size_t len) {
+	char* dst_ = static_cast<char*>(dst);
+	char const* src_ = static_cast<char const*>(src);
+
+	for(size_t i = 0; i < len; i++)
+		dst_[i] = src_[len - i - 1];
+}
+
+/*!
+ * \brief memcmp() with endianness swapping.
+ */
+int memcmp_swap(void const* a, void const* b, size_t len) {
+	unsigned char const* a_ = static_cast<unsigned char const*>(a);
+	unsigned char const* b_ = static_cast<unsigned char const*>(b);
+
+	size_t i;
+	for(i = 0; i < len; i++)
+		if(a_[i] != b_[len - i - 1])
+			goto diff;
+
+	return 0;
+
+diff:
+	return a_[i] < b_[i] ? -1 : 1;
+}
+
 } // namespace
 

@@ -21,6 +21,9 @@
 /*!
  * \defgroup libstored_synchronizer synchronizer
  * \brief Distributed store synchornizer.
+ *
+ * The communication is done in the store's endianness.
+ *
  * \ingroup libstored
  */
 
@@ -222,10 +225,10 @@ namespace stored {
 		typedef ProtocolLayer base;
 		typedef uint16_t Id;
 
-		static char const Hello = 'h';
-		static char const Welcome = 'w';
-		static char const Update = 'u';
-		static char const Bye = 'b';
+		static char const Hello = Config::StoreInLittleEndian ? 'h' : 'H';
+		static char const Welcome = Config::StoreInLittleEndian ? 'w' : 'W';
+		static char const Update = Config::StoreInLittleEndian ? 'u' : 'U';
+		static char const Bye = Config::StoreInLittleEndian ? 'b' : 'B';
 
 		SyncConnection(Synchronizer& synchronizer, ProtocolLayer& connection);
 		virtual ~SyncConnection() override;

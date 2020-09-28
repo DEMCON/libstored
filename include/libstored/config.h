@@ -66,6 +66,24 @@ namespace stored {
 #endif
 
 		/*!
+		 * \brief Indicate if the store's buffer is in little endian.
+		 *
+		 * Usually, you would use the same endianness as the host,
+		 * but as the Synchronizer does not swap endianness for the data,
+		 * synchronization between different CPU types is not possible.
+		 * In that case, one on both sides should save its store differently.
+		 *
+		 * Make sure that this flag corresponds to the endianness setting of
+		 * the generator (-b flag).
+		 */
+		static bool const StoreInLittleEndian =
+#ifdef STORED_LITTLE_ENDIAN
+			true;
+#else
+			false;
+#endif
+
+		/*!
 		 * \brief When \c true, include full name directory listing support.
 		 *
 		 * If \c false, a listing can be still be requested, but the names may

@@ -184,6 +184,8 @@ namespace stored {
 #endif
 
 	void swap_endian(void* buffer, size_t len);
+	void memcpy_swap(void* __restrict__ dst, void const* __restrict__ src, size_t len);
+	int memcmp_swap(void const* a, void const* b, size_t len);
 
 	template <size_t S>
 	static inline void swap_endian_(void* buffer) {
@@ -241,10 +243,51 @@ namespace stored {
 	}
 
 	/*!
+	 * \brief Swap host to big endianness.
+	 */
+	template <typename T>
+	static inline T endian_h2b(T value) {
+#ifdef STORED_LITTLE_ENDIAN
+		swap_endian_<sizeof(T)>(&value);
+#endif
+		return value;
+	}
+
+	/*!
 	 * \brief Swap host to network (big) endianness.
 	 */
 	template <typename T>
 	static inline T endian_h2n(T value) {
+		return endian_h2b<T>(value);
+	}
+
+	/*!
+	 * \brief Swap host to little endianness.
+	 */
+	template <typename T>
+	static inline T endian_h2l(T value) {
+#ifdef STORED_BIG_ENDIAN
+		swap_endian_<sizeof(T)>(&value);
+#endif
+		return value;
+	}
+
+	/*!
+	 * \brief Swap host to store endianness.
+	 */
+	template <typename T>
+	static inline T endian_h2s(T value) {
+		if(Config::StoreInLittleEndian)
+			return endian_h2l<T>(value);
+		else
+			return endian_h2b<T>(value);
+	}
+
+	/*!
+	 * \brief Swap big to host endianness.
+	 */
+	template <typename T>
+	static inline T endian_b2h(T value) {
 #ifdef STORED_LITTLE_ENDIAN
 		swap_endian_<sizeof(T)>(&value);
 #endif
@@ -256,10 +299,29 @@ namespace stored {
 	 */
 	template <typename T>
 	static inline T endian_n2h(T value) {
-#ifdef STORED_LITTLE_ENDIAN
+		return endian_b2h<T>(value);
+	}
+
+	/*!
+	 * \brief Swap little to host endianness.
+	 */
+	template <typename T>
+	static inline T endian_l2h(T value) {
+#ifdef STORED_BIG_ENDIAN
 		swap_endian_<sizeof(T)>(&value);
 #endif
 		return value;
+	}
+
+	/*!
+	 * \brief Swap store to host endianness.
+	 */
+	template <typename T>
+	static inline T endian_s2h(T value) {
+		if(Config::StoreInLittleEndian)
+			return endian_l2h<T>(value);
+		else
+			return endian_b2h<T>(value);
 	}
 
 	/*!

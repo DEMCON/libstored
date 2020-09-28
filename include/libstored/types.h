@@ -33,6 +33,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
+#include <vector>
 
 #if STORED_cplusplus >= 201103L
 #  include <cinttypes>
@@ -99,6 +100,16 @@ namespace stored {
 		static bool isSpecial(type t) { return (t & MaskFlags) == 0; }
 		/*! \brief Returns the size of the (function argument) type, or 0 when it is not fixed. */
 		static size_t size(type t) { return !isFixed(t) ? 0u : (size_t)(t & MaskSize) + 1u; }
+		/*! \brief Checks if endianness of given type is swapped in the store's buffer. */
+		static bool isStoreSwapped(type t) {
+			return Config::StoreInLittleEndian !=
+#ifdef STORED_LITTLE_ENDIAN
+				true
+#else
+				false
+#endif
+			&& Type::isFixed(t);
+		}
 	};
 
 	constexpr static inline Type::type operator|(Type::type a, Type::type b) { return (Type::type)((uint8_t)a | (uint8_t)b); }
@@ -217,9 +228,9 @@ namespace stored {
 		 * \brief Returns the value.
 		 * \details Only call this function when it is #valid().
 		 */
-		type const& get() const {
+		type get() const {
 			stored_assert(valid());
-			return buffer();
+			return endian_s2h(buffer());
 		}
 
 		/*!
@@ -235,7 +246,7 @@ namespace stored {
 #if STORED_cplusplus >= 201103L
 		explicit
 #endif
-		operator type const&() const { return get(); }
+		operator type() const { return get(); }
 
 		/*!
 		 * \brief Sets the value.
@@ -243,7 +254,7 @@ namespace stored {
 		 */
 		void set(type v) {
 			stored_assert(valid());
-			buffer() = v;
+			buffer() = endian_h2s(v);
 		}
 
 		/*!
@@ -398,7 +409,13 @@ namespace stored {
 		 */
 		void set(type v) {
 			entryX();
-			bool changed = memcmp(&v, &this->buffer(), sizeof(v)) != 0;
+
+			bool changed;
+			if(Type::isStoreSwapped(toType<type>::type))
+				changed = memcmp_swap(&v, &this->buffer(), sizeof(v)) != 0;
+			else
+				changed = memcmp(&v, &this->buffer(), sizeof(v)) != 0;
+
 			if(changed)
 				base::set(v);
 			exitX(changed);
@@ -762,7 +779,10 @@ namespace stored {
 						dst_[len_] = '\0';
 					len = len_;
 				} else {
-					memcpy(dst, m_buffer, len);
+					if(Type::isStoreSwapped(type()))
+						memcpy_swap(dst, m_buffer, len);
+					else
+						memcpy(dst, m_buffer, len);
 				}
 				exitRO(len);
 			}
@@ -780,6 +800,16 @@ namespace stored {
 			T data;
 			size_t len = get(&data, sizeof(T));
 			return len == sizeof(T) ? data : T();
+		}
+
+		/*!
+		 * \brief Gets the value.
+		 * \see #get(void*, size_t) const
+		 */
+		std::vector<char> get() const {
+			std::vector<char> buffer(size());
+			get(&buffer[0], buffer.size());
+			return buffer;
 		}
 
 		/*!
@@ -820,11 +850,19 @@ namespace stored {
 					if(changed)
 						buffer_[len = strncpy(buffer_, src_, len)] = '\0';
 				} else {
-					if(Config::EnableHooks)
-						changed = memcmp(src, m_buffer, len) != 0;
+					if(Config::EnableHooks) {
+						if(Type::isStoreSwapped(type()))
+							changed = memcmp(src, m_buffer, len) != 0;
+						else
+							changed = memcmp_swap(src, m_buffer, len) != 0;
+					}
 
-					if(changed)
-						memcpy(m_buffer, src, len);
+					if(changed) {
+						if(Type::isStoreSwapped(type()))
+							memcpy_swap(m_buffer, src, len);
+						else
+							memcpy(m_buffer, src, len);
+					}
 				}
 
 				exitX(changed, len);
