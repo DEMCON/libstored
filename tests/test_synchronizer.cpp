@@ -22,6 +22,8 @@
 #include <libstored/synchronizer.h>
 #include "LoggingLayer.h"
 
+#include <chrono>
+
 namespace {
 
 class SyncTestStore : public stored::Synchronizable<stored::TestStoreBase<SyncTestStore>> {
@@ -115,7 +117,7 @@ TEST(Synchronizer, Changes) {
 		EXPECT_FALSE(_synced); \
 	} while(0)
 
-TEST(Synchronizer, Sync1) {
+TEST(Synchronizer, Sync2) {
 	SyncTestStore store1;
 	SyncTestStore store2;
 
@@ -161,7 +163,118 @@ TEST(Synchronizer, Sync1) {
 		printBuffer(s, "> ");
 	for(auto& s : ll2.decoded())
 		printBuffer(s, "< ");
+}
 
+TEST(Synchronizer, Sync5) {
+	SyncTestStore store[5];
+	stored::Synchronizer s[5];
+
+	for(size_t i = 0; i < 5; i++)
+		s[i].map(store[i]);
+
+	/*
+	 * Topology: higher in tree is source.
+	 *
+	 *     0
+	 *    /  \
+	 *   1    2
+	 *       /  \
+	 *      3    4
+	 */
+
+	LoggingLayer ll01;
+	LoggingLayer ll10;
+	LoggingLayer ll02;
+	LoggingLayer ll20;
+	LoggingLayer ll23;
+	LoggingLayer ll32;
+	LoggingLayer ll24;
+	LoggingLayer ll42;
+	stored::Loopback loop01(ll01, ll10);
+	stored::Loopback loop02(ll02, ll20);
+	stored::Loopback loop23(ll23, ll32);
+	stored::Loopback loop24(ll24, ll42);
+
+	s[0].connect(ll01);
+	s[0].connect(ll02);
+	s[1].connect(ll10);
+	s[2].connect(ll20);
+	s[2].connect(ll23);
+	s[2].connect(ll24);
+	s[3].connect(ll32);
+	s[4].connect(ll42);
+
+	s[1].syncFrom(store[1], ll10);
+	s[2].syncFrom(store[2], ll20);
+	s[3].syncFrom(store[3], ll32);
+	s[4].syncFrom(store[4], ll42);
+
+	for(size_t i = 1; i < 5; i++)
+		EXPECT_SYNCED(store[0], store[1]);
+
+	store[0].default_uint8 = 1;
+	s[0].process();
+	EXPECT_EQ(store[4].default_uint8.get(), 0);
+	s[2].process();
+
+	EXPECT_EQ(store[1].default_uint8.get(), 1);
+	EXPECT_EQ(store[2].default_uint8.get(), 1);
+	EXPECT_EQ(store[3].default_uint8.get(), 1);
+	EXPECT_EQ(store[4].default_uint8.get(), 1);
+
+	for(size_t i = 1; i < 5; i++)
+		EXPECT_SYNCED(store[0], store[1]);
+
+	store[3].default_int16 = 2;
+	store[2].default_int32 = 3;
+	store[4].default_uint8 = 4;
+	store[1].default_uint16 = 5;
+	store[0].default_uint32 = 6;
+
+	for(size_t j = 0; j < 3; j++)
+		for(size_t i = 0; i < 5; i++)
+			s[i].process();
+
+	for(size_t i = 1; i < 5; i++)
+		EXPECT_SYNCED(store[0], store[1]);
+
+	SyncTestStore::ObjectMap map[5];
+	std::vector<SyncTestStore::ObjectMap::mapped_type> list[5];
+
+	for(size_t i = 0; i < 5; i++) {
+		map[i] = store[i].map();
+		for(auto& x : map[i])
+			list[i].push_back(x.second);
+	}
+
+	auto start = std::chrono::steady_clock::now();
+	int count = 0;
+	while(std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() < 1) {
+		for(size_t batch = 0; batch < 10; batch++) {
+			// Pick a random store
+			int i = rand() % 5;
+			auto& l = list[i];
+
+			// Pick a random object from that store (but only one in five can be written by us).
+			auto& o = l[(rand() % (l.size() / 5)) * 5 + i];
+
+			// Flip a bit of that object.
+			auto data = o.get();
+			data[0] = (char)(data[0] + 1);
+			o.set((void const*)&data[0]);
+			count++;
+		}
+
+		// Do a full sync and check.
+		for(size_t j = 0; j < 3; j++)
+			for(size_t i = 0; i < 5; i++)
+				s[i].process();
+
+		for(size_t i = 1; i < 5; i++)
+			EXPECT_SYNCED(store[0], store[1]);
+	}
+
+	EXPECT_GT(count, 100);
 }
 
 } // namespace
