@@ -561,7 +561,9 @@ void SyncConnection::process(StoreJournal& store) {
 
 	encodeCmd(Update);
 	encodeId(id->second, false);
-	seq->second = store.encodeUpdates(*this, seq->second, true);
+	// Make sure to set the process seq before the last part of the encode is sent.
+	seq->second = store.encodeUpdates(*this, seq->second);
+	encode();
 }
 
 char SyncConnection::decodeCmd(void*& buffer, size_t& len) {
@@ -706,7 +708,7 @@ void SyncConnection::decode(void* buffer, size_t len) {
 }
 
 void SyncConnection::encodeId(SyncConnection::Id id, bool last) {
-	id = endian_h2n(id);
+	id = endian_h2s(id);
 	encode(&id, sizeof(Id), last);
 }
 
@@ -715,7 +717,7 @@ SyncConnection::Id SyncConnection::decodeId(void*& buffer, size_t& len) {
 		return 0;
 
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-	Id id = endian_n2h(*reinterpret_cast<Id*>(buffer));
+	Id id = endian_s2h(*reinterpret_cast<Id*>(buffer));
 
 	len -= sizeof(Id);
 	buffer = static_cast<char*>(buffer) + sizeof(Id);

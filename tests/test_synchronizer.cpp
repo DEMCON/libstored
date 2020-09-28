@@ -94,31 +94,74 @@ TEST(Synchronizer, Changes) {
 	EXPECT_EQ(c, 2);
 }
 
+#define EXPECT_SYNCED(store1, store2) \
+	do { \
+		auto _map1 = (store1).map(); \
+		auto _map2 = (store2).map(); \
+		for(auto& _o : _map1) \
+			EXPECT_EQ(_o.second.get(), _map2[_o.first].get()); \
+	} while(0)
+
+#define EXPECT_NOT_SYNCED(store1, store2) \
+	do { \
+		auto _map1 = (store1).map(); \
+		auto _map2 = (store2).map(); \
+		bool _synced = true; \
+		for(auto& _o : _map1) \
+			if(_o.second.get() != _map2[_o.first].get()) { \
+				_synced = false; \
+				break; \
+			} \
+		EXPECT_FALSE(_synced); \
+	} while(0)
+
 TEST(Synchronizer, Sync1) {
 	SyncTestStore store1;
 	SyncTestStore store2;
 
 	stored::Synchronizer s1;
 	stored::Synchronizer s2;
-	s1.map(store1);
-	s2.map(store2);
 
 	LoggingLayer ll1;
 	LoggingLayer ll2;
 	stored::Loopback loop(ll1, ll2);
 
+	s1.map(store1);
+	s2.map(store2);
 	s1.connect(ll1);
 	s2.connect(ll2);
+
+	// Equal at initialization.
+	EXPECT_SYNCED(store1, store2);
+
 	s2.syncFrom(store2, ll2);
 
 	store1.default_uint8 = 1;
+	// Not synced yet.
+	EXPECT_NOT_SYNCED(store1, store2);
 	s1.process();
 	EXPECT_EQ(store2.default_uint8.get(), 1);
+
+	// Equal after sync.
+	EXPECT_SYNCED(store1, store2);
+
+	store2.default_uint16 = 2;
+	s2.process();
+	EXPECT_EQ(store1.map()["/default uint16"].get<uint16_t>(), 2);
+	EXPECT_SYNCED(store1, store2);
+
+	store1.default_uint8 = 3;
+	store2.default_uint16 = 4;
+	EXPECT_NOT_SYNCED(store1, store2);
+	s1.process();
+	s2.process();
+	EXPECT_SYNCED(store1, store2);
 
 	for(auto& s : ll2.encoded())
 		printBuffer(s, "> ");
 	for(auto& s : ll2.decoded())
 		printBuffer(s, "< ");
+
 }
 
 } // namespace
