@@ -20,9 +20,93 @@
 
 /*!
  * \defgroup libstored_synchronizer synchronizer
- * \brief Distributed store synchornizer.
+ * \brief Distributed store synchronizer.
  *
- * The communication is done in the store's endianness.
+ * In a distributed system, every process has its own instance of a store.
+ * Synchronization between these instances is implemented by the #stored::Synchronizer.
+ * The Synchronizer can be seen as a service, usually one per process,
+ * which knows all stores in that process and all communication channels to other
+ * processes. At regular intervals, it sends updates of locally modified data
+ * to the other Synchronizers.
+ *
+ * The topology can be configured at will. In principle, a process can have any
+ * number of stores, any number of synchronizers (which all handle any subset of the stores),
+ * any number of connections to any other process in the system.
+ *
+ * There are a few rules to keep in mind:
+ *
+ * - Only #stored::Synchronizable stores can be handled by the Synchronizer.
+ *   This has to be used correctly when the store is instantiated.
+ * - To synchronize a store, one must define which store is the one that
+ *   provides the initial value. Upon connection between Synchronizers, the
+ *   store's content is synchronized at once from one party to the other.
+ *   Afterwards, updates are sent in both directions.
+ * - Writes to different objects in the same store by the same process are
+ *   observed by every other process in the same order. All other write orders
+ *   are undefined (like writes to objects of different stores by the same
+ *   process, or writes to the same store by different processes), and can be
+ *   observed to happen in a different order by different processes at the same
+ *   time.
+ * - Writes to one object should only be done by one process. So, every process owns
+ *   a subset of a store. If multiple processes write to the same object, behavior
+ *   is undefined. That would be a race-condition anyway.
+ * - The communication is done in the store's endianness. If a distributed
+ *   system have processors with different endianness, they should be configured
+ *   to all-little or all-big endian. Accessing the store by the processor that
+ *   has a store in a non-native endianness, might be a bit more expensive, but
+ *   synchronization is cheaper.
+ * - Stores are identified by their (SHA-1) hash. This hash is computed over the full
+ *   source code of the store (the .st file). So, only stores with the exact same
+ *   definition, and therefore layout, can be synchronized.
+ *
+ * The protocol for synchronization consists of four messages. These are sent
+ * when appropriate, not in a request-response paradigm. There is no acknowledge.
+ * Invalid messages are just ignored.
+ *
+ * ### Hello
+ *
+ * "I would like to have the full state and future changes
+ * of the given store (by hash). All updates, send to me
+ * using this reference."
+ *
+ * `h` \<hash\> \<id\>
+ *
+ * The hash is returned by the \c hash() function of the store, including the
+ * null-terminator. The id is arbitrary chosen by the Synchronizer, and is
+ * 16-bit in the store's endianness.
+ *
+ * ### Welcome (as a response to a Hello)
+ *
+ * "You are welcome. Here is the full buffer state, upon your request, of the
+ * store with given reference. Any updates to the store at your side,
+ * provide them to me with my reference."
+ *
+ * `w` \<hello id\> \<welcome id\> \<buffer\>
+ *
+ * The hello id is the id as received in the hello message (by the other party).
+ * The welcome id is chosen by this Synchronizer, in the same manner.
+ *
+ * ### Update
+ *
+ * "Your store, with given reference, has changed.
+ * The changes are attached."
+ *
+ * `u` \<id\> \<updates\>
+ *
+ * The updates are a sequence of the triple: \<key\> \<length\> \<data\>.
+ * The key and length have the most significant bytes stripped, which would
+ * always be 0.  The data is in the store's endianness.
+ *
+ * ### Bye
+ *
+ * "I do not need any more updates of the given store (by hash, by id or all)."
+ *
+ * 'b' hash
+ * 'b' id
+ * 'b'
+ *
+ * A bye using the id can be used to respond to another message that has an unknown id.
+ * Previous communication sessions remnents can be cleaned up in this way.
  *
  * \ingroup libstored
  */
@@ -40,6 +124,11 @@
 
 namespace stored {
 
+	/*!
+	 * \brief A record of all changes within a store.
+	 * \see #stored::Synchronizable
+	 * \ingroup libstored_synchronizer
+	 */
 	class StoreJournal {
 		CLASS_NOCOPY(StoreJournal)
 	public:
@@ -167,6 +256,8 @@ namespace stored {
 	 *
 	 * Now, \c ActualStore inherits from \c Synchronizable, which inherits from \c MyStoreBase.
 	 * However, \c ActualStore is still used as the final implementation.
+	 *
+	 * \ingroup libstored_synchronizer
 	 */
 	template <typename Base>
 	class Synchronizable : public Base {
@@ -218,6 +309,8 @@ namespace stored {
 
 	/*!
 	 * \brief A one-to-one connection to synchronize one or more stores.
+	 * \see #stored::Synchronizer
+	 * \ingroup libstored_synchronizer
 	 */
 	class SyncConnection : public ProtocolLayer {
 		CLASS_NOCOPY(SyncConnection)
@@ -270,6 +363,10 @@ namespace stored {
 		Id m_idInNext;
 	};
 
+	/*!
+	 * \brief The service that manages synchronization of stores over SyncConnections.
+	 * \ingroup libstored_synchronizer
+	 */
 	class Synchronizer {
 		CLASS_NOCOPY(Synchronizer)
 	public:

@@ -75,7 +75,7 @@ StoreJournal::Seq StoreJournal::bumpSeq() {
 	Seq const saveRange = (1u << (sizeof(ShortSeq) * 8u)) - SeqLowerMargin;
 
 	if(unlikely(m_seq - m_seqLower > saveRange)) {
-		size_t seqLower = m_seq;
+		Seq seqLower = m_seq;
 		m_seqLower = m_seq - SeqLowerMargin;
 
 		for(size_t i = 0; i < m_changes.size(); i++) {
@@ -582,10 +582,6 @@ void SyncConnection::decode(void* buffer, size_t len) {
 		/*
 		 * Hello
 		 *
-		 * "I would like to have the full state and future changes
-		 * of the given store (by hash). All updates, send to me
-		 * using this reference."
-		 *
 		 * 'h' hash id
 		 */
 		char const* hash = StoreJournal::decodeHash(buffer, len);
@@ -614,10 +610,6 @@ void SyncConnection::decode(void* buffer, size_t len) {
 		/*
 		 * Welcome
 		 *
-		 * "You are welcome. Here is the full buffer state, upon your request, of the
-		 * store with given reference. Any updates to the store at your side,
-		 * provide them to me with my reference."
-		 *
 		 * 'w' hello_id welcome_id buffer
 		 */
 
@@ -644,9 +636,6 @@ void SyncConnection::decode(void* buffer, size_t len) {
 	case Update: {
 		/*
 		 * Update
-		 *
-		 * "Your store, with given reference, has changed.
-		 * The changes are attached."
 		 *
 		 * 'u' id updates
 		 */
