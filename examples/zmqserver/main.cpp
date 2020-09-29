@@ -77,7 +77,7 @@ int main() {
 	stored::Debugger debugger("zmqserver");
 	debugger.map(store);
 
-	stored::ZmqLayer zmqLayer;
+	stored::DebugZmqLayer zmqLayer;
 	zmqLayer.wrap(debugger);
 
 	printf("Connect via ZMQ to debug this application.\n");
