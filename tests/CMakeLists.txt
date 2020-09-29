@@ -51,7 +51,7 @@ if(HAVE_VALGRIND AND LIBSTORED_EXAMPLES)
 	libstored_example_test(3_scope)
 	libstored_example_test(4_function)
 	libstored_example_test(5_debug)
-	libstored_example_test(6_sync)
+	libstored_example_test(6_hooks)
 endif()
 
 find_program(SPIN_EXECUTABLE spin)

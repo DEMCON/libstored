@@ -264,8 +264,8 @@ namespace stored {
 		CLASS_NOCOPY(Synchronizable<Base>)
 	public:
 		typedef Base base;
-		using base::Objects;
-		using base::Implementation;
+		using typename base::Objects;
+		using typename base::Implementation;
 
 #if STORED_cplusplus >= 201103L
 		template <typename... Args>

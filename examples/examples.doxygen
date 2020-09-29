@@ -48,6 +48,17 @@ ExampleDebugAnotherStore.st:
 */
 
 /*!
+\example 8_sync/main.cpp
+\brief Arbitrary synchronizer topology.
+
+<p>ExampleSync1.st:</p>
+\verbinclude 8_sync/ExampleSync1.st
+
+<p>ExampleSync2.st:</p>
+\verbinclude 8_sync/ExampleSync2.st
+*/
+
+/*!
 \example terminal/main.cpp
 \brief A stdin/stdout terminal application to test hand-injected Embedded Debugger messages.
 \verbinclude terminal/ExampleTerminal.st
