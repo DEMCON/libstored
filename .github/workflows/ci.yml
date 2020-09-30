@@ -71,7 +71,7 @@ jobs:
       - name: build Debug
         run: |
           refreshenv
-          set
+          $env:path
           mkdir build-msvc
           cd build-msvc
           cmake -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Debug ..
