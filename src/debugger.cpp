@@ -172,9 +172,9 @@ notfound:
 	// - is alphabetically before name, such as /aa, while name was /prefix/object (no match)
 	// So, check both it and --it.
 
-	if(       it != m_map.end() && checkPrefix(name, it->first, len))
+	if(                              it != m_map.end() && checkPrefix(name, it->first, len))
 		goto gotit;
-	else if(--it != m_map.end() && checkPrefix(name, it->first, len))
+	else if(it != m_map.begin() && --it != m_map.end() && checkPrefix(name, it->first, len))
 		goto gotit;
 	else
 		goto notfound;

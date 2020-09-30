@@ -161,11 +161,11 @@ namespace stored {
 		typedef {{store.name}}Data Data;
 		/*! \brief Returns the container for all the store's data. */
 		Data const& data() const { return m_data; }
-		/*! \copydoc data() const */
+		/*! \copydoc stored::{{store.name}}Base::data() const */
 		Data& data() { return m_data; }
 		/*! \brief Returns the buffer with all variable data. */
 		char const* buffer() const { return data().buffer; }
-		/*! \copydoc buffer() const */
+		/*! \copydoc stored::{{store.name}}Base::buffer() const */
 		char* buffer() { return data().buffer; }
 
 	private:

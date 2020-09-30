@@ -256,7 +256,7 @@ TEST(Synchronizer, Sync5) {
 			auto& l = list[i];
 
 			// Pick a random object from that store (but only one in five can be written by us).
-			auto& o = l[(rand() % (l.size() / 5)) * 5 + i];
+			auto& o = l[((size_t)rand() % (l.size() / 5u)) * 5u + (size_t)i];
 
 			// Flip a bit of that object.
 			auto data = o.get();
