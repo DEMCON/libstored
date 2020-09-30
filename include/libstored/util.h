@@ -274,6 +274,7 @@ namespace stored {
 
 	/*!
 	 * \brief Swap host to store endianness.
+	 * \ingroup libstored_util
 	 */
 	template <typename T>
 	static inline T endian_h2s(T value) {
@@ -315,6 +316,7 @@ namespace stored {
 
 	/*!
 	 * \brief Swap store to host endianness.
+	 * \ingroup libstored_util
 	 */
 	template <typename T>
 	static inline T endian_s2h(T value) {
@@ -323,6 +325,8 @@ namespace stored {
 		else
 			return endian_b2h<T>(value);
 	}
+
+	std::string string_literal(void const* buffer, size_t len, char const* prefix = nullptr);
 
 	/*!
 	 * \brief Determine the number of bytes to save the given unsigned value.

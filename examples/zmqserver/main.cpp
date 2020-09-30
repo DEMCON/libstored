@@ -1,3 +1,8 @@
+/*!
+ * \file
+ * \brief A stored::ZmqServer interface for a lot of different types of objects.
+ */
+
 #include <stored>
 #include "ZmqServerStore.h"
 #include <cmath>

@@ -17,6 +17,7 @@
  */
 
 #include <libstored/protocol.h>
+#include <libstored/util.h>
 
 #ifndef STORED_OS_BAREMETAL
 #  ifdef STORED_COMPILER_MSVC
@@ -891,6 +892,61 @@ void BufferLayer::encode(void const* buffer, size_t len, bool last) {
 		m_buffer.append(buffer_, len);
 	}
 }
+
+
+//////////////////////////////
+// PrintLayer
+//
+
+PrintLayer::PrintLayer(FILE* f, char const* name, ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_f(f)
+	, m_name(name)
+{
+}
+
+void PrintLayer::decode(void* buffer, size_t len) {
+	if(m_f) {
+		std::string prefix;
+		if(m_name)
+			prefix += m_name;
+		prefix += " < ";
+
+		std::string s = string_literal(buffer, len, prefix.c_str());
+		s += "\n";
+		fputs(s.c_str(), m_f);
+	}
+
+	base::decode(buffer, len);
+}
+
+void PrintLayer::encode(void const* buffer, size_t len, bool last) {
+	if(m_f) {
+		std::string prefix;
+		if(m_name)
+			prefix += m_name;
+
+		if(last)
+			prefix += " > ";
+		else
+			prefix += " * ";
+
+		std::string s = string_literal(buffer, len, prefix.c_str());
+		s += "\n";
+		fputs(s.c_str(), m_f);
+	}
+
+	base::encode(buffer, len, last);
+}
+
+/*!
+ * \brief Set the \c FILE to write to.
+ * \param f the \c FILE, set to \c nullptr to disable output
+ */
+void PrintLayer::setFile(FILE* f) {
+	m_f = f;
+}
+
 
 
 //////////////////////////////

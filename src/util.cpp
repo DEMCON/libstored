@@ -19,11 +19,13 @@
 #include <libstored/util.h>
 
 #include <cstring>
+#include <cinttypes>
 
 namespace stored {
 
 /*!
  * \brief Like \c ::strncpy(), but without padding and returning the length of the string.
+ * \ingroup libstored_util
  */
 size_t strncpy(char* __restrict__ dst, char const* __restrict__ src, size_t len) {
 	if(len == 0)
@@ -41,6 +43,7 @@ size_t strncpy(char* __restrict__ dst, char const* __restrict__ src, size_t len)
 
 /*!
  * \brief Like \c ::strncmp(), but handles non zero-terminated strings.
+ * \ingroup libstored_util
  */
 int strncmp(char const* __restrict__ str1, size_t len1, char const* __restrict__ str2, size_t len2) {
 	stored_assert(str1);
@@ -86,6 +89,7 @@ void swap_endian(void* buffer, size_t len) {
 
 /*!
  * \brief \c memcpy() with endianness swapping.
+ * \ingroup libstored_util
  */
 void memcpy_swap(void* __restrict__ dst, void const* __restrict__ src, size_t len) {
 	char* dst_ = static_cast<char*>(dst);
@@ -97,6 +101,7 @@ void memcpy_swap(void* __restrict__ dst, void const* __restrict__ src, size_t le
 
 /*!
  * \brief memcmp() with endianness swapping.
+ * \ingroup libstored_util
  */
 int memcmp_swap(void const* a, void const* b, size_t len) {
 	unsigned char const* a_ = static_cast<unsigned char const*>(a);
@@ -111,6 +116,41 @@ int memcmp_swap(void const* a, void const* b, size_t len) {
 
 diff:
 	return a_[i] < b_[i] ? -1 : 1;
+}
+
+/*!
+ * \brief Converts the given buffer to a string literal.
+ *
+ * This comes in handy for verbose output of binary data, like protocol messages.
+ *
+ * \ingroup libstored_util
+ */
+std::string string_literal(void const* buffer, size_t len, char const* prefix) {
+	std::string s;
+	if(prefix)
+		s += prefix;
+
+	uint8_t const* b = static_cast<uint8_t const*>(buffer);
+	char buf[16];
+	for(size_t i = 0; i < len; i++) {
+		switch(b[i]) {
+		case '\0': s += "\\0"; break;
+		case '\r': s += "\\r"; break;
+		case '\n': s += "\\n"; break;
+		case '\t': s += "\\t"; break;
+		case '\\': s += "\\\\"; break;
+		default:
+			if(b[i] < 0x20 || b[i] >= 0x7f) {
+				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
+				snprintf(buf, sizeof(buf), "\\x%02" PRIx8, b[i]);
+				s += buf;
+			} else {
+				s += (char)b[i];
+			}
+		}
+	}
+
+	return s;
 }
 
 } // namespace

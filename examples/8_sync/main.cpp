@@ -65,44 +65,68 @@ int main(int argc, char** argv) {
 	synchronizer.map(store1);
 	synchronizer.map(store2);
 
+	std::list<stored::ProtocolLayer*> otherLayers;
 	std::list<stored::SyncZmqLayer*> connections;
 	int debug_port = stored::DebugZmqLayer::DefaultPort;
+	bool verbose = false;
 
 	int c;
-	while((c = getopt(argc, argv, "i:d:u:p:")) != -1)
+	while((c = getopt(argc, argv, "i:d:u:p:v")) != -1)
 		switch(c) {
-		case 'i': {
+		case 'i':
 			printf("This is %s\n", optarg);
 			debugger.setIdentification(optarg);
 			break;
-		}
-		case 'p': {
+		case 'p':
 			debug_port = atoi(optarg);
 			break;
-		}
+		case 'v':
+			printf("Enable verbose output\n");
+			verbose = true;
+			break;
 		case 'd': {
 			printf("Listen at %s for downstream sync\n", optarg);
 			stored::SyncZmqLayer* z = new stored::SyncZmqLayer(nullptr, optarg, true);
 			connections.push_back(z);
-			synchronizer.connect(*z);
+			stored::ProtocolLayer* c = z;
+			if(verbose) {
+				c = new stored::BufferLayer();
+				stored::PrintLayer* p = new stored::PrintLayer(stdout, optarg);
+				otherLayers.push_back(c);
+				otherLayers.push_back(p);
+				p->wrap(*c);
+				z->wrap(*p);
+			}
+			synchronizer.connect(*c);
 			break;
 		}
 		case 'u': {
 			printf("Connect to %s for upstream sync\n", optarg);
 			stored::SyncZmqLayer* z = new stored::SyncZmqLayer(nullptr, optarg, false);
 			connections.push_back(z);
-			synchronizer.connect(*z);
-			synchronizer.syncFrom(store1, *z);
-			synchronizer.syncFrom(store2, *z);
+			stored::ProtocolLayer* c = z;
+			if(verbose) {
+				c = new stored::BufferLayer();
+				stored::PrintLayer* p = new stored::PrintLayer(stdout, optarg);
+				otherLayers.push_back(c);
+				otherLayers.push_back(p);
+				p->wrap(*c);
+				z->wrap(*p);
+			}
+			synchronizer.connect(*c);
+			synchronizer.syncFrom(store1, *c);
+			synchronizer.syncFrom(store2, *c);
 			break;
 		}
 		default:
-			printf("Usage: %s [-i <name>] [-p <port>] [-d <endpoint>|-u <endpoint>]*\n", argv[0]);
+			printf("Usage: %s [-v] [-i <name>] [-p <port>] [-d <endpoint>|-u <endpoint>]*\n", argv[0]);
 			printf("where\n");
 			printf("  -d   Listen for incoming 0MQ endpoint for downstream sync.\n");
 			printf("  -i   Set debugger's identification name.\n");
 			printf("  -p   Set debugger's port\n");
 			printf("  -u   Connect to 0MQ endpoint for upstream sync.\n\n");
+			printf("  -v   Verbose output of sync connections. Applies only to\n");
+			printf("       -u and -d options after -v.\n");
 			printf("Specify -i and -u as often as required.\n\n");
 			return 1;
 		}
@@ -172,6 +196,8 @@ int main(int argc, char** argv) {
 
 done:
 	for(std::list<stored::SyncZmqLayer*>::iterator it = connections.begin(); it != connections.end(); ++it)
+		delete *it;
+	for(std::list<stored::ProtocolLayer*>::iterator it = otherLayers.begin(); it != otherLayers.end(); ++it)
 		delete *it;
 
 	return 0;

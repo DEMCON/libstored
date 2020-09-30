@@ -569,6 +569,8 @@ public:
 	 * \brief A layer that adds a CRC-16 to messages.
 	 *
 	 * Like #stored::Crc8Layer, but using a 0xbaad as polynomial.
+	 *
+	 * \ingroup libstored_protocol
 	 */
 	class Crc16Layer : public ProtocolLayer {
 		CLASS_NOCOPY(Crc16Layer)
@@ -600,6 +602,8 @@ public:
 	 * However, one might collect as much data as possible to reduce overhead
 	 * of the actual transport.  This layer buffers partial messages until the
 	 * maximum buffer capacity is reached, or the \c last flag is encountered.
+	 *
+	 * \ingroup libstored_protocol
 	 */
 	class BufferLayer : public ProtocolLayer {
 		CLASS_NOCOPY(BufferLayer)
@@ -615,6 +619,32 @@ public:
 	private:
 		size_t m_size;
 		std::string m_buffer;
+	};
+
+	/*!
+	 * \brief Prints all messages to a \c FILE.
+	 *
+	 * Mainly for debugging purposes.
+	 *
+	 * \ingroup libstored_protocol
+	 */
+	class PrintLayer : public ProtocolLayer {
+		CLASS_NOCOPY(PrintLayer)
+	public:
+		typedef ProtocolLayer base;
+
+		PrintLayer(FILE* f = stdout, char const* name = nullptr, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~PrintLayer() override is_default
+
+		virtual void decode(void* buffer, size_t len) override;
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+
+		void setFile(FILE* f);
+
+	private:
+		FILE* m_f;
+		char const* m_name;
 	};
 
 	namespace impl {
@@ -637,6 +667,8 @@ public:
 
 	/*!
 	 * \brief Loopback between two protocol stacks.
+	 *
+	 * \ingroup libstored_protocol
 	 */
 	class Loopback {
 		CLASS_NOCOPY(Loopback)
