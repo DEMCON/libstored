@@ -42,6 +42,8 @@
 #  include <stdlib.h>
 #endif
 
+#include <string>
+
 /*!
  * \def likely(expr)
  * \brief Marks the given expression to likely be evaluated to true.
