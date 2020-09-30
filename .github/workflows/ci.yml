@@ -70,7 +70,7 @@ jobs:
           git submodule update --init --recursive
       - name: build Debug
         run: |
-          refreshenv
+          call scripts\env.cmd
           mkdir build-msvc
           cd build-msvc
           cmake -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Debug ..
@@ -81,7 +81,7 @@ jobs:
         working-directory: build-msvc
       - name: build Release
         run: |
-          refreshenv
+          call ..\scripts\env.cmd
           cmake -DCMAKE_BUILD_TYPE=Release ..
           cmake --build .
         shell: cmd
