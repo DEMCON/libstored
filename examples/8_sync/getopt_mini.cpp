@@ -1,6 +1,8 @@
 #include "getopt_mini.h"
 
-#ifndef STORED_OS_LINUX
+#ifndef STORED_OS_POSIX
+
+#include <stddef.h>
 
 int opterr = 1;
 int optopt = 0;
