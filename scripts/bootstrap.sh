@@ -38,6 +38,7 @@ case `uname -s` in
 		install_or_upgrade pyqt
 		install_or_upgrade pkgconfig
 		install_or_upgrade gnutls
+		install_or_upgrade doxygen
 		pip3 install jinja2 textx pyzmq pyside2 pyserial lognplot natsort wheel crcmod
 		;;
 	*)
