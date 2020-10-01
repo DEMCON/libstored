@@ -27,7 +27,7 @@ if(LIBSTORED_DOCUMENTATION)
 
 	add_custom_target(
 		doc ALL
-		COMMAND doxygen
+		COMMAND $<TARGET_FILE:Doxygen::doxygen>
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		COMMENT "Generating API documentation with Doxygen (see doxygen/html/index.html)"
 	)
