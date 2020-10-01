@@ -24,7 +24,7 @@ echo Chocolatey not installed. Install from here: https://chocolatey.org/docs/in
 goto error
 :have_choco
 
-choco install -y --no-progress tortoisegit git cmake make python3 pkgconfiglite mingw
+choco install -y --no-progress tortoisegit git cmake make python3 pkgconfiglite mingw doxygen.install
 if errorlevel 1 goto error
 
 call refreshenv

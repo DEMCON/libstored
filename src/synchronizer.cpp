@@ -415,7 +415,7 @@ void SyncConnection::source(StoreJournal& store) {
  * \brief Determine a unique ID for others to send store updates to us.
  */
 SyncConnection::Id SyncConnection::nextId() {
-	stored_assert(m_idIn.size() < std::numeric_limits<Id>::max() / 2);
+	stored_assert(m_idIn.size() < std::numeric_limits<Id>::max() / 2u);
 
 	while(true) {
 		Id id = m_idInNext++;
@@ -508,11 +508,13 @@ void SyncConnection::bye(SyncConnection::Id id) {
 }
 
 void SyncConnection::erase(SyncConnection::Id id) {
-	IdInMap::iterator it = m_idIn.find(id);
-	if(it != m_idIn.end()) {
-		m_seq.erase(it->second);
-		m_idOut.erase(it->second);
-		m_idIn.erase(it);
+	{
+		IdInMap::iterator it = m_idIn.find(id);
+		if(it != m_idIn.end()) {
+			m_seq.erase(it->second);
+			m_idOut.erase(it->second);
+			m_idIn.erase(it);
+		}
 	}
 
 	StoreJournal* j = nullptr;
@@ -620,7 +622,7 @@ void SyncConnection::decode(void* buffer, size_t len) {
 		Id welcome_id = decodeId(buffer, len);
 		IdInMap::iterator j = m_idIn.find(id);
 
-		StoreJournal::Seq seq;
+		StoreJournal::Seq seq = 0;
 
 		if(!welcome_id || j == m_idIn.end() ||
 			!(seq = j->second->decodeBuffer(buffer, len)))
@@ -652,7 +654,7 @@ void SyncConnection::decode(void* buffer, size_t len) {
 		// Make sure that local changes are flushed out first.
 		process(*it->second);
 
-		StoreJournal::Seq seq;
+		StoreJournal::Seq seq = 0;
 		if(!(seq = it->second->decodeUpdates(buffer, len))) {
 			bye(id);
 			break;

@@ -482,6 +482,8 @@ namespace stored {
 	class DebugVariant final : public DebugVariantBase {
 		CLASS_NO_WEAK_VTABLE
 	public:
+		typedef DebugVariantBase base;
+
 		/*!
 		 * \brief Constructor for an invalid #stored::Variant wrapper.
 		 */
@@ -530,6 +532,8 @@ namespace stored {
 			return !(*this == rhs); }
 
 	protected:
+		using base::operator==;
+
 		/*!
 		 * \brief Returns the contained #stored::DebugVariantTyped instance.
 		 */

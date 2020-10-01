@@ -264,8 +264,8 @@ namespace stored {
 		CLASS_NOCOPY(Synchronizable<Base>)
 	public:
 		typedef Base base;
-		using typename base::Objects;
-		using typename base::Implementation;
+		typedef typename base::Objects Objects;
+		typedef typename base::Implementation Implementation;
 
 #if STORED_cplusplus >= 201103L
 		template <typename... Args>
@@ -275,7 +275,7 @@ namespace stored {
 		Synchronizable()
 			: base()
 #endif
-			, m_journal(this->hash(), this->buffer(), sizeof(this->data().buffer))
+			, m_journal(base::hash(), base::buffer(), sizeof(base::data().buffer))
 		{
 			// Useless without hooks.
 			stored_assert(Config::EnableHooks);

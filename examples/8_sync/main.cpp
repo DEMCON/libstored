@@ -18,9 +18,9 @@
 #include "ExampleSync2.h"
 
 #include <stored>
-#include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include "getopt_mini.h"
 
 static stored::Synchronizer synchronizer;
 
@@ -88,34 +88,34 @@ int main(int argc, char** argv) {
 			printf("Listen at %s for downstream sync\n", optarg);
 			stored::SyncZmqLayer* z = new stored::SyncZmqLayer(nullptr, optarg, true);
 			connections.push_back(z);
-			stored::ProtocolLayer* c = z;
+			stored::ProtocolLayer* l = z;
 			if(verbose) {
-				c = new stored::BufferLayer();
+				l = new stored::BufferLayer();
 				stored::PrintLayer* p = new stored::PrintLayer(stdout, optarg);
-				otherLayers.push_back(c);
+				otherLayers.push_back(l);
 				otherLayers.push_back(p);
-				p->wrap(*c);
+				p->wrap(*l);
 				z->wrap(*p);
 			}
-			synchronizer.connect(*c);
+			synchronizer.connect(*l);
 			break;
 		}
 		case 'u': {
 			printf("Connect to %s for upstream sync\n", optarg);
 			stored::SyncZmqLayer* z = new stored::SyncZmqLayer(nullptr, optarg, false);
 			connections.push_back(z);
-			stored::ProtocolLayer* c = z;
+			stored::ProtocolLayer* l = z;
 			if(verbose) {
-				c = new stored::BufferLayer();
+				l = new stored::BufferLayer();
 				stored::PrintLayer* p = new stored::PrintLayer(stdout, optarg);
-				otherLayers.push_back(c);
+				otherLayers.push_back(l);
 				otherLayers.push_back(p);
-				p->wrap(*c);
+				p->wrap(*l);
 				z->wrap(*p);
 			}
-			synchronizer.connect(*c);
-			synchronizer.syncFrom(store1, *c);
-			synchronizer.syncFrom(store2, *c);
+			synchronizer.connect(*l);
+			synchronizer.syncFrom(store1, *l);
+			synchronizer.syncFrom(store2, *l);
 			break;
 		}
 		default:

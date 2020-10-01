@@ -24,11 +24,11 @@
 
 #include <chrono>
 
-namespace {
-
 class SyncTestStore : public stored::Synchronizable<stored::TestStoreBase<SyncTestStore>> {
 	friend class stored::TestStoreBase<SyncTestStore>;
 };
+
+namespace {
 
 TEST(Synchronizer, Endianness) {
 	EXPECT_EQ(stored::swap_endian<uint8_t>(1), 1);
