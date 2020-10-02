@@ -77,11 +77,17 @@ if(SPIN_EXECUTABLE)
 	)
 endif()
 
+if(WIN32)
+	set(ENV_PATH_SEP ";")
+else()
+	set(ENV_PATH_SEP ":")
+endif()
+
 add_test(
 	NAME ZmqClient
 	COMMAND ${CMAKE_COMMAND} -E env
 		PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/../client
-		"PATH=$<SHELL_PATH:$<TARGET_FILE_DIR:libzmq>;$ENV{PATH}>"
+		"PATH=$<SHELL_PATH:$<TARGET_FILE_DIR:libzmq>>${ENV_PATH_SEP}$ENV{PATH}"
 		${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_ZmqClient.py $<TARGET_FILE:zmqserver>
 )
 set_tests_properties(ZmqClient PROPERTIES TIMEOUT 60)
