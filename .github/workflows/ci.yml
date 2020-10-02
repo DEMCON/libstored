@@ -74,7 +74,7 @@ jobs:
           mkdir build-msvc
           cd build-msvc
           cmake -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Debug ..
-          cmake --build . -j%NUMBER_OF_PROCESSORS%
+          cmake --build . -j%NUMBER_OF_PROCESSORS% --config Debug
         shell: cmd
       - name: test
         run: cmake --build . --target RUN_TESTS --config Debug
@@ -83,7 +83,7 @@ jobs:
         run: |
           call ..\scripts\env.cmd
           cmake -DCMAKE_BUILD_TYPE=Release ..
-          cmake --build . -j%NUMBER_OF_PROCESSORS%
+          cmake --build . -j%NUMBER_OF_PROCESSORS% --config Release
         shell: cmd
         working-directory: build-msvc
       - name: test

@@ -290,7 +290,8 @@ namespace stored {
 				StoreJournal::Key key = (StoreJournal::Key)this->bufferToKey(buffer);
 
 				if(Config::EnableAssert) {
-					bool ok __attribute__((unused)) = true;
+					bool ok = true;
+					(void)ok;
 					stored_assert(journal().keyToBuffer(key, (StoreJournal::Size)len, &ok) == buffer);
 					stored_assert(ok);
 				}
