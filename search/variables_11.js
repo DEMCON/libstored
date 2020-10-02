@@ -1,23 +1,10 @@
 var searchData=
 [
-  ['s',['s',['../classstored_1_1_example_basic_objects.html#a9eaebb4547d6c8194d0b700c9d5d6cd0',1,'stored::ExampleBasicObjects']]],
-  ['scope_5f_5fan_5fint',['scope__an_int',['../classstored_1_1_example_scope_objects.html#a796b3a65bdd25ccadf03b001516ea35c',1,'stored::ExampleScopeObjects']]],
-  ['scope_5f_5fsome_5fbool',['scope__some_bool',['../classstored_1_1_example_scope_objects.html#a535e6b35397a555b86bcc05f2779e271',1,'stored::ExampleScopeObjects']]],
-  ['scope_5f_5fsubscope_5f_5fanother_5fbool',['scope__subscope__another_bool',['../classstored_1_1_example_scope_objects.html#aa67e16149576c6694ca8891e1bb80e3e',1,'stored::ExampleScopeObjects']]],
-  ['serial',['serial',['../classed2_1_1serial2zmq_1_1_serial2_zmq.html#aa84609906b123f501d32fce0d9ba4842',1,'ed2::serial2zmq::Serial2Zmq']]],
-  ['serial_5fsocket',['serial_socket',['../classed2_1_1serial2zmq_1_1_serial2_zmq.html#a9da7413df6a5995e61e4f3a67396c7b5',1,'ed2::serial2zmq::Serial2Zmq']]],
-  ['slowpollinterval_5fs',['slowPollInterval_s',['../classed2_1_1zmq__client_1_1_zmq_client.html#ab5aee1fbd4f96db097041130ff88a3c6',1,'ed2::zmq_client::ZmqClient']]],
-  ['small_5f_5fworld',['small__world',['../classstored_1_1_example_terminal_objects.html#abb03d99231dbca8fda16db3550db58b0',1,'stored::ExampleTerminalObjects']]],
-  ['so_5fthis_5fis_5fa_5fperfectly_5ffine_5fname_5feven_5fif_5fit_5fincludes_5fcharacters_5flike_5fand_5fso_5fon',['So_this_is_a_perfectly_fine_name_even_if_it_includes_characters_like_and_so_on',['../classstored_1_1_example_basic_objects.html#af6ae8e631be9b435050267b8f3e98b07',1,'stored::ExampleBasicObjects']]],
-  ['socket',['socket',['../classed2_1_1zmq__server_1_1_zmq_server.html#aea10a1f7017c5ff3ade55f3b9c9d648d',1,'ed2::zmq_server::ZmqServer']]],
-  ['sockets',['sockets',['../classed2_1_1zmq__server_1_1_zmq_server.html#a19da49305dda8fa58ba819034fa607bc',1,'ed2::zmq_server::ZmqServer']]],
-  ['start',['start',['../classed2_1_1protocol_1_1_terminal_layer.html#a3bfe0e75a76dc71fbd7307537be1865b',1,'ed2::protocol::TerminalLayer']]],
-  ['stats_5f_5fobject_5fwrites',['stats__object_writes',['../classstored_1_1_zmq_server_store_objects.html#a011ecccd65898668cd7b496a32fb7459',1,'stored::ZmqServerStoreObjects']]],
-  ['stats_5f_5fzmq_5fmessages',['stats__ZMQ_messages',['../classstored_1_1_zmq_server_store_objects.html#a3679c31731680c9c86116dc5cab60a71',1,'stored::ZmqServerStoreObjects']]],
-  ['stdin_5fsocket',['stdin_socket',['../classed2_1_1serial2zmq_1_1_serial2_zmq.html#a4bd1168ef4473e234fc463573fde12cf',1,'ed2.serial2zmq.Serial2Zmq.stdin_socket()'],['../classed2_1_1stdio2zmq_1_1_stdio2_zmq.html#a148c162de2653a3c0d793cddf89cf43b',1,'ed2.stdio2zmq.Stdio2Zmq.stdin_socket()']]],
-  ['stdout_5fsocket',['stdout_socket',['../classed2_1_1stdio2zmq_1_1_stdio2_zmq.html#a654e8e07006d050c1da27dd71075daa6',1,'ed2::stdio2zmq::Stdio2Zmq']]],
-  ['str',['str',['../classed2_1_1zmq__client_1_1_object.html#a3322938fd0aa9c055e60ce51fecdf4bd',1,'ed2.zmq_client.Object.str()'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a6bad21013ccf50234c91fd489b33e66d',1,'ed2.zmq_client.ZmqClient.str()'],['../namespaceed2_1_1cli_1_1____main____.html#a403747d8070f86d3d65b1a22a4095f48',1,'ed2.cli.__main__.str()'],['../namespaceed2_1_1gui_1_1____main____.html#a16219872c4d782ea8e98ae56fe072753',1,'ed2.gui.__main__.str()'],['../namespaceed2_1_1wrapper_1_1serial_1_1____main____.html#ae6c8b92a34b18cfd8576e2f2bf859374',1,'ed2.wrapper.serial.__main__.str()'],['../namespaceed2_1_1wrapper_1_1stdio_1_1____main____.html#a19c57ab9f814805ee29d89f1990f933d',1,'ed2.wrapper.stdio.__main__.str()']]],
-  ['streams',['streams',['../classed2_1_1zmq__server_1_1_zmq_server.html#a31e7683121913d1a3925d83708e33a4d',1,'ed2::zmq_server::ZmqServer']]],
-  ['string',['String',['../classed2_1_1zmq__client_1_1_object.html#ae782a52ad2be2abeeec4eb7237b029ec',1,'ed2::zmq_client::Object']]],
-  ['supercalifragilisticexpialidocious',['supercalifragilisticexpialidocious',['../classstored_1_1_example_terminal_objects.html#aee5aeae8b2df25f220a186ca6c640823',1,'stored::ExampleTerminalObjects']]]
+  ['rand',['rand',['../classstored_1_1_zmq_server_store_objects.html#afd0dca6acba4e7bde2c9122b498f34b6',1,'stored::ZmqServerStoreObjects']]],
+  ['rep_5fqueue',['rep_queue',['../classed2_1_1serial2zmq_1_1_serial2_zmq.html#a33c52f81d72d62b53a02c984fbd0d7ce',1,'ed2.serial2zmq.Serial2Zmq.rep_queue()'],['../classed2_1_1stdio2zmq_1_1_stdio2_zmq.html#a70714a27f255edddba16535b4872eb7a',1,'ed2.stdio2zmq.Stdio2Zmq.rep_queue()']]],
+  ['res',['res',['../namespaceed2_1_1gui_1_1____main____.html#a11587f112b0486278fe041290b1db064',1,'ed2::gui::__main__']]],
+  ['reset_5fflag',['reset_flag',['../classed2_1_1protocol_1_1_arq_layer.html#a0deca335324bb60cdcc30a4b2ec8f9eb',1,'ed2::protocol::ArqLayer']]],
+  ['resetflag',['ResetFlag',['../classstored_1_1_arq_layer.html#a31266d3a965a40c5cdee2d0642727d7a',1,'stored::ArqLayer']]],
+  ['response',['response',['../structstored_1_1_list_cmd_callback_arg.html#a3e0554416bf2d281bd13aacae9722808',1,'stored::ListCmdCallbackArg']]],
+  ['result',['result',['../classed2_1_1gui_1_1____main_____1_1_object_list_model.html#ae23d33fd5a5e1f758de85c78b408dd44',1,'ed2.gui.__main__.ObjectListModel.result()'],['../classed2_1_1zmq__client_1_1_object.html#a24bc34eaf380e4aa37a218fdbdb7ecd3',1,'ed2.zmq_client.Object.result()'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a612ec43085c34a4667148e2b5587f349',1,'ed2.zmq_client.ZmqClient.result()']]]
 ];

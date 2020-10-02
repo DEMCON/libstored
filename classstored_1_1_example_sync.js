@@ -1,10 +1,8 @@
 var classstored_1_1_example_sync =
 [
-    [ "Base", "classstored_1_1_example_sync.html#a939d81580c84ac637b57497a7455371b", null ],
     [ "base", "classstored_1_1_example_sync.html#a68be27fd91008484c87c9b4f07ceed17", null ],
     [ "Implementation", "classstored_1_1_example_sync.html#a937b1f7288e8c64ca69bf2a6996b5d87", null ],
     [ "Key", "classstored_1_1_example_sync.html#aa6b550dce4f6a49a1aaa1109c79544e6", null ],
-    [ "Objects", "classstored_1_1_example_sync.html#a63df5af764f754083524464ef893e943", null ],
     [ "ExampleSync", "classstored_1_1_example_sync.html#a7877f186061db84a79cb48b2a6890986", null ],
     [ "ExampleSync", "classstored_1_1_example_sync.html#a9b3d5bbb28880084bd8c58aba1dcb405", null ],
     [ "ExampleSync", "classstored_1_1_example_sync.html#a7d1d4745dc1007b1c3fc1c88a181ae02", null ],
@@ -16,6 +14,7 @@ var classstored_1_1_example_sync =
     [ "bufferToKey", "classstored_1_1_example_sync.html#ac770c6853a6fad5a8929bd88953e7ae6", null ],
     [ "callback", "classstored_1_1_example_sync.html#a0e7418484c4bdfdd34fa4513338f9399", null ],
     [ "find", "classstored_1_1_example_sync.html#a09e1d95037a71812ca4d39b8f300853a", null ],
+    [ "function", "classstored_1_1_example_sync.html#a7aab2c541bb1f6980268c8343b55d06a", null ],
     [ "hookEntryRO", "classstored_1_1_example_sync.html#ad8cbc82bc6f7e399aa9e2dcf982174c4", null ],
     [ "hookEntryX", "classstored_1_1_example_sync.html#a5e2e4c3d15b5e92dacc6566bcb8e9e31", null ],
     [ "hookExitRO", "classstored_1_1_example_sync.html#a9404e5ea4bb08dd48078714f8afad990", null ],
@@ -23,14 +22,13 @@ var classstored_1_1_example_sync =
     [ "implementation", "classstored_1_1_example_sync.html#a872855e7c881e3bae3fc08a66b519b48", null ],
     [ "implementation", "classstored_1_1_example_sync.html#adf75d00128b481789d3b6d0fbb3c7962", null ],
     [ "list", "classstored_1_1_example_sync.html#ac83cedae74d83129e40f6349dcadd439", null ],
-    [ "list", "classstored_1_1_example_sync.html#ae4d98128808bf3def3122fccb7642afb", null ],
+    [ "list", "classstored_1_1_example_sync.html#acfa0eb2967fc4fe5eb7e7ac7319195bd", null ],
     [ "longDirectory", "classstored_1_1_example_sync.html#a855fdaa2fd7c546651f3290e4d6197a5", null ],
     [ "name", "classstored_1_1_example_sync.html#acfe5926e3a5cb60965be6e1a142d3309", null ],
     [ "operator=", "classstored_1_1_example_sync.html#af5c8ce340f1f60c6c753e4e61254dce9", null ],
     [ "operator=", "classstored_1_1_example_sync.html#a8a3f28d52b0d80414be84f92c0cd5dd7", null ],
     [ "shortDirectory", "classstored_1_1_example_sync.html#ab684a98e82b5b12c178a9a960c643f74", null ],
-    [ "ExampleSyncBase< ExampleSync >", "classstored_1_1_example_sync.html#ac4486ee3aa96e68f37ab9cb21f04adc9", null ],
-    [ "function", "classstored_1_1_example_sync.html#ad3e9c3e741de02d331e59e9d3e79e9bd", null ],
-    [ "variable_1", "classstored_1_1_example_sync.html#a4fb8eaf6eb9efe05a90d7b7072735964", null ],
-    [ "variable_2", "classstored_1_1_example_sync.html#adf36732c57b08cc9604725cdc4c7d327", null ]
+    [ "variable_1", "classstored_1_1_example_sync.html#afa3b8af60f6fd684f660886609bd2484", null ],
+    [ "variable_2", "classstored_1_1_example_sync.html#a344eca98c8b615e2524ed17562176e09", null ],
+    [ "ExampleSyncBase< ExampleSync >", "classstored_1_1_example_sync.html#ac4486ee3aa96e68f37ab9cb21f04adc9", null ]
 ];

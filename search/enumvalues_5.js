@@ -1,7 +1,10 @@
 var searchData=
 [
-  ['maskflags',['MaskFlags',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea2d5518f85bf6c81f968e7262933e3b7d',1,'stored::Type']]],
-  ['masksize',['MaskSize',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eafab8b14d23add4c4a4921c971ead9c0a',1,'stored::Type']]],
-  ['maxbuffer',['MaxBuffer',['../classstored_1_1_terminal_layer.html#a18e520b233aa224854f48695f9ce350dac2e5fe6228ece37b246ab755b987f59f',1,'stored::TerminalLayer']]],
-  ['maxsize',['maxSize',['../classstored_1_1_scratch_pad.html#a15f34d2b6d42f4b4f8bdc25bbae3efe5a62424ce21ef05ba377086fb28696171c',1,'stored::ScratchPad']]]
+  ['init',['init',['../classstored_1_1_crc8_layer.html#a42689e45f91b83968e42a747ce3ae3a8a1631c674509e8d7d495cab564f1cd8eb',1,'stored::Crc8Layer::init()'],['../classstored_1_1_crc16_layer.html#a1695e0aded59c2f14c92c49e64e4f106aeb8e182958fd03c1968f253e0bcb11c6',1,'stored::Crc16Layer::init()']]],
+  ['int',['Int',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea63be2e87df1668e33600f74b25377135',1,'stored::Type']]],
+  ['int16',['Int16',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea9ff50bbf1154550b120e6a9a34cfe4a3',1,'stored::Type']]],
+  ['int32',['Int32',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada75833dee6f44310b76a392f59fa3ae',1,'stored::Type']]],
+  ['int64',['Int64',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eab9faa26c220d3cea1b00b1159ae2748b',1,'stored::Type']]],
+  ['int8',['Int8',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ead13dd94a5f73fdb5bbeca07963d836e6',1,'stored::Type']]],
+  ['invalid',['Invalid',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea8162286bfc05e98454e6d04a0bdd23a3',1,'stored::Type']]]
 ];

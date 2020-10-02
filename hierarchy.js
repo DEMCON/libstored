@@ -75,6 +75,19 @@ var hierarchy =
     [ "stored::ExampleHelloObjects< ExampleHelloBase< Implementation_ >, Implementation_ >", "classstored_1_1_example_hello_objects.html", [
       [ "stored::ExampleHelloBase< Implementation_ >", "classstored_1_1_example_hello_base.html", null ]
     ] ],
+    [ "stored::ExampleHooksObjects< ExampleHooksBase< ExampleHooks >, ExampleHooks >", "classstored_1_1_example_hooks_objects.html", [
+      [ "stored::ExampleHooksBase< ExampleHooks >", "classstored_1_1_example_hooks_base.html", [
+        [ "stored::ExampleHooks", "classstored_1_1_example_hooks.html", null ]
+      ] ]
+    ] ],
+    [ "stored::ExampleHooksObjects< ExampleHooksBase< Implementation_ >, Implementation_ >", "classstored_1_1_example_hooks_objects.html", [
+      [ "stored::ExampleHooksBase< Implementation_ >", "classstored_1_1_example_hooks_base.html", null ]
+    ] ],
+    [ "stored::ExampleHooksObjects< ExampleHooksBase< SyncedExampleHooks >, SyncedExampleHooks >", "classstored_1_1_example_hooks_objects.html", [
+      [ "stored::ExampleHooksBase< SyncedExampleHooks >", "classstored_1_1_example_hooks_base.html", [
+        [ "SyncedExampleHooks", "class_synced_example_hooks.html", null ]
+      ] ]
+    ] ],
     [ "stored::ExampleProtocolObjects< ExampleProtocolBase< ExampleProtocol >, ExampleProtocol >", "classstored_1_1_example_protocol_objects.html", [
       [ "stored::ExampleProtocolBase< ExampleProtocol >", "classstored_1_1_example_protocol_base.html", [
         [ "stored::ExampleProtocol", "classstored_1_1_example_protocol.html", null ]
@@ -91,19 +104,29 @@ var hierarchy =
     [ "stored::ExampleScopeObjects< ExampleScopeBase< Implementation_ >, Implementation_ >", "classstored_1_1_example_scope_objects.html", [
       [ "stored::ExampleScopeBase< Implementation_ >", "classstored_1_1_example_scope_base.html", null ]
     ] ],
-    [ "stored::ExampleSyncObjects< ExampleSyncBase< ExampleSync >, ExampleSync >", "classstored_1_1_example_sync_objects.html", [
-      [ "stored::ExampleSyncBase< ExampleSync >", "classstored_1_1_example_sync_base.html", [
-        [ "stored::ExampleSync", "classstored_1_1_example_sync.html", null ]
+    [ "stored::ExampleSync1Objects< ExampleSync1Base< ExampleSync1 >, ExampleSync1 >", "classstored_1_1_example_sync1_objects.html", [
+      [ "stored::ExampleSync1Base< ExampleSync1 >", "classstored_1_1_example_sync1_base.html", [
+        [ "stored::ExampleSync1", "classstored_1_1_example_sync1.html", null ],
+        [ "stored::Synchronizable< stored::ExampleSync1Base< ExampleSync1 > >", "classstored_1_1_synchronizable.html", [
+          [ "ExampleSync1", "class_example_sync1.html", null ]
+        ] ]
       ] ]
     ] ],
-    [ "stored::ExampleSyncObjects< ExampleSyncBase< Implementation_ >, Implementation_ >", "classstored_1_1_example_sync_objects.html", [
-      [ "stored::ExampleSyncBase< Implementation_ >", "classstored_1_1_example_sync_base.html", null ]
+    [ "stored::ExampleSync1Objects< ExampleSync1Base< Implementation_ >, Implementation_ >", "classstored_1_1_example_sync1_objects.html", [
+      [ "stored::ExampleSync1Base< Implementation_ >", "classstored_1_1_example_sync1_base.html", null ]
     ] ],
-    [ "stored::ExampleSyncObjects< ExampleSyncBase< SyncedExampleSync >, SyncedExampleSync >", "classstored_1_1_example_sync_objects.html", [
-      [ "stored::ExampleSyncBase< SyncedExampleSync >", "classstored_1_1_example_sync_base.html", [
-        [ "SyncedExampleSync", "class_synced_example_sync.html", null ]
+    [ "stored::ExampleSync2Objects< ExampleSync2Base< ExampleSync2 >, ExampleSync2 >", "classstored_1_1_example_sync2_objects.html", [
+      [ "stored::ExampleSync2Base< ExampleSync2 >", "classstored_1_1_example_sync2_base.html", [
+        [ "stored::ExampleSync2", "classstored_1_1_example_sync2.html", null ],
+        [ "stored::Synchronizable< stored::ExampleSync2Base< ExampleSync2 > >", "classstored_1_1_synchronizable.html", [
+          [ "ExampleSync2", "class_example_sync2.html", null ]
+        ] ]
       ] ]
     ] ],
+    [ "stored::ExampleSync2Objects< ExampleSync2Base< Implementation_ >, Implementation_ >", "classstored_1_1_example_sync2_objects.html", [
+      [ "stored::ExampleSync2Base< Implementation_ >", "classstored_1_1_example_sync2_base.html", null ]
+    ] ],
+    [ "stored::ExampleSyncBase< ExampleSync >", "classstored_1_1_example_sync_base.html", null ],
     [ "stored::ExampleTerminalObjects< ExampleTerminalBase< ExampleTerminal >, ExampleTerminal >", "classstored_1_1_example_terminal_objects.html", [
       [ "stored::ExampleTerminalBase< ExampleTerminal >", "classstored_1_1_example_terminal_base.html", [
         [ "stored::ExampleTerminal", "classstored_1_1_example_terminal.html", null ]
@@ -140,12 +163,20 @@ var hierarchy =
     [ "stored::ExampleFunctionObjects< Base_, Implementation_ >", "classstored_1_1_example_function_objects.html", null ],
     [ "stored::ExampleHelloData", "structstored_1_1_example_hello_data.html", null ],
     [ "stored::ExampleHelloObjects< Base_, Implementation_ >", "classstored_1_1_example_hello_objects.html", null ],
+    [ "stored::ExampleHooksData", "structstored_1_1_example_hooks_data.html", null ],
+    [ "stored::ExampleHooksObjects< Base_, Implementation_ >", "classstored_1_1_example_hooks_objects.html", null ],
     [ "stored::ExampleProtocolData", "structstored_1_1_example_protocol_data.html", null ],
     [ "stored::ExampleProtocolObjects< Base_, Implementation_ >", "classstored_1_1_example_protocol_objects.html", null ],
     [ "stored::ExampleScopeData", "structstored_1_1_example_scope_data.html", null ],
     [ "stored::ExampleScopeObjects< Base_, Implementation_ >", "classstored_1_1_example_scope_objects.html", null ],
+    [ "stored::ExampleSync1Data", "structstored_1_1_example_sync1_data.html", null ],
+    [ "stored::ExampleSync1Objects< Base_, Implementation_ >", "classstored_1_1_example_sync1_objects.html", null ],
+    [ "stored::ExampleSync2Data", "structstored_1_1_example_sync2_data.html", null ],
+    [ "stored::ExampleSync2Objects< Base_, Implementation_ >", "classstored_1_1_example_sync2_objects.html", null ],
+    [ "stored::ExampleSyncBase< Implementation_ >", "classstored_1_1_example_sync_base.html", [
+      [ "stored::ExampleSync", "classstored_1_1_example_sync.html", null ]
+    ] ],
     [ "stored::ExampleSyncData", "structstored_1_1_example_sync_data.html", null ],
-    [ "stored::ExampleSyncObjects< Base_, Implementation_ >", "classstored_1_1_example_sync_objects.html", null ],
     [ "stored::ExampleTerminalData", "structstored_1_1_example_terminal_data.html", null ],
     [ "stored::ExampleTerminalObjects< Base_, Implementation_ >", "classstored_1_1_example_terminal_objects.html", null ],
     [ "stored::Function< T, Container >", "classstored_1_1_function.html", null ],
@@ -175,6 +206,7 @@ var hierarchy =
     [ "stored::impl::toIntType< true, 4 >", "structstored_1_1impl_1_1to_int_type_3_01true_00_014_01_4.html", null ],
     [ "stored::impl::toIntType< true, 8 >", "structstored_1_1impl_1_1to_int_type_3_01true_00_018_01_4.html", null ],
     [ "stored::ListCmdCallbackArg", "structstored_1_1_list_cmd_callback_arg.html", null ],
+    [ "stored::Loopback", "classstored_1_1_loopback.html", null ],
     [ "stored::ProtocolLayer", "classstored_1_1_protocol_layer.html", [
       [ "LossyChannel", "class_lossy_channel.html", null ],
       [ "PrintfPhysical", "class_printf_physical.html", null ],
@@ -187,15 +219,25 @@ var hierarchy =
         [ "ExtendedDebugger", "class_extended_debugger.html", null ]
       ] ],
       [ "stored::FrameMerger", "classstored_1_1_frame_merger.html", null ],
+      [ "stored::impl::Loopback1", "classstored_1_1impl_1_1_loopback1.html", null ],
+      [ "stored::PrintLayer", "classstored_1_1_print_layer.html", null ],
       [ "stored::SegmentationLayer", "classstored_1_1_segmentation_layer.html", null ],
       [ "stored::StringEncoder", "classstored_1_1_string_encoder.html", null ],
+      [ "stored::SyncConnection", "classstored_1_1_sync_connection.html", null ],
       [ "stored::TerminalLayer", "classstored_1_1_terminal_layer.html", [
         [ "CaseInverter", "class_case_inverter.html", null ]
       ] ],
-      [ "stored::ZmqLayer", "classstored_1_1_zmq_layer.html", null ]
+      [ "stored::ZmqLayer", "classstored_1_1_zmq_layer.html", [
+        [ "stored::DebugZmqLayer", "classstored_1_1_debug_zmq_layer.html", null ],
+        [ "stored::SyncZmqLayer", "classstored_1_1_sync_zmq_layer.html", null ]
+      ] ]
     ] ],
     [ "stored::ScratchPad< MaxSize >", "classstored_1_1_scratch_pad.html", null ],
     [ "stored::ScratchPad< MaxSize >::Snapshot", "classstored_1_1_scratch_pad_1_1_snapshot.html", null ],
+    [ "stored::StoreJournal", "classstored_1_1_store_journal.html", null ],
+    [ "stored::StoreJournal::ObjectInfo", "structstored_1_1_store_journal_1_1_object_info.html", null ],
+    [ "stored::StoreJournal::ObjectInfoComparator", "structstored_1_1_store_journal_1_1_object_info_comparator.html", null ],
+    [ "stored::Synchronizer", "classstored_1_1_synchronizer.html", null ],
     [ "stored::toType< T >", "structstored_1_1to_type.html", null ],
     [ "stored::toType< bool >", "structstored_1_1to_type_3_01bool_01_4.html", null ],
     [ "stored::toType< char * >", "structstored_1_1to_type_3_01char_01_5_01_4.html", null ],
@@ -217,6 +259,7 @@ var hierarchy =
     [ "stored::Variant< void >", "classstored_1_1_variant_3_01void_01_4.html", null ],
     [ "stored::ZmqServerStoreData", "structstored_1_1_zmq_server_store_data.html", null ],
     [ "stored::ZmqServerStoreObjects< Base_, Implementation_ >", "classstored_1_1_zmq_server_store_objects.html", null ],
+    [ "stored::impl::StoreFunction< Base, Implementation, bool, 1u >", "classstored_1_1impl_1_1_store_function.html", null ],
     [ "stored::impl::StoreFunction< Base, Implementation, double, 2u >", "classstored_1_1impl_1_1_store_function.html", null ],
     [ "stored::impl::StoreFunction< Base, Implementation, double, 6u >", "classstored_1_1impl_1_1_store_function.html", null ],
     [ "stored::impl::StoreFunction< Base, Implementation, int32_t, 1u >", "classstored_1_1impl_1_1_store_function.html", null ],
@@ -230,6 +273,7 @@ var hierarchy =
     [ "stored::impl::StoreVariable< Base, Implementation, bool, 12u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, bool, 16u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, bool, 17u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
+    [ "stored::impl::StoreVariable< Base, Implementation, bool, 1u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, bool, 20u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, bool, 21u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, bool, 86u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
@@ -268,6 +312,7 @@ var hierarchy =
     [ "stored::impl::StoreVariable< Base, Implementation, uint32_t, 68u, 4 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, uint32_t, 8u, 4 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, uint64_t, 40u, 8 >", "classstored_1_1impl_1_1_store_variable.html", null ],
+    [ "stored::impl::StoreVariable< Base, Implementation, uint8_t, 0u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, uint8_t, 85u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, uint8_t, 98u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, void *, 56u, 8 >", "classstored_1_1impl_1_1_store_variable.html", null ],
@@ -330,5 +375,8 @@ var hierarchy =
     [ "QSortFilterProxyModel", null, [
       [ "ed2.gui.__main__.NatSort", "classed2_1_1gui_1_1____main_____1_1_nat_sort.html", null ],
       [ "ed2.gui.__main__.NatSort", "classed2_1_1gui_1_1____main_____1_1_nat_sort.html", null ]
+    ] ],
+    [ "Base", null, [
+      [ "stored::Synchronizable< Base >", "classstored_1_1_synchronizable.html", null ]
     ] ]
 ];

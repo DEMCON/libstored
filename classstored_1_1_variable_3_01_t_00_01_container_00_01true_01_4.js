@@ -17,7 +17,6 @@ var classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4 =
     [ "get", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#aa4ee2991fb6b65047995c2c3e7021dfb", null ],
     [ "key", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#ad6fd56a852d3ba19cfbb7a9d0b201d40", null ],
     [ "operator type", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#af9213e27085f5c810f56a1c01d0c8900", null ],
-    [ "operator type const &", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a225c82f6e27ecc18b652f03b722c5ec3", null ],
     [ "operator!=", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a7188076759ca90268abf257b290cf5f1", null ],
     [ "operator=", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a3ba5a27338e9cce5a2d6aa24d40ad867", null ],
     [ "operator=", "classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#aaab104480432d1b1e6015ec7ee081698", null ],

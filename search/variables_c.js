@@ -1,8 +1,10 @@
 var searchData=
 [
-  ['m_5fbuffer',['m_buffer',['../classstored_1_1_variant.html#a7e987c9fc2cff52ed74934f914eed227',1,'stored::Variant::m_buffer()'],['../classstored_1_1_variant_3_01void_01_4.html#a142d1f1e0d72b4ad8f915f9e093ff7b0',1,'stored::Variant&lt; void &gt;::m_buffer()']]],
-  ['m_5ff',['m_f',['../classstored_1_1_variant.html#ac6c0a4c67705eca5b37ac355f2b7e905',1,'stored::Variant::m_f()'],['../classstored_1_1_variant_3_01void_01_4.html#a62fe7c72a32542187357f46f9784525a',1,'stored::Variant&lt; void &gt;::m_f()']]],
-  ['macro',['macro',['../classed2_1_1zmq__client_1_1_tracing.html#ab3f423614ae41f1c26daa36ef690203b',1,'ed2::zmq_client::Tracing']]],
-  ['model',['model',['../namespaceed2_1_1gui_1_1____main____.html#adeda9ea5c04e4385151766cce2112349',1,'ed2::gui::__main__']]],
-  ['mtu',['MTU',['../classstored_1_1_example_protocol_objects.html#a89d1ba0b428bbad18e46592ea3dbe58c',1,'stored::ExampleProtocolObjects']]]
+  ['layer_5ftypes',['layer_types',['../namespaceed2_1_1protocol.html#ae4a8428361364eb7a7c1d6c995ed4a16',1,'ed2::protocol']]],
+  ['len',['len',['../structstored_1_1_store_journal_1_1_object_info.html#a6cf9c4532e909eceb9c56ca2ee856f4d',1,'stored::StoreJournal::ObjectInfo']]],
+  ['level',['level',['../namespaceed2_1_1cli_1_1____main____.html#abc73c8f5d171f92026bb9b56bcab38c7',1,'ed2.cli.__main__.level()'],['../namespaceed2_1_1gui_1_1____main____.html#ac5b59a5a1c64b650e0437ec7e97a1f90',1,'ed2.gui.__main__.level()'],['../namespaceed2_1_1wrapper_1_1serial_1_1____main____.html#a10e4e679095d69be911098a11c06d521',1,'ed2.wrapper.serial.__main__.level()'],['../namespaceed2_1_1wrapper_1_1stdio_1_1____main____.html#a273dbf736075a3b84a84f0babc897bdd',1,'ed2.wrapper.stdio.__main__.level()']]],
+  ['license',['license',['../namespacesetup.html#a8ed6f50a28bd6a8794f8e1153baa6de9',1,'setup']]],
+  ['line',['line',['../namespaceed2_1_1cli_1_1____main____.html#a909bb9c3e92fc89d4e3ee1f9e38ac47a',1,'ed2::cli::__main__']]],
+  ['logger',['logger',['../classed2_1_1protocol_1_1_protocol_layer.html#a49eb5c0d251ca9a3516142d5086b820b',1,'ed2.protocol.ProtocolLayer.logger()'],['../classed2_1_1serial2zmq_1_1_serial2_zmq.html#a6131e1dfb12f4f1d5ecb2cccf0055b28',1,'ed2.serial2zmq.Serial2Zmq.logger()'],['../classed2_1_1stream2zmq_1_1_stream2_zmq.html#aa1f09a7a661b2835711c4db6b69c0c0c',1,'ed2.stream2zmq.Stream2Zmq.logger()'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a5b27817c3f53b6ca21358de49723e137',1,'ed2.zmq_client.ZmqClient.logger()'],['../classed2_1_1zmq__server_1_1_zmq_server.html#a927b0b54a7dc3c1d2adb2f95c200d13c',1,'ed2.zmq_server.ZmqServer.logger()']]],
+  ['lognplot',['lognplot',['../namespaceed2_1_1gui_1_1____main____.html#a085b0dd18bbdc4d327ae0d9932881b2d',1,'ed2::gui::__main__']]]
 ];

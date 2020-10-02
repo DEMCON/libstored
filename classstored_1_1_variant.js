@@ -18,6 +18,7 @@ var classstored_1_1_variant =
     [ "function", "classstored_1_1_variant.html#a6e64c9ec58d04d6996c10f720b1c8702", null ],
     [ "get", "classstored_1_1_variant.html#a9b160b7a25f5b42905cb62d21a00d6b3", null ],
     [ "get", "classstored_1_1_variant.html#a24e447798023fc0393b42586f9a9d7cd", null ],
+    [ "get", "classstored_1_1_variant.html#aabdf6743e71104400becd3a48ba04f8a", null ],
     [ "isFunction", "classstored_1_1_variant.html#ace4f41c8a960f8edae08691715018180", null ],
     [ "isVariable", "classstored_1_1_variant.html#a4c5b0a9c58666d045a74ec935bb7c3af", null ],
     [ "key", "classstored_1_1_variant.html#a85d6affa5768ff3cba127cf11e4b7d59", null ],

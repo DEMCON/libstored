@@ -13,9 +13,9 @@ var group__libstored__util =
         [ "ScratchPad", "classstored_1_1_scratch_pad_1_1_snapshot.html#a37bfe8e4cab0932cfc4a814101bfceb3", null ]
       ] ],
       [ "size_type", "classstored_1_1_scratch_pad.html#a99d00bbc9e2ed2b394d38d5a4e20554e", null ],
-      [ "maxSize", "classstored_1_1_scratch_pad.html#a15f34d2b6d42f4b4f8bdc25bbae3efe5a62424ce21ef05ba377086fb28696171c", null ],
-      [ "chunkHeader", "classstored_1_1_scratch_pad.html#a15f34d2b6d42f4b4f8bdc25bbae3efe5a93c50596b9a5c2f5e24bfbbfc8c04581", null ],
-      [ "spare", "classstored_1_1_scratch_pad.html#a15f34d2b6d42f4b4f8bdc25bbae3efe5a6696822a44e9973945331edcd65a963b", null ],
+      [ "maxSize", "classstored_1_1_scratch_pad.html#a48bc14f68786a1307dedef1f04638395a62424ce21ef05ba377086fb28696171c", null ],
+      [ "chunkHeader", "classstored_1_1_scratch_pad.html#a48bc14f68786a1307dedef1f04638395a93c50596b9a5c2f5e24bfbbfc8c04581", null ],
+      [ "spare", "classstored_1_1_scratch_pad.html#a48bc14f68786a1307dedef1f04638395a6696822a44e9973945331edcd65a963b", null ],
       [ "ScratchPad", "classstored_1_1_scratch_pad.html#a50e87954737a92ab1a2782cde931759e", null ],
       [ "ScratchPad", "classstored_1_1_scratch_pad.html#a85cf660076b466fb96b55dd7a716fa35", null ],
       [ "ScratchPad", "classstored_1_1_scratch_pad.html#a909eddb57c5c6d8ca63c05d5675e475f", null ],
@@ -37,5 +37,11 @@ var group__libstored__util =
     [ "likely", "group__libstored__util.html#gaa0672ea7123854cc5f51902a06c473fb", null ],
     [ "stored_assert", "group__libstored__util.html#gab750e51b876450a0a4ad419588a82a4d", null ],
     [ "unlikely", "group__libstored__util.html#gad8700448546b3b5111404cc021061fd5", null ],
-    [ "saturated_cast", "group__libstored__util.html#gacf36670c6952f79aef87c1ed7b610074", null ]
+    [ "memcmp_swap", "group__libstored__util.html#gaaaa850b08b762f712e9dd4b57bf5a4f2", null ],
+    [ "memcpy_swap", "group__libstored__util.html#ga1315150756fa0e36ae94f749d1f36392", null ],
+    [ "saturated_cast", "group__libstored__util.html#gacf36670c6952f79aef87c1ed7b610074", null ],
+    [ "string_literal", "group__libstored__util.html#ga6953f0800ee0798ebed8c960e3412d17", null ],
+    [ "strncmp", "group__libstored__util.html#ga732691fa4769154b74f9b71d24a10ad8", null ],
+    [ "strncpy", "group__libstored__util.html#gab35f3536f6df038d221bf13ebab7a454", null ],
+    [ "swap_endian", "group__libstored__util.html#ga398f638b198400f954eb222d1c73e9ab", null ]
 ];

@@ -114,9 +114,9 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:aad07c52d67d3737d915ffffc9eab766a"><td class="memItemLeft" align="right" valign="top">typedef DebugStoreBase::ListCallback&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debugger.html#aad07c52d67d3737d915ffffc9eab766a">ListCallback</a></td></tr>
-<tr class="memdesc:aad07c52d67d3737d915ffffc9eab766a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function prototype as supplied to <code><a class="el" href="classstored_1_1_debugger.html#a52c30ab3e1c2bb160c96c65725e6b248" title="Iterates over the directory and invoke a callback for every object. ">list()</a></code>.  <a href="#aad07c52d67d3737d915ffffc9eab766a">More...</a><br /></td></tr>
-<tr class="separator:aad07c52d67d3737d915ffffc9eab766a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a610e688e6a6da5d667efbfa2969691ec"><td class="memItemLeft" align="right" valign="top">typedef void()&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debugger.html#a610e688e6a6da5d667efbfa2969691ec">ListCallback</a>(char const *, <a class="el" href="classstored_1_1_debug_variant.html">DebugVariant</a> &amp;)</td></tr>
+<tr class="memdesc:a610e688e6a6da5d667efbfa2969691ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function prototype as supplied to <code><a class="el" href="classstored_1_1_debugger.html#a52c30ab3e1c2bb160c96c65725e6b248" title="Iterates over the directory and invoke a callback for every object. ">list()</a></code>.  <a href="#a610e688e6a6da5d667efbfa2969691ec">More...</a><br /></td></tr>
+<tr class="separator:a610e688e6a6da5d667efbfa2969691ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78804cd84cd1416eefffb12c22a44c44"><td class="memItemLeft" align="right" valign="top">typedef DebugStoreBase::ListCallbackArg&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debugger.html#a78804cd84cd1416eefffb12c22a44c44">ListCallbackArg</a></td></tr>
 <tr class="memdesc:a78804cd84cd1416eefffb12c22a44c44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function prototype as supplied to <code><a class="el" href="classstored_1_1_debugger.html#a52c30ab3e1c2bb160c96c65725e6b248" title="Iterates over the directory and invoke a callback for every object. ">list()</a></code>.  <a href="#a78804cd84cd1416eefffb12c22a44c44">More...</a><br /></td></tr>
 <tr class="separator:a78804cd84cd1416eefffb12c22a44c44"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -162,10 +162,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a52c30ab3e1c2bb160c96c65725e6b248"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debugger.html#a52c30ab3e1c2bb160c96c65725e6b248">list</a> (<a class="el" href="classstored_1_1_debugger.html#a78804cd84cd1416eefffb12c22a44c44">ListCallbackArg</a> *f, void *arg=nullptr) const</td></tr>
 <tr class="memdesc:a52c30ab3e1c2bb160c96c65725e6b248"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterates over the directory and invoke a callback for every object.  <a href="#a52c30ab3e1c2bb160c96c65725e6b248">More...</a><br /></td></tr>
 <tr class="separator:a52c30ab3e1c2bb160c96c65725e6b248"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b63ed921d918a5b18f5f23fc50b8463"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
-<tr class="memitem:a2b63ed921d918a5b18f5f23fc50b8463"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classstored_1_1_debugger.html#a2b63ed921d918a5b18f5f23fc50b8463">list</a> (F &amp;f) const</td></tr>
-<tr class="memdesc:a2b63ed921d918a5b18f5f23fc50b8463"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterates over the directory and invoke a callback for every object.  <a href="#a2b63ed921d918a5b18f5f23fc50b8463">More...</a><br /></td></tr>
-<tr class="separator:a2b63ed921d918a5b18f5f23fc50b8463"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55c61c7d9c075cb84fe56e701d86bcd2"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
+<tr class="memitem:a55c61c7d9c075cb84fe56e701d86bcd2"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classstored_1_1_debugger.html#a55c61c7d9c075cb84fe56e701d86bcd2">list</a> (F &amp;&amp;f) const</td></tr>
+<tr class="memdesc:a55c61c7d9c075cb84fe56e701d86bcd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterates over the directory and invoke a callback for every object.  <a href="#a55c61c7d9c075cb84fe56e701d86bcd2">More...</a><br /></td></tr>
+<tr class="separator:a55c61c7d9c075cb84fe56e701d86bcd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9f2965b44b4549ee4d05a48477c7655"><td class="memTemplParams" colspan="2">template&lt;typename Store &gt; </td></tr>
 <tr class="memitem:ae9f2965b44b4549ee4d05a48477c7655"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classstored_1_1_debugger.html#ae9f2965b44b4549ee4d05a48477c7655">map</a> (Store &amp;store, char const *name=nullptr)</td></tr>
 <tr class="memdesc:ae9f2965b44b4549ee4d05a48477c7655"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a store to this <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">Debugger</a>.  <a href="#ae9f2965b44b4549ee4d05a48477c7655">More...</a><br /></td></tr>
@@ -322,9 +322,9 @@ Protected Member Functions</h2></td></tr>
 <li>Wrap this instance in any <a class="el" href="classstored_1_1_protocol_layer.html" title="Protocol layer base class. ">stored::ProtocolLayer</a> that is required for your device.</li>
 </ul>
 <p>By default, the <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">Debugger</a> provides the standard set of commands. To extend it, create a subclass and override <a class="el" href="classstored_1_1_debugger.html#ace1f0eb1dddf86514791ead65ae028fd" title="Get the capabilities as supported by this Debugger. ">capabilities()</a> and <a class="el" href="classstored_1_1_debugger.html#ab790d058db43fd5953758001e361cf3b" title="Process a Embedded Debugger message. ">process()</a>. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#_a12">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#_a25">7_protocol/main.cpp</a>, <a class="el" href="terminal_2main_8cpp-example.html#_a4">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#_a24">zmqserver/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#_a12">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#_a26">7_protocol/main.cpp</a>, <a class="el" href="8_sync_2main_8cpp-example.html#_a14">8_sync/main.cpp</a>, <a class="el" href="terminal_2main_8cpp-example.html#_a4">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#_a25">zmqserver/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00684">684</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00710">710</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="af2ab24dd88c3fb0259c60856b2671293"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af2ab24dd88c3fb0259c60856b2671293">&#9670;&nbsp;</a></span>AliasMap</h2>
@@ -348,27 +348,27 @@ Protected Member Functions</h2></td></tr>
 
 <p><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of alias map. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00812">812</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00850">850</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
-<a id="aad07c52d67d3737d915ffffc9eab766a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aad07c52d67d3737d915ffffc9eab766a">&#9670;&nbsp;</a></span>ListCallback</h2>
+<a id="a610e688e6a6da5d667efbfa2969691ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a610e688e6a6da5d667efbfa2969691ec">&#9670;&nbsp;</a></span>ListCallback</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef DebugStoreBase::ListCallback <a class="el" href="classstored_1_1_debugger.html#aad07c52d67d3737d915ffffc9eab766a">stored::Debugger::ListCallback</a></td>
+          <td class="memname">typedef void() stored::Debugger::ListCallback(char const  *, <a class="el" href="classstored_1_1_debug_variant.html">DebugVariant</a> &amp;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Callback function prototype as supplied to <code><a class="el" href="classstored_1_1_debugger.html#a52c30ab3e1c2bb160c96c65725e6b248" title="Iterates over the directory and invoke a callback for every object. ">list()</a></code>. </p>
 <p>It receives the name of the object, and the corresponding <a class="el" href="classstored_1_1_debug_variant.html" title="A wrapper for any type of object in a store. ">stored::DebugVariant</a> of the object.</p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debugger.html#a2b63ed921d918a5b18f5f23fc50b8463" title="Iterates over the directory and invoke a callback for every object. ">list&lt;F&gt;(F&amp;) const </a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debugger.html#a55c61c7d9c075cb84fe56e701d86bcd2" title="Iterates over the directory and invoke a callback for every object. ">list&lt;F&gt;(F&amp;&amp;) const</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00753">753</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00786">786</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -388,7 +388,7 @@ Protected Member Functions</h2></td></tr>
 <p>It receives the name of the object, the corresponding <a class="el" href="classstored_1_1_debug_variant.html" title="A wrapper for any type of object in a store. ">stored::DebugVariant</a> of the object, and the <code>arg</code> value, as passed to <code><a class="el" href="classstored_1_1_debugger.html#a52c30ab3e1c2bb160c96c65725e6b248" title="Iterates over the directory and invoke a callback for every object. ">list()</a></code>.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debug_store_base.html#afe84fc6c67d903c78ea515da4b9a813a" title="Iterates over the directory and invoke a callback for every object. ">stored::DebugStoreBase::list(ListCallbackArg*, void*, char const*) const </a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00748">748</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00774">774</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -414,7 +414,7 @@ Protected Member Functions</h2></td></tr>
 
 <p><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of macro map. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00817">817</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00855">855</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -432,7 +432,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>The map to used by <a class="el" href="classstored_1_1_debugger.html#ae9f2965b44b4549ee4d05a48477c7655" title="Register a store to this Debugger. ">map()</a>, which maps names to stores. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00713">713</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00739">739</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -596,7 +596,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Returns the registered aliases. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00216">216</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00256">256</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -625,7 +625,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Returns the registered aliases. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00209">209</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00249">249</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -682,7 +682,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="class_extended_debugger.html#adcc61432f6f97b2ed5976f4793ff0657">ExtendedDebugger</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00259">259</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00299">299</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -725,7 +725,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a357b029311be09df61e019682a848ab5">stored::ProtocolLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00351">351</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00392">392</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -772,7 +772,7 @@ Protected Member Functions</h2></td></tr>
 <p>Decode ASCII hex. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debugger.html#ae93585d717651de0c5e93ffcc2b36bf4" title="Encode data to ASCII hex. ">encodeHex(stored::Type::type, void*&amp;, size_t&amp;, bool)</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00955">955</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00996">996</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -801,9 +801,9 @@ Protected Member Functions</h2></td></tr>
 
 <p>Returns the layer below this one. </p>
 <dl class="section return"><dt>Returns</dt><dd>the layer, or <code>nullptr</code> if there is none. </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a10">7_protocol/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a11">7_protocol/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00210">210</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00212">212</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -831,9 +831,9 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Encodes the last part of the current frame. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a10">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#a16">7_protocol/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#a8">terminal/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a10">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#a17">7_protocol/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#a8">terminal/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00225">225</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00227">227</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -880,9 +880,9 @@ Protected Member Functions</h2></td></tr>
 <p>Encode a (partial) frame and forward it to the lower layer. </p>
 <p>The given buffer will not be modified. A new buffer is allocated when required. </p>
 
-<p>Reimplemented in <a class="el" href="classstored_1_1_string_encoder.html#a6aac5077fea5c2867749dbf39755d6cf">stored::StringEncoder</a>, <a class="el" href="classstored_1_1_frame_merger.html#a388b28ac5690f83bbbdf1b48557786a7">stored::FrameMerger</a>, <a class="el" href="classstored_1_1_buffer_layer.html#aa33bb526174b8ab92a7243175009140d">stored::BufferLayer</a>, <a class="el" href="classstored_1_1_crc16_layer.html#aaa370f1466d22991713a951f1a8e9bfd">stored::Crc16Layer</a>, <a class="el" href="classstored_1_1_crc8_layer.html#a5181019b72aefb28daee0cd8889daab2">stored::Crc8Layer</a>, <a class="el" href="classstored_1_1_arq_layer.html#a156d3e684ca880a6d5a4e57da36d585e">stored::ArqLayer</a>, <a class="el" href="classstored_1_1_segmentation_layer.html#a07d8192a0db41389735cb012fc231ba0">stored::SegmentationLayer</a>, <a class="el" href="classstored_1_1_terminal_layer.html#a8e4eb065c098959fb740a9862cf59164">stored::TerminalLayer</a>, <a class="el" href="classstored_1_1_ascii_escape_layer.html#a3db26741f80800ade6a58055dc89b5ee">stored::AsciiEscapeLayer</a>, <a class="el" href="class_lossy_channel.html#a97ab6d58a563d599122607ffe0b7663b">LossyChannel</a>, <a class="el" href="classstored_1_1_zmq_layer.html#ae4fca5b96098db29439f8cfc9f06a7a1">stored::ZmqLayer</a>, <a class="el" href="class_case_inverter.html#a566eb23f69cd661052b16fadd42ca059">CaseInverter</a>, and <a class="el" href="class_printf_physical.html#a192d35cf7f86602df79631e5f733465a">PrintfPhysical</a>.</p>
+<p>Reimplemented in <a class="el" href="classstored_1_1_string_encoder.html#a6aac5077fea5c2867749dbf39755d6cf">stored::StringEncoder</a>, <a class="el" href="classstored_1_1_frame_merger.html#a388b28ac5690f83bbbdf1b48557786a7">stored::FrameMerger</a>, <a class="el" href="classstored_1_1impl_1_1_loopback1.html#a253415479c82702a73eb0f5b7435354a">stored::impl::Loopback1</a>, <a class="el" href="classstored_1_1_print_layer.html#a226eb9431e9d6a646fb120258d30717d">stored::PrintLayer</a>, <a class="el" href="classstored_1_1_buffer_layer.html#aa33bb526174b8ab92a7243175009140d">stored::BufferLayer</a>, <a class="el" href="classstored_1_1_crc16_layer.html#aaa370f1466d22991713a951f1a8e9bfd">stored::Crc16Layer</a>, <a class="el" href="classstored_1_1_crc8_layer.html#a5181019b72aefb28daee0cd8889daab2">stored::Crc8Layer</a>, <a class="el" href="classstored_1_1_arq_layer.html#a156d3e684ca880a6d5a4e57da36d585e">stored::ArqLayer</a>, <a class="el" href="classstored_1_1_segmentation_layer.html#a07d8192a0db41389735cb012fc231ba0">stored::SegmentationLayer</a>, <a class="el" href="classstored_1_1_terminal_layer.html#a8e4eb065c098959fb740a9862cf59164">stored::TerminalLayer</a>, <a class="el" href="classstored_1_1_ascii_escape_layer.html#a3db26741f80800ade6a58055dc89b5ee">stored::AsciiEscapeLayer</a>, <a class="el" href="class_lossy_channel.html#a97ab6d58a563d599122607ffe0b7663b">LossyChannel</a>, <a class="el" href="class_case_inverter.html#a566eb23f69cd661052b16fadd42ca059">CaseInverter</a>, <a class="el" href="classstored_1_1_zmq_layer.html#ae4fca5b96098db29439f8cfc9f06a7a1">stored::ZmqLayer</a>, and <a class="el" href="class_printf_physical.html#a192d35cf7f86602df79631e5f733465a">PrintfPhysical</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00235">235</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00237">237</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -931,7 +931,7 @@ template&lt;typename T , typename B &gt; </div>
 <p>Encode a given value to ASCII hex. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debugger.html#ae93585d717651de0c5e93ffcc2b36bf4" title="Encode data to ASCII hex. ">encodeHex(stored::Type::type, void*&amp;, size_t&amp;, bool)</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00827">827</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00865">865</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -994,7 +994,7 @@ template&lt;typename T , typename B &gt; </div>
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debugger.html#ab8b61a7802026c5edb802e33e9e679e4" title="Decode ASCII hex. ">decodeHex()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00881">881</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00922">922</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1035,7 +1035,7 @@ template&lt;typename T , typename B &gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>a <a class="el" href="classstored_1_1_debug_variant.html" title="A wrapper for any type of object in a store. ">stored::DebugVariant</a>, which is invalid when the object was not found. </dd></dl>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a23">5_debug/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00107">107</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00133">133</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1065,7 +1065,7 @@ template&lt;typename T , typename B &gt; </div>
 <p>Returns the identification. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debugger.html#a58172b25824dcf4d0347b6f101f333e8" title="Sets the identification. ">setIdentification()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00301">301</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00341">341</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1104,12 +1104,12 @@ template&lt;typename T , typename B &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00239">239</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00279">279</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a2b63ed921d918a5b18f5f23fc50b8463"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2b63ed921d918a5b18f5f23fc50b8463">&#9670;&nbsp;</a></span>list() <span class="overload">[2/2]</span></h2>
+<a id="a55c61c7d9c075cb84fe56e701d86bcd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55c61c7d9c075cb84fe56e701d86bcd2">&#9670;&nbsp;</a></span>list() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1120,9 +1120,9 @@ template&lt;typename F &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void stored::Debugger::list </td>
+          <td class="memname">stored::Debugger::list </td>
           <td>(</td>
-          <td class="paramtype">F &amp;&#160;</td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
           <td class="paramname"><em>f</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -1137,12 +1137,12 @@ template&lt;typename F &gt; </div>
 <p>Iterates over the directory and invoke a callback for every object. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">f</td><td>the callback to invoke, which can be any type, but must look like <a class="el" href="classstored_1_1_debugger.html#aad07c52d67d3737d915ffffc9eab766a" title="Callback function prototype as supplied to list(). ">ListCallback</a> </td></tr>
+    <tr><td class="paramname">f</td><td>the callback to invoke, which can be any type, but must look like <a class="el" href="classstored_1_1_debugger.html#a610e688e6a6da5d667efbfa2969691ec" title="Callback function prototype as supplied to list(). ">ListCallback</a> </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00757">757</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00794">794</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -1171,7 +1171,7 @@ template&lt;typename F &gt; </div>
 
 <p>Returns the defined macros. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00230">230</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00270">270</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1200,7 +1200,7 @@ template&lt;typename F &gt; </div>
 
 <p>Returns the defined macros. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00223">223</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00263">263</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1242,9 +1242,9 @@ template&lt;typename Store &gt; </div>
 
 <p>Register a store to this <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">Debugger</a>. </p>
 <p>If there is only one store registered, all objects of that store are accessible using the names as defined by the store. If multiple stores are mapped, all objects are prefixed using either the prefix supplied to <a class="el" href="classstored_1_1_debugger.html#ae9f2965b44b4549ee4d05a48477c7655" title="Register a store to this Debugger. ">map()</a>, or using the store's name when <code>name</code> is <code>nullptr</code>. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a21">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#a26">7_protocol/main.cpp</a>, <a class="el" href="terminal_2main_8cpp-example.html#a12">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#a25">zmqserver/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a21">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#a27">7_protocol/main.cpp</a>, <a class="el" href="8_sync_2main_8cpp-example.html#a15">8_sync/main.cpp</a>, <a class="el" href="terminal_2main_8cpp-example.html#a12">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#a26">zmqserver/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00724">724</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00750">750</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -1285,7 +1285,7 @@ template&lt;typename Store &gt; </div>
 <p>Register a store to this <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">Debugger</a>. </p>
 <p>Don't use this function directly; use <a class="el" href="classstored_1_1_debugger.html#ae9f2965b44b4549ee4d05a48477c7655" title="Register a store to this Debugger. ">map(Store&amp;, char const*)</a> instead. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00155">155</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00192">192</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1318,7 +1318,7 @@ template&lt;typename Store &gt; </div>
 
 <p>Reimplemented in <a class="el" href="classstored_1_1_crc16_layer.html#a82d88b7503bdb383c9416e2a0cad8503">stored::Crc16Layer</a>, <a class="el" href="classstored_1_1_crc8_layer.html#ac3bb509c6ebf1a8c9c98f4985ea91bde">stored::Crc8Layer</a>, <a class="el" href="classstored_1_1_arq_layer.html#a1efacad0bccc60d7d202663ce984aab2">stored::ArqLayer</a>, <a class="el" href="classstored_1_1_segmentation_layer.html#a5cd64512cd57378cf25bd2890266919a">stored::SegmentationLayer</a>, <a class="el" href="classstored_1_1_terminal_layer.html#a0a19f65b341e78a98dca4f13747fb2a7">stored::TerminalLayer</a>, <a class="el" href="classstored_1_1_ascii_escape_layer.html#ac773513d7ef5330f9fc7b46f08e79442">stored::AsciiEscapeLayer</a>, and <a class="el" href="class_lossy_channel.html#a6967348e03e7d69ecf1a40dcc549a13d">LossyChannel</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00268">268</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00270">270</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -1428,7 +1428,7 @@ template&lt;typename Store &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00361">361</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00402">402</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1469,7 +1469,7 @@ template&lt;typename Store &gt; </div>
 <p>Execute the given macro, and produce the results in the given response. </p>
 <dl class="section return"><dt>Returns</dt><dd><code>false</code> when the macro does not exist </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00825">825</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00866">866</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1529,8 +1529,9 @@ template&lt;typename Store &gt; </div>
 <p>Sets the identification. </p>
 <p>The supplied string is not copied; just the pointer is saved, so the string must remain valid while the <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">Debugger</a> has its pointer. So, it is fine to supply a string literal.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debugger.html#a31663206e779bf86e74180fcc956a67a" title="Returns the identification. ">identification()</a> </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00314">314</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="8_sync_2main_8cpp-example.html#a18">8_sync/main.cpp</a>.</dd>
+</dl>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00354">354</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1564,7 +1565,7 @@ template&lt;typename Store &gt; </div>
 
 <p>Reimplemented in <a class="el" href="classstored_1_1_string_encoder.html#a29fce383dfd9a94fdc47f5643db405b6">stored::StringEncoder</a>, <a class="el" href="classstored_1_1_frame_merger.html#ae5800ec4cd54027d1dcfb0fde99ae140">stored::FrameMerger</a>, and <a class="el" href="classstored_1_1_arq_layer.html#aebc97053e2dbcf03acbc1ea8f3c3664d">stored::ArqLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00254">254</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00256">256</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -1625,7 +1626,7 @@ template&lt;typename Store &gt; </div>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debugger.html#ab6203b1226153a94c9ba87ae88931d6a" title="Push the version string into the given response. ">version()</a> </dd></dl>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a20">5_debug/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00347">347</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00388">388</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1654,7 +1655,7 @@ template&lt;typename Store &gt; </div>
 
 <p>Returns a scratch pad memory. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01007">1007</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01048">1048</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1685,7 +1686,7 @@ template&lt;typename Store &gt; </div>
 <p>Sets the up/down layers of this layer and the given layer, such that this layer is stacked on (or wrapped by) the given one. </p>
 <p>If the given layer was not the top of the stack, this layer injects itself between the given layer and its stacked one. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00189">189</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00191">191</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -1706,7 +1707,7 @@ template&lt;typename Store &gt; </div>
 
 <p>Returns the mapped stores. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00202">202</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00242">242</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1740,7 +1741,7 @@ template&lt;typename Store &gt; </div>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debugger.html#ae5984c100fffd78efdb1364d077bfbb8" title="Adds a buffer to the given stream. ">stream(char, char const*, size_t)</a> </dd></dl>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a28">5_debug/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01043">1043</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01084">1084</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1788,7 +1789,7 @@ template&lt;typename Store &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The length that was appended. On success, this equals <code>len</code>, but may be less if the buffer was full. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01058">1058</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01099">1099</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1828,7 +1829,7 @@ template&lt;typename Store &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01091">1091</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01132">1132</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1851,7 +1852,7 @@ template&lt;typename Store &gt; </div>
 <p>Returns the stream buffer given a stream name. </p>
 <dl class="section return"><dt>Returns</dt><dd>the stream or <code>nullptr</code> when there is no stream with the given name </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01081">1081</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01122">1122</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1891,7 +1892,7 @@ template&lt;typename Store &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0-terminated string of stream names (which equals <code>buffer</code>) </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01128">1128</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01169">1169</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1913,9 +1914,9 @@ template&lt;typename Store &gt; </div>
 <p>Executes the trace macro and appends the output to the trace buffer. </p>
 <p>The application should always call this function as often as required for tracing. For example, if 1 kHz tracing is to be supported, make sure to call this function at (about) 1 kHz. Depending on the configuration, decimation is applied. This call will execute the macro, when required, so the call is potentially expensive.</p>
 <p>The output of the macro is either completely or not at all put in the stream buffer; it is not truncated. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="zmqserver_2main_8cpp-example.html#a30">zmqserver/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="zmqserver_2main_8cpp-example.html#a31">zmqserver/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01177">1177</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01218">1218</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1936,7 +1937,7 @@ template&lt;typename Store &gt; </div>
 
 <p>Checks if tracing is currently enabled and configured. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01213">1213</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l01254">1254</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1960,7 +1961,7 @@ template&lt;typename Store &gt; </div>
 <p>Note that if after unmapping there is only one mapped store left, the prefixes are automatically dropped from all names.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debugger.html#ae9f2965b44b4549ee4d05a48477c7655" title="Register a store to this Debugger. ">map()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00190">190</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00230">230</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -1989,9 +1990,9 @@ template&lt;typename Store &gt; </div>
 
 <p>Returns the layer above this one. </p>
 <dl class="section return"><dt>Returns</dt><dd>the layer, or <code>nullptr</code> if there is none. </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a6">5_debug/main.cpp</a>, and <a class="el" href="7_protocol_2main_8cpp-example.html#a9">7_protocol/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a6">5_debug/main.cpp</a>, and <a class="el" href="7_protocol_2main_8cpp-example.html#a10">7_protocol/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00204">204</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00206">206</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -2020,9 +2021,10 @@ template&lt;typename Store &gt; </div>
 </div><div class="memdoc">
 
 <p>Push the version string into the given response. </p>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the version is pushed, <code>false</code> if not available </dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debugger.html#af6b6842d2ff19f0d9813fe379bf0d07a" title="Set the versions as used by version(). ">setVersions()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00322">322</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8cpp_source.html#l00363">363</a> of file <a class="el" href="debugger_8cpp_source.html">debugger.cpp</a>.</p>
 
 </div>
 </div>
@@ -2052,7 +2054,7 @@ template&lt;typename Store &gt; </div>
 
 <p>Sets the up/down layers of this layer and the given layer, such that this layer wraps the given one. </p>
 <p>If the given layer was not the bottom of the stack, this layer injects itself in between the given layer and its wrapper. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a28">7_protocol/main.cpp</a>, <a class="el" href="terminal_2main_8cpp-example.html#a14">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#a27">zmqserver/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a29">7_protocol/main.cpp</a>, <a class="el" href="8_sync_2main_8cpp-example.html#a23">8_sync/main.cpp</a>, <a class="el" href="terminal_2main_8cpp-example.html#a14">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#a28">zmqserver/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00172">172</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
@@ -2079,7 +2081,7 @@ template&lt;typename Store &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00786">786</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00824">824</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -2103,7 +2105,7 @@ template&lt;typename Store &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00778">778</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00816">816</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -2127,7 +2129,7 @@ template&lt;typename Store &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00773">773</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00811">811</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -2151,7 +2153,7 @@ template&lt;typename Store &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00776">776</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00814">814</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -2175,7 +2177,7 @@ template&lt;typename Store &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00780">780</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00818">818</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -2199,7 +2201,7 @@ template&lt;typename Store &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00777">777</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00815">815</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -2223,7 +2225,7 @@ template&lt;typename Store &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00779">779</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00817">817</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -2247,7 +2249,7 @@ template&lt;typename Store &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00774">774</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00812">812</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -2271,7 +2273,7 @@ template&lt;typename Store &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00782">782</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00820">820</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -2295,7 +2297,7 @@ template&lt;typename Store &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00784">784</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00822">822</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -2319,7 +2321,7 @@ template&lt;typename Store &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00785">785</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00823">823</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -2343,7 +2345,7 @@ template&lt;typename Store &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00781">781</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00819">819</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -2367,7 +2369,7 @@ template&lt;typename Store &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00775">775</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00813">813</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -2391,7 +2393,7 @@ template&lt;typename Store &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00783">783</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00821">821</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -2415,7 +2417,7 @@ template&lt;typename Store &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00787">787</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00825">825</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>

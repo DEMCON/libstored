@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['spare',['spare',['../classstored_1_1_scratch_pad.html#a15f34d2b6d42f4b4f8bdc25bbae3efe5a6696822a44e9973945331edcd65a963b',1,'stored::ScratchPad']]],
-  ['string',['String',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9',1,'stored::Type']]]
+  ['pointer',['Pointer',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea30cfe463b5324ffd1aef8a7383b36201',1,'stored::Type']]],
+  ['pointer32',['Pointer32',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea0db65abcf10a457fe16f12185f83abae',1,'stored::Type']]],
+  ['pointer64',['Pointer64',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eaf9ff92ab1c4a60d1660ed3cf430acf8c',1,'stored::Type']]],
+  ['polynomial',['polynomial',['../classstored_1_1_crc8_layer.html#a42689e45f91b83968e42a747ce3ae3a8a14adee897c9ad5499de4c6608c8f78c7',1,'stored::Crc8Layer::polynomial()'],['../classstored_1_1_crc16_layer.html#a1695e0aded59c2f14c92c49e64e4f106aee711989700375651ca8a9c3cc313fa9',1,'stored::Crc16Layer::polynomial()']]]
 ];

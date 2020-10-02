@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['i',['i',['../classstored_1_1_example_debug_some_store_objects.html#af5bfa089148d7ed3f25dfb59a92cec18',1,'stored::ExampleDebugSomeStoreObjects']]],
+  ['i',['i',['../classstored_1_1_example_debug_some_store_objects.html#af5bfa089148d7ed3f25dfb59a92cec18',1,'stored::ExampleDebugSomeStoreObjects::i()'],['../classstored_1_1_example_sync1_objects.html#a50d5a5093774f1be6e46b4ea8cfc3404',1,'stored::ExampleSync1Objects::i()']]],
   ['i16',['i16',['../classstored_1_1_example_basic_objects.html#ab185870d6fc4334af5160f84098b416d',1,'stored::ExampleBasicObjects']]],
   ['i32',['i32',['../classstored_1_1_example_basic_objects.html#acc20c9df4167e708bd8f045a23127015',1,'stored::ExampleBasicObjects']]],
   ['i64',['i64',['../classstored_1_1_example_basic_objects.html#a25a3f8c805ed9cf0be479c55c2b3aa35',1,'stored::ExampleBasicObjects']]],

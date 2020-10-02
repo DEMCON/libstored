@@ -105,9 +105,6 @@ Inheritance diagram for stored::DebugStoreBase:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:adedc79d091ee719f0bc1da1fe9cfb523"><td class="memItemLeft" align="right" valign="top">typedef void()&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_store_base.html#adedc79d091ee719f0bc1da1fe9cfb523">ListCallback</a>(char const *, <a class="el" href="classstored_1_1_debug_variant.html">DebugVariant</a> &amp;)</td></tr>
-<tr class="memdesc:adedc79d091ee719f0bc1da1fe9cfb523"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function prototype as supplied to <code><a class="el" href="classstored_1_1_debug_store_base.html#afe84fc6c67d903c78ea515da4b9a813a" title="Iterates over the directory and invoke a callback for every object. ">list()</a></code>.  <a href="#adedc79d091ee719f0bc1da1fe9cfb523">More...</a><br /></td></tr>
-<tr class="separator:adedc79d091ee719f0bc1da1fe9cfb523"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d524e09aac0f46ea582885d22670777"><td class="memItemLeft" align="right" valign="top">typedef void()&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_store_base.html#a0d524e09aac0f46ea582885d22670777">ListCallbackArg</a>(char const *, <a class="el" href="classstored_1_1_debug_variant.html">DebugVariant</a> &amp;, void *)</td></tr>
 <tr class="memdesc:a0d524e09aac0f46ea582885d22670777"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback function prototype as supplied to <code><a class="el" href="classstored_1_1_debug_store_base.html#afe84fc6c67d903c78ea515da4b9a813a" title="Iterates over the directory and invoke a callback for every object. ">list()</a></code>.  <a href="#a0d524e09aac0f46ea582885d22670777">More...</a><br /></td></tr>
 <tr class="separator:a0d524e09aac0f46ea582885d22670777"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -129,19 +126,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afe84fc6c67d903c78ea515da4b9a813a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_store_base.html#afe84fc6c67d903c78ea515da4b9a813a">list</a> (<a class="el" href="classstored_1_1_debug_store_base.html#a0d524e09aac0f46ea582885d22670777">ListCallbackArg</a> *f, void *arg=nullptr, char const *prefix=nullptr) const =0</td></tr>
 <tr class="memdesc:afe84fc6c67d903c78ea515da4b9a813a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterates over the directory and invoke a callback for every object.  <a href="#afe84fc6c67d903c78ea515da4b9a813a">More...</a><br /></td></tr>
 <tr class="separator:afe84fc6c67d903c78ea515da4b9a813a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4df2d0f5921c3f382356eebaaf6951fa"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
-<tr class="memitem:a4df2d0f5921c3f382356eebaaf6951fa"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_store_base.html#a4df2d0f5921c3f382356eebaaf6951fa">list</a> (F &amp;f) const</td></tr>
-<tr class="memdesc:a4df2d0f5921c3f382356eebaaf6951fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterates over the directory and invoke a callback for every object.  <a href="#a4df2d0f5921c3f382356eebaaf6951fa">More...</a><br /></td></tr>
-<tr class="separator:a4df2d0f5921c3f382356eebaaf6951fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b0b381124d16d74aa0fdd01bdf56d48"><td class="memItemLeft" align="right" valign="top">virtual char const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_store_base.html#a7b0b381124d16d74aa0fdd01bdf56d48">name</a> () const =0</td></tr>
 <tr class="memdesc:a7b0b381124d16d74aa0fdd01bdf56d48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name of this store.  <a href="#a7b0b381124d16d74aa0fdd01bdf56d48">More...</a><br /></td></tr>
 <tr class="separator:a7b0b381124d16d74aa0fdd01bdf56d48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f407c6d3f3a304925176ea0ab6337dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_store_base.html#a3f407c6d3f3a304925176ea0ab6337dc">operator=</a> (<a class="el" href="classstored_1_1_debug_store_base.html">DebugStoreBase</a> &amp;&amp;)=delete</td></tr>
-<tr class="memdesc:a3f407c6d3f3a304925176ea0ab6337dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted move assignment operator.  <a href="#a3f407c6d3f3a304925176ea0ab6337dc">More...</a><br /></td></tr>
-<tr class="separator:a3f407c6d3f3a304925176ea0ab6337dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af01966dc48306528400f888fb8a14fa3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_store_base.html#af01966dc48306528400f888fb8a14fa3">operator=</a> (<a class="el" href="classstored_1_1_debug_store_base.html">DebugStoreBase</a> const &amp;)=delete</td></tr>
 <tr class="memdesc:af01966dc48306528400f888fb8a14fa3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted assignment operator.  <a href="#af01966dc48306528400f888fb8a14fa3">More...</a><br /></td></tr>
 <tr class="separator:af01966dc48306528400f888fb8a14fa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f407c6d3f3a304925176ea0ab6337dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_store_base.html#a3f407c6d3f3a304925176ea0ab6337dc">operator=</a> (<a class="el" href="classstored_1_1_debug_store_base.html">DebugStoreBase</a> &amp;&amp;)=delete</td></tr>
+<tr class="memdesc:a3f407c6d3f3a304925176ea0ab6337dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted move assignment operator.  <a href="#a3f407c6d3f3a304925176ea0ab6337dc">More...</a><br /></td></tr>
+<tr class="separator:a3f407c6d3f3a304925176ea0ab6337dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -154,28 +147,8 @@ Protected Member Functions</h2></td></tr>
 <p>This is a type-independent base class of <a class="el" href="classstored_1_1_debug_store.html" title="A type-specific wrapper for a store to be used by stored::Debugger. ">stored::DebugStore</a>. For <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>, this is the interface to access a specific store.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debug_store.html" title="A type-specific wrapper for a store to be used by stored::Debugger. ">stored::DebugStore</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00530">530</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00581">581</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="adedc79d091ee719f0bc1da1fe9cfb523"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adedc79d091ee719f0bc1da1fe9cfb523">&#9670;&nbsp;</a></span>ListCallback</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef void() stored::DebugStoreBase::ListCallback(char const  *, <a class="el" href="classstored_1_1_debug_variant.html">DebugVariant</a> &amp;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Callback function prototype as supplied to <code><a class="el" href="classstored_1_1_debug_store_base.html#afe84fc6c67d903c78ea515da4b9a813a" title="Iterates over the directory and invoke a callback for every object. ">list()</a></code>. </p>
-<p>It receives the name of the object, and the corresponding <a class="el" href="classstored_1_1_debug_variant.html" title="A wrapper for any type of object in a store. ">stored::DebugVariant</a> of the object.</p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debug_store_base.html#a4df2d0f5921c3f382356eebaaf6951fa" title="Iterates over the directory and invoke a callback for every object. ">list&lt;F&gt;(F&amp;) const</a> </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00583">583</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
-
-</div>
-</div>
 <a id="a0d524e09aac0f46ea582885d22670777"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0d524e09aac0f46ea582885d22670777">&#9670;&nbsp;</a></span>ListCallbackArg</h2>
 
@@ -192,7 +165,7 @@ Protected Member Functions</h2></td></tr>
 <p>It receives the name of the object, the corresponding <a class="el" href="classstored_1_1_debug_variant.html" title="A wrapper for any type of object in a store. ">stored::DebugVariant</a> of the object, and the <code>arg</code> value, as passed to <code><a class="el" href="classstored_1_1_debug_store_base.html#afe84fc6c67d903c78ea515da4b9a813a" title="Iterates over the directory and invoke a callback for every object. ">list()</a></code>.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debug_store_base.html#afe84fc6c67d903c78ea515da4b9a813a" title="Iterates over the directory and invoke a callback for every object. ">stored::DebugStoreBase::list(ListCallbackArg*, void*, char const*) const</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00564">564</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00615">615</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -357,7 +330,7 @@ Protected Member Functions</h2></td></tr>
 </div>
 </div>
 <a id="afe84fc6c67d903c78ea515da4b9a813a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afe84fc6c67d903c78ea515da4b9a813a">&#9670;&nbsp;</a></span>list() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#afe84fc6c67d903c78ea515da4b9a813a">&#9670;&nbsp;</a></span>list()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -407,44 +380,6 @@ Protected Member Functions</h2></td></tr>
 </dl>
 
 <p>Implemented in <a class="el" href="classstored_1_1_debug_store.html#a778be6270b2cc95577885bb5a5c1af36">stored::DebugStore&lt; Store &gt;</a>.</p>
-
-</div>
-</div>
-<a id="a4df2d0f5921c3f382356eebaaf6951fa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4df2d0f5921c3f382356eebaaf6951fa">&#9670;&nbsp;</a></span>list() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename F &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">stored::DebugStoreBase::list </td>
-          <td>(</td>
-          <td class="paramtype">F &amp;&#160;</td>
-          <td class="paramname"><em>f</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Iterates over the directory and invoke a callback for every object. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">f</td><td>the callback to invoke, which can be any type, but must look like <a class="el" href="classstored_1_1_debug_store_base.html#adedc79d091ee719f0bc1da1fe9cfb523" title="Callback function prototype as supplied to list(). ">ListCallback</a> </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00591">591</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>

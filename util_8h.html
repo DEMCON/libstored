@@ -91,6 +91,7 @@ $(document).ready(function(){initNavTree('util_8h.html','');});
 <div class="textblock"><code>#include &lt;<a class="el" href="macros_8h_source.html">libstored/macros.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="config_8h_source.html">libstored/config.h</a>&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
 <code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;cmath&gt;</code><br />
 <code>#include &lt;limits&gt;</code><br />
@@ -182,16 +183,37 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:gaaaa850b08b762f712e9dd4b57bf5a4f2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__libstored__util.html#gaaaa850b08b762f712e9dd4b57bf5a4f2">stored::memcmp_swap</a> (void const  *a, void const  *b, size_t len)</td></tr>
+<tr class="memdesc:gaaaa850b08b762f712e9dd4b57bf5a4f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">memcmp() with endianness swapping.  <a href="group__libstored__util.html#gaaaa850b08b762f712e9dd4b57bf5a4f2">More...</a><br /></td></tr>
+<tr class="separator:gaaaa850b08b762f712e9dd4b57bf5a4f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1315150756fa0e36ae94f749d1f36392"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__libstored__util.html#ga1315150756fa0e36ae94f749d1f36392">stored::memcpy_swap</a> (void *__restrict__ dst, void const  *__restrict__ src, size_t len)</td></tr>
+<tr class="memdesc:ga1315150756fa0e36ae94f749d1f36392"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>memcpy()</code> with endianness swapping.  <a href="group__libstored__util.html#ga1315150756fa0e36ae94f749d1f36392">More...</a><br /></td></tr>
+<tr class="separator:ga1315150756fa0e36ae94f749d1f36392"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gacf36670c6952f79aef87c1ed7b610074"><td class="memTemplParams" colspan="2">template&lt;typename R , typename T &gt; </td></tr>
 <tr class="memitem:gacf36670c6952f79aef87c1ed7b610074"><td class="memTemplItemLeft" align="right" valign="top">R&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__libstored__util.html#gacf36670c6952f79aef87c1ed7b610074">saturated_cast</a> (T value)</td></tr>
 <tr class="memdesc:gacf36670c6952f79aef87c1ed7b610074"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a number type to another one, with proper rounding and saturation.  <a href="group__libstored__util.html#gacf36670c6952f79aef87c1ed7b610074">More...</a><br /></td></tr>
 <tr class="separator:gacf36670c6952f79aef87c1ed7b610074"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a732691fa4769154b74f9b71d24a10ad8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestored.html#a732691fa4769154b74f9b71d24a10ad8">stored::strncmp</a> (char const  *__restrict__ str1, size_t len1, char const  *__restrict__ str2, size_t len2)</td></tr>
-<tr class="memdesc:a732691fa4769154b74f9b71d24a10ad8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Like <code><a class="el" href="namespacestored.html#a732691fa4769154b74f9b71d24a10ad8" title="Like strncmp(), but handles non zero-terminated strings. ">strncmp()</a></code>, but handles non zero-terminated strings.  <a href="namespacestored.html#a732691fa4769154b74f9b71d24a10ad8">More...</a><br /></td></tr>
-<tr class="separator:a732691fa4769154b74f9b71d24a10ad8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab35f3536f6df038d221bf13ebab7a454"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestored.html#ab35f3536f6df038d221bf13ebab7a454">stored::strncpy</a> (char *__restrict__ dst, char const  *__restrict__ src, size_t len)</td></tr>
-<tr class="memdesc:ab35f3536f6df038d221bf13ebab7a454"><td class="mdescLeft">&#160;</td><td class="mdescRight">Like <code><a class="el" href="namespacestored.html#ab35f3536f6df038d221bf13ebab7a454" title="Like strncpy(), but without padding and returning the length of the string. ">strncpy()</a></code>, but without padding and returning the length of the string.  <a href="namespacestored.html#ab35f3536f6df038d221bf13ebab7a454">More...</a><br /></td></tr>
-<tr class="separator:ab35f3536f6df038d221bf13ebab7a454"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6953f0800ee0798ebed8c960e3412d17"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__libstored__util.html#ga6953f0800ee0798ebed8c960e3412d17">stored::string_literal</a> (void const  *buffer, size_t len, char const  *prefix)</td></tr>
+<tr class="memdesc:ga6953f0800ee0798ebed8c960e3412d17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the given buffer to a string literal.  <a href="group__libstored__util.html#ga6953f0800ee0798ebed8c960e3412d17">More...</a><br /></td></tr>
+<tr class="separator:ga6953f0800ee0798ebed8c960e3412d17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga732691fa4769154b74f9b71d24a10ad8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__libstored__util.html#ga732691fa4769154b74f9b71d24a10ad8">stored::strncmp</a> (char const  *__restrict__ str1, size_t len1, char const  *__restrict__ str2, size_t len2)</td></tr>
+<tr class="memdesc:ga732691fa4769154b74f9b71d24a10ad8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Like <code><a class="el" href="group__libstored__util.html#ga732691fa4769154b74f9b71d24a10ad8" title="Like strncmp(), but handles non zero-terminated strings. ">strncmp()</a></code>, but handles non zero-terminated strings.  <a href="group__libstored__util.html#ga732691fa4769154b74f9b71d24a10ad8">More...</a><br /></td></tr>
+<tr class="separator:ga732691fa4769154b74f9b71d24a10ad8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab35f3536f6df038d221bf13ebab7a454"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__libstored__util.html#gab35f3536f6df038d221bf13ebab7a454">stored::strncpy</a> (char *__restrict__ dst, char const  *__restrict__ src, size_t len)</td></tr>
+<tr class="memdesc:gab35f3536f6df038d221bf13ebab7a454"><td class="mdescLeft">&#160;</td><td class="mdescRight">Like <code><a class="el" href="group__libstored__util.html#gab35f3536f6df038d221bf13ebab7a454" title="Like strncpy(), but without padding and returning the length of the string. ">strncpy()</a></code>, but without padding and returning the length of the string.  <a href="group__libstored__util.html#gab35f3536f6df038d221bf13ebab7a454">More...</a><br /></td></tr>
+<tr class="separator:gab35f3536f6df038d221bf13ebab7a454"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga398f638b198400f954eb222d1c73e9ab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__libstored__util.html#ga398f638b198400f954eb222d1c73e9ab">stored::swap_endian</a> (void *buffer, size_t len)</td></tr>
+<tr class="memdesc:ga398f638b198400f954eb222d1c73e9ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Swap endianness of the given buffer.  <a href="group__libstored__util.html#ga398f638b198400f954eb222d1c73e9ab">More...</a><br /></td></tr>
+<tr class="separator:ga398f638b198400f954eb222d1c73e9ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea8c3556872a1ad092df021dc4807d7d"><td class="memTemplParams" colspan="2">template&lt;&gt; </td></tr>
+<tr class="memitem:aea8c3556872a1ad092df021dc4807d7d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacestored.html#aea8c3556872a1ad092df021dc4807d7d">stored::swap_endian_&lt; 2 &gt;</a> (void *buffer)</td></tr>
+<tr class="separator:aea8c3556872a1ad092df021dc4807d7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af34ff995e7f60a764f119acae58d90cd"><td class="memTemplParams" colspan="2">template&lt;&gt; </td></tr>
+<tr class="memitem:af34ff995e7f60a764f119acae58d90cd"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacestored.html#af34ff995e7f60a764f119acae58d90cd">stored::swap_endian_&lt; 4 &gt;</a> (void *buffer)</td></tr>
+<tr class="separator:af34ff995e7f60a764f119acae58d90cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc02bafee167b74680005ae03b84f455"><td class="memTemplParams" colspan="2">template&lt;&gt; </td></tr>
+<tr class="memitem:acc02bafee167b74680005ae03b84f455"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacestored.html#acc02bafee167b74680005ae03b84f455">stored::swap_endian_&lt; 8 &gt;</a> (void *buffer)</td></tr>
+<tr class="separator:acc02bafee167b74680005ae03b84f455"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="ae6d06be09cbce14f4d9ebd7fce942221"></a>
@@ -209,7 +231,7 @@ Functions</h2></td></tr>
 <p>Macro to make sure that the containing class emits its vtable in one translation unit. </p>
 <p>Use <a class="el" href="util_8h.html#ac56d4e0f94ae6fa721af21e4f11c4ec5">CLASS_NO_WEAK_VTABLE_DEF()</a> in one .cpp file. </p>
 
-<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00151">151</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00157">157</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
 
 </div>
 </div>
@@ -230,7 +252,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line"> \</div><div class="line">    void Class::force_to_translation_unit() { abort(); }</div></div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="util_8h.html#ae6d06be09cbce14f4d9ebd7fce942221" title="Macro to make sure that the containing class emits its vtable in one translation unit. ">CLASS_NO_WEAK_VTABLE</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00157">157</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00163">163</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
 
 </div>
 </div>
@@ -257,9 +279,9 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="4_function_2main_8cpp-example.html#a2">4_function/main.cpp</a>, <a class="el" href="5_debug_2main_8cpp-example.html#a2">5_debug/main.cpp</a>, <a class="el" href="6_sync_2main_8cpp-example.html#a2">6_sync/main.cpp</a>, and <a class="el" href="7_protocol_2main_8cpp-example.html#a5">7_protocol/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="4_function_2main_8cpp-example.html#a2">4_function/main.cpp</a>, <a class="el" href="5_debug_2main_8cpp-example.html#a2">5_debug/main.cpp</a>, <a class="el" href="6_hooks_2main_8cpp-example.html#a2">6_hooks/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#a6">7_protocol/main.cpp</a>, and <a class="el" href="8_sync_2main_8cpp-example.html#a3">8_sync/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00126">126</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00132">132</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
 
 </div>
 </div>
@@ -274,9 +296,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a13">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#a12">7_protocol/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#a6">terminal/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a13">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#a13">7_protocol/main.cpp</a>, <a class="el" href="8_sync_2main_8cpp-example.html#a8">8_sync/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#a6">terminal/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00164">164</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00170">170</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
 
 </div>
 </div>
@@ -320,7 +342,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00108">108</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00114">114</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
 
 </div>
 </div>
@@ -341,7 +363,7 @@ Functions</h2></td></tr>
 
 <p>Allow to yield the processor during long-running tasks. </p>
 
-<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00083">83</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00089">89</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
 
 </div>
 </div>

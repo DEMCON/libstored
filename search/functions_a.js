@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['key',['key',['../classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#ad6fd56a852d3ba19cfbb7a9d0b201d40',1,'stored::Variable&lt; T, Container, true &gt;::key()'],['../classstored_1_1_variant.html#a85d6affa5768ff3cba127cf11e4b7d59',1,'stored::Variant::key()']]]
+  ['journal',['journal',['../classstored_1_1_synchronizable.html#a87fc4ad5d50a98633178056c809f218d',1,'stored::Synchronizable::journal() const'],['../classstored_1_1_synchronizable.html#aaea4f34590c85e08d759d88676190651',1,'stored::Synchronizable::journal()']]]
 ];

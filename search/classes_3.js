@@ -6,5 +6,6 @@ var searchData=
   ['debugvariant',['DebugVariant',['../classstored_1_1_debug_variant.html',1,'stored']]],
   ['debugvariantbase',['DebugVariantBase',['../classstored_1_1_debug_variant_base.html',1,'stored']]],
   ['debugvarianttyped',['DebugVariantTyped',['../classstored_1_1_debug_variant_typed.html',1,'stored']]],
+  ['debugzmqlayer',['DebugZmqLayer',['../classstored_1_1_debug_zmq_layer.html',1,'stored']]],
   ['defaultconfig',['DefaultConfig',['../structstored_1_1_default_config.html',1,'stored']]]
 ];

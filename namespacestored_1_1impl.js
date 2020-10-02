@@ -1,5 +1,6 @@
 var namespacestored_1_1impl =
 [
+    [ "Loopback1", "classstored_1_1impl_1_1_loopback1.html", "classstored_1_1impl_1_1_loopback1" ],
     [ "saturated_cast_helper", "structstored_1_1impl_1_1saturated__cast__helper.html", null ],
     [ "saturated_cast_helper< bool >", "structstored_1_1impl_1_1saturated__cast__helper_3_01bool_01_4.html", null ],
     [ "saturated_cast_helper< double >", "structstored_1_1impl_1_1saturated__cast__helper_3_01double_01_4.html", null ],

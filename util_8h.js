@@ -29,7 +29,14 @@ var util_8h =
     [ "stored_assert", "group__libstored__util.html#gab750e51b876450a0a4ad419588a82a4d", null ],
     [ "stored_yield", "util_8h.html#ab87f43bb221663fb973421055ae96d08", null ],
     [ "unlikely", "group__libstored__util.html#gad8700448546b3b5111404cc021061fd5", null ],
+    [ "memcmp_swap", "util_8h.html#gaaaa850b08b762f712e9dd4b57bf5a4f2", null ],
+    [ "memcpy_swap", "util_8h.html#ga1315150756fa0e36ae94f749d1f36392", null ],
     [ "saturated_cast", "group__libstored__util.html#gacf36670c6952f79aef87c1ed7b610074", null ],
-    [ "strncmp", "util_8h.html#a732691fa4769154b74f9b71d24a10ad8", null ],
-    [ "strncpy", "util_8h.html#ab35f3536f6df038d221bf13ebab7a454", null ]
+    [ "string_literal", "util_8h.html#ga6953f0800ee0798ebed8c960e3412d17", null ],
+    [ "strncmp", "util_8h.html#ga732691fa4769154b74f9b71d24a10ad8", null ],
+    [ "strncpy", "util_8h.html#gab35f3536f6df038d221bf13ebab7a454", null ],
+    [ "swap_endian", "util_8h.html#ga398f638b198400f954eb222d1c73e9ab", null ],
+    [ "swap_endian_< 2 >", "util_8h.html#aea8c3556872a1ad092df021dc4807d7d", null ],
+    [ "swap_endian_< 4 >", "util_8h.html#af34ff995e7f60a764f119acae58d90cd", null ],
+    [ "swap_endian_< 8 >", "util_8h.html#acc02bafee167b74680005ae03b84f455", null ]
 ];

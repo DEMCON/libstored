@@ -130,7 +130,7 @@ Static Public Attributes</h2></td></tr>
 <tr class="memitem:a21279247d11df5c7ccb61aa1a1fd45db"><td class="memItemLeft" align="right" valign="top">static size_t const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1_default_config.html#a21279247d11df5c7ccb61aa1a1fd45db">DebuggerStreamBuffer</a> = 1024</td></tr>
 <tr class="memdesc:a21279247d11df5c7ccb61aa1a1fd45db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of one stream buffer in bytes.  <a href="#a21279247d11df5c7ccb61aa1a1fd45db">More...</a><br /></td></tr>
 <tr class="separator:a21279247d11df5c7ccb61aa1a1fd45db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4352b3506e2ca35f622bf5fe859f18e1"><td class="memItemLeft" align="right" valign="top">static int const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1_default_config.html#a4352b3506e2ca35f622bf5fe859f18e1">DebuggerStreams</a> = 1</td></tr>
+<tr class="memitem:a4352b3506e2ca35f622bf5fe859f18e1"><td class="memItemLeft" align="right" valign="top">static int const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1_default_config.html#a4352b3506e2ca35f622bf5fe859f18e1">DebuggerStreams</a> = 2</td></tr>
 <tr class="memdesc:a4352b3506e2ca35f622bf5fe859f18e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">When not 0, <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> implements the streams capability.  <a href="#a4352b3506e2ca35f622bf5fe859f18e1">More...</a><br /></td></tr>
 <tr class="separator:a4352b3506e2ca35f622bf5fe859f18e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f25d415c20ec7121ecc92985fdb2c90"><td class="memItemLeft" align="right" valign="top">static bool const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1_default_config.html#a1f25d415c20ec7121ecc92985fdb2c90">DebuggerTrace</a> = <a class="el" href="structstored_1_1_default_config.html#a4352b3506e2ca35f622bf5fe859f18e1">DebuggerStreams</a> &gt; 0 &amp;&amp; <a class="el" href="structstored_1_1_default_config.html#a40296d9001a04b268f53644d1e6f9e67">DebuggerMacro</a> &gt; 0</td></tr>
@@ -154,6 +154,9 @@ Static Public Attributes</h2></td></tr>
 <tr class="memitem:abdff5ea91d2521e9bd1ee2c5a94f920d"><td class="memItemLeft" align="right" valign="top">static bool const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1_default_config.html#abdff5ea91d2521e9bd1ee2c5a94f920d">FullNames</a> = true</td></tr>
 <tr class="memdesc:abdff5ea91d2521e9bd1ee2c5a94f920d"><td class="mdescLeft">&#160;</td><td class="mdescRight">When <code>true</code>, include full name directory listing support.  <a href="#abdff5ea91d2521e9bd1ee2c5a94f920d">More...</a><br /></td></tr>
 <tr class="separator:abdff5ea91d2521e9bd1ee2c5a94f920d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e76106436b37677a138ec0f85e72be8"><td class="memItemLeft" align="right" valign="top">static bool const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstored_1_1_default_config.html#a4e76106436b37677a138ec0f85e72be8">StoreInLittleEndian</a></td></tr>
+<tr class="memdesc:a4e76106436b37677a138ec0f85e72be8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicate if the store's buffer is in little endian.  <a href="#a4e76106436b37677a138ec0f85e72be8">More...</a><br /></td></tr>
+<tr class="separator:a4e76106436b37677a138ec0f85e72be8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Example of a configuration that override the <a class="el" href="structstored_1_1_default_config.html" title="Default configuration. ">stored::DefaultConfig</a>. </p>
@@ -211,7 +214,7 @@ Static Public Attributes</h2></td></tr>
 <p>When not 0, <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> implements the alias capability. </p>
 <p>The defined number is the number of aliases that are supported at the same time. </p>
 
-<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00096">96</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00114">114</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
 
 </div>
 </div>
@@ -237,7 +240,7 @@ Static Public Attributes</h2></td></tr>
 
 <p>When <code>true</code>, <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> implements the echo capability. </p>
 
-<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00088">88</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00106">106</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
 
 </div>
 </div>
@@ -263,7 +266,7 @@ Static Public Attributes</h2></td></tr>
 
 <p>When <code>true</code>, <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> implements the identification capability. </p>
 
-<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00106">106</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00124">124</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
 
 </div>
 </div>
@@ -289,7 +292,7 @@ Static Public Attributes</h2></td></tr>
 
 <p>When <code>true</code>, <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> implements the list capability. </p>
 
-<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00090">90</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00108">108</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
 
 </div>
 </div>
@@ -316,7 +319,7 @@ Static Public Attributes</h2></td></tr>
 <p>When not 0, <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> implements the macro capability. </p>
 <p>The defined number is the total amount of memory that can be used for all macro definitions (excluding data structure overhead of the implementation). </p>
 
-<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00104">104</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00122">122</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
 
 </div>
 </div>
@@ -342,7 +345,7 @@ Static Public Attributes</h2></td></tr>
 
 <p>When <code>true</code>, <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> implements the read capability. </p>
 
-<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00084">84</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00102">102</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
 
 </div>
 </div>
@@ -368,7 +371,7 @@ Static Public Attributes</h2></td></tr>
 
 <p>When <code>true</code>, <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> implements the read memory capability. </p>
 
-<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00110">110</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00128">128</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
 
 </div>
 </div>
@@ -394,7 +397,7 @@ Static Public Attributes</h2></td></tr>
 
 <p>Size of one stream buffer in bytes. </p>
 
-<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00120">120</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00138">138</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
 
 </div>
 </div>
@@ -408,7 +411,7 @@ Static Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int const stored::DefaultConfig::DebuggerStreams = 1</td>
+          <td class="memname">int const stored::DefaultConfig::DebuggerStreams = 2</td>
         </tr>
       </table>
   </td>
@@ -421,7 +424,7 @@ Static Public Attributes</h2></td></tr>
 <p>When not 0, <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> implements the streams capability. </p>
 <p>The defined number is the number of concurrent streams that are supported. </p>
 
-<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00118">118</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00136">136</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
 
 </div>
 </div>
@@ -447,7 +450,7 @@ Static Public Attributes</h2></td></tr>
 
 <p>When <code>true</code>, <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> implements the trace capability. </p>
 
-<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00123">123</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00141">141</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
 
 </div>
 </div>
@@ -473,7 +476,7 @@ Static Public Attributes</h2></td></tr>
 
 <p>When <code>true</code>, <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> implements the version capability. </p>
 
-<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00108">108</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00126">126</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
 
 </div>
 </div>
@@ -499,7 +502,7 @@ Static Public Attributes</h2></td></tr>
 
 <p>When <code>true</code>, <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> implements the write capability. </p>
 
-<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00086">86</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00104">104</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
 
 </div>
 </div>
@@ -525,7 +528,7 @@ Static Public Attributes</h2></td></tr>
 
 <p>When <code>true</code>, <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> implements the write memory capability. </p>
 
-<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00112">112</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00130">130</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
 
 </div>
 </div>
@@ -578,7 +581,7 @@ Static Public Attributes</h2></td></tr>
 <p>When <code>true</code>, enable calls to <code>hook</code>...() functions of the store. </p>
 <p>This may be required for additional synchronization, but may add overhead for every object access. </p>
 
-<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00081">81</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00099">99</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
 
 </div>
 </div>
@@ -605,7 +608,35 @@ Static Public Attributes</h2></td></tr>
 <p>When <code>true</code>, include full name directory listing support. </p>
 <p>If <code>false</code>, a listing can be still be requested, but the names may be abbreviated. </p>
 
-<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00074">74</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00092">92</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
+
+</div>
+</div>
+<a id="a4e76106436b37677a138ec0f85e72be8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e76106436b37677a138ec0f85e72be8">&#9670;&nbsp;</a></span>StoreInLittleEndian</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool const stored::DefaultConfig::StoreInLittleEndian</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">            <span class="keyword">false</span></div></div><!-- fragment -->
+<p>Indicate if the store's buffer is in little endian. </p>
+<p>Usually, you would use the same endianness as the host, but as the <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a> does not swap endianness for the data, synchronization between different CPU types is not possible. In that case, one on both sides should save its store differently.</p>
+<p>Make sure that this flag corresponds to the endianness setting of the generator (-b flag). </p>
+
+<p class="definition">Definition at line <a class="el" href="config_8h_source.html#l00079">79</a> of file <a class="el" href="config_8h_source.html">config.h</a>.</p>
 
 </div>
 </div>

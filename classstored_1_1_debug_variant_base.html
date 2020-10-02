@@ -81,6 +81,8 @@ $(document).ready(function(){initNavTree('classstored_1_1_debug_variant_base.htm
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#friends">Friends</a> &#124;
 <a href="classstored_1_1_debug_variant_base-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">stored::DebugVariantBase Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
@@ -125,12 +127,61 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0c8680ce13a188f4788c5e1db607bc00"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_variant_base.html#a0c8680ce13a188f4788c5e1db607bc00">valid</a> () const =0</td></tr>
 <tr class="memdesc:a0c8680ce13a188f4788c5e1db607bc00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns if this wrapper points to a valid object.  <a href="#a0c8680ce13a188f4788c5e1db607bc00">More...</a><br /></td></tr>
 <tr class="separator:a0c8680ce13a188f4788c5e1db607bc00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a34c3a73c34a2fcddf5668383dbe419e0"><td class="memItemLeft" align="right" valign="top">virtual void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_variant_base.html#a34c3a73c34a2fcddf5668383dbe419e0">container</a> () const =0</td></tr>
+<tr class="memdesc:a34c3a73c34a2fcddf5668383dbe419e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the container this object belongs to.  <a href="#a34c3a73c34a2fcddf5668383dbe419e0">More...</a><br /></td></tr>
+<tr class="separator:a34c3a73c34a2fcddf5668383dbe419e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cc64e17a2adf138eabc228adde85617"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_variant_base.html#a7cc64e17a2adf138eabc228adde85617">operator!=</a> (<a class="el" href="classstored_1_1_debug_variant_base.html">DebugVariantBase</a> const &amp;rhs) const</td></tr>
+<tr class="memdesc:a7cc64e17a2adf138eabc228adde85617"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if this and the given variant do not point to the same object.  <a href="#a7cc64e17a2adf138eabc228adde85617">More...</a><br /></td></tr>
+<tr class="separator:a7cc64e17a2adf138eabc228adde85617"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ca67ecea1c4b2387fd3048cf7575bc7"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_variant_base.html#a0ca67ecea1c4b2387fd3048cf7575bc7">operator==</a> (<a class="el" href="classstored_1_1_debug_variant_base.html">DebugVariantBase</a> const &amp;rhs) const</td></tr>
+<tr class="memdesc:a0ca67ecea1c4b2387fd3048cf7575bc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if this and the given variant point to the same object.  <a href="#a0ca67ecea1c4b2387fd3048cf7575bc7">More...</a><br /></td></tr>
+<tr class="separator:a0ca67ecea1c4b2387fd3048cf7575bc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:af7ae25b4536aec4f8998a1c14fc80ea4"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_variant_base.html#af7ae25b4536aec4f8998a1c14fc80ea4">DebugVariant</a></td></tr>
+<tr class="separator:af7ae25b4536aec4f8998a1c14fc80ea4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0a2252a43e6e921f9e6cb01f5b02d4a"><td class="memTemplParams" colspan="2">template&lt;typename Container &gt; </td></tr>
+<tr class="memitem:ac0a2252a43e6e921f9e6cb01f5b02d4a"><td class="memTemplItemLeft" align="right" valign="top">class&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_variant_base.html#ac0a2252a43e6e921f9e6cb01f5b02d4a">DebugVariantTyped</a></td></tr>
+<tr class="separator:ac0a2252a43e6e921f9e6cb01f5b02d4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Container-template-type-invariant base class of a wrapper for <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">stored::Variant</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00334">334</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00338">338</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a34c3a73c34a2fcddf5668383dbe419e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34c3a73c34a2fcddf5668383dbe419e0">&#9670;&nbsp;</a></span>container()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void* stored::DebugVariantBase::container </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the container this object belongs to. </p>
+
+<p>Implemented in <a class="el" href="classstored_1_1_debug_variant.html#ae0121e5c137d7058b9036a2ac92cf0bd">stored::DebugVariant</a>, and <a class="el" href="classstored_1_1_debug_variant_typed.html#ac172a1196f7b58fdeafc85b56a21847a">stored::DebugVariantTyped&lt; Container &gt;</a>.</p>
+
+</div>
+</div>
 <a id="a6730848b8d1b68684612aa2a431a7e3f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6730848b8d1b68684612aa2a431a7e3f">&#9670;&nbsp;</a></span>get()</h2>
 
@@ -204,7 +255,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Checks if the object is a function. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00371">371</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00375">375</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -233,7 +284,69 @@ Public Member Functions</h2></td></tr>
 
 <p>Checks if the object is a variable. </p>
 
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00376">376</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00380">380</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+
+</div>
+</div>
+<a id="a7cc64e17a2adf138eabc228adde85617"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cc64e17a2adf138eabc228adde85617">&#9670;&nbsp;</a></span>operator!=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool stored::DebugVariantBase::operator!= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classstored_1_1_debug_variant_base.html">DebugVariantBase</a> const &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check if this and the given variant do not point to the same object. </p>
+
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00391">391</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+
+</div>
+</div>
+<a id="a0ca67ecea1c4b2387fd3048cf7575bc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ca67ecea1c4b2387fd3048cf7575bc7">&#9670;&nbsp;</a></span>operator==()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool stored::DebugVariantBase::operator== </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classstored_1_1_debug_variant_base.html">DebugVariantBase</a> const &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check if this and the given variant point to the same object. </p>
+
+<p>Reimplemented in <a class="el" href="classstored_1_1_debug_variant_typed.html#a7a5a34016f0132fce79e328fd9570d8e">stored::DebugVariantTyped&lt; Container &gt;</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00386">386</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>
@@ -369,6 +482,57 @@ Public Member Functions</h2></td></tr>
 <p>Returns if this wrapper points to a valid object. </p>
 
 <p>Implemented in <a class="el" href="classstored_1_1_debug_variant.html#a34af04b37012ab79a5b33e15ceee2b87">stored::DebugVariant</a>, and <a class="el" href="classstored_1_1_debug_variant_typed.html#a7887d509994ba346f5c9db20b60bc44e">stored::DebugVariantTyped&lt; Container &gt;</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Function Documentation</h2>
+<a id="af7ae25b4536aec4f8998a1c14fc80ea4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7ae25b4536aec4f8998a1c14fc80ea4">&#9670;&nbsp;</a></span>DebugVariant</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classstored_1_1_debug_variant.html">DebugVariant</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00400">400</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+
+</div>
+</div>
+<a id="ac0a2252a43e6e921f9e6cb01f5b02d4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0a2252a43e6e921f9e6cb01f5b02d4a">&#9670;&nbsp;</a></span>DebugVariantTyped</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Container &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classstored_1_1_debug_variant_typed.html">DebugVariantTyped</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00399">399</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
 
 </div>
 </div>

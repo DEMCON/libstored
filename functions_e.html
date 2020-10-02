@@ -127,6 +127,8 @@ $(document).ready(function(){initNavTree('functions_e.html','');});
 , <a class="el" href="classstored_1_1_crc16_layer.html#aaa370f1466d22991713a951f1a8e9bfd">stored::Crc16Layer</a>
 , <a class="el" href="classstored_1_1_crc8_layer.html#a5181019b72aefb28daee0cd8889daab2">stored::Crc8Layer</a>
 , <a class="el" href="classstored_1_1_frame_merger.html#a388b28ac5690f83bbbdf1b48557786a7">stored::FrameMerger</a>
+, <a class="el" href="classstored_1_1impl_1_1_loopback1.html#a253415479c82702a73eb0f5b7435354a">stored::impl::Loopback1</a>
+, <a class="el" href="classstored_1_1_print_layer.html#a226eb9431e9d6a646fb120258d30717d">stored::PrintLayer</a>
 , <a class="el" href="classstored_1_1_protocol_layer.html#a66c24cec6a17c44fac68213d358a5aa8">stored::ProtocolLayer</a>
 , <a class="el" href="classstored_1_1_segmentation_layer.html#a07d8192a0db41389735cb012fc231ba0">stored::SegmentationLayer</a>
 , <a class="el" href="classstored_1_1_string_encoder.html#a6aac5077fea5c2867749dbf39755d6cf">stored::StringEncoder</a>
@@ -136,17 +138,38 @@ $(document).ready(function(){initNavTree('functions_e.html','');});
 <li>encode_seq()
 : <a class="el" href="classed2_1_1protocol_1_1_arq_layer.html#aa30458930e9df05b5dd797948e27dd14">ed2.protocol.ArqLayer</a>
 </li>
+<li>encodeBuffer()
+: <a class="el" href="classstored_1_1_store_journal.html#aca272a2e64cde16b6b2368bb812a510d">stored::StoreJournal</a>
+</li>
+<li>encodeCmd()
+: <a class="el" href="classstored_1_1_sync_connection.html#afdc9909e51d4b0d6df7a8c9708ddfbc7">stored::SyncConnection</a>
+</li>
 <li>encodeEnd()
 : <a class="el" href="classstored_1_1_terminal_layer.html#a553f973e434533d14c48f898cc9d6d36">stored::TerminalLayer</a>
 </li>
+<li>encodeHash()
+: <a class="el" href="classstored_1_1_store_journal.html#ab11bd97531925543d78886ac7d6e4069">stored::StoreJournal</a>
+</li>
 <li>encodeHex()
 : <a class="el" href="classstored_1_1_debugger.html#a06427217cb0ee60ba6124f9a991648e4">stored::Debugger</a>
+</li>
+<li>encodeId()
+: <a class="el" href="classstored_1_1_sync_connection.html#abe0d50f79040c075ad100f89ee44f371">stored::SyncConnection</a>
+</li>
+<li>encodeKey()
+: <a class="el" href="classstored_1_1_store_journal.html#a3624031db63468b0991b91bf84e8d97e">stored::StoreJournal</a>
 </li>
 <li>encodeSeq()
 : <a class="el" href="classstored_1_1_arq_layer.html#a3a4d08bb1058612cd5724dc5466007c5">stored::ArqLayer</a>
 </li>
 <li>encodeStart()
 : <a class="el" href="classstored_1_1_terminal_layer.html#ac734cdbc0cc6331ae456a530485d619a">stored::TerminalLayer</a>
+</li>
+<li>encodeUpdate()
+: <a class="el" href="classstored_1_1_store_journal.html#a40e49d6804b1eefc32c3f212f7dd54cc">stored::StoreJournal</a>
+</li>
+<li>encodeUpdates()
+: <a class="el" href="classstored_1_1_store_journal.html#a07eb53a4f8287ff5620a61e074fbb8d6">stored::StoreJournal</a>
 </li>
 <li>end
 : <a class="el" href="classed2_1_1protocol_1_1_segmentation_layer.html#a40906c10e36434b71b832d67542aa46d">ed2.protocol.SegmentationLayer</a>
@@ -162,8 +185,11 @@ $(document).ready(function(){initNavTree('functions_e.html','');});
 </li>
 <li>entryX()
 : <a class="el" href="classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4.html#a1d805297c83f0d0ea6345dc767b79eba">stored::Variable&lt; T, Container, true &gt;</a>
-, <a class="el" href="classstored_1_1_variant.html#aa340c13bb494b0dc3305162d81f1b577">stored::Variant&lt; Container &gt;</a>
+, <a class="el" href="classstored_1_1_variant.html#ae04279e825a318bb2b496fe7e98f9afd">stored::Variant&lt; Container &gt;</a>
 , <a class="el" href="classstored_1_1_variant_3_01void_01_4.html#a4ddc013b031c1b61cf3216ad8efbdfb2">stored::Variant&lt; void &gt;</a>
+</li>
+<li>erase()
+: <a class="el" href="classstored_1_1_sync_connection.html#a584631092ebaf048d5d23b665f16e7a8">stored::SyncConnection</a>
 </li>
 <li>Esc
 : <a class="el" href="classstored_1_1_ascii_escape_layer.html#a3387a996b07c01ff22e8fadecda9277d">stored::AsciiEscapeLayer</a>
@@ -200,7 +226,7 @@ $(document).ready(function(){initNavTree('functions_e.html','');});
 : <a class="el" href="classstored_1_1_example_debug_another_store.html#af5f1d3e19bebc2665624c59a5fc35b5b">stored::ExampleDebugAnotherStore</a>
 </li>
 <li>ExampleDebugAnotherStoreBase()
-: <a class="el" href="classstored_1_1_example_debug_another_store_base.html#af7790fd0248695e3f058c3e45bd3f7c1">stored::ExampleDebugAnotherStoreBase&lt; Implementation_ &gt;</a>
+: <a class="el" href="classstored_1_1_example_debug_another_store_base.html#a9e2b93edbd4cfc0fef42791efb68360f">stored::ExampleDebugAnotherStoreBase&lt; Implementation_ &gt;</a>
 </li>
 <li>ExampleDebugAnotherStoreBase&lt; ExampleDebugAnotherStore &gt;
 : <a class="el" href="classstored_1_1_example_debug_another_store.html#a1fa7d1deacd9a3515a4993479e9bbefe">stored::ExampleDebugAnotherStore</a>
@@ -215,7 +241,7 @@ $(document).ready(function(){initNavTree('functions_e.html','');});
 : <a class="el" href="classstored_1_1_example_debug_some_store.html#a132bdd64756e5862831dbaa115f5aa43">stored::ExampleDebugSomeStore</a>
 </li>
 <li>ExampleDebugSomeStoreBase()
-: <a class="el" href="classstored_1_1_example_debug_some_store_base.html#a49868de8db90b5a569138ffc6134e7f2">stored::ExampleDebugSomeStoreBase&lt; Implementation_ &gt;</a>
+: <a class="el" href="classstored_1_1_example_debug_some_store_base.html#aa0f2b9e6155229fb757115fd33a7cb2c">stored::ExampleDebugSomeStoreBase&lt; Implementation_ &gt;</a>
 </li>
 <li>ExampleDebugSomeStoreBase&lt; ExampleDebugSomeStore &gt;
 : <a class="el" href="classstored_1_1_example_debug_some_store.html#a656bb94f590d624f14bc45b11c5eef4b">stored::ExampleDebugSomeStore</a>
@@ -242,10 +268,10 @@ $(document).ready(function(){initNavTree('functions_e.html','');});
 : <a class="el" href="classstored_1_1_example_function_objects.html#ae46df7655f9dee6df4e86dfe8bb2cc98">stored::ExampleFunctionObjects&lt; Base_, Implementation_ &gt;</a>
 </li>
 <li>ExampleHello()
-: <a class="el" href="classstored_1_1_example_hello.html#a378aa63b96ac1ceb1059cad0876f01a9">stored::ExampleHello</a>
+: <a class="el" href="classstored_1_1_example_hello.html#a318fb825f7df300f949b5181d45b0a26">stored::ExampleHello</a>
 </li>
 <li>ExampleHelloBase()
-: <a class="el" href="classstored_1_1_example_hello_base.html#aca14607cf3a4253e5c4ee2c2bdbcc3c6">stored::ExampleHelloBase&lt; Implementation_ &gt;</a>
+: <a class="el" href="classstored_1_1_example_hello_base.html#ab1613baff5a66b57bfe4e5d08e5cc7e4">stored::ExampleHelloBase&lt; Implementation_ &gt;</a>
 </li>
 <li>ExampleHelloBase&lt; ExampleHello &gt;
 : <a class="el" href="classstored_1_1_example_hello.html#aa8f101eb3838850c5bc175212d09e1dc">stored::ExampleHello</a>
@@ -256,8 +282,23 @@ $(document).ready(function(){initNavTree('functions_e.html','');});
 <li>ExampleHelloObjects()
 : <a class="el" href="classstored_1_1_example_hello_objects.html#a39863fb76f354e8c5df73ab723d0f5e2">stored::ExampleHelloObjects&lt; Base_, Implementation_ &gt;</a>
 </li>
+<li>ExampleHooks()
+: <a class="el" href="classstored_1_1_example_hooks.html#a04db3ca6771105d0326993e58cb3e767">stored::ExampleHooks</a>
+</li>
+<li>ExampleHooksBase()
+: <a class="el" href="classstored_1_1_example_hooks_base.html#a50acbe9a370da949f9a595807b5ba53e">stored::ExampleHooksBase&lt; Implementation_ &gt;</a>
+</li>
+<li>ExampleHooksBase&lt; ExampleHooks &gt;
+: <a class="el" href="classstored_1_1_example_hooks.html#a157aa3fada6f65afff2e1fadb47f0bf9">stored::ExampleHooks</a>
+</li>
+<li>ExampleHooksData()
+: <a class="el" href="structstored_1_1_example_hooks_data.html#a909f0513a95119b0b972a012c3ffec11">stored::ExampleHooksData</a>
+</li>
+<li>ExampleHooksObjects()
+: <a class="el" href="classstored_1_1_example_hooks_objects.html#a863fe6b3ef8c009ac1517a9d52e80316">stored::ExampleHooksObjects&lt; Base_, Implementation_ &gt;</a>
+</li>
 <li>ExampleProtocol()
-: <a class="el" href="classstored_1_1_example_protocol.html#aaeafcf12001439e2499a59d597ca9659">stored::ExampleProtocol</a>
+: <a class="el" href="classstored_1_1_example_protocol.html#a1fda09106b41fab5599261b549d6c238">stored::ExampleProtocol</a>
 </li>
 <li>ExampleProtocolBase()
 : <a class="el" href="classstored_1_1_example_protocol_base.html#afa91d5735658c4bfb42e67f34d653da9">stored::ExampleProtocolBase&lt; Implementation_ &gt;</a>
@@ -272,7 +313,7 @@ $(document).ready(function(){initNavTree('functions_e.html','');});
 : <a class="el" href="classstored_1_1_example_protocol_objects.html#aa72ff573ca406fcb3cb53ae3bb51751f">stored::ExampleProtocolObjects&lt; Base_, Implementation_ &gt;</a>
 </li>
 <li>ExampleScope()
-: <a class="el" href="classstored_1_1_example_scope.html#ab2b17ab65c23c62665820ae0f2a06590">stored::ExampleScope</a>
+: <a class="el" href="classstored_1_1_example_scope.html#a221cd1b290bcd299f6c66b990725775b">stored::ExampleScope</a>
 </li>
 <li>ExampleScopeBase()
 : <a class="el" href="classstored_1_1_example_scope_base.html#ac165899ac280b17fdb4eceaa12ed5d92">stored::ExampleScopeBase&lt; Implementation_ &gt;</a>
@@ -287,7 +328,39 @@ $(document).ready(function(){initNavTree('functions_e.html','');});
 : <a class="el" href="classstored_1_1_example_scope_objects.html#ab024a11ddb7046577c23bade44c2e419">stored::ExampleScopeObjects&lt; Base_, Implementation_ &gt;</a>
 </li>
 <li>ExampleSync()
-: <a class="el" href="classstored_1_1_example_sync.html#a7877f186061db84a79cb48b2a6890986">stored::ExampleSync</a>
+: <a class="el" href="classstored_1_1_example_sync.html#a7d1d4745dc1007b1c3fc1c88a181ae02">stored::ExampleSync</a>
+</li>
+<li>ExampleSync1()
+: <a class="el" href="class_example_sync1.html#a53fa1407594fc890d91a50b31c35a25d">ExampleSync1</a>
+, <a class="el" href="classstored_1_1_example_sync1.html#afc7015683188cfb42b380d1353e51d33">stored::ExampleSync1</a>
+</li>
+<li>ExampleSync1Base()
+: <a class="el" href="classstored_1_1_example_sync1_base.html#a55000e50c1eb40509f4a2afe2fc15ee3">stored::ExampleSync1Base&lt; Implementation_ &gt;</a>
+</li>
+<li>ExampleSync1Base&lt; ExampleSync1 &gt;
+: <a class="el" href="classstored_1_1_example_sync1.html#a03053d302c7b55195e5c0af5cd8924a2">stored::ExampleSync1</a>
+</li>
+<li>ExampleSync1Data()
+: <a class="el" href="structstored_1_1_example_sync1_data.html#a9f159f4ed64ab821ff1f839a9046ce1b">stored::ExampleSync1Data</a>
+</li>
+<li>ExampleSync1Objects()
+: <a class="el" href="classstored_1_1_example_sync1_objects.html#a6a5cca9ee9ab182325c259731007becf">stored::ExampleSync1Objects&lt; Base_, Implementation_ &gt;</a>
+</li>
+<li>ExampleSync2()
+: <a class="el" href="class_example_sync2.html#a5dee3713c1a25208f05caed5c42b7cf1">ExampleSync2</a>
+, <a class="el" href="classstored_1_1_example_sync2.html#aaa2550e5e1b2a9c49d5dbb583049a07d">stored::ExampleSync2</a>
+</li>
+<li>ExampleSync2Base()
+: <a class="el" href="classstored_1_1_example_sync2_base.html#a8603d07f12f12941cb6f224275fcdc1c">stored::ExampleSync2Base&lt; Implementation_ &gt;</a>
+</li>
+<li>ExampleSync2Base&lt; ExampleSync2 &gt;
+: <a class="el" href="classstored_1_1_example_sync2.html#a83fb2f026d81c1883e7373d4949a68cd">stored::ExampleSync2</a>
+</li>
+<li>ExampleSync2Data()
+: <a class="el" href="structstored_1_1_example_sync2_data.html#aee0dc70c774cf627b34a27309d8eee56">stored::ExampleSync2Data</a>
+</li>
+<li>ExampleSync2Objects()
+: <a class="el" href="classstored_1_1_example_sync2_objects.html#a8b6383bc5a742def00061a094e36215a">stored::ExampleSync2Objects&lt; Base_, Implementation_ &gt;</a>
 </li>
 <li>ExampleSyncBase()
 : <a class="el" href="classstored_1_1_example_sync_base.html#a7eac94613d475e44e171ccc87ba4dfbe">stored::ExampleSyncBase&lt; Implementation_ &gt;</a>
@@ -298,11 +371,8 @@ $(document).ready(function(){initNavTree('functions_e.html','');});
 <li>ExampleSyncData()
 : <a class="el" href="structstored_1_1_example_sync_data.html#a0f590379d123c9f58b6645268fcfe8fb">stored::ExampleSyncData</a>
 </li>
-<li>ExampleSyncObjects()
-: <a class="el" href="classstored_1_1_example_sync_objects.html#af1964539024af8a8528a196813fd9734">stored::ExampleSyncObjects&lt; Base_, Implementation_ &gt;</a>
-</li>
 <li>ExampleTerminal()
-: <a class="el" href="classstored_1_1_example_terminal.html#a6815ef118c1bea86537c88ab599a7b33">stored::ExampleTerminal</a>
+: <a class="el" href="classstored_1_1_example_terminal.html#ac066957ddeca8ae9de8a556af5a7ef19">stored::ExampleTerminal</a>
 </li>
 <li>ExampleTerminalBase()
 : <a class="el" href="classstored_1_1_example_terminal_base.html#aadaae69ef5f175e5a938ef4fa80c83b8">stored::ExampleTerminalBase&lt; Implementation_ &gt;</a>
@@ -328,6 +398,9 @@ $(document).ready(function(){initNavTree('functions_e.html','');});
 </li>
 <li>ExtendedDebugger()
 : <a class="el" href="class_extended_debugger.html#acfe6b2fa805886d6446bfb280d4bab71">ExtendedDebugger</a>
+</li>
+<li>ExtraAlloc
+: <a class="el" href="classstored_1_1impl_1_1_loopback1.html#a341a0d1668a12ca495fe7814b9495aafa594188343a255bdf58034bdc4eaa2ac2">stored::impl::Loopback1</a>
 </li>
 </ul>
 </div><!-- contents -->
