@@ -1,0 +1,97 @@
+# vim:filetype=cmake
+cmake_minimum_required(VERSION 3.0)
+include(CheckIncludeFileCXX)
+
+file(TO_CMAKE_PATH "C:\\dev\\prive\\libstored" libstored_dir)
+
+add_library(6_sync-libstored
+    ${libstored_dir}/include/stored
+    ${libstored_dir}/include/stored.h
+    ${libstored_dir}/include/libstored/macros.h
+    ${libstored_dir}/include/libstored/types.h
+    ${libstored_dir}/include/libstored/directory.h
+    ${libstored_dir}/include/libstored/util.h
+    ${libstored_dir}/include/libstored/zmq.h
+    ${libstored_dir}/src/directory.cpp
+    ${libstored_dir}/src/debugger.cpp
+    ${libstored_dir}/src/protocol.cpp
+    ${libstored_dir}/src/util.cpp
+    ${libstored_dir}/src/zmq.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ExampleSync.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ExampleSync.cpp
+)
+
+target_include_directories(6_sync-libstored
+    PUBLIC ${libstored_dir}/include
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+set_target_properties(6_sync-libstored PROPERTIES OUTPUT_NAME "stored")
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	target_compile_definitions(6_sync-libstored PUBLIC -D_DEBUG)
+else()
+	target_compile_definitions(6_sync-libstored PUBLIC -DNDEBUG)
+endif()
+
+if(MSVC)
+	target_compile_options(6_sync-libstored PRIVATE /Wall /WX)
+else()
+	target_compile_options(6_sync-libstored PRIVATE -Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion -ffunction-sections -fdata-sections)
+endif()
+
+CHECK_INCLUDE_FILE_CXX("valgrind/memcheck.h" LIBSTORED_HAVE_VALGRIND)
+if(LIBSTORED_HAVE_VALGRIND)
+	target_compile_definitions(6_sync-libstored PUBLIC -DSTORED_HAVE_VALGRIND)
+endif()
+
+if(TARGET libzth)
+	target_link_libraries(6_sync-libstored PUBLIC libzth)
+endif()
+
+if(LIBSTORED_HAVE_LIBZMQ)
+	target_compile_definitions(6_sync-libstored PUBLIC -DSTORED_HAVE_ZMQ)
+	target_include_directories(6_sync-libstored
+		PRIVATE $<TARGET_PROPERTY:libzmq,INTERFACE_INCLUDE_DIRECTORIES>
+	)
+	target_link_libraries(6_sync-libstored INTERFACE libzmq)
+endif()
+
+if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
+    find_program(CLANG_TIDY_EXE NAMES "clang-tidy" DOC "Path to clang-tidy executable")
+    if(CLANG_TIDY_EXE AND NOT CMAKE_CROSSCOMPILING)
+        option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ON)
+        if(LIBSTORED_CLANG_TIDY)
+            string(CONCAT CLANG_TIDY_CHECKS "-checks="
+                "cppcoreguidelines-*,"
+                "-cppcoreguidelines-pro-bounds-array-to-pointer-decay,"
+                "-cppcoreguidelines-pro-type-union-access,"
+                "-cppcoreguidelines-pro-bounds-pointer-arithmetic,"
+
+                "hicpp-*,"
+                "-hicpp-braces-around-statements,"
+                "-hicpp-no-array-decay,"
+                "-hicpp-member-init,"
+                "-hicpp-use-auto,"
+                "-hicpp-no-malloc,"
+                "-hicpp-use-override,"
+
+                "performance-*,"
+                "clang-analyzer-*,"
+                "bugprone-*,"
+                "portability-*,"
+                "misc-*,"
+
+                "readability-*,"
+                "-readability-braces-around-statements,"
+                "-readability-implicit-bool-conversion,"
+                "-readability-else-after-return,"
+            )
+            set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
+                "-header-filter=.*includ/libstored.*")
+        endif()
+
+        set_target_properties(6_sync-libstored
+            PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}" )
+    endif()
+endif()

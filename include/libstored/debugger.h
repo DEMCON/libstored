@@ -322,6 +322,10 @@
 #include <string>
 #include <memory>
 
+#if STORED_cplusplus >= 201103L
+#  include <functional>
+#endif
+
 namespace stored {
 
 #ifdef STORED_COMPILER_ARMCC
@@ -374,6 +378,26 @@ namespace stored {
 		 * \brief Checks if the object is a variable.
 		 */
 		bool isVariable() const { return valid() && !Type::isFunction(type()); }
+
+	protected:
+		/*!
+		 * \brief Check if this and the given variant point to the same object.
+		 */
+		virtual bool operator==(DebugVariantBase const& rhs) const { return this == &rhs; }
+
+		/*!
+		 * \brief Check if this and the given variant do not point to the same object.
+		 */
+		bool operator!=(DebugVariantBase const& rhs) const { return !(*this == rhs); }
+
+		/*!
+		 * \brief Returns the container this object belongs to.
+		 */
+		virtual void* container() const = 0;
+
+		// For operator==().
+		template <typename Container> friend class DebugVariantTyped;
+		friend class DebugVariant;
 	};
 
 	/*!
@@ -422,6 +446,21 @@ namespace stored {
 		/*! \copydoc variant() const */
 		Variant<Container>& variant() { return m_variant; }
 
+	protected:
+		bool operator==(DebugVariantBase const& rhs) const final {
+			if(valid() != rhs.valid())
+				return false;
+			if(!valid())
+				return true;
+			if(container() != rhs.container())
+				return false;
+			return variant() == static_cast<DebugVariantTyped<Container> const&>(rhs).variant();
+		}
+
+		void* container() const final {
+			return variant().valid() ? &variant().container() : nullptr;
+		}
+
 	private:
 		/*! \brief The wrapped variant. */
 		Variant<Container> m_variant;
@@ -443,6 +482,8 @@ namespace stored {
 	class DebugVariant final : public DebugVariantBase {
 		CLASS_NO_WEAK_VTABLE
 	public:
+		typedef DebugVariantBase base;
+
 		/*!
 		 * \brief Constructor for an invalid #stored::Variant wrapper.
 		 */
@@ -485,8 +526,14 @@ namespace stored {
 			return variant().size(); }
 		bool valid() const final {
 			return variant().valid(); }
+		bool operator==(DebugVariant const& rhs) const {
+			return variant() == rhs.variant(); }
+		bool operator!=(DebugVariant const& rhs) const {
+			return !(*this == rhs); }
 
 	protected:
+		using base::operator==;
+
 		/*!
 		 * \brief Returns the contained #stored::DebugVariantTyped instance.
 		 */
@@ -501,6 +548,10 @@ namespace stored {
 		DebugVariantBase& variant() {
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return *static_cast<DebugVariantBase*>(reinterpret_cast<DebugVariantTyped<>*>(m_buffer));
+		}
+
+		void* container() const final {
+			return variant().container();
 		}
 
 	private:
@@ -570,31 +621,6 @@ namespace stored {
 		 * \param prefix a prefix applied to the name passed to \p f
 		 */
 		virtual void list(ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr) const = 0;
-
-#if STORED_cplusplus >= 201103L
-		/*!
-		 * \brief Callback function prototype as supplied to \c list().
-		 *
-		 * It receives the name of the object, and the corresponding
-		 * #stored::DebugVariant of the object.
-		 *
-		 * \see #list<F>(F&) const
-		 */
-		typedef void(ListCallback)(char const*, DebugVariant&);
-
-		/*!
-		 * \brief Iterates over the directory and invoke a callback for every object.
-		 * \param f the callback to invoke, which can be any type, but must look like #ListCallback
-		 */
-		template <typename F>
-		SFINAE_IS_FUNCTION(F, ListCallback, void)
-		list(F& f) const {
-			auto cb = [](char const* name, DebugVariant& variant, void* f_) {
-				(*static_cast<F*>(f_))(name, variant);
-			};
-			list(static_cast<ListCallbackArg*>(cb), &f);
-		}
-#endif
 	};
 
 	/*!
@@ -749,16 +775,28 @@ namespace stored {
 		void list(ListCallbackArg* f, void* arg = nullptr) const;
 
 #if STORED_cplusplus >= 201103L
-		/*! \copydoc stored::DebugStoreBase::ListCallback */
-		typedef DebugStoreBase::ListCallback ListCallback;
+		/*!
+		 * \brief Callback function prototype as supplied to \c list().
+		 *
+		 * It receives the name of the object, and the corresponding
+		 * #stored::DebugVariant of the object.
+		 *
+		 * \see #list<F>(F&&) const
+		 */
+		typedef void(ListCallback)(char const*, DebugVariant&);
 
-		/*! \copydoc stored::DebugStoreBase::list(F&) const */
+		/*!
+		 * \brief Iterates over the directory and invoke a callback for every object.
+		 * \param f the callback to invoke, which can be any type, but must look like #ListCallback
+		 */
 		template <typename F>
-		void list(F& f) const {
-			auto cb = [](char const* name, DebugVariant& variant, void* f_) {
-				(*static_cast<F*>(f_))(name, variant);
+		SFINAE_IS_FUNCTION(F, ListCallback, void)
+		list(F&& f) const {
+			std::function<ListCallback> f_ = f;
+			auto cb = [](char const* name, DebugVariant& variant, void* f__) {
+				(*(std::function<ListCallback>*)f__)(name, variant);
 			};
-			list(static_cast<ListCallbackArg*>(cb), &f);
+			list(static_cast<ListCallbackArg*>(cb), &f_);
 		}
 #endif
 	private:

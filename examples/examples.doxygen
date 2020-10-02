@@ -2,31 +2,31 @@
 
 /*!
 \example 1_hello/main.cpp
-\brief Hello World.
+\copydoc examples/1_hello/main.cpp
 \verbinclude 1_hello/ExampleHello.st
 */
 
 /*!
 \example 2_basic/main.cpp
-\brief Basic syntax.
+\copydoc examples/2_basic/main.cpp
 \verbinclude 2_basic/ExampleBasic.st
 */
 
 /*!
 \example 3_scope/main.cpp
-\brief Scoping syntax.
+\copydoc examples/3_scope/main.cpp
 \verbinclude 3_scope/ExampleScope.st
 */
 
 /*!
 \example 4_function/main.cpp
-\brief Function objects.
+\copydoc examples/4_function/main.cpp
 \verbinclude 4_function/ExampleFunction.st
 */
 
 /*!
 \example 5_debug/main.cpp
-\brief Embedded Debugger interface.
+\copydoc examples/5_debug/main.cpp
 
 <p>ExampleDebugSomeStore.st:
 \verbinclude 5_debug/ExampleDebugSomeStore.st
@@ -36,25 +36,36 @@ ExampleDebugAnotherStore.st:
 */
 
 /*!
-\example 6_sync/main.cpp
-\brief Synchronization.
-\verbinclude 6_sync/ExampleSync.st
+\example 6_hooks/main.cpp
+\copydoc examples/6_hooks/main.cpp
+\verbinclude 6_hooks/ExampleHooks.st
 */
 
 /*!
 \example 7_protocol/main.cpp
-\brief Protocol stack over a lossy channel.
+\copydoc examples/7_protocol/main.cpp
 \verbinclude 7_protocol/ExampleProtocol.st
 */
 
 /*!
+\example 8_sync/main.cpp
+\copydoc examples/8_sync/main.cpp
+
+<p>ExampleSync1.st:</p>
+\verbinclude 8_sync/ExampleSync1.st
+
+<p>ExampleSync2.st:</p>
+\verbinclude 8_sync/ExampleSync2.st
+*/
+
+/*!
 \example terminal/main.cpp
-\brief A stdin/stdout terminal application to test hand-injected Embedded Debugger messages.
+\copydoc examples/terminal/main.cpp
 \verbinclude terminal/ExampleTerminal.st
 */
 
 /*!
 \example zmqserver/main.cpp
-\brief A stored::ZmqServer interface for a lot of different types of objects.
+\copydoc examples/zmqserver/main.cpp
 \verbinclude zmqserver/ZmqServerStore.st
 */

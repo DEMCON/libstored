@@ -38,6 +38,8 @@ libstored_add_test(test_array test_array.cpp)
 libstored_add_test(test_directory test_directory.cpp)
 libstored_add_test(test_spm test_spm.cpp)
 libstored_add_test(test_protocol test_protocol.cpp)
+libstored_add_test(test_debugger test_debugger.cpp)
+libstored_add_test(test_synchronizer test_synchronizer.cpp)
 
 if(HAVE_VALGRIND AND LIBSTORED_EXAMPLES)
 	macro(libstored_example_test EXAMPLE)
@@ -49,7 +51,7 @@ if(HAVE_VALGRIND AND LIBSTORED_EXAMPLES)
 	libstored_example_test(3_scope)
 	libstored_example_test(4_function)
 	libstored_example_test(5_debug)
-	libstored_example_test(6_sync)
+	libstored_example_test(6_hooks)
 endif()
 
 find_program(SPIN_EXECUTABLE spin)
@@ -74,4 +76,19 @@ if(SPIN_EXECUTABLE)
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	)
 endif()
+
+if(WIN32)
+	set(ENV_PATH_SEP ";")
+else()
+	set(ENV_PATH_SEP ":")
+endif()
+
+add_test(
+	NAME ZmqClient
+	COMMAND ${CMAKE_COMMAND} -E env
+		PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/../client
+		"PATH=$<SHELL_PATH:$<TARGET_FILE_DIR:libzmq>>${ENV_PATH_SEP}$ENV{PATH}"
+		${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_ZmqClient.py $<TARGET_FILE:zmqserver>
+)
+set_tests_properties(ZmqClient PROPERTIES TIMEOUT 60)
 

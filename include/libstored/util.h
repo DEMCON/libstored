@@ -38,6 +38,12 @@
 #  include <libzth/worker.h>
 #endif
 
+#ifdef STORED_COMPILER_MSVC
+#  include <stdlib.h>
+#endif
+
+#include <string>
+
 /*!
  * \def likely(expr)
  * \brief Marks the given expression to likely be evaluated to true.
@@ -178,6 +184,151 @@ namespace stored {
 #else
 #  define stored_assert(expr)	do { if(::stored::Config::EnableAssert) { assert(expr); } } while(false)
 #endif
+
+	void swap_endian(void* buffer, size_t len);
+	void memcpy_swap(void* __restrict__ dst, void const* __restrict__ src, size_t len);
+	int memcmp_swap(void const* a, void const* b, size_t len);
+
+	template <size_t S>
+	static inline void swap_endian_(void* buffer) {
+		swap_endian(buffer, S);
+	}
+
+#ifdef STORED_COMPILER_GCC
+	template <>
+	inline void swap_endian_<2>(void* buffer) {
+		uint16_t* x = static_cast<uint16_t*>(buffer);
+		*x = __builtin_bswap16(*x);
+	}
+
+	template <>
+	inline void swap_endian_<4>(void* buffer) {
+		uint32_t* x = static_cast<uint32_t*>(buffer);
+		*x = __builtin_bswap32(*x);
+	}
+
+	template <>
+	inline void swap_endian_<8>(void* buffer) {
+		uint64_t* x = static_cast<uint64_t*>(buffer);
+		*x = __builtin_bswap64(*x);
+	}
+#endif // STORED_COMPILER_GCC
+
+#ifdef STORED_COMPILER_MSVC
+	template <>
+	inline void swap_endian_<sizeof(unsigned short)>(void* buffer) {
+		unsigned short* x = static_cast<unsigned short*>(buffer);
+		*x = _byteswap_ushort(*x);
+	}
+
+	template <>
+	inline void swap_endian_<sizeof(unsigned long)>(void* buffer) {
+		unsigned long* x = static_cast<unsigned long*>(buffer);
+		*x = _byteswap_ulong(*x);
+	}
+
+	template <>
+	inline void swap_endian_<sizeof(unsigned __int64)>(void* buffer) {
+		unsigned __int64* x = static_cast<unsigned __int64*>(buffer);
+		*x = _byteswap_uint64(*x);
+	}
+#endif // STORED_COMPILER_MSVC
+
+	/*!
+	 * \brief Swap endianness of the given value.
+	 * \ingroup libstored_util
+	 */
+	template <typename T>
+	static inline T swap_endian(T value) {
+		swap_endian_<sizeof(T)>(&value);
+		return value;
+	}
+
+	/*!
+	 * \brief Swap host to big endianness.
+	 */
+	template <typename T>
+	static inline T endian_h2b(T value) {
+#ifdef STORED_LITTLE_ENDIAN
+		swap_endian_<sizeof(T)>(&value);
+#endif
+		return value;
+	}
+
+	/*!
+	 * \brief Swap host to network (big) endianness.
+	 */
+	template <typename T>
+	static inline T endian_h2n(T value) {
+		return endian_h2b<T>(value);
+	}
+
+	/*!
+	 * \brief Swap host to little endianness.
+	 */
+	template <typename T>
+	static inline T endian_h2l(T value) {
+#ifdef STORED_BIG_ENDIAN
+		swap_endian_<sizeof(T)>(&value);
+#endif
+		return value;
+	}
+
+	/*!
+	 * \brief Swap host to store endianness.
+	 * \ingroup libstored_util
+	 */
+	template <typename T>
+	static inline T endian_h2s(T value) {
+		if(Config::StoreInLittleEndian)
+			return endian_h2l<T>(value);
+		else
+			return endian_h2b<T>(value);
+	}
+
+	/*!
+	 * \brief Swap big to host endianness.
+	 */
+	template <typename T>
+	static inline T endian_b2h(T value) {
+#ifdef STORED_LITTLE_ENDIAN
+		swap_endian_<sizeof(T)>(&value);
+#endif
+		return value;
+	}
+
+	/*!
+	 * \brief Swap network (big) to host endianness.
+	 */
+	template <typename T>
+	static inline T endian_n2h(T value) {
+		return endian_b2h<T>(value);
+	}
+
+	/*!
+	 * \brief Swap little to host endianness.
+	 */
+	template <typename T>
+	static inline T endian_l2h(T value) {
+#ifdef STORED_BIG_ENDIAN
+		swap_endian_<sizeof(T)>(&value);
+#endif
+		return value;
+	}
+
+	/*!
+	 * \brief Swap store to host endianness.
+	 * \ingroup libstored_util
+	 */
+	template <typename T>
+	static inline T endian_s2h(T value) {
+		if(Config::StoreInLittleEndian)
+			return endian_l2h<T>(value);
+		else
+			return endian_b2h<T>(value);
+	}
+
+	std::string string_literal(void const* buffer, size_t len, char const* prefix = nullptr);
 
 	/*!
 	 * \brief Determine the number of bytes to save the given unsigned value.

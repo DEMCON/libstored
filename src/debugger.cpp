@@ -98,9 +98,35 @@ Debugger::~Debugger()
  */
 static bool checkPrefix(char const* name, char const* prefix, size_t len) {
 	stored_assert(name && prefix);
-	// Check full prefix, as we only check against prefix and not to others,
-	// so we cannot check disambiguity.
-	return memcmp(name, prefix, std::min(len, strlen(prefix))) == 0;
+
+	if(len == 0 || *name != '/' || *prefix != '/')
+		return false;
+
+	name++;
+	prefix++;
+	len--;
+
+	// Consider a match if name (e.g., /prefix/name) contains the full prefix (/prefix),
+	// or when the given name has an abbreviated prefix (/pr/name). If this is
+	// ambiguous, it is undefined which store is to be returned, but that is up to the user.
+	while(len > 0) {
+		if(!*prefix)
+			// End of prefix, so it should also be the end of the prefix in name.
+			return *name == '/';
+		if(!*name)
+			// Name is too short.
+			return false;
+		if(*name == '/')
+			// Name has a shorter prefix than prefix. Accept abbreviated names.
+			return true;
+		if(*name != *prefix)
+			return false;
+		name++;
+		prefix++;
+		len--;
+	}
+
+	return true;
 }
 
 /*! \copydoc stored::DebugStoreBase::find() */
@@ -118,12 +144,23 @@ notfound:
 			return it->second;
 	}
 
-	if(m_map.size() == 1) {
-		// Don't compare prefix, just forward to the only mapped store.
-		return m_map.begin()->second->find(name, len);
+	switch(m_map.size()) {
+	case 0:
+		// No store mapped.
+		goto notfound;
+	case 1: {
+		// The name may not contain a prefix. Try to forward it to the only mapped store.
+		DebugVariant v = m_map.begin()->second->find(name, len);
+		if(v.valid())
+			return v;
+
+		// Again, but strip / to drop the prefix and forward it.
+		return m_map.begin()->second->find(&name[1], len);
+	}
+	default:;
 	}
 
-	// name contains '/prefix/object', where '/prefix' equals he mapped name of
+	// name contains '/prefix/object', where '/prefix' equals the mapped name of
 	// a store.
 
 	StoreMap::const_iterator it = m_map.upper_bound(name);
@@ -135,9 +172,9 @@ notfound:
 	// - is alphabetically before name, such as /aa, while name was /prefix/object (no match)
 	// So, check both it and --it.
 
-	if(       it != m_map.end() && checkPrefix(name, it->first, len))
+	if(                              it != m_map.end() && checkPrefix(name, it->first, len))
 		goto gotit;
-	else if(--it != m_map.end() && checkPrefix(name, it->first, len))
+	else if(it != m_map.begin() && --it != m_map.end() && checkPrefix(name, it->first, len))
 		goto gotit;
 	else
 		goto notfound;
@@ -156,8 +193,11 @@ void Debugger::map(DebugStoreBase* store, char const* name) {
 	if(!name && store)
 		name = store->name();
 
-	if(!name || name[0] != '/' || !store)
+	if(!name || name[0] != '/' || strchr(name + 1, '/') || !store) {
+		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+		delete store;
 		return;
+	}
 
 	StoreMap::iterator it = m_map.find(name);
 
@@ -317,6 +357,7 @@ void Debugger::setIdentification(char const* identification) {
 
 /*!
  * \brief Push the version string into the given response.
+ * \return \c true if the version is pushed, \c false if not available
  * \see #setVersions()
  */
 bool Debugger::version(ProtocolLayer& response) {

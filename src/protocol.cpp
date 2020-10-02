@@ -17,6 +17,7 @@
  */
 
 #include <libstored/protocol.h>
+#include <libstored/util.h>
 
 #ifndef STORED_OS_BAREMETAL
 #  ifdef STORED_COMPILER_MSVC
@@ -31,6 +32,7 @@
 #endif
 
 #include <algorithm>
+#include <new>
 
 namespace stored {
 
@@ -890,6 +892,109 @@ void BufferLayer::encode(void const* buffer, size_t len, bool last) {
 		m_buffer.append(buffer_, len);
 	}
 }
+
+
+//////////////////////////////
+// PrintLayer
+//
+
+PrintLayer::PrintLayer(FILE* f, char const* name, ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_f(f)
+	, m_name(name)
+{
+}
+
+void PrintLayer::decode(void* buffer, size_t len) {
+	if(m_f) {
+		std::string prefix;
+		if(m_name)
+			prefix += m_name;
+		prefix += " < ";
+
+		std::string s = string_literal(buffer, len, prefix.c_str());
+		s += "\n";
+		fputs(s.c_str(), m_f);
+	}
+
+	base::decode(buffer, len);
+}
+
+void PrintLayer::encode(void const* buffer, size_t len, bool last) {
+	if(m_f) {
+		std::string prefix;
+		if(m_name)
+			prefix += m_name;
+
+		if(last)
+			prefix += " > ";
+		else
+			prefix += " * ";
+
+		std::string s = string_literal(buffer, len, prefix.c_str());
+		s += "\n";
+		fputs(s.c_str(), m_f);
+	}
+
+	base::encode(buffer, len, last);
+}
+
+/*!
+ * \brief Set the \c FILE to write to.
+ * \param f the \c FILE, set to \c nullptr to disable output
+ */
+void PrintLayer::setFile(FILE* f) {
+	m_f = f;
+}
+
+
+
+//////////////////////////////
+// Loopback
+//
+
+impl::Loopback1::Loopback1(ProtocolLayer& from, ProtocolLayer& to)
+	: m_to(to)
+	, m_buffer()
+	, m_capacity()
+	, m_len()
+{
+	wrap(from);
+}
+
+impl::Loopback1::~Loopback1() {
+	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory, cppcoreguidelines-no-malloc)
+	free(m_buffer);
+}
+
+void impl::Loopback1::encode(void const* buffer, size_t len, bool last) {
+	if(likely(len > 0)) {
+		if(unlikely(m_len + len > m_capacity)) {
+			size_t capacity = m_len + len + ExtraAlloc;
+			// NOLINTNEXTLINE(cppcoreguidelines-owning-memory, cppcoreguidelines-no-malloc)
+			void* p = realloc(m_buffer, capacity);
+			if(!p)
+				throw std::bad_alloc();
+			m_buffer = static_cast<char*>(p);
+			m_capacity = capacity;
+		}
+
+		memcpy(m_buffer + m_len, buffer, len);
+		m_len += len;
+	}
+
+	if(last) {
+		m_to.decode(m_buffer, m_len);
+		m_len = 0;
+	}
+}
+
+Loopback::Loopback(ProtocolLayer& a, ProtocolLayer& b)
+	: m_a2b(a, b)
+	, m_b2a(b, a)
+{
+}
+
 
 
 } // namespace

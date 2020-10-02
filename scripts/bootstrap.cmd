@@ -24,7 +24,7 @@ echo Chocolatey not installed. Install from here: https://chocolatey.org/docs/in
 goto error
 :have_choco
 
-choco install -y --no-progress tortoisegit git cmake make python3 pkgconfiglite mingw
+choco install -y --no-progress tortoisegit git cmake make python3 pkgconfiglite mingw doxygen.install
 if errorlevel 1 goto error
 
 call refreshenv
@@ -32,7 +32,7 @@ call refreshenv
 python.exe -m ensurepip
 if errorlevel 1 goto error
 
-pip3 install textx jinja2 pyzmq pyside2 pyserial lognplot PyQt5 natsort wheel crcmod
+python.exe -m pip install textx jinja2 pyzmq pyside2 pyserial lognplot PyQt5 natsort wheel crcmod
 if errorlevel 1 goto error
 
 :done

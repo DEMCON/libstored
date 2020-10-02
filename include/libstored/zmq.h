@@ -41,11 +41,7 @@ namespace stored {
 	public:
 		typedef ProtocolLayer base;
 
-		enum {
-			DefaultPort = 19026,
-		};
-
-		ZmqLayer(void* context = nullptr, int port = DefaultPort, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		ZmqLayer(void* context, int type, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~ZmqLayer() override;
 
 		void* context() const;
@@ -63,6 +59,11 @@ namespace stored {
 		void encode(void const* buffer, size_t len, bool last = true) final;
 		using base::encode;
 
+		int lastError() const;
+
+	protected:
+		void setLastError(int error);
+
 	private:
 		/*! \brief The ZeroMQ context. */
 		void* m_context;
@@ -76,7 +77,32 @@ namespace stored {
 		size_t m_bufferCapacity;
 		/*! \brief Allocated size of #m_buffer. */
 		size_t m_bufferSize;
+		/*! \brief Error result of last function. */
+		int m_error;
 	};
+
+	class DebugZmqLayer : public ZmqLayer {
+	public:
+		typedef ZmqLayer base;
+
+		enum {
+			DefaultPort = 19026,
+		};
+
+		DebugZmqLayer(void* context = nullptr, int port = DefaultPort, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~DebugZmqLayer() override is_default
+
+		virtual int recv(bool block = false) override;
+	};
+
+	class SyncZmqLayer : public ZmqLayer {
+	public:
+		typedef ZmqLayer base;
+
+		SyncZmqLayer(void* context, char const* endpoint, bool listen, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~SyncZmqLayer() override is_default
+	};
+
 } // namespace
 
 #  endif // STORED_HAVE_ZMQ

@@ -40,9 +40,9 @@ namespace stored {
 /*!
  * \copydoc stored::ProtocolLayer::ProtocolLayer(ProtocolLayer*,ProtocolLayer*)
  * \param context the ZeroMQ context to use. If \c nullptr, a new context is allocated.
- * \param port the port to bind to
+ * \param type the ZeroMQ socket type to create.
  */
-ZmqLayer::ZmqLayer(void* context, int port, ProtocolLayer* up, ProtocolLayer* down)
+ZmqLayer::ZmqLayer(void* context, int type, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_context(context ? context : zmq_ctx_new())
 	, m_contextCleanup(!context)
@@ -50,15 +50,10 @@ ZmqLayer::ZmqLayer(void* context, int port, ProtocolLayer* up, ProtocolLayer* do
 	, m_buffer()
 	, m_bufferCapacity()
 	, m_bufferSize()
+	, m_error()
 {
-	m_socket = zmq_socket(this->context(), ZMQ_REP);
-
-	char bind[32] = {};
-	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
-	snprintf(bind, sizeof(bind), "tcp://*:%" PRIu16, (uint16_t)port);
-
-	// Bind, but ignore errors. They will be reported when calling poll() later on.
-	zmq_bind(m_socket, bind);
+	if(!(m_socket = zmq_socket(this->context(), type)))
+		setLastError(errno);
 }
 
 /*!
@@ -103,12 +98,14 @@ ZmqLayer::socket_type ZmqLayer::fd() {
 	size_t size = sizeof(socket);
 
 	if(zmq_getsockopt(m_socket, ZMQ_FD, &socket, &size) == -1) {
+		setLastError(errno);
 #ifdef STORED_OS_WINDOWS
 		return INVALID_SOCKET;
 #else
 		return -1;
 #endif
-	}
+	} else
+		setLastError(0);
 
 	return socket;
 }
@@ -130,11 +127,6 @@ int ZmqLayer::recv(bool block) {
 
 	if(unlikely(zmq_msg_recv(&msg, m_socket, block ? 0 : ZMQ_DONTWAIT) == -1)) {
 		res = errno;
-		if(res == EFSM) {
-			// We should not be receiving at the moment.
-			// That is odd, but we can try to recover from it by sending an (error) reply.
-			encode("?", 1);
-		}
 		goto error_recv;
 	}
 
@@ -173,13 +165,17 @@ int ZmqLayer::recv(bool block) {
 	}
 
 	zmq_msg_close(&msg);
+	setLastError(0);
 	return 0;
 
 error_buffer:
 error_recv:
 	zmq_msg_close(&msg);
 error_msg:
-	return res ? res : EIO;
+	if(!res)
+		res = EIO;
+	setLastError(res);
+	return res;
 }
 
 /*!
@@ -187,7 +183,68 @@ error_msg:
  * \details Encoded data is send as REP over the ZeroMQ socket.
  */
 void ZmqLayer::encode(void const* buffer, size_t len, bool last) {
-	zmq_send(m_socket, buffer, len, last ? 0 : ZMQ_SNDMORE);
+	if(zmq_send(m_socket, buffer, len, last ? 0 : ZMQ_SNDMORE) == -1)
+		setLastError(errno);
+}
+
+int ZmqLayer::lastError() const {
+	return m_error;
+}
+
+void ZmqLayer::setLastError(int error) {
+	m_error = error;
+}
+
+
+//////////////////////////////
+// DebugZmqLayer
+//
+
+DebugZmqLayer::DebugZmqLayer(void* context, int port, ProtocolLayer* up, ProtocolLayer* down)
+	: base(context, ZMQ_REP, up, down)
+{
+	if(lastError())
+		return;
+
+	char bind[32] = {};
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
+	snprintf(bind, sizeof(bind), "tcp://*:%" PRIu16, (uint16_t)port);
+
+	if(zmq_bind(socket(), bind) == -1)
+		setLastError(errno);
+}
+
+int DebugZmqLayer::recv(bool block) {
+	int res = base::recv(block);
+
+	if(res == EFSM) {
+		// We should not be receiving at the moment.
+		// That is odd, but we can try to recover from it by sending an (error) reply.
+		encode("?", 1);
+	}
+
+	return res;
+}
+
+
+//////////////////////////////
+// SyncZmqLayer
+//
+
+SyncZmqLayer::SyncZmqLayer(void* context, char const* endpoint, bool listen, ProtocolLayer* up, ProtocolLayer* down)
+	: base(context, ZMQ_PAIR, up, down)
+{
+	if(lastError())
+		return;
+
+	int res;
+	if(listen)
+		res = zmq_bind(socket(), endpoint);
+	else
+		res = zmq_connect(socket(), endpoint);
+
+	if(res)
+		setLastError(res);
 }
 
 } // namespace

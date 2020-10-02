@@ -83,7 +83,7 @@
 #  endif
 #  define NOMINMAX
 #  define _USE_MATH_DEFINES
-#  pragma warning(disable: 4061 4068 4100 4127 4324 4514 4571 4625 4626 4710 4711 4774 4820 5026 5027 5039 5045)
+#  pragma warning(disable: 4061 4068 4100 4127 4324 4514 4571 4625 4626 4706 4710 4711 4774 4789 4820 5026 5027 5039 5045)
 #  if _MSC_VER >= 1925
 #    pragma warning(disable: 5204)
 #  endif
@@ -134,8 +134,12 @@ typedef SSIZE_T ssize_t;
 #  endif
 #elif defined(__linux__)
 #  define STORED_OS_LINUX 1
+#  define STORED_OS_POSIX 1
 #elif defined(STORED_COMPILER_ARMCC)
 #  define STORED_OS_BAREMETAL 1
+#elif defined(__APPLE__)
+#  define STORED_OS_OSX 1
+#  define STORED_OS_POSIX 1
 #else
 #  define STORED_OS_GENERIC 1
 #endif

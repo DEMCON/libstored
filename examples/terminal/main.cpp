@@ -1,3 +1,8 @@
+/*!
+ * \file
+ * \brief A stdin/stdout terminal application to test hand-injected Embedded Debugger messages.
+ */
+
 #include "ExampleTerminal.h"
 
 #include <stored>

@@ -5,16 +5,16 @@
 
 #include <stored>
 
-#include "ExampleSync.h"
+#include "ExampleHooks.h"
 
 #include <cstdio>
 
-class SyncedExampleSync : public stored::ExampleSyncBase<SyncedExampleSync> {
-	CLASS_NOCOPY(SyncedExampleSync)
+class SyncedExampleHooks : public stored::ExampleHooksBase<SyncedExampleHooks> {
+	CLASS_NOCOPY(SyncedExampleHooks)
 public:
-	typedef stored::ExampleSyncBase<SyncedExampleSync> base;
-	friend class stored::ExampleSyncBase<SyncedExampleSync>;
-	SyncedExampleSync() {}
+	typedef stored::ExampleHooksBase<SyncedExampleHooks> base;
+	friend class stored::ExampleHooksBase<SyncedExampleHooks>;
+	SyncedExampleHooks() {}
 
 protected:
 	void __function(bool set, int32_t& value) { if(!set) value = 42; }
@@ -41,7 +41,7 @@ protected:
 };
 
 int main() {
-	SyncedExampleSync store;
+	SyncedExampleHooks store;
 
 	printf("Function access (no hooks)\n");
 	store.function.get();

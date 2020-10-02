@@ -27,7 +27,7 @@ if(LIBSTORED_DOCUMENTATION)
 
 	add_custom_target(
 		doc ALL
-		COMMAND doxygen
+		COMMAND $<TARGET_FILE:Doxygen::doxygen>
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		COMMENT "Generating API documentation with Doxygen (see doxygen/html/index.html)"
 	)
@@ -139,8 +139,9 @@ if(CPPCHECK_CMD)
 			-I examples/3_scope/libstored/include
 			-I examples/4_function/libstored/include
 			-I examples/5_debug/libstored/include
-			-I examples/6_sync/libstored/include
+			-I examples/6_hooks/libstored/include
 			-I examples/7_protocol/libstored/include
+			-I examples/8_sync/libstored/include
 			-I examples/terminal/libstored/include
 			-I examples/zmqserver/libstored/include
 			src
