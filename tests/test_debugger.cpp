@@ -46,7 +46,7 @@ TEST(Debugger, Identification) {
 	EXPECT_EQ(ll.encoded().at(0), "?");
 
 	d.setIdentification("asdf");
-	EXPECT_EQ(d.identification(), "asdf");
+	EXPECT_EQ(strcmp(d.identification(), "asdf"), 0);
 
 	DECODE(d, "i");
 	EXPECT_EQ(ll.encoded().at(1), "asdf");
