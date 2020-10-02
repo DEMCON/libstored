@@ -101,9 +101,9 @@
  *
  * "I do not need any more updates of the given store (by hash, by id or all)."
  *
- * 'b' hash
- * 'b' id
- * 'b'
+ * `b` \<hash\><br>
+ * `b` \<id\><br>
+ * `b`
  *
  * A bye using the id can be used to respond to another message that has an unknown id.
  * Previous communication sessions remnents can be cleaned up in this way.
@@ -126,19 +126,60 @@ namespace stored {
 
 	/*!
 	 * \brief A record of all changes within a store.
+	 *
+	 * Every variable in the store registers updates in the journal.
+	 * The journal keeps an administration based on the key of the variable.
+	 * Every change has a sequence number, which is kind of a time stamp.
+	 * This sequence number can be used to check which objects has changed
+	 * since some point in time.
+	 *
+	 * The current sequence number ('now') is bumped upon an encode or decode,
+	 * when there have been changes in between.
+	 *
+	 * Internally, only the last bytes of the sequence number is stored (short seq).
+	 * Therefore, there is a window (now-ShortSeqWindow .. now) of which
+	 * a short seq can be converted back to a real seq. Changes that are older than
+	 * the safe margin (now-SeqLowerMargin), are automatically shifted in time
+	 * to stay within the window. This may lead to some false positives when determining
+	 * which objects have changed since an old seq number. This is safe behavior,
+	 * but slightly less efficient for encoding updates.
+	 *
 	 * \see #stored::Synchronizable
 	 * \ingroup libstored_synchronizer
 	 */
 	class StoreJournal {
 		CLASS_NOCOPY(StoreJournal)
 	public:
+		/*!
+		 * \brief Timestamp of a change.
+		 * \details 64-bit means that if it is bumped every ns, a wrap-around
+		 *          happens after 500 years.
+		 */
 		typedef uint64_t Seq;
+		/*!
+		 * \brief A short version of Seq, used in all administration.
+		 * \details This saves a lot of space, but limits handling timestamps
+		 *          to ShortSeqWindow.
+		 */
 		typedef uint16_t ShortSeq;
+		/*!
+		 * \brief The key, as produced by a store.
+		 * \details The key of a store is \c size_t. Limit it to 32-bit,
+		 *          assuming that stores will not be bigger than 4G.
+		 */
 		typedef uint32_t Key;
+		/*!
+		 * \brief The size of an object.
+		 * \details The 32-bit assumption is checked in the ctor.
+		 */
 		typedef Key Size;
 
 		enum {
-			SeqLowerMargin = 1u << (sizeof(ShortSeq) * 8u - 2u),
+			/*! \brief Maximum offset of seq() that is a valid short seq. */
+			ShortSeqWindow = 1u << (sizeof(ShortSeq) * 8u),
+			/*! \brief Oldest margin where the short seq of changes should be moved. */
+			SeqLowerMargin = ShortSeqWindow / 4u,
+			/*! \brief Threshold for #clean(). */
 			SeqCleanThreshold = SeqLowerMargin * 2u,
 		};
 
@@ -157,12 +198,12 @@ namespace stored {
 		bool hasChanged(Seq since) const;
 
 		typedef void(IterateChangedCallback)(Key, void*);
-		void iterateChanged(Seq since, IterateChangedCallback* cb, void* arg = nullptr);
+		void iterateChanged(Seq since, IterateChangedCallback* cb, void* arg = nullptr) const;
 
 #if STORED_cplusplus >= 201103L
 		template <typename F>
 		SFINAE_IS_FUNCTION(F, void(Key), void)
-		iterateChanged(Seq since, F&& cb) {
+		iterateChanged(Seq since, F&& cb) const {
 			std::function<void(Key)> f = cb;
 			iterateChanged(since,
 				[](Key key, void* f_) {
@@ -198,6 +239,7 @@ namespace stored {
 			}
 		};
 
+		Seq bumpSeq(bool force);
 		ShortSeq toShort(Seq seq) const;
 		Seq toLong(ShortSeq seq) const;
 
@@ -217,7 +259,7 @@ namespace stored {
 		size_t bufferSize() const;
 		size_t keySize() const;
 
-		void iterateChanged(Seq since, IterateChangedCallback* cb, void* arg, size_t lower, size_t upper);
+		void iterateChanged(Seq since, IterateChangedCallback* cb, void* arg, size_t lower, size_t upper) const;
 
 	private:
 		char const* const m_hash;

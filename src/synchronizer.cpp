@@ -27,6 +27,12 @@ namespace stored {
 // StoreJournal
 //
 
+/*!
+ * \brief Ctor.
+ * \param hash the hash of the store
+ * \param buffer the buffer of the store
+ * \param size the size of \p buffer
+ */
 StoreJournal::StoreJournal(char const* hash, void* buffer, size_t size)
 	: m_hash(hash)
 	, m_buffer(buffer)
@@ -41,6 +47,9 @@ StoreJournal::StoreJournal(char const* hash, void* buffer, size_t size)
 	stored_assert(size < std::numeric_limits<Size>::max());
 }
 
+/*!
+ * \brief Compute key size in bytes given a buffer size.
+ */
 uint8_t StoreJournal::keySize(size_t bufferSize) {
 	uint8_t s = 0;
 	while(bufferSize) {
@@ -50,6 +59,9 @@ uint8_t StoreJournal::keySize(size_t bufferSize) {
 	return s;
 }
 
+/*!
+ * \brief Return the hash of the corresponding store.
+ */
 char const* StoreJournal::hash() const {
 	return m_hash;
 }
@@ -65,23 +77,33 @@ StoreJournal::Seq StoreJournal::seq() const {
 	return m_seq;
 }
 
+/*!
+ * \brief Bump #seq(), when required.
+ */
 StoreJournal::Seq StoreJournal::bumpSeq() {
-	if(!m_partialSeq)
+	return bumpSeq(false);
+}
+
+/*!
+ * \brief Bump #seq().
+ */
+StoreJournal::Seq StoreJournal::bumpSeq(bool force) {
+	if(!force && !m_partialSeq)
 		return m_seq;
 
 	m_partialSeq = false;
 	m_seq++;
 
-	Seq const saveRange = (1u << (sizeof(ShortSeq) * 8u)) - SeqLowerMargin;
+	Seq const safeRange = ShortSeqWindow - SeqLowerMargin;
 
-	if(unlikely(m_seq - m_seqLower > saveRange)) {
+	if(unlikely(m_seq - m_seqLower > safeRange)) {
 		Seq seqLower = m_seq;
-		m_seqLower = m_seq - SeqLowerMargin;
+		m_seqLower = m_seq - ShortSeqWindow + 2u * SeqLowerMargin;
 
 		for(size_t i = 0; i < m_changes.size(); i++) {
 			ObjectInfo& o = m_changes[i];
 			Seq o_seq = toLong(o.seq);
-			if(m_seq - o_seq > saveRange) {
+			if(m_seq - o_seq > safeRange) {
 				update(o.key, o.len, m_seqLower, 0, m_changes.size());
 				seqLower = m_seqLower;
 			} else
@@ -94,20 +116,38 @@ StoreJournal::Seq StoreJournal::bumpSeq() {
 	return m_seq;
 }
 
+/*!
+ * \brief Convert to short seq.
+ * \param seq the seq to convert, which must be within the current ShortSeqWindow
+ */
 StoreJournal::ShortSeq StoreJournal::toShort(StoreJournal::Seq seq) const {
+	stored_assert(seq <= m_seq);
+	stored_assert(m_seq - seq < ShortSeqWindow);
 	return (ShortSeq)seq;
 }
 
+/*!
+ * \brief Convert from short seq.
+ */
 StoreJournal::Seq StoreJournal::toLong(StoreJournal::ShortSeq seq) const {
-	ShortSeq sseq = toShort(m_seq);
-	if(sseq == seq)
+	ShortSeq short_m_seq = toShort(m_seq);
+	if(seq == short_m_seq)
 		return m_seq;
-	else if(sseq > seq)
-		return m_seq - sseq + seq;
+	else if(seq < short_m_seq)
+		//     <------ShortSeqWindow------->
+		//    0....seq....short_m_seq.......|.... . . . ...m_seq
+		return m_seq - (short_m_seq - seq);
 	else
-		return m_seq - (1u << (sizeof(ShortSeq) * 8u)) - seq + sseq;
+		//    0....short_m_seq....seq.......|.... . . . ...m_seq
+		return m_seq - (ShortSeqWindow + short_m_seq - seq);
 }
 
+/*!
+ * \brief Record a change.
+ * \param key of the object within the store this is the journal of
+ * \param len the length of the (changed) data of the object.
+ *        This is usually constant, but may change if the object is a string, for example.
+ */
 void StoreJournal::changed(StoreJournal::Key key, size_t len) {
 	m_partialSeq = true;
 
@@ -123,6 +163,11 @@ void StoreJournal::changed(StoreJournal::Key key, size_t len) {
 	}
 }
 
+/*!
+ * \brief Update the meta data of the given key.
+ * \details This function does a binary search through \c m_changes, limited by [lower,upper[.
+ * \return \c true of successful, \c false if key is unknown
+ */
 bool StoreJournal::update(StoreJournal::Key key, size_t len, StoreJournal::Seq seq, size_t lower, size_t upper) {
 	if(lower >= upper)
 		return false;
@@ -142,11 +187,18 @@ bool StoreJournal::update(StoreJournal::Key key, size_t len, StoreJournal::Seq s
 		return update(key, len, seq, pivot + 1, upper);
 }
 
+/*!
+ * \brief Regenerate the adminstration.
+ * \details This must be done if elements are added or removed from \c m_changes.
+ */
 void StoreJournal::regenerate() {
 	std::sort(m_changes.begin(), m_changes.end(), ObjectInfoComparator());
 	regenerate(0, m_changes.size());
 }
 
+/*!
+ * \brief Implementation of #regenerate().
+ */
 StoreJournal::Seq StoreJournal::regenerate(size_t lower, size_t upper) {
 	if(lower >= upper)
 		return 0;
@@ -203,16 +255,25 @@ bool StoreJournal::hasChanged(Seq since) const {
 	return m_changes[pivot].highest >= since;
 }
 
-void StoreJournal::iterateChanged(StoreJournal::Seq since, IterateChangedCallback* cb, void* arg) {
+/*!
+ * \brief Iterate all changes since the given seq.
+ */
+void StoreJournal::iterateChanged(StoreJournal::Seq since, IterateChangedCallback* cb, void* arg) const {
+	if(!cb)
+		return;
+
 	iterateChanged(since, cb, arg, 0, m_changes.size());
 }
 
-void StoreJournal::iterateChanged(StoreJournal::Seq since, IterateChangedCallback* cb, void* arg, size_t lower, size_t upper) {
+/*!
+ * \brief Implementation of #iterateChanged()
+ */
+void StoreJournal::iterateChanged(StoreJournal::Seq since, IterateChangedCallback* cb, void* arg, size_t lower, size_t upper) const {
 	if(lower >= upper)
 		return;
 
 	size_t pivot = (upper - lower) / 2 + lower;
-	ObjectInfo& o = m_changes[pivot];
+	ObjectInfo const& o = m_changes[pivot];
 	if(toLong(o.highest) < since)
 		return;
 
@@ -222,6 +283,10 @@ void StoreJournal::iterateChanged(StoreJournal::Seq since, IterateChangedCallbac
 	iterateChanged(since, cb, arg, pivot + 1, upper);
 }
 
+/*!
+ * \brief Remove all elements from the administration older than the given threshold.
+ * \param oldest seq of oldest element to remain. If 0, use older than #SeqCleanThreshold before #seq().
+ */
 void StoreJournal::clean(StoreJournal::Seq oldest) {
 	if(oldest == 0)
 		oldest = seq() - SeqCleanThreshold;
@@ -238,16 +303,26 @@ void StoreJournal::clean(StoreJournal::Seq oldest) {
 		regenerate();
 }
 
+/*!
+ * \brief Encode the store's hash into a Synchronizer message.
+ */
 void StoreJournal::encodeHash(ProtocolLayer& p, bool last) {
 	encodeHash(p, hash(), last);
 }
 
+/*!
+ * \brief Encode a hash into a Synchronizer message.
+ */
 void StoreJournal::encodeHash(ProtocolLayer& p, char const* hash, bool last) {
 	size_t len = strlen(hash) + 1;
 	stored_assert(len > sizeof(SyncConnection::Id)); // Otherwise SyncConnection::Bye cannot see the difference.
 	p.encode(hash, len, last);
 }
 
+/*!
+ * \brief Decode hash from a Synchronizer message.
+ * \return the hash, or an empty string upon decode error
+ */
 char const* StoreJournal::decodeHash(void*& buffer, size_t& len) {
 	char* buffer_ = static_cast<char*>(buffer);
 	size_t i;
@@ -265,11 +340,19 @@ char const* StoreJournal::decodeHash(void*& buffer, size_t& len) {
 	}
 }
 
+/*!
+ * \brief Encode full store's buffer as a #stored::Synchronizer message.
+ * \return the seq number of the change set
+ */
 StoreJournal::Seq StoreJournal::encodeBuffer(ProtocolLayer& p, bool last) {
 	p.encode(buffer(), bufferSize(), last);
 	return bumpSeq();
 }
 
+/*!
+ * \brief Decode and process a full store's buffer from #stored::Synchronizer message.
+ * \return the seq number of the applied changes
+ */
 StoreJournal::Seq StoreJournal::decodeBuffer(void*& buffer, size_t& len) {
 	if(len < bufferSize())
 		return 0;
@@ -294,6 +377,9 @@ StoreJournal::Seq StoreJournal::encodeUpdates(ProtocolLayer& p, StoreJournal::Se
 	return bumpSeq();
 }
 
+/*!
+ * \brief Implementation of #encodeUpdates().
+ */
 void StoreJournal::encodeUpdates(ProtocolLayer& p, StoreJournal::Seq sinceSeq, size_t lower, size_t upper) {
 	if(lower >= upper)
 		return;
@@ -309,12 +395,18 @@ void StoreJournal::encodeUpdates(ProtocolLayer& p, StoreJournal::Seq sinceSeq, s
 	encodeUpdates(p, sinceSeq, pivot + 1, upper);
 }
 
+/*!
+ * \brief Encode one change.
+ */
 void StoreJournal::encodeUpdate(ProtocolLayer& p, StoreJournal::ObjectInfo& o) {
 	encodeKey(p, o.key);
 	encodeKey(p, o.len);
 	p.encode(keyToBuffer(o.key), o.len, false);
 }
 
+/*!
+ * \brief Decode and apply updates from a #stored::Synchronizer message.
+ */
 StoreJournal::Seq StoreJournal::decodeUpdates(void*& buffer, size_t& len) {
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 	bool ok = true;
@@ -337,6 +429,9 @@ StoreJournal::Seq StoreJournal::decodeUpdates(void*& buffer, size_t& len) {
 	return bumpSeq();
 }
 
+/*!
+ * \brief Encode a key for a #stored::Synchronizer message.
+ */
 void StoreJournal::encodeKey(ProtocolLayer& p, StoreJournal::Key key) {
 	size_t keysize = keySize();
 	key = endian_h2n(key);
@@ -344,6 +439,9 @@ void StoreJournal::encodeKey(ProtocolLayer& p, StoreJournal::Key key) {
 	p.encode(reinterpret_cast<char*>(&key) + sizeof(key) - keysize, keysize, false);
 }
 
+/*!
+ * \brief Decode a key from a #stored::Synchronizer message.
+ */
 StoreJournal::Key StoreJournal::decodeKey(uint8_t*& buffer, size_t& len, bool& ok) {
 	Key key = 0;
 	size_t i = keySize();
@@ -360,10 +458,22 @@ StoreJournal::Key StoreJournal::decodeKey(uint8_t*& buffer, size_t& len, bool& o
 	return key;
 }
 
+/*!
+ * \brief Return the buffer of the store.
+ */
 void* StoreJournal::buffer() const { return m_buffer; }
+/*!
+ * \brief Return the size of #buffer().
+ */
 size_t StoreJournal::bufferSize() const { return m_bufferSize; }
+/*!
+ * \brief Return the key size applicable to this store.
+ */
 size_t StoreJournal::keySize() const { return m_keySize; }
 
+/*!
+ * \brief Return the buffer of an object corresponding to the given key.
+ */
 void* StoreJournal::keyToBuffer(StoreJournal::Key key, StoreJournal::Size len, bool* ok) const {
 	if(ok && len && key + len > bufferSize())
 		*ok = false;

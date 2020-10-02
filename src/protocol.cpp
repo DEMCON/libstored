@@ -853,11 +853,19 @@ size_t Crc16Layer::mtu() const {
 // BufferLayer
 //
 
+/*!
+ * \brief Constructor for a buffer with given size.
+ *
+ * If \p size is 0, the buffer it not bounded.
+ */
 BufferLayer::BufferLayer(size_t size, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_size(size ? size : std::numeric_limits<size_t>::max())
 {}
 
+/*!
+ * \brief Collects all partial buffers, and passes the full encoded data on when \p last is set.
+ */
 void BufferLayer::encode(void const* buffer, size_t len, bool last) {
 	char const* buffer_ = static_cast<char const*>(buffer);
 
@@ -898,6 +906,14 @@ void BufferLayer::encode(void const* buffer, size_t len, bool last) {
 // PrintLayer
 //
 
+/*!
+ * \brief Constructor to print all decoding/encoding messages to the given \c FILE.
+ *
+ * If \p f is \c nullptr, printing is suppressed.
+ * The name is used as prefix of the printed messages.
+ *
+ * \see #setFile()
+ */
 PrintLayer::PrintLayer(FILE* f, char const* name, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_f(f)
@@ -953,6 +969,9 @@ void PrintLayer::setFile(FILE* f) {
 // Loopback
 //
 
+/*!
+ * \brief Constructor.
+ */
 impl::Loopback1::Loopback1(ProtocolLayer& from, ProtocolLayer& to)
 	: m_to(to)
 	, m_buffer()
@@ -962,11 +981,17 @@ impl::Loopback1::Loopback1(ProtocolLayer& from, ProtocolLayer& to)
 	wrap(from);
 }
 
+/*!
+ * \brief Destructor.
+ */
 impl::Loopback1::~Loopback1() {
 	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory, cppcoreguidelines-no-malloc)
 	free(m_buffer);
 }
 
+/*!
+ * \brief Collect partial data, and passes into the \c decode() of \c to when it has the full message.
+ */
 void impl::Loopback1::encode(void const* buffer, size_t len, bool last) {
 	if(likely(len > 0)) {
 		if(unlikely(m_len + len > m_capacity)) {
@@ -989,6 +1014,9 @@ void impl::Loopback1::encode(void const* buffer, size_t len, bool last) {
 	}
 }
 
+/*!
+ * \brief Constructs a bidirectional loopback of stacks \p a and \p b.
+ */
 Loopback::Loopback(ProtocolLayer& a, ProtocolLayer& b)
 	: m_a2b(a, b)
 	, m_b2a(b, a)

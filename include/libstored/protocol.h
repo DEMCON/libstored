@@ -392,6 +392,7 @@ public:
 		static char const EndMarker = 'E';
 
 		SegmentationLayer(size_t mtu = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		/*! \brief Dtor. */
 		virtual ~SegmentationLayer() override is_default
 
 		virtual void decode(void* buffer, size_t len) override;
@@ -550,6 +551,7 @@ public:
 		enum { polynomial = 0xa6, init = 0xff };
 
 		Crc8Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		/*! \brief Dtor. */
 		virtual ~Crc8Layer() override is_default
 
 		virtual void decode(void* buffer, size_t len) override;
@@ -580,6 +582,7 @@ public:
 		enum { polynomial = 0xbaad, init = 0xffff };
 
 		Crc16Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		/*! \brief Dtor. */
 		virtual ~Crc16Layer() override is_default
 
 		virtual void decode(void* buffer, size_t len) override;
@@ -611,6 +614,7 @@ public:
 		typedef ProtocolLayer base;
 
 		BufferLayer(size_t size = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		/*! \brief Destructor. */
 		virtual ~BufferLayer() override is_default
 
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
@@ -623,6 +627,9 @@ public:
 
 	/*!
 	 * \brief Prints all messages to a \c FILE.
+	 *
+	 * Messages are printed on a line.
+	 * Decoded message start with &lt;, encoded messages with &gt;, partial encoded messages with *.
 	 *
 	 * Mainly for debugging purposes.
 	 *
@@ -654,6 +661,7 @@ public:
 			enum { ExtraAlloc = 32 };
 
 			Loopback1(ProtocolLayer& from, ProtocolLayer& to);
+			/*! \brief Destructor. */
 			~Loopback1() override final;
 
 			void encode(void const* buffer, size_t len, bool last = true) override final;

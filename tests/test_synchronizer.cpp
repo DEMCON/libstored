@@ -54,6 +54,57 @@ TEST(Synchronizer, Instantiate) {
 	EXPECT_EQ(store1.hash(), store2.hash());
 }
 
+class TestJournal : public stored::StoreJournal {
+	CLASS_NOCOPY(TestJournal)
+public:
+	template <typename... Arg>
+	TestJournal(Arg&&... arg)
+		: StoreJournal(std::forward<Arg>(arg)...)
+	{
+	}
+
+	FRIEND_TEST(Synchronizer, ShortSeq);
+};
+
+TEST(Synchronizer, ShortSeq) {
+	TestJournal j("123", nullptr, 0);
+
+	EXPECT_EQ(j.seq(), 1);
+
+	j.changed(1, 0);
+	EXPECT_TRUE(j.hasChanged(1, 1));
+
+	for(int i = 1; i < 50; i++)
+		j.bumpSeq(true);
+
+	EXPECT_EQ(j.seq(), 50);
+	EXPECT_FALSE(j.hasChanged(1, 2));
+
+	EXPECT_EQ(j.toShort(50), 50);
+	EXPECT_EQ(j.toShort(49), 49);
+	EXPECT_EQ(j.toShort(1), 1);
+
+	EXPECT_EQ(j.toLong(50), 50);
+	EXPECT_EQ(j.toLong(49), 49);
+	EXPECT_EQ(j.toLong(1), 1);
+
+	for(int i = 0; i < 0x10000; i++)
+		j.bumpSeq(true);
+
+	EXPECT_EQ(j.toShort(0x10032), 50);
+	EXPECT_EQ(j.toShort(0x10031), 49);
+	EXPECT_EQ(j.toShort(0x10001), 1);
+	EXPECT_EQ(j.toShort(51), 51);
+
+	EXPECT_EQ(j.toLong(51), 51);
+	EXPECT_EQ(j.toLong(50), 0x10032);
+	EXPECT_EQ(j.toLong(49), 0x10031);
+	EXPECT_EQ(j.toLong(1), 0x10001);
+
+	EXPECT_TRUE(j.hasChanged(1, j.seq() - TestJournal::ShortSeqWindow + TestJournal::SeqLowerMargin));
+	EXPECT_FALSE(j.hasChanged(1, j.seq() - TestJournal::ShortSeqWindow + TestJournal::SeqLowerMargin * 2u));
+}
+
 TEST(Synchronizer, Changes) {
 	SyncTestStore store;
 

@@ -187,10 +187,19 @@ void ZmqLayer::encode(void const* buffer, size_t len, bool last) {
 		setLastError(errno);
 }
 
+/*!
+ * \brief Returns the last reported error of any operation on the ZmqLayer.
+ *
+ * Errors are not reset when the next operation is successful. So, check this
+ * function if a previous call returned an error.
+ */
 int ZmqLayer::lastError() const {
 	return m_error;
 }
 
+/*!
+ * \brief Saves the given error for #lastError().
+ */
 void ZmqLayer::setLastError(int error) {
 	m_error = error;
 }
@@ -200,6 +209,14 @@ void ZmqLayer::setLastError(int error) {
 // DebugZmqLayer
 //
 
+/*!
+ * \brief Constructor.
+ *
+ * The given \p port used for a REQ/REP socket over TCP.
+ * This is the listening side, where a client like the \c ed2.gui can connect to.
+ *
+ * \see #stored::Debugger
+ */
 DebugZmqLayer::DebugZmqLayer(void* context, int port, ProtocolLayer* up, ProtocolLayer* down)
 	: base(context, ZMQ_REP, up, down)
 {
@@ -231,6 +248,14 @@ int DebugZmqLayer::recv(bool block) {
 // SyncZmqLayer
 //
 
+/*!
+ * \brief Constructor.
+ *
+ * The given \p endpoint is used for a PAIR socket.
+ * If \p listen is \c true, it binds to the endpoint, otherwise it connects to it.
+ *
+ * \see #stored::Synchronizer
+ */
 SyncZmqLayer::SyncZmqLayer(void* context, char const* endpoint, bool listen, ProtocolLayer* up, ProtocolLayer* down)
 	: base(context, ZMQ_PAIR, up, down)
 {
