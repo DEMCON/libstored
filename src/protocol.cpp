@@ -185,7 +185,15 @@ TerminalLayer::TerminalLayer(int nonDebugDecodeFd, int encodeFd, ProtocolLayer* 
 	, m_encodeFd(encodeFd)
 	, m_decodeState(StateNormal)
 	, m_encodeState()
-{}
+{
+}
+
+void TerminalLayer::reset() {
+	m_decodeState = StateNormal;
+	m_encodeState = false;
+	m_buffer.clear();
+	base::reset();
+}
 
 /*!
  * \copydoc stored::ProtocolLayer::~ProtocolLayer()
@@ -332,6 +340,12 @@ SegmentationLayer::SegmentationLayer(size_t mtu, ProtocolLayer* up, ProtocolLaye
 {
 }
 
+void SegmentationLayer::reset() {
+	m_decode.clear();
+	m_encoded = 0;
+	base::reset();
+}
+
 size_t SegmentationLayer::mtu() const {
 	// We segment, so all layers above can use any size they want.
 	return 0;
@@ -443,6 +457,18 @@ DebugArqLayer::DebugArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, Protocol
 	, m_maxEncodeBuffer(maxEncodeBuffer)
 	, m_encodeBufferSize()
 {
+}
+
+void DebugArqLayer::reset() {
+	m_decodeState = DecodeStateIdle;
+	m_decodeSeq = 1;
+	m_decodeSeqStart = 0;
+	m_encodeState = EncodeStateIdle;
+	m_encodeSeq = 1;
+	m_encodeSeqReset = true;
+	m_encodeBuffer.clear();
+	m_encodeBufferSize = 0;
+	base::reset();
 }
 
 void DebugArqLayer::decode(void* buffer, size_t len) {
@@ -651,11 +677,17 @@ size_t DebugArqLayer::mtu() const {
 	return mtu - 4u;
 }
 
+/*!
+ * \brief Compute the successive sequence number.
+ */
 uint32_t DebugArqLayer::nextSeq(uint32_t seq) {
 	seq = (uint32_t)((seq + 1u) % 0x8000000);
 	return seq ? seq : 1u;
 }
 
+/*!
+ * \brief Decode the sequence number from a buffer.
+ */
 uint32_t DebugArqLayer::decodeSeq(uint8_t*& buffer, size_t& len) {
 	uint32_t seq = 0;
 	uint8_t flag = 0x40;
@@ -670,6 +702,10 @@ uint32_t DebugArqLayer::decodeSeq(uint8_t*& buffer, size_t& len) {
 	}
 }
 
+/*!
+ * \brief Encode a sequence number into a buffer.
+ * \return the number of bytes written (maximum of 4)
+ */
 size_t DebugArqLayer::encodeSeq(uint32_t seq, void* buffer) {
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 	if(seq < 0x40u) {
@@ -730,6 +766,11 @@ Crc8Layer::Crc8Layer(ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_crc(init)
 {
+}
+
+void Crc8Layer::reset() {
+	m_crc = init;
+	base::reset();
 }
 
 void Crc8Layer::decode(void* buffer, size_t len) {
@@ -812,6 +853,11 @@ Crc16Layer::Crc16Layer(ProtocolLayer* up, ProtocolLayer* down)
 {
 }
 
+void Crc16Layer::reset() {
+	m_crc = init;
+	base::reset();
+}
+
 void Crc16Layer::decode(void* buffer, size_t len) {
 	if(len < 2)
 		return;
@@ -871,6 +917,11 @@ BufferLayer::BufferLayer(size_t size, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_size(size ? size : std::numeric_limits<size_t>::max())
 {}
+
+void BufferLayer::reset() {
+	m_buffer.clear();
+	base::reset();
+}
 
 /*!
  * \brief Collects all partial buffers, and passes the full encoded data on when \p last is set.
@@ -996,6 +1047,11 @@ impl::Loopback1::Loopback1(ProtocolLayer& from, ProtocolLayer& to)
 impl::Loopback1::~Loopback1() {
 	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory, cppcoreguidelines-no-malloc)
 	free(m_buffer);
+}
+
+void impl::Loopback1::reset() {
+	m_len = 0;
+	base::reset();
 }
 
 /*!

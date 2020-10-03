@@ -271,6 +271,27 @@ namespace stored {
 			return down() ? down()->mtu() : 0;
 		}
 
+		/*!
+		 * \brief Flushes all buffered message out of the stack (top-down), if possible.
+		 *
+		 * Any buffered, held back, queued messages are tried to be sent
+		 * immediately.  A flush is always safe; it never destroys data in the
+		 * stack, it only tries to force it out.
+		 *
+		 * \return \c true if successful and the stack is empty, or \c false if message are still blocked
+		 */
+		virtual bool flush() {
+			return down() ? down()->flush() : true;
+		}
+
+		/*!
+		 * \brief Reset the stack (top-down), and drop all messages.
+		 */
+		virtual void reset() {
+			if(down())
+				down()->reset();
+		}
+
 	private:
 		/*! \brief The layer above this one. */
 		ProtocolLayer* m_up;
@@ -333,6 +354,7 @@ namespace stored {
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
 		using base::encode;
 		virtual size_t mtu() const override;
+		virtual void reset() override;
 
 	protected:
 		virtual void nonDebugDecode(void* buffer, size_t len);
@@ -401,6 +423,7 @@ public:
 
 		size_t mtu() const final;
 		size_t lowerMtu() const;
+		virtual void reset() override;
 
 	private:
 		size_t m_mtu;
@@ -528,6 +551,7 @@ public:
 
 		virtual void setPurgeableResponse(bool purgeable = true) override;
 		virtual size_t mtu() const override;
+		virtual void reset() override;
 
 	protected:
 		static uint32_t nextSeq(uint32_t seq);
@@ -583,6 +607,7 @@ public:
 		using base::encode;
 
 		virtual size_t mtu() const override;
+		virtual void reset() override;
 
 	protected:
 		static uint8_t compute(uint8_t input, uint8_t crc = init);
@@ -614,6 +639,7 @@ public:
 		using base::encode;
 
 		virtual size_t mtu() const override;
+		virtual void reset() override;
 
 	protected:
 		static uint16_t compute(uint8_t input, uint16_t crc = init);
@@ -644,8 +670,10 @@ public:
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
 		using base::encode;
 
+		virtual void reset() override;
+
 	private:
-		size_t m_size;
+		size_t const m_size;
 		std::string m_buffer;
 	};
 
@@ -675,13 +703,14 @@ public:
 
 	private:
 		FILE* m_f;
-		char const* m_name;
+		char const* const m_name;
 	};
 
 	namespace impl {
 		class Loopback1 : public ProtocolLayer {
 			CLASS_NOCOPY(Loopback1)
 		public:
+			typedef ProtocolLayer base;
 			enum { ExtraAlloc = 32 };
 
 			Loopback1(ProtocolLayer& from, ProtocolLayer& to);
@@ -689,6 +718,7 @@ public:
 			~Loopback1() override final;
 
 			void encode(void const* buffer, size_t len, bool last = true) override final;
+			void reset() override final;
 		private:
 			ProtocolLayer& m_to;
 			char* m_buffer;
