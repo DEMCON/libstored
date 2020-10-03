@@ -253,7 +253,7 @@ class SegmentationLayer(ProtocolLayer):
     def mtu(self):
         return 0
 
-class ArqLayer(ProtocolLayer):
+class DebugArqLayer(ProtocolLayer):
     name = 'arq'
     reset_flag = 0x80
 
@@ -547,7 +547,7 @@ layer_types = [
     AsciiEscapeLayer,
     TerminalLayer,
     SegmentationLayer,
-    ArqLayer,
+    DebugArqLayer,
     Crc8Layer,
     Crc16Layer,
     LoopbackLayer,

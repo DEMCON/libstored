@@ -59,10 +59,10 @@ find_program(SPIN_EXECUTABLE spin)
 if(SPIN_EXECUTABLE)
 	add_custom_target(
 		arq-spin-run
-		COMMAND ${SPIN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/ArqLayer.pml
+		COMMAND ${SPIN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/DebugArqLayer.pml
 	)
 
-	set(ARQ_VERIFY_CMD ${SPIN_EXECUTABLE} -search -DBITSTATE -O3 -b -v -bitstate ${CMAKE_CURRENT_SOURCE_DIR}/ArqLayer.pml)
+	set(ARQ_VERIFY_CMD ${SPIN_EXECUTABLE} -search -DBITSTATE -O3 -b -v -bitstate ${CMAKE_CURRENT_SOURCE_DIR}/DebugArqLayer.pml)
 
 	add_custom_target(
 		arq-spin-verify
@@ -71,7 +71,7 @@ if(SPIN_EXECUTABLE)
 	)
 
 	add_test(
-		NAME ArqLayer-spin
+		NAME DebugArqLayer-spin
 		COMMAND ${ARQ_VERIFY_CMD}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	)

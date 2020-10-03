@@ -414,16 +414,25 @@ void SegmentationLayer::encode(void const* buffer, size_t len, bool last) {
 
 
 
+//////////////////////////////
+// ArqLayer
+//
+
+ArqLayer::ArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_maxEncodeBuffer(maxEncodeBuffer)
+{
+}
 
 
 //////////////////////////////
-// ArqLayer
+// DebugArqLayer
 //
 
 /*!
  * \brief Ctor.
  */
-ArqLayer::ArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* down)
+DebugArqLayer::DebugArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_decodeState(DecodeStateIdle)
 	, m_decodeSeq(1)
@@ -436,7 +445,7 @@ ArqLayer::ArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* dow
 {
 }
 
-void ArqLayer::decode(void* buffer, size_t len) {
+void DebugArqLayer::decode(void* buffer, size_t len) {
 	if(len == 0)
 		return;
 
@@ -520,7 +529,7 @@ void ArqLayer::decode(void* buffer, size_t len) {
 	}
 }
 
-void ArqLayer::encode(void const* buffer, size_t len, bool last) {
+void DebugArqLayer::encode(void const* buffer, size_t len, bool last) {
 	if(m_decodeState == DecodeStateDecoding) {
 		// This seems to be the first part of the response.
 		// So, the request message must have been complete.
@@ -591,7 +600,7 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 	}
 }
 
-void ArqLayer::setPurgeableResponse(bool purgeable) {
+void DebugArqLayer::setPurgeableResponse(bool purgeable) {
 	bool wasPurgeable = m_encodeState == EncodeStateUnbufferedIdle || m_encodeState == EncodeStateUnbufferedEncoding;
 
 	if(wasPurgeable == purgeable)
@@ -633,7 +642,7 @@ void ArqLayer::setPurgeableResponse(bool purgeable) {
 	}
 }
 
-size_t ArqLayer::mtu() const {
+size_t DebugArqLayer::mtu() const {
 	size_t mtu = base::mtu();
 	if(mtu == 0)
 		return 0;
@@ -642,12 +651,12 @@ size_t ArqLayer::mtu() const {
 	return mtu - 4u;
 }
 
-uint32_t ArqLayer::nextSeq(uint32_t seq) {
+uint32_t DebugArqLayer::nextSeq(uint32_t seq) {
 	seq = (uint32_t)((seq + 1u) % 0x8000000);
 	return seq ? seq : 1u;
 }
 
-uint32_t ArqLayer::decodeSeq(uint8_t*& buffer, size_t& len) {
+uint32_t DebugArqLayer::decodeSeq(uint8_t*& buffer, size_t& len) {
 	uint32_t seq = 0;
 	uint8_t flag = 0x40;
 
@@ -661,7 +670,7 @@ uint32_t ArqLayer::decodeSeq(uint8_t*& buffer, size_t& len) {
 	}
 }
 
-size_t ArqLayer::encodeSeq(uint32_t seq, void* buffer) {
+size_t DebugArqLayer::encodeSeq(uint32_t seq, void* buffer) {
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 	if(seq < 0x40u) {
 		buffer_[0] = (uint8_t)(seq & 0x3fu);

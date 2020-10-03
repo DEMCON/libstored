@@ -20,7 +20,7 @@
 
 /*!
  * \defgroup libstored_protocol protocol
- * \brief Protocol layers, to be wrapped around a #stored::Debugger instance.
+ * \brief Protocol layers, to be wrapped around a #stored::Debugger or #stored::Synchronizer instance.
  *
  * Every embedded device is different, so the required protocol layers are too.
  * What is common, is the Application layer, but as the Transport and Physical
@@ -57,8 +57,8 @@
  * Standard layer implementations can be used to construct the following stacks (top-down):
  *
  * - Lossless UART: stored::Debugger, stored::AsciiEscapeLayer, stored::TerminalLayer
- * - Lossy UART: stored::Debugger, stored::ArqLayer, stored::Crc16Layer, stored::AsciiEscapeLayer, stored::TerminalLayer
- * - CAN: stored::Debugger, stored::SegmentationLayer, stored::ArqLayer, stored::BufferLayer, CAN driver
+ * - Lossy UART: stored::Debugger, stored::DebugArqLayer, stored::Crc16Layer, stored::AsciiEscapeLayer, stored::TerminalLayer
+ * - CAN: stored::Debugger, stored::SegmentationLayer, stored::DebugArqLayer, stored::BufferLayer, CAN driver
  * - ZMQ: stored::Debugger, stored::ZmqLayer
  *
  * ## Application layer
@@ -82,7 +82,7 @@
  * should be used (see stored::SegmentationLayer).
  *
  * In case of lossy channels (UART/CAN), message sequence number, and
- * retransmits (see stored::ArqLayer) should be implemented, and CRC (see
+ * retransmits (see stored::DebugArqLayer) should be implemented, and CRC (see
  * stored::Crc8Layer). Default implementations are provided, but may be
  * dependent on the specific transport hardware and embedded device.
  *
@@ -378,7 +378,7 @@ public:
 	 *
 	 * This layer assumes a lossless channel; all messages are received in
 	 * order. If that is not the case for your transport, wrap this layer in
-	 * the #stored::ArqLayer.
+	 * the #stored::DebugArqLayer or #stored::ArqLayer.
 	 *
 	 * \ingroup libstored_protocol
 	 */
@@ -409,7 +409,29 @@ public:
 	};
 
 	/*!
-	 * \brief A layer that performs Automatic Repeat Request operations on messages.
+	 * \brief A general purpose layer that performs Automatic Repeat Request operations on messages.
+	 *
+	 * This layer does not assume a specific message pattern. For
+	 * #stored::Debugger, use #stored::DebugArqLayer.
+	 *
+	 * \ingroup libstored_protocol
+	 */
+	class ArqLayer : public ProtocolLayer {
+		CLASS_NOCOPY(ArqLayer)
+	public:
+		typedef ProtocolLayer base;
+
+		ArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~ArqLayer() override is_default
+	private:
+		size_t const m_maxEncodeBuffer;
+	};
+
+	/*!
+	 * \brief A layer that performs Automatic Repeat Request operations on messages for #stored::Debugger.
+	 *
+	 * Only apply this layer on #stored::Debugger, as it assumes a REQ/REP
+	 * mechanism. For a general purpose ARQ, use #stored::ArqLayer.
 	 *
 	 * This layer allows messages that are lost, to be retransmitted on both
 	 * the request and response side. The implementation assumes that lost
@@ -458,7 +480,7 @@ public:
 	 * The application has limited buffering. So, neither the request nor the
 	 * full response may be buffered for (partial) retransmission. Therefore,
 	 * it may be the case that when the response was lost, the request is
-	 * reexecuted. It is up to the buffer size as specified in ArqLayer's
+	 * reexecuted. It is up to the buffer size as specified in DebugArqLayer's
 	 * constructor and stored::Debugger to determine when it is safe or
 	 * required to reexected upon every retransmit. For example, writes are not
 	 * reexecuted, as a write may have unexpected side-effects, while it is
@@ -467,7 +489,7 @@ public:
 	 * constant, so it is not buffered either and just reexecuted. Note that if
 	 * the buffer is too small, reading from a stream (s command) will do a
 	 * destructive read, but this data may be lost if the response is lost.
-	 * Configure the stream size and ArqLayer's buffer appropriate if that is
+	 * Configure the stream size and DebugArqLayer's buffer appropriate if that is
 	 * unacceptable for you.
 	 *
 	 * Because of this limited buffering, the response may reset the sequence
@@ -485,17 +507,18 @@ public:
 	 * request and response to 128 MB.  As the payload is allowed to be
 	 * of any size, this should not be a real limitation in practice.
 	 *
-	 * This protocol is verified by the Promela model in tests/ArqLayer.pml.
+	 * This protocol is verified by the Promela model in tests/DebugArqLayer.pml.
 	 *
 	 * \ingroup libstored_protocol
 	 */
-	class ArqLayer : public ProtocolLayer {
-		CLASS_NOCOPY(ArqLayer)
+	class DebugArqLayer : public ProtocolLayer {
+		CLASS_NOCOPY(DebugArqLayer)
 	public:
 		typedef ProtocolLayer base;
 
-		ArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
-		virtual ~ArqLayer() override is_default
+		DebugArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		/*! \brief Dtor. */
+		virtual ~DebugArqLayer() override is_default
 
 		static uint8_t const ResetFlag = 0x80;
 
@@ -520,7 +543,7 @@ public:
 		uint32_t m_encodeSeq;
 		bool m_encodeSeqReset;
 
-		size_t m_maxEncodeBuffer;
+		size_t const m_maxEncodeBuffer;
 		std::vector<std::string> m_encodeBuffer;
 		size_t m_encodeBufferSize;
 	};
@@ -529,7 +552,8 @@ public:
 	 * \brief A layer that adds a CRC-8 to messages.
 	 *
 	 * If the CRC does not match during decoding, it is silently dropped.
-	 * You probably want #stored::ArqLayer somewhere higher in the stack.
+	 * You probably want #stored::DebugArqLayer or #stored::ArqLayer somewhere
+	 * higher in the stack.
 	 *
 	 * An 8-bit CRC is used with polynomial 0xA6.  This polynomial seems to be
 	 * a good choice according to <i>Cyclic Redundancy Code (CRC) Polynomial

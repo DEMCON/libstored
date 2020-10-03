@@ -199,9 +199,9 @@ TEST(SegmentationLayer, MultiChunkDecode) {
 	EXPECT_EQ(ll.decoded().at(0), "123456789");
 }
 
-TEST(ArqLayer, SingleChunk) {
+TEST(DebugArqLayer, SingleChunk) {
 	LoggingLayer top;
-	stored::ArqLayer l;
+	stored::DebugArqLayer l;
 	l.wrap(top);
 	LoggingLayer bottom;
 	bottom.wrap(l);
@@ -248,9 +248,9 @@ TEST(ArqLayer, SingleChunk) {
 	EXPECT_EQ(bottom.encoded().at(1), "\x01""abcdef");
 }
 
-TEST(ArqLayer, MultiChunk) {
+TEST(DebugArqLayer, MultiChunk) {
 	LoggingLayer top;
-	stored::ArqLayer l;
+	stored::DebugArqLayer l;
 	l.wrap(top);
 	LoggingLayer bottom;
 	bottom.wrap(l);
@@ -285,9 +285,9 @@ TEST(ArqLayer, MultiChunk) {
 	EXPECT_EQ(bottom.encoded().at(1), "\x04""hi");
 }
 
-TEST(ArqLayer, LostRequest) {
+TEST(DebugArqLayer, LostRequest) {
 	LoggingLayer top;
-	stored::ArqLayer l;
+	stored::DebugArqLayer l;
 	l.wrap(top);
 	LoggingLayer bottom;
 	bottom.wrap(l);
@@ -342,9 +342,9 @@ TEST(ArqLayer, LostRequest) {
 	EXPECT_EQ(top.decoded().at(2), "567");
 }
 
-TEST(ArqLayer, LostResponse) {
+TEST(DebugArqLayer, LostResponse) {
 	LoggingLayer top;
-	stored::ArqLayer l;
+	stored::DebugArqLayer l;
 	l.wrap(top);
 	LoggingLayer bottom;
 	bottom.wrap(l);
@@ -384,9 +384,9 @@ TEST(ArqLayer, LostResponse) {
 	EXPECT_EQ(bottom.encoded().at(5), "\x03""hi");
 }
 
-TEST(ArqLayer, Purgeable) {
+TEST(DebugArqLayer, Purgeable) {
 	LoggingLayer top;
-	stored::ArqLayer l;
+	stored::DebugArqLayer l;
 	l.wrap(top);
 	LoggingLayer bottom;
 	bottom.wrap(l);
@@ -438,9 +438,9 @@ TEST(ArqLayer, Purgeable) {
 	EXPECT_EQ(bottom.encoded().at(4), std::string("\x04""jkl", 4));
 }
 
-TEST(ArqLayer, Overflow) {
+TEST(DebugArqLayer, Overflow) {
 	LoggingLayer top;
-	stored::ArqLayer l(4);
+	stored::DebugArqLayer l(4);
 	l.wrap(top);
 	LoggingLayer bottom;
 	bottom.wrap(l);
