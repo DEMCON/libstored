@@ -118,6 +118,7 @@
 
 #include <vector>
 #include <string>
+#include <deque>
 
 namespace stored {
 
@@ -444,10 +445,43 @@ public:
 	public:
 		typedef ProtocolLayer base;
 
+		static uint8_t const AckFlag = 0x80u;
+
 		ArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~ArqLayer() override is_default
+
+		virtual void decode(void* buffer, size_t len) override;
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+
+		virtual size_t mtu() const override;
+		virtual bool flush() override;
+		virtual void reset() override;
+
+		enum Event { EventEncodeBufferOverflow };
+		typedef void(EventCallback)(ArqLayer&, Event, void*);
+		void setEventCallback(EventCallback* cb, void* arg);
+
+	protected:
+		virtual void event(Event e);
+		bool transmit();
+
+		enum EncodeState { EncodeStateIdle, EncodeStateEncoding };
+
+		static uint8_t nextSeq(uint8_t seq);
+		bool waitingForAck() const;
+
 	private:
+		EventCallback* m_cb;
+		void* m_cbArg;
+
 		size_t const m_maxEncodeBuffer;
+		std::deque<std::string> m_encodeQueue;
+		size_t m_encodeQueueSize;
+		EncodeState m_encodeState;
+		bool m_partialMsg;
+
+		uint8_t m_sendSeq;
+		uint8_t m_recvSeq;
 	};
 
 	/*!

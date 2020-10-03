@@ -434,9 +434,173 @@ void SegmentationLayer::encode(void const* buffer, size_t len, bool last) {
 
 ArqLayer::ArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
+	, m_cb()
+	, m_cbArg()
 	, m_maxEncodeBuffer(maxEncodeBuffer)
+	, m_encodeQueueSize()
+	, m_encodeState(EncodeStateIdle)
+	, m_partialMsg()
+	, m_sendSeq(1)
+	, m_recvSeq(1)
 {
 }
+
+void ArqLayer::reset() {
+	m_encodeQueue.clear();
+	m_encodeQueueSize = 0;
+	m_encodeState = EncodeStateIdle;
+	m_partialMsg = false;
+	m_sendSeq = 1;
+	m_recvSeq = 1;
+	base::reset();
+}
+
+void ArqLayer::decode(void* buffer, size_t len) {
+	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
+
+next:
+	if(len == 0)
+		return;
+
+	if(buffer_[0] & AckFlag) {
+		if((buffer_[0] & (uint8_t)~AckFlag) == m_sendSeq) {
+			// They got our last transmission.
+			m_sendSeq = nextSeq(m_sendSeq);
+			if(likely(waitingForAck())) {
+				m_encodeQueueSize -= m_encodeQueue[0].size();
+				m_encodeQueue.pop_front();
+			}
+
+			// Transmit next message, if any.
+			transmit();
+		}
+
+		buffer_++;
+		len--;
+		goto next;
+	}
+
+	if(likely(buffer_[0] == m_recvSeq)) {
+		// This is a proper next message.
+		uint8_t ack = m_recvSeq | AckFlag;
+		base::encode(&ack, 1, false);
+		m_recvSeq = nextSeq(m_recvSeq);
+		m_partialMsg = true;
+
+		// Go process the payload.
+		base::decode(buffer_ + 1, len - 1);
+
+		if(m_partialMsg)
+			transmit();
+
+		if(m_partialMsg) {
+			base::encode();
+			m_partialMsg = false;
+		}
+	} else if(nextSeq(buffer_[0]) == m_recvSeq) {
+		// This is a retransmit of the previous message.
+		// Send ack again.
+		uint8_t ack = buffer_[0] | AckFlag;
+		base::encode(&ack, 1, true);
+	} // else drop silently
+}
+
+bool ArqLayer::waitingForAck() const {
+	if(m_encodeQueue.empty())
+		return false;
+
+	if(m_encodeQueue.size() == 1 && m_encodeState != EncodeStateIdle)
+		return false;
+
+	return true;
+}
+
+void ArqLayer::encode(void const* buffer, size_t len, bool last) {
+	if(m_maxEncodeBuffer > 0 && m_maxEncodeBuffer < m_encodeQueueSize + len)
+		event(EventEncodeBufferOverflow);
+
+	m_encodeQueueSize += len;
+
+	switch(m_encodeState) {
+	case EncodeStateIdle:
+		m_encodeQueue.
+#if STORED_cplusplus >= 201103L
+			emplace_back
+#else
+			push_back
+#endif
+			(std::string(static_cast<char const*>(buffer), len));
+
+		if(!last)
+			m_encodeState = EncodeStateEncoding;
+
+		break;
+
+	case EncodeStateEncoding:
+		stored_assert(!m_encodeQueue.empty());
+		m_encodeQueue[0].append(static_cast<char const*>(buffer), len);
+
+		if(last)
+			m_encodeState = EncodeStateIdle;
+		break;
+	}
+
+	transmit();
+}
+
+bool ArqLayer::flush() {
+	bool res = !transmit();
+	return base::flush() && res;
+}
+
+bool ArqLayer::transmit() {
+	if(m_encodeQueue.empty())
+		// Nothing to send.
+		return false;
+
+	if(m_encodeQueue.size() == 1 && m_encodeState == EncodeStateEncoding)
+		// Still assembling first message, but there is nothing to flush (yet).
+		return false;
+
+	// (Re)transmit first message.
+	base::encode(&m_sendSeq, 1, false);
+	base::encode(m_encodeQueue[0].data(), m_encodeQueue[0].size(), true);
+	m_partialMsg = false;
+
+	stored_assert(waitingForAck());
+	return true;
+}
+
+void ArqLayer::setEventCallback(ArqLayer::EventCallback* cb, void* arg) {
+	m_cb = cb;
+	m_cbArg = arg;
+}
+
+void ArqLayer::event(ArqLayer::Event e) {
+	if(m_cb)
+		m_cb(*this, e, m_cbArg);
+	else
+		switch(e) {
+		case EventEncodeBufferOverflow:
+			// Cannot handle this.
+			abort();
+		}
+}
+
+uint8_t ArqLayer::nextSeq(uint8_t seq) {
+	seq = (uint8_t)((seq + 1u) % AckFlag);
+	return seq ? seq : 1u;
+}
+
+size_t ArqLayer::mtu() const {
+	size_t mtu = base::mtu();
+	if(mtu == 0)
+		return 0;
+	if(mtu <= 2u)
+		return 1u;
+	return mtu - 2u;
+}
+
 
 
 //////////////////////////////
