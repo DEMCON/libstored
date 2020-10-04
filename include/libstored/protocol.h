@@ -438,6 +438,28 @@ public:
 	 * This layer does not assume a specific message pattern. For
 	 * #stored::Debugger, use #stored::DebugArqLayer.
 	 *
+	 * Every message sent has to be acknowledged. There is no window; after
+	 * sending a message, an ack must be received before continuing.  The queue
+	 * of messages is by default unlimited, but can be set via the constructor.
+	 * If the limit is hit, the event callback is invoked.
+	 *
+	 * This layer prepends the message with a sequence number byte.  The MSb
+	 * indicates if it is an ack, the 7 LSb are the sequence number.
+	 * Sequence 0 is special; it resets the connection. It should not be used
+	 * during normal operation, so the next sequence number after 127 is 1.
+	 *
+	 * Retransmits are triggered every time a message is queued for encoding,
+	 * or when #flush() is called. There is no timeout specified.
+	 *
+	 * One may decide to use a #stored::SegmentationLayer higher in the
+	 * protocol stack to reduce the amount of data to retransmit when a message
+	 * is lost (only one segment is retransmitted, not the full message), but
+	 * this may add the overhead of the sequence number and round-trip time per
+	 * segment. If the #stored::SegmentationLayer is used below the ArqLayer,
+	 * normal-case behavior (no packet loss) is most efficient, but the penalty
+	 * of a retransmit may be higher. It is up to the infrastructure and
+	 * application requirements what is best.
+	 *
 	 * \ingroup libstored_protocol
 	 */
 	class ArqLayer : public ProtocolLayer {
@@ -447,19 +469,48 @@ public:
 
 		static uint8_t const AckFlag = 0x80u;
 
+		enum {
+			RetransmitCallbackThreshold = 10,
+		};
+
 		ArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
-		virtual ~ArqLayer() override is_default
+		virtual ~ArqLayer() override;
 
 		virtual void decode(void* buffer, size_t len) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
 
 		virtual size_t mtu() const override;
 		virtual bool flush() override;
 		virtual void reset() override;
+		void keepAlive();
 
-		enum Event { EventEncodeBufferOverflow };
+		enum Event {
+			/*!
+			 * \brief An unexpected reset message has been received.
+			 *
+			 * The reset message remains unanswered, until #reset() is called.
+			 */
+			EventReconnect,
+
+			/*!
+			 * \brief The maximum buffer capactiy has passed.
+			 *
+			 * If not handled by a callback function, \c abort() is called.
+			 */
+			EventEncodeBufferOverflow,
+
+			/*!
+			 * \brief #RetransmitCallbackThreshold has been reached on the current message.
+			 */
+			EventRetransmit,
+		};
 		typedef void(EventCallback)(ArqLayer&, Event, void*);
 		void setEventCallback(EventCallback* cb, void* arg);
+
+		bool didTransmit() const;
+		void resetDidTransmit();
+		size_t retransmits() const;
 
 	protected:
 		virtual void event(Event e);
@@ -470,15 +521,22 @@ public:
 		static uint8_t nextSeq(uint8_t seq);
 		bool waitingForAck() const;
 
+		void popEncodeQueue();
+		void pushEncodeQueue(void const* buffer, size_t len);
+
+		void shrink_to_fit();
+
 	private:
 		EventCallback* m_cb;
 		void* m_cbArg;
 
 		size_t const m_maxEncodeBuffer;
-		std::deque<std::string> m_encodeQueue;
+		std::deque<std::string*> m_encodeQueue;
+		std::deque<std::string*> m_spare;
 		size_t m_encodeQueueSize;
 		EncodeState m_encodeState;
-		bool m_partialMsg;
+		bool m_didTransmit;
+		uint8_t m_retransmits;
 
 		uint8_t m_sendSeq;
 		uint8_t m_recvSeq;

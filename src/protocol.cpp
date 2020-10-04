@@ -439,20 +439,34 @@ ArqLayer::ArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* dow
 	, m_maxEncodeBuffer(maxEncodeBuffer)
 	, m_encodeQueueSize()
 	, m_encodeState(EncodeStateIdle)
-	, m_partialMsg()
-	, m_sendSeq(1)
-	, m_recvSeq(1)
+	, m_didTransmit()
+	, m_retransmits()
+	, m_sendSeq()
+	, m_recvSeq()
 {
+	// Empty encode with seq 0, which indicates a reset message.
+	encode();
+}
+
+ArqLayer::~ArqLayer() {
+	for(std::deque<std::string*>::iterator it = m_encodeQueue.begin(); it != m_encodeQueue.end(); ++it)
+		delete *it; // NOLINT(cppcoreguidelines-owning-memory)
+	for(std::deque<std::string*>::iterator it = m_spare.begin(); it != m_spare.end(); ++it)
+		delete *it; // NOLINT(cppcoreguidelines-owning-memory)
 }
 
 void ArqLayer::reset() {
-	m_encodeQueue.clear();
-	m_encodeQueueSize = 0;
+	while(!m_encodeQueue.empty())
+		popEncodeQueue();
+	stored_assert(m_encodeQueueSize == 0);
+
 	m_encodeState = EncodeStateIdle;
-	m_partialMsg = false;
-	m_sendSeq = 1;
-	m_recvSeq = 1;
+	m_didTransmit = false;
+	m_retransmits = 0;
+	m_sendSeq = 0;
+	m_recvSeq = 0;
 	base::reset();
+	encode();
 }
 
 void ArqLayer::decode(void* buffer, size_t len) {
@@ -467,8 +481,8 @@ next:
 			// They got our last transmission.
 			m_sendSeq = nextSeq(m_sendSeq);
 			if(likely(waitingForAck())) {
-				m_encodeQueueSize -= m_encodeQueue[0].size();
-				m_encodeQueue.pop_front();
+				popEncodeQueue();
+				m_retransmits = 0;
 			}
 
 			// Transmit next message, if any.
@@ -485,18 +499,21 @@ next:
 		uint8_t ack = m_recvSeq | AckFlag;
 		base::encode(&ack, 1, false);
 		m_recvSeq = nextSeq(m_recvSeq);
-		m_partialMsg = true;
+		resetDidTransmit();
 
 		// Go process the payload.
 		base::decode(buffer_ + 1, len - 1);
 
-		if(m_partialMsg)
+		if(!didTransmit())
 			transmit();
 
-		if(m_partialMsg) {
+		if(!didTransmit()) {
 			base::encode();
-			m_partialMsg = false;
+			m_didTransmit = true;
 		}
+	} else if(buffer_[0] == 0) {
+		// This is an unexpected reset message.
+		event(EventReconnect);
 	} else if(nextSeq(buffer_[0]) == m_recvSeq) {
 		// This is a retransmit of the previous message.
 		// Send ack again.
@@ -519,17 +536,9 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 	if(m_maxEncodeBuffer > 0 && m_maxEncodeBuffer < m_encodeQueueSize + len)
 		event(EventEncodeBufferOverflow);
 
-	m_encodeQueueSize += len;
-
 	switch(m_encodeState) {
 	case EncodeStateIdle:
-		m_encodeQueue.
-#if STORED_cplusplus >= 201103L
-			emplace_back
-#else
-			push_back
-#endif
-			(std::string(static_cast<char const*>(buffer), len));
+		pushEncodeQueue(buffer, len);
 
 		if(!last)
 			m_encodeState = EncodeStateEncoding;
@@ -538,7 +547,8 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 
 	case EncodeStateEncoding:
 		stored_assert(!m_encodeQueue.empty());
-		m_encodeQueue[0].append(static_cast<char const*>(buffer), len);
+		m_encodeQueueSize += len;
+		m_encodeQueue.back()->append(static_cast<char const*>(buffer), len);
 
 		if(last)
 			m_encodeState = EncodeStateIdle;
@@ -562,10 +572,17 @@ bool ArqLayer::transmit() {
 		// Still assembling first message, but there is nothing to flush (yet).
 		return false;
 
+	// Update administration first, in case base::encode() has some recursive
+	// call back to decode()/encode().
+	m_didTransmit = true;
+	if(m_retransmits < std::numeric_limits<decltype(m_retransmits)>::max())
+		m_retransmits++;
+	if(m_retransmits >= RetransmitCallbackThreshold)
+		event(EventRetransmit);
+
 	// (Re)transmit first message.
 	base::encode(&m_sendSeq, 1, false);
-	base::encode(m_encodeQueue[0].data(), m_encodeQueue[0].size(), true);
-	m_partialMsg = false;
+	base::encode(m_encodeQueue.front()->data(), m_encodeQueue.front()->size(), true);
 
 	stored_assert(waitingForAck());
 	return true;
@@ -581,6 +598,10 @@ void ArqLayer::event(ArqLayer::Event e) {
 		m_cb(*this, e, m_cbArg);
 	else
 		switch(e) {
+		case EventReconnect:
+		case EventRetransmit:
+			// By default, ignore.
+			break;
 		case EventEncodeBufferOverflow:
 			// Cannot handle this.
 			abort();
@@ -601,6 +622,85 @@ size_t ArqLayer::mtu() const {
 	return mtu - 2u;
 }
 
+bool ArqLayer::didTransmit() const {
+	return m_didTransmit;
+}
+
+void ArqLayer::resetDidTransmit() {
+	m_didTransmit = false;
+}
+
+size_t ArqLayer::retransmits() const {
+	return m_retransmits ? m_retransmits - 1u : 0u;
+}
+
+void ArqLayer::keepAlive() {
+	if(m_encodeQueue.empty()) {
+		// Send empty message. This will trigger (re)transmits, so a broken
+		// connection will be detected.
+		encode();
+	} else {
+		// Retransmit, if applicable.
+		transmit();
+	}
+}
+
+void ArqLayer::popEncodeQueue() {
+	stored_assert(!m_encodeQueue.empty());
+	m_encodeQueueSize -= m_encodeQueue.front()->size();
+	m_encodeQueue.front()->clear();
+
+#if STORED_cplusplus >= 201103L
+	m_spare.emplace_back(m_encodeQueue.front());
+#else
+	m_spare.push_back(m_encodeQueue.front());
+#endif
+
+	m_encodeQueue.pop_front();
+}
+
+void ArqLayer::pushEncodeQueue(void const* buffer, size_t len) {
+	m_encodeQueueSize += len;
+
+	if(m_spare.empty()) {
+		m_encodeQueue.
+#if STORED_cplusplus >= 201103L
+			// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+			emplace_back(new std::string(static_cast<char const*>(buffer), len));
+#else
+			push_back(new std::string(static_cast<char const*>(buffer), len));
+#endif
+	} else {
+		std::string* s = m_spare.back();
+		m_spare.pop_back();
+		stored_assert(s->empty());
+		s->append(static_cast<char const*>(buffer), len);
+
+		m_encodeQueue.
+#if STORED_cplusplus >= 201103L
+			emplace_back(s);
+#else
+			push_back(s);
+#endif
+	}
+}
+
+void ArqLayer::shrink_to_fit() {
+	for(std::deque<std::string*>::iterator it = m_encodeQueue.begin(); it != m_encodeQueue.end(); ++it)
+#if STORED_cplusplus >= 201103L
+		(*it)->shrink_to_fit();
+#else
+		(*it)->capacity((*it)->size());
+#endif
+
+	for(std::deque<std::string*>::iterator it = m_spare.begin(); it != m_spare.end(); ++it)
+		delete *it; // NOLINT(cppcoreguidelines-owning-memory)
+
+	m_spare.clear();
+#if STORED_cplusplus >= 201103L
+	m_spare.shrink_to_fit();
+#endif
+}
 
 
 //////////////////////////////
