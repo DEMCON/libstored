@@ -1,142 +1,74 @@
 [![CI](https://github.com/DEMCON/libstored/workflows/CI/badge.svg)](https://github.com/DEMCON/libstored/actions?query=workflow%3ACI)
 
-# libstored - Store for Embedded Debugger
+# libstored
 
 ## TL;DR
 
 **What is it?**  
 A generator for a C++ class (store) with your application's variables, and a
-tool to access it remotely.
+tool set to synchronize updates between processes, and debug it remotely.
 
 **When do I need it?**  
-When you want to be able to inspect and modify internal data of a running
-application.
+When you have a distributed application in need of synchronization, and/or you
+want to be able to inspect and modify internal data of a running application.
 
 **Does it work on my platform?**  
 Yes.
 
-**How do I use it?**  
+**Huh? But how you do know my hardware architecture?** 
+I don't. You have to supply the drivers for your (hardware) communication
+interfaces, but everything else is ready to use.
+
+**Great! How do I use it?**  
 Have a look at the [examples](examples).
 
 ## Table of contents
 
 - [Introduction](#intro)
+- [libstored - Store by description](#store)
+- [libstored - Store on a distributed system](#sync)
+- [libstored - Store for Embedded Debugger](#debug)
+	- [Example](#debug_ex)
+	- [Embedded Debugger protocol](#protocol)
 - [How to build](#build)
 	- [How to integrate in your build](#integrate)
-- [Syntax example](#syntax)
-- [Debugging example](#debugging)
-- [Embedded Debugger protocol](#protocol)
 - [License](#license)
 
 ## <a name="intro"></a>Introduction
 
-If you have an embedded system, you probably want to debug it on-target.  One
-of the questions you often have, is what is the value of internal variables of
-the program, and how can I change them.  Debugging using `gdb` is great, but it
-pauses the application, which also stops control loops, for example.
+Data is at the core of any application. And data is tricky, especially when it
+changes.  This library helps you managing data in three ways:
 
-libstored helps you to access internal variables. These variables are part of
-a _store_. A store is defined in a simple language, and libstored provides a
-generator to produce a C++ class (as cmake library) with the variables you
-want.  This generated C++ class is very efficient when accessed by the C++
-application. However, it adds interesting functionality: all variables can be
-accessed remotely.
+1. Using a simple language, you can define which variables, types, etc., you
+   need. Next, a C++ class is generated, with these variables, but also with
+   iterators, run-time name lookup, synchronization hooks, and more. This is
+   your _store_.
+2. These stores can be synchronized between different instances via arbitrary
+   communication channels.  So, you can build a distributed system over multiple
+   processes or hardware nodes, via lossy and lossless channels, over TCP, CAN,
+   serial, you name it. When some node writes to its store, this update is
+   distributed through your application.
+3. The store can be accessed via a debugging protocol. Using this protocol, all
+   objects in the store can be read/written or sampled at high frequency for nice
+   plots. It offers streams to have a sort of stdout redirection or debugging
+   output from your application. The protocol is ASCII based, and usable via
+   PuTTY, for example.  However, there is GUI and CLI implementation available,
+   which can be extended easily to build your custom (Qt) debugging GUI.
 
-The (OSI-stack) Application layer of this debugging interface is provided by
-libstored. Additionally, other layers are available to support lossless and
-lossy channels, which fit to common UART and CAN interfaces.  You have to
-combine, and possibly add, and configure other (usually hardware-specific)
-layers of the OSI stack to get the debugging protocol in and out of your
-system.  Although the protocol fits nicely to ZeroMQ, a TCP stream, or `stdio`
-via terminal, the complexity of integrating this depends on your embedded
-device.  However, once you implemented this data transport, you can access the
-store, and observe and manipulate it using an Embedded Debugger (PC) client,
-where libstored provides Python classes, a CLI and GUI interface.
+See next sections for details, but the following is worth to mention here:
 
-Your application can have one store with one debugging interface, but also
-multiple stores with one debugging interface, or one store with multiple
-debugging interfaces -- any combination is possible.
-
-The store has a few other interesting properties:
-
-- Objects can have a piece of memory as backing (just like a normal variable in
-  a `struct`), but can also have custom callbacks on every get and set. This
-  allows all kinds of side effects, even though the interface of the object is
-  the same.
-- Objects are accessible using a C++ interface, but also via name lookup by
-  string. The generator generates a compact name parser, such that names,
-  types, and sizes can be queried dynamically.
-- The Embedded Debugger has a standard set of commands, which can be disabled
-  for your specific project.  Moreover, you can also easily add custom commands
-  by adding another capability in a subclass of stored::Debugger.
-- There are sufficient hooks by the store to implement any application-specific
-  synchronization method, other than the Embedded Debugger.
-- The store and all other libstored classes are not thread-safe.
-  Using threads is troubling anyway, use [fibers](https://github.com/jhrutgers/zth) instead.
 - All code is normal C++, there are no platform-dependent constructs used.
   Therefore, all platforms are supported: Windows/Linux/Mac/bare
   metal (newlib), x86/ARM, gcc/clang/MSVC/armcc).
+- The store and all other libstored classes are not thread-safe.
+  Using threads is troubling anyway, use [fibers](https://github.com/jhrutgers/zth) instead.
 
-Have a look in the `examples` directory for further in-depth reading.
+Have a look in the [`examples`](examples) directory for further in-depth reading.
 Refer to the [Doxygen documentation](https://demcon.github.io/libstored) for the C++ API.
 
-## <a name="build"></a>How to build
+### <a name="store"></a>libstored - Store by description
 
-Run `scripts/bootstrap` (as Administrator under Windows) once to install all
-build dependencies.  Then run `scripts/build` to build the project. This does
-effectively:
-
-	mkdir build
-	cd build
-	cmake ..
-	cmake --build .
-
-`scripts/build` takes an optional argument, which allows you to specify the
-`CMAKE_BUILD_TYPE`.  If not specified, Debug is assumed.
-
-By default, all examples are built.  For example, notice that sources are
-generated under `examples/1_hello`, while the example itself is built in the
-`build` directory. The documentation can be viewed at
-`doxygen/html/index.html`.
-
-To run all tests:
-
-	cmake --build . -- test
-
-### <a name="integrate"></a>How to integrate in your build
-
-Building libstored on itself is not too interesting, it is about how it can
-generate stuff for you.  This is how to integrate it in your project:
-
-- Add libstored to your source repository, for example as a submodule.
-- Run `scripts/bootstrap` in the libstored directory once to install all
-  dependencies.
-- Include libstored to your cmake project. For example:
-
-		set(LIBSTORED_EXAMPLES OFF CACHE BOOL "Disable libstored examples" FORCE)
-		set(LIBSTORED_TESTS OFF CACHE BOOL "Disable libstored tests" FORCE)
-		set(LIBSTORED_DOCUMENTATION OFF CACHE BOOL "Disable libstored documentation" FORCE)
-		add_subdirectory(libstored)
-
-- Optional: install `scripts/st.vim` in `$HOME/.vim/syntax` to have proper
-  syntax highlighting in vim.
-- Add some store definition file to your project, let's say `MyStore.st`.
-  Assume you have a target `app` (which can be any type of cmake target), which
-  is going to use `MyStore.st`, generate all required files. This will generate
-  the sources in the `libstored` subdirectory of the current source directory,
-  a library named `app-libstored`, and set all the dependencies right.
-
-		add_application(app main.cpp)
-		libstored_generate(app MyStore.st)
-
-- Now, build your `app`. The generated libstored library is automatically
-  built.
-
-Check out the examples of libstored, which are all independent applications
-with their own generated store.
-
-## <a name="syntax"></a>Syntax example
-
+The store is described in a simple grammar.
 See the [examples](https://demcon.github.io/libstored/examples.html) directory
 for more explanation. This is just an impression of the syntax.
 
@@ -153,7 +85,7 @@ for more explanation. This is just an impression of the syntax.
 		string:16 s
 	} scope
 
-The generated store has variables that can be accessed like this:
+The generated store (C++ class) has variables that can be accessed like this:
 
 	mystore.some_int = 10;
 	int i = mystore.another_int_which_is_initialized;
@@ -163,7 +95,100 @@ The generated store has variables that can be accessed like this:
 	mystore.scope__numbers_1.set(1.1);
 	mystore.scope__s.set("hello");
 
-## <a name="debugging"></a>Debugging example
+The store has a few other interesting properties:
+
+- Objects can have a piece of memory as backing (just like a normal variable in
+  a `struct`), but can also have custom callbacks on every get and set. This
+  allows all kinds of side effects, even though the interface of the object is
+  the same.
+- Objects are accessible using a C++ interface, but also via name lookup by
+  string. The generator generates a compact name parser, such that names,
+  types, and sizes can be queried dynamically.
+- A store is not thread-safe. This seems a limitation, but really, applications
+  without threads are way easier to build and debug.
+
+### <a name="sync"></a>libstored - Store on a distributed system
+
+Synchronization is tricky to manage. libstored helps you by providing a
+stored::Synchronizer class that manages connections to other Synchronizers.
+Between these Synchronizers, one or more stores can be synchronized.  The (OSI)
+Application layer is implemented, and several other (OSI) protocol layers are
+provided to configure the channels as required. These protocols are generic and
+also used by the debugger interface. See [next section](#debug) for details.
+
+The store provides you with enough hooks to implement any distributed memory
+architecture, but that is often way to complicated. The default Synchronizer is
+simple and efficient, but has the following limitations:
+
+- Only instances of the exact same store can be synchronized. This is checked
+  using a SHA-1 hash over the .st file of the store. That is fine if you
+  compile your program at once, but harder to manage if components are not
+  built in the same compile run.
+- Writes to a variable in a store should only be done by one process.  If
+  multiple processes write to the same variable, the outcome of the
+  synchronization is undefined. However, you would have a data race in your
+  application anyway, so this is in practice probably not really a limitation.
+
+See [the doxygen documentation](https://demcon.github.io/libstored/group__libstored__synchronizer.html) for more details.
+
+The topology is arbitrary, as long as every store instance has one root, where
+it gets its initial copy from. You could, for example, construct the following topology:
+
+	B   C
+	 \ /
+	  A
+	  |
+	  D--E--F
+	 / \
+	G   H
+
+Assume that A is the first node, of all other nodes gets the initial copy from.
+So, D registers at A, then E gets it from D, F from E, etc. After setup, any
+node can write to the same store (but not to the same variable in that store).
+So, updates from H are first pushed to D. The D pushes them to A, E and G, and
+so on.
+
+Different stores can have different topologies for synchronization, and
+synchronization may happen at different speed or interval. Everything is
+possible, and you can define it based on your application's needs.
+
+The example [`8_sync`](examples/8_sync) implements an application with two
+stores, which can be connected arbitrarily using command line arguments. You
+can play with it to see the synchronization.
+
+### <a name="debug"></a>libstored - Store for Embedded Debugger
+
+If you have an embedded system, you probably want to debug it on-target.  One
+of the questions you often have, is what is the value of internal variables of
+the program, and how can I change them?  Debugging using `gdb` is great, but it
+pauses the application, which also stops control loops, for example.
+
+Using libstored, you can access and manipulate a running system.
+The (OSI-stack) Application layer of this debugging interface is provided by
+libstored. Additionally, other layers are available to support lossless and
+lossy channels, which fit to common UART and CAN interfaces.  You have to
+combine, and possibly add, and configure other (usually hardware-specific)
+layers of the OSI stack to get the debugging protocol in and out of your
+system.  Although the protocol fits nicely to ZeroMQ, a TCP stream, or `stdio`
+via terminal, the complexity of integrating this depends on your embedded
+device.  However, once you implemented this data transport, you can access the
+store, and observe and manipulate it using an Embedded Debugger (PC) client,
+where libstored provides Python classes, a CLI and GUI interface.
+
+Your application can have one store with one debugging interface, but also
+multiple stores with one debugging interface, or one store with multiple
+debugging interfaces -- any combination is possible.
+
+It seems to be a duplicate to have two synchronization protocols, but both have
+a different purpose.  For synchronization, a binary protocol is used, which
+only synchronizes data, using memory offsets, and some endianness.  This is
+tightly coupled to the exact version and layout of the store. This is all known
+at compile time, and great for performance, but harder to manage when you start
+debugging. The debugging protocol is ASCII based, writable by hand, easy to use
+dynamic lookup of variable names, and has support to easily add custom
+commands by adding another capability in a subclass of stored::Debugger.
+
+### <a name="debug_ex"></a>Example
 
 The host tools to debug your application are written in python, as the `ed2`
 package, and are located the `client` directory. You can run the example below
@@ -238,7 +263,7 @@ The structure of this setup is:
 There are some more ready-to-use clients, and a Python module in the
 [client](https://github.com/DEMCON/libstored/tree/master/client) directory.
 
-## <a name="protocol"></a>Embedded Debugger protocol
+### <a name="protocol"></a>Embedded Debugger protocol
 
 Communication with the debugger implementation in the application follows a
 request-response pattern.  A full description of the commands can be found in
@@ -325,6 +350,62 @@ Refer to the documentation for the details about these and other commands.
 	<  3fd755a4ab38afc0
 	>  rr
 	<  3fb7617168255e00
+
+## <a name="build"></a>How to build
+
+Run `scripts/bootstrap` (as Administrator under Windows) once to install all
+build dependencies.  Then run `scripts/build` to build the project. This does
+effectively:
+
+	mkdir build
+	cd build
+	cmake ..
+	cmake --build .
+
+`scripts/build` takes an optional argument, which allows you to specify the
+`CMAKE_BUILD_TYPE`.  If not specified, Debug is assumed.
+
+By default, all examples are built.  For example, notice that sources are
+generated under `examples/1_hello`, while the example itself is built in the
+`build` directory. The documentation can be viewed at
+`doxygen/html/index.html`.
+
+To run all tests, use one of:
+
+	cmake --build . --target test
+	cmake --build . --target RUN_TESTS
+
+### <a name="integrate"></a>How to integrate in your build
+
+Building libstored on itself is not too interesting, it is about how it can
+generate stuff for you.  This is how to integrate it in your project:
+
+- Add libstored to your source repository, for example as a submodule.
+- Run `scripts/bootstrap` in the libstored directory once to install all
+  dependencies.
+- Include libstored to your cmake project. For example:
+
+		set(LIBSTORED_EXAMPLES OFF CACHE BOOL "Disable libstored examples" FORCE)
+		set(LIBSTORED_TESTS OFF CACHE BOOL "Disable libstored tests" FORCE)
+		set(LIBSTORED_DOCUMENTATION OFF CACHE BOOL "Disable libstored documentation" FORCE)
+		add_subdirectory(libstored)
+
+- Optional: install `scripts/st.vim` in `$HOME/.vim/syntax` to have proper
+  syntax highlighting in vim.
+- Add some store definition file to your project, let's say `MyStore.st`.
+  Assume you have a target `app` (which can be any type of cmake target), which
+  is going to use `MyStore.st`, generate all required files. This will generate
+  the sources in the `libstored` subdirectory of the current source directory,
+  a library named `app-libstored`, and set all the dependencies right.
+
+		add_application(app main.cpp)
+		libstored_generate(app MyStore.st)
+
+- Now, build your `app`. The generated libstored library is automatically
+  built.
+
+Check out the examples of libstored, which are all independent applications
+with their own generated store.
 
 ## <a name="license"></a>License
 
