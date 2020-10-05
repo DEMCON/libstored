@@ -67,7 +67,7 @@ public:
 };
 
 TEST(Synchronizer, ShortSeq) {
-	TestJournal j("123", nullptr, 0);
+	TestJournal j("123", nullptr, 0u);
 
 	EXPECT_EQ(j.seq(), 1);
 
