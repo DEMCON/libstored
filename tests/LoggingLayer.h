@@ -60,6 +60,11 @@ public:
 	std::deque<std::string>& encoded() { return m_encoded; }
 	std::deque<std::string> const & encoded() const { return m_encoded; }
 
+	void clear() {
+		encoded().clear();
+		decoded().clear();
+	}
+
 private:
 	std::deque<std::string> m_decoded;
 	std::deque<std::string> m_encoded;

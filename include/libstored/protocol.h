@@ -444,9 +444,12 @@ public:
 	 * If the limit is hit, the event callback is invoked.
 	 *
 	 * This layer prepends the message with a sequence number byte.  The MSb
-	 * indicates if it is an ack, the 7 LSb are the sequence number.
+	 * indicates if it is an ack, the 6 LSb are the sequence number.
 	 * Sequence 0 is special; it resets the connection. It should not be used
-	 * during normal operation, so the next sequence number after 127 is 1.
+	 * during normal operation, so the next sequence number after 63 is 1.
+	 * Message that do not have a payload (so, no decode() has to be invoked
+	 * upon receival), should set bit 6. This also applies to the reset
+	 * message.
 	 *
 	 * Retransmits are triggered every time a message is queued for encoding,
 	 * or when #flush() is called. There is no timeout specified.
@@ -460,6 +463,15 @@ public:
 	 * of a retransmit may be higher. It is up to the infrastructure and
 	 * application requirements what is best.
 	 *
+	 * The layer has no notion of time, or time out for retransmits and acks.
+	 * The application must call #flush() (for the whole stack), or
+	 * #keepAlive() at a regular interval. Every invocation of either function
+	 * will do a retransmit of the head of the encode queue. If called to
+	 * often, retransmits may be done before the other party had a change to
+	 * respond. If called not often enough, retransmits may take long and
+	 * communication may be slowed down. Either way, it is functionally
+	 * correct. Determine for you application what is wise to do.
+	 *
 	 * \ingroup libstored_protocol
 	 */
 	class ArqLayer : public ProtocolLayer {
@@ -467,9 +479,12 @@ public:
 	public:
 		typedef ProtocolLayer base;
 
-		static uint8_t const AckFlag = 0x80u;
+		static uint8_t const NopFlag = 0x40u; //!< \brief Flag to indicate that the payload should be ignored.
+		static uint8_t const AckFlag = 0x80u; //!< \brief Ack flag.
+		static uint8_t const SeqMask = 0x3fu; //!< \brief Mask for sequence number.
 
 		enum {
+			/*! \brief Number of successive retransmits before the event is emitted. */
 			RetransmitCallbackThreshold = 10,
 		};
 
@@ -487,30 +502,80 @@ public:
 
 		enum Event {
 			/*!
+			 * \brief No event.
+			 */
+			EventNone,
+
+			/*!
 			 * \brief An unexpected reset message has been received.
 			 *
 			 * The reset message remains unanswered, until #reset() is called.
+			 * The callback function should probably reinitialize the whole stack.
 			 */
 			EventReconnect,
 
 			/*!
 			 * \brief The maximum buffer capactiy has passed.
 			 *
-			 * If not handled by a callback function, \c abort() is called.
+			 * The callback may reset the stack to prevent excessive memory usage.
+			 * Memory allocation will just continue. If no callback function is set (the default),
+			 * \c abort() is called when this event happens.
 			 */
 			EventEncodeBufferOverflow,
 
 			/*!
 			 * \brief #RetransmitCallbackThreshold has been reached on the current message.
+			 *
+			 * This is an indicator that the connection has been lost.
 			 */
 			EventRetransmit,
 		};
-		typedef void(EventCallback)(ArqLayer&, Event, void*);
-		void setEventCallback(EventCallback* cb, void* arg);
+
+		/*!
+		 * \brief Callback type for #setEventCallback(EventCallbackArg*,void*).
+		 */
+		typedef void(EventCallbackArg)(ArqLayer&, Event, void*);
+
+#if STORED_cplusplus < 201103L
+		/*!
+		 * \brief Set event callback.
+		 */
+		void setEventCallback(EventCallbackArg* cb = nullptr, void* arg = nullptr) {
+			m_cb = cb;
+			m_cbArg = arg;
+		}
+#else
+		/*!
+		 * \brief Set event callback.
+		 */
+		void setEventCallback(EventCallbackArg* cb = nullptr, void* arg = nullptr) {
+			if(cb)
+				setEventCallback([arg,cb](ArqLayer& l, Event e) { cb(l, e, arg); });
+			else
+				m_cb = nullptr;
+		}
+
+		/*!
+		 * \brief Callback type for #setEventCallback(F&&).
+		 */
+		typedef void(EventCallback)(ArqLayer&, Event);
+
+		/*!
+		 * \brief Set event callback.
+		 */
+		template <typename F>
+		SFINAE_IS_FUNCTION(F, EventCallback, void)
+		setEventCallback(F&& cb) {
+			m_cb = std::forward<F>(cb);
+		}
+#endif
 
 		bool didTransmit() const;
 		void resetDidTransmit();
 		size_t retransmits() const;
+		bool waitingForAck() const;
+
+		void shrink_to_fit();
 
 	protected:
 		virtual void event(Event e);
@@ -519,16 +584,18 @@ public:
 		enum EncodeState { EncodeStateIdle, EncodeStateEncoding };
 
 		static uint8_t nextSeq(uint8_t seq);
-		bool waitingForAck() const;
 
 		void popEncodeQueue();
 		void pushEncodeQueue(void const* buffer, size_t len);
-
-		void shrink_to_fit();
+		std::string& pushEncodeQueueRaw();
 
 	private:
-		EventCallback* m_cb;
+#if STORED_cplusplus < 201103L
+		EventCallbackArg* m_cb;
 		void* m_cbArg;
+#else
+		std::function<EventCallback> m_cb;
+#endif
 
 		size_t const m_maxEncodeBuffer;
 		std::deque<std::string*> m_encodeQueue;
