@@ -15,7 +15,7 @@ want to be able to inspect and modify internal data of a running application.
 **Does it work on my platform?**  
 Yes.
 
-**Huh? But how you do know my hardware architecture?** 
+**Huh? But how you do know my hardware architecture?**  
 I don't. You have to supply the drivers for your (hardware) communication
 interfaces, but everything else is ready to use.
 

@@ -773,7 +773,7 @@ void ArqLayer::shrink_to_fit() {
 #if STORED_cplusplus >= 201103L
 		(*it)->shrink_to_fit();
 #else
-		(*it)->capacity((*it)->size());
+		(*it)->reserve((*it)->size());
 #endif
 
 	for(std::deque<std::string*>::iterator it = m_spare.begin(); it != m_spare.end(); ++it)
