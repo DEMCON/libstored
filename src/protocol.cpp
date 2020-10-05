@@ -505,7 +505,7 @@ next:
 
 	if(likely((buffer_[0] & SeqMask) == m_recvSeq)) {
 		// This is a proper next message.
-		uint8_t ack = m_recvSeq | AckFlag;
+		uint8_t ack = (uint8_t)(m_recvSeq | AckFlag);
 		base::encode(&ack, 1, false);
 		m_recvSeq = nextSeq(m_recvSeq);
 		resetDidTransmit();
@@ -522,10 +522,10 @@ next:
 			base::encode(nullptr, 0, true);
 			m_didTransmit = true;
 		}
-	} else if(nextSeq(buffer_[0] & SeqMask) == m_recvSeq) {
+	} else if(nextSeq((uint8_t)(buffer_[0] & SeqMask)) == m_recvSeq) {
 		// This is a retransmit of the previous message.
 		// Send ack again.
-		uint8_t ack = ((uint8_t)(buffer_[0] & SeqMask) | AckFlag);
+		uint8_t ack = (uint8_t)((uint8_t)(buffer_[0] & SeqMask) | AckFlag);
 		base::encode(&ack, 1, true);
 	} else if((buffer_[0] & SeqMask) == 0) {
 		// This is an unexpected reset message.

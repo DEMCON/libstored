@@ -938,9 +938,9 @@ void SyncConnection::helloAgain(StoreJournal& store) {
 	si.idOut = 0;
 
 	Id id = 0;
-	for(IdInMap::iterator it = m_idIn.begin(); it != m_idIn.end(); ++it)
-		if(it->second == &store) {
-			id = it->first;
+	for(IdInMap::iterator itId = m_idIn.begin(); itId != m_idIn.end(); ++itId)
+		if(itId->second == &store) {
+			id = itId->first;
 			break;
 		}
 
