@@ -346,11 +346,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.9899495"
-     inkscape:cx="87.811929"
-     inkscape:cy="768.9324"
+     inkscape:zoom="7.919596"
+     inkscape:cx="441.10985"
+     inkscape:cy="102.24521"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer2"
      showgrid="false"
      inkscape:window-width="1598"
      inkscape:window-height="1027"
@@ -1464,7 +1464,7 @@
        height="5.6696429"
        x="46.680061"
        y="111.79166"
-       transform="matrix(0.90698757,0,0,0.60341505,63.394944,204.37976)" />
+       transform="matrix(1.2315524,0,0,1.1427447,46.702008,144.4626)" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.05833328px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
@@ -1475,6 +1475,27 @@
          sodipodi:role="line"
          x="108.68594"
          y="273.96939"
-         id="tspan7359-5">libstored</tspan></text>
+         id="tspan7648">libstored</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:0.69223952px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.17305988"
+       x="105.34347"
+       y="275.75937"
+       id="text5791-68-3-9-9-9-1"><tspan
+         style="stroke-width:0.17305988"
+         sodipodi:role="line"
+         x="105.34347"
+         y="275.75937"
+         id="tspan7646-3">LGPLv3, gcc/MSVC/clang/armcc,</tspan><tspan
+         style="stroke-width:0.17305988"
+         sodipodi:role="line"
+         x="105.34347"
+         y="276.62466"
+         id="tspan7650-1">Linux, Windows, Mac, bare metal</tspan><tspan
+         style="stroke-width:0.17305988"
+         sodipodi:role="line"
+         x="105.34347"
+         y="277.48996"
+         id="tspan7648-4">C++98 and higher</tspan></text>
   </g>
 </svg>
