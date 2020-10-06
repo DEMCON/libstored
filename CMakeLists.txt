@@ -28,6 +28,7 @@ if(LIBSTORED_DOCUMENTATION)
 	add_custom_target(
 		doc ALL
 		COMMAND $<TARGET_FILE:Doxygen::doxygen>
+		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/presentation/libstored.sozi.html ${CMAKE_CURRENT_SOURCE_DIR}/doxygen/html
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		COMMENT "Generating API documentation with Doxygen (see doxygen/html/index.html)"
 	)
