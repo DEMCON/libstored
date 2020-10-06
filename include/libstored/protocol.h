@@ -20,7 +20,7 @@
 
 /*!
  * \defgroup libstored_protocol protocol
- * \brief Protocol layers, to be wrapped around a #stored::Debugger instance.
+ * \brief Protocol layers, to be wrapped around a #stored::Debugger or #stored::Synchronizer instance.
  *
  * Every embedded device is different, so the required protocol layers are too.
  * What is common, is the Application layer, but as the Transport and Physical
@@ -57,8 +57,8 @@
  * Standard layer implementations can be used to construct the following stacks (top-down):
  *
  * - Lossless UART: stored::Debugger, stored::AsciiEscapeLayer, stored::TerminalLayer
- * - Lossy UART: stored::Debugger, stored::ArqLayer, stored::Crc16Layer, stored::AsciiEscapeLayer, stored::TerminalLayer
- * - CAN: stored::Debugger, stored::SegmentationLayer, stored::ArqLayer, stored::BufferLayer, CAN driver
+ * - Lossy UART: stored::Debugger, stored::DebugArqLayer, stored::Crc16Layer, stored::AsciiEscapeLayer, stored::TerminalLayer
+ * - CAN: stored::Debugger, stored::SegmentationLayer, stored::DebugArqLayer, stored::BufferLayer, CAN driver
  * - ZMQ: stored::Debugger, stored::ZmqLayer
  *
  * ## Application layer
@@ -82,7 +82,7 @@
  * should be used (see stored::SegmentationLayer).
  *
  * In case of lossy channels (UART/CAN), message sequence number, and
- * retransmits (see stored::ArqLayer) should be implemented, and CRC (see
+ * retransmits (see stored::DebugArqLayer) should be implemented, and CRC (see
  * stored::Crc8Layer). Default implementations are provided, but may be
  * dependent on the specific transport hardware and embedded device.
  *
@@ -118,6 +118,7 @@
 
 #include <vector>
 #include <string>
+#include <deque>
 
 namespace stored {
 
@@ -271,6 +272,27 @@ namespace stored {
 			return down() ? down()->mtu() : 0;
 		}
 
+		/*!
+		 * \brief Flushes all buffered message out of the stack (top-down), if possible.
+		 *
+		 * Any buffered, held back, queued messages are tried to be sent
+		 * immediately.  A flush is always safe; it never destroys data in the
+		 * stack, it only tries to force it out.
+		 *
+		 * \return \c true if successful and the stack is empty, or \c false if message are still blocked
+		 */
+		virtual bool flush() {
+			return down() ? down()->flush() : true;
+		}
+
+		/*!
+		 * \brief Reset the stack (top-down), and drop all messages.
+		 */
+		virtual void reset() {
+			if(down())
+				down()->reset();
+		}
+
 	private:
 		/*! \brief The layer above this one. */
 		ProtocolLayer* m_up;
@@ -333,6 +355,7 @@ namespace stored {
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
 		using base::encode;
 		virtual size_t mtu() const override;
+		virtual void reset() override;
 
 	protected:
 		virtual void nonDebugDecode(void* buffer, size_t len);
@@ -378,7 +401,7 @@ public:
 	 *
 	 * This layer assumes a lossless channel; all messages are received in
 	 * order. If that is not the case for your transport, wrap this layer in
-	 * the #stored::ArqLayer.
+	 * the #stored::DebugArqLayer or #stored::ArqLayer.
 	 *
 	 * \ingroup libstored_protocol
 	 */
@@ -392,6 +415,7 @@ public:
 		static char const EndMarker = 'E';
 
 		SegmentationLayer(size_t mtu = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		/*! \brief Dtor. */
 		virtual ~SegmentationLayer() override is_default
 
 		virtual void decode(void* buffer, size_t len) override;
@@ -400,6 +424,7 @@ public:
 
 		size_t mtu() const final;
 		size_t lowerMtu() const;
+		virtual void reset() override;
 
 	private:
 		size_t m_mtu;
@@ -408,7 +433,187 @@ public:
 	};
 
 	/*!
-	 * \brief A layer that performs Automatic Repeat Request operations on messages.
+	 * \brief A general purpose layer that performs Automatic Repeat Request operations on messages.
+	 *
+	 * This layer does not assume a specific message pattern. For
+	 * #stored::Debugger, use #stored::DebugArqLayer.
+	 *
+	 * Every message sent has to be acknowledged. There is no window; after
+	 * sending a message, an ack must be received before continuing.  The queue
+	 * of messages is by default unlimited, but can be set via the constructor.
+	 * If the limit is hit, the event callback is invoked.
+	 *
+	 * This layer prepends the message with a sequence number byte.  The MSb
+	 * indicates if it is an ack, the 6 LSb are the sequence number.
+	 * Sequence 0 is special; it resets the connection. It should not be used
+	 * during normal operation, so the next sequence number after 63 is 1.
+	 * Message that do not have a payload (so, no decode() has to be invoked
+	 * upon receival), should set bit 6. This also applies to the reset
+	 * message.
+	 *
+	 * Retransmits are triggered every time a message is queued for encoding,
+	 * or when #flush() is called. There is no timeout specified.
+	 *
+	 * One may decide to use a #stored::SegmentationLayer higher in the
+	 * protocol stack to reduce the amount of data to retransmit when a message
+	 * is lost (only one segment is retransmitted, not the full message), but
+	 * this may add the overhead of the sequence number and round-trip time per
+	 * segment. If the #stored::SegmentationLayer is used below the ArqLayer,
+	 * normal-case behavior (no packet loss) is most efficient, but the penalty
+	 * of a retransmit may be higher. It is up to the infrastructure and
+	 * application requirements what is best.
+	 *
+	 * The layer has no notion of time, or time out for retransmits and acks.
+	 * The application must call #flush() (for the whole stack), or
+	 * #keepAlive() at a regular interval. Every invocation of either function
+	 * will do a retransmit of the head of the encode queue. If called to
+	 * often, retransmits may be done before the other party had a change to
+	 * respond. If called not often enough, retransmits may take long and
+	 * communication may be slowed down. Either way, it is functionally
+	 * correct. Determine for you application what is wise to do.
+	 *
+	 * \ingroup libstored_protocol
+	 */
+	class ArqLayer : public ProtocolLayer {
+		CLASS_NOCOPY(ArqLayer)
+	public:
+		typedef ProtocolLayer base;
+
+		static uint8_t const NopFlag = 0x40u; //!< \brief Flag to indicate that the payload should be ignored.
+		static uint8_t const AckFlag = 0x80u; //!< \brief Ack flag.
+		static uint8_t const SeqMask = 0x3fu; //!< \brief Mask for sequence number.
+
+		enum {
+			/*! \brief Number of successive retransmits before the event is emitted. */
+			RetransmitCallbackThreshold = 10,
+		};
+
+		ArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~ArqLayer() override;
+
+		virtual void decode(void* buffer, size_t len) override;
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+
+		virtual size_t mtu() const override;
+		virtual bool flush() override;
+		virtual void reset() override;
+		void keepAlive();
+
+		enum Event {
+			/*!
+			 * \brief No event.
+			 */
+			EventNone,
+
+			/*!
+			 * \brief An unexpected reset message has been received.
+			 *
+			 * The reset message remains unanswered, until #reset() is called.
+			 * The callback function should probably reinitialize the whole stack.
+			 */
+			EventReconnect,
+
+			/*!
+			 * \brief The maximum buffer capactiy has passed.
+			 *
+			 * The callback may reset the stack to prevent excessive memory usage.
+			 * Memory allocation will just continue. If no callback function is set (the default),
+			 * \c abort() is called when this event happens.
+			 */
+			EventEncodeBufferOverflow,
+
+			/*!
+			 * \brief #RetransmitCallbackThreshold has been reached on the current message.
+			 *
+			 * This is an indicator that the connection has been lost.
+			 */
+			EventRetransmit,
+		};
+
+		/*!
+		 * \brief Callback type for #setEventCallback(EventCallbackArg*,void*).
+		 */
+		typedef void(EventCallbackArg)(ArqLayer&, Event, void*);
+
+#if STORED_cplusplus < 201103L
+		/*!
+		 * \brief Set event callback.
+		 */
+		void setEventCallback(EventCallbackArg* cb = nullptr, void* arg = nullptr) {
+			m_cb = cb;
+			m_cbArg = arg;
+		}
+#else
+		/*!
+		 * \brief Set event callback.
+		 */
+		void setEventCallback(EventCallbackArg* cb = nullptr, void* arg = nullptr) {
+			if(cb)
+				setEventCallback([arg,cb](ArqLayer& l, Event e) { cb(l, e, arg); });
+			else
+				m_cb = nullptr;
+		}
+
+		/*!
+		 * \brief Callback type for #setEventCallback(F&&).
+		 */
+		typedef void(EventCallback)(ArqLayer&, Event);
+
+		/*!
+		 * \brief Set event callback.
+		 */
+		template <typename F>
+		SFINAE_IS_FUNCTION(F, EventCallback, void)
+		setEventCallback(F&& cb) {
+			m_cb = std::forward<F>(cb);
+		}
+#endif
+
+		bool didTransmit() const;
+		void resetDidTransmit();
+		size_t retransmits() const;
+		bool waitingForAck() const;
+
+		void shrink_to_fit();
+
+	protected:
+		virtual void event(Event e);
+		bool transmit();
+
+		enum EncodeState { EncodeStateIdle, EncodeStateEncoding };
+
+		static uint8_t nextSeq(uint8_t seq);
+
+		void popEncodeQueue();
+		void pushEncodeQueue(void const* buffer, size_t len);
+		std::string& pushEncodeQueueRaw();
+
+	private:
+#if STORED_cplusplus < 201103L
+		EventCallbackArg* m_cb;
+		void* m_cbArg;
+#else
+		std::function<EventCallback> m_cb;
+#endif
+
+		size_t const m_maxEncodeBuffer;
+		std::deque<std::string*> m_encodeQueue;
+		std::deque<std::string*> m_spare;
+		size_t m_encodeQueueSize;
+		EncodeState m_encodeState;
+		bool m_didTransmit;
+		uint8_t m_retransmits;
+
+		uint8_t m_sendSeq;
+		uint8_t m_recvSeq;
+	};
+
+	/*!
+	 * \brief A layer that performs Automatic Repeat Request operations on messages for #stored::Debugger.
+	 *
+	 * Only apply this layer on #stored::Debugger, as it assumes a REQ/REP
+	 * mechanism. For a general purpose ARQ, use #stored::ArqLayer.
 	 *
 	 * This layer allows messages that are lost, to be retransmitted on both
 	 * the request and response side. The implementation assumes that lost
@@ -457,7 +662,7 @@ public:
 	 * The application has limited buffering. So, neither the request nor the
 	 * full response may be buffered for (partial) retransmission. Therefore,
 	 * it may be the case that when the response was lost, the request is
-	 * reexecuted. It is up to the buffer size as specified in ArqLayer's
+	 * reexecuted. It is up to the buffer size as specified in DebugArqLayer's
 	 * constructor and stored::Debugger to determine when it is safe or
 	 * required to reexected upon every retransmit. For example, writes are not
 	 * reexecuted, as a write may have unexpected side-effects, while it is
@@ -466,7 +671,7 @@ public:
 	 * constant, so it is not buffered either and just reexecuted. Note that if
 	 * the buffer is too small, reading from a stream (s command) will do a
 	 * destructive read, but this data may be lost if the response is lost.
-	 * Configure the stream size and ArqLayer's buffer appropriate if that is
+	 * Configure the stream size and DebugArqLayer's buffer appropriate if that is
 	 * unacceptable for you.
 	 *
 	 * Because of this limited buffering, the response may reset the sequence
@@ -484,17 +689,18 @@ public:
 	 * request and response to 128 MB.  As the payload is allowed to be
 	 * of any size, this should not be a real limitation in practice.
 	 *
-	 * This protocol is verified by the Promela model in tests/ArqLayer.pml.
+	 * This protocol is verified by the Promela model in tests/DebugArqLayer.pml.
 	 *
 	 * \ingroup libstored_protocol
 	 */
-	class ArqLayer : public ProtocolLayer {
-		CLASS_NOCOPY(ArqLayer)
+	class DebugArqLayer : public ProtocolLayer {
+		CLASS_NOCOPY(DebugArqLayer)
 	public:
 		typedef ProtocolLayer base;
 
-		ArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
-		virtual ~ArqLayer() override is_default
+		DebugArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		/*! \brief Dtor. */
+		virtual ~DebugArqLayer() override is_default
 
 		static uint8_t const ResetFlag = 0x80;
 
@@ -504,6 +710,7 @@ public:
 
 		virtual void setPurgeableResponse(bool purgeable = true) override;
 		virtual size_t mtu() const override;
+		virtual void reset() override;
 
 	protected:
 		static uint32_t nextSeq(uint32_t seq);
@@ -519,7 +726,7 @@ public:
 		uint32_t m_encodeSeq;
 		bool m_encodeSeqReset;
 
-		size_t m_maxEncodeBuffer;
+		size_t const m_maxEncodeBuffer;
 		std::vector<std::string> m_encodeBuffer;
 		size_t m_encodeBufferSize;
 	};
@@ -528,7 +735,8 @@ public:
 	 * \brief A layer that adds a CRC-8 to messages.
 	 *
 	 * If the CRC does not match during decoding, it is silently dropped.
-	 * You probably want #stored::ArqLayer somewhere higher in the stack.
+	 * You probably want #stored::DebugArqLayer or #stored::ArqLayer somewhere
+	 * higher in the stack.
 	 *
 	 * An 8-bit CRC is used with polynomial 0xA6.  This polynomial seems to be
 	 * a good choice according to <i>Cyclic Redundancy Code (CRC) Polynomial
@@ -550,6 +758,7 @@ public:
 		enum { polynomial = 0xa6, init = 0xff };
 
 		Crc8Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		/*! \brief Dtor. */
 		virtual ~Crc8Layer() override is_default
 
 		virtual void decode(void* buffer, size_t len) override;
@@ -557,6 +766,7 @@ public:
 		using base::encode;
 
 		virtual size_t mtu() const override;
+		virtual void reset() override;
 
 	protected:
 		static uint8_t compute(uint8_t input, uint8_t crc = init);
@@ -580,6 +790,7 @@ public:
 		enum { polynomial = 0xbaad, init = 0xffff };
 
 		Crc16Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		/*! \brief Dtor. */
 		virtual ~Crc16Layer() override is_default
 
 		virtual void decode(void* buffer, size_t len) override;
@@ -587,6 +798,7 @@ public:
 		using base::encode;
 
 		virtual size_t mtu() const override;
+		virtual void reset() override;
 
 	protected:
 		static uint16_t compute(uint8_t input, uint16_t crc = init);
@@ -611,18 +823,24 @@ public:
 		typedef ProtocolLayer base;
 
 		BufferLayer(size_t size = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		/*! \brief Destructor. */
 		virtual ~BufferLayer() override is_default
 
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
 		using base::encode;
 
+		virtual void reset() override;
+
 	private:
-		size_t m_size;
+		size_t const m_size;
 		std::string m_buffer;
 	};
 
 	/*!
 	 * \brief Prints all messages to a \c FILE.
+	 *
+	 * Messages are printed on a line.
+	 * Decoded message start with &lt;, encoded messages with &gt;, partial encoded messages with *.
 	 *
 	 * Mainly for debugging purposes.
 	 *
@@ -644,19 +862,22 @@ public:
 
 	private:
 		FILE* m_f;
-		char const* m_name;
+		char const* const m_name;
 	};
 
 	namespace impl {
 		class Loopback1 : public ProtocolLayer {
 			CLASS_NOCOPY(Loopback1)
 		public:
+			typedef ProtocolLayer base;
 			enum { ExtraAlloc = 32 };
 
 			Loopback1(ProtocolLayer& from, ProtocolLayer& to);
+			/*! \brief Destructor. */
 			~Loopback1() override final;
 
 			void encode(void const* buffer, size_t len, bool last = true) override final;
+			void reset() override final;
 		private:
 			ProtocolLayer& m_to;
 			char* m_buffer;

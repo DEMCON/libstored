@@ -33,8 +33,10 @@
 namespace stored {
 
 	/*!
-	 * \brief A protocol layer that wraps the protocol stack and implements ZeroMQ REQ/REP around it.
-	 * \ingroup libstored_protocol
+	 * \brief A protocol layer that wraps the protocol stack and implements ZeroMQ socket around it.
+	 *
+	 * This is a generic ZeroMQ class, for practical usages, instantiate
+	 * #stored::DebugZmqLayer or #stored::SyncZmqLayer instead.
 	 */
 	class ZmqLayer : public ProtocolLayer {
 		CLASS_NOCOPY(ZmqLayer)
@@ -81,6 +83,10 @@ namespace stored {
 		int m_error;
 	};
 
+	/*!
+	 * \brief Constructs a protocol stack on top of a REQ/REP ZeroMQ socket, specifically for the #stored::Debugger.
+	 * \ingroup libstored_protocol
+	 */
 	class DebugZmqLayer : public ZmqLayer {
 	public:
 		typedef ZmqLayer base;
@@ -90,16 +96,22 @@ namespace stored {
 		};
 
 		DebugZmqLayer(void* context = nullptr, int port = DefaultPort, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		/*! \brief Dtor. */
 		virtual ~DebugZmqLayer() override is_default
 
 		virtual int recv(bool block = false) override;
 	};
 
+	/*!
+	 * \brief Constructs a protocol stack on top of a PAIR ZeroMQ socket, specifically for the #stored::Synchronizer.
+	 * \ingroup libstored_protocol
+	 */
 	class SyncZmqLayer : public ZmqLayer {
 	public:
 		typedef ZmqLayer base;
 
 		SyncZmqLayer(void* context, char const* endpoint, bool listen, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		/*! \brief Dtor. */
 		virtual ~SyncZmqLayer() override is_default
 	};
 

@@ -101,9 +101,9 @@
  *
  * "I do not need any more updates of the given store (by hash, by id or all)."
  *
- * 'b' hash
- * 'b' id
- * 'b'
+ * `b` \<hash\><br>
+ * `b` \<id\><br>
+ * `b`
  *
  * A bye using the id can be used to respond to another message that has an unknown id.
  * Previous communication sessions remnents can be cleaned up in this way.
@@ -126,19 +126,70 @@ namespace stored {
 
 	/*!
 	 * \brief A record of all changes within a store.
+	 *
+	 * Every variable in the store registers updates in the journal.
+	 * The journal keeps an administration based on the key of the variable.
+	 * Every change has a sequence number, which is kind of a time stamp.
+	 * This sequence number can be used to check which objects has changed
+	 * since some point in time.
+	 *
+	 * The current sequence number ('now') is bumped upon an encode or decode,
+	 * when there have been changes in between.
+	 *
+	 * Internally, only the last bytes of the sequence number is stored (short seq).
+	 * Therefore, there is a window (now-ShortSeqWindow .. now) of which
+	 * a short seq can be converted back to a real seq. Changes that are older than
+	 * the safe margin (now-SeqLowerMargin), are automatically shifted in time
+	 * to stay within the window. This may lead to some false positives when determining
+	 * which objects have changed since an old seq number. This is safe behavior,
+	 * but slightly less efficient for encoding updates.
+	 *
+	 * The administration is a binary tree, stored in a \c std::vector.  Every
+	 * node in the tree contains the maximum seq of any node below it, so a
+	 * search like 'find objects with a seq higher than x' can terminate early.
+	 * The vector must be regenerated when elements are inserted or removed.
+	 * This is expensive, but usually only happens during the initial phase of
+	 * the application.
+	 *
+	 * A store has only one journal, via #stored::Synchronizable. Multiple
+	 * instances of #stored::SyncConnection use the same journal.
+	 *
 	 * \see #stored::Synchronizable
 	 * \ingroup libstored_synchronizer
 	 */
 	class StoreJournal {
 		CLASS_NOCOPY(StoreJournal)
 	public:
+		/*!
+		 * \brief Timestamp of a change.
+		 * \details 64-bit means that if it is bumped every ns, a wrap-around
+		 *          happens after 500 years.
+		 */
 		typedef uint64_t Seq;
+		/*!
+		 * \brief A short version of Seq, used in all administration.
+		 * \details This saves a lot of space, but limits handling timestamps
+		 *          to ShortSeqWindow.
+		 */
 		typedef uint16_t ShortSeq;
+		/*!
+		 * \brief The key, as produced by a store.
+		 * \details The key of a store is \c size_t. Limit it to 32-bit,
+		 *          assuming that stores will not be bigger than 4G.
+		 */
 		typedef uint32_t Key;
+		/*!
+		 * \brief The size of an object.
+		 * \details The 32-bit assumption is checked in the ctor.
+		 */
 		typedef Key Size;
 
 		enum {
-			SeqLowerMargin = 1u << (sizeof(ShortSeq) * 8u - 2u),
+			/*! \brief Maximum offset of seq() that is a valid short seq. */
+			ShortSeqWindow = 1u << (sizeof(ShortSeq) * 8u),
+			/*! \brief Oldest margin where the short seq of changes should be moved. */
+			SeqLowerMargin = ShortSeqWindow / 4u,
+			/*! \brief Threshold for #clean(). */
 			SeqCleanThreshold = SeqLowerMargin * 2u,
 		};
 
@@ -157,12 +208,18 @@ namespace stored {
 		bool hasChanged(Seq since) const;
 
 		typedef void(IterateChangedCallback)(Key, void*);
-		void iterateChanged(Seq since, IterateChangedCallback* cb, void* arg = nullptr);
+		void iterateChanged(Seq since, IterateChangedCallback* cb, void* arg = nullptr) const;
 
 #if STORED_cplusplus >= 201103L
+		/*!
+		 * \brief Iterate all changes since the given seq.
+		 *
+		 * The callback \p will receive the Key of the object that has changed
+		 * since the given seq.
+		 */
 		template <typename F>
 		SFINAE_IS_FUNCTION(F, void(Key), void)
-		iterateChanged(Seq since, F&& cb) {
+		iterateChanged(Seq since, F&& cb) const {
 			std::function<void(Key)> f = cb;
 			iterateChanged(since,
 				[](Key key, void* f_) {
@@ -181,6 +238,9 @@ namespace stored {
 		Seq decodeUpdates(void*& buffer, size_t& len);
 
 	protected:
+		/*!
+		 * \brief Element in the \c m_changes administration.
+		 */
 		struct ObjectInfo {
 			ObjectInfo(StoreJournal::Key key, StoreJournal::Size len, StoreJournal::ShortSeq seq)
 				: key(key), len(len), seq(seq), highest(seq)
@@ -192,12 +252,16 @@ namespace stored {
 			StoreJournal::ShortSeq highest; // of all seqs in this part of the tree
 		};
 
+		/*!
+		 * \brief Comparator to sort \c m_changes based on the key.
+		 */
 		struct ObjectInfoComparator {
 			bool operator()(ObjectInfo const& a, ObjectInfo const& b) const {
 				return a.key < b.key;
 			}
 		};
 
+		Seq bumpSeq(bool force);
 		ShortSeq toShort(Seq seq) const;
 		Seq toLong(ShortSeq seq) const;
 
@@ -217,7 +281,7 @@ namespace stored {
 		size_t bufferSize() const;
 		size_t keySize() const;
 
-		void iterateChanged(Seq since, IterateChangedCallback* cb, void* arg, size_t lower, size_t upper);
+		void iterateChanged(Seq since, IterateChangedCallback* cb, void* arg, size_t lower, size_t upper) const;
 
 	private:
 		char const* const m_hash;
@@ -310,6 +374,23 @@ namespace stored {
 
 	/*!
 	 * \brief A one-to-one connection to synchronize one or more stores.
+	 *
+	 * A SyncConnection is related to one #stored::Synchronizer, and a
+	 * protocol stack to one other party. Using this connection, multiple
+	 * stores can be synchronized.
+	 *
+	 * The protocol is straight-forward: assume Synchronizer A wants to synchronize
+	 * a store with Synchronizer B via a SyncConnection:
+	 *
+	 * - A sends 'Hello' to B to indicate that it wants the full store
+	 *   immediately and updates afterwards.
+	 * - B sends 'Welcome' back to A, including the full store's buffer.
+	 * - When A has updates, it sends 'Update' to B.
+	 * - When B has updates, it sensd 'Update' to A.
+	 * - If A does not need updates anymore, it sends 'Bye'.
+	 * - B can send 'Bye' to A too, but this will probably break the application,
+	 *   as A usually cannot handle this.
+	 *
 	 * \see #stored::Synchronizer
 	 * \ingroup libstored_synchronizer
 	 */
@@ -334,6 +415,8 @@ namespace stored {
 		void process(StoreJournal& store);
 		void decode(void* buffer, size_t len) override final;
 
+		virtual void reset() override;
+
 	protected:
 		Id nextId();
 		void encodeCmd(char cmd, bool last = false);
@@ -345,17 +428,28 @@ namespace stored {
 		void bye(char const* hash);
 		void bye(Id id);
 		void erase(char const* hash);
-		void erase(Id id);
+		void eraseOut(Id id);
+		void eraseIn(Id id);
+
+		void dropNonSources();
+		void helloAgain();
+		void helloAgain(StoreJournal& store);
 
 	private:
 		Synchronizer& m_synchronizer;
 
-		typedef std::map<StoreJournal*, StoreJournal::Seq> SeqMap;
-		SeqMap m_seq;
+		struct StoreInfo {
+			StoreInfo() : seq(), idOut(), source() {}
 
-		// Id determined by remote class (got via Hello message)
-		typedef std::map<StoreJournal*, Id> IdOutMap;
-		IdOutMap m_idOut;
+			StoreJournal::Seq seq;
+			// Id determined by remote class (got via Hello message)
+			Id idOut;
+			// When true, this store was initially synchronized from there to here.
+			bool source;
+		};
+
+		typedef std::map<StoreJournal*, StoreInfo> StoreMap;
+		StoreMap m_store;
 
 		// Id determined by this class (set in Hello message)
 		typedef std::map<Id, StoreJournal*> IdInMap;
@@ -366,20 +460,32 @@ namespace stored {
 
 	/*!
 	 * \brief The service that manages synchronization of stores over SyncConnections.
+	 *
+	 * A Synchronizer holds a set of stores, and a set of SyncConnections.
+	 * A store can be synchronized over multiple connections simultaneously.
+	 *
 	 * \ingroup libstored_synchronizer
 	 */
 	class Synchronizer {
 		CLASS_NOCOPY(Synchronizer)
 	public:
-
+		/*!
+		 * \brief Ctor.
+		 */
 		Synchronizer() is_default
 		~Synchronizer();
 
+		/*!
+		 * \brief Register a store in this Synchronizer.
+		 */
 		template <typename Store>
 		void map(Synchronizable<Store>& store) {
 			m_storeMap.insert(std::make_pair(store.hash(), &store.journal()));
 		}
 
+		/*!
+		 * \brief Deregister a store from this Synchronizer.
+		 */
 		template <typename Store>
 		void unmap(Synchronizable<Store>& store) {
 			m_storeMap.erase(store.hash());
@@ -393,6 +499,12 @@ namespace stored {
 		void connect(ProtocolLayer& connection);
 		void disconnect(ProtocolLayer& connection);
 
+		/*!
+		 * \brief Mark the connection to be a source of the given store.
+		 *
+		 * The full store's buffer is received from the Synchronizer via the \p connection.
+		 * Afterwards, updates and exchanged bidirectionally.
+		 */
 		template <typename Store>
 		void syncFrom(Synchronizable<Store>& store, ProtocolLayer& connection) {
 			StoreJournal* j = toJournal(store.hash());
@@ -402,11 +514,17 @@ namespace stored {
 			c->source(*j);
 		}
 
+		/*!
+		 * \brief Process updates for the given store on all connections.
+		 */
 		template <typename Store>
 		void process(Synchronizable<Store>& store) {
 			process(store.journal());
 		}
 
+		/*!
+		 * \brief Process updates for the given store on the given connection.
+		 */
 		template <typename Store>
 		void process(ProtocolLayer& connection, Synchronizable<Store>& store) {
 			process(connection, store.journal());
@@ -421,6 +539,9 @@ namespace stored {
 		SyncConnection* toConnection(ProtocolLayer& connection) const;
 
 	private:
+		/*!
+		 * \brief Comparator based on the hash string.
+		 */
 		struct HashComparator {
 			bool operator()(char const* a, char const* b) const {
 				return strcmp(a, b) < 0;

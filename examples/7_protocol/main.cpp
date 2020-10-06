@@ -143,7 +143,7 @@ int main() {
 
 	This is:
 		\x1b_       TerminalLayer: start of message
-		  @Y        ArqLayer: seq=89
+		  @Y        DebugArqLayer: seq=89
 		    ?       Debugger: capabilities
 		  E         SegmentationLayer: last chunk
 		  z\x7fI    AsciiEscapeLayer: z<tab>
@@ -166,7 +166,7 @@ int main() {
 	stored::SegmentationLayer segmentation;
 	segmentation.wrap(debugger);
 
-	stored::ArqLayer arq;
+	stored::DebugArqLayer arq;
 	arq.wrap(segmentation);
 
 	stored::Crc16Layer crc;

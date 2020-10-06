@@ -185,7 +185,15 @@ TerminalLayer::TerminalLayer(int nonDebugDecodeFd, int encodeFd, ProtocolLayer* 
 	, m_encodeFd(encodeFd)
 	, m_decodeState(StateNormal)
 	, m_encodeState()
-{}
+{
+}
+
+void TerminalLayer::reset() {
+	m_decodeState = StateNormal;
+	m_encodeState = false;
+	m_buffer.clear();
+	base::reset();
+}
 
 /*!
  * \copydoc stored::ProtocolLayer::~ProtocolLayer()
@@ -332,6 +340,12 @@ SegmentationLayer::SegmentationLayer(size_t mtu, ProtocolLayer* up, ProtocolLaye
 {
 }
 
+void SegmentationLayer::reset() {
+	m_decode.clear();
+	m_encoded = 0;
+	base::reset();
+}
+
 size_t SegmentationLayer::mtu() const {
 	// We segment, so all layers above can use any size they want.
 	return 0;
@@ -414,16 +428,372 @@ void SegmentationLayer::encode(void const* buffer, size_t len, bool last) {
 
 
 
-
-
 //////////////////////////////
 // ArqLayer
 //
 
 /*!
  * \brief Ctor.
+ *
+ * If \p maxEncodeBuffer is non-zero, it defines the upper limit of the
+ * combined length of all queued messages for encoding. If the limit is hit,
+ * the #EventEncodeBufferOverflow event is passed to the callback.
  */
 ArqLayer::ArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+#if STORED_cplusplus < 201103L
+	, m_cb()
+	, m_cbArg()
+#endif
+	, m_maxEncodeBuffer(maxEncodeBuffer)
+	, m_encodeQueueSize()
+	, m_encodeState(EncodeStateIdle)
+	, m_didTransmit()
+	, m_retransmits()
+	, m_sendSeq()
+	, m_recvSeq()
+{
+	// Empty encode with seq 0, which indicates a reset message.
+	keepAlive();
+}
+
+/*!
+ * \brief Dtor.
+ */
+ArqLayer::~ArqLayer() {
+	for(std::deque<std::string*>::iterator it = m_encodeQueue.begin(); it != m_encodeQueue.end(); ++it)
+		delete *it; // NOLINT(cppcoreguidelines-owning-memory)
+	for(std::deque<std::string*>::iterator it = m_spare.begin(); it != m_spare.end(); ++it)
+		delete *it; // NOLINT(cppcoreguidelines-owning-memory)
+}
+
+void ArqLayer::reset() {
+	while(!m_encodeQueue.empty())
+		popEncodeQueue();
+	stored_assert(m_encodeQueueSize == 0);
+
+	m_encodeState = EncodeStateIdle;
+	m_didTransmit = false;
+	m_retransmits = 0;
+	m_sendSeq = 0;
+	m_recvSeq = 0;
+	base::reset();
+	keepAlive();
+}
+
+void ArqLayer::decode(void* buffer, size_t len) {
+	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
+
+next:
+	if(len == 0)
+		return;
+
+	if(buffer_[0] & AckFlag) {
+		if(waitingForAck() && (buffer_[0] & SeqMask) == ((uint8_t)(*m_encodeQueue.front())[0] & SeqMask)) {
+			// They got our last transmission.
+			popEncodeQueue();
+			m_retransmits = 0;
+
+			// Transmit next message, if any.
+			transmit();
+		}
+
+		buffer_++;
+		len--;
+		goto next;
+	}
+
+	if(likely((buffer_[0] & SeqMask) == m_recvSeq)) {
+		// This is a proper next message.
+		uint8_t ack = (uint8_t)(m_recvSeq | AckFlag);
+		base::encode(&ack, 1, false);
+		m_recvSeq = nextSeq(m_recvSeq);
+		resetDidTransmit();
+
+		if(likely(!(buffer_[0] & NopFlag))) {
+			// Go process the payload.
+			base::decode(buffer_ + 1, len - 1);
+		}
+
+		if(!didTransmit())
+			transmit();
+
+		if(!didTransmit()) {
+			base::encode(nullptr, 0, true);
+			m_didTransmit = true;
+		}
+	} else if(nextSeq((uint8_t)(buffer_[0] & SeqMask)) == m_recvSeq) {
+		// This is a retransmit of the previous message.
+		// Send ack again.
+		uint8_t ack = (uint8_t)((uint8_t)(buffer_[0] & SeqMask) | AckFlag);
+		base::encode(&ack, 1, true);
+	} else if((buffer_[0] & SeqMask) == 0) {
+		// This is an unexpected reset message.
+		event(EventReconnect);
+	} // else drop silently
+}
+
+/*!
+ * \brief Checks if this layer is waiting for an ack.
+ */
+bool ArqLayer::waitingForAck() const {
+	if(m_encodeQueue.empty())
+		return false;
+
+	if(m_encodeQueue.size() == 1 && m_encodeState != EncodeStateIdle)
+		return false;
+
+	stored_assert(m_encodeQueue.front() && !m_encodeQueue.front()->empty());
+	return true;
+}
+
+void ArqLayer::encode(void const* buffer, size_t len, bool last) {
+	if(m_maxEncodeBuffer > 0 && m_maxEncodeBuffer < m_encodeQueueSize + len)
+		event(EventEncodeBufferOverflow);
+
+	switch(m_encodeState) {
+	case EncodeStateIdle:
+		pushEncodeQueue(buffer, len);
+
+		if(!last)
+			m_encodeState = EncodeStateEncoding;
+
+		break;
+
+	case EncodeStateEncoding:
+		stored_assert(!m_encodeQueue.empty());
+		m_encodeQueueSize += len;
+		m_encodeQueue.back()->append(static_cast<char const*>(buffer), len);
+
+		if(last)
+			m_encodeState = EncodeStateIdle;
+		break;
+	}
+
+	transmit();
+}
+
+bool ArqLayer::flush() {
+	bool res = !transmit();
+	return base::flush() && res;
+}
+
+/*!
+ * \brief (Re)transmits the first message in the queue.
+ * \return \c true if something has been sent, \c false if the queue is empty
+ */
+bool ArqLayer::transmit() {
+	if(m_encodeQueue.empty())
+		// Nothing to send.
+		return false;
+
+	if(m_encodeQueue.size() == 1 && m_encodeState == EncodeStateEncoding)
+		// Still assembling first message, but there is nothing to flush (yet).
+		return false;
+
+	// Update administration first, in case base::encode() has some recursive
+	// call back to decode()/encode().
+	m_didTransmit = true;
+	if(m_retransmits < std::numeric_limits<decltype(m_retransmits)>::max())
+		m_retransmits++;
+	if(m_retransmits >= RetransmitCallbackThreshold)
+		event(EventRetransmit);
+
+	// (Re)transmit first message.
+	base::encode(m_encodeQueue.front()->data(), m_encodeQueue.front()->size(), true);
+
+	stored_assert(waitingForAck());
+	return true;
+}
+
+/*!
+ * \brief Forward the given event to the registered callback, if any.
+ */
+void ArqLayer::event(ArqLayer::Event e) {
+	if(m_cb) {
+#if STORED_cplusplus < 201103L
+		m_cb(*this, e, m_cbArg);
+#else
+		m_cb(*this, e);
+#endif
+	} else {
+		switch(e) {
+		case EventNone:
+		case EventReconnect:
+		case EventRetransmit:
+			// By default, ignore.
+			break;
+		case EventEncodeBufferOverflow:
+			// Cannot handle this.
+			abort();
+		}
+	}
+}
+
+/*!
+ * \brief Compute the next sequence number.
+ */
+uint8_t ArqLayer::nextSeq(uint8_t seq) {
+	seq = (uint8_t)((seq + 1u) & SeqMask);
+	return seq ? seq : 1u;
+}
+
+size_t ArqLayer::mtu() const {
+	size_t mtu = base::mtu();
+	if(mtu == 0)
+		return 0;
+	if(mtu <= 2u)
+		return 1u;
+	return mtu - 2u;
+}
+
+/*!
+ * \brief Checks if a full message has been transmitted.
+ *
+ * This function can be used to determine if this layer transmitted anything.
+ * For example, when a response is decoded, this function can be used to check
+ * if anything has sent back, or the message was dropped. Or, when #flush() is
+ * called, this flag can be used to check if anything was actually flushed.
+ *
+ * To use the function, first call #resetDidTransmit(), then execute the code
+ * you want to check, and then check #didTransmit().
+ *
+ * \see #resetDidTransmit()
+ */
+bool ArqLayer::didTransmit() const {
+	return m_didTransmit;
+}
+
+/*!
+ * \brief Reset the flag for #didTransmit().
+ * \see #didTransmit()
+ */
+void ArqLayer::resetDidTransmit() {
+	m_didTransmit = false;
+}
+
+/*!
+ * \brief Returns the number of consecutive retransmits of the same message.
+ *
+ * Use this function to determine whether the connection is still alive.  It is
+ * application-defined what the threshold is of too many retransmits.
+ */
+size_t ArqLayer::retransmits() const {
+	return m_retransmits ? m_retransmits - 1u : 0u;
+}
+
+/*!
+ * \brief Send a keep-alive packet to check the connection.
+ *
+ * It actually retransmits the message that is currently processed (waiting for
+ * an ack), or sends a dummy message in case the encode queue is empty. Either
+ * way, #retransmits() and the #EventRetransmit can be used afterwards to
+ * determine the quality of the link.
+ */
+void ArqLayer::keepAlive() {
+	if(m_encodeQueue.empty()) {
+		// Send empty message. This will trigger (re)transmits, so a broken
+		// connection will be detected.
+		pushEncodeQueueRaw().push_back((char)(m_sendSeq | NopFlag));
+		m_encodeQueueSize++;
+		m_sendSeq = nextSeq(m_sendSeq);
+	}
+
+	transmit();
+}
+
+/*!
+ * \brief Drop front of encode queue.
+ */
+void ArqLayer::popEncodeQueue() {
+	stored_assert(!m_encodeQueue.empty());
+	m_encodeQueueSize -= m_encodeQueue.front()->size();
+	m_encodeQueue.front()->clear();
+
+#if STORED_cplusplus >= 201103L
+	m_spare.emplace_back(m_encodeQueue.front());
+#else
+	m_spare.push_back(m_encodeQueue.front());
+#endif
+
+	m_encodeQueue.pop_front();
+}
+
+/*!
+ * \brief Push the given buffer into the encode queue.
+ */
+void ArqLayer::pushEncodeQueue(void const* buffer, size_t len) {
+	std::string& s = pushEncodeQueueRaw();
+	s.push_back((char)m_sendSeq);
+	s.append(static_cast<char const*>(buffer), len);
+	m_sendSeq = nextSeq(m_sendSeq);
+	m_encodeQueueSize += len;
+}
+
+/*!
+ * \brief Adds an entry in the encode queue, but do not populate the contents.
+ *
+ * The returned buffer can be used to put the message in. This should include
+ * the sequence number as the first byte.
+ */
+std::string& ArqLayer::pushEncodeQueueRaw() {
+	std::string* s;
+
+	if(m_spare.empty()) {
+		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+		s = new std::string;
+
+		m_encodeQueue.
+#if STORED_cplusplus >= 201103L
+			emplace_back(s);
+#else
+			push_back(s);
+#endif
+	} else {
+		s = m_spare.back();
+		m_spare.pop_back();
+
+		m_encodeQueue.
+#if STORED_cplusplus >= 201103L
+			emplace_back(s);
+#else
+			push_back(s);
+#endif
+	}
+
+	stored_assert(s->empty());
+	return *s;
+}
+
+/*!
+ * \brief Free all unused memory.
+ */
+void ArqLayer::shrink_to_fit() {
+	for(std::deque<std::string*>::iterator it = m_encodeQueue.begin(); it != m_encodeQueue.end(); ++it)
+#if STORED_cplusplus >= 201103L
+		(*it)->shrink_to_fit();
+#else
+		(*it)->reserve((*it)->size());
+#endif
+
+	for(std::deque<std::string*>::iterator it = m_spare.begin(); it != m_spare.end(); ++it)
+		delete *it; // NOLINT(cppcoreguidelines-owning-memory)
+
+	m_spare.clear();
+#if STORED_cplusplus >= 201103L
+	m_spare.shrink_to_fit();
+#endif
+}
+
+
+//////////////////////////////
+// DebugArqLayer
+//
+
+/*!
+ * \brief Ctor.
+ */
+DebugArqLayer::DebugArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_decodeState(DecodeStateIdle)
 	, m_decodeSeq(1)
@@ -436,7 +806,19 @@ ArqLayer::ArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* dow
 {
 }
 
-void ArqLayer::decode(void* buffer, size_t len) {
+void DebugArqLayer::reset() {
+	m_decodeState = DecodeStateIdle;
+	m_decodeSeq = 1;
+	m_decodeSeqStart = 0;
+	m_encodeState = EncodeStateIdle;
+	m_encodeSeq = 1;
+	m_encodeSeqReset = true;
+	m_encodeBuffer.clear();
+	m_encodeBufferSize = 0;
+	base::reset();
+}
+
+void DebugArqLayer::decode(void* buffer, size_t len) {
 	if(len == 0)
 		return;
 
@@ -520,7 +902,7 @@ void ArqLayer::decode(void* buffer, size_t len) {
 	}
 }
 
-void ArqLayer::encode(void const* buffer, size_t len, bool last) {
+void DebugArqLayer::encode(void const* buffer, size_t len, bool last) {
 	if(m_decodeState == DecodeStateDecoding) {
 		// This seems to be the first part of the response.
 		// So, the request message must have been complete.
@@ -591,7 +973,7 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 	}
 }
 
-void ArqLayer::setPurgeableResponse(bool purgeable) {
+void DebugArqLayer::setPurgeableResponse(bool purgeable) {
 	bool wasPurgeable = m_encodeState == EncodeStateUnbufferedIdle || m_encodeState == EncodeStateUnbufferedEncoding;
 
 	if(wasPurgeable == purgeable)
@@ -633,7 +1015,7 @@ void ArqLayer::setPurgeableResponse(bool purgeable) {
 	}
 }
 
-size_t ArqLayer::mtu() const {
+size_t DebugArqLayer::mtu() const {
 	size_t mtu = base::mtu();
 	if(mtu == 0)
 		return 0;
@@ -642,12 +1024,18 @@ size_t ArqLayer::mtu() const {
 	return mtu - 4u;
 }
 
-uint32_t ArqLayer::nextSeq(uint32_t seq) {
+/*!
+ * \brief Compute the successive sequence number.
+ */
+uint32_t DebugArqLayer::nextSeq(uint32_t seq) {
 	seq = (uint32_t)((seq + 1u) % 0x8000000);
 	return seq ? seq : 1u;
 }
 
-uint32_t ArqLayer::decodeSeq(uint8_t*& buffer, size_t& len) {
+/*!
+ * \brief Decode the sequence number from a buffer.
+ */
+uint32_t DebugArqLayer::decodeSeq(uint8_t*& buffer, size_t& len) {
 	uint32_t seq = 0;
 	uint8_t flag = 0x40;
 
@@ -661,7 +1049,11 @@ uint32_t ArqLayer::decodeSeq(uint8_t*& buffer, size_t& len) {
 	}
 }
 
-size_t ArqLayer::encodeSeq(uint32_t seq, void* buffer) {
+/*!
+ * \brief Encode a sequence number into a buffer.
+ * \return the number of bytes written (maximum of 4)
+ */
+size_t DebugArqLayer::encodeSeq(uint32_t seq, void* buffer) {
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 	if(seq < 0x40u) {
 		buffer_[0] = (uint8_t)(seq & 0x3fu);
@@ -721,6 +1113,11 @@ Crc8Layer::Crc8Layer(ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_crc(init)
 {
+}
+
+void Crc8Layer::reset() {
+	m_crc = init;
+	base::reset();
 }
 
 void Crc8Layer::decode(void* buffer, size_t len) {
@@ -803,6 +1200,11 @@ Crc16Layer::Crc16Layer(ProtocolLayer* up, ProtocolLayer* down)
 {
 }
 
+void Crc16Layer::reset() {
+	m_crc = init;
+	base::reset();
+}
+
 void Crc16Layer::decode(void* buffer, size_t len) {
 	if(len < 2)
 		return;
@@ -853,11 +1255,24 @@ size_t Crc16Layer::mtu() const {
 // BufferLayer
 //
 
+/*!
+ * \brief Constructor for a buffer with given size.
+ *
+ * If \p size is 0, the buffer it not bounded.
+ */
 BufferLayer::BufferLayer(size_t size, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_size(size ? size : std::numeric_limits<size_t>::max())
 {}
 
+void BufferLayer::reset() {
+	m_buffer.clear();
+	base::reset();
+}
+
+/*!
+ * \brief Collects all partial buffers, and passes the full encoded data on when \p last is set.
+ */
 void BufferLayer::encode(void const* buffer, size_t len, bool last) {
 	char const* buffer_ = static_cast<char const*>(buffer);
 
@@ -898,6 +1313,14 @@ void BufferLayer::encode(void const* buffer, size_t len, bool last) {
 // PrintLayer
 //
 
+/*!
+ * \brief Constructor to print all decoding/encoding messages to the given \c FILE.
+ *
+ * If \p f is \c nullptr, printing is suppressed.
+ * The name is used as prefix of the printed messages.
+ *
+ * \see #setFile()
+ */
 PrintLayer::PrintLayer(FILE* f, char const* name, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_f(f)
@@ -953,6 +1376,9 @@ void PrintLayer::setFile(FILE* f) {
 // Loopback
 //
 
+/*!
+ * \brief Constructor.
+ */
 impl::Loopback1::Loopback1(ProtocolLayer& from, ProtocolLayer& to)
 	: m_to(to)
 	, m_buffer()
@@ -962,11 +1388,22 @@ impl::Loopback1::Loopback1(ProtocolLayer& from, ProtocolLayer& to)
 	wrap(from);
 }
 
+/*!
+ * \brief Destructor.
+ */
 impl::Loopback1::~Loopback1() {
 	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory, cppcoreguidelines-no-malloc)
 	free(m_buffer);
 }
 
+void impl::Loopback1::reset() {
+	m_len = 0;
+	base::reset();
+}
+
+/*!
+ * \brief Collect partial data, and passes into the \c decode() of \c to when it has the full message.
+ */
 void impl::Loopback1::encode(void const* buffer, size_t len, bool last) {
 	if(likely(len > 0)) {
 		if(unlikely(m_len + len > m_capacity)) {
@@ -989,6 +1426,9 @@ void impl::Loopback1::encode(void const* buffer, size_t len, bool last) {
 	}
 }
 
+/*!
+ * \brief Constructs a bidirectional loopback of stacks \p a and \p b.
+ */
 Loopback::Loopback(ProtocolLayer& a, ProtocolLayer& b)
 	: m_a2b(a, b)
 	, m_b2a(b, a)

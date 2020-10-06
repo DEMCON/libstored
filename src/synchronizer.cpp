@@ -27,6 +27,12 @@ namespace stored {
 // StoreJournal
 //
 
+/*!
+ * \brief Ctor.
+ * \param hash the hash of the store
+ * \param buffer the buffer of the store
+ * \param size the size of \p buffer
+ */
 StoreJournal::StoreJournal(char const* hash, void* buffer, size_t size)
 	: m_hash(hash)
 	, m_buffer(buffer)
@@ -41,6 +47,9 @@ StoreJournal::StoreJournal(char const* hash, void* buffer, size_t size)
 	stored_assert(size < std::numeric_limits<Size>::max());
 }
 
+/*!
+ * \brief Compute key size in bytes given a buffer size.
+ */
 uint8_t StoreJournal::keySize(size_t bufferSize) {
 	uint8_t s = 0;
 	while(bufferSize) {
@@ -50,6 +59,9 @@ uint8_t StoreJournal::keySize(size_t bufferSize) {
 	return s;
 }
 
+/*!
+ * \brief Return the hash of the corresponding store.
+ */
 char const* StoreJournal::hash() const {
 	return m_hash;
 }
@@ -65,23 +77,33 @@ StoreJournal::Seq StoreJournal::seq() const {
 	return m_seq;
 }
 
+/*!
+ * \brief Bump #seq(), when required.
+ */
 StoreJournal::Seq StoreJournal::bumpSeq() {
-	if(!m_partialSeq)
+	return bumpSeq(false);
+}
+
+/*!
+ * \brief Bump #seq().
+ */
+StoreJournal::Seq StoreJournal::bumpSeq(bool force) {
+	if(!force && !m_partialSeq)
 		return m_seq;
 
 	m_partialSeq = false;
 	m_seq++;
 
-	Seq const saveRange = (1u << (sizeof(ShortSeq) * 8u)) - SeqLowerMargin;
+	Seq const safeRange = ShortSeqWindow - SeqLowerMargin;
 
-	if(unlikely(m_seq - m_seqLower > saveRange)) {
+	if(unlikely(m_seq - m_seqLower > safeRange)) {
 		Seq seqLower = m_seq;
-		m_seqLower = m_seq - SeqLowerMargin;
+		m_seqLower = m_seq - ShortSeqWindow + 2u * SeqLowerMargin;
 
 		for(size_t i = 0; i < m_changes.size(); i++) {
 			ObjectInfo& o = m_changes[i];
 			Seq o_seq = toLong(o.seq);
-			if(m_seq - o_seq > saveRange) {
+			if(m_seq - o_seq > safeRange) {
 				update(o.key, o.len, m_seqLower, 0, m_changes.size());
 				seqLower = m_seqLower;
 			} else
@@ -94,20 +116,38 @@ StoreJournal::Seq StoreJournal::bumpSeq() {
 	return m_seq;
 }
 
+/*!
+ * \brief Convert to short seq.
+ * \param seq the seq to convert, which must be within the current ShortSeqWindow
+ */
 StoreJournal::ShortSeq StoreJournal::toShort(StoreJournal::Seq seq) const {
+	stored_assert(seq <= m_seq);
+	stored_assert(m_seq - seq < ShortSeqWindow);
 	return (ShortSeq)seq;
 }
 
+/*!
+ * \brief Convert from short seq.
+ */
 StoreJournal::Seq StoreJournal::toLong(StoreJournal::ShortSeq seq) const {
-	ShortSeq sseq = toShort(m_seq);
-	if(sseq == seq)
+	ShortSeq short_m_seq = toShort(m_seq);
+	if(seq == short_m_seq)
 		return m_seq;
-	else if(sseq > seq)
-		return m_seq - sseq + seq;
+	else if(seq < short_m_seq)
+		//     <------ShortSeqWindow------->
+		//    0....seq....short_m_seq.......|.... . . . ...m_seq
+		return m_seq - (short_m_seq - seq);
 	else
-		return m_seq - (1u << (sizeof(ShortSeq) * 8u)) - seq + sseq;
+		//    0....short_m_seq....seq.......|.... . . . ...m_seq
+		return m_seq - (ShortSeqWindow + short_m_seq - seq);
 }
 
+/*!
+ * \brief Record a change.
+ * \param key of the object within the store this is the journal of
+ * \param len the length of the (changed) data of the object.
+ *        This is usually constant, but may change if the object is a string, for example.
+ */
 void StoreJournal::changed(StoreJournal::Key key, size_t len) {
 	m_partialSeq = true;
 
@@ -123,6 +163,11 @@ void StoreJournal::changed(StoreJournal::Key key, size_t len) {
 	}
 }
 
+/*!
+ * \brief Update the meta data of the given key.
+ * \details This function does a binary search through \c m_changes, limited by [lower,upper[.
+ * \return \c true of successful, \c false if key is unknown
+ */
 bool StoreJournal::update(StoreJournal::Key key, size_t len, StoreJournal::Seq seq, size_t lower, size_t upper) {
 	if(lower >= upper)
 		return false;
@@ -142,11 +187,18 @@ bool StoreJournal::update(StoreJournal::Key key, size_t len, StoreJournal::Seq s
 		return update(key, len, seq, pivot + 1, upper);
 }
 
+/*!
+ * \brief Regenerate the adminstration.
+ * \details This must be done if elements are added or removed from \c m_changes.
+ */
 void StoreJournal::regenerate() {
 	std::sort(m_changes.begin(), m_changes.end(), ObjectInfoComparator());
 	regenerate(0, m_changes.size());
 }
 
+/*!
+ * \brief Implementation of #regenerate().
+ */
 StoreJournal::Seq StoreJournal::regenerate(size_t lower, size_t upper) {
 	if(lower >= upper)
 		return 0;
@@ -203,16 +255,28 @@ bool StoreJournal::hasChanged(Seq since) const {
 	return m_changes[pivot].highest >= since;
 }
 
-void StoreJournal::iterateChanged(StoreJournal::Seq since, IterateChangedCallback* cb, void* arg) {
+/*!
+ * \brief Iterate all changes since the given seq.
+ *
+ * The callback \p will receive the Key of the object that has changed
+ * since the given seq, and the supplied \p arg.
+ */
+void StoreJournal::iterateChanged(StoreJournal::Seq since, IterateChangedCallback* cb, void* arg) const {
+	if(!cb)
+		return;
+
 	iterateChanged(since, cb, arg, 0, m_changes.size());
 }
 
-void StoreJournal::iterateChanged(StoreJournal::Seq since, IterateChangedCallback* cb, void* arg, size_t lower, size_t upper) {
+/*!
+ * \brief Implementation of #iterateChanged()
+ */
+void StoreJournal::iterateChanged(StoreJournal::Seq since, IterateChangedCallback* cb, void* arg, size_t lower, size_t upper) const {
 	if(lower >= upper)
 		return;
 
 	size_t pivot = (upper - lower) / 2 + lower;
-	ObjectInfo& o = m_changes[pivot];
+	ObjectInfo const& o = m_changes[pivot];
 	if(toLong(o.highest) < since)
 		return;
 
@@ -222,6 +286,10 @@ void StoreJournal::iterateChanged(StoreJournal::Seq since, IterateChangedCallbac
 	iterateChanged(since, cb, arg, pivot + 1, upper);
 }
 
+/*!
+ * \brief Remove all elements from the administration older than the given threshold.
+ * \param oldest seq of oldest element to remain. If 0, use older than #SeqCleanThreshold before #seq().
+ */
 void StoreJournal::clean(StoreJournal::Seq oldest) {
 	if(oldest == 0)
 		oldest = seq() - SeqCleanThreshold;
@@ -238,16 +306,26 @@ void StoreJournal::clean(StoreJournal::Seq oldest) {
 		regenerate();
 }
 
+/*!
+ * \brief Encode the store's hash into a Synchronizer message.
+ */
 void StoreJournal::encodeHash(ProtocolLayer& p, bool last) {
 	encodeHash(p, hash(), last);
 }
 
+/*!
+ * \brief Encode a hash into a Synchronizer message.
+ */
 void StoreJournal::encodeHash(ProtocolLayer& p, char const* hash, bool last) {
 	size_t len = strlen(hash) + 1;
 	stored_assert(len > sizeof(SyncConnection::Id)); // Otherwise SyncConnection::Bye cannot see the difference.
 	p.encode(hash, len, last);
 }
 
+/*!
+ * \brief Decode hash from a Synchronizer message.
+ * \return the hash, or an empty string upon decode error
+ */
 char const* StoreJournal::decodeHash(void*& buffer, size_t& len) {
 	char* buffer_ = static_cast<char*>(buffer);
 	size_t i;
@@ -265,11 +343,19 @@ char const* StoreJournal::decodeHash(void*& buffer, size_t& len) {
 	}
 }
 
+/*!
+ * \brief Encode full store's buffer as a #stored::Synchronizer message.
+ * \return the seq number of the change set
+ */
 StoreJournal::Seq StoreJournal::encodeBuffer(ProtocolLayer& p, bool last) {
 	p.encode(buffer(), bufferSize(), last);
 	return bumpSeq();
 }
 
+/*!
+ * \brief Decode and process a full store's buffer from #stored::Synchronizer message.
+ * \return the seq number of the applied changes
+ */
 StoreJournal::Seq StoreJournal::decodeBuffer(void*& buffer, size_t& len) {
 	if(len < bufferSize())
 		return 0;
@@ -294,6 +380,9 @@ StoreJournal::Seq StoreJournal::encodeUpdates(ProtocolLayer& p, StoreJournal::Se
 	return bumpSeq();
 }
 
+/*!
+ * \brief Implementation of #encodeUpdates().
+ */
 void StoreJournal::encodeUpdates(ProtocolLayer& p, StoreJournal::Seq sinceSeq, size_t lower, size_t upper) {
 	if(lower >= upper)
 		return;
@@ -309,12 +398,18 @@ void StoreJournal::encodeUpdates(ProtocolLayer& p, StoreJournal::Seq sinceSeq, s
 	encodeUpdates(p, sinceSeq, pivot + 1, upper);
 }
 
+/*!
+ * \brief Encode one change.
+ */
 void StoreJournal::encodeUpdate(ProtocolLayer& p, StoreJournal::ObjectInfo& o) {
 	encodeKey(p, o.key);
 	encodeKey(p, o.len);
 	p.encode(keyToBuffer(o.key), o.len, false);
 }
 
+/*!
+ * \brief Decode and apply updates from a #stored::Synchronizer message.
+ */
 StoreJournal::Seq StoreJournal::decodeUpdates(void*& buffer, size_t& len) {
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 	bool ok = true;
@@ -337,6 +432,9 @@ StoreJournal::Seq StoreJournal::decodeUpdates(void*& buffer, size_t& len) {
 	return bumpSeq();
 }
 
+/*!
+ * \brief Encode a key for a #stored::Synchronizer message.
+ */
 void StoreJournal::encodeKey(ProtocolLayer& p, StoreJournal::Key key) {
 	size_t keysize = keySize();
 	key = endian_h2n(key);
@@ -344,6 +442,9 @@ void StoreJournal::encodeKey(ProtocolLayer& p, StoreJournal::Key key) {
 	p.encode(reinterpret_cast<char*>(&key) + sizeof(key) - keysize, keysize, false);
 }
 
+/*!
+ * \brief Decode a key from a #stored::Synchronizer message.
+ */
 StoreJournal::Key StoreJournal::decodeKey(uint8_t*& buffer, size_t& len, bool& ok) {
 	Key key = 0;
 	size_t i = keySize();
@@ -360,10 +461,22 @@ StoreJournal::Key StoreJournal::decodeKey(uint8_t*& buffer, size_t& len, bool& o
 	return key;
 }
 
+/*!
+ * \brief Return the buffer of the store.
+ */
 void* StoreJournal::buffer() const { return m_buffer; }
+/*!
+ * \brief Return the size of #buffer().
+ */
 size_t StoreJournal::bufferSize() const { return m_bufferSize; }
+/*!
+ * \brief Return the key size applicable to this store.
+ */
 size_t StoreJournal::keySize() const { return m_keySize; }
 
+/*!
+ * \brief Return the buffer of an object corresponding to the given key.
+ */
 void* StoreJournal::keyToBuffer(StoreJournal::Key key, StoreJournal::Size len, bool* ok) const {
 	if(ok && len && key + len > bufferSize())
 		*ok = false;
@@ -376,6 +489,11 @@ void* StoreJournal::keyToBuffer(StoreJournal::Key key, StoreJournal::Size len, b
 // SyncConnection
 //
 
+/*!
+ * \brief Ctor.
+ * \param synchronizer the Synchronizer that manages this connection
+ * \param connection the protocol stack that is to wrap this SyncConnection
+ */
 SyncConnection::SyncConnection(Synchronizer& synchronizer, ProtocolLayer& connection)
 	: m_synchronizer(synchronizer)
 	, m_idInNext(1)
@@ -383,14 +501,31 @@ SyncConnection::SyncConnection(Synchronizer& synchronizer, ProtocolLayer& connec
 	connection.wrap(*this);
 }
 
+/*!
+ * \brief Dtor.
+ */
 SyncConnection::~SyncConnection() {
 	bye();
 }
 
+void SyncConnection::reset() {
+	encodeCmd(Bye);
+	flush();
+	dropNonSources();
+	base::reset();
+	helloAgain();
+}
+
+/*!
+ * \brief Returns the Synchronizer that manages this connection.
+ */
 Synchronizer& SyncConnection::synchronizer() const {
 	return m_synchronizer;
 }
 
+/*!
+ * \brief Encode a command byte.
+ */
 void SyncConnection::encodeCmd(char cmd, bool last) {
 	encode(&cmd, 1, last);
 }
@@ -399,10 +534,15 @@ void SyncConnection::encodeCmd(char cmd, bool last) {
  * \brief Use this connection as a source of the given store.
  */
 void SyncConnection::source(StoreJournal& store) {
-	for(IdInMap::iterator it = m_idIn.begin(); it != m_idIn.end(); ++it)
-		if(it->second == &store)
-			// Already registered.
-			return;
+	StoreMap::iterator it = m_store.find(&store);
+	if(it != m_store.end()) {
+		// Already registered, but the direction should not have changed...
+		stored_assert(it->second.source);
+		return;
+	}
+
+	StoreInfo& si = m_store[&store];
+	si.source = true;
 
 	encodeCmd(Hello);
 	store.encodeHash(*this, false);
@@ -435,16 +575,14 @@ SyncConnection::Id SyncConnection::nextId() {
 void SyncConnection::drop(StoreJournal& store) {
 	bool bye = false;
 
-	Id id = 0;
-	for(IdInMap::iterator it = m_idIn.begin(); !id && it != m_idIn.end(); ++it)
-		if(it->second == &store)
-			id = it->first;
+	for(IdInMap::iterator it = m_idIn.begin(); it != m_idIn.end(); ++it)
+		if(it->second == &store) {
+			m_idIn.erase(it);
+			bye = true;
+			break;
+		}
 
-	if(id && m_idIn.erase(id))
-		bye = true;
-	if(m_idOut.erase(&store))
-		bye = true;
-	if(m_seq.erase(&store))
+	if(m_store.erase(&store))
 		bye = true;
 
 	if(!bye)
@@ -454,13 +592,18 @@ void SyncConnection::drop(StoreJournal& store) {
 	store.encodeHash(*this, true);
 }
 
+/*!
+ * \brief Encode a Bye and drop all stores.
+ */
 void SyncConnection::bye() {
 	encodeCmd(Bye, true);
-	m_seq.clear();
+	m_store.clear();
 	m_idIn.clear();
-	m_idOut.clear();
 }
 
+/*!
+ * \brief Encode a Bye with a hash and drop the corresponding store.
+ */
 void SyncConnection::bye(char const* hash) {
 	if(!hash)
 		return;
@@ -470,6 +613,9 @@ void SyncConnection::bye(char const* hash) {
 	StoreJournal::encodeHash(*this, hash, true);
 }
 
+/*!
+ * \brief Erase the store with the given hash from this connection.
+ */
 void SyncConnection::erase(char const* hash) {
 	if(!hash)
 		return;
@@ -478,8 +624,7 @@ void SyncConnection::erase(char const* hash) {
 	if(!j)
 		return;
 
-	m_seq.erase(j);
-	m_idOut.erase(j);
+	m_store.erase(j);
 
 #if STORED_cplusplus >= 201103L
 	for(IdInMap::iterator it = m_idIn.begin(); it != m_idIn.end();)
@@ -501,73 +646,81 @@ void SyncConnection::erase(char const* hash) {
 #endif
 }
 
+/*!
+ * \brief Encode a Bye message with ID, and drop it from this connection.
+ */
 void SyncConnection::bye(SyncConnection::Id id) {
-	erase(id);
+	eraseIn(id);
 	encodeCmd(Bye);
 	encodeId(id);
 }
 
-void SyncConnection::erase(SyncConnection::Id id) {
-	{
-		IdInMap::iterator it = m_idIn.find(id);
-		if(it != m_idIn.end()) {
-			m_seq.erase(it->second);
-			m_idOut.erase(it->second);
-			m_idIn.erase(it);
-		}
-	}
+/*!
+ * \brief Erase the store from this connection that uses the given ID to send updates to us.
+ */
+void SyncConnection::eraseIn(SyncConnection::Id id) {
+	IdInMap::iterator it = m_idIn.find(id);
+	if(it == m_idIn.end())
+		return;
 
-	StoreJournal* j = nullptr;
-
-#if STORED_cplusplus >= 201103L
-	for(IdOutMap::iterator it = m_idOut.begin(); it != m_idOut.end();)
-		if(it->second == id) {
-			j = it->first;
-			it = m_idOut.erase(it);
-		} else
-			++it;
-#else
-	bool done;
-	do {
-		done = true;
-		for(IdOutMap::iterator it = m_idOut.begin(); it != m_idOut.end(); ++it)
-			if(it->second == id) {
-				j = it->first;
-				m_idOut.erase(it);
-				done = false;
-				break;
-			}
-	} while(!done);
-#endif
-
-	if(j)
-		erase(j->hash());
+	m_store.erase(it->second);
+	m_idIn.erase(it);
 }
 
 /*!
- * \brief Send out all updates of te given store.
+ * \brief Erase the store from this connection that uses the given ID to send updates to the other party.
+ */
+void SyncConnection::eraseOut(SyncConnection::Id id) {
+#if STORED_cplusplus >= 201103L
+	for(StoreMap::iterator it = m_store.begin(); it != m_store.end();)
+		if(it->second.idOut == id) {
+			for(IdInMap::iterator itIn = m_idIn.begin(); itIn != m_idIn.end();)
+				if(itIn->second == it->first)
+					itIn = m_idIn.erase(itIn);
+				else
+					++itIn;
+			it = m_store.erase(it);
+		} else
+			++it;
+#else
+again:
+	for(StoreMap::iterator it = m_store.begin(); it != m_store.end(); ++it)
+		if(it->second.idOut == id) {
+againIn:
+			for(IdInMap::iterator itIn = m_idIn.begin(); itIn != m_idIn.end(); ++itIn)
+				if(itIn->second == it->first) {
+					m_idIn.erase(itIn);
+					goto againIn;
+				}
+			m_store.erase(it);
+			goto again;
+		}
+#endif
+}
+
+/*!
+ * \brief Send out all updates of the given store.
  */
 void SyncConnection::process(StoreJournal& store) {
-	SeqMap::iterator seq = m_seq.find(&store);
-	if(seq == m_seq.end())
+	StoreMap::iterator s = m_store.find(&store);
+	if(s == m_store.end())
 		// Unknown store.
 		return;
-	if(!store.hasChanged(seq->second))
+	if(!store.hasChanged(s->second.seq))
 		// No recent changes.
 		return;
 
-	IdOutMap::iterator id = m_idOut.find(&store);
-	if(id == m_idOut.end())
-		// No id related to this store.
-		return;
-
 	encodeCmd(Update);
-	encodeId(id->second, false);
+	encodeId(s->second.idOut, false);
 	// Make sure to set the process seq before the last part of the encode is sent.
-	seq->second = store.encodeUpdates(*this, seq->second);
+	s->second.seq = store.encodeUpdates(*this, s->second.seq);
 	encode();
 }
 
+/*!
+ * \brief Decode the command from the buffer.
+ * \return the command or \0 on error
+ */
 char SyncConnection::decodeCmd(void*& buffer, size_t& len) {
 	if(len == 0)
 		return 0;
@@ -593,6 +746,7 @@ void SyncConnection::decode(void* buffer, size_t len) {
 
 		StoreJournal* j = synchronizer().toJournal(hash);
 		if(!j) {
+			// Unknown, drop immediately.
 			bye(hash);
 			break;
 		}
@@ -600,12 +754,15 @@ void SyncConnection::decode(void* buffer, size_t len) {
 		encodeCmd(Welcome);
 		encodeId(id);
 
-		m_idOut[j] = id;
+		StoreInfo& si = m_store[j];
+		si.source = false;
+		si.idOut = id;
+
 		id = nextId();
 		m_idIn[id] = j;
-
 		encodeId(id, false);
-		m_seq[j] = j->encodeBuffer(*this, true);
+
+		si.seq = j->encodeBuffer(*this, true);
 		break;
 	}
 	case Welcome: {
@@ -631,8 +788,10 @@ void SyncConnection::decode(void* buffer, size_t len) {
 			break;
 		}
 
-		m_seq[j->second] = seq;
-		m_idOut[j->second] = welcome_id;
+		StoreInfo& si = m_store[j->second];
+		si.seq = seq;
+		si.idOut = welcome_id;
+		stored_assert(si.source);
 		break;
 	}
 	case Update: {
@@ -660,23 +819,21 @@ void SyncConnection::decode(void* buffer, size_t len) {
 			break;
 		}
 
-		m_seq[it->second] = seq;
+		stored_assert(m_store.find(it->second) != m_store.end());
+		m_store[it->second].seq = seq;
 		break;
 	}
 	case Bye: {
 		/*
 		 * Bye
 		 *
-		 * "I do not need any more updates of the given store (by hash, by id or all)."
-		 *
 		 * 'b' hash
 		 * 'b' id
 		 * 'b'
 		 */
 		if(len == 0) {
-			m_seq.clear();
-			m_idIn.clear();
-			m_idOut.clear();
+			dropNonSources();
+			helloAgain();
 		} else if(len == sizeof(Id)) {
 			Id id = decodeId(buffer, len);
 			if(!id)
@@ -686,10 +843,28 @@ void SyncConnection::decode(void* buffer, size_t len) {
 			if(it == m_idIn.end())
 				break;
 
-			erase(id);
+			StoreInfo& si = m_store[it->second];
+			if(si.source && si.idOut)
+				// Hey, we need it!
+				helloAgain(*(it->second));
+			else
+				eraseOut(id);
 		} else {
 			char const* hash = StoreJournal::decodeHash(buffer, len);
-			erase(hash);
+			StoreJournal* j = synchronizer().toJournal(hash);
+			if(!j)
+				break;
+
+			StoreMap::iterator it = m_store.find(j);
+			if(it == m_store.end())
+				break;
+
+			StoreInfo& si = it->second;
+			if(si.source && si.idOut)
+				// Hey, we need it!
+				helloAgain(*j);
+			else
+				erase(hash);
 		}
 		break;
 	}
@@ -698,11 +873,18 @@ void SyncConnection::decode(void* buffer, size_t len) {
 	}
 }
 
+/*!
+ * \brief Encode the given ID.
+ */
 void SyncConnection::encodeId(SyncConnection::Id id, bool last) {
 	id = endian_h2s(id);
 	encode(&id, sizeof(Id), last);
 }
 
+/*!
+ * \brief Decode an ID from the buffer.
+ * \return the ID, or 0 when there decode failed
+ */
 SyncConnection::Id SyncConnection::decodeId(void*& buffer, size_t& len) {
 	if(len < sizeof(Id))
 		return 0;
@@ -715,6 +897,60 @@ SyncConnection::Id SyncConnection::decodeId(void*& buffer, size_t& len) {
 	return id;
 }
 
+/*!
+ * \brief Drop all stores from this connection that are not sources.
+ */
+void SyncConnection::dropNonSources() {
+#if STORED_cplusplus >= 201103L
+	for(StoreMap::iterator it = m_store.begin(); it != m_store.end();)
+		if(!it->second.source)
+			it = m_store.erase(it);
+		else
+			++it;
+#else
+again:
+	for(StoreMap::iterator it = m_store.begin(); it != m_store.end(); ++it)
+		if(!it->second.source) {
+			m_store.erase(it);
+			goto again;
+		}
+#endif
+}
+
+/*!
+ * \brief Send a Hello again for all sources.
+ */
+void SyncConnection::helloAgain() {
+	for(StoreMap::iterator it = m_store.begin(); it != m_store.end();)
+		if(it->second.source)
+			helloAgain(*it->first);
+}
+
+/*!
+ * \brief Send a Hello again for the given source.
+ */
+void SyncConnection::helloAgain(StoreJournal& store) {
+	StoreMap::iterator it = m_store.find(&store);
+	if(it == m_store.end())
+		return;
+
+	StoreInfo& si = it->second;
+	si.idOut = 0;
+
+	Id id = 0;
+	for(IdInMap::iterator itId = m_idIn.begin(); itId != m_idIn.end(); ++itId)
+		if(itId->second == &store) {
+			id = itId->first;
+			break;
+		}
+
+	stored_assert(id);
+
+	encodeCmd(Hello);
+	store.encodeHash(*this, false);
+	encodeId(id, true);
+}
+
 
 
 
@@ -722,6 +958,9 @@ SyncConnection::Id SyncConnection::decodeId(void*& buffer, size_t& len) {
 // Synchronizer
 //
 
+/*!
+ * \brief Dtor.
+ */
 Synchronizer::~Synchronizer() {
 	for(Connections::iterator it = m_connections.begin(); it != m_connections.end(); ++it)
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
@@ -729,6 +968,10 @@ Synchronizer::~Synchronizer() {
 	m_connections.clear();
 }
 
+/*!
+ * \brief Find a registered store given an hash.
+ * \return the store, or \c nullptr when not found
+ */
 StoreJournal* Synchronizer::toJournal(char const* hash) const {
 	if(!hash)
 		return nullptr;
@@ -736,12 +979,23 @@ StoreJournal* Synchronizer::toJournal(char const* hash) const {
 	return it == m_storeMap.end() ? nullptr : it->second;
 }
 
+/*!
+ * \brief Connect the given connection to this Synchronizer.
+ *
+ * A #stored::SyncConnection is instantiated on top of the given protocol stack.
+ * This SyncConnection is the OSI Application layer of the synchronization prococol.
+ */
 void Synchronizer::connect(ProtocolLayer& connection) {
 	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 	SyncConnection* c = new SyncConnection(*this, connection);
 	m_connections.insert(c);
 }
 
+/*!
+ * \brief Disconnect the given connection from this Synchronizer.
+ *
+ * Provide the connection as given to #connect() before.
+ */
 void Synchronizer::disconnect(ProtocolLayer& connection) {
 	SyncConnection* c = toConnection(connection);
 	if(c) {
@@ -751,6 +1005,13 @@ void Synchronizer::disconnect(ProtocolLayer& connection) {
 	}
 }
 
+/*!
+ * \brief Find the SyncConnection instance from the given connection.
+ *
+ * Provide the connection as given to #connect() before.
+ *
+ * \return the SyncConnection, or \c nullptr when not found
+ */
 SyncConnection* Synchronizer::toConnection(ProtocolLayer& connection) const {
 	ProtocolLayer* c = connection.up();
 	if(!c)
@@ -763,17 +1024,26 @@ SyncConnection* Synchronizer::toConnection(ProtocolLayer& connection) const {
 	return static_cast<SyncConnection*>(c);
 }
 
+/*!
+ * \brief Process updates for all connections and all stores.
+ */
 void Synchronizer::process() {
 	for(StoreMap::iterator it = m_storeMap.begin(); it != m_storeMap.end(); ++it)
 		process(*it->second);
 }
 
+/*!
+ * \brief Process updates for the given journal on all connections.
+ */
 void Synchronizer::process(StoreJournal& j) {
 	for(Connections::iterator it = m_connections.begin(); it != m_connections.end(); ++it)
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
 		static_cast<SyncConnection*>(*it)->process(j);
 }
 
+/*!
+ * \brief Process updates for all stores on the given connection.
+ */
 void Synchronizer::process(ProtocolLayer& connection) {
 	SyncConnection* c = toConnection(connection);
 	if(!c)
@@ -783,6 +1053,9 @@ void Synchronizer::process(ProtocolLayer& connection) {
 		c->process(*it->second);
 }
 
+/*!
+ * \brief Process updates for the given store on the given connection.
+ */
 void Synchronizer::process(ProtocolLayer& connection, StoreJournal& j) {
 	SyncConnection* c = toConnection(connection);
 	if(c)
