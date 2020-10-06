@@ -1,1 +1,3 @@
 *.st linguist-language=Text
+presentation/*.html linguist-detectable=false
+presentation linguist-documentation
