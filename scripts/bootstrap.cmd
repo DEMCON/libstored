@@ -24,7 +24,12 @@ echo Chocolatey not installed. Install from here: https://chocolatey.org/docs/in
 goto error
 :have_choco
 
-choco install -y --no-progress tortoisegit git cmake make python3 pkgconfiglite mingw doxygen.install
+rem The actual python version is not really relevant, but pyzmq have trouble
+rem building with 3.9.0 at the moment.
+choco install -y --no-progress python3 --version=3.8.6
+if errorlevel 1 goto error
+
+choco install -y --no-progress tortoisegit git cmake make pkgconfiglite mingw doxygen.install
 if errorlevel 1 goto error
 
 call refreshenv
