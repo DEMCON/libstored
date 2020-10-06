@@ -7,6 +7,7 @@
 **What is it?**  
 A generator for a C++ class (store) with your application's variables, and a
 tool set to synchronize updates between processes, and debug it remotely.
+See also the [presentation](https://demcon.github.io/libstored/libstored.sozi.html).
 
 **When do I need it?**  
 When you have a distributed application in need of synchronization, and/or you
@@ -65,6 +66,7 @@ See next sections for details, but the following is worth to mention here:
 
 Have a look in the [`examples`](examples) directory for further in-depth reading.
 Refer to the [Doxygen documentation](https://demcon.github.io/libstored) for the C++ API.
+See also the [presentation](https://demcon.github.io/libstored/libstored.sozi.html).
 
 ### <a name="store"></a>libstored - Store by description
 
