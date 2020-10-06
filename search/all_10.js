@@ -12,7 +12,8 @@ var searchData=
   ['polling',['polling',['../classed2_1_1zmq__client_1_1_object.html#a933b2ce55e834fa5a535b2d24bb32bc6',1,'ed2.zmq_client.Object.polling(self)'],['../classed2_1_1zmq__client_1_1_object.html#a933b2ce55e834fa5a535b2d24bb32bc6',1,'ed2.zmq_client.Object.polling(self)']]],
   ['pollingchanged',['pollingChanged',['../classed2_1_1zmq__client_1_1_object.html#a474a5215c6916c5f1384564f912d28ac',1,'ed2::zmq_client::Object']]],
   ['pollingrole',['PollingRole',['../classed2_1_1gui_1_1____main_____1_1_object_list_model.html#aa850bd4afc31a95c779a807bc4d977da',1,'ed2::gui::__main__::ObjectListModel']]],
-  ['polynomial',['polynomial',['../classstored_1_1_crc8_layer.html#a42689e45f91b83968e42a747ce3ae3a8a14adee897c9ad5499de4c6608c8f78c7',1,'stored::Crc8Layer::polynomial()'],['../classstored_1_1_crc16_layer.html#a1695e0aded59c2f14c92c49e64e4f106aee711989700375651ca8a9c3cc313fa9',1,'stored::Crc16Layer::polynomial()']]],
+  ['polynomial',['polynomial',['../classstored_1_1_crc8_layer.html#a07b24f77f1d4e55b2b1573230b091974a14adee897c9ad5499de4c6608c8f78c7',1,'stored::Crc8Layer::polynomial()'],['../classstored_1_1_crc16_layer.html#a2fdc38bd0332dfd195fd43a6463534c9aee711989700375651ca8a9c3cc313fa9',1,'stored::Crc16Layer::polynomial()']]],
+  ['popencodequeue',['popEncodeQueue',['../classstored_1_1_arq_layer.html#a1b2f96a8e25063dbf2631c5d2c765920',1,'stored::ArqLayer']]],
   ['prefix',['prefix',['../namespaceed2_1_1cli_1_1____main____.html#a7dd4a7db291fe246593191db75b1fdca',1,'ed2::cli::__main__']]],
   ['print_5fto_5fstderr',['PRINT_TO_STDERR',['../terminal_2main_8cpp.html#a30a5e2be3979e50f5008597e46546e84',1,'main.cpp']]],
   ['printfphysical',['PrintfPhysical',['../class_printf_physical.html',1,'PrintfPhysical'],['../class_printf_physical.html#a507c13d3f98dcd037339c6ec07e6498a',1,'PrintfPhysical::PrintfPhysical(PrintfPhysical const &amp;)=delete'],['../class_printf_physical.html#af5307ef001e3a6ec97014fe57b1ff1d0',1,'PrintfPhysical::PrintfPhysical(PrintfPhysical &amp;&amp;)=delete'],['../class_printf_physical.html#a1ee4ab0e015ac43535d28504b2bbbce6',1,'PrintfPhysical::PrintfPhysical(ProtocolLayer &amp;up)']]],
@@ -23,5 +24,7 @@ var searchData=
   ['protocol_2epy',['protocol.py',['../build_2lib_2ed2_2protocol_8py.html',1,'(Global Namespace)'],['../ed2_2protocol_8py.html',1,'(Global Namespace)']]],
   ['protocollayer',['ProtocolLayer',['../classed2_1_1protocol_1_1_protocol_layer.html',1,'ed2.protocol.ProtocolLayer'],['../classstored_1_1_protocol_layer.html',1,'stored::ProtocolLayer'],['../classstored_1_1_protocol_layer.html#a04eadf44cf520838107498fa87ad4ff1',1,'stored::ProtocolLayer::ProtocolLayer(ProtocolLayer const &amp;)=delete'],['../classstored_1_1_protocol_layer.html#a3c582466de07553928d4801c705af2fa',1,'stored::ProtocolLayer::ProtocolLayer(ProtocolLayer &amp;&amp;)=delete'],['../classstored_1_1_protocol_layer.html#a01e053123817f8f52dc9217590d5f3b9',1,'stored::ProtocolLayer::ProtocolLayer(ProtocolLayer *up=nullptr, ProtocolLayer *down=nullptr)']]],
   ['protocolstack',['ProtocolStack',['../classed2_1_1protocol_1_1_protocol_stack.html',1,'ed2::protocol']]],
+  ['pushencodequeue',['pushEncodeQueue',['../classstored_1_1_arq_layer.html#a9a411e363eaca7a8060277363feee51b',1,'stored::ArqLayer']]],
+  ['pushencodequeueraw',['pushEncodeQueueRaw',['../classstored_1_1_arq_layer.html#a7e32f0946f88adc172b501b335c68632',1,'stored::ArqLayer']]],
   ['python_5frequires',['python_requires',['../namespacesetup.html#aa7ca7bc9391b217e81efeb03689d8dbf',1,'setup']]]
 ];

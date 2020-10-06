@@ -7,6 +7,7 @@ var namespacestored =
     [ "Config", "structstored_1_1_config.html", null ],
     [ "Crc16Layer", "classstored_1_1_crc16_layer.html", "classstored_1_1_crc16_layer" ],
     [ "Crc8Layer", "classstored_1_1_crc8_layer.html", "classstored_1_1_crc8_layer" ],
+    [ "DebugArqLayer", "classstored_1_1_debug_arq_layer.html", "classstored_1_1_debug_arq_layer" ],
     [ "Debugger", "classstored_1_1_debugger.html", "classstored_1_1_debugger" ],
     [ "DebugStore", "classstored_1_1_debug_store.html", "classstored_1_1_debug_store" ],
     [ "DebugStoreBase", "classstored_1_1_debug_store_base.html", "classstored_1_1_debug_store_base" ],

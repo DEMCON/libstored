@@ -1,14 +1,14 @@
 var hierarchy =
 [
     [ "ed2.protocol.ProtocolLayer", "classed2_1_1protocol_1_1_protocol_layer.html", [
-      [ "ed2.protocol.ArqLayer", "classed2_1_1protocol_1_1_arq_layer.html", null ],
-      [ "ed2.protocol.ArqLayer", "classed2_1_1protocol_1_1_arq_layer.html", null ],
       [ "ed2.protocol.AsciiEscapeLayer", "classed2_1_1protocol_1_1_ascii_escape_layer.html", null ],
       [ "ed2.protocol.AsciiEscapeLayer", "classed2_1_1protocol_1_1_ascii_escape_layer.html", null ],
       [ "ed2.protocol.Crc16Layer", "classed2_1_1protocol_1_1_crc16_layer.html", null ],
       [ "ed2.protocol.Crc16Layer", "classed2_1_1protocol_1_1_crc16_layer.html", null ],
       [ "ed2.protocol.Crc8Layer", "classed2_1_1protocol_1_1_crc8_layer.html", null ],
       [ "ed2.protocol.Crc8Layer", "classed2_1_1protocol_1_1_crc8_layer.html", null ],
+      [ "ed2.protocol.DebugArqLayer", "classed2_1_1protocol_1_1_debug_arq_layer.html", null ],
+      [ "ed2.protocol.DebugArqLayer", "classed2_1_1protocol_1_1_debug_arq_layer.html", null ],
       [ "ed2.protocol.LoopbackLayer", "classed2_1_1protocol_1_1_loopback_layer.html", null ],
       [ "ed2.protocol.LoopbackLayer", "classed2_1_1protocol_1_1_loopback_layer.html", null ],
       [ "ed2.protocol.ProtocolStack", "classed2_1_1protocol_1_1_protocol_stack.html", null ],
@@ -215,6 +215,7 @@ var hierarchy =
       [ "stored::BufferLayer", "classstored_1_1_buffer_layer.html", null ],
       [ "stored::Crc16Layer", "classstored_1_1_crc16_layer.html", null ],
       [ "stored::Crc8Layer", "classstored_1_1_crc8_layer.html", null ],
+      [ "stored::DebugArqLayer", "classstored_1_1_debug_arq_layer.html", null ],
       [ "stored::Debugger", "classstored_1_1_debugger.html", [
         [ "ExtendedDebugger", "class_extended_debugger.html", null ]
       ] ],

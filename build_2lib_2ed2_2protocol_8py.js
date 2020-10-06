@@ -1,9 +1,9 @@
 var build_2lib_2ed2_2protocol_8py =
 [
-    [ "ArqLayer", "classed2_1_1protocol_1_1_arq_layer.html", "classed2_1_1protocol_1_1_arq_layer" ],
     [ "AsciiEscapeLayer", "classed2_1_1protocol_1_1_ascii_escape_layer.html", "classed2_1_1protocol_1_1_ascii_escape_layer" ],
     [ "Crc16Layer", "classed2_1_1protocol_1_1_crc16_layer.html", "classed2_1_1protocol_1_1_crc16_layer" ],
     [ "Crc8Layer", "classed2_1_1protocol_1_1_crc8_layer.html", "classed2_1_1protocol_1_1_crc8_layer" ],
+    [ "DebugArqLayer", "classed2_1_1protocol_1_1_debug_arq_layer.html", "classed2_1_1protocol_1_1_debug_arq_layer" ],
     [ "LoopbackLayer", "classed2_1_1protocol_1_1_loopback_layer.html", "classed2_1_1protocol_1_1_loopback_layer" ],
     [ "ProtocolLayer", "classed2_1_1protocol_1_1_protocol_layer.html", "classed2_1_1protocol_1_1_protocol_layer" ],
     [ "ProtocolStack", "classed2_1_1protocol_1_1_protocol_stack.html", "classed2_1_1protocol_1_1_protocol_stack" ],

@@ -14,6 +14,7 @@ var searchData=
   ['a_5fuint64',['a_uint64',['../classstored_1_1_zmq_server_store_objects.html#a0d4a990f67c1dbb97ca921b25cb36e20',1,'stored::ZmqServerStoreObjects']]],
   ['a_5fuint8',['a_uint8',['../classstored_1_1_zmq_server_store_objects.html#ab507cd5b73333e1baa1d3dbe9ea132e3',1,'stored::ZmqServerStoreObjects']]],
   ['ack',['Ack',['../classstored_1_1_debugger.html#aaf9a895dd57e6161532b2eaf9558fb7d',1,'stored::Debugger']]],
+  ['ackflag',['AckFlag',['../classstored_1_1_arq_layer.html#a4af8faa0449d4c0c048be13a0d250384',1,'stored::ArqLayer']]],
   ['action',['action',['../namespaceed2_1_1cli_1_1____main____.html#a27c95f5f9f1013d4416c1804df18154f',1,'ed2.cli.__main__.action()'],['../namespaceed2_1_1gui_1_1____main____.html#a49bfe6573093254990c3497681ff0ec7',1,'ed2.gui.__main__.action()'],['../namespaceed2_1_1wrapper_1_1serial_1_1____main____.html#a8cccf42ba848962472652fd3ff69aecb',1,'ed2.wrapper.serial.__main__.action()'],['../namespaceed2_1_1wrapper_1_1stdio_1_1____main____.html#a0361859aeba3150508b7ee4316efc2d8',1,'ed2.wrapper.stdio.__main__.action()']]],
   ['alias',['alias',['../classed2_1_1zmq__client_1_1_object.html#abba810d27f6ad3bc141ca9ca1f39aa6b',1,'ed2::zmq_client::Object']]],
   ['aliaschanged',['aliasChanged',['../classed2_1_1zmq__client_1_1_object.html#ad769b03e6e0341949fc97595c077982d',1,'ed2::zmq_client::Object']]],

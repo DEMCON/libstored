@@ -105,10 +105,10 @@ Inheritance diagram for stored::Crc16Layer:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a1695e0aded59c2f14c92c49e64e4f106"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="classstored_1_1_crc16_layer.html#a1695e0aded59c2f14c92c49e64e4f106aee711989700375651ca8a9c3cc313fa9">polynomial</a> = 0xbaad, 
-<a class="el" href="classstored_1_1_crc16_layer.html#a1695e0aded59c2f14c92c49e64e4f106aeb8e182958fd03c1968f253e0bcb11c6">init</a> = 0xffff
+<tr class="memitem:a2fdc38bd0332dfd195fd43a6463534c9"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="classstored_1_1_crc16_layer.html#a2fdc38bd0332dfd195fd43a6463534c9aee711989700375651ca8a9c3cc313fa9">polynomial</a> = 0xbaad, 
+<a class="el" href="classstored_1_1_crc16_layer.html#a2fdc38bd0332dfd195fd43a6463534c9aeb8e182958fd03c1968f253e0bcb11c6">init</a> = 0xffff
  }</td></tr>
-<tr class="separator:a1695e0aded59c2f14c92c49e64e4f106"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a2fdc38bd0332dfd195fd43a6463534c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae4465a77b90af4bc3c5f8d7f9816a376"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#ae4465a77b90af4bc3c5f8d7f9816a376">base</a></td></tr>
 <tr class="separator:ae4465a77b90af4bc3c5f8d7f9816a376"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -124,6 +124,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ac332e25fb8984cdc0c95dc2905e3cb62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ctor.  <a href="#ac332e25fb8984cdc0c95dc2905e3cb62">More...</a><br /></td></tr>
 <tr class="separator:ac332e25fb8984cdc0c95dc2905e3cb62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b1420d3d3c69c129962c8ece9052ad3"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#a0b1420d3d3c69c129962c8ece9052ad3">~Crc16Layer</a> () override=default</td></tr>
+<tr class="memdesc:a0b1420d3d3c69c129962c8ece9052ad3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dtor.  <a href="#a0b1420d3d3c69c129962c8ece9052ad3">More...</a><br /></td></tr>
 <tr class="separator:a0b1420d3d3c69c129962c8ece9052ad3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc268baaaa18446a10a8ab23bf04e967"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#afc268baaaa18446a10a8ab23bf04e967">decode</a> (void *buffer, size_t len) override</td></tr>
 <tr class="memdesc:afc268baaaa18446a10a8ab23bf04e967"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode a frame and forward the decoded frame to the upper layer.  <a href="#afc268baaaa18446a10a8ab23bf04e967">More...</a><br /></td></tr>
@@ -137,6 +138,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aaa370f1466d22991713a951f1a8e9bfd"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#aaa370f1466d22991713a951f1a8e9bfd">encode</a> (void const *buffer, size_t len, bool last=true) override</td></tr>
 <tr class="memdesc:aaa370f1466d22991713a951f1a8e9bfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode a (partial) frame and forward it to the lower layer.  <a href="#aaa370f1466d22991713a951f1a8e9bfd">More...</a><br /></td></tr>
 <tr class="separator:aaa370f1466d22991713a951f1a8e9bfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a654466d2b7502efdbd5b1b1e95263194"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a654466d2b7502efdbd5b1b1e95263194">flush</a> ()</td></tr>
+<tr class="memdesc:a654466d2b7502efdbd5b1b1e95263194"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flushes all buffered message out of the stack (top-down), if possible.  <a href="#a654466d2b7502efdbd5b1b1e95263194">More...</a><br /></td></tr>
+<tr class="separator:a654466d2b7502efdbd5b1b1e95263194"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82d88b7503bdb383c9416e2a0cad8503"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#a82d88b7503bdb383c9416e2a0cad8503">mtu</a> () const override</td></tr>
 <tr class="memdesc:a82d88b7503bdb383c9416e2a0cad8503"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the maximum amount of data to be put in one message that is encoded.  <a href="#a82d88b7503bdb383c9416e2a0cad8503">More...</a><br /></td></tr>
 <tr class="separator:a82d88b7503bdb383c9416e2a0cad8503"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -146,6 +150,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a63dfa7cb6832d146859bcd07a26705f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#a63dfa7cb6832d146859bcd07a26705f0">operator=</a> (<a class="el" href="classstored_1_1_crc16_layer.html">Crc16Layer</a> const &amp;)=delete</td></tr>
 <tr class="memdesc:a63dfa7cb6832d146859bcd07a26705f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted assignment operator.  <a href="#a63dfa7cb6832d146859bcd07a26705f0">More...</a><br /></td></tr>
 <tr class="separator:a63dfa7cb6832d146859bcd07a26705f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00610c4aeabd33c565f5331a5aef3e01"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#a00610c4aeabd33c565f5331a5aef3e01">reset</a> () override</td></tr>
+<tr class="memdesc:a00610c4aeabd33c565f5331a5aef3e01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset the stack (top-down), and drop all messages.  <a href="#a00610c4aeabd33c565f5331a5aef3e01">More...</a><br /></td></tr>
+<tr class="separator:a00610c4aeabd33c565f5331a5aef3e01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b2523892617a43cf7421a654bfc3b6c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a2b2523892617a43cf7421a654bfc3b6c">setDown</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a>)</td></tr>
 <tr class="memdesc:a2b2523892617a43cf7421a654bfc3b6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the layer that receives our encoded frames.  <a href="#a2b2523892617a43cf7421a654bfc3b6c">More...</a><br /></td></tr>
 <tr class="separator:a2b2523892617a43cf7421a654bfc3b6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -167,7 +174,7 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-methods"></a>
 Static Protected Member Functions</h2></td></tr>
-<tr class="memitem:a4b48d4c95eb8f590ab7428e94221197b"><td class="memItemLeft" align="right" valign="top">static uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#a4b48d4c95eb8f590ab7428e94221197b">compute</a> (uint8_t input, uint16_t crc=<a class="el" href="classstored_1_1_crc16_layer.html#a1695e0aded59c2f14c92c49e64e4f106aeb8e182958fd03c1968f253e0bcb11c6">init</a>)</td></tr>
+<tr class="memitem:a4b48d4c95eb8f590ab7428e94221197b"><td class="memItemLeft" align="right" valign="top">static uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc16_layer.html#a4b48d4c95eb8f590ab7428e94221197b">compute</a> (uint8_t input, uint16_t crc=<a class="el" href="classstored_1_1_crc16_layer.html#a2fdc38bd0332dfd195fd43a6463534c9aeb8e182958fd03c1968f253e0bcb11c6">init</a>)</td></tr>
 <tr class="separator:a4b48d4c95eb8f590ab7428e94221197b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -175,7 +182,7 @@ Static Protected Member Functions</h2></td></tr>
 <p>Like <a class="el" href="classstored_1_1_crc8_layer.html" title="A layer that adds a CRC-8 to messages. ">stored::Crc8Layer</a>, but using a 0xbaad as polynomial. </p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#_a31">7_protocol/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00575">575</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00785">785</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="ae4465a77b90af4bc3c5f8d7f9816a376"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae4465a77b90af4bc3c5f8d7f9816a376">&#9670;&nbsp;</a></span>base</h2>
@@ -189,13 +196,13 @@ Static Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00578">578</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00788">788</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Enumeration Documentation</h2>
-<a id="a1695e0aded59c2f14c92c49e64e4f106"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1695e0aded59c2f14c92c49e64e4f106">&#9670;&nbsp;</a></span>anonymous enum</h2>
+<a id="a2fdc38bd0332dfd195fd43a6463534c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fdc38bd0332dfd195fd43a6463534c9">&#9670;&nbsp;</a></span>anonymous enum</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -206,11 +213,11 @@ Static Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a1695e0aded59c2f14c92c49e64e4f106aee711989700375651ca8a9c3cc313fa9"></a>polynomial&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a1695e0aded59c2f14c92c49e64e4f106aeb8e182958fd03c1968f253e0bcb11c6"></a>init&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a2fdc38bd0332dfd195fd43a6463534c9aee711989700375651ca8a9c3cc313fa9"></a>polynomial&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a2fdc38bd0332dfd195fd43a6463534c9aeb8e182958fd03c1968f253e0bcb11c6"></a>init&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00580">580</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00790">790</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -299,7 +306,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Ctor. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00800">800</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l01197">1197</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -326,6 +333,8 @@ Static Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Dtor. </p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -348,7 +357,7 @@ Static Protected Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint16_t&#160;</td>
-          <td class="paramname"><em>crc</em> = <code><a class="el" href="classstored_1_1_crc16_layer.html#a1695e0aded59c2f14c92c49e64e4f106aeb8e182958fd03c1968f253e0bcb11c6">init</a></code>&#160;</td>
+          <td class="paramname"><em>crc</em> = <code><a class="el" href="classstored_1_1_crc16_layer.html#a2fdc38bd0332dfd195fd43a6463534c9aeb8e182958fd03c1968f253e0bcb11c6">init</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -363,7 +372,7 @@ Static Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00836">836</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l01238">1238</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -406,7 +415,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a357b029311be09df61e019682a848ab5">stored::ProtocolLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00806">806</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l01208">1208</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -437,7 +446,7 @@ Static Protected Member Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>the layer, or <code>nullptr</code> if there is none. </dd></dl>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a11">7_protocol/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00212">212</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00213">213</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -467,7 +476,7 @@ Static Protected Member Functions</h2></td></tr>
 <p>Encodes the last part of the current frame. </p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a10">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#a17">7_protocol/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#a8">terminal/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00227">227</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00228">228</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -516,7 +525,40 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#ae5dab6177c1448d1ce5ac04a69c9b4e4">stored::ProtocolLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00822">822</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l01224">1224</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a654466d2b7502efdbd5b1b1e95263194"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a654466d2b7502efdbd5b1b1e95263194">&#9670;&nbsp;</a></span>flush()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool stored::ProtocolLayer::flush </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flushes all buffered message out of the stack (top-down), if possible. </p>
+<p>Any buffered, held back, queued messages are tried to be sent immediately. A flush is always safe; it never destroys data in the stack, it only tries to force it out.</p>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if successful and the stack is empty, or <code>false</code> if message are still blocked </dd></dl>
+
+<p>Reimplemented in <a class="el" href="classstored_1_1_arq_layer.html#abf63088fb9952dcc6599a023d0491d12">stored::ArqLayer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00284">284</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -549,7 +591,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a88195d7cdb7129ac7bc625ffeb24d449">stored::ProtocolLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00841">841</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l01243">1243</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -609,6 +651,37 @@ Static Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a00610c4aeabd33c565f5331a5aef3e01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00610c4aeabd33c565f5331a5aef3e01">&#9670;&nbsp;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void stored::Crc16Layer::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reset the stack (top-down), and drop all messages. </p>
+
+<p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a53fe78a7b405b981649112d9c84fe762">stored::ProtocolLayer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l01203">1203</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+
+</div>
+</div>
 <a id="a2b2523892617a43cf7421a654bfc3b6c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2b2523892617a43cf7421a654bfc3b6c">&#9670;&nbsp;</a></span>setDown()</h2>
 
@@ -642,7 +715,7 @@ Static Protected Member Functions</h2></td></tr>
 </dl>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a7">5_debug/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00164">164</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00165">165</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -674,9 +747,9 @@ Static Protected Member Functions</h2></td></tr>
 <p>This may influence how a response is handled. Especially, in case of retransmits of lost packets, one may decide to either reexecute the command, or to save the first response and resend it when the command was retransmitted. In that sense, a precious response (default) means that every layer should handle the data with case, as it cannot be recovered once it is lost. When the response is flagged purgeeble, the response may be thrown away after the first try to transmit it to the client.</p>
 <p>By default, all responses are precious. </p>
 
-<p>Reimplemented in <a class="el" href="classstored_1_1_string_encoder.html#a29fce383dfd9a94fdc47f5643db405b6">stored::StringEncoder</a>, <a class="el" href="classstored_1_1_frame_merger.html#ae5800ec4cd54027d1dcfb0fde99ae140">stored::FrameMerger</a>, and <a class="el" href="classstored_1_1_arq_layer.html#aebc97053e2dbcf03acbc1ea8f3c3664d">stored::ArqLayer</a>.</p>
+<p>Reimplemented in <a class="el" href="classstored_1_1_string_encoder.html#a29fce383dfd9a94fdc47f5643db405b6">stored::StringEncoder</a>, <a class="el" href="classstored_1_1_frame_merger.html#ae5800ec4cd54027d1dcfb0fde99ae140">stored::FrameMerger</a>, and <a class="el" href="classstored_1_1_debug_arq_layer.html#a036abba40a16df72e93b9fd9a9251bbb">stored::DebugArqLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00256">256</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00257">257</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -712,7 +785,7 @@ Static Protected Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00158">158</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00159">159</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -743,7 +816,7 @@ Static Protected Member Functions</h2></td></tr>
 <p>Sets the up/down layers of this layer and the given layer, such that this layer is stacked on (or wrapped by) the given one. </p>
 <p>If the given layer was not the top of the stack, this layer injects itself between the given layer and its stacked one. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00191">191</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00192">192</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -774,7 +847,7 @@ Static Protected Member Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>the layer, or <code>nullptr</code> if there is none. </dd></dl>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a6">5_debug/main.cpp</a>, and <a class="el" href="7_protocol_2main_8cpp-example.html#a10">7_protocol/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00206">206</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00207">207</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -806,7 +879,7 @@ Static Protected Member Functions</h2></td></tr>
 <p>If the given layer was not the bottom of the stack, this layer injects itself in between the given layer and its wrapper. </p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a29">7_protocol/main.cpp</a>, <a class="el" href="8_sync_2main_8cpp-example.html#a23">8_sync/main.cpp</a>, <a class="el" href="terminal_2main_8cpp-example.html#a14">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#a28">zmqserver/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00172">172</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00173">173</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>

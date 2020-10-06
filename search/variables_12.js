@@ -5,6 +5,7 @@ var searchData=
   ['scope_5f_5fsome_5fbool',['scope__some_bool',['../classstored_1_1_example_scope_objects.html#a535e6b35397a555b86bcc05f2779e271',1,'stored::ExampleScopeObjects']]],
   ['scope_5f_5fsubscope_5f_5fanother_5fbool',['scope__subscope__another_bool',['../classstored_1_1_example_scope_objects.html#aa67e16149576c6694ca8891e1bb80e3e',1,'stored::ExampleScopeObjects']]],
   ['seq',['seq',['../structstored_1_1_store_journal_1_1_object_info.html#acfe1597f9ba6b105c66a569257a7249a',1,'stored::StoreJournal::ObjectInfo']]],
+  ['seqmask',['SeqMask',['../classstored_1_1_arq_layer.html#a6d481c24d715ceef8dcc2fd9cd19eab1',1,'stored::ArqLayer']]],
   ['serial',['serial',['../classed2_1_1serial2zmq_1_1_serial2_zmq.html#aa84609906b123f501d32fce0d9ba4842',1,'ed2::serial2zmq::Serial2Zmq']]],
   ['serial_5fsocket',['serial_socket',['../classed2_1_1serial2zmq_1_1_serial2_zmq.html#a9da7413df6a5995e61e4f3a67396c7b5',1,'ed2::serial2zmq::Serial2Zmq']]],
   ['slowpollinterval_5fs',['slowPollInterval_s',['../classed2_1_1zmq__client_1_1_zmq_client.html#ab5aee1fbd4f96db097041130ff88a3c6',1,'ed2::zmq_client::ZmqClient']]],

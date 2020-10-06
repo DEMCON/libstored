@@ -1,11 +1,12 @@
 var searchData=
 [
-  ['_7earqlayer',['~ArqLayer',['../classstored_1_1_arq_layer.html#aba7be7e51474cae2f192458aad0369c1',1,'stored::ArqLayer']]],
+  ['_7earqlayer',['~ArqLayer',['../classstored_1_1_arq_layer.html#afbab2b5061d597434e4e1f6620bb110f',1,'stored::ArqLayer']]],
   ['_7easciiescapelayer',['~AsciiEscapeLayer',['../classstored_1_1_ascii_escape_layer.html#afa36c84c34abaaafeff11862f610860c',1,'stored::AsciiEscapeLayer']]],
   ['_7ebufferlayer',['~BufferLayer',['../classstored_1_1_buffer_layer.html#a25955130c9a93809ab60cac04e2e8141',1,'stored::BufferLayer']]],
   ['_7ecaseinverter',['~CaseInverter',['../class_case_inverter.html#a6a0ebbfbc5187bd55fae44f81c364348',1,'CaseInverter']]],
   ['_7ecrc16layer',['~Crc16Layer',['../classstored_1_1_crc16_layer.html#a0b1420d3d3c69c129962c8ece9052ad3',1,'stored::Crc16Layer']]],
   ['_7ecrc8layer',['~Crc8Layer',['../classstored_1_1_crc8_layer.html#a70da4defe96323a84a456fba27538c8e',1,'stored::Crc8Layer']]],
+  ['_7edebugarqlayer',['~DebugArqLayer',['../classstored_1_1_debug_arq_layer.html#a3e1fa759205732459521e6ebf3043849',1,'stored::DebugArqLayer']]],
   ['_7edebugger',['~Debugger',['../classstored_1_1_debugger.html#a571cde110ec9f6ee1a7b1b082342edda',1,'stored::Debugger']]],
   ['_7edebugstore',['~DebugStore',['../classstored_1_1_debug_store.html#a93e7290bc99b70555d387fb73caed73d',1,'stored::DebugStore']]],
   ['_7edebugstorebase',['~DebugStoreBase',['../classstored_1_1_debug_store_base.html#aae6e15009f8bd0e9ed08e70b2ee09909',1,'stored::DebugStoreBase']]],

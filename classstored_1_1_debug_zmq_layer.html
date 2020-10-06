@@ -85,9 +85,12 @@ $(document).ready(function(){initNavTree('classstored_1_1_debug_zmq_layer.html',
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="classstored_1_1_debug_zmq_layer-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">stored::DebugZmqLayer Class Reference</div>  </div>
+<div class="title">stored::DebugZmqLayer Class Reference<div class="ingroups"><a class="el" href="group__libstored.html">libstored</a> &raquo; <a class="el" href="group__libstored__protocol.html">protocol</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Constructs a protocol stack on top of a REQ/REP ZeroMQ socket, specifically for the <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>.  
+ <a href="classstored_1_1_debug_zmq_layer.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="zmq_8h_source.html">zmq.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -96,16 +99,16 @@ Inheritance diagram for stored::DebugZmqLayer:</div>
  <div class="center">
   <img src="classstored_1_1_debug_zmq_layer.png" usemap="#stored::DebugZmqLayer_map" alt=""/>
   <map id="stored::DebugZmqLayer_map" name="stored::DebugZmqLayer_map">
-<area href="classstored_1_1_zmq_layer.html" title="A protocol layer that wraps the protocol stack and implements ZeroMQ REQ/REP around it..." alt="stored::ZmqLayer" shape="rect" coords="0,56,147,80"/>
+<area href="classstored_1_1_zmq_layer.html" title="A protocol layer that wraps the protocol stack and implements ZeroMQ socket around it..." alt="stored::ZmqLayer" shape="rect" coords="0,56,147,80"/>
 <area href="classstored_1_1_protocol_layer.html" title="Protocol layer base class. " alt="stored::ProtocolLayer" shape="rect" coords="0,0,147,24"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a5fb2db262260f79bc1d316f4f33b762e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="classstored_1_1_debug_zmq_layer.html#a5fb2db262260f79bc1d316f4f33b762ea6e3be45d44a117e2006d26f9adef4611">DefaultPort</a> = 19026
+<tr class="memitem:acd53747af957ae2f677b286d199f28be"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="classstored_1_1_debug_zmq_layer.html#acd53747af957ae2f677b286d199f28bea6e3be45d44a117e2006d26f9adef4611">DefaultPort</a> = 19026
  }</td></tr>
-<tr class="separator:a5fb2db262260f79bc1d316f4f33b762e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:acd53747af957ae2f677b286d199f28be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9197cae99539f25370afcb076ca410f0"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_zmq_layer.html">ZmqLayer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_zmq_layer.html#a9197cae99539f25370afcb076ca410f0">base</a></td></tr>
 <tr class="separator:a9197cae99539f25370afcb076ca410f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af26be4cada09535cc494ac4b5ebe2cfd"><td class="memItemLeft" align="right" valign="top">typedef int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_zmq_layer.html#af26be4cada09535cc494ac4b5ebe2cfd">socket_type</a></td></tr>
@@ -114,9 +117,11 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a53d99c8a2bf36828686aec34b9175999"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_zmq_layer.html#a53d99c8a2bf36828686aec34b9175999">DebugZmqLayer</a> (void *<a class="el" href="classstored_1_1_zmq_layer.html#a39899cdc06f5403bc6e67d30908a05ff">context</a>=nullptr, int port=<a class="el" href="classstored_1_1_debug_zmq_layer.html#a5fb2db262260f79bc1d316f4f33b762ea6e3be45d44a117e2006d26f9adef4611">DefaultPort</a>, <a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40">up</a>=nullptr, <a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a>=nullptr)</td></tr>
+<tr class="memitem:a53d99c8a2bf36828686aec34b9175999"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_zmq_layer.html#a53d99c8a2bf36828686aec34b9175999">DebugZmqLayer</a> (void *<a class="el" href="classstored_1_1_zmq_layer.html#a39899cdc06f5403bc6e67d30908a05ff">context</a>=nullptr, int port=<a class="el" href="classstored_1_1_debug_zmq_layer.html#acd53747af957ae2f677b286d199f28bea6e3be45d44a117e2006d26f9adef4611">DefaultPort</a>, <a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40">up</a>=nullptr, <a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a>=nullptr)</td></tr>
+<tr class="memdesc:a53d99c8a2bf36828686aec34b9175999"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <a href="#a53d99c8a2bf36828686aec34b9175999">More...</a><br /></td></tr>
 <tr class="separator:a53d99c8a2bf36828686aec34b9175999"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a794242ade3ab69336a5a4f55a2bb925c"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_zmq_layer.html#a794242ade3ab69336a5a4f55a2bb925c">~DebugZmqLayer</a> () override=default</td></tr>
+<tr class="memdesc:a794242ade3ab69336a5a4f55a2bb925c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dtor.  <a href="#a794242ade3ab69336a5a4f55a2bb925c">More...</a><br /></td></tr>
 <tr class="separator:a794242ade3ab69336a5a4f55a2bb925c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a39899cdc06f5403bc6e67d30908a05ff"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_zmq_layer.html#a39899cdc06f5403bc6e67d30908a05ff">context</a> () const</td></tr>
 <tr class="memdesc:a39899cdc06f5403bc6e67d30908a05ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">The ZeroMQ context.  <a href="#a39899cdc06f5403bc6e67d30908a05ff">More...</a><br /></td></tr>
@@ -136,7 +141,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a23337a3b834888ec196ca07047437edd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_zmq_layer.html#af26be4cada09535cc494ac4b5ebe2cfd">socket_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_zmq_layer.html#a23337a3b834888ec196ca07047437edd">fd</a> ()</td></tr>
 <tr class="memdesc:a23337a3b834888ec196ca07047437edd"><td class="mdescLeft">&#160;</td><td class="mdescRight">The ZeroMQ socket, which can be used for <code>poll()</code> or <code>select()</code>.  <a href="#a23337a3b834888ec196ca07047437edd">More...</a><br /></td></tr>
 <tr class="separator:a23337a3b834888ec196ca07047437edd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a654466d2b7502efdbd5b1b1e95263194"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a654466d2b7502efdbd5b1b1e95263194">flush</a> ()</td></tr>
+<tr class="memdesc:a654466d2b7502efdbd5b1b1e95263194"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flushes all buffered message out of the stack (top-down), if possible.  <a href="#a654466d2b7502efdbd5b1b1e95263194">More...</a><br /></td></tr>
+<tr class="separator:a654466d2b7502efdbd5b1b1e95263194"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7bb8215f20cdafe5a4d16d0361621be"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_zmq_layer.html#ab7bb8215f20cdafe5a4d16d0361621be">lastError</a> () const</td></tr>
+<tr class="memdesc:ab7bb8215f20cdafe5a4d16d0361621be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the last reported error of any operation on the <a class="el" href="classstored_1_1_zmq_layer.html" title="A protocol layer that wraps the protocol stack and implements ZeroMQ socket around it...">ZmqLayer</a>.  <a href="#ab7bb8215f20cdafe5a4d16d0361621be">More...</a><br /></td></tr>
 <tr class="separator:ab7bb8215f20cdafe5a4d16d0361621be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88195d7cdb7129ac7bc625ffeb24d449"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a88195d7cdb7129ac7bc625ffeb24d449">mtu</a> () const</td></tr>
 <tr class="memdesc:a88195d7cdb7129ac7bc625ffeb24d449"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the maximum amount of data to be put in one message that is encoded.  <a href="#a88195d7cdb7129ac7bc625ffeb24d449">More...</a><br /></td></tr>
@@ -144,6 +153,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a85dff6acf4316281ef3f0912981f9f1f"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_zmq_layer.html#a85dff6acf4316281ef3f0912981f9f1f">recv</a> (bool block=false) override</td></tr>
 <tr class="memdesc:a85dff6acf4316281ef3f0912981f9f1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Try to receive data from the ZeroMQ REP socket, and <a class="el" href="classstored_1_1_protocol_layer.html#a357b029311be09df61e019682a848ab5" title="Decode a frame and forward the decoded frame to the upper layer. ">decode()</a> it.  <a href="#a85dff6acf4316281ef3f0912981f9f1f">More...</a><br /></td></tr>
 <tr class="separator:a85dff6acf4316281ef3f0912981f9f1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53fe78a7b405b981649112d9c84fe762"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a53fe78a7b405b981649112d9c84fe762">reset</a> ()</td></tr>
+<tr class="memdesc:a53fe78a7b405b981649112d9c84fe762"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset the stack (top-down), and drop all messages.  <a href="#a53fe78a7b405b981649112d9c84fe762">More...</a><br /></td></tr>
+<tr class="separator:a53fe78a7b405b981649112d9c84fe762"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b2523892617a43cf7421a654bfc3b6c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a2b2523892617a43cf7421a654bfc3b6c">setDown</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a>)</td></tr>
 <tr class="memdesc:a2b2523892617a43cf7421a654bfc3b6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the layer that receives our encoded frames.  <a href="#a2b2523892617a43cf7421a654bfc3b6c">More...</a><br /></td></tr>
 <tr class="separator:a2b2523892617a43cf7421a654bfc3b6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -169,12 +181,14 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a3cce4dc0a455b30a2d4c6e2bc093af22"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_zmq_layer.html#a3cce4dc0a455b30a2d4c6e2bc093af22">setLastError</a> (int error)</td></tr>
+<tr class="memdesc:a3cce4dc0a455b30a2d4c6e2bc093af22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves the given error for <a class="el" href="classstored_1_1_zmq_layer.html#ab7bb8215f20cdafe5a4d16d0361621be" title="Returns the last reported error of any operation on the ZmqLayer. ">lastError()</a>.  <a href="#a3cce4dc0a455b30a2d4c6e2bc093af22">More...</a><br /></td></tr>
 <tr class="separator:a3cce4dc0a455b30a2d4c6e2bc093af22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><dl><dt><b>Examples: </b></dt><dd><a class="el" href="8_sync_2main_8cpp-example.html#_a26">8_sync/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#_a27">zmqserver/main.cpp</a>.</dd>
+<div class="textblock"><p>Constructs a protocol stack on top of a REQ/REP ZeroMQ socket, specifically for the <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>. </p>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="8_sync_2main_8cpp-example.html#_a26">8_sync/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#_a27">zmqserver/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="zmq_8h_source.html#l00084">84</a> of file <a class="el" href="zmq_8h_source.html">zmq.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="zmq_8h_source.html#l00090">90</a> of file <a class="el" href="zmq_8h_source.html">zmq.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a9197cae99539f25370afcb076ca410f0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9197cae99539f25370afcb076ca410f0">&#9670;&nbsp;</a></span>base</h2>
@@ -188,7 +202,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="zmq_8h_source.html#l00086">86</a> of file <a class="el" href="zmq_8h_source.html">zmq.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="zmq_8h_source.html#l00092">92</a> of file <a class="el" href="zmq_8h_source.html">zmq.h</a>.</p>
 
 </div>
 </div>
@@ -214,13 +228,13 @@ Protected Member Functions</h2></td></tr>
 
 <p>The socket type. </p>
 
-<p class="definition">Definition at line <a class="el" href="zmq_8h_source.html#l00055">55</a> of file <a class="el" href="zmq_8h_source.html">zmq.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="zmq_8h_source.html#l00057">57</a> of file <a class="el" href="zmq_8h_source.html">zmq.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Enumeration Documentation</h2>
-<a id="a5fb2db262260f79bc1d316f4f33b762e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5fb2db262260f79bc1d316f4f33b762e">&#9670;&nbsp;</a></span>anonymous enum</h2>
+<a id="acd53747af957ae2f677b286d199f28be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd53747af957ae2f677b286d199f28be">&#9670;&nbsp;</a></span>anonymous enum</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -231,10 +245,10 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a5fb2db262260f79bc1d316f4f33b762ea6e3be45d44a117e2006d26f9adef4611"></a>DefaultPort&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="acd53747af957ae2f677b286d199f28bea6e3be45d44a117e2006d26f9adef4611"></a>DefaultPort&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="zmq_8h_source.html#l00088">88</a> of file <a class="el" href="zmq_8h_source.html">zmq.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="zmq_8h_source.html#l00094">94</a> of file <a class="el" href="zmq_8h_source.html">zmq.h</a>.</p>
 
 </div>
 </div>
@@ -255,7 +269,7 @@ Protected Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>port</em> = <code><a class="el" href="classstored_1_1_debug_zmq_layer.html#a5fb2db262260f79bc1d316f4f33b762ea6e3be45d44a117e2006d26f9adef4611">DefaultPort</a></code>, </td>
+          <td class="paramname"><em>port</em> = <code><a class="el" href="classstored_1_1_debug_zmq_layer.html#acd53747af957ae2f677b286d199f28bea6e3be45d44a117e2006d26f9adef4611">DefaultPort</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -277,7 +291,11 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="zmq_8cpp_source.html#l00203">203</a> of file <a class="el" href="zmq_8cpp_source.html">zmq.cpp</a>.</p>
+<p>Constructor. </p>
+<p>The given <code>port</code> used for a REQ/REP socket over TCP. This is the listening side, where a client like the <code><a class="el" href="namespaceed2_1_1gui.html">ed2.gui</a></code> can connect to.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="zmq_8cpp_source.html#l00220">220</a> of file <a class="el" href="zmq_8cpp_source.html">zmq.cpp</a>.</p>
 
 </div>
 </div>
@@ -303,6 +321,8 @@ Protected Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Dtor. </p>
 
 </div>
 </div>
@@ -373,10 +393,10 @@ Protected Member Functions</h2></td></tr>
 <p>Decode a frame and forward the decoded frame to the upper layer. </p>
 <p>The given buffer may be decoded in-place. </p>
 
-<p>Reimplemented in <a class="el" href="classstored_1_1_debugger.html#ab898cc1ca7b88385ea50b39aa9d310ee">stored::Debugger</a>, <a class="el" href="classstored_1_1_print_layer.html#af92198162e84a80d70afbd76143df369">stored::PrintLayer</a>, <a class="el" href="classstored_1_1_crc16_layer.html#afc268baaaa18446a10a8ab23bf04e967">stored::Crc16Layer</a>, <a class="el" href="classstored_1_1_crc8_layer.html#a53910dd8cb7f74db64011b5918c8c52a">stored::Crc8Layer</a>, <a class="el" href="classstored_1_1_arq_layer.html#aae0973f22504fbff0b98fefec8d53013">stored::ArqLayer</a>, <a class="el" href="classstored_1_1_segmentation_layer.html#adee6ee8d098ff67655b36c1ab269d490">stored::SegmentationLayer</a>, <a class="el" href="classstored_1_1_sync_connection.html#a02f2c9f8bd944387ccc2b3d26168cfa6">stored::SyncConnection</a>, <a class="el" href="classstored_1_1_terminal_layer.html#a189c272877b09b93aac1b1ddc96fe58c">stored::TerminalLayer</a>, <a class="el" href="classstored_1_1_ascii_escape_layer.html#a5acfb59ed33a8f0f3e27556421ff5245">stored::AsciiEscapeLayer</a>, <a class="el" href="class_lossy_channel.html#a60989db2a2ad55091267c1810761d169">LossyChannel</a>, and <a class="el" href="class_printf_physical.html#afc3eb3f0ca598dd287a6022f3121a458">PrintfPhysical</a>.</p>
+<p>Reimplemented in <a class="el" href="classstored_1_1_print_layer.html#af92198162e84a80d70afbd76143df369">stored::PrintLayer</a>, <a class="el" href="classstored_1_1_debugger.html#ab898cc1ca7b88385ea50b39aa9d310ee">stored::Debugger</a>, <a class="el" href="classstored_1_1_crc16_layer.html#afc268baaaa18446a10a8ab23bf04e967">stored::Crc16Layer</a>, <a class="el" href="classstored_1_1_crc8_layer.html#a53910dd8cb7f74db64011b5918c8c52a">stored::Crc8Layer</a>, <a class="el" href="classstored_1_1_debug_arq_layer.html#a2dc5a377d6c5f636cd0e3cf4343ddea4">stored::DebugArqLayer</a>, <a class="el" href="classstored_1_1_arq_layer.html#aae0973f22504fbff0b98fefec8d53013">stored::ArqLayer</a>, <a class="el" href="classstored_1_1_segmentation_layer.html#adee6ee8d098ff67655b36c1ab269d490">stored::SegmentationLayer</a>, <a class="el" href="classstored_1_1_sync_connection.html#a02f2c9f8bd944387ccc2b3d26168cfa6">stored::SyncConnection</a>, <a class="el" href="classstored_1_1_terminal_layer.html#a189c272877b09b93aac1b1ddc96fe58c">stored::TerminalLayer</a>, <a class="el" href="classstored_1_1_ascii_escape_layer.html#a5acfb59ed33a8f0f3e27556421ff5245">stored::AsciiEscapeLayer</a>, <a class="el" href="class_lossy_channel.html#a60989db2a2ad55091267c1810761d169">LossyChannel</a>, and <a class="el" href="class_printf_physical.html#afc3eb3f0ca598dd287a6022f3121a458">PrintfPhysical</a>.</p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a9">5_debug/main.cpp</a>, and <a class="el" href="7_protocol_2main_8cpp-example.html#a16">7_protocol/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00219">219</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00220">220</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -407,7 +427,7 @@ Protected Member Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>the layer, or <code>nullptr</code> if there is none. </dd></dl>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a11">7_protocol/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00212">212</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00213">213</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -487,7 +507,7 @@ Protected Member Functions</h2></td></tr>
 <p>Encodes the last part of the current frame. </p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a10">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#a17">7_protocol/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#a8">terminal/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00227">227</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00228">228</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -521,6 +541,39 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a654466d2b7502efdbd5b1b1e95263194"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a654466d2b7502efdbd5b1b1e95263194">&#9670;&nbsp;</a></span>flush()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool stored::ProtocolLayer::flush </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flushes all buffered message out of the stack (top-down), if possible. </p>
+<p>Any buffered, held back, queued messages are tried to be sent immediately. A flush is always safe; it never destroys data in the stack, it only tries to force it out.</p>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if successful and the stack is empty, or <code>false</code> if message are still blocked </dd></dl>
+
+<p>Reimplemented in <a class="el" href="classstored_1_1_arq_layer.html#abf63088fb9952dcc6599a023d0491d12">stored::ArqLayer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00284">284</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
 <a id="ab7bb8215f20cdafe5a4d16d0361621be"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab7bb8215f20cdafe5a4d16d0361621be">&#9670;&nbsp;</a></span>lastError()</h2>
 
@@ -544,7 +597,10 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="zmq_8cpp_source.html#l00190">190</a> of file <a class="el" href="zmq_8cpp_source.html">zmq.cpp</a>.</p>
+<p>Returns the last reported error of any operation on the <a class="el" href="classstored_1_1_zmq_layer.html" title="A protocol layer that wraps the protocol stack and implements ZeroMQ socket around it...">ZmqLayer</a>. </p>
+<p>Errors are not reset when the next operation is successful. So, check this function if a previous call returned an error. </p>
+
+<p class="definition">Definition at line <a class="el" href="zmq_8cpp_source.html#l00196">196</a> of file <a class="el" href="zmq_8cpp_source.html">zmq.cpp</a>.</p>
 
 </div>
 </div>
@@ -575,9 +631,9 @@ Protected Member Functions</h2></td></tr>
 <p>If there is a MTU applicable to the physical transport (like a CAN bus), override this method to reflect that value. Layers on top will decrease the MTU when there protocol adds headers, for example.</p>
 <dl class="section return"><dt>Returns</dt><dd>the number of bytes, or 0 for infinity </dd></dl>
 
-<p>Reimplemented in <a class="el" href="classstored_1_1_crc16_layer.html#a82d88b7503bdb383c9416e2a0cad8503">stored::Crc16Layer</a>, <a class="el" href="classstored_1_1_crc8_layer.html#ac3bb509c6ebf1a8c9c98f4985ea91bde">stored::Crc8Layer</a>, <a class="el" href="classstored_1_1_arq_layer.html#a1efacad0bccc60d7d202663ce984aab2">stored::ArqLayer</a>, <a class="el" href="classstored_1_1_segmentation_layer.html#a5cd64512cd57378cf25bd2890266919a">stored::SegmentationLayer</a>, <a class="el" href="classstored_1_1_terminal_layer.html#a0a19f65b341e78a98dca4f13747fb2a7">stored::TerminalLayer</a>, <a class="el" href="classstored_1_1_ascii_escape_layer.html#ac773513d7ef5330f9fc7b46f08e79442">stored::AsciiEscapeLayer</a>, and <a class="el" href="class_lossy_channel.html#a6967348e03e7d69ecf1a40dcc549a13d">LossyChannel</a>.</p>
+<p>Reimplemented in <a class="el" href="classstored_1_1_crc16_layer.html#a82d88b7503bdb383c9416e2a0cad8503">stored::Crc16Layer</a>, <a class="el" href="classstored_1_1_crc8_layer.html#ac3bb509c6ebf1a8c9c98f4985ea91bde">stored::Crc8Layer</a>, <a class="el" href="classstored_1_1_debug_arq_layer.html#adb2ab020fb7e6aeca00c97be9545ced7">stored::DebugArqLayer</a>, <a class="el" href="classstored_1_1_arq_layer.html#a1efacad0bccc60d7d202663ce984aab2">stored::ArqLayer</a>, <a class="el" href="classstored_1_1_segmentation_layer.html#a5cd64512cd57378cf25bd2890266919a">stored::SegmentationLayer</a>, <a class="el" href="classstored_1_1_terminal_layer.html#a0a19f65b341e78a98dca4f13747fb2a7">stored::TerminalLayer</a>, <a class="el" href="classstored_1_1_ascii_escape_layer.html#ac773513d7ef5330f9fc7b46f08e79442">stored::AsciiEscapeLayer</a>, and <a class="el" href="class_lossy_channel.html#a6967348e03e7d69ecf1a40dcc549a13d">LossyChannel</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00270">270</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00271">271</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -616,7 +672,38 @@ Protected Member Functions</h2></td></tr>
 <p>Reimplemented from <a class="el" href="classstored_1_1_zmq_layer.html#a1a284926a6e41e19475e0a4e20c9a1cf">stored::ZmqLayer</a>.</p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="8_sync_2main_8cpp-example.html#a31">8_sync/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#a29">zmqserver/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="zmq_8cpp_source.html#l00217">217</a> of file <a class="el" href="zmq_8cpp_source.html">zmq.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="zmq_8cpp_source.html#l00234">234</a> of file <a class="el" href="zmq_8cpp_source.html">zmq.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a53fe78a7b405b981649112d9c84fe762"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53fe78a7b405b981649112d9c84fe762">&#9670;&nbsp;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void stored::ProtocolLayer::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reset the stack (top-down), and drop all messages. </p>
+
+<p>Reimplemented in <a class="el" href="classstored_1_1impl_1_1_loopback1.html#ac2f4ef6e8200a9391d6c04728922198b">stored::impl::Loopback1</a>, <a class="el" href="classstored_1_1_buffer_layer.html#a106b4baa477a0fac388215fc87a54fd4">stored::BufferLayer</a>, <a class="el" href="classstored_1_1_crc16_layer.html#a00610c4aeabd33c565f5331a5aef3e01">stored::Crc16Layer</a>, <a class="el" href="classstored_1_1_crc8_layer.html#af9a6cc6ac539027ee452c485611ec0ac">stored::Crc8Layer</a>, <a class="el" href="classstored_1_1_debug_arq_layer.html#a6b16bc8ebeb3d6e2bc3fa2fd42a82998">stored::DebugArqLayer</a>, <a class="el" href="classstored_1_1_arq_layer.html#ab2f83fa2caaab88f9ee29855b3c527a7">stored::ArqLayer</a>, <a class="el" href="classstored_1_1_segmentation_layer.html#a3d4b430c6dab20da295fb67dacf5451a">stored::SegmentationLayer</a>, <a class="el" href="classstored_1_1_sync_connection.html#aca59978ca6b6b640d0b05fd8c9d2c498">stored::SyncConnection</a>, and <a class="el" href="classstored_1_1_terminal_layer.html#aa520c45c348439dbf7a56f511bd5ac39">stored::TerminalLayer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00291">291</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -653,7 +740,7 @@ Protected Member Functions</h2></td></tr>
 </dl>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a7">5_debug/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00164">164</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00165">165</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -681,7 +768,9 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="zmq_8cpp_source.html#l00194">194</a> of file <a class="el" href="zmq_8cpp_source.html">zmq.cpp</a>.</p>
+<p>Saves the given error for <a class="el" href="classstored_1_1_zmq_layer.html#ab7bb8215f20cdafe5a4d16d0361621be" title="Returns the last reported error of any operation on the ZmqLayer. ">lastError()</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="zmq_8cpp_source.html#l00203">203</a> of file <a class="el" href="zmq_8cpp_source.html">zmq.cpp</a>.</p>
 
 </div>
 </div>
@@ -713,9 +802,9 @@ Protected Member Functions</h2></td></tr>
 <p>This may influence how a response is handled. Especially, in case of retransmits of lost packets, one may decide to either reexecute the command, or to save the first response and resend it when the command was retransmitted. In that sense, a precious response (default) means that every layer should handle the data with case, as it cannot be recovered once it is lost. When the response is flagged purgeeble, the response may be thrown away after the first try to transmit it to the client.</p>
 <p>By default, all responses are precious. </p>
 
-<p>Reimplemented in <a class="el" href="classstored_1_1_string_encoder.html#a29fce383dfd9a94fdc47f5643db405b6">stored::StringEncoder</a>, <a class="el" href="classstored_1_1_frame_merger.html#ae5800ec4cd54027d1dcfb0fde99ae140">stored::FrameMerger</a>, and <a class="el" href="classstored_1_1_arq_layer.html#aebc97053e2dbcf03acbc1ea8f3c3664d">stored::ArqLayer</a>.</p>
+<p>Reimplemented in <a class="el" href="classstored_1_1_string_encoder.html#a29fce383dfd9a94fdc47f5643db405b6">stored::StringEncoder</a>, <a class="el" href="classstored_1_1_frame_merger.html#ae5800ec4cd54027d1dcfb0fde99ae140">stored::FrameMerger</a>, and <a class="el" href="classstored_1_1_debug_arq_layer.html#a036abba40a16df72e93b9fd9a9251bbb">stored::DebugArqLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00256">256</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00257">257</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -751,7 +840,7 @@ Protected Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00158">158</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00159">159</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -813,7 +902,7 @@ Protected Member Functions</h2></td></tr>
 <p>Sets the up/down layers of this layer and the given layer, such that this layer is stacked on (or wrapped by) the given one. </p>
 <p>If the given layer was not the top of the stack, this layer injects itself between the given layer and its stacked one. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00191">191</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00192">192</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -844,7 +933,7 @@ Protected Member Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>the layer, or <code>nullptr</code> if there is none. </dd></dl>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a6">5_debug/main.cpp</a>, and <a class="el" href="7_protocol_2main_8cpp-example.html#a10">7_protocol/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00206">206</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00207">207</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -876,7 +965,7 @@ Protected Member Functions</h2></td></tr>
 <p>If the given layer was not the bottom of the stack, this layer injects itself in between the given layer and its wrapper. </p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a29">7_protocol/main.cpp</a>, <a class="el" href="8_sync_2main_8cpp-example.html#a23">8_sync/main.cpp</a>, <a class="el" href="terminal_2main_8cpp-example.html#a14">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#a28">zmqserver/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00172">172</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00173">173</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>

@@ -83,6 +83,8 @@ $(document).ready(function(){initNavTree('classstored_1_1_arq_layer.html','');})
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="#pro-types">Protected Types</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-static-methods">Static Protected Member Functions</a> &#124;
 <a href="classstored_1_1_arq_layer-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -90,7 +92,7 @@ $(document).ready(function(){initNavTree('classstored_1_1_arq_layer.html','');})
 </div><!--header-->
 <div class="contents">
 
-<p>A layer that performs Automatic Repeat Request operations on messages.  
+<p>A general purpose layer that performs Automatic Repeat Request operations on messages.  
  <a href="classstored_1_1_arq_layer.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="protocol_8h_source.html">protocol.h</a>&gt;</code></p>
@@ -106,8 +108,23 @@ Inheritance diagram for stored::ArqLayer:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
+<tr class="memitem:afd3c6c47dbbc8673fd0cfea97a00b233"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="classstored_1_1_arq_layer.html#afd3c6c47dbbc8673fd0cfea97a00b233a39ab31057c8c5eea4f5e0afb1a8fcbc7">RetransmitCallbackThreshold</a> = 10
+ }</td></tr>
+<tr class="separator:afd3c6c47dbbc8673fd0cfea97a00b233"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af614b4f50851434d0ffa0dc9f7388f20"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#af614b4f50851434d0ffa0dc9f7388f20">base</a></td></tr>
 <tr class="separator:af614b4f50851434d0ffa0dc9f7388f20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d3b18fc5b159e527b087385ac961e52"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a1d3b18fc5b159e527b087385ac961e52">Event</a> { <a class="el" href="classstored_1_1_arq_layer.html#a1d3b18fc5b159e527b087385ac961e52ad7a25330d281170fe07445ea0b491f05">EventNone</a>, 
+<a class="el" href="classstored_1_1_arq_layer.html#a1d3b18fc5b159e527b087385ac961e52a695faff43603c7debd9ac61f8b607c99">EventReconnect</a>, 
+<a class="el" href="classstored_1_1_arq_layer.html#a1d3b18fc5b159e527b087385ac961e52afec9d8b5d2c8fe338525458da4909a48">EventEncodeBufferOverflow</a>, 
+<a class="el" href="classstored_1_1_arq_layer.html#a1d3b18fc5b159e527b087385ac961e52a67b425c96fa51d033359fbea7f1c344a">EventRetransmit</a>
+ }</td></tr>
+<tr class="separator:a1d3b18fc5b159e527b087385ac961e52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a035b726e630d83552d9587b3b37c3ec8"><td class="memItemLeft" align="right" valign="top">typedef void()&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a035b726e630d83552d9587b3b37c3ec8">EventCallback</a>(<a class="el" href="classstored_1_1_arq_layer.html">ArqLayer</a> &amp;, <a class="el" href="classstored_1_1_arq_layer.html#a1d3b18fc5b159e527b087385ac961e52">Event</a>)</td></tr>
+<tr class="memdesc:a035b726e630d83552d9587b3b37c3ec8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback type for <a class="el" href="classstored_1_1_arq_layer.html#a021b579df6a03cbf7a7f77098360547d" title="Set event callback. ">setEventCallback(F&amp;&amp;)</a>.  <a href="#a035b726e630d83552d9587b3b37c3ec8">More...</a><br /></td></tr>
+<tr class="separator:a035b726e630d83552d9587b3b37c3ec8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fa6e75d37245bfe70669aae2982d8e3"><td class="memItemLeft" align="right" valign="top">typedef void()&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a0fa6e75d37245bfe70669aae2982d8e3">EventCallbackArg</a>(<a class="el" href="classstored_1_1_arq_layer.html">ArqLayer</a> &amp;, <a class="el" href="classstored_1_1_arq_layer.html#a1d3b18fc5b159e527b087385ac961e52">Event</a>, void *)</td></tr>
+<tr class="memdesc:a0fa6e75d37245bfe70669aae2982d8e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback type for <a class="el" href="classstored_1_1_arq_layer.html#aea5caae38968fc00bd7de90915a154a8" title="Set event callback. ">setEventCallback(EventCallbackArg*,void*)</a>.  <a href="#a0fa6e75d37245bfe70669aae2982d8e3">More...</a><br /></td></tr>
+<tr class="separator:a0fa6e75d37245bfe70669aae2982d8e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -120,11 +137,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a38bd267c41bd6d7fd9b5231b398ac176"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a38bd267c41bd6d7fd9b5231b398ac176">ArqLayer</a> (size_t maxEncodeBuffer=0, <a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40">up</a>=nullptr, <a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a>=nullptr)</td></tr>
 <tr class="memdesc:a38bd267c41bd6d7fd9b5231b398ac176"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ctor.  <a href="#a38bd267c41bd6d7fd9b5231b398ac176">More...</a><br /></td></tr>
 <tr class="separator:a38bd267c41bd6d7fd9b5231b398ac176"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba7be7e51474cae2f192458aad0369c1"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#aba7be7e51474cae2f192458aad0369c1">~ArqLayer</a> () override=default</td></tr>
-<tr class="separator:aba7be7e51474cae2f192458aad0369c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbab2b5061d597434e4e1f6620bb110f"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#afbab2b5061d597434e4e1f6620bb110f">~ArqLayer</a> () override</td></tr>
+<tr class="memdesc:afbab2b5061d597434e4e1f6620bb110f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dtor.  <a href="#afbab2b5061d597434e4e1f6620bb110f">More...</a><br /></td></tr>
+<tr class="separator:afbab2b5061d597434e4e1f6620bb110f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae0973f22504fbff0b98fefec8d53013"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#aae0973f22504fbff0b98fefec8d53013">decode</a> (void *buffer, size_t len) override</td></tr>
 <tr class="memdesc:aae0973f22504fbff0b98fefec8d53013"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode a frame and forward the decoded frame to the upper layer.  <a href="#aae0973f22504fbff0b98fefec8d53013">More...</a><br /></td></tr>
 <tr class="separator:aae0973f22504fbff0b98fefec8d53013"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72a34dd87ec3fcee83db2a44f7e8a8e5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a72a34dd87ec3fcee83db2a44f7e8a8e5">didTransmit</a> () const</td></tr>
+<tr class="memdesc:a72a34dd87ec3fcee83db2a44f7e8a8e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a full message has been transmitted.  <a href="#a72a34dd87ec3fcee83db2a44f7e8a8e5">More...</a><br /></td></tr>
+<tr class="separator:a72a34dd87ec3fcee83db2a44f7e8a8e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9a6113262899388f922a6d466e9245a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a> () const</td></tr>
 <tr class="memdesc:ac9a6113262899388f922a6d466e9245a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the layer below this one.  <a href="#ac9a6113262899388f922a6d466e9245a">More...</a><br /></td></tr>
 <tr class="separator:ac9a6113262899388f922a6d466e9245a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -134,6 +155,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a156d3e684ca880a6d5a4e57da36d585e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a156d3e684ca880a6d5a4e57da36d585e">encode</a> (void const *buffer, size_t len, bool last=true) override</td></tr>
 <tr class="memdesc:a156d3e684ca880a6d5a4e57da36d585e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode a (partial) frame and forward it to the lower layer.  <a href="#a156d3e684ca880a6d5a4e57da36d585e">More...</a><br /></td></tr>
 <tr class="separator:a156d3e684ca880a6d5a4e57da36d585e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf63088fb9952dcc6599a023d0491d12"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#abf63088fb9952dcc6599a023d0491d12">flush</a> () override</td></tr>
+<tr class="memdesc:abf63088fb9952dcc6599a023d0491d12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flushes all buffered message out of the stack (top-down), if possible.  <a href="#abf63088fb9952dcc6599a023d0491d12">More...</a><br /></td></tr>
+<tr class="separator:abf63088fb9952dcc6599a023d0491d12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1d2c6282a3ecad2e561ddb517421b09"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#ab1d2c6282a3ecad2e561ddb517421b09">keepAlive</a> ()</td></tr>
+<tr class="memdesc:ab1d2c6282a3ecad2e561ddb517421b09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send a keep-alive packet to check the connection.  <a href="#ab1d2c6282a3ecad2e561ddb517421b09">More...</a><br /></td></tr>
+<tr class="separator:ab1d2c6282a3ecad2e561ddb517421b09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1efacad0bccc60d7d202663ce984aab2"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a1efacad0bccc60d7d202663ce984aab2">mtu</a> () const override</td></tr>
 <tr class="memdesc:a1efacad0bccc60d7d202663ce984aab2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the maximum amount of data to be put in one message that is encoded.  <a href="#a1efacad0bccc60d7d202663ce984aab2">More...</a><br /></td></tr>
 <tr class="separator:a1efacad0bccc60d7d202663ce984aab2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,55 +170,100 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a315e70b02f9ad26a581b3cdb7e19b345"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a315e70b02f9ad26a581b3cdb7e19b345">operator=</a> (<a class="el" href="classstored_1_1_arq_layer.html">ArqLayer</a> const &amp;)=delete</td></tr>
 <tr class="memdesc:a315e70b02f9ad26a581b3cdb7e19b345"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted assignment operator.  <a href="#a315e70b02f9ad26a581b3cdb7e19b345">More...</a><br /></td></tr>
 <tr class="separator:a315e70b02f9ad26a581b3cdb7e19b345"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2f83fa2caaab88f9ee29855b3c527a7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#ab2f83fa2caaab88f9ee29855b3c527a7">reset</a> () override</td></tr>
+<tr class="memdesc:ab2f83fa2caaab88f9ee29855b3c527a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset the stack (top-down), and drop all messages.  <a href="#ab2f83fa2caaab88f9ee29855b3c527a7">More...</a><br /></td></tr>
+<tr class="separator:ab2f83fa2caaab88f9ee29855b3c527a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad385593c1549539ec000943046860404"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#ad385593c1549539ec000943046860404">resetDidTransmit</a> ()</td></tr>
+<tr class="memdesc:ad385593c1549539ec000943046860404"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset the flag for <a class="el" href="classstored_1_1_arq_layer.html#a72a34dd87ec3fcee83db2a44f7e8a8e5" title="Checks if a full message has been transmitted. ">didTransmit()</a>.  <a href="#ad385593c1549539ec000943046860404">More...</a><br /></td></tr>
+<tr class="separator:ad385593c1549539ec000943046860404"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fc718f8b8c05aef735e2c861535eabc"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a7fc718f8b8c05aef735e2c861535eabc">retransmits</a> () const</td></tr>
+<tr class="memdesc:a7fc718f8b8c05aef735e2c861535eabc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of consecutive retransmits of the same message.  <a href="#a7fc718f8b8c05aef735e2c861535eabc">More...</a><br /></td></tr>
+<tr class="separator:a7fc718f8b8c05aef735e2c861535eabc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b2523892617a43cf7421a654bfc3b6c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a2b2523892617a43cf7421a654bfc3b6c">setDown</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a>)</td></tr>
 <tr class="memdesc:a2b2523892617a43cf7421a654bfc3b6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the layer that receives our encoded frames.  <a href="#a2b2523892617a43cf7421a654bfc3b6c">More...</a><br /></td></tr>
 <tr class="separator:a2b2523892617a43cf7421a654bfc3b6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aebc97053e2dbcf03acbc1ea8f3c3664d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#aebc97053e2dbcf03acbc1ea8f3c3664d">setPurgeableResponse</a> (bool purgeable=true) override</td></tr>
-<tr class="memdesc:aebc97053e2dbcf03acbc1ea8f3c3664d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flags the current response as purgeable.  <a href="#aebc97053e2dbcf03acbc1ea8f3c3664d">More...</a><br /></td></tr>
-<tr class="separator:aebc97053e2dbcf03acbc1ea8f3c3664d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea5caae38968fc00bd7de90915a154a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#aea5caae38968fc00bd7de90915a154a8">setEventCallback</a> (<a class="el" href="classstored_1_1_arq_layer.html#a0fa6e75d37245bfe70669aae2982d8e3">EventCallbackArg</a> *cb=nullptr, void *arg=nullptr)</td></tr>
+<tr class="memdesc:aea5caae38968fc00bd7de90915a154a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set event callback.  <a href="#aea5caae38968fc00bd7de90915a154a8">More...</a><br /></td></tr>
+<tr class="separator:aea5caae38968fc00bd7de90915a154a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a021b579df6a03cbf7a7f77098360547d"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
+<tr class="memitem:a021b579df6a03cbf7a7f77098360547d"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a021b579df6a03cbf7a7f77098360547d">setEventCallback</a> (F &amp;&amp;cb)</td></tr>
+<tr class="memdesc:a021b579df6a03cbf7a7f77098360547d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set event callback.  <a href="#a021b579df6a03cbf7a7f77098360547d">More...</a><br /></td></tr>
+<tr class="separator:a021b579df6a03cbf7a7f77098360547d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e8b913345f11bf3cf3999c305905681"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a8e8b913345f11bf3cf3999c305905681">setPurgeableResponse</a> (bool purgeable=true)</td></tr>
+<tr class="memdesc:a8e8b913345f11bf3cf3999c305905681"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flags the current response as purgeable.  <a href="#a8e8b913345f11bf3cf3999c305905681">More...</a><br /></td></tr>
+<tr class="separator:a8e8b913345f11bf3cf3999c305905681"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43ca79c4b9503ce51f817ddc7fcd1cb5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a43ca79c4b9503ce51f817ddc7fcd1cb5">setUp</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *<a class="el" href="classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40">up</a>)</td></tr>
 <tr class="memdesc:a43ca79c4b9503ce51f817ddc7fcd1cb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the layer that receives our decoded frames.  <a href="#a43ca79c4b9503ce51f817ddc7fcd1cb5">More...</a><br /></td></tr>
 <tr class="separator:a43ca79c4b9503ce51f817ddc7fcd1cb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8b06247c0e2efa0f54c8a1addac8e2d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#ad8b06247c0e2efa0f54c8a1addac8e2d">shrink_to_fit</a> ()</td></tr>
+<tr class="memdesc:ad8b06247c0e2efa0f54c8a1addac8e2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Free all unused memory.  <a href="#ad8b06247c0e2efa0f54c8a1addac8e2d">More...</a><br /></td></tr>
+<tr class="separator:ad8b06247c0e2efa0f54c8a1addac8e2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f34a83e488add9a3f459fb8ebed8e34"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a3f34a83e488add9a3f459fb8ebed8e34">stack</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> &amp;<a class="el" href="classstored_1_1_protocol_layer.html#ac9a6113262899388f922a6d466e9245a">down</a>)</td></tr>
 <tr class="memdesc:a3f34a83e488add9a3f459fb8ebed8e34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the up/down layers of this layer and the given layer, such that this layer is stacked on (or wrapped by) the given one.  <a href="#a3f34a83e488add9a3f459fb8ebed8e34">More...</a><br /></td></tr>
 <tr class="separator:a3f34a83e488add9a3f459fb8ebed8e34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7cbd80b10e74166c661582027158b40"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40">up</a> () const</td></tr>
 <tr class="memdesc:ac7cbd80b10e74166c661582027158b40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the layer above this one.  <a href="#ac7cbd80b10e74166c661582027158b40">More...</a><br /></td></tr>
 <tr class="separator:ac7cbd80b10e74166c661582027158b40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57d385c32e28f7684d75567aeca702f4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a57d385c32e28f7684d75567aeca702f4">waitingForAck</a> () const</td></tr>
+<tr class="memdesc:a57d385c32e28f7684d75567aeca702f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if this layer is waiting for an ack.  <a href="#a57d385c32e28f7684d75567aeca702f4">More...</a><br /></td></tr>
+<tr class="separator:a57d385c32e28f7684d75567aeca702f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d2f0987462196f77ca9067c050db09d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_protocol_layer.html#a7d2f0987462196f77ca9067c050db09d">wrap</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> &amp;<a class="el" href="classstored_1_1_protocol_layer.html#ac7cbd80b10e74166c661582027158b40">up</a>)</td></tr>
 <tr class="memdesc:a7d2f0987462196f77ca9067c050db09d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the up/down layers of this layer and the given layer, such that this layer wraps the given one.  <a href="#a7d2f0987462196f77ca9067c050db09d">More...</a><br /></td></tr>
 <tr class="separator:a7d2f0987462196f77ca9067c050db09d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a31266d3a965a40c5cdee2d0642727d7a"><td class="memItemLeft" align="right" valign="top">static uint8_t const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a31266d3a965a40c5cdee2d0642727d7a">ResetFlag</a> = 0x80</td></tr>
-<tr class="separator:a31266d3a965a40c5cdee2d0642727d7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4af8faa0449d4c0c048be13a0d250384"><td class="memItemLeft" align="right" valign="top">static uint8_t const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a4af8faa0449d4c0c048be13a0d250384">AckFlag</a> = 0x80u</td></tr>
+<tr class="memdesc:a4af8faa0449d4c0c048be13a0d250384"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ack flag.  <a href="#a4af8faa0449d4c0c048be13a0d250384">More...</a><br /></td></tr>
+<tr class="separator:a4af8faa0449d4c0c048be13a0d250384"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a335ff281a24fb2aac70b381451589424"><td class="memItemLeft" align="right" valign="top">static uint8_t const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a335ff281a24fb2aac70b381451589424">NopFlag</a> = 0x40u</td></tr>
+<tr class="memdesc:a335ff281a24fb2aac70b381451589424"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag to indicate that the payload should be ignored.  <a href="#a335ff281a24fb2aac70b381451589424">More...</a><br /></td></tr>
+<tr class="separator:a335ff281a24fb2aac70b381451589424"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d481c24d715ceef8dcc2fd9cd19eab1"><td class="memItemLeft" align="right" valign="top">static uint8_t const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a6d481c24d715ceef8dcc2fd9cd19eab1">SeqMask</a> = 0x3fu</td></tr>
+<tr class="memdesc:a6d481c24d715ceef8dcc2fd9cd19eab1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mask for sequence number.  <a href="#a6d481c24d715ceef8dcc2fd9cd19eab1">More...</a><br /></td></tr>
+<tr class="separator:a6d481c24d715ceef8dcc2fd9cd19eab1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-types"></a>
+Protected Types</h2></td></tr>
+<tr class="memitem:a5afc54c8eec96b06ba9c0a99d4dca7c1"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a5afc54c8eec96b06ba9c0a99d4dca7c1">EncodeState</a> { <a class="el" href="classstored_1_1_arq_layer.html#a5afc54c8eec96b06ba9c0a99d4dca7c1adc66734e4631a5349dcaba9bcf8dd524">EncodeStateIdle</a>, 
+<a class="el" href="classstored_1_1_arq_layer.html#a5afc54c8eec96b06ba9c0a99d4dca7c1a6a87d422220f79f0357e0f9c8d2dce8b">EncodeStateEncoding</a>
+ }</td></tr>
+<tr class="separator:a5afc54c8eec96b06ba9c0a99d4dca7c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:af8bb680d2105264eaf4b7103eb0a3319"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#af8bb680d2105264eaf4b7103eb0a3319">event</a> (<a class="el" href="classstored_1_1_arq_layer.html#a1d3b18fc5b159e527b087385ac961e52">Event</a> e)</td></tr>
+<tr class="memdesc:af8bb680d2105264eaf4b7103eb0a3319"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forward the given event to the registered callback, if any.  <a href="#af8bb680d2105264eaf4b7103eb0a3319">More...</a><br /></td></tr>
+<tr class="separator:af8bb680d2105264eaf4b7103eb0a3319"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b2f96a8e25063dbf2631c5d2c765920"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a1b2f96a8e25063dbf2631c5d2c765920">popEncodeQueue</a> ()</td></tr>
+<tr class="memdesc:a1b2f96a8e25063dbf2631c5d2c765920"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop front of encode queue.  <a href="#a1b2f96a8e25063dbf2631c5d2c765920">More...</a><br /></td></tr>
+<tr class="separator:a1b2f96a8e25063dbf2631c5d2c765920"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a411e363eaca7a8060277363feee51b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a9a411e363eaca7a8060277363feee51b">pushEncodeQueue</a> (void const *buffer, size_t len)</td></tr>
+<tr class="memdesc:a9a411e363eaca7a8060277363feee51b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push the given buffer into the encode queue.  <a href="#a9a411e363eaca7a8060277363feee51b">More...</a><br /></td></tr>
+<tr class="separator:a9a411e363eaca7a8060277363feee51b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e32f0946f88adc172b501b335c68632"><td class="memItemLeft" align="right" valign="top">std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a7e32f0946f88adc172b501b335c68632">pushEncodeQueueRaw</a> ()</td></tr>
+<tr class="memdesc:a7e32f0946f88adc172b501b335c68632"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an entry in the encode queue, but do not populate the contents.  <a href="#a7e32f0946f88adc172b501b335c68632">More...</a><br /></td></tr>
+<tr class="separator:a7e32f0946f88adc172b501b335c68632"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06104ba40460c0852457bbe651ddba48"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a06104ba40460c0852457bbe651ddba48">transmit</a> ()</td></tr>
+<tr class="memdesc:a06104ba40460c0852457bbe651ddba48"><td class="mdescLeft">&#160;</td><td class="mdescRight">(Re)transmits the first message in the queue.  <a href="#a06104ba40460c0852457bbe651ddba48">More...</a><br /></td></tr>
+<tr class="separator:a06104ba40460c0852457bbe651ddba48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-methods"></a>
 Static Protected Member Functions</h2></td></tr>
-<tr class="memitem:a7ab1ffd45d793a4c2c65b4c4454efa17"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a7ab1ffd45d793a4c2c65b4c4454efa17">decodeSeq</a> (uint8_t *&amp;buffer, size_t &amp;len)</td></tr>
-<tr class="separator:a7ab1ffd45d793a4c2c65b4c4454efa17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a4d08bb1058612cd5724dc5466007c5"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#a3a4d08bb1058612cd5724dc5466007c5">encodeSeq</a> (uint32_t seq, void *buffer)</td></tr>
-<tr class="separator:a3a4d08bb1058612cd5724dc5466007c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa2b4aae5b1be0635b4babd0d0274cbf7"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#aa2b4aae5b1be0635b4babd0d0274cbf7">nextSeq</a> (uint32_t seq)</td></tr>
-<tr class="separator:aa2b4aae5b1be0635b4babd0d0274cbf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6414510a8e158dd1df01b8738ac565b"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_arq_layer.html#aa6414510a8e158dd1df01b8738ac565b">nextSeq</a> (uint8_t seq)</td></tr>
+<tr class="memdesc:aa6414510a8e158dd1df01b8738ac565b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the next sequence number.  <a href="#aa6414510a8e158dd1df01b8738ac565b">More...</a><br /></td></tr>
+<tr class="separator:aa6414510a8e158dd1df01b8738ac565b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A layer that performs Automatic Repeat Request operations on messages. </p>
-<p>This layer allows messages that are lost, to be retransmitted on both the request and response side. The implementation assumes that lost message is possible, but rare. It optimizes on the normal case that message arrive. Retransmits may be relatively expensive.</p>
-<p>Messages must be either lost or arrive correctly. Make sure to do checksumming in the layer below. Moreover, you might want the <a class="el" href="classstored_1_1_segmentation_layer.html" title="A layer that performs segmentation of the messages. ">stored::SegmentationLayer</a> on top of this layer to make sure that packets have a deterministic (small) size.</p>
-<p>Every message is prefixed with a sequence number in the range 0-0x7ffffff. Sequence numbers are normally incremented after every message. It can wrap around, but if it does, 0 should be skipped. So, the next sequence number after 0x7ffffff is 1.</p>
-<p>This sequence number is encoded like VLQ (Variable-length quantity, see <a href="https://en.wikipedia.org/wiki/Variable-length_quantity">https://en.wikipedia.org/wiki/Variable-length_quantity</a>), with the exception that the most significant bit of the first byte is a reset flag. So, the prefix is one to four bytes.</p>
-<p>A request (to be received by the target) transmits every chunk with increasing sequence number. When the target has received all messages of the request (probably determined by a <a class="el" href="classstored_1_1_segmentation_layer.html" title="A layer that performs segmentation of the messages. ">stored::SegmentationLayer</a> on top), the request is executed and the response is sent. When everything is OK, the next request can be sent, continuing with the sequence number. There should be no gap in these numbers.</p>
-<p>The client can decide to reset the sequence numbers. To do this, send a message with only the new sequence number that the client will use from now on, but with the reset flag set. There is no payload. The target will respond with a message containing 0x80 (and no further payload). This can be used to recover the connection if the client lost track of the sequence numbers (e.g., it restarted). After this reset operation, the next request shall use the sequence number used to reset + 1. The response will start with sequence number 1.</p>
-<p>Individual messages are not ACKed, like TCP does. If the client does not receive a response to its request, either the request or the response has been lost. In any case, it has to resend its full request, using the same sequence numbers as used with the first attempt. The target will (re)send its response. There is no timeout specified. Use a timeout value that fits the infrastructure of your device. There is no limit in how often a retransmit can occur.</p>
-<p>The application has limited buffering. So, neither the request nor the full response may be buffered for (partial) retransmission. Therefore, it may be the case that when the response was lost, the request is reexecuted. It is up to the buffer size as specified in <a class="el" href="classstored_1_1_arq_layer.html" title="A layer that performs Automatic Repeat Request operations on messages. ">ArqLayer</a>'s constructor and <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> to determine when it is safe or required to reexected upon every retransmit. For example, writes are not reexecuted, as a write may have unexpected side-effects, while it is safe to reexecute a read of a normal variable. When the directory is requested, the response is often too long to buffer, and the response is constant, so it is not buffered either and just reexecuted. Note that if the buffer is too small, reading from a stream (s command) will do a destructive read, but this data may be lost if the response is lost. Configure the stream size and <a class="el" href="classstored_1_1_arq_layer.html" title="A layer that performs Automatic Repeat Request operations on messages. ">ArqLayer</a>'s buffer appropriate if that is unacceptable for you.</p>
-<p>Because of this limited buffering, the response may reset the sequence numbers more often. Upon retransmission of the same data, the same sequence numbers are used, just like the retransmission of the request. However, if the data may have been changed, as the response was not buffered and the request was reexecuted, the reset flag is set of the first response message, while it has a new sequence number. The client should accept this new sequence number and discard all previously collected response messages.</p>
-<p>Within one request or response, the same sequence number should be used twice; even if the request or response is very long. Worst-case, when there is only one payload byte per message, this limits the request and response to 128 MB. As the payload is allowed to be of any size, this should not be a real limitation in practice.</p>
-<p>This protocol is verified by the Promela model in tests/ArqLayer.pml. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#_a30">7_protocol/main.cpp</a>.</dd>
-</dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00491">491</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<div class="textblock"><p>A general purpose layer that performs Automatic Repeat Request operations on messages. </p>
+<p>This layer does not assume a specific message pattern. For <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>, use <a class="el" href="classstored_1_1_debug_arq_layer.html" title="A layer that performs Automatic Repeat Request operations on messages for stored::Debugger. ">stored::DebugArqLayer</a>.</p>
+<p>Every message sent has to be acknowledged. There is no window; after sending a message, an ack must be received before continuing. The queue of messages is by default unlimited, but can be set via the constructor. If the limit is hit, the event callback is invoked.</p>
+<p>This layer prepends the message with a sequence number byte. The MSb indicates if it is an ack, the 6 LSb are the sequence number. Sequence 0 is special; it resets the connection. It should not be used during normal operation, so the next sequence number after 63 is 1. Message that do not have a payload (so, no <a class="el" href="classstored_1_1_arq_layer.html#aae0973f22504fbff0b98fefec8d53013" title="Decode a frame and forward the decoded frame to the upper layer. ">decode()</a> has to be invoked upon receival), should set bit 6. This also applies to the reset message.</p>
+<p>Retransmits are triggered every time a message is queued for encoding, or when <a class="el" href="classstored_1_1_arq_layer.html#abf63088fb9952dcc6599a023d0491d12" title="Flushes all buffered message out of the stack (top-down), if possible. ">flush()</a> is called. There is no timeout specified.</p>
+<p>One may decide to use a <a class="el" href="classstored_1_1_segmentation_layer.html" title="A layer that performs segmentation of the messages. ">stored::SegmentationLayer</a> higher in the protocol stack to reduce the amount of data to retransmit when a message is lost (only one segment is retransmitted, not the full message), but this may add the overhead of the sequence number and round-trip time per segment. If the <a class="el" href="classstored_1_1_segmentation_layer.html" title="A layer that performs segmentation of the messages. ">stored::SegmentationLayer</a> is used below the <a class="el" href="classstored_1_1_arq_layer.html" title="A general purpose layer that performs Automatic Repeat Request operations on messages. ">ArqLayer</a>, normal-case behavior (no packet loss) is most efficient, but the penalty of a retransmit may be higher. It is up to the infrastructure and application requirements what is best.</p>
+<p>The layer has no notion of time, or time out for retransmits and acks. The application must call <a class="el" href="classstored_1_1_arq_layer.html#abf63088fb9952dcc6599a023d0491d12" title="Flushes all buffered message out of the stack (top-down), if possible. ">flush()</a> (for the whole stack), or <a class="el" href="classstored_1_1_arq_layer.html#ab1d2c6282a3ecad2e561ddb517421b09" title="Send a keep-alive packet to check the connection. ">keepAlive()</a> at a regular interval. Every invocation of either function will do a retransmit of the head of the encode queue. If called to often, retransmits may be done before the other party had a change to respond. If called not often enough, retransmits may take long and communication may be slowed down. Either way, it is functionally correct. Determine for you application what is wise to do. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00477">477</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="af614b4f50851434d0ffa0dc9f7388f20"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af614b4f50851434d0ffa0dc9f7388f20">&#9670;&nbsp;</a></span>base</h2>
@@ -205,7 +277,121 @@ Static Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00494">494</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00480">480</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a035b726e630d83552d9587b3b37c3ec8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a035b726e630d83552d9587b3b37c3ec8">&#9670;&nbsp;</a></span>EventCallback</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef void() stored::ArqLayer::EventCallback(<a class="el" href="classstored_1_1_arq_layer.html">ArqLayer</a> &amp;, <a class="el" href="classstored_1_1_arq_layer.html#a1d3b18fc5b159e527b087385ac961e52">Event</a>)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Callback type for <a class="el" href="classstored_1_1_arq_layer.html#a021b579df6a03cbf7a7f77098360547d" title="Set event callback. ">setEventCallback(F&amp;&amp;)</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00561">561</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a0fa6e75d37245bfe70669aae2982d8e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fa6e75d37245bfe70669aae2982d8e3">&#9670;&nbsp;</a></span>EventCallbackArg</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef void() stored::ArqLayer::EventCallbackArg(<a class="el" href="classstored_1_1_arq_layer.html">ArqLayer</a> &amp;, <a class="el" href="classstored_1_1_arq_layer.html#a1d3b18fc5b159e527b087385ac961e52">Event</a>, void *)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Callback type for <a class="el" href="classstored_1_1_arq_layer.html#aea5caae38968fc00bd7de90915a154a8" title="Set event callback. ">setEventCallback(EventCallbackArg*,void*)</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00537">537</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="afd3c6c47dbbc8673fd0cfea97a00b233"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd3c6c47dbbc8673fd0cfea97a00b233">&#9670;&nbsp;</a></span>anonymous enum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">anonymous enum</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="afd3c6c47dbbc8673fd0cfea97a00b233a39ab31057c8c5eea4f5e0afb1a8fcbc7"></a>RetransmitCallbackThreshold&#160;</td><td class="fielddoc"><p>Number of successive retransmits before the event is emitted. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00486">486</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a5afc54c8eec96b06ba9c0a99d4dca7c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5afc54c8eec96b06ba9c0a99d4dca7c1">&#9670;&nbsp;</a></span>EncodeState</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="classstored_1_1_arq_layer.html#a5afc54c8eec96b06ba9c0a99d4dca7c1">stored::ArqLayer::EncodeState</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a5afc54c8eec96b06ba9c0a99d4dca7c1adc66734e4631a5349dcaba9bcf8dd524"></a>EncodeStateIdle&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5afc54c8eec96b06ba9c0a99d4dca7c1a6a87d422220f79f0357e0f9c8d2dce8b"></a>EncodeStateEncoding&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00584">584</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a1d3b18fc5b159e527b087385ac961e52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d3b18fc5b159e527b087385ac961e52">&#9670;&nbsp;</a></span>Event</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="classstored_1_1_arq_layer.html#a1d3b18fc5b159e527b087385ac961e52">stored::ArqLayer::Event</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a1d3b18fc5b159e527b087385ac961e52ad7a25330d281170fe07445ea0b491f05"></a>EventNone&#160;</td><td class="fielddoc"><p>No event. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a1d3b18fc5b159e527b087385ac961e52a695faff43603c7debd9ac61f8b607c99"></a>EventReconnect&#160;</td><td class="fielddoc"><p>An unexpected reset message has been received. </p>
+<p>The reset message remains unanswered, until <a class="el" href="classstored_1_1_arq_layer.html#ab2f83fa2caaab88f9ee29855b3c527a7" title="Reset the stack (top-down), and drop all messages. ">reset()</a> is called. The callback function should probably reinitialize the whole stack. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a1d3b18fc5b159e527b087385ac961e52afec9d8b5d2c8fe338525458da4909a48"></a>EventEncodeBufferOverflow&#160;</td><td class="fielddoc"><p>The maximum buffer capactiy has passed. </p>
+<p>The callback may reset the stack to prevent excessive memory usage. Memory allocation will just continue. If no callback function is set (the default), <code>abort()</code> is called when this event happens. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a1d3b18fc5b159e527b087385ac961e52a67b425c96fa51d033359fbea7f1c344a"></a>EventRetransmit&#160;</td><td class="fielddoc"><p><a class="el" href="classstored_1_1_arq_layer.html#afd3c6c47dbbc8673fd0cfea97a00b233a39ab31057c8c5eea4f5e0afb1a8fcbc7" title="Number of successive retransmits before the event is emitted. ">RetransmitCallbackThreshold</a> has been reached on the current message. </p>
+<p>This is an indicator that the connection has been lost. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00503">503</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -299,13 +485,14 @@ Static Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Ctor. </p>
+<p>If <code>maxEncodeBuffer</code> is non-zero, it defines the upper limit of the combined length of all queued messages for encoding. If the limit is hit, the <a class="el" href="classstored_1_1_arq_layer.html#a1d3b18fc5b159e527b087385ac961e52afec9d8b5d2c8fe338525458da4909a48" title="The maximum buffer capactiy has passed. ">EventEncodeBufferOverflow</a> event is passed to the callback. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00426">426</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00442">442</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
-<a id="aba7be7e51474cae2f192458aad0369c1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aba7be7e51474cae2f192458aad0369c1">&#9670;&nbsp;</a></span>~ArqLayer()</h2>
+<a id="afbab2b5061d597434e4e1f6620bb110f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbab2b5061d597434e4e1f6620bb110f">&#9670;&nbsp;</a></span>~ArqLayer()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -314,7 +501,7 @@ Static Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual stored::ArqLayer::~ArqLayer </td>
+          <td class="memname">stored::ArqLayer::~ArqLayer </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -322,10 +509,14 @@ Static Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Dtor. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00463">463</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -369,45 +560,31 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a357b029311be09df61e019682a848ab5">stored::ProtocolLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00439">439</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00484">484</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a7ab1ffd45d793a4c2c65b4c4454efa17"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ab1ffd45d793a4c2c65b4c4454efa17">&#9670;&nbsp;</a></span>decodeSeq()</h2>
+<a id="a72a34dd87ec3fcee83db2a44f7e8a8e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72a34dd87ec3fcee83db2a44f7e8a8e5">&#9670;&nbsp;</a></span>didTransmit()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32_t stored::ArqLayer::decodeSeq </td>
+          <td class="memname">bool stored::ArqLayer::didTransmit </td>
           <td>(</td>
-          <td class="paramtype">uint8_t *&amp;&#160;</td>
-          <td class="paramname"><em>buffer</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t &amp;&#160;</td>
-          <td class="paramname"><em>len</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00650">650</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p>Checks if a full message has been transmitted. </p>
+<p>This function can be used to determine if this layer transmitted anything. For example, when a response is decoded, this function can be used to check if anything has sent back, or the message was dropped. Or, when <a class="el" href="classstored_1_1_arq_layer.html#abf63088fb9952dcc6599a023d0491d12" title="Flushes all buffered message out of the stack (top-down), if possible. ">flush()</a> is called, this flag can be used to check if anything was actually flushed.</p>
+<p>To use the function, first call <a class="el" href="classstored_1_1_arq_layer.html#ad385593c1549539ec000943046860404" title="Reset the flag for didTransmit(). ">resetDidTransmit()</a>, then execute the code you want to check, and then check <a class="el" href="classstored_1_1_arq_layer.html#a72a34dd87ec3fcee83db2a44f7e8a8e5" title="Checks if a full message has been transmitted. ">didTransmit()</a>.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_arq_layer.html#ad385593c1549539ec000943046860404" title="Reset the flag for didTransmit(). ">resetDidTransmit()</a> </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00663">663</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -438,7 +615,7 @@ Static Protected Member Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>the layer, or <code>nullptr</code> if there is none. </dd></dl>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a11">7_protocol/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00212">212</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00213">213</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -468,7 +645,7 @@ Static Protected Member Functions</h2></td></tr>
 <p>Encodes the last part of the current frame. </p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a10">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#a17">7_protocol/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#a8">terminal/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00227">227</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00228">228</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -517,12 +694,12 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#ae5dab6177c1448d1ce5ac04a69c9b4e4">stored::ProtocolLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00523">523</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00550">550</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a3a4d08bb1058612cd5724dc5466007c5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3a4d08bb1058612cd5724dc5466007c5">&#9670;&nbsp;</a></span>encodeSeq()</h2>
+<a id="af8bb680d2105264eaf4b7103eb0a3319"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8bb680d2105264eaf4b7103eb0a3319">&#9670;&nbsp;</a></span>event()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -531,31 +708,78 @@ Static Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">size_t stored::ArqLayer::encodeSeq </td>
+          <td class="memname">void stored::ArqLayer::event </td>
           <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>seq</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype"><a class="el" href="classstored_1_1_arq_layer.html#a1d3b18fc5b159e527b087385ac961e52">ArqLayer::Event</a>&#160;</td>
+          <td class="paramname"><em>e</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>buffer</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00664">664</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p>Forward the given event to the registered callback, if any. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00612">612</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="abf63088fb9952dcc6599a023d0491d12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf63088fb9952dcc6599a023d0491d12">&#9670;&nbsp;</a></span>flush()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool stored::ArqLayer::flush </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flushes all buffered message out of the stack (top-down), if possible. </p>
+<p>Any buffered, held back, queued messages are tried to be sent immediately. A flush is always safe; it never destroys data in the stack, it only tries to force it out.</p>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if successful and the stack is empty, or <code>false</code> if message are still blocked </dd></dl>
+
+<p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a654466d2b7502efdbd5b1b1e95263194">stored::ProtocolLayer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00576">576</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ab1d2c6282a3ecad2e561ddb517421b09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1d2c6282a3ecad2e561ddb517421b09">&#9670;&nbsp;</a></span>keepAlive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void stored::ArqLayer::keepAlive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Send a keep-alive packet to check the connection. </p>
+<p>It actually retransmits the message that is currently processed (waiting for an ack), or sends a dummy message in case the encode queue is empty. Either way, <a class="el" href="classstored_1_1_arq_layer.html#a7fc718f8b8c05aef735e2c861535eabc" title="Returns the number of consecutive retransmits of the same message. ">retransmits()</a> and the <a class="el" href="classstored_1_1_arq_layer.html#a1d3b18fc5b159e527b087385ac961e52a67b425c96fa51d033359fbea7f1c344a" title="RetransmitCallbackThreshold has been reached on the current message. ">EventRetransmit</a> can be used afterwards to determine the quality of the link. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00693">693</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -588,12 +812,12 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a88195d7cdb7129ac7bc625ffeb24d449">stored::ProtocolLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00636">636</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00641">641</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
-<a id="aa2b4aae5b1be0635b4babd0d0274cbf7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa2b4aae5b1be0635b4babd0d0274cbf7">&#9670;&nbsp;</a></span>nextSeq()</h2>
+<a id="aa6414510a8e158dd1df01b8738ac565b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6414510a8e158dd1df01b8738ac565b">&#9670;&nbsp;</a></span>nextSeq()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -602,9 +826,9 @@ Static Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32_t stored::ArqLayer::nextSeq </td>
+          <td class="memname">uint8_t stored::ArqLayer::nextSeq </td>
           <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>seq</em></td><td>)</td>
           <td></td>
         </tr>
@@ -616,7 +840,9 @@ Static Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00645">645</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p>Compute the next sequence number. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00636">636</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -676,6 +902,180 @@ Static Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a1b2f96a8e25063dbf2631c5d2c765920"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b2f96a8e25063dbf2631c5d2c765920">&#9670;&nbsp;</a></span>popEncodeQueue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void stored::ArqLayer::popEncodeQueue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Drop front of encode queue. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00708">708</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a9a411e363eaca7a8060277363feee51b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a411e363eaca7a8060277363feee51b">&#9670;&nbsp;</a></span>pushEncodeQueue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void stored::ArqLayer::pushEncodeQueue </td>
+          <td>(</td>
+          <td class="paramtype">void const *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>len</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Push the given buffer into the encode queue. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00725">725</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a7e32f0946f88adc172b501b335c68632"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e32f0946f88adc172b501b335c68632">&#9670;&nbsp;</a></span>pushEncodeQueueRaw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string &amp; stored::ArqLayer::pushEncodeQueueRaw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Adds an entry in the encode queue, but do not populate the contents. </p>
+<p>The returned buffer can be used to put the message in. This should include the sequence number as the first byte. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00739">739</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ab2f83fa2caaab88f9ee29855b3c527a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2f83fa2caaab88f9ee29855b3c527a7">&#9670;&nbsp;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void stored::ArqLayer::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reset the stack (top-down), and drop all messages. </p>
+
+<p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a53fe78a7b405b981649112d9c84fe762">stored::ProtocolLayer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00470">470</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ad385593c1549539ec000943046860404"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad385593c1549539ec000943046860404">&#9670;&nbsp;</a></span>resetDidTransmit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void stored::ArqLayer::resetDidTransmit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reset the flag for <a class="el" href="classstored_1_1_arq_layer.html#a72a34dd87ec3fcee83db2a44f7e8a8e5" title="Checks if a full message has been transmitted. ">didTransmit()</a>. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_arq_layer.html#a72a34dd87ec3fcee83db2a44f7e8a8e5" title="Checks if a full message has been transmitted. ">didTransmit()</a> </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00671">671</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a7fc718f8b8c05aef735e2c861535eabc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fc718f8b8c05aef735e2c861535eabc">&#9670;&nbsp;</a></span>retransmits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t stored::ArqLayer::retransmits </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the number of consecutive retransmits of the same message. </p>
+<p>Use this function to determine whether the connection is still alive. It is application-defined what the threshold is of too many retransmits. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00681">681</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+
+</div>
+</div>
 <a id="a2b2523892617a43cf7421a654bfc3b6c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2b2523892617a43cf7421a654bfc3b6c">&#9670;&nbsp;</a></span>setDown()</h2>
 
@@ -709,12 +1109,12 @@ Static Protected Member Functions</h2></td></tr>
 </dl>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a7">5_debug/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00164">164</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00165">165</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
-<a id="aebc97053e2dbcf03acbc1ea8f3c3664d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aebc97053e2dbcf03acbc1ea8f3c3664d">&#9670;&nbsp;</a></span>setPurgeableResponse()</h2>
+<a id="aea5caae38968fc00bd7de90915a154a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea5caae38968fc00bd7de90915a154a8">&#9670;&nbsp;</a></span>setEventCallback() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -723,7 +1123,79 @@ Static Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void stored::ArqLayer::setPurgeableResponse </td>
+          <td class="memname">void stored::ArqLayer::setEventCallback </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classstored_1_1_arq_layer.html#a0fa6e75d37245bfe70669aae2982d8e3">EventCallbackArg</a> *&#160;</td>
+          <td class="paramname"><em>cb</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>arg</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set event callback. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00551">551</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a021b579df6a03cbf7a7f77098360547d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a021b579df6a03cbf7a7f77098360547d">&#9670;&nbsp;</a></span>setEventCallback() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename F &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">stored::ArqLayer::setEventCallback </td>
+          <td>(</td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
+          <td class="paramname"><em>cb</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set event callback. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00568">568</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a8e8b913345f11bf3cf3999c305905681"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e8b913345f11bf3cf3999c305905681">&#9670;&nbsp;</a></span>setPurgeableResponse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void stored::ProtocolLayer::setPurgeableResponse </td>
           <td>(</td>
           <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>purgeable</em> = <code>true</code></td><td>)</td>
@@ -732,7 +1204,7 @@ Static Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -741,9 +1213,9 @@ Static Protected Member Functions</h2></td></tr>
 <p>This may influence how a response is handled. Especially, in case of retransmits of lost packets, one may decide to either reexecute the command, or to save the first response and resend it when the command was retransmitted. In that sense, a precious response (default) means that every layer should handle the data with case, as it cannot be recovered once it is lost. When the response is flagged purgeeble, the response may be thrown away after the first try to transmit it to the client.</p>
 <p>By default, all responses are precious. </p>
 
-<p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a8e8b913345f11bf3cf3999c305905681">stored::ProtocolLayer</a>.</p>
+<p>Reimplemented in <a class="el" href="classstored_1_1_string_encoder.html#a29fce383dfd9a94fdc47f5643db405b6">stored::StringEncoder</a>, <a class="el" href="classstored_1_1_frame_merger.html#ae5800ec4cd54027d1dcfb0fde99ae140">stored::FrameMerger</a>, and <a class="el" href="classstored_1_1_debug_arq_layer.html#a036abba40a16df72e93b9fd9a9251bbb">stored::DebugArqLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00594">594</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00257">257</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
@@ -779,7 +1251,28 @@ Static Protected Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00158">158</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00159">159</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="ad8b06247c0e2efa0f54c8a1addac8e2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8b06247c0e2efa0f54c8a1addac8e2d">&#9670;&nbsp;</a></span>shrink_to_fit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void stored::ArqLayer::shrink_to_fit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Free all unused memory. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00771">771</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -810,7 +1303,37 @@ Static Protected Member Functions</h2></td></tr>
 <p>Sets the up/down layers of this layer and the given layer, such that this layer is stacked on (or wrapped by) the given one. </p>
 <p>If the given layer was not the top of the stack, this layer injects itself between the given layer and its stacked one. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00191">191</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00192">192</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a06104ba40460c0852457bbe651ddba48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06104ba40460c0852457bbe651ddba48">&#9670;&nbsp;</a></span>transmit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool stored::ArqLayer::transmit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>(Re)transmits the first message in the queue. </p>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if something has been sent, <code>false</code> if the queue is empty </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00585">585</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -841,7 +1364,28 @@ Static Protected Member Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>the layer, or <code>nullptr</code> if there is none. </dd></dl>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a6">5_debug/main.cpp</a>, and <a class="el" href="7_protocol_2main_8cpp-example.html#a10">7_protocol/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00206">206</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00207">207</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a57d385c32e28f7684d75567aeca702f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57d385c32e28f7684d75567aeca702f4">&#9670;&nbsp;</a></span>waitingForAck()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool stored::ArqLayer::waitingForAck </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checks if this layer is waiting for an ack. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00539">539</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -873,13 +1417,13 @@ Static Protected Member Functions</h2></td></tr>
 <p>If the given layer was not the bottom of the stack, this layer injects itself in between the given layer and its wrapper. </p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a29">7_protocol/main.cpp</a>, <a class="el" href="8_sync_2main_8cpp-example.html#a23">8_sync/main.cpp</a>, <a class="el" href="terminal_2main_8cpp-example.html#a14">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#a28">zmqserver/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00172">172</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00173">173</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a31266d3a965a40c5cdee2d0642727d7a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a31266d3a965a40c5cdee2d0642727d7a">&#9670;&nbsp;</a></span>ResetFlag</h2>
+<a id="a4af8faa0449d4c0c048be13a0d250384"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4af8faa0449d4c0c048be13a0d250384">&#9670;&nbsp;</a></span>AckFlag</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -888,7 +1432,7 @@ Static Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t const stored::ArqLayer::ResetFlag = 0x80</td>
+          <td class="memname">uint8_t const stored::ArqLayer::AckFlag = 0x80u</td>
         </tr>
       </table>
   </td>
@@ -898,7 +1442,61 @@ Static Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00499">499</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+<p>Ack flag. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00483">483</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a335ff281a24fb2aac70b381451589424"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a335ff281a24fb2aac70b381451589424">&#9670;&nbsp;</a></span>NopFlag</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t const stored::ArqLayer::NopFlag = 0x40u</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flag to indicate that the payload should be ignored. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00482">482</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+
+</div>
+</div>
+<a id="a6d481c24d715ceef8dcc2fd9cd19eab1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d481c24d715ceef8dcc2fd9cd19eab1">&#9670;&nbsp;</a></span>SeqMask</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t const stored::ArqLayer::SeqMask = 0x3fu</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mask for sequence number. </p>
+
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00484">484</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
 
 </div>
 </div>

@@ -40,21 +40,21 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "1__hello_2main_8cpp.html",
-"class_example_sync1.html#ade4c2a3e54cf20a791a8b00e0ec9b89b",
-"class_zmq_server_store.html#a82613442ae42fb1dd54727b002318ab1",
-"classed2_1_1protocol_1_1_protocol_stack_1_1_iterator.html",
-"classed2_1_1zmq__client_1_1_object.html#a37990361faddc778c8497d3c9f2270f0",
-"classstored_1_1_crc16_layer.html#a0b1420d3d3c69c129962c8ece9052ad3",
-"classstored_1_1_example_basic.html#afefe333f494c45228bccfd4a790a2109",
-"classstored_1_1_example_debug_some_store_base.html#a49868de8db90b5a569138ffc6134e7f2",
-"classstored_1_1_example_hooks.html#aa969ed2e35469305e4273b3ed818f823",
-"classstored_1_1_example_scope_base.html#ab0d8a22c0775980fea583c73d70f3b07",
-"classstored_1_1_example_sync_base.html#a09e1d95037a71812ca4d39b8f300853a",
-"classstored_1_1_segmentation_layer.html#a8e8b913345f11bf3cf3999c305905681",
-"classstored_1_1_variant.html#aff3a4841c099eaa800140534aec4e958",
-"classstored_1_1impl_1_1_store_function.html#ae0a5c540c62a2492ff5e0fb167ac7eef",
-"group__libstored__util.html",
-"synchronizer_8h.html"
+"class_example_sync1.html#ad8fea86b781c98550550465c955b56b2",
+"class_zmq_server_store.html#a5a4c484a359b1baeb00ea57210ef5c76",
+"classed2_1_1protocol_1_1_protocol_stack.html#a907d670c8a4c3d1df47c9af0462c82c8",
+"classed2_1_1zmq__client_1_1_object.html#a1b33cdc96972831ea088d0be46e58603",
+"classstored_1_1_ascii_escape_layer.html#a53fe78a7b405b981649112d9c84fe762",
+"classstored_1_1_debugger.html#af2ab24dd88c3fb0259c60856b2671293",
+"classstored_1_1_example_debug_another_store_base.html#af312c2fc20cef8708c707de015c87551",
+"classstored_1_1_example_hello_base.html#a2c48e6f22c30fa750a99de5199f84d3b",
+"classstored_1_1_example_scope.html#a535e6b35397a555b86bcc05f2779e271",
+"classstored_1_1_example_sync2.html#ab4b6d85ed43a64f51bc8d06a71151fa1",
+"classstored_1_1_print_layer.html#aa77d727ebfa1e502f9383ab717b9724d",
+"classstored_1_1_terminal_layer.html#a8e8b913345f11bf3cf3999c305905681",
+"classstored_1_1_zmq_server_store_base.html#aa35d17e837c34e20db1f4054d5ce98c1",
+"functions_d.html",
+"structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea2d5518f85bf6c81f968e7262933e3b7d"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

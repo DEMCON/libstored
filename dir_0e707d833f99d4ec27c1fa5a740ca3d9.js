@@ -22,7 +22,6 @@ var dir_0e707d833f99d4ec27c1fa5a740ca3d9 =
     [ "types.h", "types_8h.html", "types_8h" ],
     [ "util.h", "util_8h.html", "util_8h" ],
     [ "zmq.h", "zmq_8h.html", [
-      [ "DebugZmqLayer", "classstored_1_1_debug_zmq_layer.html", "classstored_1_1_debug_zmq_layer" ],
-      [ "SyncZmqLayer", "classstored_1_1_sync_zmq_layer.html", "classstored_1_1_sync_zmq_layer" ]
+      [ "ZmqLayer", "classstored_1_1_zmq_layer.html", "classstored_1_1_zmq_layer" ]
     ] ]
 ];

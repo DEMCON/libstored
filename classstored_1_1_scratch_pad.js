@@ -2,9 +2,9 @@ var classstored_1_1_scratch_pad =
 [
     [ "Snapshot", "classstored_1_1_scratch_pad_1_1_snapshot.html", "classstored_1_1_scratch_pad_1_1_snapshot" ],
     [ "size_type", "classstored_1_1_scratch_pad.html#a99d00bbc9e2ed2b394d38d5a4e20554e", null ],
-    [ "maxSize", "classstored_1_1_scratch_pad.html#a48bc14f68786a1307dedef1f04638395a62424ce21ef05ba377086fb28696171c", null ],
-    [ "chunkHeader", "classstored_1_1_scratch_pad.html#a48bc14f68786a1307dedef1f04638395a93c50596b9a5c2f5e24bfbbfc8c04581", null ],
-    [ "spare", "classstored_1_1_scratch_pad.html#a48bc14f68786a1307dedef1f04638395a6696822a44e9973945331edcd65a963b", null ],
+    [ "maxSize", "classstored_1_1_scratch_pad.html#ace0bda2402d3c660b2255ea68efb35dba62424ce21ef05ba377086fb28696171c", null ],
+    [ "chunkHeader", "classstored_1_1_scratch_pad.html#ace0bda2402d3c660b2255ea68efb35dba93c50596b9a5c2f5e24bfbbfc8c04581", null ],
+    [ "spare", "classstored_1_1_scratch_pad.html#ace0bda2402d3c660b2255ea68efb35dba6696822a44e9973945331edcd65a963b", null ],
     [ "ScratchPad", "classstored_1_1_scratch_pad.html#a50e87954737a92ab1a2782cde931759e", null ],
     [ "ScratchPad", "classstored_1_1_scratch_pad.html#a85cf660076b466fb96b55dd7a716fa35", null ],
     [ "ScratchPad", "classstored_1_1_scratch_pad.html#a909eddb57c5c6d8ca63c05d5675e475f", null ],

@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['waitingforack',['waitingForAck',['../classstored_1_1_arq_layer.html#a57d385c32e28f7684d75567aeca702f4',1,'stored::ArqLayer']]],
   ['welcome',['Welcome',['../classstored_1_1_sync_connection.html#a4e3f8faa9aedda9b7ca9bed735f2e339',1,'stored::SyncConnection']]],
   ['world',['world',['../classstored_1_1_example_hello_objects.html#a988ce01f2aa6253b40448f97d4ab5ffe',1,'stored::ExampleHelloObjects']]],
   ['wrap',['wrap',['../classstored_1_1_protocol_layer.html#a7d2f0987462196f77ca9067c050db09d',1,'stored::ProtocolLayer::wrap()'],['../classed2_1_1protocol_1_1_protocol_layer.html#aaa4fe88e8d68f2fc71066e183ec58ee8',1,'ed2.protocol.ProtocolLayer.wrap(self, layer)'],['../classed2_1_1protocol_1_1_protocol_layer.html#aaa4fe88e8d68f2fc71066e183ec58ee8',1,'ed2.protocol.ProtocolLayer.wrap(self, layer)']]],
