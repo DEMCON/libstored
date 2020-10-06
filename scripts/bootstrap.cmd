@@ -32,7 +32,13 @@ call refreshenv
 python.exe -m ensurepip
 if errorlevel 1 goto error
 
-python.exe -m pip install textx jinja2 pyzmq pyside2 pyserial lognplot PyQt5 natsort wheel crcmod
+python.exe -m pip install --upgrade setuptools
+if errorlevel 1 goto error
+
+python.exe -m pip install wheel
+if errorlevel 1 goto error
+
+python.exe -m pip install textx jinja2 pyzmq pyside2 pyserial lognplot PyQt5 natsort crcmod
 if errorlevel 1 goto error
 
 :done
