@@ -86,7 +86,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="textblock"><p><a href="https://github.com/DEMCON/libstored/actions?query=workflow%3ACI"></a></p>
 <h1>libstored</h1>
 <h2>TL;DR</h2>
-<p><b>What is it?</b> A generator for a C++ class (store) with your application's variables, and a tool set to synchronize updates between processes, and debug it remotely.</p>
+<p><b>What is it?</b> A generator for a C++ class (store) with your application's variables, and a tool set to synchronize updates between processes, and debug it remotely. See also the <a href="https://demcon.github.io/libstored/libstored.sozi.html">presentation</a>.</p>
 <p><b>When do I need it?</b> When you have a distributed application in need of synchronization, and/or you want to be able to inspect and modify internal data of a running application.</p>
 <p><b>Does it work on my platform?</b> Yes.</p>
 <p><b>Huh? But how you do know my hardware architecture?</b> I don't. You have to supply the drivers for your (hardware) communication interfaces, but everything else is ready to use.</p>
@@ -119,7 +119,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 <li>All code is normal C++, there are no platform-dependent constructs used. Therefore, all platforms are supported: Windows/Linux/Mac/bare metal (newlib), x86/ARM, gcc/clang/MSVC/armcc).</li>
 <li>The store and all other libstored classes are not thread-safe. Using threads is troubling anyway, use <a href="https://github.com/jhrutgers/zth">fibers</a> instead.</li>
 </ul>
-<p>Have a look in the [<code>examples</code>](examples) directory for further in-depth reading. Refer to the <a href="https://demcon.github.io/libstored">Doxygen documentation</a> for the C++ API.</p>
+<p>Have a look in the [<code>examples</code>](examples) directory for further in-depth reading. Refer to the <a href="https://demcon.github.io/libstored">Doxygen documentation</a> for the C++ API. See also the <a href="https://demcon.github.io/libstored/libstored.sozi.html">presentation</a>.</p>
 <h3><a class="anchor" id="store"></a>libstored - Store by description</h3>
 <p>The store is described in a simple grammar. See the <a href="https://demcon.github.io/libstored/examples.html">examples</a> directory for more explanation. This is just an impression of the syntax. </p><pre class="fragment">// Comment
 // Grammar: type:size[array]=initializer long name with any character

@@ -1,16 +1,8 @@
 var NAVTREE =
 [
   [ "libstored", "index.html", [
+    [ "Presentation", "libstored.sozi.html", null ],
     [ "Modules", "modules.html", "modules" ],
-    [ "Namespaces", null, [
-      [ "Namespace List", "namespaces.html", "namespaces" ],
-      [ "Namespace Members", "namespacemembers.html", [
-        [ "All", "namespacemembers.html", null ],
-        [ "Functions", "namespacemembers_func.html", null ],
-        [ "Variables", "namespacemembers_vars.html", null ],
-        [ "Typedefs", "namespacemembers_type.html", null ]
-      ] ]
-    ] ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
@@ -54,7 +46,7 @@ var NAVTREEINDEX =
 "classstored_1_1_terminal_layer.html#a8e8b913345f11bf3cf3999c305905681",
 "classstored_1_1_zmq_server_store_base.html#aa35d17e837c34e20db1f4054d5ce98c1",
 "functions_d.html",
-"structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea2d5518f85bf6c81f968e7262933e3b7d"
+"structstored_1_1_zmq_server_store_data.html#a3628a7cec9ad32d527b9a1ee09304e95"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

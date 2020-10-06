@@ -87,10 +87,13 @@ $(document).ready(function(){initNavTree('classstored_1_1_buffer_layer.html','')
 <div class="title">stored::BufferLayer Class Reference<div class="ingroups"><a class="el" href="group__libstored.html">libstored</a> &raquo; <a class="el" href="group__libstored__protocol.html">protocol</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>Buffer partial encoding frames.  
- <a href="classstored_1_1_buffer_layer.html#details">More...</a></p>
-
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Buffer partial encoding frames. </p>
+<p>By default, layers pass encoded data immediately to lower layers. However, one might collect as much data as possible to reduce overhead of the actual transport. This layer buffers partial messages until the maximum buffer capacity is reached, or the <code>last</code> flag is encountered. </p>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#_a34">7_protocol/main.cpp</a>, and <a class="el" href="8_sync_2main_8cpp-example.html#_a21">8_sync/main.cpp</a>.</dd>
+</dl>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00820">820</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+</div>
 <p><code>#include &lt;<a class="el" href="protocol_8h_source.html">protocol.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for stored::BufferLayer:</div>
@@ -167,13 +170,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a7d2f0987462196f77ca9067c050db09d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the up/down layers of this layer and the given layer, such that this layer wraps the given one.  <a href="#a7d2f0987462196f77ca9067c050db09d">More...</a><br /></td></tr>
 <tr class="separator:a7d2f0987462196f77ca9067c050db09d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Buffer partial encoding frames. </p>
-<p>By default, layers pass encoded data immediately to lower layers. However, one might collect as much data as possible to reduce overhead of the actual transport. This layer buffers partial messages until the maximum buffer capacity is reached, or the <code>last</code> flag is encountered. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#_a34">7_protocol/main.cpp</a>, and <a class="el" href="8_sync_2main_8cpp-example.html#_a21">8_sync/main.cpp</a>.</dd>
-</dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00820">820</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a4e4349d53f00b48357952031c61857fa"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4e4349d53f00b48357952031c61857fa">&#9670;&nbsp;</a></span>base</h2>
 

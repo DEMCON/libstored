@@ -91,10 +91,19 @@ $(document).ready(function(){initNavTree('classstored_1_1_example_hello_base.htm
 <div class="title">stored::ExampleHelloBase&lt; Implementation_ &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__libstored.html">libstored</a> &raquo; <a class="el" href="group__libstored__stores.html">stores</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename Implementation_&gt;<br />
+class stored::ExampleHelloBase&lt; Implementation_ &gt;</h3>
 
-<p>Base class with default interface of all <a class="el" href="classstored_1_1_example_hello.html" title="Default ExampleHelloBase implementation. ">ExampleHello</a> implementations.  
- <a href="classstored_1_1_example_hello_base.html#details">More...</a></p>
+<p>Base class with default interface of all <a class="el" href="classstored_1_1_example_hello.html" title="Default ExampleHelloBase implementation. ">ExampleHello</a> implementations. </p>
+<p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code>Implementation_</code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
+<p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="el" href="classstored_1_1_example_hello.html" title="Default ExampleHelloBase implementation. ">stored::ExampleHello</a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_hello.html" title="Default ExampleHelloBase implementation. ">stored::ExampleHello</a> </dd>
+<dd>
+<a class="el" href="structstored_1_1_example_hello_data.html" title="Data storage of ExampleHelloBase. ">stored::ExampleHelloData</a> </dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_example_hello_8h_source.html#l00102">102</a> of file <a class="el" href="_example_hello_8h_source.html">ExampleHello.h</a>.</p>
+</div>
 <p><code>#include &lt;<a class="el" href="_example_hello_8h_source.html">ExampleHello.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for stored::ExampleHelloBase&lt; Implementation_ &gt;:</div>
@@ -255,19 +264,7 @@ Friends</h2></td></tr>
 <tr class="memitem:aac6d4804615302b3ff620cbd2c0484ad"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hello_base.html#aac6d4804615302b3ff620cbd2c0484ad">Variant&lt; Implementation &gt;</a></td></tr>
 <tr class="separator:aac6d4804615302b3ff620cbd2c0484ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename Implementation_&gt;<br />
-class stored::ExampleHelloBase&lt; Implementation_ &gt;</h3>
-
-<p>Base class with default interface of all <a class="el" href="classstored_1_1_example_hello.html" title="Default ExampleHelloBase implementation. ">ExampleHello</a> implementations. </p>
-<p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code>Implementation_</code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
-<p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="el" href="classstored_1_1_example_hello.html" title="Default ExampleHelloBase implementation. ">stored::ExampleHello</a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_hello.html" title="Default ExampleHelloBase implementation. ">stored::ExampleHello</a> </dd>
-<dd>
-<a class="el" href="structstored_1_1_example_hello_data.html" title="Data storage of ExampleHelloBase. ">stored::ExampleHelloData</a> </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="_example_hello_8h_source.html#l00102">102</a> of file <a class="el" href="_example_hello_8h_source.html">ExampleHello.h</a>.</p>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="adbfdee62d10a740df1c6ca0d08182c4a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adbfdee62d10a740df1c6ca0d08182c4a">&#9670;&nbsp;</a></span>Base</h2>
 

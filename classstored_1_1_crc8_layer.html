@@ -88,10 +88,14 @@ $(document).ready(function(){initNavTree('classstored_1_1_crc8_layer.html','');}
 <div class="title">stored::Crc8Layer Class Reference<div class="ingroups"><a class="el" href="group__libstored.html">libstored</a> &raquo; <a class="el" href="group__libstored__protocol.html">protocol</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A layer that adds a CRC-8 to messages. </p>
+<p>If the CRC does not match during decoding, it is silently dropped. You probably want <a class="el" href="classstored_1_1_debug_arq_layer.html" title="A layer that performs Automatic Repeat Request operations on messages for stored::Debugger. ">stored::DebugArqLayer</a> or <a class="el" href="classstored_1_1_arq_layer.html" title="A general purpose layer that performs Automatic Repeat Request operations on messages. ">stored::ArqLayer</a> somewhere higher in the stack.</p>
+<p>An 8-bit CRC is used with polynomial 0xA6. This polynomial seems to be a good choice according to <em>Cyclic Redundancy Code (CRC) Polynomial Selection For Embedded Networks</em> (Koopman et al., 2004).</p>
+<p>8-bit is quite short, so it works only reliable on short messages. For proper two bit error detection, the message can be 256 bytes. For three bits, messages should only be up to 30 bytes. Use an appropriate <a class="el" href="classstored_1_1_segmentation_layer.html" title="A layer that performs segmentation of the messages. ">stored::SegmentationLayer</a> somewhere higher in the stack to accomplish this. Consider using <a class="el" href="classstored_1_1_crc16_layer.html" title="A layer that adds a CRC-16 to messages. ">stored::Crc16Layer</a> instead. </p>
 
-<p>A layer that adds a CRC-8 to messages.  
- <a href="classstored_1_1_crc8_layer.html#details">More...</a></p>
-
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00753">753</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+</div>
 <p><code>#include &lt;<a class="el" href="protocol_8h_source.html">protocol.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for stored::Crc8Layer:</div>
@@ -177,14 +181,7 @@ Static Protected Member Functions</h2></td></tr>
 <tr class="memitem:a92eeb73a06af54090715da5f336a2217"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_crc8_layer.html#a92eeb73a06af54090715da5f336a2217">compute</a> (uint8_t input, uint8_t crc=<a class="el" href="classstored_1_1_crc8_layer.html#a07b24f77f1d4e55b2b1573230b091974a1631c674509e8d7d495cab564f1cd8eb">init</a>)</td></tr>
 <tr class="separator:a92eeb73a06af54090715da5f336a2217"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A layer that adds a CRC-8 to messages. </p>
-<p>If the CRC does not match during decoding, it is silently dropped. You probably want <a class="el" href="classstored_1_1_debug_arq_layer.html" title="A layer that performs Automatic Repeat Request operations on messages for stored::Debugger. ">stored::DebugArqLayer</a> or <a class="el" href="classstored_1_1_arq_layer.html" title="A general purpose layer that performs Automatic Repeat Request operations on messages. ">stored::ArqLayer</a> somewhere higher in the stack.</p>
-<p>An 8-bit CRC is used with polynomial 0xA6. This polynomial seems to be a good choice according to <em>Cyclic Redundancy Code (CRC) Polynomial Selection For Embedded Networks</em> (Koopman et al., 2004).</p>
-<p>8-bit is quite short, so it works only reliable on short messages. For proper two bit error detection, the message can be 256 bytes. For three bits, messages should only be up to 30 bytes. Use an appropriate <a class="el" href="classstored_1_1_segmentation_layer.html" title="A layer that performs segmentation of the messages. ">stored::SegmentationLayer</a> somewhere higher in the stack to accomplish this. Consider using <a class="el" href="classstored_1_1_crc16_layer.html" title="A layer that adds a CRC-16 to messages. ">stored::Crc16Layer</a> instead. </p>
-
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00753">753</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a13eec04e6a1de27ad4c418a8eb023b3c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a13eec04e6a1de27ad4c418a8eb023b3c">&#9670;&nbsp;</a></span>base</h2>
 

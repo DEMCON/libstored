@@ -88,10 +88,17 @@ $(document).ready(function(){initNavTree('classstored_1_1_scratch_pad_1_1_snapsh
 <div class="title">stored::ScratchPad&lt; MaxSize &gt;::Snapshot Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;size_t MaxSize = 0xffff&gt;<br />
+class stored::ScratchPad&lt; MaxSize &gt;::Snapshot</h3>
 
-<p>A snapshot of the <a class="el" href="classstored_1_1_scratch_pad.html" title="Memory that uses bump-alloc for a very fast short-lived heap. ">ScratchPad</a>, which can be rolled back to.  
- <a href="classstored_1_1_scratch_pad_1_1_snapshot.html#details">More...</a></p>
+<p>A snapshot of the <a class="el" href="classstored_1_1_scratch_pad.html" title="Memory that uses bump-alloc for a very fast short-lived heap. ">ScratchPad</a>, which can be rolled back to. </p>
+<p>A <a class="el" href="classstored_1_1_scratch_pad_1_1_snapshot.html" title="A snapshot of the ScratchPad, which can be rolled back to. ">Snapshot</a> remains valid, until the <a class="el" href="classstored_1_1_scratch_pad.html" title="Memory that uses bump-alloc for a very fast short-lived heap. ">ScratchPad</a> is reset, or an earlier snapshot is rolled back. An invalid snapshot cannot be rolled back, and cannot be destructed, as that implies a rollback. Make sure to reset the snapshot before destruction, if it may have become invalid.</p>
+<p>Normally, you would let a snapshot go out of scope before doing anything with older snapshots.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_scratch_pad.html#abd37e875ac15d3d0aa05d5e56a585a56" title="Get a snapshot of the ScratchPad. ">stored::ScratchPad::snapshot()</a> </dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="spm_8h_source.html#l00163">163</a> of file <a class="el" href="spm_8h_source.html">spm.h</a>.</p>
+</div>
 <p><code>#include &lt;<a class="el" href="spm_8h_source.html">spm.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -128,17 +135,7 @@ Friends</h2></td></tr>
 <tr class="memitem:a37bfe8e4cab0932cfc4a814101bfceb3"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_scratch_pad_1_1_snapshot.html#a37bfe8e4cab0932cfc4a814101bfceb3">ScratchPad</a></td></tr>
 <tr class="separator:a37bfe8e4cab0932cfc4a814101bfceb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;size_t MaxSize = 0xffff&gt;<br />
-class stored::ScratchPad&lt; MaxSize &gt;::Snapshot</h3>
-
-<p>A snapshot of the <a class="el" href="classstored_1_1_scratch_pad.html" title="Memory that uses bump-alloc for a very fast short-lived heap. ">ScratchPad</a>, which can be rolled back to. </p>
-<p>A <a class="el" href="classstored_1_1_scratch_pad_1_1_snapshot.html" title="A snapshot of the ScratchPad, which can be rolled back to. ">Snapshot</a> remains valid, until the <a class="el" href="classstored_1_1_scratch_pad.html" title="Memory that uses bump-alloc for a very fast short-lived heap. ">ScratchPad</a> is reset, or an earlier snapshot is rolled back. An invalid snapshot cannot be rolled back, and cannot be destructed, as that implies a rollback. Make sure to reset the snapshot before destruction, if it may have become invalid.</p>
-<p>Normally, you would let a snapshot go out of scope before doing anything with older snapshots.</p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_scratch_pad.html#abd37e875ac15d3d0aa05d5e56a585a56" title="Get a snapshot of the ScratchPad. ">stored::ScratchPad::snapshot()</a> </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="spm_8h_source.html#l00163">163</a> of file <a class="el" href="spm_8h_source.html">spm.h</a>.</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a187f7745d7ee2ca4f72f1a065836f382"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a187f7745d7ee2ca4f72f1a065836f382">&#9670;&nbsp;</a></span>Snapshot() <span class="overload">[1/3]</span></h2>
 

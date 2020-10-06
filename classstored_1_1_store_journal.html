@@ -90,10 +90,17 @@ $(document).ready(function(){initNavTree('classstored_1_1_store_journal.html',''
 <div class="title">stored::StoreJournal Class Reference<div class="ingroups"><a class="el" href="group__libstored.html">libstored</a> &raquo; <a class="el" href="group__libstored__synchronizer.html">synchronizer</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A record of all changes within a store. </p>
+<p>Every variable in the store registers updates in the journal. The journal keeps an administration based on the key of the variable. Every change has a sequence number, which is kind of a time stamp. This sequence number can be used to check which objects has changed since some point in time.</p>
+<p>The current sequence number ('now') is bumped upon an encode or decode, when there have been changes in between.</p>
+<p>Internally, only the last bytes of the sequence number is stored (short seq). Therefore, there is a window (now-ShortSeqWindow .. now) of which a short seq can be converted back to a real seq. Changes that are older than the safe margin (now-SeqLowerMargin), are automatically shifted in time to stay within the window. This may lead to some false positives when determining which objects have changed since an old seq number. This is safe behavior, but slightly less efficient for encoding updates.</p>
+<p>The administration is a binary tree, stored in a <code>std::vector</code>. Every node in the tree contains the maximum seq of any node below it, so a search like 'find objects with a seq higher than x' can terminate early. The vector must be regenerated when elements are inserted or removed. This is expensive, but usually only happens during the initial phase of the application.</p>
+<p>A store has only one journal, via <a class="el" href="classstored_1_1_synchronizable.html" title="An extension of a store to be used by the stored::Synchronizer. ">stored::Synchronizable</a>. Multiple instances of <a class="el" href="classstored_1_1_sync_connection.html" title="A one-to-one connection to synchronize one or more stores. ">stored::SyncConnection</a> use the same journal.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_synchronizable.html" title="An extension of a store to be used by the stored::Synchronizer. ">stored::Synchronizable</a> </dd></dl>
 
-<p>A record of all changes within a store.  
- <a href="classstored_1_1_store_journal.html#details">More...</a></p>
-
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00160">160</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+</div>
 <p><code>#include &lt;<a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -248,17 +255,7 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:a591b5268f3cad3ddf4e27b6b23c2f6de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the meta data of the given key.  <a href="#a591b5268f3cad3ddf4e27b6b23c2f6de">More...</a><br /></td></tr>
 <tr class="separator:a591b5268f3cad3ddf4e27b6b23c2f6de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A record of all changes within a store. </p>
-<p>Every variable in the store registers updates in the journal. The journal keeps an administration based on the key of the variable. Every change has a sequence number, which is kind of a time stamp. This sequence number can be used to check which objects has changed since some point in time.</p>
-<p>The current sequence number ('now') is bumped upon an encode or decode, when there have been changes in between.</p>
-<p>Internally, only the last bytes of the sequence number is stored (short seq). Therefore, there is a window (now-ShortSeqWindow .. now) of which a short seq can be converted back to a real seq. Changes that are older than the safe margin (now-SeqLowerMargin), are automatically shifted in time to stay within the window. This may lead to some false positives when determining which objects have changed since an old seq number. This is safe behavior, but slightly less efficient for encoding updates.</p>
-<p>The administration is a binary tree, stored in a <code>std::vector</code>. Every node in the tree contains the maximum seq of any node below it, so a search like 'find objects with a seq higher than x' can terminate early. The vector must be regenerated when elements are inserted or removed. This is expensive, but usually only happens during the initial phase of the application.</p>
-<p>A store has only one journal, via <a class="el" href="classstored_1_1_synchronizable.html" title="An extension of a store to be used by the stored::Synchronizer. ">stored::Synchronizable</a>. Multiple instances of <a class="el" href="classstored_1_1_sync_connection.html" title="A one-to-one connection to synchronize one or more stores. ">stored::SyncConnection</a> use the same journal.</p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_synchronizable.html" title="An extension of a store to be used by the stored::Synchronizer. ">stored::Synchronizable</a> </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00160">160</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a0937d139c06dd4e5de06a9560efc6faa"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0937d139c06dd4e5de06a9560efc6faa">&#9670;&nbsp;</a></span>IterateChangedCallback</h2>
 

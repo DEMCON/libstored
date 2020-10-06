@@ -91,10 +91,22 @@ $(document).ready(function(){initNavTree('classstored_1_1_sync_connection.html',
 <div class="title">stored::SyncConnection Class Reference<div class="ingroups"><a class="el" href="group__libstored.html">libstored</a> &raquo; <a class="el" href="group__libstored__synchronizer.html">synchronizer</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A one-to-one connection to synchronize one or more stores. </p>
+<p>A <a class="el" href="classstored_1_1_sync_connection.html" title="A one-to-one connection to synchronize one or more stores. ">SyncConnection</a> is related to one <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">stored::Synchronizer</a>, and a protocol stack to one other party. Using this connection, multiple stores can be synchronized.</p>
+<p>The protocol is straight-forward: assume <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a> A wants to synchronize a store with <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a> B via a <a class="el" href="classstored_1_1_sync_connection.html" title="A one-to-one connection to synchronize one or more stores. ">SyncConnection</a>:</p>
+<ul>
+<li>A sends 'Hello' to B to indicate that it wants the full store immediately and updates afterwards.</li>
+<li>B sends 'Welcome' back to A, including the full store's buffer.</li>
+<li>When A has updates, it sends 'Update' to B.</li>
+<li>When B has updates, it sensd 'Update' to A.</li>
+<li>If A does not need updates anymore, it sends 'Bye'.</li>
+<li>B can send 'Bye' to A too, but this will probably break the application, as A usually cannot handle this.</li>
+</ul>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">stored::Synchronizer</a> </dd></dl>
 
-<p>A one-to-one connection to synchronize one or more stores.  
- <a href="classstored_1_1_sync_connection.html#details">More...</a></p>
-
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00397">397</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+</div>
 <p><code>#include &lt;<a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for stored::SyncConnection:</div>
@@ -244,22 +256,7 @@ Static Protected Member Functions</h2></td></tr>
 <tr class="memdesc:a9e3a68176e64ae5b62fa92a69d045025"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode an ID from the buffer.  <a href="#a9e3a68176e64ae5b62fa92a69d045025">More...</a><br /></td></tr>
 <tr class="separator:a9e3a68176e64ae5b62fa92a69d045025"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A one-to-one connection to synchronize one or more stores. </p>
-<p>A <a class="el" href="classstored_1_1_sync_connection.html" title="A one-to-one connection to synchronize one or more stores. ">SyncConnection</a> is related to one <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">stored::Synchronizer</a>, and a protocol stack to one other party. Using this connection, multiple stores can be synchronized.</p>
-<p>The protocol is straight-forward: assume <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a> A wants to synchronize a store with <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a> B via a <a class="el" href="classstored_1_1_sync_connection.html" title="A one-to-one connection to synchronize one or more stores. ">SyncConnection</a>:</p>
-<ul>
-<li>A sends 'Hello' to B to indicate that it wants the full store immediately and updates afterwards.</li>
-<li>B sends 'Welcome' back to A, including the full store's buffer.</li>
-<li>When A has updates, it sends 'Update' to B.</li>
-<li>When B has updates, it sensd 'Update' to A.</li>
-<li>If A does not need updates anymore, it sends 'Bye'.</li>
-<li>B can send 'Bye' to A too, but this will probably break the application, as A usually cannot handle this.</li>
-</ul>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">stored::Synchronizer</a> </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00397">397</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="aef7463575c484fbde29a4f2019798cdb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aef7463575c484fbde29a4f2019798cdb">&#9670;&nbsp;</a></span>base</h2>
 

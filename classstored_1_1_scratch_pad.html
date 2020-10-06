@@ -89,10 +89,23 @@ $(document).ready(function(){initNavTree('classstored_1_1_scratch_pad.html','');
 <div class="title">stored::ScratchPad&lt; MaxSize &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__libstored.html">libstored</a> &raquo; <a class="el" href="group__libstored__util.html">util</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;size_t MaxSize = 0xffff&gt;<br />
+class stored::ScratchPad&lt; MaxSize &gt;</h3>
 
-<p>Memory that uses bump-alloc for a very fast short-lived heap.  
- <a href="classstored_1_1_scratch_pad.html#details">More...</a></p>
+<p>Memory that uses bump-alloc for a very fast short-lived heap. </p>
+<p>The <a class="el" href="classstored_1_1_scratch_pad.html" title="Memory that uses bump-alloc for a very fast short-lived heap. ">ScratchPad</a> grows automatically, but it is more efficient to manage the <a class="el" href="classstored_1_1_scratch_pad.html#a70723e281a5105e4605b7d4360901f57" title="Returns the total capacity currently available within the ScratchPad. ">capacity()</a> on beforehand. The capacity is determined while using the <a class="el" href="classstored_1_1_scratch_pad.html" title="Memory that uses bump-alloc for a very fast short-lived heap. ">ScratchPad</a>, which may cause some more overhead at the start of the application.</p>
+<p>There is no overhead per <a class="el" href="classstored_1_1_scratch_pad.html#a0d2ebf84b297dfaf3b74bf8e2f15a750" title="Allocate memory. ">alloc()</a>, but padding bytes may be inserted to word-align allocs. Heap fragmentation is not possible.</p>
+<p>Alloc is very fast, but dealloc or free is not possible. Bump-alloc is like a stack; you can <a class="el" href="classstored_1_1_scratch_pad.html#aad566f5ccddfbf90dd6357bb4084ea57" title="Resets the content of the ScratchPad. ">reset()</a> it, or make a <a class="el" href="classstored_1_1_scratch_pad.html#abd37e875ac15d3d0aa05d5e56a585a56" title="Get a snapshot of the ScratchPad. ">snapshot()</a>, which you can rollback to.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">MaxSize</td><td>the maximum total size to be allocated, which is used to determine the type of the internal counters. </td></tr>
+  </table>
+  </dd>
+</dl>
 
+<p class="definition">Definition at line <a class="el" href="spm_8h_source.html#l00055">55</a> of file <a class="el" href="spm_8h_source.html">spm.h</a>.</p>
+</div>
 <p><code>#include &lt;<a class="el" href="spm_8h_source.html">spm.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -169,23 +182,7 @@ Friends</h2></td></tr>
 <tr class="memitem:a8ac3ebe40ea81ee151d14870b1548183"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_scratch_pad.html#a8ac3ebe40ea81ee151d14870b1548183">Snapshot</a></td></tr>
 <tr class="separator:a8ac3ebe40ea81ee151d14870b1548183"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;size_t MaxSize = 0xffff&gt;<br />
-class stored::ScratchPad&lt; MaxSize &gt;</h3>
-
-<p>Memory that uses bump-alloc for a very fast short-lived heap. </p>
-<p>The <a class="el" href="classstored_1_1_scratch_pad.html" title="Memory that uses bump-alloc for a very fast short-lived heap. ">ScratchPad</a> grows automatically, but it is more efficient to manage the <a class="el" href="classstored_1_1_scratch_pad.html#a70723e281a5105e4605b7d4360901f57" title="Returns the total capacity currently available within the ScratchPad. ">capacity()</a> on beforehand. The capacity is determined while using the <a class="el" href="classstored_1_1_scratch_pad.html" title="Memory that uses bump-alloc for a very fast short-lived heap. ">ScratchPad</a>, which may cause some more overhead at the start of the application.</p>
-<p>There is no overhead per <a class="el" href="classstored_1_1_scratch_pad.html#a0d2ebf84b297dfaf3b74bf8e2f15a750" title="Allocate memory. ">alloc()</a>, but padding bytes may be inserted to word-align allocs. Heap fragmentation is not possible.</p>
-<p>Alloc is very fast, but dealloc or free is not possible. Bump-alloc is like a stack; you can <a class="el" href="classstored_1_1_scratch_pad.html#aad566f5ccddfbf90dd6357bb4084ea57" title="Resets the content of the ScratchPad. ">reset()</a> it, or make a <a class="el" href="classstored_1_1_scratch_pad.html#abd37e875ac15d3d0aa05d5e56a585a56" title="Get a snapshot of the ScratchPad. ">snapshot()</a>, which you can rollback to.</p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">MaxSize</td><td>the maximum total size to be allocated, which is used to determine the type of the internal counters. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="spm_8h_source.html#l00055">55</a> of file <a class="el" href="spm_8h_source.html">spm.h</a>.</p>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a99d00bbc9e2ed2b394d38d5a4e20554e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a99d00bbc9e2ed2b394d38d5a4e20554e">&#9670;&nbsp;</a></span>size_type</h2>
 

@@ -85,22 +85,6 @@ $(document).ready(function(){initNavTree('group__libstored__debugger.html','');}
 <div class="title">debugger<div class="ingroups"><a class="el" href="group__libstored.html">libstored</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>Embedded Debugger message handling.  
-<a href="#details">More...</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debugger.html">stored::Debugger</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The application-layer implementation of the Embedded Debugger protocol.  <a href="classstored_1_1_debugger.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_store_base.html">stored::DebugStoreBase</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper for a store, that hides the store's template parameters.  <a href="classstored_1_1_debug_store_base.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_variant.html">stored::DebugVariant</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A wrapper for any type of object in a store.  <a href="classstored_1_1_debug_variant.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Embedded Debugger message handling. </p>
 <p>The default set of commands that is processed by <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a> is listed below. A subclass of Debugger may extend the set of capabilities, for application-specific purposes.</p>
@@ -197,6 +181,19 @@ sT
 ...
 </pre><p>Now, the returned stream buffer contains triplets of time, /some variable, /some other variable, like this: </p><pre class="fragment">101,1,2;102,1,2;103,1,2;
 </pre><p>Depending on the buffer size, reading the buffer may be orders of magnitude slower than the actual tracing speed. </p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debugger.html">stored::Debugger</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The application-layer implementation of the Embedded Debugger protocol.  <a href="classstored_1_1_debugger.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_store_base.html">stored::DebugStoreBase</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper for a store, that hides the store's template parameters.  <a href="classstored_1_1_debug_store_base.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_variant.html">stored::DebugVariant</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A wrapper for any type of object in a store.  <a href="classstored_1_1_debug_variant.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

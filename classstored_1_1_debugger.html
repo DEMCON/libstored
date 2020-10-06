@@ -91,10 +91,19 @@ $(document).ready(function(){initNavTree('classstored_1_1_debugger.html','');});
 <div class="title">stored::Debugger Class Reference<div class="ingroups"><a class="el" href="group__libstored.html">libstored</a> &raquo; <a class="el" href="group__libstored__debugger.html">debugger</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>The application-layer implementation of the Embedded Debugger protocol.  
- <a href="classstored_1_1_debugger.html#details">More...</a></p>
-
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The application-layer implementation of the Embedded Debugger protocol. </p>
+<p>To use the <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">Debugger</a> in your application:</p>
+<ul>
+<li>Instantiate <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">Debugger</a>.</li>
+<li><a class="el" href="classstored_1_1_debugger.html#ae9f2965b44b4549ee4d05a48477c7655" title="Register a store to this Debugger. ">map()</a> your store into the <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">Debugger</a> instance.</li>
+<li>Wrap this instance in any <a class="el" href="classstored_1_1_protocol_layer.html" title="Protocol layer base class. ">stored::ProtocolLayer</a> that is required for your device.</li>
+</ul>
+<p>By default, the <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">Debugger</a> provides the standard set of commands. To extend it, create a subclass and override <a class="el" href="classstored_1_1_debugger.html#ace1f0eb1dddf86514791ead65ae028fd" title="Get the capabilities as supported by this Debugger. ">capabilities()</a> and <a class="el" href="classstored_1_1_debugger.html#ab790d058db43fd5953758001e361cf3b" title="Process a Embedded Debugger message. ">process()</a>. </p>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#_a12">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#_a26">7_protocol/main.cpp</a>, <a class="el" href="8_sync_2main_8cpp-example.html#_a14">8_sync/main.cpp</a>, <a class="el" href="terminal_2main_8cpp-example.html#_a4">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#_a25">zmqserver/main.cpp</a>.</dd>
+</dl>
+<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00710">710</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
+</div>
 <p><code>#include &lt;<a class="el" href="debugger_8h_source.html">debugger.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for stored::Debugger:</div>
@@ -319,19 +328,7 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:aad8407735aa0f2fcab2640c72c830537"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a scratch pad memory.  <a href="#aad8407735aa0f2fcab2640c72c830537">More...</a><br /></td></tr>
 <tr class="separator:aad8407735aa0f2fcab2640c72c830537"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The application-layer implementation of the Embedded Debugger protocol. </p>
-<p>To use the <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">Debugger</a> in your application:</p>
-<ul>
-<li>Instantiate <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">Debugger</a>.</li>
-<li><a class="el" href="classstored_1_1_debugger.html#ae9f2965b44b4549ee4d05a48477c7655" title="Register a store to this Debugger. ">map()</a> your store into the <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">Debugger</a> instance.</li>
-<li>Wrap this instance in any <a class="el" href="classstored_1_1_protocol_layer.html" title="Protocol layer base class. ">stored::ProtocolLayer</a> that is required for your device.</li>
-</ul>
-<p>By default, the <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">Debugger</a> provides the standard set of commands. To extend it, create a subclass and override <a class="el" href="classstored_1_1_debugger.html#ace1f0eb1dddf86514791ead65ae028fd" title="Get the capabilities as supported by this Debugger. ">capabilities()</a> and <a class="el" href="classstored_1_1_debugger.html#ab790d058db43fd5953758001e361cf3b" title="Process a Embedded Debugger message. ">process()</a>. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#_a12">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#_a26">7_protocol/main.cpp</a>, <a class="el" href="8_sync_2main_8cpp-example.html#_a14">8_sync/main.cpp</a>, <a class="el" href="terminal_2main_8cpp-example.html#_a4">terminal/main.cpp</a>, and <a class="el" href="zmqserver_2main_8cpp-example.html#_a25">zmqserver/main.cpp</a>.</dd>
-</dl>
-<p class="definition">Definition at line <a class="el" href="debugger_8h_source.html#l00710">710</a> of file <a class="el" href="debugger_8h_source.html">debugger.h</a>.</p>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="af2ab24dd88c3fb0259c60856b2671293"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af2ab24dd88c3fb0259c60856b2671293">&#9670;&nbsp;</a></span>AliasMap</h2>
 

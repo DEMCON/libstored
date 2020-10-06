@@ -88,10 +88,18 @@ $(document).ready(function(){initNavTree('classstored_1_1_synchronizable.html','
 <div class="title">stored::Synchronizable&lt; Base &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__libstored.html">libstored</a> &raquo; <a class="el" href="group__libstored__synchronizer.html">synchronizer</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename Base&gt;<br />
+class stored::Synchronizable&lt; Base &gt;</h3>
 
-<p>An extension of a store to be used by the <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">stored::Synchronizer</a>.  
- <a href="classstored_1_1_synchronizable.html#details">More...</a></p>
-
+<p>An extension of a store to be used by the <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">stored::Synchronizer</a>. </p>
+<p>Assume you have <code>MyStoreBase</code> (which takes a template parameter <code>Implementation</code>), and the actual store implementation <code>ActualStore</code>. If it does not have to be synchronizable, you would inherit <code>ActualStore</code> from <code>MyStoreBase&lt;ActualStore&gt;</code>.</p>
+<p>If it should be synchronizable, use <a class="el" href="classstored_1_1_synchronizable.html#a3bc1ad747d4e160895d47012482f007c" title="Deleted copy constructor. ">Synchronizable</a> like this:</p>
+<div class="fragment"><div class="line"><span class="keyword">class </span>ActualStore : <span class="keyword">public</span> <a class="code" href="classstored_1_1_synchronizable.html#a3bc1ad747d4e160895d47012482f007c">Synchronizable</a>&lt;MyStoreBase&lt;ActualStore&gt; &gt; {</div><div class="line">...</div><div class="line">};</div></div><!-- fragment --><p>Now, <code>ActualStore</code> inherits from <code><a class="el" href="classstored_1_1_synchronizable.html" title="An extension of a store to be used by the stored::Synchronizer. ">Synchronizable</a></code>, which inherits from <code>MyStoreBase</code>. However, <code>ActualStore</code> is still used as the final implementation. </p>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="8_sync_2main_8cpp-example.html#_a2">8_sync/main.cpp</a>.</dd>
+</dl>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00327">327</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+</div>
 <p><code>#include &lt;<a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for stored::Synchronizable&lt; Base &gt;:</div>
@@ -138,18 +146,7 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a59b7f488848afc990ea24170de0c8802"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizable.html#a59b7f488848afc990ea24170de0c8802">__hookExitX</a> (<a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9e">Type::type</a> type, void *buffer, size_t len, bool changed)</td></tr>
 <tr class="separator:a59b7f488848afc990ea24170de0c8802"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename Base&gt;<br />
-class stored::Synchronizable&lt; Base &gt;</h3>
-
-<p>An extension of a store to be used by the <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">stored::Synchronizer</a>. </p>
-<p>Assume you have <code>MyStoreBase</code> (which takes a template parameter <code>Implementation</code>), and the actual store implementation <code>ActualStore</code>. If it does not have to be synchronizable, you would inherit <code>ActualStore</code> from <code>MyStoreBase&lt;ActualStore&gt;</code>.</p>
-<p>If it should be synchronizable, use <a class="el" href="classstored_1_1_synchronizable.html#a3bc1ad747d4e160895d47012482f007c" title="Deleted copy constructor. ">Synchronizable</a> like this:</p>
-<div class="fragment"><div class="line"><span class="keyword">class </span>ActualStore : <span class="keyword">public</span> <a class="code" href="classstored_1_1_synchronizable.html#a3bc1ad747d4e160895d47012482f007c">Synchronizable</a>&lt;MyStoreBase&lt;ActualStore&gt; &gt; {</div><div class="line">...</div><div class="line">};</div></div><!-- fragment --><p>Now, <code>ActualStore</code> inherits from <code><a class="el" href="classstored_1_1_synchronizable.html" title="An extension of a store to be used by the stored::Synchronizer. ">Synchronizable</a></code>, which inherits from <code>MyStoreBase</code>. However, <code>ActualStore</code> is still used as the final implementation. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="8_sync_2main_8cpp-example.html#_a2">8_sync/main.cpp</a>.</dd>
-</dl>
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00327">327</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a4e7c1bda607d10c32470355a438132e4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4e7c1bda607d10c32470355a438132e4">&#9670;&nbsp;</a></span>base</h2>
 

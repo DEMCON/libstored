@@ -90,10 +90,16 @@ $(document).ready(function(){initNavTree('classstored_1_1_variable.html','');});
 <div class="title">stored::Variable&lt; T, Container, Hooks &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__libstored.html">libstored</a> &raquo; <a class="el" href="group__libstored__types.html">types</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;<br />
+class stored::Variable&lt; T, Container, Hooks &gt;</h3>
 
-<p>A typed variable in a store.  
- <a href="classstored_1_1_variable.html#details">More...</a></p>
+<p>A typed variable in a store. </p>
+<p>This class only works for fixed-length variables (see <a class="el" href="structstored_1_1_type.html#a2c988ab827562d9bcd7f99506c765cd1" title="Checks if the given type has a fixed length, or is a function with such an argument. ">stored::Type::isFixed()</a>). Otherwise, use <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">stored::Variant</a>.</p>
+<p>A <a class="el" href="classstored_1_1_variable.html" title="A typed variable in a store. ">Variable</a> is very small (it contains only a pointer). It is copyable and assignable, so it is fine to pass it by value. </p>
 
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00170">170</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+</div>
 <p><code>#include &lt;<a class="el" href="types_8h_source.html">types.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
@@ -171,16 +177,7 @@ Friends</h2></td></tr>
 <tr class="memitem:a75e7ee2aa66b65ef87a7ed2ffcc475b0"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_variable.html#a75e7ee2aa66b65ef87a7ed2ffcc475b0">Variant&lt; Container &gt;</a></td></tr>
 <tr class="separator:a75e7ee2aa66b65ef87a7ed2ffcc475b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename T, typename Container, bool Hooks = Config::EnableHooks&gt;<br />
-class stored::Variable&lt; T, Container, Hooks &gt;</h3>
-
-<p>A typed variable in a store. </p>
-<p>This class only works for fixed-length variables (see <a class="el" href="structstored_1_1_type.html#a2c988ab827562d9bcd7f99506c765cd1" title="Checks if the given type has a fixed length, or is a function with such an argument. ">stored::Type::isFixed()</a>). Otherwise, use <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">stored::Variant</a>.</p>
-<p>A <a class="el" href="classstored_1_1_variable.html" title="A typed variable in a store. ">Variable</a> is very small (it contains only a pointer). It is copyable and assignable, so it is fine to pass it by value. </p>
-
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00170">170</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a2f3d59f2244ac9444f4576af63dd9df4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2f3d59f2244ac9444f4576af63dd9df4">&#9670;&nbsp;</a></span>type</h2>
 

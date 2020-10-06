@@ -86,10 +86,14 @@ $(document).ready(function(){initNavTree('classstored_1_1_protocol_layer.html','
 <div class="title">stored::ProtocolLayer Class Reference<div class="ingroups"><a class="el" href="group__libstored.html">libstored</a> &raquo; <a class="el" href="group__libstored__protocol.html">protocol</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>Protocol layer base class.  
- <a href="classstored_1_1_protocol_layer.html#details">More...</a></p>
-
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Protocol layer base class. </p>
+<p>A layer is usually part of the protocol stack. Bytes are decoded and forwarded to the layer above this one, and the layer above sends bytes for encoding down. Moreover, <a class="el" href="classstored_1_1_protocol_layer.html#a357b029311be09df61e019682a848ab5" title="Decode a frame and forward the decoded frame to the upper layer. ">decode()</a> is the inverse of <a class="el" href="classstored_1_1_protocol_layer.html#a66c24cec6a17c44fac68213d358a5aa8" title="Encodes the last part of the current frame. ">encode()</a>. It is wise to stick to this concept, even though the interface of this class allows more irregular structures, such that decoding and encoding take a different path through the protocol layers.</p>
+<p>The implementation of this class does nothing except forwarding bytes. Override <a class="el" href="classstored_1_1_protocol_layer.html#a66c24cec6a17c44fac68213d358a5aa8" title="Encodes the last part of the current frame. ">encode()</a> and <a class="el" href="classstored_1_1_protocol_layer.html#a357b029311be09df61e019682a848ab5" title="Decode a frame and forward the decoded frame to the upper layer. ">decode()</a> in a subclass. </p>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#_a1">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#_a5">7_protocol/main.cpp</a>, and <a class="el" href="8_sync_2main_8cpp-example.html#_a20">8_sync/main.cpp</a>.</dd>
+</dl>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00140">140</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+</div>
 <p><code>#include &lt;<a class="el" href="protocol_8h_source.html">protocol.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for stored::ProtocolLayer:</div>
@@ -177,14 +181,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a7d2f0987462196f77ca9067c050db09d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the up/down layers of this layer and the given layer, such that this layer wraps the given one.  <a href="#a7d2f0987462196f77ca9067c050db09d">More...</a><br /></td></tr>
 <tr class="separator:a7d2f0987462196f77ca9067c050db09d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Protocol layer base class. </p>
-<p>A layer is usually part of the protocol stack. Bytes are decoded and forwarded to the layer above this one, and the layer above sends bytes for encoding down. Moreover, <a class="el" href="classstored_1_1_protocol_layer.html#a357b029311be09df61e019682a848ab5" title="Decode a frame and forward the decoded frame to the upper layer. ">decode()</a> is the inverse of <a class="el" href="classstored_1_1_protocol_layer.html#a66c24cec6a17c44fac68213d358a5aa8" title="Encodes the last part of the current frame. ">encode()</a>. It is wise to stick to this concept, even though the interface of this class allows more irregular structures, such that decoding and encoding take a different path through the protocol layers.</p>
-<p>The implementation of this class does nothing except forwarding bytes. Override <a class="el" href="classstored_1_1_protocol_layer.html#a66c24cec6a17c44fac68213d358a5aa8" title="Encodes the last part of the current frame. ">encode()</a> and <a class="el" href="classstored_1_1_protocol_layer.html#a357b029311be09df61e019682a848ab5" title="Decode a frame and forward the decoded frame to the upper layer. ">decode()</a> in a subclass. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#_a1">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#_a5">7_protocol/main.cpp</a>, and <a class="el" href="8_sync_2main_8cpp-example.html#_a20">8_sync/main.cpp</a>.</dd>
-</dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00140">140</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a04eadf44cf520838107498fa87ad4ff1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a04eadf44cf520838107498fa87ad4ff1">&#9670;&nbsp;</a></span>ProtocolLayer() <span class="overload">[1/3]</span></h2>
 

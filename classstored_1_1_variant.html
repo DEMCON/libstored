@@ -86,10 +86,16 @@ $(document).ready(function(){initNavTree('classstored_1_1_variant.html','');});
 <div class="title">stored::Variant&lt; Container &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__libstored.html">libstored</a> &raquo; <a class="el" href="group__libstored__types.html">types</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename Container&gt;<br />
+class stored::Variant&lt; Container &gt;</h3>
 
-<p>A untyped interface to an object in a store.  
- <a href="classstored_1_1_variant.html#details">More...</a></p>
+<p>A untyped interface to an object in a store. </p>
+<p>This class works for all variables and functions of all types. However, using <a class="el" href="classstored_1_1_variable.html" title="A typed variable in a store. ">stored::Variable</a> or <a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">stored::Function</a> is more efficient both in performance and memory. Use those when you can.</p>
+<p>A <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> is quite small (only about four words). It is default copyable and assignable, so it is fine to pass it by value. </p>
 
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00156">156</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+</div>
 <p><code>#include &lt;<a class="el" href="types_8h_source.html">types.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -191,16 +197,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a7f9fb0640b4c3203dc19311f881ddabf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a <a class="el" href="classstored_1_1_variable.html" title="A typed variable in a store. ">stored::Variable</a> that corresponds to this <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a>.  <a href="#a7f9fb0640b4c3203dc19311f881ddabf">More...</a><br /></td></tr>
 <tr class="separator:a7f9fb0640b4c3203dc19311f881ddabf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename Container&gt;<br />
-class stored::Variant&lt; Container &gt;</h3>
-
-<p>A untyped interface to an object in a store. </p>
-<p>This class works for all variables and functions of all types. However, using <a class="el" href="classstored_1_1_variable.html" title="A typed variable in a store. ">stored::Variable</a> or <a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">stored::Function</a> is more efficient both in performance and memory. Use those when you can.</p>
-<p>A <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> is quite small (only about four words). It is default copyable and assignable, so it is fine to pass it by value. </p>
-
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00156">156</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a365a13995c58f15697ed2ed8c72c0b96"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a365a13995c58f15697ed2ed8c72c0b96">&#9670;&nbsp;</a></span>Variant() <span class="overload">[1/5]</span></h2>
 

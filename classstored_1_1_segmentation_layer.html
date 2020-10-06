@@ -88,10 +88,14 @@ $(document).ready(function(){initNavTree('classstored_1_1_segmentation_layer.htm
 <div class="title">stored::SegmentationLayer Class Reference<div class="ingroups"><a class="el" href="group__libstored.html">libstored</a> &raquo; <a class="el" href="group__libstored__protocol.html">protocol</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>A layer that performs segmentation of the messages.  
- <a href="classstored_1_1_segmentation_layer.html#details">More...</a></p>
-
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A layer that performs segmentation of the messages. </p>
+<p>Messages to be encoded are split with a maximum chunk size (MTU). At the end of each chunk, either <a class="el" href="classstored_1_1_segmentation_layer.html#a36b6e6bf8545558a5e1c95c9a3bbcd27">ContinueMarker</a> or the <a class="el" href="classstored_1_1_segmentation_layer.html#a85ac4ba426a9e49f2f8c1d14785bcc24">EndMarker</a> is inserted, depending of this was the last chunk. Incoming messages are reassembled until the <a class="el" href="classstored_1_1_segmentation_layer.html#a85ac4ba426a9e49f2f8c1d14785bcc24">EndMarker</a> is encountered.</p>
+<p>This layer assumes a lossless channel; all messages are received in order. If that is not the case for your transport, wrap this layer in the <a class="el" href="classstored_1_1_debug_arq_layer.html" title="A layer that performs Automatic Repeat Request operations on messages for stored::Debugger. ">stored::DebugArqLayer</a> or <a class="el" href="classstored_1_1_arq_layer.html" title="A general purpose layer that performs Automatic Repeat Request operations on messages. ">stored::ArqLayer</a>. </p>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#_a28">7_protocol/main.cpp</a>.</dd>
+</dl>
+<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00408">408</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
+</div>
 <p><code>#include &lt;<a class="el" href="protocol_8h_source.html">protocol.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for stored::SegmentationLayer:</div>
@@ -178,14 +182,7 @@ Static Public Attributes</h2></td></tr>
 <tr class="memitem:a85ac4ba426a9e49f2f8c1d14785bcc24"><td class="memItemLeft" align="right" valign="top">static char const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_segmentation_layer.html#a85ac4ba426a9e49f2f8c1d14785bcc24">EndMarker</a> = 'E'</td></tr>
 <tr class="separator:a85ac4ba426a9e49f2f8c1d14785bcc24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A layer that performs segmentation of the messages. </p>
-<p>Messages to be encoded are split with a maximum chunk size (MTU). At the end of each chunk, either <a class="el" href="classstored_1_1_segmentation_layer.html#a36b6e6bf8545558a5e1c95c9a3bbcd27">ContinueMarker</a> or the <a class="el" href="classstored_1_1_segmentation_layer.html#a85ac4ba426a9e49f2f8c1d14785bcc24">EndMarker</a> is inserted, depending of this was the last chunk. Incoming messages are reassembled until the <a class="el" href="classstored_1_1_segmentation_layer.html#a85ac4ba426a9e49f2f8c1d14785bcc24">EndMarker</a> is encountered.</p>
-<p>This layer assumes a lossless channel; all messages are received in order. If that is not the case for your transport, wrap this layer in the <a class="el" href="classstored_1_1_debug_arq_layer.html" title="A layer that performs Automatic Repeat Request operations on messages for stored::Debugger. ">stored::DebugArqLayer</a> or <a class="el" href="classstored_1_1_arq_layer.html" title="A general purpose layer that performs Automatic Repeat Request operations on messages. ">stored::ArqLayer</a>. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#_a28">7_protocol/main.cpp</a>.</dd>
-</dl>
-<p class="definition">Definition at line <a class="el" href="protocol_8h_source.html#l00408">408</a> of file <a class="el" href="protocol_8h_source.html">protocol.h</a>.</p>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a3843bb7c02a848cf6f2f427731572edd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3843bb7c02a848cf6f2f427731572edd">&#9670;&nbsp;</a></span>base</h2>
 

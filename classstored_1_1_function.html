@@ -88,10 +88,16 @@ $(document).ready(function(){initNavTree('classstored_1_1_function.html','');});
 <div class="title">stored::Function&lt; T, Container &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__libstored.html">libstored</a> &raquo; <a class="el" href="group__libstored__types.html">types</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T, typename Container&gt;<br />
+class stored::Function&lt; T, Container &gt;</h3>
 
-<p>A typed function in a store.  
- <a href="classstored_1_1_function.html#details">More...</a></p>
+<p>A typed function in a store. </p>
+<p>This class only works for functions with fixed-length arguments (see <a class="el" href="structstored_1_1_type.html#a2c988ab827562d9bcd7f99506c765cd1" title="Checks if the given type has a fixed length, or is a function with such an argument. ">stored::Type::isFixed()</a>). Otherwise, use <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">stored::Variant</a>.</p>
+<p>A <a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">Function</a> is very small (it contains two words). It is default copyable and assignable, so it is fine to pass it by value. </p>
 
+<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00515">515</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
+</div>
 <p><code>#include &lt;<a class="el" href="types_8h_source.html">types.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
@@ -164,16 +170,7 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memdesc:a6702ad05ed5d4af95cbfef605f6a8c4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the size of the function's argument.  <a href="#a6702ad05ed5d4af95cbfef605f6a8c4b">More...</a><br /></td></tr>
 <tr class="separator:a6702ad05ed5d4af95cbfef605f6a8c4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename T, typename Container&gt;<br />
-class stored::Function&lt; T, Container &gt;</h3>
-
-<p>A typed function in a store. </p>
-<p>This class only works for functions with fixed-length arguments (see <a class="el" href="structstored_1_1_type.html#a2c988ab827562d9bcd7f99506c765cd1" title="Checks if the given type has a fixed length, or is a function with such an argument. ">stored::Type::isFixed()</a>). Otherwise, use <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">stored::Variant</a>.</p>
-<p>A <a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">Function</a> is very small (it contains two words). It is default copyable and assignable, so it is fine to pass it by value. </p>
-
-<p class="definition">Definition at line <a class="el" href="types_8h_source.html#l00515">515</a> of file <a class="el" href="types_8h_source.html">types.h</a>.</p>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a0a3595e6b8079f4102624824d967e0cb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0a3595e6b8079f4102624824d967e0cb">&#9670;&nbsp;</a></span>type</h2>
 

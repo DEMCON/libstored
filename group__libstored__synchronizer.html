@@ -85,25 +85,6 @@ $(document).ready(function(){initNavTree('group__libstored__synchronizer.html','
 <div class="title">synchronizer<div class="ingroups"><a class="el" href="group__libstored.html">libstored</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>Distributed store synchronizer.  
-<a href="#details">More...</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_store_journal.html">stored::StoreJournal</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A record of all changes within a store.  <a href="classstored_1_1_store_journal.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_sync_connection.html">stored::SyncConnection</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A one-to-one connection to synchronize one or more stores.  <a href="classstored_1_1_sync_connection.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizable.html">stored::Synchronizable&lt; Base &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An extension of a store to be used by the <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">stored::Synchronizer</a>.  <a href="classstored_1_1_synchronizable.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizer.html">stored::Synchronizer</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The service that manages synchronization of stores over SyncConnections.  <a href="classstored_1_1_synchronizer.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Distributed store synchronizer. </p>
 <p>In a distributed system, every process has its own instance of a store. Synchronization between these instances is implemented by the <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">stored::Synchronizer</a>. The Synchronizer can be seen as a service, usually one per process, which knows all stores in that process and all communication channels to other processes. At regular intervals, it sends updates of locally modified data to the other Synchronizers.</p>
@@ -137,6 +118,22 @@ The changes are attached."</p>
  <code>b</code> &lt;id&gt;<br />
  <code>b</code></p>
 <p>A bye using the id can be used to respond to another message that has an unknown id. Previous communication sessions remnents can be cleaned up in this way. </p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_store_journal.html">stored::StoreJournal</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A record of all changes within a store.  <a href="classstored_1_1_store_journal.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_sync_connection.html">stored::SyncConnection</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A one-to-one connection to synchronize one or more stores.  <a href="classstored_1_1_sync_connection.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizable.html">stored::Synchronizable&lt; Base &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An extension of a store to be used by the <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">stored::Synchronizer</a>.  <a href="classstored_1_1_synchronizable.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizer.html">stored::Synchronizer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The service that manages synchronization of stores over SyncConnections.  <a href="classstored_1_1_synchronizer.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
