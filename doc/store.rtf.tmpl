@@ -22,7 +22,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 {\fonttbl{\f0\froman Times New Roman;}}
 {\info{\title {{store.name|rtfstring}}}{\comment {{store.hash}}}}\paperw11906\paperh16838\viewkind1\sectd\pard\keepn\b
 {{store.name|rtfstring}}\line\plain
-hash: {{store.hash}}\par\pard\sb240\keepn\b
+hash: {{store.hash}}\line
+{% if store.littleEndian -%}
+little endian
+{%- else -%}
+big endian
+{%- endif -%}
+\par\pard\sb240\keepn\b
 Store objects\par\pard\plain
 \trowd\trgaph120\trhdr\trkeep
 \clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx4000
