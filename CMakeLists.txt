@@ -71,6 +71,7 @@ function(libstored_generate target) # add all other models as varargs
         OUTPUT ${target}-libstored.timestamp
         DEPENDS ${LIBSTORED_SOURCE_DIR}/include/libstored/store.h.tmpl
         DEPENDS ${LIBSTORED_SOURCE_DIR}/src/store.cpp.tmpl
+        DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.rtf.tmpl
         DEPENDS ${LIBSTORED_SOURCE_DIR}/CMakeLists.txt.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/generate.py
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/dsl/grammar.tx

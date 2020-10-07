@@ -158,6 +158,8 @@ def generate_store(model_file, output_dir, littleEndian=True):
         os.mkdir(os.path.join(output_dir, 'include'))
     if not os.path.exists(os.path.join(output_dir, 'src')):
         os.mkdir(os.path.join(output_dir, 'src'))
+    if not os.path.exists(os.path.join(output_dir, 'doc')):
+        os.mkdir(os.path.join(output_dir, 'doc'))
 
     # now generate the code
 
@@ -165,6 +167,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
             loader = jinja2.FileSystemLoader([
                 os.path.join(libstored_dir, 'include', 'libstored'),
                 os.path.join(libstored_dir, 'src'),
+                os.path.join(libstored_dir, 'doc'),
             ]),
             trim_blocks = True,
             lstrip_blocks = True)
@@ -182,12 +185,16 @@ def generate_store(model_file, output_dir, littleEndian=True):
 
     store_h_tmpl = jenv.get_template('store.h.tmpl')
     store_cpp_tmpl = jenv.get_template('store.cpp.tmpl')
+    store_rtf_tmpl = jenv.get_template('store.rtf.tmpl')
 
     with open(os.path.join(output_dir, 'include', model_name(model_file) + '.h'), 'w') as f:
         f.write(store_h_tmpl.render(store=model))
 
     with open(os.path.join(output_dir, 'src', model_name(model_file) + '.cpp'), 'w') as f:
         f.write(store_cpp_tmpl.render(store=model))
+
+    with open(os.path.join(output_dir, 'doc', model_name(model_file) + '.rtf'), 'w') as f:
+        f.write(store_rtf_tmpl.render(store=model))
 
 def generate_cmake(libprefix, model_files, output_dir):
     logger.info("generating CMakeLists.txt")
