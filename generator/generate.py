@@ -111,6 +111,9 @@ def carray(a):
 def escapebs(s):
     return re.sub(r'\\', r'\\\\', s)
 
+def rtfstring(s):
+    return re.sub(r'([\\{}])', r'\\\1', s)
+
 def model_name(model_file):
     return os.path.splitext(os.path.split(model_file)[1])[0]
 
@@ -178,6 +181,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.filters['carray'] = carray
     jenv.filters['len'] = len
     jenv.filters['hasfunction' ] = has_function
+    jenv.filters['rtfstring' ] = rtfstring
     jenv.tests['variable'] = is_variable
     jenv.tests['function'] = is_function
     jenv.tests['blob'] = is_blob

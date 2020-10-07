@@ -20,8 +20,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #}
 {\rtf1\rtf\ansi\deff0
 {\fonttbl{\f0\froman Times New Roman;}}
-{\info{\title {{store.name}}}{\comment {{store.hash}}}}\paperw11906\paperh16838\viewkind1\sectd\pard\keepn\b
-{{store.name}}\line\plain
+{\info{\title {{store.name|rtfstring}}}{\comment {{store.hash}}}}\paperw11906\paperh16838\viewkind1\sectd\pard\keepn\b
+{{store.name|rtfstring}}\line\plain
 hash: {{store.hash}}\par\pard\sb240\keepn\b
 Store objects\par\pard\plain
 \trowd\trgaph120\trhdr\trkeep
@@ -42,7 +42,7 @@ Size\cell\row\pard\plain
 \clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx6700
 \clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx7900
 \clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx8700
-{{o.name}}\cell
+{{o.name|rtfstring}}\cell
 {%    if o is function %}
 ({{o.type}}{% if o is blob %}:{{o.size}}{% endif %})\cell
 \cell
@@ -84,7 +84,7 @@ Name\cell\row\pard\plain
 \clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx6000\qr
 {{'0x%x'|format(o.offset)}}\cell
 {{o.size}}\cell\pard
-{{o.name}}\cell\row
+{{o.name|rtfstring}}\cell\row
 {%- endif -%}
 {%- endfor -%}
 \par
