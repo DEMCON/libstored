@@ -1,0 +1,148 @@
+{#
+-- vim:filetype=vhdl
+
+-- libstored, a Store for Embedded Debugger.
+-- Copyright (C) 2020  Jochem Rutgers
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU Lesser General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU Lesser General Public License for more details.
+--
+-- You should have received a copy of the GNU Lesser General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#}
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+use work.libstored_pkg.all;
+use work.{{store.name}}_pkg;
+
+--! \brief HDL implementation of {{store.name}}, with integrated %Synchronizer.
+--!
+--! This entity tries to register itself with another store using the Hello
+--! message. This implementation does not accept Hello messages.
+--!
+--! Only the store's variables are synchronized. The HDL has no support for the
+--! store's functions.
+entity {{store.name}}_hdl is
+	generic (
+		--! \brief #clk frequency.
+		SYSTEM_CLK_FREQ : integer := 100e6;
+		--! \brief Default interval to generate sync update messages.
+		--! \details Set to 0 to disable.
+		SYNC_OUT_INTERVAL_s : real := 0.1;
+		--! \brief Store ID to use in a Hello message.
+		ID_OUT : natural := 1;
+		--! \brief Width of \c len ports.
+		LEN_LENGTH : natural := 16;
+
+		--! \brief Flag to indicate that we are in simulation.
+		--! \details This will reduce timing intervals.
+		SIMULATION : boolean := false
+--pragma translate_off
+			or true
+--pragma translate_on
+	);
+	port (
+		clk : in std_logic;
+		rstn : in std_logic;
+
+{% for o in store.objects %}
+{%   if o is variable %}
+		-- {{o}}
+		{{o.cname}}__out : out {{o.cname}}_pkg.{{o.cname}}__type;
+		{{o.cname}}__out_changed : out std_logic;
+		{{o.cname}}__in : in {{o.cname}}_pkg.{{o.cname}}__type := {{o.cname|upper}}__INIT;
+		{{o.cname}}__in_we : in std_logic := '0';
+
+{%   endif %}
+{% endfor %}
+		-- Input of sync messages.
+		sync_in_data : in std_logic_vector(7 downto 0) := (others => '-');
+		sync_in_last : in std_logic := '-';
+		sync_in_valid : in std_logic := '0';
+		sync_in_accept : out std_logic;
+
+		-- Output of unhandled sync messages to daisy chain stores.
+		sync_in_data_next : out std_logic_vector(7 downto 0);
+		sync_in_last_next : out std_logic;
+		sync_in_valid_next : out std_logic;
+		sync_in_accept_next : in std_logic := '1';
+
+		--! \brief Trigger a sync immediately.
+		sync_out_trigger : in std_logic := '0';
+		--! \brief Hold off a timed sync.
+		sync_out_hold : in std_logic := '0';
+
+		-- Sync messages generated (or forwarded) by this store.
+		sync_out_len : out std_logic_vector(LEN_LENGTH - 1 downto 0);
+		sync_out_data : out std_logic_vector(7 downto 0);
+		sync_out_last : out std_logic;
+		sync_out_valid : out std_logic;
+		sync_out_accept : in std_logic := '0';
+
+		-- Sync messages generated (of forwarded) by another store, for daisy chaining.
+		sync_out_len_prev : in std_logic_vector(LEN_LENGTH - 1 downto 0) := (others => '-');
+		sync_out_data_prev : in std_logic_vector(7 downto 0) := (others => '-');
+		sync_out_last_prev : in std_logic := '-';
+		sync_out_valid_prev : in std_logic := '0';
+		sync_out_accept_prev : out std_logic
+	);
+end {{store.name}};
+
+--! \brief Default architecture of #{{store.name}}_hdl.
+architecture rtl of {{store.name}}_hdl is
+	constant NUM_VARIABLES : natural := {{store.objects|len}};
+begin
+{% for o in store.objects|sort(attribute='offset') %}
+{%   if o is variable %}
+	{{o.cname}}__g : if true generate
+		signal data__out_i : std_logic_vector({{o.size * 8 - 1}} downto 0);
+		signal data__in_i : std_logic_vector({{o.size * 8 - 1}} downto 0);
+	begin
+		{{o.cname}}__inst : entity work.libstored_variable
+			generic map (
+				SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ,
+				LEN_LENGTH => LEN_LENGTH,
+				DATA_LENGTH => {{o.size * 8}},
+				BUFFER_OFFSET => {{o.offset}},
+				LITTLE_ENDIAN => {% if store.littleEndian %}true{% else %}false{% endif %},
+				SIMULATION => SIMULATION
+			)
+			port map (
+				clk => clk,
+				rstn => rstn,
+				data__out => data_out_i,
+				data__out_changed => {{o.cname}}__out_changed,
+				data__in => data_in_i,
+				data__in_we => {{o.cname}}__in_we,
+				sync_in_data => sync_in_data,
+				sync_in_last => sync_in_last,
+				sync_in_valid => sync_in_valid,
+			);
+
+{%     if o|vhdltype == 'std_logic' %}
+		{{o.cname}}__out <=
+--pragma translate_off
+			'x' if is_x(data__out_i) else
+--pragma translate_on
+			'1' if data__out_i /= x"00" else
+			'0';
+		data__in_i <= "0000000" & {{o.cname}}__in;
+{%     else %}
+		{{o.cname}}__out <= {{store.name}}_pkg.{{o.cname}}__type(data__out_i);
+		data__in_i <= std_logic_vector({{o.cname}}__in);
+{%     endif %}
+	end generate;
+
+{%   endif %}
+{% endfor %}
+end rtl;
+

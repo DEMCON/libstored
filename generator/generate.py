@@ -97,6 +97,44 @@ def stype(o):
         t += ' | Type::FlagFunction'
     return t
 
+def vhdltype(o):
+    return {
+            'bool': 'std_logic',
+            'int8': 'signed(7 downto 0)',
+            'uint8': 'unsigned(7 downto 0)',
+            'int16': 'signed(15 downto 0)',
+            'uint16': 'unsigned(15 downto 0)',
+            'int32': 'signed(31 downto 0)',
+            'uint32': 'unsigned(31 downto 0)',
+            'int64': 'signed(63 downto 0)',
+            'uint64': 'unsigned(63 downto 0)',
+            'float': 'std_logic_vector(31 downto 0)',
+            'double': 'std_logic_vector(64 downto 0)',
+            'ptr32': 'std_logic_vector(31 downto 0)',
+            'ptr64': 'std_logic_vector(63 downto 0)',
+            'blob': 'std_logic_vector(%d downto 0)' % (o.size - 1),
+            'string': 'std_logic_vector(%d downto 0)' % (o.size - 1),
+    }[o.type]
+
+def vhdlinit(o):
+    return {
+            'bool': "'0'",
+            'int8': "(7 downto 0 => '0')",
+            'uint8': "(7 downto 0 => '0')",
+            'int16': "(15 downto 0 => '0')",
+            'uint16': "(15 downto 0 => '0')",
+            'int32': "(31 downto 0 => '0')",
+            'uint32': "(31 downto 0 => '0')",
+            'int64': "(63 downto 0 => '0')",
+            'uint64': "(63 downto 0 => '0')",
+            'float': "(31 downto 0 => '0')",
+            'double': "(64 downto 0 => '0')",
+            'ptr32': "(31 downto 0 => '0')",
+            'ptr64': "(64 downto 0 => '0')",
+            'blob': "(%d downto 0 => '0')" % (o.size - 1),
+            'string': "(%d downto 0 => '0')" % (o.size - 1),
+    }[o.type]
+
 def carray(a):
     s = ''
     line = 0
@@ -163,6 +201,8 @@ def generate_store(model_file, output_dir, littleEndian=True):
         os.mkdir(os.path.join(output_dir, 'src'))
     if not os.path.exists(os.path.join(output_dir, 'doc')):
         os.mkdir(os.path.join(output_dir, 'doc'))
+    if not os.path.exists(os.path.join(output_dir, 'rtl')):
+        os.mkdir(os.path.join(output_dir, 'rtl'))
 
     # now generate the code
 
@@ -171,12 +211,15 @@ def generate_store(model_file, output_dir, littleEndian=True):
                 os.path.join(libstored_dir, 'include', 'libstored'),
                 os.path.join(libstored_dir, 'src'),
                 os.path.join(libstored_dir, 'doc'),
+                os.path.join(libstored_dir, 'fpga', 'rtl'),
             ]),
             trim_blocks = True,
             lstrip_blocks = True)
 
     jenv.filters['ctype'] = ctype
     jenv.filters['stype'] = stype
+    jenv.filters['vhdltype'] = vhdltype
+    jenv.filters['vhdlinit'] = vhdlinit
     jenv.filters['cname'] = types.cname
     jenv.filters['carray'] = carray
     jenv.filters['len'] = len
@@ -190,6 +233,8 @@ def generate_store(model_file, output_dir, littleEndian=True):
     store_h_tmpl = jenv.get_template('store.h.tmpl')
     store_cpp_tmpl = jenv.get_template('store.cpp.tmpl')
     store_rtf_tmpl = jenv.get_template('store.rtf.tmpl')
+    store_vhd_tmpl = jenv.get_template('store.vhd.tmpl')
+    store_pkg_vhd_tmpl = jenv.get_template('store_pkg.vhd.tmpl')
 
     with open(os.path.join(output_dir, 'include', model_name(model_file) + '.h'), 'w') as f:
         f.write(store_h_tmpl.render(store=model))
@@ -199,6 +244,12 @@ def generate_store(model_file, output_dir, littleEndian=True):
 
     with open(os.path.join(output_dir, 'doc', model_name(model_file) + '.rtf'), 'w') as f:
         f.write(store_rtf_tmpl.render(store=model))
+
+    with open(os.path.join(output_dir, 'rtl', model_name(model_file) + '.vhd'), 'w') as f:
+        f.write(store_vhd_tmpl.render(store=model))
+
+    with open(os.path.join(output_dir, 'rtl', model_name(model_file) + '_pkg.vhd'), 'w') as f:
+        f.write(store_pkg_vhd_tmpl.render(store=model))
 
 def generate_cmake(libprefix, model_files, output_dir):
     logger.info("generating CMakeLists.txt")
