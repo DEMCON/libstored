@@ -135,6 +135,9 @@ def vhdlinit(o):
             'string': "(%d downto 0 => '0')" % (o.size - 1),
     }[o.type]
 
+def vhdlstr(s):
+    return '(' + ', '.join(map(lambda c: 'x"%02x"' % c, s.encode())) + ')'
+
 def carray(a):
     s = ''
     line = 0
@@ -220,6 +223,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.filters['stype'] = stype
     jenv.filters['vhdltype'] = vhdltype
     jenv.filters['vhdlinit'] = vhdlinit
+    jenv.filters['vhdlstr'] = vhdlstr
     jenv.filters['cname'] = types.cname
     jenv.filters['carray'] = carray
     jenv.filters['len'] = len

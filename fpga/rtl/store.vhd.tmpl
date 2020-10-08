@@ -20,6 +20,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use ieee.math_real.all;
 
 use work.libstored_pkg.all;
 use work.{{store.name}}_pkg;
@@ -39,7 +40,7 @@ entity {{store.name}}_hdl is
 		--! \details Set to 0 to disable.
 		SYNC_OUT_INTERVAL_s : real := 0.1;
 		--! \brief Store ID to use in a Hello message.
-		ID_OUT : natural := 1;
+		ID : natural := 1;
 		--! \brief Width of \c len ports.
 		LEN_LENGTH : natural := 16;
 
@@ -80,6 +81,8 @@ entity {{store.name}}_hdl is
 		sync_out_trigger : in std_logic := '0';
 		--! \brief Hold off a timed sync.
 		sync_out_hold : in std_logic := '0';
+		--! \brief IRQ when there is an update message.
+		sync_out_irq : out std_logic;
 
 		-- Sync messages generated (or forwarded) by this store.
 		sync_out_len : out std_logic_vector(LEN_LENGTH - 1 downto 0);
@@ -99,8 +102,85 @@ end {{store.name}};
 
 --! \brief Default architecture of #{{store.name}}_hdl.
 architecture rtl of {{store.name}}_hdl is
+	constant RETIMING_DEPTH : natural := 2;
 	constant NUM_VARIABLES : natural := {{store.objects|len}};
+
+	type hash_t is array(0 to {{store.hash|len - 1}}) of std_logic_vector(7 downto 0);
+	constant HASH : hash_t := {{store.hash|vhdlstr}}; -- {{store.hash}}
+
+{% if store.littleEndian %}
+	constant MSG_HELLO   : std_logic_vector(7 downto 0) := x"68"; -- 'h'
+	constant MSG_WELCOME : std_logic_vector(7 downto 0) := x"77"; -- 'w'
+	constant MSG_UPDATE  : std_logic_vector(7 downto 0) := x"75"; -- 'u'
+	constant MSG_BYE     : std_logic_vector(7 downto 0) := x"62"; -- 'b'
+{% else %}
+	constant MSG_HELLO   : std_logic_vector(7 downto 0) := x"48"; -- 'H'
+	constant MSG_WELCOME : std_logic_vector(7 downto 0) := x"57"; -- 'W'
+	constant MSG_UPDATE  : std_logic_vector(7 downto 0) := x"55"; -- 'U'
+	constant MSG_BYE     : std_logic_vector(7 downto 0) := x"42"; -- 'B'
+{% endif %}
+
+	type var_sync_len_t is array(0 to NUM_VARIABLES) of std_logic_vector(LEN_LENGTH - 1 downto 0);
+	type var_sync_data_t is array(0 to NUM_VARIABLES) of std_logic_vector(7 downto 0);
+	subtype var_sync_flag_t is array(0 to NUM_VARIABLES) of std_logic;
+
+	signal var_sync_in_data : var_sync_data_t;
+	signal var_sync_in_last : var_sync_flag_t;
+	signal var_sync_in_valid : var_sync_flag_t;
+	signal var_sync_in_buffer : var_sync_flag_t;
+
+	signal var_sync_out_len : var_sync_len_t;
+	signal var_sync_out_data : var_sync_data_t;
+	signal var_sync_out_last : var_sync_flag_t;
+	signal var_sync_out_valid : var_sync_flag_t;
+	signal var_sync_out_accept : var_sync_flag_t;
+	signal var_sync_out_accept_first : std_logic;
+
+	signal sync_in_commit, sync_in_commit_delay : std_logic;
+	signal sync_out_snapshot, sync_out_snapshot_delay : std_logic;
+
+	signal var_sync_out_len_last, sync_out_len_i : std_logic_vector(LEN_LENGTH - 1 downto 0);
+	signal var_sync_out_data_last, sync_out_data_i : std_logic_vector(7 downto 0);
+	signal var_sync_out_last_last, sync_out_last_i : std_logic;
+	signal var_sync_out_valid_last, sync_out_valid_i : std_logic;
+	signal var_sync_out_accept_last, sync_out_accept_i : std_logic;
+	signal sync_out_r : std_logic_vector(LEN_LENGTH + 8 downto 0);
+
+	constant id_in : std_logic_vector(15 downto 0) :=
+{% if store.littleEndian %}
+		std_logic_vector(to_unsigned(ID, 8)) & std_logic_vector(to_unsigned(ID / 256, 8));
+{% else %}
+		std_logic_vector(to_unsigned(ID, 16));
+{% endif %}
+	signal id_out : std_logic_vector(15 downto 0);
+	signal id_out_valid : std_logic;
 begin
+
+	sync_in_commit_inst : entity work.libstored_delay1
+		generic map (
+			DELAY => RETIMING_DEPTH,
+			INIT => '0'
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			i => sync_in_commit,
+			o => sync_in_commit_delay
+		);
+
+	sync_out_snapshot_inst : entity work.libstored_delay1
+		generic map (
+			DELAY => RETIMING_DEPTH,
+			INIT => '0'
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			i => sync_out_snapshot,
+			o => sync_out_snapshot_delay
+		);
+
+{% set ns = namespace(var_i=0) %}
 {% for o in store.objects|sort(attribute='offset') %}
 {%   if o is variable %}
 	{{o.cname}}__g : if true generate
@@ -114,18 +194,42 @@ begin
 				DATA_LENGTH => {{o.size * 8}},
 				BUFFER_OFFSET => {{o.offset}},
 				LITTLE_ENDIAN => {% if store.littleEndian %}true{% else %}false{% endif %},
+				BUFFER_CHAIN => {% if ns.var_i % 4 == 3 %}true{% else %}false{% endif %},
 				SIMULATION => SIMULATION
 			)
 			port map (
 				clk => clk,
 				rstn => rstn,
+
 				data__out => data_out_i,
 				data__out_changed => {{o.cname}}__out_changed,
 				data__in => data_in_i,
 				data__in_we => {{o.cname}}__in_we,
-				sync_in_data => sync_in_data,
-				sync_in_last => sync_in_last,
-				sync_in_valid => sync_in_valid,
+
+				sync_in_commit => sync_in_commit_delay,
+				sync_out_snapshot => sync_out_snapshot_delay,
+
+				sync_in_data => var_sync_in_data({{ns.var_i}}),
+				sync_in_last => var_sync_in_last({{ns.var_i}}),
+				sync_in_valid => var_sync_in_valid({{ns.var_i}}),
+				sync_in_buffer => var_sync_in_buffer({{ns.var_i}}),
+
+				sync_in_data_next => var_sync_in_data({{ns.var_i + 1}}),
+				sync_in_last_next => var_sync_in_last({{ns.var_i + 1}}),
+				sync_in_valid_next => var_sync_in_valid({{ns.var_i + 1}}),
+				sync_in_buffer_next => var_sync_in_buffer({{ns.var_i + 1}}),
+
+				sync_out_len => var_sync_out_len({{ns.var_i + 1}}),
+				sync_out_data => var_sync_out_data({{ns.var_i + 1}}),
+				sync_out_last => var_sync_out_last({{ns.var_i + 1}}),
+				sync_out_valid => var_sync_out_valid({{ns.var_i + 1}}),
+				sync_out_accept => var_sync_out_accept({{ns.var_i + 1}}),
+
+				sync_out_len_prev => var_sync_out_len({{ns.var_i}}),
+				sync_out_data_prev => var_sync_out_data({{ns.var_i}}),
+				sync_out_last_prev => var_sync_out_last({{ns.var_i}}),
+				sync_out_valid_prev => var_sync_out_valid({{ns.var_i}}),
+				sync_out_accept_prev => var_sync_out_accept({{ns.var_i}})
 			);
 
 {%     if o|vhdltype == 'std_logic' %}
@@ -142,7 +246,297 @@ begin
 {%     endif %}
 	end generate;
 
+{%     set ns.var_i = ns.var_i + 1 %}
 {%   endif %}
 {% endfor %}
+
+	var_sync_out_len_last <= var_sync_out_len(var_sync_out_len'high);
+	var_sync_out_data_last <= var_sync_out_data(var_sync_out_data'high);
+	var_sync_out_last_last <= var_sync_out_last(var_sync_out_last'high);
+	var_sync_out_valid_last <= var_sync_out_valid(var_sync_out_valid'high);
+	var_sync_out_accept(var_sync_out_len'high) <= var_sync_out_accept_last;
+	var_sync_out_accept_first <= var_sync_out_accept(0);
+
+	sync_out_g : if true generate
+		type state_t is (
+			STATE_RESET, STATE_IDLE,
+			STATE_HELLO, STATE_HELLO_CMD, STATE_HELLO_HASH, STATE_HELLO_HASH_END,
+			STATE_HELLO_ID1, STATE_HELLO_ID2,
+			STATE_SNAPSHOT, STATE_SNAPSHOT_WAIT, STATE_TRIGGER, STATE_TRIGGERED,
+			STATE_UPDATE_WAIT, STATE_UPDATE_CMD, STATE_UPDATE_ID1, STATE_UPDATE_ID2,
+			STATE_UPDATE_PAYLOAD, STATE_DROP, STATE_DONE, STATE_PASSTHROUGH);
+
+		constant SYNC_OUT_INTERVAL_clk : natural := natural(ceil(SYNC_OUT_INTERVAL_s / real(SYSTEM_CLK_FREQ)));
+
+		type r_t is record
+			state : state_t;
+			t : natural range 0 to SYNC_OUT_INTERVAL_clk;
+			id : std_logic_vector(id_out'range);
+			passthrough : std_logic;
+			passthrough_last : std_logic;
+			cnt : natural 0 to RETIMING_DEPTH;
+		end record;
+
+		signal r, r_in : r_t;
+	begin
+
+		process(r, rstn, sync_out_valid_prev, sync_out_last_prev, sync_out_last_accept_i,
+			sync_out_trigger, id_out_valid, var_sync_out_valid_last, var_sync_out_last_last,
+			var_sync_out_accept_first)
+			variable v : r_t;
+		begin
+			v := r;
+
+			if r.t > 0 then
+				v.t := r.t - 1;
+			end if;
+			if r.cnt > 0 then
+				v.cnt := r.cnt - 1;
+			end if;
+
+			v.passthrough := r.passthrough_last = '0' and (r.passthrough = '1' or sync_out_valid_prev = '1');
+			v.passthrough_last := sync_out_valid_prev = '1' and sync_out_last_prev = '1' and sync_out_last_accept_i = '1';
+
+			case r.state is
+			when STATE_RESET =>
+				v.state := STATE_IDLE;
+			when STATE_IDLE =>
+				if ((SYNC_OUT_INTERVAL_s > 0 and r.t = 0) or sync_out_trigger = '1') and sync_out_hold = '0' then
+					if id_out_valid = '0' then
+						v.state := STATE_HELLO;
+					else
+						v.state := STATE_SNAPSHOT;
+						v.id := id_out;
+					end if;
+				end if;
+			when STATE_HELLO =>
+				if v.passthrough = '0' then
+					v.state := STATE_HELLO_CMD;
+				end if;
+			when STATE_HELLO_CMD =>
+				v.passthrough := '0';
+				if sync_out_accept_i = '1' then
+					v.state := STATE_HELLO_HASH
+					v.cnt := HASH'length;
+				end if;
+			when STATE_HELLO_HASH =>
+				v.passthrough := '0';
+				if sync_out_accept_i = '1' then
+					if r.cnt = 0 then
+						v.state := STATE_HELLO_HASH_END;
+					end if;
+				else
+					v.cnt := r.cnt;
+				end if;
+			when STATE_HELLO_HASH_END =>
+				v.passthrough := '0';
+				if sync_out_accept_i = '1' then
+					v.state := STATE_HELLO_ID1;
+				end if;
+			when STATE_HELLO_ID1 =>
+				v.passthrough := '0';
+				if sync_out_accept_i = '1' then
+					v.state := STATE_HELLO_ID2;
+				end if;
+			when STATE_HELLO_ID2 =>
+				v.passthrough := '0';
+				if sync_out_accept_i = '1' then
+					v.state := STATE_DONE;
+					v.t := SYNC_OUT_INTERVAL_clk;
+				end if;
+			when STATE_SNAPSHOT =>
+				v.state := STATE_SNAPSHOT_WAIT;
+				v.cnt := RETIMING_DEPTH;
+			when STATE_SNAPSHOT_WAIT =>
+				if v.cnt = 0 then
+					v.state := STATE_TRIGGER;
+				end if;
+			when STATE_TRIGGER =>
+				v.t := SYNC_OUT_INTERVAL_clk;
+				if var_sync_out_accept_first = '1' then
+					v.state := STATE_TRIGGERED;
+				end if;
+			when STATE_TRIGGERED =>
+				if var_sync_out_valid_last = '1' then
+					-- Got header back.
+					if var_sync_out_last_last = '1' then
+						-- Only the header; no updates.
+						v.state := STATE_DROP;
+					elsif r.passthrough = '1' then
+						-- We have updates, but a passthrough is in progress.
+						v.state := STATE_UPDATE_WAIT;
+					else
+						-- We have updates.
+						v.state := STATE_UPDATE_CMD;
+					end if;
+				end if;
+			when STATE_UPDATE_WAIT =>
+				if v.passthrough = '0' then
+					v.state := STATE_UPDATE_CMD;
+				end i;
+			when STATE_UPDATE_CMD =>
+				v.passthrough := '0';
+				if var_sync_out_valid_last = '1' and sync_out_accept_i = '1' then
+					v.state := STATE_UPDATE_ID1;
+				end if;
+			when STATE_UPDATE_ID1 =>
+				v.passthrough := '0';
+				if sync_out_accept_i = '1' then
+					v.state := STATE_UPDATE_ID2;
+				end if;
+			when STATE_UPDATE_ID2 =>
+				v.passthrough := '0';
+				if sync_out_accept_i = '1' then
+					v.state := STATE_UPDATE_PAYLOAD;
+				end if;
+			when STATE_UPDATE_PAYLOAD =>
+				v.passthrough := '0';
+				if var_sync_out_valid_last = '1' and var_sync_out_last_last = '1' and sync_out_accept_i = '1'
+					v.state := STATE_DONE;
+				end if;
+			when STATE_DROP =>
+				v.state := STATE_DONE;
+			when STATE_DONE =>
+				if v.passthrough = '1' then
+					v.state := STATE_PASSTHROUGH;
+				else
+					v.state := STATE_IDLE;
+				end if;
+			when STATE_PASSTHROUGH =>
+				if v.passthrough = '0' then
+					v.state := STATE_IDLE;
+				end if;
+			end case;
+
+			if rstn /= '1' then
+				v.state := STATE_RESET;
+				v.passthrough := '0';
+				v.passthrough_last := '0';
+				v.t := 0;
+				v.id := (others => '-');
+			end if;
+
+			r_in <= v;
+		end process;
+
+		process(clk)
+		begin
+			if rising_edge(clk) then
+				r <= r_in;
+			end if;
+		end process;
+
+		with r.state select
+			sync_out_snapshot <=
+				'1' when STATE_SNAPSHOT,
+				'0' when others;
+
+		var_sync_out_len(0) <=
+			(var_sync_out_len(0)'high downto 1 => '0', 0 => '1')
+--pragma translate_off
+				if r.state = STATE_TRIGGER else (others => '-')
+--pragma translate_on
+			;
+
+		var_sync_out_data(0) <=
+			MSG_UPDATE
+--pragma translate_off
+				if r.state = STATE_TRIGGER else (others => '-')
+--pragma translate_on
+			;
+
+		var_sync_out_last(0) <=
+			'1'
+--pragma translate_off
+				if r.state = STATE_TRIGGER else '-'
+--pragma translate_on
+			;
+
+		var_sync_out_valid(0) <=
+			'1' if r.state = STATE_TRIGGER else '0';
+
+		sync_out_len_i <=
+			sync_out_len_prev if r.passthrough = '1' else
+			std_logic_vector(to_unsigned(hash'len + 4, LEN_LENGTH))
+				if r.state = STATE_HELLO_CMD or
+					r.state = STATE_HELLO_HASH or
+					r.state = STATE_HELLO_HASH_END or
+					r.state = STATE_HELLO_ID1 or
+					r.state = STATE_HELLO_ID2 else
+			var_sync_out_len_last;
+
+		sync_out_data_i <=
+			sync_out_data_prev if r.passthrough = '1' else
+			MSG_HELLO if r.state = STATE_HELLO_CMD else
+			HASH(r.cnt) if r.state = STATE_HELLO_HASH else
+			(others => '0') if r.state = STATE_HELLO_HASH_END else
+			id_in(15 downto 8) if r.state = STATE_HELLO_ID1 else
+			id_in(7 downto 0) if r.state = STATE_HELLO_ID2 else
+			var_sync_out_data_last if r.state = STATE_UPDATE_CMD else
+			id_out(15 downto 8) if r.state = STATE_UPDATE_ID1 else
+			id_out(7 downto 0) if r.state = STATE_UPDATE_ID2 else
+			var_sync_out_data_last if r.state = STATE_UPDATE_PAYLOAD else
+			(others => '-');
+
+		sync_out_last_i <=
+			sync_out_last_prev if r.passthrough = '1' else
+			var_sync_out_last_last if r.state = STATE_UPDATE_PAYLOAD else
+			'0'  if r.state = STATE_HELLO_CMD or
+					r.state = STATE_HELLO_HASH or
+					r.state = STATE_HELLO_HASH_END or
+					r.state = STATE_HELLO_ID1 else
+			'1'  if r.state = STATE_HELLO_ID2 else
+			'-';
+
+		sync_out_valid_i <=
+			sync_out_valid_prev if r.passthrough = '1' else
+			'1' if r.state = STATE_HELLO_CMD else
+			'1' if r.state = STATE_HELLO_HASH else
+			'1' if r.state = STATE_HELLO_HASH_END else
+			'1' if r.state = STATE_HELLO_ID1 else
+			'1' if r.state = STATE_HELLO_ID2 else
+			'1' if r.state = STATE_UPDATE_CMD else
+			'1' if r.state = STATE_UPDATE_ID1 else
+			'1' if r.state = STATE_UPDATE_ID2 else
+			var_sync_out_valid_last if r.state = STATE_UPDATE_PAYLOAD else
+			'0';
+
+		sync_out_irq <=
+			'1' if r.state = STATE_HELLO_CMD else
+			'1' if r.state = STATE_HELLO_HASH else
+			'1' if r.state = STATE_HELLO_HASH_END else
+			'1' if r.state = STATE_HELLO_ID1 else
+			'1' if r.state = STATE_HELLO_ID2 else
+			'1' if r.state = STATE_UPDATE_CMD else
+			'1' if r.state = STATE_UPDATE_ID1 else
+			'1' if r.state = STATE_UPDATE_ID2 else
+			'1' if r.state = STATE_UPDATE_PAYLOAD else
+			r.passthrough;
+
+		with r.state select
+			var_sync_out_accept_last <=
+				sync_out_accept_i when STATE_UPDATE_PAYLOAD,
+				'0' when others;
+
+	end generate;
+
+	sync_out_buffer_inst : entity work.libstored_stream_buffer
+		generic map (
+			WIDTH => LEN_LENGTH + 8 + 1
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			i => sync_out_last_i & sync_out_len_i & sync_out_data_i,
+			i_valid => sync_out_valid_i,
+			i_accept => sync_out_accept_i,
+			o => sync_out_r,
+			o_valid => sync_out_valid,
+			o_accept => sync_out_accept
+		);
+
+	sync_out_len <= sync_out_r(LEN_LENGTH + 7 downto 8);
+	sync_out_data <= sync_out_r(7 downto 0);
+	sync_out_last <= sync_out_r(LEN_LENGTH + 8);
 end rtl;
 

@@ -24,9 +24,11 @@ entity libstored_variable is
 	generic (
 		SYSTEM_CLK_FREQ : integer := 100e6;
 		LEN_LENGTH : natural := 16;
+		KEY_LENGTH : natural := 8;
 		DATA_LENGTH : natural := 32;
 		BUFFER_OFFSET : natural := 0;
 		LITTLE_ENDIAN := boolean := true;
+		BUFFER_CHAIN : boolean := true;
 		SIMULATION : boolean := false
 --pragma translate_off
 			or true
@@ -42,11 +44,23 @@ entity libstored_variable is
 		data__in_we : in std_logic := '0';
 
 		sync_in_commit : in std_logic := '1';
+		sync_out_snapshot : in std_logic := '1';
 
 		-- Input of sync messages.
+		-- When sync_in_buffer is true, this variable takes
+		-- the first DATA_LENGTH bits and forwards the rest.
+		-- Otherwise, it expects a Update message header (key/size),
+		-- and either consumes or forwards the message.
 		sync_in_data : in std_logic_vector(7 downto 0) := (others => '-');
 		sync_in_last : in std_logic := '-';
 		sync_in_valid : in std_logic := '0';
+		sync_in_buffer : in std_logic := '0';
+
+		-- Unhandled sync messages, for daisy chaining.
+		sync_in_data_next : out std_logic_vector(7 downto 0) := (others => '-');
+		sync_in_last_next : out std_logic := '-';
+		sync_in_valid_next : out std_logic := '0';
+		sync_in_buffer_next : out std_logic := '0';
 
 		-- Sync messages generated (or forwarded) by this variable.
 		sync_out_len : out std_logic_vector(LEN_LENGTH - 1 downto 0);
