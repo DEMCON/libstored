@@ -35,11 +35,13 @@ Store objects\par\pard\plain
 \clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx5500
 \clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx6700
 \clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx7900
-\clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx8700\i
+\clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx8700
+\clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx9500\i
 Name\cell
 Type\cell
 Init\cell
 \qr Offset / function\cell
+AXI\cell
 Size\cell\row\pard\plain
 {%- for o in store.objects|sort(attribute='name') -%}
 \trowd\trgaph120\trkeep
@@ -48,21 +50,24 @@ Size\cell\row\pard\plain
 \clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx6700
 \clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx7900
 \clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx8700
+\clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx9500
 {{o.name|rtfstring}}\cell
 {%    if o is function %}
 ({{o.type}}{% if o is blob %}:{{o.size}}{% endif %})\cell
 \cell
 \qr {{o.f}}\cell
 \cell
+\cell
 {%    else %}
 {{o.type}}{% if o is blob %}:{{o.size}}{% endif %}\cell
 {% if o.init == None %}0{% else %}{{o.init}}{% endif %}\cell
 \qr {{o.offset}}\cell
+{% if o.axi != None %}{{'0x%x'|format(o.axi)}}{% endif %}\cell
 {{o.size}}\cell
 {%-   endif -%}
 \row\pard
 {%- endfor -%}
-\parb\keepn\sb240\plain\b
+\pard\keepn\sb240\plain\b
 Store buffer\par\pard\plain
 {%- set ns = namespace(nextOffset=0) -%}
 \trowd\trgaph120\trhdr\trkeep
@@ -92,6 +97,27 @@ Name\cell\row\pard\plain
 {{o.size}}\cell\pard
 {{o.name|rtfstring}}\cell\row
 {%- endif -%}
+{%- endfor -%}
+\pard\keepn\sb240\plain\b
+AXI interface\par\pard\plain\trowd\trgaph120\trhdr\trkeep
+\clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx1000
+\clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx2000
+\clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx3000
+\clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx7000\i\qr
+Offset\cell
+Size\cell\pard
+Type\cell
+Name\cell\row\pard\plain
+{%- for o in store.objects|rejectattr('axi','none')|sort(attribute='axi') -%}
+\trowd\trgaph120\trkeep
+\clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx1000
+\clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx2000
+\clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx3000
+\clbrdrt\brdrs\clbrdrl\brdrs\clbrdrb\brdrs\clbrdrr\brdrs\cellx7000\qr
+{{'0x%x'|format(o.axi)}}\cell
+{{o.size}}\cell\pard
+{{o.type}}\cell
+{{o.name|rtfstring}}\cell\row
 {%- endfor -%}
 \par
 }

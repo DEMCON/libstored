@@ -22,6 +22,8 @@ import argparse
 import jinja2
 import re
 import hashlib
+import struct
+from functools import reduce
 
 import sys
 import os
@@ -117,26 +119,56 @@ def vhdltype(o):
     }[o.type]
 
 def vhdlinit(o):
+    b = lambda: 'x"' + (('00' * o.size) + reduce(lambda a, b: '%02x' % b + a, o.encode(o.init, False)))[-o.size * 2:] + '"'
+
+    b = None
+    if o.init != None:
+        b = ('00' * o.size)
+        b += reduce(lambda a, b: a + ('%02x' % b), o.encode(o.init, False), '')
+        b = f'x"{b[-o.size * 2:]}"'
+
     return {
-            'bool': "'0'",
-            'int8': "(7 downto 0 => '0')",
-            'uint8': "(7 downto 0 => '0')",
-            'int16': "(15 downto 0 => '0')",
-            'uint16': "(15 downto 0 => '0')",
-            'int32': "(31 downto 0 => '0')",
-            'uint32': "(31 downto 0 => '0')",
-            'int64': "(63 downto 0 => '0')",
-            'uint64': "(63 downto 0 => '0')",
-            'float': "(31 downto 0 => '0')",
-            'double': "(64 downto 0 => '0')",
-            'ptr32': "(31 downto 0 => '0')",
-            'ptr64': "(64 downto 0 => '0')",
-            'blob': "(%d downto 0 => '0')" % (o.size - 1),
-            'string': "(%d downto 0 => '0')" % (o.size - 1),
+            'bool': "'0'" if o.init == None or b == 'x"00"' else "'1'",
+            'int8': "(7 downto 0 => '0')" if o.init == None else b,
+            'uint8': "(7 downto 0 => '0')" if o.init == None else b,
+            'int16': "(15 downto 0 => '0')" if o.init == None else b,
+            'uint16': "(15 downto 0 => '0')" if o.init == None else b,
+            'int32': "(31 downto 0 => '0')" if o.init == None else b,
+            'uint32': "(31 downto 0 => '0')" if o.init == None else b,
+            'int64': "(63 downto 0 => '0')" if o.init == None else b,
+            'uint64': "(63 downto 0 => '0')" if o.init == None else b,
+            'float': "(31 downto 0 => '0')" if o.init == None else b,
+            'double': "(64 downto 0 => '0')" if o.init == None else b,
+            'ptr32': "(31 downto 0 => '0')" if o.init == None else b,
+            'ptr64': "(64 downto 0 => '0')" if o.init == None else b,
+            'blob': "(%d downto 0 => '0')" % (o.size * 8 - 1) if o.init == None else b,
+            'string': "(%d downto 0 => '0')" % (o.size * 8 - 1) if o.init == None else b,
     }[o.type]
 
 def vhdlstr(s):
     return '(' + ', '.join(map(lambda c: 'x"%02x"' % c, s.encode())) + ')'
+
+def vhdlkey(o, store, littleEndian):
+    key = struct.pack(('<' if littleEndian else '>') + 'I', o.offset)
+    if store.buffer.size >= 0x1000000:
+        pass
+    elif store.buffer.size >= 0x10000:
+        if littleEndian:
+            key = key[:3]
+        else:
+            key = key[1:]
+    elif store.buffer.size >= 0x100:
+        if littleEndian:
+            key = key[:2]
+        else:
+            key = key[2:]
+    else:
+        if littleEndian:
+            key = key[:1]
+        else:
+            key = key[3:]
+
+    return 'x"' + ''.join(map(lambda x: '%02x' % x, key)) + '"'
 
 def carray(a):
     s = ''
@@ -224,11 +256,12 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.filters['vhdltype'] = vhdltype
     jenv.filters['vhdlinit'] = vhdlinit
     jenv.filters['vhdlstr'] = vhdlstr
+    jenv.filters['vhdlkey'] = vhdlkey
     jenv.filters['cname'] = types.cname
     jenv.filters['carray'] = carray
     jenv.filters['len'] = len
-    jenv.filters['hasfunction' ] = has_function
-    jenv.filters['rtfstring' ] = rtfstring
+    jenv.filters['hasfunction'] = has_function
+    jenv.filters['rtfstring'] = rtfstring
     jenv.tests['variable'] = is_variable
     jenv.tests['function'] = is_function
     jenv.tests['blob'] = is_blob

@@ -395,6 +395,7 @@ class Store(object):
         self.generateBuffer()
         self.generateDirectory()
         self.extractArrayAccessors()
+        self.generateAxiAddresses()
 
     def flattenScope(self, scope):
         res = []
@@ -485,6 +486,15 @@ class Store(object):
         # Save the grouped objects, which will later be used to generate nested switch statements.
         self.arrays = [ArrayLookup(x) for x in grouped_objects.values()]
 
+    def generateAxiAddresses(self):
+        addr = 0
+        for o in self.objects:
+            if isinstance(o, Variable):
+                assert(o.len == 1)
+                if o.size <= 4:
+                    o.axi = addr
+                    addr += 4
+
 
 class Object(object):
     def __init__(self, parent, name, len = 0):
@@ -532,6 +542,7 @@ class Variable(Object):
             self.size = type.blob.size
             self.init = None
             self.len = type.blob.len
+        self.axi = None
 
     def isBlob(self):
         return self.type in ['blob', 'string']
@@ -573,6 +584,7 @@ class Function(Object):
         super().__init__(self, name, len)
         self.parent = parent
         self.offset = self.f
+        self.axi = None
         if type.fixed != None:
             self.type = type.fixed.type
             self.size = csize(type.fixed.type)
