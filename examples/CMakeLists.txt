@@ -16,6 +16,7 @@ add_subdirectory(5_debug)
 add_subdirectory(6_hooks)
 add_subdirectory(7_protocol)
 add_subdirectory(8_sync)
+add_subdirectory(9_fpga)
 add_subdirectory(terminal)
 
 if(LIBSTORED_HAVE_LIBZMQ)
