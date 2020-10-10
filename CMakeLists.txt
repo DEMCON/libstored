@@ -72,6 +72,7 @@ function(libstored_generate target) # add all other models as varargs
         DEPENDS ${LIBSTORED_SOURCE_DIR}/include/libstored/store.h.tmpl
         DEPENDS ${LIBSTORED_SOURCE_DIR}/src/store.cpp.tmpl
         DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.rtf.tmpl
+        DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.csv.tmpl
         DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store.vhd.tmpl
         DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store_pkg.vhd.tmpl
         DEPENDS ${LIBSTORED_SOURCE_DIR}/CMakeLists.txt.tmpl

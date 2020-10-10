@@ -187,6 +187,17 @@ def escapebs(s):
 def rtfstring(s):
     return re.sub(r'([\\{}])', r'\\\1', s)
 
+def csvstring(s):
+    needEscape = False
+    for c in ['\r','\n','"',',']:
+        if c in s:
+            needEscape = True
+
+    if not needEscape:
+        return s
+
+    return '"' + re.sub(r'"', r'""', s) + '"'
+
 def model_name(model_file):
     return os.path.splitext(os.path.split(model_file)[1])[0]
 
@@ -262,6 +273,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.filters['len'] = len
     jenv.filters['hasfunction'] = has_function
     jenv.filters['rtfstring'] = rtfstring
+    jenv.filters['csvstring'] = csvstring
     jenv.tests['variable'] = is_variable
     jenv.tests['function'] = is_function
     jenv.tests['blob'] = is_blob
@@ -270,6 +282,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
     store_h_tmpl = jenv.get_template('store.h.tmpl')
     store_cpp_tmpl = jenv.get_template('store.cpp.tmpl')
     store_rtf_tmpl = jenv.get_template('store.rtf.tmpl')
+    store_csv_tmpl = jenv.get_template('store.csv.tmpl')
     store_vhd_tmpl = jenv.get_template('store.vhd.tmpl')
     store_pkg_vhd_tmpl = jenv.get_template('store_pkg.vhd.tmpl')
 
@@ -281,6 +294,9 @@ def generate_store(model_file, output_dir, littleEndian=True):
 
     with open(os.path.join(output_dir, 'doc', model_name(model_file) + '.rtf'), 'w') as f:
         f.write(store_rtf_tmpl.render(store=model))
+
+    with open(os.path.join(output_dir, 'doc', model_name(model_file) + '.csv'), 'w') as f:
+        f.write(store_csv_tmpl.render(store=model))
 
     with open(os.path.join(output_dir, 'rtl', model_name(model_file) + '.vhd'), 'w') as f:
         f.write(store_vhd_tmpl.render(store=model))
