@@ -18,10 +18,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity 9_fpga is
+entity example_9_fpga is
 end entity;
 
-architecture rtl of 9_fpga is
+architecture rtl of example_9_fpga is
 	constant SYSTEM_CLK_FREQ : integer := 100e6;
 
 	signal clk, rstn : std_logic;

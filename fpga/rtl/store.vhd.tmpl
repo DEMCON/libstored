@@ -20,7 +20,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use ieee.math_real.all;
 
 use work.libstored_pkg.all;
 use work.{{store.name}}_pkg;
@@ -60,10 +59,14 @@ entity {{store.name}}_hdl is
 {% for o in store.objects %}
 {%   if o is variable %}
 		-- {{o}}
-		{{o.cname}}__out : out {{store.name}}_pkg.{{o.cname}}__type;
-		{{o.cname}}__out_changed : out std_logic;
-		{{o.cname}}__in : in {{store.name}}_pkg.{{o.cname}}__type := {{store.name}}_pkg.{{o.cname|upper}}__INIT;
-		{{o.cname}}__in_we : in std_logic := '0';
+		\{{o.cname}}__out\ : out {{store.name}}_pkg.\{{o.cname}}__type\;
+		\{{o.cname}}__out_changed\ : out std_logic;
+{%     if o|vhdltype == 'std_logic' %}
+		\{{o.cname}}__in\ : in {{store.name}}_pkg.\{{o.cname}}__type\ := '-';
+{%     else %}
+		\{{o.cname}}__in\ : in {{store.name}}_pkg.\{{o.cname}}__type\ := (others => '-');
+{%     endif %}
+		\{{o.cname}}__in_we\ : in std_logic := '0';
 
 {%   endif %}
 {% endfor %}
@@ -118,7 +121,7 @@ entity {{store.name}}_hdl is
 		s_axi_wready  : out std_logic;
 		s_axi_wvalid  : in  std_logic := '0'
 	);
-end {{store.name}};
+end {{store.name}}_hdl;
 
 --! \brief Default architecture of #{{store.name}}_hdl.
 architecture rtl of {{store.name}}_hdl is
@@ -142,7 +145,7 @@ architecture rtl of {{store.name}}_hdl is
 
 	type var_sync_len_t is array(0 to NUM_VARIABLES) of std_logic_vector(LEN_LENGTH - 1 downto 0);
 	type var_sync_data_t is array(0 to NUM_VARIABLES) of std_logic_vector(7 downto 0);
-	subtype var_sync_flag_t is array(0 to NUM_VARIABLES) of std_logic;
+	type var_sync_flag_t is array(0 to NUM_VARIABLES) of std_logic;
 
 	signal var_sync_in_data : var_sync_data_t;
 	signal var_sync_in_last : var_sync_flag_t;
@@ -163,14 +166,16 @@ architecture rtl of {{store.name}}_hdl is
 	signal sync_in_valid_next_i : std_logic;
 	signal sync_in_accept_next_i : std_logic;
 	signal sync_in_data_next_i : std_logic_vector(8 downto 0);
-	signal sync_in_r : std_logic_vector(8 downto 0);
+	signal sync_in_i, sync_in_r : std_logic_vector(8 downto 0);
+
+	signal sync_out_accept_prev_i : std_logic;
 
 	signal var_sync_out_len_last, sync_out_len_i : std_logic_vector(LEN_LENGTH - 1 downto 0);
 	signal var_sync_out_data_last, sync_out_data_i : std_logic_vector(7 downto 0);
 	signal var_sync_out_last_last, sync_out_last_i : std_logic;
 	signal var_sync_out_valid_last, sync_out_valid_i : std_logic;
 	signal var_sync_out_accept_last, sync_out_accept_i : std_logic;
-	signal sync_out_r : std_logic_vector(LEN_LENGTH + 8 downto 0);
+	signal sync_out_i, sync_out_r : std_logic_vector(LEN_LENGTH + 8 downto 0);
 
 	constant id_in : std_logic_vector(15 downto 0) :=
 {% if store.littleEndian %}
@@ -183,7 +188,7 @@ architecture rtl of {{store.name}}_hdl is
 
 	constant NUM_AXI_REGS : natural := {{store.objects|rejectattr('axi','none')|list|len}};
 	type axi_data_t is array(0 to NUM_AXI_REGS - 1) of std_logic_vector(31 downto 0);
-	type axi_flag_t is array(to to NUM_AXI_REGS - 1) of std_logic;
+	type axi_flag_t is array(0 to NUM_AXI_REGS - 1) of std_logic;
 	signal axi_data_rd : axi_data_t;
 	signal axi_data_wr : std_logic_vector(31 downto 0);
 	signal axi_we : axi_flag_t;
@@ -216,22 +221,22 @@ begin
 {% set ns = namespace(var_i=0, offset_next=0) %}
 {% for o in store.objects|sort(attribute='offset') %}
 {%   if o is variable %}
-	{{o.cname}}__g : if true generate
+	\{{o.cname}}__g\ : if true generate
 {%       if o.axi != None %}
 		constant AXI_REG : natural := {{(o.axi / 4)|int}};
 {%       endif %}
-		signal data__out_i : std_logic_vector({{o.size * 8 - 1}} downto 0);
-		signal data__in_i : std_logic_vector({{o.size * 8 - 1}} downto 0);
-		signal data__in_we_i : std_logic;
+		signal data_out_i : std_logic_vector({{o.size * 8 - 1}} downto 0);
+		signal data_in_i : std_logic_vector({{o.size * 8 - 1}} downto 0);
+		signal data_in_we_i : std_logic;
 	begin
-		{{o.cname}}__inst : entity work.libstored_variable
+		\{{o.cname}}__inst\ : entity work.libstored_variable
 			generic map (
 				SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ,
 				LEN_LENGTH => LEN_LENGTH,
 {%     if o|vhdltype == 'std_logic' %}
-				DATA_INIT => (7 downto 1 => '0') & {{store.name}}_pkg.{{o.cname|upper}}__INIT,
+				DATA_INIT => (7 downto 1 => '0') & {{store.name}}_pkg.\{{o.cname|upper}}__INIT\,
 {%     else %}
-				DATA_INIT => {{store.name}}_pkg.{{o.cname|upper}}__INIT,
+				DATA_INIT => {{store.name}}_pkg.\{{o.cname|upper}}__INIT\,
 {%     endif %}
 				KEY => {{o|vhdlkey(store=store, littleEndian=store.littleEndian)}},
 				BUFFER_PADDING_BEFORE => {{o.offset - ns.offset_next}},
@@ -244,10 +249,10 @@ begin
 				clk => clk,
 				rstn => rstn,
 
-				data__out => data__out_i,
-				data__out_changed => {{o.cname}}__out_changed,
-				data__in => data__in_i,
-				data__in_we => data__in_we_i,
+				data_out => data_out_i,
+				data_out_changed => \{{o.cname}}__out_changed\,
+				data_in => data_in_i,
+				data_in_we => data_in_we_i,
 
 				sync_in_commit => sync_in_commit_delay,
 				sync_out_snapshot => sync_out_snapshot_delay,
@@ -275,37 +280,37 @@ begin
 				sync_out_accept_prev => var_sync_out_accept({{ns.var_i}})
 			);
 
-		data__in_we_i <=
+		data_in_we_i <=
 {%       if o.axi != None %}
 			axi_we(AXI_REG) or
 {%       endif %}
-			{{o.cname}}__in_we;
+			\{{o.cname}}__in_we\;
 
 {%     if o|vhdltype == 'std_logic' %}
-		{{o.cname}}__out <=
+		\{{o.cname}}__out\ <=
 --pragma translate_off
-			'x' if is_x(data__out_i) else
+			'x' when is_x(data_out_i) else
 --pragma translate_on
-			'1' if data__out_i /= x"00" else
+			'1' when data_out_i /= x"00" else
 			'0';
-		data__in_i <= "0000000" & {{o.cname}}__in;
+		data_in_i <= "0000000" & \{{o.cname}}__in\;
 {%       if o.axi != None %}
-		axi_data_rd(AXI_REG) <= (31 downto 8 => '0') & data__out_i;
+		axi_data_rd(AXI_REG) <= (31 downto 8 => '0') & data_out_i;
 {%       endif %}
 {%     else %}
-		{{o.cname}}__out <= {{store.name}}_pkg.{{o.cname}}__type(data__out_i);
+		\{{o.cname}}__out\ <= {{store.name}}_pkg.\{{o.cname}}__type\(data_out_i);
 
 		data_in_i <=
 {%       if o.axi != None %}
-			axi_data_write if {{o.cname}}__in_we = '0' and axi_we(AXI_REG) = '1' else
+			axi_data_wr when \{{o.cname}}__in_we\ = '0' and axi_we(AXI_REG) = '1' else
 {%       endif %}
-			std_logic_vector({{o.cname}}__in);
+			std_logic_vector(\{{o.cname}}__in\);
 
 {%       if o.axi != None %}
-		process(data__out_i)
+		process(data_out_i)
 		begin
 			axi_data_rd(AXI_REG) <= (others => '0');
-			axi_data_rd(AXI_REG)(data__out_i'range) <= data__out_i;
+			axi_data_rd(AXI_REG)(data_out_i'range) <= data_out_i;
 		end process;
 {%       endif %}
 {%     endif %}
@@ -332,7 +337,7 @@ begin
 			STATE_UPDATE_WAIT, STATE_UPDATE_CMD, STATE_UPDATE_ID1, STATE_UPDATE_ID2,
 			STATE_UPDATE_PAYLOAD, STATE_DROP, STATE_DONE, STATE_PASSTHROUGH);
 
-		constant SYNC_OUT_INTERVAL_clk : natural := natural(ceil(SYNC_OUT_INTERVAL_s / real(SYSTEM_CLK_FREQ)));
+		constant SYNC_OUT_INTERVAL_clk : natural := ceil(SYNC_OUT_INTERVAL_s / real(SYSTEM_CLK_FREQ));
 
 		type r_t is record
 			state : state_t;
@@ -340,13 +345,13 @@ begin
 			id : std_logic_vector(id_out'range);
 			passthrough : std_logic;
 			passthrough_last : std_logic;
-			cnt : natural 0 to RETIMING_DEPTH;
+			cnt : natural range 0 to RETIMING_DEPTH;
 		end record;
 
 		signal r, r_in : r_t;
 	begin
 
-		process(r, rstn, sync_out_valid_prev, sync_out_last_prev, sync_out_last_accept_i,
+		process(r, rstn, sync_out_valid_prev, sync_out_last_prev, sync_out_accept_prev_i,
 			sync_out_trigger, id_out_valid, var_sync_out_valid_last, var_sync_out_last_last,
 			var_sync_out_accept_first)
 			variable v : r_t;
@@ -360,14 +365,14 @@ begin
 				v.cnt := r.cnt - 1;
 			end if;
 
-			v.passthrough := r.passthrough_last = '0' and (r.passthrough = '1' or sync_out_valid_prev = '1');
-			v.passthrough_last := sync_out_valid_prev = '1' and sync_out_last_prev = '1' and sync_out_last_accept_i = '1';
+			v.passthrough := not r.passthrough_last and (r.passthrough or sync_out_valid_prev);
+			v.passthrough_last := sync_out_valid_prev and sync_out_last_prev and sync_out_accept_prev_i;
 
 			case r.state is
 			when STATE_RESET =>
 				v.state := STATE_IDLE;
 			when STATE_IDLE =>
-				if ((SYNC_OUT_INTERVAL_s > 0 and r.t = 0) or sync_out_trigger = '1') and sync_out_hold = '0' then
+				if ((SYNC_OUT_INTERVAL_s > 0.0 and r.t = 0) or sync_out_trigger = '1') and sync_out_hold = '0' then
 					if id_out_valid = '0' then
 						v.state := STATE_HELLO;
 					else
@@ -382,7 +387,7 @@ begin
 			when STATE_HELLO_CMD =>
 				v.passthrough := '0';
 				if sync_out_accept_i = '1' then
-					v.state := STATE_HELLO_HASH
+					v.state := STATE_HELLO_HASH;
 					v.cnt := HASH'length;
 				end if;
 			when STATE_HELLO_HASH =>
@@ -439,7 +444,7 @@ begin
 			when STATE_UPDATE_WAIT =>
 				if v.passthrough = '0' then
 					v.state := STATE_UPDATE_CMD;
-				end i;
+				end if;
 			when STATE_UPDATE_CMD =>
 				v.passthrough := '0';
 				if var_sync_out_valid_last = '1' and sync_out_accept_i = '1' then
@@ -457,7 +462,7 @@ begin
 				end if;
 			when STATE_UPDATE_PAYLOAD =>
 				v.passthrough := '0';
-				if var_sync_out_valid_last = '1' and var_sync_out_last_last = '1' and sync_out_accept_i = '1'
+				if var_sync_out_valid_last = '1' and var_sync_out_last_last = '1' and sync_out_accept_i = '1' then
 					v.state := STATE_DONE;
 				end if;
 			when STATE_DROP =>
@@ -498,23 +503,23 @@ begin
 				'0' when others;
 
 		var_sync_out_len(0) <=
-			(var_sync_out_len(0)'high downto 1 => '0', 0 => '1')
+			(var_sync_out_len(0)'high downto 1 => '0') & '1'
 --pragma translate_off
-				if r.state = STATE_TRIGGER else (others => '-')
+				when r.state = STATE_TRIGGER else (others => '-')
 --pragma translate_on
 			;
 
 		var_sync_out_data(0) <=
 			MSG_UPDATE
 --pragma translate_off
-				if r.state = STATE_TRIGGER else (others => '-')
+				when r.state = STATE_TRIGGER else (others => '-')
 --pragma translate_on
 			;
 
 		var_sync_out_last(0) <=
 			'1'
 --pragma translate_off
-				if r.state = STATE_TRIGGER else '-'
+				when r.state = STATE_TRIGGER else '-'
 --pragma translate_on
 			;
 
@@ -525,11 +530,11 @@ begin
 
 		with r.state select
 			sync_out_len_i <=
-				std_logic_vector(to_unsigned(hash'len + 4, LEN_LENGTH))
+				std_logic_vector(to_unsigned(HASH'length + 4, LEN_LENGTH))
 					when STATE_HELLO_CMD | STATE_HELLO_HASH | STATE_HELLO_HASH_END |
 						STATE_HELLO_ID1 | STATE_HELLO_ID2,
 				std_logic_vector(to_unsigned(3, LEN_LENGTH))
-					when STATE_UPDATE_CMD | STATE_UPDATE_ID1 | STATE_UPDATE_CMD2,
+					when STATE_UPDATE_CMD | STATE_UPDATE_ID1 | STATE_UPDATE_ID2,
 				var_sync_out_len_last when STATE_UPDATE_PAYLOAD,
 				sync_out_len_prev when others;
 
@@ -582,7 +587,7 @@ begin
 		port map (
 			clk => clk,
 			rstn => rstn,
-			i => sync_out_last_i & sync_out_len_i & sync_out_data_i,
+			i => sync_out_i,
 			i_valid => sync_out_valid_i,
 			i_accept => sync_out_accept_i,
 			o => sync_out_r,
@@ -590,19 +595,20 @@ begin
 			o_accept => sync_out_accept
 		);
 
+	sync_out_i <= sync_out_last_i & sync_out_len_i & sync_out_data_i;
 	sync_out_len <= sync_out_r(LEN_LENGTH + 7 downto 8);
 	sync_out_data <= sync_out_r(7 downto 0);
 	sync_out_last <= sync_out_r(LEN_LENGTH + 8);
 
 	sync_in_g : if true generate
-		constant PIPE_LENGTH : natural := NUM_VARIBLES / 4 + 1; -- only one in four has buffers
+		constant PIPE_LENGTH : natural := NUM_VARIABLES / 4 + 1; -- only one in four has buffers
 
-		type state_t is (STATE_RESET, STATE_IDLE.
+		type state_t is (STATE_RESET, STATE_IDLE,
 			STATE_WELCOME, STATE_WELCOME_ID_IN1, STATE_WELCOME_ID_IN2, STATE_WELCOME_ID_OUT1,
 			STATE_WELCOME_ID_OUT2, STATE_WELCOME_BUFFER_WAIT, STATE_WELCOME_BUFFER,
 			STATE_UPDATE, STATE_UPDATE_ID_IN1, STATE_UPDATE_ID_IN2, STATE_UPDATE_PAYLOAD_WAIT,
 			STATE_UPDATE_PAYLOAD,
-			STATE_REPEAT, STATE_REPEAT_ID1, STATE_REPEAT_ID2, STATE_REPEATE_PASSTHROUGH,
+			STATE_REPEAT, STATE_REPEAT_ID1, STATE_REPEAT_ID2, STATE_PASSTHROUGH,
 			STATE_WAIT_PIPE, STATE_DONE, STATE_DROP
 			);
 		type r_t is record
@@ -610,8 +616,8 @@ begin
 			id_in : std_logic_vector(15 downto 0);
 			id_out : std_logic_vector(15 downto 0);
 			sync_buffer : std_logic;
-			cnt : natural range 0 to max(PIPE_LENGTH, RETIMING_DEPTH);
-		end record
+			cnt : natural range 0 to maximum(PIPE_LENGTH, RETIMING_DEPTH);
+		end record;
 
 		signal r, r_in : r_t;
 	begin
@@ -751,11 +757,11 @@ begin
 				end if;
 			when STATE_REPEAT_ID2 =>
 				if sync_in_accept_next_i = '1' then
-					v.state := STATE_REPEAT_ID2;
+					v.state := STATE_PASSTHROUGH;
 				end if;
 			when STATE_PASSTHROUGH =>
 				if sync_in_valid = '1' and sync_in_last = '1' and sync_in_accept_next_i = '1' then
-					v.state := IDLE;
+					v.state := STATE_IDLE;
 				end if;
 			when STATE_WAIT_PIPE =>
 				if v.cnt = 0 then
@@ -787,18 +793,18 @@ begin
 
 		var_sync_in_data(0) <=
 --pragma translate_off
-			(others => '-') if r.state /= STATE_UPDATE_PAYLOAD else
+			(others => '-') when r.state /= STATE_UPDATE_PAYLOAD else
 --pragma translate_on
 			sync_in_data;
 
 		var_sync_in_last(0) <=
 --pragma translate_off
-			'-' if r.state /= STATE_UPDATE_PAYLOAD else
+			'-' when r.state /= STATE_UPDATE_PAYLOAD else
 --pragma translate_on
 			sync_in_last;
 
 		var_sync_in_valid(0) <=
-			sync_in_valid if r.state = STATE_UPDATE_PAYLOAD else
+			sync_in_valid when r.state = STATE_UPDATE_PAYLOAD else
 			'0';
 
 		var_sync_in_buffer(0) <= r.sync_buffer;
@@ -815,18 +821,18 @@ begin
 				'0' when others;
 
 		sync_in_data_next_i <=
-			sync_in_data if r.state = STATE_PASSTHROUGH else
-			MSG_WELCOME if r.state = STATE_REPEAT and r.sync_buffer = '1' else
-			MSG_UPDATE if r.state = STATE_REPEAT and r.sync_buffer = '0' else
-			r.id(15 downto 8) if r.state = STATE_REPEAT_ID1 else
-			r.id(7 downto 0) if r.state = STATE_REPEAT_ID2 else
+			sync_in_data when r.state = STATE_PASSTHROUGH else
+			MSG_WELCOME when r.state = STATE_REPEAT and r.sync_buffer = '1' else
+			MSG_UPDATE when r.state = STATE_REPEAT and r.sync_buffer = '0' else
+			r.id_in(15 downto 8) when r.state = STATE_REPEAT_ID1 else
+			r.id_in(7 downto 0) when r.state = STATE_REPEAT_ID2 else
 			(others => '-');
 
 		with r.state select
 			sync_in_accept <=
 				sync_in_accept_next_i when STATE_PASSTHROUGH,
 				'1' when STATE_WELCOME | STATE_WELCOME_ID_IN1 | STATE_WELCOME_ID_IN2 | STATE_WELCOME_ID_OUT1 | STATE_WELCOME_ID_OUT2 | STATE_WELCOME_BUFFER,
-				'1' when STATE_UPDATE | STATE_UPDATE_ID1 | STATE_UPDATE_ID2 | STATE_UDPATE_PAYLOAD,
+				'1' when STATE_UPDATE | STATE_UPDATE_ID_IN1 | STATE_UPDATE_ID_IN2 | STATE_UPDATE_PAYLOAD,
 				'1' when STATE_DROP,
 				'0' when others;
 
@@ -844,7 +850,7 @@ begin
 		port map (
 			clk => clk,
 			rstn => rstn,
-			i => sync_in_last_next_i & sync_in_data_next_i,
+			i => sync_in_i,
 			i_valid => sync_in_valid_next_i,
 			i_accept => sync_in_accept_next_i,
 			o => sync_in_r,
@@ -852,6 +858,7 @@ begin
 			o_accept => sync_in_accept_next
 		);
 
+	sync_in_i <= sync_in_last_next_i & sync_in_data_next_i;
 	sync_in_last_next <= sync_in_r(8);
 	sync_in_data_next <= sync_in_r(7 downto 0);
 
@@ -871,7 +878,7 @@ begin
 		signal r, r_in : r_t;
 	begin
 
-		process(r, rstn, s_axi_araddr, s_axi_arvalid, axi_data_r, s_axi_rready)
+		process(r, rstn, s_axi_araddr, s_axi_arvalid, axi_data_rd, s_axi_rready)
 			variable v : r_t;
 		begin
 			v := r;
@@ -886,7 +893,7 @@ begin
 				end if;
 			when STATE_READ =>
 				if to_integer(unsigned(r.addr(31 downto 2))) < axi_we'length then
-					v.data := axi_data_r(to_integer(unsigned(r.addr(31 downto 2))));
+					v.data := axi_data_rd(to_integer(unsigned(r.addr(31 downto 2))));
 				else
 					v.data := (others => '0');
 				end if;
@@ -922,7 +929,7 @@ begin
 
 		s_axi_rdata <=
 --pragma translate_off
-			(others => '-') if r.state /= STATE_READ_WAIT else
+			(others => '-') when r.state /= STATE_READ_WAIT else
 --pragma translate_on
 			r.data;
 
@@ -936,7 +943,7 @@ begin
 	end generate;
 
 	axi_write_g : if AXI_SLAVE generate
-		type state_t is (STATE_RESET, STATE_IDLE);
+		type state_t is (STATE_RESET, STATE_IDLE, STATE_WAIT_DATA, STATE_WAIT_ADDR, STATE_WRITE, STATE_DONE);
 		type r_t is record
 			state : state_t;
 			addr : std_logic_vector(31 downto 0);
@@ -961,7 +968,7 @@ begin
 					v.addr := s_axi_awaddr(31 downto 2) & "00";
 					v.data := s_axi_wdata;
 					v.state := STATE_WRITE;
-				if s_axi_awvalid = '1' then
+				elsif s_axi_awvalid = '1' then
 					v.addr := s_axi_awaddr(31 downto 2) & "00";
 					v.state := STATE_WAIT_DATA;
 				elsif s_axi_wvalid = '1' then
@@ -1018,13 +1025,13 @@ begin
 				'0' when others;
 
 		with r.state select
-			s_axi_wvalid <=
+			s_axi_wready <=
 				'1' when STATE_IDLE | STATE_WAIT_DATA,
 				'0' when others;
 
 		axi_data_wr <=
 --pragma translate_off
-			(others => '-') if r.state /= STATE_WRITE else
+			(others => '-') when r.state /= STATE_WRITE else
 --pragma translate_on
 			r.data;
 

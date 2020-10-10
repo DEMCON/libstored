@@ -20,7 +20,7 @@ use ieee.numeric_std.all;
 
 entity libstored_delay1 is
 	generic (
-		DELAY : natural := 1,
+		DELAY : natural := 1;
 		INIT : std_logic := '-'
 	);
 	port (
@@ -28,7 +28,7 @@ entity libstored_delay1 is
 		rstn : in std_logic;
 		i : in std_logic;
 		o : out std_logic
-	)
+	);
 end libstored_delay1;
 
 architecture rtl of libstored_delay1 is
@@ -40,8 +40,9 @@ begin
 			r <= i & r(0 to r'high - 1);
 
 			if rstn /= '1' then
-				r <= (others => INIT)
+				r <= (others => INIT);
 			end if;
+		end if;
 	end process;
 
 	o <= r(r'high);
@@ -56,7 +57,7 @@ use ieee.numeric_std.all;
 
 entity libstored_stream_buffer is
 	generic (
-		WIDTH : natural;
+		WIDTH : natural
 	);
 	port (
 		clk : in std_logic;
@@ -148,8 +149,8 @@ begin
 			'0' when others;
 
 --pragma translate_off
-	assert not(rising_edge(clk) and is_x(i_valid) report "Invalid i_valid" severity error;
-	assert not(rising_edge(clk) and is_x(o_accept) report "Invalid o_accept" severity error;
+	assert not(rising_edge(clk) and is_x(i_valid)) report "Invalid i_valid" severity error;
+	assert not(rising_edge(clk) and is_x(o_accept)) report "Invalid o_accept" severity error;
 --pragma translate_on
 
 end rtl;

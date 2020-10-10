@@ -19,5 +19,22 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 package libstored_pkg is
+	function maximum(constant a, b : integer) return integer;
+	function ceil(constant x : real) return integer;
 end libstored_pkg;
 
+package body libstored_pkg is
+	function maximum(constant a, b : integer) return integer is
+	begin
+		if a > b then
+			return a;
+		else
+			return b;
+		end if;
+	end function;
+
+	function ceil(constant x : real) return integer is
+	begin
+		return integer(x + 0.5);
+	end function;
+end package body;

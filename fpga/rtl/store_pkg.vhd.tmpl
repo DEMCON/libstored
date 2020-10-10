@@ -29,12 +29,12 @@ package {{store.name}}_pkg is
 {%   if o is variable %}
 	-- {{o}}
 {%     if o|vhdltype == 'std_logic' %}
-	constant {{o.cname|upper}}__LENGTH : natural := 1;
+	constant \{{o.cname|upper}}__LENGTH\ : natural := 1;
 {%     else %}
-	constant {{o.cname|upper}}__LENGTH : natural := {{o.size * 8}};
+	constant \{{o.cname|upper}}__LENGTH\ : natural := {{o.size * 8}};
 {%     endif %}
-	subtype {{o.cname}}__type is {{o|vhdltype}};
-	constant {{o.cname|upper}}__INIT : {{o.cname}}__type := {{o|vhdlinit}};
+	subtype \{{o.cname}}__type\ is {{o|vhdltype}};
+	constant \{{o.cname|upper}}__INIT\ : std_logic_vector := {{o|vhdlinit}};
 
 {%   endif %}
 {% endfor %}

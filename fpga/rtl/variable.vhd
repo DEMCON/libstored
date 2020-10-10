@@ -27,7 +27,7 @@ entity libstored_variable is
 		DATA_INIT : std_logic_vector;
 		KEY : std_logic_vector;
 		BUFFER_PADDING_BEFORE : natural := 0;
-		LITTLE_ENDIAN := boolean := true;
+		LITTLE_ENDIAN : boolean := true;
 		BLOB : boolean := false;
 		BUFFER_CHAIN : boolean := true;
 		SIMULATION : boolean := false
@@ -39,10 +39,10 @@ entity libstored_variable is
 		clk : in std_logic;
 		rstn : in std_logic;
 
-		data__out : out std_logic_vector(DATA_INIT'length - 1 downto 0);
-		data__out_changed : out std_logic;
-		data__in : in std_logic_vector(DATA_INIT'length - 1 downto 0) := (others => '-');
-		data__in_we : in std_logic := '0';
+		data_out : out std_logic_vector(DATA_INIT'length - 1 downto 0);
+		data_out_changed : out std_logic;
+		data_in : in std_logic_vector(DATA_INIT'length - 1 downto 0) := (others => '-');
+		data_in_we : in std_logic := '0';
 
 		sync_in_commit : in std_logic := '1';
 		sync_out_snapshot : in std_logic := '1';
@@ -84,8 +84,8 @@ architecture rtl of libstored_variable is
 	constant DATA_BYTES : natural := DATA_BITS / 8;
 	constant KEY_BYTES : natural := KEY'length / 8;
 
-	signal data__in_i, data, data_update, data_snapshot : std_logic_vector(DATA_INIT'length - 1 downto 0);
-	signal data__in_we_i, data__out_changed_i, data_snapshot_changed : std_logic;
+	signal data_in_i, data, data_update, data_snapshot : std_logic_vector(DATA_INIT'length - 1 downto 0);
+	signal data_in_we_i, data_out_changed_i, data_snapshot_changed : std_logic;
 
 	signal sync_in_data_next_i : std_logic_vector(7 downto 0);
 	signal sync_in_last_next_i : std_logic;
@@ -96,21 +96,21 @@ begin
 	process(clk)
 	begin
 		if rising_edge(clk) then
-			data__out_changed_i <= '0';
+			data_out_changed_i <= '0';
 			data_snapshot_changed <= '0';
 
 			if sync_out_snapshot = '1' then
 				data_snapshot <= data;
-				if data_snaphost /= data then
+				if data_snapshot /= data then
 					data_snapshot_changed <= '1';
 				end if;
 			end if;
 
-			if data__in_we_i = '1' then
-				data <= data__in_i;
+			if data_in_we_i = '1' then
+				data <= data_in_i;
 
-				if data /= data__in_i then
-					data__out_changed_i <= '1';
+				if data /= data_in_i then
+					data_out_changed_i <= '1';
 				end if;
 			end if;
 
@@ -121,25 +121,28 @@ begin
 		end if;
 	end process;
 
-	data__out <= data;
+	data_out <= data;
 
-	data__in_i <=
-		data_in if data__in_we = '1' else
+	data_in_i <=
+		data_in when data_in_we = '1' else
 		data_update
 --pragma translate_off
-			if sync_in_commit = '1' else (others => '-')
+			when sync_in_commit = '1' else (others => '-')
 --pragma translate_on
 			;
 
-	data__in_we_i <= data__in_we or sync_in_commit;
+	data_in_we_i <= data_in_we or sync_in_commit;
 
-	data__out_changed <= data__out_changed_i;
+	data_out_changed <= data_out_changed_i;
 
 	sync_in_g : if true generate
-		type state_t is (STATE_RESET, STATE_IDLE);
+		type state_t is (STATE_RESET, STATE_IDLE,
+			STATE_PADDING, STATE_BUFFER, STATE_BUFFER_PASSTHROUGH,
+			STATE_UPDATE, STATE_UPDATE_LEN, STATE_UPDATE_DATA, STATE_UPDATE_SKIP,
+			STATE_UPDATE_LEN_SKIP, STATE_UPDATE_DATA_SKIP);
 		type r_t is record
 			state : state_t;
-			cnt : natural range 0 to max(2**(KEY_BYTES * 8) - 1, max(DATA_BYTES, BUFFER_PADDING_BEFORE));
+			cnt : natural range 0 to maximum(2**(KEY_BYTES * 8) - 1, maximum(DATA_BYTES, BUFFER_PADDING_BEFORE));
 			data : std_logic_vector(DATA_BITS - 1 downto 0);
 			len : std_logic_vector(KEY_BYTES * 8 - 1 downto 0);
 			save : std_logic;
@@ -259,7 +262,7 @@ begin
 					end if;
 
 					if v.cnt = 0 then
-						v.cnt := to_integer(unsigend(v.len));
+						v.cnt := to_integer(unsigned(v.len));
 						v.state := STATE_UPDATE_DATA_SKIP;
 					end if;
 				end if;
