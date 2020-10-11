@@ -1,6 +1,6 @@
-Name,Type,Init,Offset / function,AXI,Size
-{% for o in store.objects|sort(attribute='name') -%}
-{{o.name|csvstring}},
+Name,C,Type,Init,Offset / function,AXI,Size
+{% for o in store.objects -%}
+{{o.name|csvstring}},{{o.cname}},
 {%-    if o is function -%}
 ({{o.type}}{% if o is blob %}:{{o.size}}{% endif %}),{{o.f}},,
 {%    else -%}
