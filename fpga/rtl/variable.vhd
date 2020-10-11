@@ -69,13 +69,15 @@ entity libstored_variable is
 		sync_out_last : out std_logic;
 		sync_out_valid : out std_logic;
 		sync_out_accept : in std_logic := '0';
+		sync_out_have_changes : out std_logic;
 
 		-- Sync messages generated (of forwarded) by another variable, for daisy chaining.
 		sync_out_len_prev : in std_logic_vector(LEN_LENGTH - 1 downto 0) := (others => '-');
 		sync_out_data_prev : in std_logic_vector(7 downto 0) := (others => '-');
 		sync_out_last_prev : in std_logic := '-';
 		sync_out_valid_prev : in std_logic := '0';
-		sync_out_accept_prev : out std_logic
+		sync_out_accept_prev : out std_logic;
+		sync_out_have_changes_prev : in std_logic := '0'
 	);
 end libstored_variable;
 
@@ -91,6 +93,8 @@ architecture rtl of libstored_variable is
 	signal sync_in_last_next_i : std_logic;
 	signal sync_in_valid_next_i : std_logic;
 	signal sync_in_buffer_next_i : std_logic;
+
+	signal sync_out_have_changes_i : std_logic;
 begin
 
 	process(clk)
@@ -134,6 +138,8 @@ begin
 	data_in_we_i <= data_in_we or sync_in_commit;
 
 	data_out_changed <= data_out_changed_i;
+
+	sync_out_have_changes_i <= data_snapshot_changed or sync_out_have_changes_prev;
 
 	sync_in_g : if true generate
 		type state_t is (STATE_RESET, STATE_IDLE,
@@ -337,9 +343,29 @@ begin
 		end generate;
 
 --pragma translate_off
-		assert not rising_edge(clk) and r.state /= STATE_IDLE and sync_in_commit = '1'
+		assert not (rising_edge(clk) and r.state /= STATE_IDLE and sync_in_commit = '1')
 			report "Sync commit while syncing" severity warning;
 --pragma translate_on
+	end generate;
+
+	sync_out_g : if true generate
+	begin
+		-- TODO
+
+		sync_out_buffer_g : if BUFFER_CHAIN generate
+		begin
+			process(clk)
+			begin
+				if rising_edge(clk) then
+					sync_out_have_changes <= sync_out_have_changes_i;
+				end if;
+			end process;
+		end generate;
+
+		sync_out_no_buffer_g : if BUFFER_CHAIN generate
+		begin
+			sync_out_have_changes <= sync_out_have_changes_i;
+		end generate;
 	end generate;
 
 --pragma translate_off

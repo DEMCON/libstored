@@ -19,6 +19,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 package libstored_pkg is
+	constant SIMULATION_SPEEDUP : real := 1.0e4;
+
 	function maximum(constant a, b : integer) return integer;
 	function ceil(constant x : real) return integer;
 end libstored_pkg;

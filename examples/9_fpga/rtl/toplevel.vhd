@@ -18,14 +18,33 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+use work.ExampleFpga_pkg;
+
+use work.libstored_tb_pkg.all;
+
 entity example_9_fpga is
 end entity;
 
-architecture rtl of example_9_fpga is
+architecture behav of example_9_fpga is
 	constant SYSTEM_CLK_FREQ : integer := 100e6;
 
 	signal clk, rstn : std_logic;
 	signal done : boolean;
+
+	signal \default_register__out\ : ExampleFpga_pkg.\default_register__type\;
+	signal \default_register__out_changed\ : std_logic;
+	signal \default_register__in\ : ExampleFpga_pkg.\default_register__type\;
+	signal \default_register__in_we\ : std_logic;
+
+	signal \initialized_register__out\ : ExampleFpga_pkg.\initialized_register__type\;
+	signal \initialized_register__out_changed\ : std_logic;
+	signal \initialized_register__in\ : ExampleFpga_pkg.\initialized_register__type\;
+	signal \initialized_register__in_we\ : std_logic;
+
+	signal \read_only_register__out\ : ExampleFpga_pkg.\read_only_register__type\;
+	signal \read_only_register__out_changed\ : std_logic;
+	signal \read_only_register__in\ : ExampleFpga_pkg.\read_only_register__type\;
+	signal \read_only_register__in_we\ : std_logic;
 begin
 
 	store_inst : entity work.ExampleFpga_hdl
@@ -35,7 +54,22 @@ begin
 		)
 		port map (
 			clk => clk,
-			rstn => rstn
+			rstn => rstn,
+
+			\default_register__out\ => \default_register__out\,
+			\default_register__out_changed\ => \default_register__out_changed\,
+			\default_register__in\ => \default_register__in\,
+			\default_register__in_we\ => \default_register__in_we\,
+
+			\initialized_register__out\ => \initialized_register__out\,
+			\initialized_register__out_changed\ => \initialized_register__out_changed\,
+			\initialized_register__in\ => \initialized_register__in\,
+			\initialized_register__in_we\ => \initialized_register__in_we\,
+
+			\read_only_register__out\ => \read_only_register__out\,
+			\read_only_register__out_changed\ => \read_only_register__out_changed\,
+			\read_only_register__in\ => \read_only_register__in\,
+			\read_only_register__in_we\ => \read_only_register__in_we\
 		);
 
 	process
@@ -60,4 +94,26 @@ begin
 		wait;
 	end process;
 
-end rtl;
+	process
+		variable test : test_t;
+	begin
+		\default_register__in_we\ <= '0';
+		\initialized_register__in_we\ <= '0';
+		\read_only_register__in_we\ <= '1';
+		\read_only_register__in\ <= x"12345678";
+
+		wait until rising_edge(clk) and rstn = '1';
+		wait until rising_edge(clk);
+		wait until rising_edge(clk);
+
+		test_init(test);
+
+		test_expect_eq(test, \read_only_register__out\, x"12345678");
+
+		test_finish(test);
+		wait for 1 us;
+		done <= true;
+		wait;
+	end process;
+
+end behav;

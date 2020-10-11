@@ -88,6 +88,12 @@ entity {{store.name}}_hdl is
 		sync_out_hold : in std_logic := '0';
 		--! \brief IRQ when there is an update message.
 		sync_out_irq : out std_logic;
+		--! \brief Flag to indicate that some variable has changed and needs to send an Update.
+		sync_out_have_changes : out std_logic;
+		--! \brief Flag to indicate that we are connected (after a successful Welcome).
+		sync_in_connected : out std_logic;
+		--! \brief Busy with processing sync in message.
+		sync_in_busy : out std_logic;
 
 		-- Sync messages generated (or forwarded) by this store.
 		sync_out_len : out std_logic_vector(LEN_LENGTH - 1 downto 0);
@@ -158,6 +164,7 @@ architecture rtl of {{store.name}}_hdl is
 	signal var_sync_out_valid : var_sync_flag_t;
 	signal var_sync_out_accept : var_sync_flag_t;
 	signal var_sync_out_accept_first : std_logic;
+	signal var_sync_out_have_changes : var_sync_flag_t;
 
 	signal sync_in_commit, sync_in_commit_delay : std_logic;
 	signal sync_out_snapshot, sync_out_snapshot_delay : std_logic;
@@ -165,7 +172,7 @@ architecture rtl of {{store.name}}_hdl is
 	signal sync_in_last_next_i : std_logic;
 	signal sync_in_valid_next_i : std_logic;
 	signal sync_in_accept_next_i : std_logic;
-	signal sync_in_data_next_i : std_logic_vector(8 downto 0);
+	signal sync_in_data_next_i : std_logic_vector(7 downto 0);
 	signal sync_in_i, sync_in_r : std_logic_vector(8 downto 0);
 
 	signal sync_out_accept_prev_i : std_logic;
@@ -176,6 +183,7 @@ architecture rtl of {{store.name}}_hdl is
 	signal var_sync_out_valid_last, sync_out_valid_i : std_logic;
 	signal var_sync_out_accept_last, sync_out_accept_i : std_logic;
 	signal sync_out_i, sync_out_r : std_logic_vector(LEN_LENGTH + 8 downto 0);
+	signal var_sync_out_have_changes_last : std_logic;
 
 	constant id_in : std_logic_vector(15 downto 0) :=
 {% if store.littleEndian %}
@@ -272,12 +280,14 @@ begin
 				sync_out_last => var_sync_out_last({{ns.var_i + 1}}),
 				sync_out_valid => var_sync_out_valid({{ns.var_i + 1}}),
 				sync_out_accept => var_sync_out_accept({{ns.var_i + 1}}),
+				sync_out_have_changes => var_sync_out_have_changes({{ns.var_i + 1}}),
 
 				sync_out_len_prev => var_sync_out_len({{ns.var_i}}),
 				sync_out_data_prev => var_sync_out_data({{ns.var_i}}),
 				sync_out_last_prev => var_sync_out_last({{ns.var_i}}),
 				sync_out_valid_prev => var_sync_out_valid({{ns.var_i}}),
-				sync_out_accept_prev => var_sync_out_accept({{ns.var_i}})
+				sync_out_accept_prev => var_sync_out_accept({{ns.var_i}}),
+				sync_out_have_changes_prev => var_sync_out_have_changes({{ns.var_i}})
 			);
 
 		data_in_we_i <=
@@ -327,6 +337,7 @@ begin
 	var_sync_out_valid_last <= var_sync_out_valid(var_sync_out_valid'high);
 	var_sync_out_accept(var_sync_out_len'high) <= var_sync_out_accept_last;
 	var_sync_out_accept_first <= var_sync_out_accept(0);
+	var_sync_out_have_changes_last <= var_sync_out_have_changes(var_sync_out_have_changes'high);
 
 	sync_out_g : if true generate
 		type state_t is (
@@ -337,7 +348,23 @@ begin
 			STATE_UPDATE_WAIT, STATE_UPDATE_CMD, STATE_UPDATE_ID1, STATE_UPDATE_ID2,
 			STATE_UPDATE_PAYLOAD, STATE_DROP, STATE_DONE, STATE_PASSTHROUGH);
 
-		constant SYNC_OUT_INTERVAL_clk : natural := ceil(SYNC_OUT_INTERVAL_s / real(SYSTEM_CLK_FREQ));
+		function compute_interval_clk(constant dt_s : real) return natural is
+			variable v_dt_s : real;
+		begin
+			if dt_s = 0.0 then
+				return 0;
+			end if;
+
+			v_dt_s := dt_s;
+
+			if SIMULATION then
+				v_dt_s := v_dt_s / SIMULATION_SPEEDUP;
+			end if;
+
+			return ceil(v_dt_s * real(SYSTEM_CLK_FREQ));
+		end function;
+
+		constant SYNC_OUT_INTERVAL_clk : natural := compute_interval_clk(SYNC_OUT_INTERVAL_s);
 
 		type r_t is record
 			state : state_t;
@@ -345,7 +372,7 @@ begin
 			id : std_logic_vector(id_out'range);
 			passthrough : std_logic;
 			passthrough_last : std_logic;
-			cnt : natural range 0 to RETIMING_DEPTH;
+			cnt : natural range 0 to maximum(RETIMING_DEPTH, HASH'length);
 		end record;
 
 		signal r, r_in : r_t;
@@ -353,7 +380,7 @@ begin
 
 		process(r, rstn, sync_out_valid_prev, sync_out_last_prev, sync_out_accept_prev_i,
 			sync_out_trigger, id_out_valid, var_sync_out_valid_last, var_sync_out_last_last,
-			var_sync_out_accept_first)
+			var_sync_out_accept_first, var_sync_out_have_changes_last)
 			variable v : r_t;
 		begin
 			v := r;
@@ -375,7 +402,7 @@ begin
 				if ((SYNC_OUT_INTERVAL_s > 0.0 and r.t = 0) or sync_out_trigger = '1') and sync_out_hold = '0' then
 					if id_out_valid = '0' then
 						v.state := STATE_HELLO;
-					else
+					elsif var_sync_out_have_changes_last = '1' then
 						v.state := STATE_SNAPSHOT;
 						v.id := id_out;
 					end if;
@@ -388,7 +415,7 @@ begin
 				v.passthrough := '0';
 				if sync_out_accept_i = '1' then
 					v.state := STATE_HELLO_HASH;
-					v.cnt := HASH'length;
+					v.cnt := HASH'length - 1;
 				end if;
 			when STATE_HELLO_HASH =>
 				v.passthrough := '0';
@@ -494,6 +521,7 @@ begin
 		begin
 			if rising_edge(clk) then
 				r <= r_in;
+				sync_out_have_changes <= var_sync_out_have_changes_last;
 			end if;
 		end process;
 
@@ -541,7 +569,7 @@ begin
 		with r.state select
 			sync_out_data_i <=
 				MSG_HELLO when STATE_HELLO_CMD,
-				HASH(r.cnt) when STATE_HELLO_HASH,
+				HASH(HASH'high - r.cnt) when STATE_HELLO_HASH,
 				(others => '0') when STATE_HELLO_HASH_END,
 				id_in(15 downto 8) when STATE_HELLO_ID1,
 				id_in(7 downto 0) when STATE_HELLO_ID2,
@@ -615,6 +643,7 @@ begin
 			state : state_t;
 			id_in : std_logic_vector(15 downto 0);
 			id_out : std_logic_vector(15 downto 0);
+			id_out_valid : std_logic;
 			sync_buffer : std_logic;
 			cnt : natural range 0 to maximum(PIPE_LENGTH, RETIMING_DEPTH);
 		end record;
@@ -694,6 +723,7 @@ begin
 {% else %}
 					v.id_out(7 downto 0) := sync_in_data;
 {% endif %}
+					v.id_out_valid := '1';
 					if sync_in_last = '1' then
 						v.state := STATE_DROP;
 					else
@@ -779,6 +809,7 @@ begin
 			if rstn /= '1' then
 				v.state := STATE_RESET;
 				v.cnt := 0;
+				v.id_out_valid := '0';
 			end if;
 
 			r_in <= v;
@@ -788,8 +819,11 @@ begin
 		begin
 			if rising_edge(clk) then
 				r <= r_in;
+				sync_in_connected <= id_out_valid;
 			end if;
 		end process;
+
+		id_out_valid <= r.id_out_valid;
 
 		var_sync_in_data(0) <=
 --pragma translate_off
@@ -840,6 +874,11 @@ begin
 			sync_in_commit <=
 				'1' when STATE_DONE,
 				'0' when others;
+
+		with r.state select
+			sync_in_busy <=
+				not id_out_valid when STATE_IDLE | STATE_DROP | STATE_DONE | STATE_PASSTHROUGH,
+				'1' when others;
 
 	end generate;
 
