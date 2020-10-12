@@ -111,11 +111,11 @@ def vhdltype(o):
             'int64': 'signed(63 downto 0)',
             'uint64': 'unsigned(63 downto 0)',
             'float': 'std_logic_vector(31 downto 0)',
-            'double': 'std_logic_vector(64 downto 0)',
+            'double': 'std_logic_vector(63 downto 0)',
             'ptr32': 'std_logic_vector(31 downto 0)',
             'ptr64': 'std_logic_vector(63 downto 0)',
-            'blob': 'std_logic_vector(%d downto 0)' % (o.size - 1),
-            'string': 'std_logic_vector(%d downto 0)' % (o.size - 1),
+            'blob': 'std_logic_vector(%d downto 0)' % (o.size * 8 - 1),
+            'string': 'std_logic_vector(%d downto 0)' % (o.size * 8 - 1),
     }[o.type]
 
 def vhdlinit(o):
@@ -128,7 +128,7 @@ def vhdlinit(o):
         b = f'x"{b[-o.size * 2:]}"'
 
     return {
-            'bool': "'0'" if o.init == None or b == 'x"00"' else "'1'",
+            'bool': "(7 downto 0 => '0')" if o.init == None or b == 'x"00"' else "(7 downto 1 => '0', 0 => '1')",
             'int8': "(7 downto 0 => '0')" if o.init == None else b,
             'uint8': "(7 downto 0 => '0')" if o.init == None else b,
             'int16': "(15 downto 0 => '0')" if o.init == None else b,
@@ -138,9 +138,9 @@ def vhdlinit(o):
             'int64': "(63 downto 0 => '0')" if o.init == None else b,
             'uint64': "(63 downto 0 => '0')" if o.init == None else b,
             'float': "(31 downto 0 => '0')" if o.init == None else b,
-            'double': "(64 downto 0 => '0')" if o.init == None else b,
+            'double': "(63 downto 0 => '0')" if o.init == None else b,
             'ptr32': "(31 downto 0 => '0')" if o.init == None else b,
-            'ptr64': "(64 downto 0 => '0')" if o.init == None else b,
+            'ptr64': "(63 downto 0 => '0')" if o.init == None else b,
             'blob': "(%d downto 0 => '0')" % (o.size * 8 - 1) if o.init == None else b,
             'string': "(%d downto 0 => '0')" % (o.size * 8 - 1) if o.init == None else b,
     }[o.type]

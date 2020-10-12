@@ -107,7 +107,9 @@ begin
 		wait until rising_edge(clk);
 
 		test_init(test);
+		test_verbose(test);
 
+		test_start(test, "ReadOnly");
 		test_expect_eq(test, \read_only_register__out\, x"12345678");
 
 		test_finish(test);

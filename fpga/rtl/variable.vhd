@@ -121,6 +121,7 @@ begin
 			if rstn /= '1' then
 				data <= DATA_INIT;
 				data_snapshot <= DATA_INIT;
+				data_out_changed_i <= '0';
 			end if;
 		end if;
 	end process;

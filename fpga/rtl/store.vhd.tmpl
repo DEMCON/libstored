@@ -122,7 +122,7 @@ entity {{store.name}}_hdl is
 		s_axi_rdata   : out std_logic_vector(31 downto 0);
 		s_axi_rready  : in  std_logic := '0';
 		s_axi_rresp   : out std_logic_vector(1 downto 0);
-		s_axi_rvalid  : out std_logic := '0';
+		s_axi_rvalid  : out std_logic;
 		s_axi_wdata   : in  std_logic_vector(31 downto 0) := (others => '-');
 		s_axi_wready  : out std_logic;
 		s_axi_wvalid  : in  std_logic := '0'
@@ -241,11 +241,7 @@ begin
 			generic map (
 				SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ,
 				LEN_LENGTH => LEN_LENGTH,
-{%     if o|vhdltype == 'std_logic' %}
-				DATA_INIT => (7 downto 1 => '0') & {{store.name}}_pkg.\{{o.cname|upper}}__INIT\,
-{%     else %}
 				DATA_INIT => {{store.name}}_pkg.\{{o.cname|upper}}__INIT\,
-{%     endif %}
 				KEY => {{o|vhdlkey(store=store, littleEndian=store.littleEndian)}},
 				BUFFER_PADDING_BEFORE => {{o.offset - ns.offset_next}},
 				LITTLE_ENDIAN => {% if store.littleEndian %}true{% else %}false{% endif %},
@@ -299,7 +295,7 @@ begin
 {%     if o|vhdltype == 'std_logic' %}
 		\{{o.cname}}__out\ <=
 --pragma translate_off
-			'x' when is_x(data_out_i) else
+			'X' when is_x(data_out_i) else
 --pragma translate_on
 			'1' when data_out_i /= x"00" else
 			'0';
@@ -312,7 +308,7 @@ begin
 
 		data_in_i <=
 {%       if o.axi != None %}
-			axi_data_wr when \{{o.cname}}__in_we\ = '0' and axi_we(AXI_REG) = '1' else
+			axi_data_wr(data_in_i'length - 1 downto 0) when \{{o.cname}}__in_we\ = '0' and axi_we(AXI_REG) = '1' else
 {%       endif %}
 			std_logic_vector(\{{o.cname}}__in\);
 
@@ -904,6 +900,17 @@ begin
 	no_axi_g : if not AXI_SLAVE generate
 	begin
 		axi_we <= (others => '0');
+
+		s_axi_arready <= '0';
+		s_axi_awready <= '0';
+		s_axi_rvalid <= '0';
+		s_axi_wready <= '0';
+		s_axi_bvalid <= '0';
+
+--pragma translate_off
+		assert not (rising_edge(clk) and (s_axi_arvalid = '1' or s_axi_awvalid = '1'))
+			report "AXI transaction detected on disabled AXI slave. Forgot to set AXI_SLAVE?" severity note;
+--pragma translate_on
 	end generate;
 
 	axi_read_g : if AXI_SLAVE generate
@@ -992,7 +999,7 @@ begin
 		signal r, r_in : r_t;
 	begin
 
-		process(r, rstn)
+		process(r, rstn, s_axi_awvalid, s_axi_wvalid, s_axi_awaddr, s_axi_wdata)
 			variable v : r_t;
 		begin
 			v := r;
