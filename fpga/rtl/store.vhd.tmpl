@@ -40,8 +40,6 @@ entity {{store.name}}_hdl is
 		SYNC_OUT_INTERVAL_s : real := 0.1;
 		--! \brief Store ID to use in a Hello message.
 		ID : natural := 1;
-		--! \brief Width of \c len ports.
-		LEN_LENGTH : natural := 16;
 		--! \brief Enabe AXI slave interface.
 		AXI_SLAVE : boolean := false;
 
@@ -70,17 +68,17 @@ entity {{store.name}}_hdl is
 
 {%   endif %}
 {% endfor %}
-		-- Input of sync messages.
-		sync_in_data : in std_logic_vector(7 downto 0) := (others => '-');
-		sync_in_last : in std_logic := '-';
-		sync_in_valid : in std_logic := '0';
-		sync_in_accept : out std_logic;
 
-		-- Output of unhandled sync messages to daisy chain stores.
-		sync_in_data_next : out std_logic_vector(7 downto 0);
-		sync_in_last_next : out std_logic;
-		sync_in_valid_next : out std_logic;
-		sync_in_accept_next : in std_logic := '1';
+		--! \brief Incoming sync messages.
+		--! \details Either from protocol stack or another store's sync_chained_out.
+		sync_in : in msg_t := msg_term;
+
+		--! \brief Outgoing sync messages.
+		--! \details Either to protocol stack or another store's sync_chained_in.
+		sync_out : out msg_t;
+
+		sync_chained_in : in msg_t := msg_term;
+		sync_chained_out : out msg_t;
 
 		--! \brief Trigger a sync immediately.
 		sync_out_trigger : in std_logic := '0';
@@ -91,23 +89,9 @@ entity {{store.name}}_hdl is
 		--! \brief Flag to indicate that some variable has changed and needs to send an Update.
 		sync_out_have_changes : out std_logic;
 		--! \brief Flag to indicate that we are connected (after a successful Welcome).
-		sync_in_connected : out std_logic;
+		sync_connected : out std_logic;
 		--! \brief Busy with processing sync in message.
 		sync_in_busy : out std_logic;
-
-		-- Sync messages generated (or forwarded) by this store.
-		sync_out_len : out std_logic_vector(LEN_LENGTH - 1 downto 0);
-		sync_out_data : out std_logic_vector(7 downto 0);
-		sync_out_last : out std_logic;
-		sync_out_valid : out std_logic;
-		sync_out_accept : in std_logic := '0';
-
-		-- Sync messages generated (of forwarded) by another store, for daisy chaining.
-		sync_out_len_prev : in std_logic_vector(LEN_LENGTH - 1 downto 0) := (others => '-');
-		sync_out_data_prev : in std_logic_vector(7 downto 0) := (others => '-');
-		sync_out_last_prev : in std_logic := '-';
-		sync_out_valid_prev : in std_logic := '0';
-		sync_out_accept_prev : out std_logic;
 
 		-- AXI4-Lite slave interface
 		s_axi_araddr  : in  std_logic_vector(31 downto 0) := (others => '-');
@@ -132,10 +116,7 @@ end {{store.name}}_hdl;
 --! \brief Default architecture of #{{store.name}}_hdl.
 architecture rtl of {{store.name}}_hdl is
 	constant RETIMING_DEPTH : natural := 2;
-	constant NUM_VARIABLES : natural := {{store.objects|len}};
-
-	type hash_t is array(0 to {{store.hash|len - 1}}) of std_logic_vector(7 downto 0);
-	constant HASH : hash_t := {{store.hash|vhdlstr}}; -- {{store.hash}}
+	constant NUM_VARIABLES : natural := {{store.objects|select('variable')|list|len}};
 
 {% if store.littleEndian %}
 	constant MSG_HELLO   : std_logic_vector(7 downto 0) := x"68"; -- 'h'
@@ -149,7 +130,6 @@ architecture rtl of {{store.name}}_hdl is
 	constant MSG_BYE     : std_logic_vector(7 downto 0) := x"42"; -- 'B'
 {% endif %}
 
-	type var_sync_len_t is array(0 to NUM_VARIABLES) of std_logic_vector(LEN_LENGTH - 1 downto 0);
 	type var_sync_data_t is array(0 to NUM_VARIABLES) of std_logic_vector(7 downto 0);
 	type var_sync_flag_t is array(0 to NUM_VARIABLES) of std_logic;
 
@@ -158,32 +138,32 @@ architecture rtl of {{store.name}}_hdl is
 	signal var_sync_in_valid : var_sync_flag_t;
 	signal var_sync_in_buffer : var_sync_flag_t;
 
-	signal var_sync_out_len : var_sync_len_t;
 	signal var_sync_out_data : var_sync_data_t;
 	signal var_sync_out_last : var_sync_flag_t;
 	signal var_sync_out_valid : var_sync_flag_t;
 	signal var_sync_out_accept : var_sync_flag_t;
+
 	signal var_sync_out_accept_first : std_logic;
 	signal var_sync_out_have_changes : var_sync_flag_t;
+	signal var_sync_out_have_changes_last : std_logic;
 
 	signal sync_in_commit, sync_in_commit_delay : std_logic;
 	signal sync_out_snapshot, sync_out_snapshot_delay : std_logic;
 
-	signal sync_in_last_next_i : std_logic;
-	signal sync_in_valid_next_i : std_logic;
-	signal sync_in_accept_next_i : std_logic;
-	signal sync_in_data_next_i : std_logic_vector(7 downto 0);
-	signal sync_in_i, sync_in_r : std_logic_vector(8 downto 0);
+	signal sync_chained_out_last_i : std_logic;
+	signal sync_chained_out_valid_i : std_logic;
+	signal sync_chained_out_accept_i : std_logic;
+	signal sync_chained_out_data_i : std_logic_vector(7 downto 0);
+	signal sync_chained_out_i, sync_chained_out_r : std_logic_vector(8 downto 0);
 
-	signal sync_out_accept_prev_i : std_logic;
+	signal sync_chained_in_accept_i : std_logic;
 
-	signal var_sync_out_len_last, sync_out_len_i : std_logic_vector(LEN_LENGTH - 1 downto 0);
 	signal var_sync_out_data_last, sync_out_data_i : std_logic_vector(7 downto 0);
 	signal var_sync_out_last_last, sync_out_last_i : std_logic;
 	signal var_sync_out_valid_last, sync_out_valid_i : std_logic;
 	signal var_sync_out_accept_last, sync_out_accept_i : std_logic;
-	signal sync_out_i, sync_out_r : std_logic_vector(LEN_LENGTH + 8 downto 0);
-	signal var_sync_out_have_changes_last : std_logic;
+
+	signal sync_out_i, sync_out_r : std_logic_vector(8 downto 0);
 
 	constant id_in : std_logic_vector(15 downto 0) :=
 {% if store.littleEndian %}
@@ -240,7 +220,6 @@ begin
 		\{{o.cname}}__inst\ : entity work.libstored_variable
 			generic map (
 				SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ,
-				LEN_LENGTH => LEN_LENGTH,
 				DATA_INIT => {{store.name}}_pkg.\{{o.cname|upper}}__INIT\,
 				KEY => {{o|vhdlkey(store=store, littleEndian=store.littleEndian)}},
 				BUFFER_PADDING_BEFORE => {{o.offset - ns.offset_next}},
@@ -271,14 +250,12 @@ begin
 				sync_in_valid_next => var_sync_in_valid({{ns.var_i + 1}}),
 				sync_in_buffer_next => var_sync_in_buffer({{ns.var_i + 1}}),
 
-				sync_out_len => var_sync_out_len({{ns.var_i + 1}}),
 				sync_out_data => var_sync_out_data({{ns.var_i + 1}}),
 				sync_out_last => var_sync_out_last({{ns.var_i + 1}}),
 				sync_out_valid => var_sync_out_valid({{ns.var_i + 1}}),
 				sync_out_accept => var_sync_out_accept({{ns.var_i + 1}}),
 				sync_out_have_changes => var_sync_out_have_changes({{ns.var_i + 1}}),
 
-				sync_out_len_prev => var_sync_out_len({{ns.var_i}}),
 				sync_out_data_prev => var_sync_out_data({{ns.var_i}}),
 				sync_out_last_prev => var_sync_out_last({{ns.var_i}}),
 				sync_out_valid_prev => var_sync_out_valid({{ns.var_i}}),
@@ -327,11 +304,10 @@ begin
 {%   endif %}
 {% endfor %}
 
-	var_sync_out_len_last <= var_sync_out_len(var_sync_out_len'high);
 	var_sync_out_data_last <= var_sync_out_data(var_sync_out_data'high);
 	var_sync_out_last_last <= var_sync_out_last(var_sync_out_last'high);
 	var_sync_out_valid_last <= var_sync_out_valid(var_sync_out_valid'high);
-	var_sync_out_accept(var_sync_out_len'high) <= var_sync_out_accept_last;
+	var_sync_out_accept(var_sync_out_accept'high) <= var_sync_out_accept_last;
 	var_sync_out_accept_first <= var_sync_out_accept(0);
 	var_sync_out_have_changes_last <= var_sync_out_have_changes(var_sync_out_have_changes'high);
 
@@ -368,15 +344,16 @@ begin
 			id : std_logic_vector(id_out'range);
 			passthrough : std_logic;
 			passthrough_last : std_logic;
-			cnt : natural range 0 to maximum(RETIMING_DEPTH, HASH'length);
+			cnt : natural range 0 to maximum(RETIMING_DEPTH, {{store.name}}_pkg.HASH'length);
 		end record;
 
 		signal r, r_in : r_t;
 	begin
 
-		process(r, rstn, sync_out_valid_prev, sync_out_last_prev, sync_out_accept_prev_i,
+		process(r, rstn, sync_chained_in.valid, sync_chained_in.last, sync_chained_in_accept_i,
 			sync_out_trigger, id_out_valid, var_sync_out_valid_last, var_sync_out_last_last,
-			var_sync_out_accept_first, var_sync_out_have_changes_last)
+			var_sync_out_accept_first, var_sync_out_have_changes_last,
+			sync_out_accept_i)
 			variable v : r_t;
 		begin
 			v := r;
@@ -388,8 +365,8 @@ begin
 				v.cnt := r.cnt - 1;
 			end if;
 
-			v.passthrough := not r.passthrough_last and (r.passthrough or sync_out_valid_prev);
-			v.passthrough_last := sync_out_valid_prev and sync_out_last_prev and sync_out_accept_prev_i;
+			v.passthrough := not r.passthrough_last and (r.passthrough or sync_chained_in.valid);
+			v.passthrough_last := sync_chained_in.valid and sync_chained_in.last and sync_chained_in_accept_i;
 
 			case r.state is
 			when STATE_RESET =>
@@ -411,7 +388,7 @@ begin
 				v.passthrough := '0';
 				if sync_out_accept_i = '1' then
 					v.state := STATE_HELLO_HASH;
-					v.cnt := HASH'length - 1;
+					v.cnt := {{store.name}}_pkg.HASH'length - 1;
 				end if;
 			when STATE_HELLO_HASH =>
 				v.passthrough := '0';
@@ -526,13 +503,6 @@ begin
 				'1' when STATE_SNAPSHOT,
 				'0' when others;
 
-		var_sync_out_len(0) <=
-			(var_sync_out_len(0)'high downto 1 => '0') & '1'
---pragma translate_off
-				when r.state = STATE_TRIGGER else (others => '-')
---pragma translate_on
-			;
-
 		var_sync_out_data(0) <=
 			MSG_UPDATE
 --pragma translate_off
@@ -553,19 +523,9 @@ begin
 				'0' when others;
 
 		with r.state select
-			sync_out_len_i <=
-				std_logic_vector(to_unsigned(HASH'length + 4, LEN_LENGTH))
-					when STATE_HELLO_CMD | STATE_HELLO_HASH | STATE_HELLO_HASH_END |
-						STATE_HELLO_ID1 | STATE_HELLO_ID2,
-				std_logic_vector(to_unsigned(3, LEN_LENGTH))
-					when STATE_UPDATE_CMD | STATE_UPDATE_ID1 | STATE_UPDATE_ID2,
-				var_sync_out_len_last when STATE_UPDATE_PAYLOAD,
-				sync_out_len_prev when others;
-
-		with r.state select
 			sync_out_data_i <=
 				MSG_HELLO when STATE_HELLO_CMD,
-				HASH(HASH'high - r.cnt) when STATE_HELLO_HASH,
+				{{store.name}}_pkg.HASH({{store.name}}_pkg.HASH'high - r.cnt) when STATE_HELLO_HASH,
 				(others => '0') when STATE_HELLO_HASH_END,
 				id_in(15 downto 8) when STATE_HELLO_ID1,
 				id_in(7 downto 0) when STATE_HELLO_ID2,
@@ -573,14 +533,14 @@ begin
 				id_out(15 downto 8) when STATE_UPDATE_ID1,
 				id_out(7 downto 0) when STATE_UPDATE_ID2,
 				var_sync_out_data_last when STATE_UPDATE_PAYLOAD,
-				sync_out_data_prev when others;
+				sync_chained_in.data when others;
 
 		with r.state select
 			sync_out_last_i <=
 				var_sync_out_last_last when STATE_UPDATE_PAYLOAD,
 				'0' when STATE_HELLO_CMD | STATE_HELLO_HASH | STATE_HELLO_HASH_END | STATE_HELLO_ID1,
 				'1' when STATE_HELLO_ID2,
-				r.passthrough and sync_out_last_prev when others;
+				r.passthrough and sync_chained_in.last when others;
 
 		with r.state select
 			sync_out_valid_i <=
@@ -588,7 +548,7 @@ begin
 					STATE_HELLO_ID1 | STATE_HELLO_ID2 | STATE_UPDATE_CMD |
 					STATE_UPDATE_ID1 | STATE_UPDATE_ID2,
 				var_sync_out_valid_last when STATE_UPDATE_PAYLOAD,
-				r.passthrough and sync_out_valid_prev when others;
+				r.passthrough and sync_chained_in.valid when others;
 
 		with r.state select
 			sync_out_irq <=
@@ -606,7 +566,7 @@ begin
 
 	sync_out_buffer_inst : entity work.libstored_stream_buffer
 		generic map (
-			WIDTH => LEN_LENGTH + 8 + 1
+			WIDTH => 8 + 1
 		)
 		port map (
 			clk => clk,
@@ -615,14 +575,13 @@ begin
 			i_valid => sync_out_valid_i,
 			i_accept => sync_out_accept_i,
 			o => sync_out_r,
-			o_valid => sync_out_valid,
-			o_accept => sync_out_accept
+			o_valid => sync_out.valid,
+			o_accept => sync_in.accept
 		);
 
-	sync_out_i <= sync_out_last_i & sync_out_len_i & sync_out_data_i;
-	sync_out_len <= sync_out_r(LEN_LENGTH + 7 downto 8);
-	sync_out_data <= sync_out_r(7 downto 0);
-	sync_out_last <= sync_out_r(LEN_LENGTH + 8);
+	sync_out_i <= sync_out_last_i & sync_out_data_i;
+	sync_out.data <= sync_out_r(7 downto 0);
+	sync_out.last <= sync_out_r(8);
 
 	sync_in_g : if true generate
 		constant PIPE_LENGTH : natural := NUM_VARIABLES / 4 + 1; -- only one in four has buffers
@@ -646,7 +605,7 @@ begin
 
 		signal r, r_in : r_t;
 	begin
-		process(r, rstn, sync_in_valid, sync_in_last, sync_in_data)
+		process(r, rstn, sync_in.valid, sync_in.last, sync_in.data)
 			variable v : r_t;
 		begin
 			v := r;
@@ -659,12 +618,12 @@ begin
 			when STATE_RESET =>
 				v.state := STATE_IDLE;
 			when STATE_IDLE =>
-				if sync_in_valid = '1' then
-					if sync_in_last = '1' then
+				if sync_in.valid = '1' then
+					if sync_in.last = '1' then
 						v.state := STATE_DROP;
-					elsif sync_in_data = MSG_WELCOME then
+					elsif sync_in.data = MSG_WELCOME then
 						v.state := STATE_WELCOME;
-					elsif sync_in_data = MSG_UPDATE then
+					elsif sync_in.data = MSG_UPDATE then
 						v.state := STATE_UPDATE;
 					else
 						v.state := STATE_PASSTHROUGH;
@@ -672,26 +631,26 @@ begin
 				end if;
 			when STATE_WELCOME =>
 				v.sync_buffer := '1';
-				if sync_in_valid = '1' then
-					if sync_in_last = '1' then
+				if sync_in.valid = '1' then
+					if sync_in.last = '1' then
 						v.state := STATE_DROP;
 					else
 						v.state := STATE_WELCOME_ID_IN1;
 					end if;
 				end if;
 			when STATE_WELCOME_ID_IN1 =>
-				if sync_in_valid = '1' then
-					v.id_in(15 downto 8) := sync_in_data;
-					if sync_in_last = '1' then
+				if sync_in.valid = '1' then
+					v.id_in(15 downto 8) := sync_in.data;
+					if sync_in.last = '1' then
 						v.state := STATE_DROP;
 					else
 						v.state := STATE_WELCOME_ID_IN2;
 					end if;
 				end if;
 			when STATE_WELCOME_ID_IN2 =>
-				if sync_in_valid = '1' then
-					v.id_in(7 downto 0) := sync_in_data;
-					if sync_in_last = '1' then
+				if sync_in.valid = '1' then
+					v.id_in(7 downto 0) := sync_in.data;
+					if sync_in.last = '1' then
 						v.state := STATE_DROP;
 					elsif v.id_in = id_in then
 						v.state := STATE_WELCOME_ID_OUT1;
@@ -700,27 +659,27 @@ begin
 					end if;
 				end if;
 			when STATE_WELCOME_ID_OUT1 =>
-				if sync_in_valid = '1' then
+				if sync_in.valid = '1' then
 {% if store.littleEndian %}
-					v.id_out(7 downto 0) := sync_in_data;
+					v.id_out(7 downto 0) := sync_in.data;
 {% else %}
-					v.id_out(15 downto 8) := sync_in_data;
+					v.id_out(15 downto 8) := sync_in.data;
 {% endif %}
-					if sync_in_last = '1' then
+					if sync_in.last = '1' then
 						v.state := STATE_DROP;
 					else
 						v.state := STATE_WELCOME_ID_OUT2;
 					end if;
 				end if;
 			when STATE_WELCOME_ID_OUT2 =>
-				if sync_in_valid = '1' then
+				if sync_in.valid = '1' then
 {% if store.littleEndian %}
-					v.id_out(15 downto 8) := sync_in_data;
+					v.id_out(15 downto 8) := sync_in.data;
 {% else %}
-					v.id_out(7 downto 0) := sync_in_data;
+					v.id_out(7 downto 0) := sync_in.data;
 {% endif %}
 					v.id_out_valid := '1';
-					if sync_in_last = '1' then
+					if sync_in.last = '1' then
 						v.state := STATE_DROP;
 					else
 						v.state := STATE_WELCOME_BUFFER_WAIT;
@@ -731,32 +690,32 @@ begin
 					v.state := STATE_WELCOME_BUFFER;
 				end if;
 			when STATE_WELCOME_BUFFER =>
-				if sync_in_valid = '1' and sync_in_last = '1' then
+				if sync_in.valid = '1' and sync_in.last = '1' then
 					v.state := STATE_WAIT_PIPE;
 					v.cnt := PIPE_LENGTH;
 				end if;
 			when STATE_UPDATE =>
 				v.sync_buffer := '0';
-				if sync_in_valid = '1' then
-					if sync_in_last = '1' then
+				if sync_in.valid = '1' then
+					if sync_in.last = '1' then
 						v.state := STATE_DROP;
 					else
 						v.state := STATE_UPDATE_ID_IN1;
 					end if;
 				end if;
 			when STATE_UPDATE_ID_IN1 =>
-				if sync_in_valid = '1' then
-					v.id_in(15 downto 8) := sync_in_data;
-					if sync_in_last = '1' then
+				if sync_in.valid = '1' then
+					v.id_in(15 downto 8) := sync_in.data;
+					if sync_in.last = '1' then
 						v.state := STATE_DROP;
 					else
 						v.state := STATE_UPDATE_ID_IN2;
 					end if;
 				end if;
 			when STATE_UPDATE_ID_IN2 =>
-				if sync_in_valid = '1' then
-					v.id_in(7 downto 0) := sync_in_data;
-					if sync_in_last = '1' then
+				if sync_in.valid = '1' then
+					v.id_in(7 downto 0) := sync_in.data;
+					if sync_in.last = '1' then
 						v.state := STATE_DROP;
 					elsif v.id_in = id_in then
 						v.state := STATE_UPDATE_PAYLOAD_WAIT;
@@ -769,24 +728,24 @@ begin
 					v.state := STATE_UPDATE_PAYLOAD;
 				end if;
 			when STATE_UPDATE_PAYLOAD =>
-				if sync_in_valid = '1' and sync_in_last = '1' then
+				if sync_in.valid = '1' and sync_in.last = '1' then
 					v.state := STATE_WAIT_PIPE;
 					v.cnt := PIPE_LENGTH;
 				end if;
 			when STATE_REPEAT =>
-				if sync_in_accept_next_i = '1' then
+				if sync_chained_in_accept_i = '1' then
 					v.state := STATE_REPEAT_ID1;
 				end if;
 			when STATE_REPEAT_ID1 =>
-				if sync_in_accept_next_i = '1' then
+				if sync_chained_in_accept_i = '1' then
 					v.state := STATE_REPEAT_ID2;
 				end if;
 			when STATE_REPEAT_ID2 =>
-				if sync_in_accept_next_i = '1' then
+				if sync_chained_in_accept_i = '1' then
 					v.state := STATE_PASSTHROUGH;
 				end if;
 			when STATE_PASSTHROUGH =>
-				if sync_in_valid = '1' and sync_in_last = '1' and sync_in_accept_next_i = '1' then
+				if sync_in.valid = '1' and sync_in.last = '1' and sync_chained_in_accept_i = '1' then
 					v.state := STATE_IDLE;
 				end if;
 			when STATE_WAIT_PIPE =>
@@ -797,7 +756,7 @@ begin
 				v.state := STATE_IDLE;
 				v.cnt := RETIMING_DEPTH;
 			when STATE_DROP =>
-				if sync_in_valid = '1' and sync_in_last = '1' then
+				if sync_in.valid = '1' and sync_in.last = '1' then
 					v.state := STATE_IDLE;
 				end if;
 			end case;
@@ -815,7 +774,7 @@ begin
 		begin
 			if rising_edge(clk) then
 				r <= r_in;
-				sync_in_connected <= id_out_valid;
+				sync_connected <= id_out_valid;
 			end if;
 		end process;
 
@@ -823,35 +782,35 @@ begin
 
 		var_sync_in_data(0) <=
 --pragma translate_off
-			(others => '-') when r.state /= STATE_UPDATE_PAYLOAD else
+			(others => '-') when r.state /= STATE_UPDATE_PAYLOAD and r.state /= STATE_WELCOME_BUFFER else
 --pragma translate_on
-			sync_in_data;
+			sync_in.data;
 
 		var_sync_in_last(0) <=
 --pragma translate_off
-			'-' when r.state /= STATE_UPDATE_PAYLOAD else
+			'-' when r.state /= STATE_UPDATE_PAYLOAD and r.state /= STATE_WELCOME_BUFFER else
 --pragma translate_on
-			sync_in_last;
+			sync_in.last;
 
 		var_sync_in_valid(0) <=
-			sync_in_valid when r.state = STATE_UPDATE_PAYLOAD else
+			sync_in.valid when r.state = STATE_UPDATE_PAYLOAD or r.state = STATE_WELCOME_BUFFER else
 			'0';
 
 		var_sync_in_buffer(0) <= r.sync_buffer;
 
 		with r.state select
-			sync_in_last_next_i <=
-				sync_in_last when STATE_PASSTHROUGH,
+			sync_chained_out_last_i <=
+				sync_in.last when STATE_PASSTHROUGH,
 				'0' when others;
 
 		with r.state select
-			sync_in_valid_next_i <=
-				sync_in_valid when STATE_PASSTHROUGH,
+			sync_chained_out_valid_i <=
+				sync_in.valid when STATE_PASSTHROUGH,
 				'1' when STATE_REPEAT | STATE_REPEAT_ID1 | STATE_REPEAT_ID2,
 				'0' when others;
 
-		sync_in_data_next_i <=
-			sync_in_data when r.state = STATE_PASSTHROUGH else
+		sync_chained_out_data_i <=
+			sync_in.data when r.state = STATE_PASSTHROUGH else
 			MSG_WELCOME when r.state = STATE_REPEAT and r.sync_buffer = '1' else
 			MSG_UPDATE when r.state = STATE_REPEAT and r.sync_buffer = '0' else
 			r.id_in(15 downto 8) when r.state = STATE_REPEAT_ID1 else
@@ -859,8 +818,8 @@ begin
 			(others => '-');
 
 		with r.state select
-			sync_in_accept <=
-				sync_in_accept_next_i when STATE_PASSTHROUGH,
+			sync_out.accept <=
+				sync_chained_out_accept_i when STATE_PASSTHROUGH,
 				'1' when STATE_WELCOME | STATE_WELCOME_ID_IN1 | STATE_WELCOME_ID_IN2 | STATE_WELCOME_ID_OUT1 | STATE_WELCOME_ID_OUT2 | STATE_WELCOME_BUFFER,
 				'1' when STATE_UPDATE | STATE_UPDATE_ID_IN1 | STATE_UPDATE_ID_IN2 | STATE_UPDATE_PAYLOAD,
 				'1' when STATE_DROP,
@@ -885,17 +844,17 @@ begin
 		port map (
 			clk => clk,
 			rstn => rstn,
-			i => sync_in_i,
-			i_valid => sync_in_valid_next_i,
-			i_accept => sync_in_accept_next_i,
-			o => sync_in_r,
-			o_valid => sync_in_valid_next,
-			o_accept => sync_in_accept_next
+			i => sync_chained_out_i,
+			i_valid => sync_chained_out_valid_i,
+			i_accept => sync_chained_out_accept_i,
+			o => sync_chained_out_r,
+			o_valid => sync_chained_out.valid,
+			o_accept => sync_chained_in.accept
 		);
 
-	sync_in_i <= sync_in_last_next_i & sync_in_data_next_i;
-	sync_in_last_next <= sync_in_r(8);
-	sync_in_data_next <= sync_in_r(7 downto 0);
+	sync_chained_out_i <= sync_chained_out_last_i & sync_chained_out_data_i;
+	sync_chained_out.last <= sync_chained_out_r(8);
+	sync_chained_out.data <= sync_chained_out_r(7 downto 0);
 
 	no_axi_g : if not AXI_SLAVE generate
 	begin

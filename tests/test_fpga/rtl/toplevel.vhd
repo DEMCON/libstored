@@ -20,6 +20,7 @@ use ieee.numeric_std.all;
 
 use work.TestStore_pkg;
 
+use work.libstored_pkg.all;
 use work.libstored_tb_pkg.all;
 
 entity test_fpga is
@@ -81,6 +82,7 @@ architecture behav of test_fpga is
 
 	signal axi_m2s : axi_m2s_t;
 	signal axi_s2m : axi_s2m_t;
+	signal sync_in, sync_out : msg_t;
 begin
 
 	store_inst : entity work.TestStore_hdl
@@ -141,6 +143,9 @@ begin
 			\scope__inner_int__in\ => \scope__inner_int__in\,
 			\scope__inner_int__in_we\ => \scope__inner_int__in_we\,
 
+			sync_in => sync_in,
+			sync_out => sync_out,
+
 			s_axi_araddr => axi_m2s.araddr,
 			s_axi_arready => axi_s2m.arready,
 			s_axi_arvalid => axi_m2s.arvalid,
@@ -184,6 +189,7 @@ begin
 	process
 		variable test : test_t;
 		variable data : std_logic_vector(31 downto 0);
+		variable id_in, id_out : std_logic_vector(15 downto 0);
 	begin
 		\default_int8__in_we\ <= '0';
 		\default_int16__in_we\ <= '0';
@@ -195,6 +201,7 @@ begin
 		\scope__inner_int__in_we\ <= '0';
 
 		axi_init(axi_m2s, axi_s2m);
+		sync_init(sync_in, sync_out);
 
 		wait until rising_edge(clk) and rstn = '1';
 		wait until rising_edge(clk);
@@ -225,6 +232,13 @@ begin
 
 		axi_write(clk, axi_m2s, axi_s2m, TestStore_pkg.\DEFAULT_INT16__ADDR\, x"abcd1122");
 		test_expect_eq(test, \default_int16__out\, 16#1122#);
+
+		test_start(test, "Hello");
+		sync_accept_hello(clk, sync_in, sync_out, TestStore_pkg.HASH, id_in, TestStore_pkg.LITTLE_ENDIAN);
+		sync_welcome(clk, sync_in, sync_out, id_in, x"aabb",
+			(0 to TestStore_pkg.BUFFER_LENGTH - 1 => x"EF"),
+--			(x"12", x"34", x"56", x"78", x"9a", x"bc", x"de", x"f0", x"11"),
+			TestStore_pkg.LITTLE_ENDIAN);
 
 		test_finish(test);
 		wait for 1 us;

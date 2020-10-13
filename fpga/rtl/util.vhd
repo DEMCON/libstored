@@ -74,7 +74,12 @@ entity libstored_stream_buffer is
 end libstored_stream_buffer;
 
 architecture rtl of libstored_stream_buffer is
-	type state_t is (STATE_RESET, STATE_EMPTY, STATE_HAVE_1, STATE_HAVE_2);
+	type state_t is (STATE_RESET, STATE_EMPTY, STATE_HAVE_1, STATE_HAVE_2
+--pragma translate_off
+		, STATE_ERROR
+--pragma translate_on
+	);
+
 	type r_t is record
 		state : state_t;
 		d1 : std_logic_vector(WIDTH - 1 downto 0);
@@ -83,7 +88,7 @@ architecture rtl of libstored_stream_buffer is
 
 	signal r, r_in : r_t;
 begin
-	process(r, rstn)
+	process(r, rstn, i_valid, o_accept, i)
 		variable v : r_t;
 	begin
 		v := r;
@@ -116,7 +121,16 @@ begin
 				v.d2 := (others => '-');
 --pragma translate_on
 			end if;
+--pragma translate_off
+		when STATE_ERROR => null;
+--pragma translate_on
 		end case;
+
+--pragma translate_off
+		if is_x(i_valid) or is_x(o_accept) then
+			v.state := STATE_ERROR;
+		end if;
+--pragma translate_on
 
 		if rstn /= '1' then
 			v.state := STATE_RESET;
@@ -134,17 +148,26 @@ begin
 
 	with r.state select
 		o <=
+--pragma translate_off
+			(others => 'X') when STATE_ERROR,
+--pragma translate_on
 			r.d1 when STATE_HAVE_1,
 			r.d2 when STATE_HAVE_2,
 			(others => '-') when others;
 
 	with r.state select
 		o_valid <=
+--pragma translate_off
+			'X' when STATE_ERROR,
+--pragma translate_on
 			'1' when STATE_HAVE_1 | STATE_HAVE_2,
 			'0' when others;
 
 	with r.state select
 		i_accept <=
+--pragma translate_off
+			'X' when STATE_ERROR,
+--pragma translate_on
 			'1' when STATE_EMPTY | STATE_HAVE_1,
 			'0' when others;
 

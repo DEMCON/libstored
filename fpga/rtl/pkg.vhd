@@ -21,6 +21,22 @@ use ieee.numeric_std.all;
 package libstored_pkg is
 	constant SIMULATION_SPEEDUP : real := 1.0e4;
 
+	type hash_t is array(0 to 39) of std_logic_vector(7 downto 0);
+
+	type msg_t is record
+		data : std_logic_vector(7 downto 0);
+		last : std_logic;
+		valid : std_logic;
+		accept : std_logic;
+	end record;
+
+	constant msg_term : msg_t := (
+		data => (others => '-'),
+		last => '-',
+		valid => '0',
+		accept => '1'
+	);
+
 	function maximum(constant a, b : integer) return integer;
 	function minimum(constant a, b : integer) return integer;
 	function ceil(constant x : real) return integer;

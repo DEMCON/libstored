@@ -25,6 +25,16 @@ use work.libstored_pkg.all;
 
 --! \brief Constants and types for #{{store.name}}_hdl.
 package {{store.name}}_pkg is
+
+	constant HASH : hash_t := {{store.hash|vhdlstr}}; -- {{store.hash}}
+	constant BUFFER_LENGTH : natural := {{store.buffer.size}};
+
+{% if store.littleEndian %}
+	constant LITTLE_ENDIAN : boolean := true;
+{% else %}
+	constant LITTLE_ENDIAN : boolean := false;
+{% endif %}
+
 {% for o in store.objects %}
 {%   if o is variable %}
 	-- {{o}}
