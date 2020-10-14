@@ -110,6 +110,12 @@ package libstored_tb_pkg is
 		constant littleEndian : boolean := true; constant timeout : time := 1 ms);
 
 	type buffer_t is array(natural range <>) of std_logic_vector(7 downto 0);
+
+	function to_buffer(constant x : std_logic) return buffer_t;
+	function to_buffer(constant x : std_logic_vector) return buffer_t;
+	function to_buffer(constant x : integer; constant width : positive; constant littleEndian : boolean := true) return buffer_t;
+	function to_buffer(constant x : buffer_t) return buffer_t;
+
 	procedure sync_welcome(signal clk : in std_logic;
 		signal sync_in : inout libstored_pkg.msg_t;
 		signal sync_out : in libstored_pkg.msg_t;
@@ -119,6 +125,33 @@ package libstored_tb_pkg is
 		constant littleEndian : boolean := true;
 		constant timeout : in time := 1 ms);
 
+	procedure sync_update_start(signal clk : in std_logic;
+		signal sync_in : inout libstored_pkg.msg_t;
+		signal sync_out : in libstored_pkg.msg_t;
+		constant id_in : std_logic_vector(15 downto 0);
+		constant littleEndian : boolean := true;
+		constant timeout : in time := 1 ms);
+
+	procedure sync_update_var(signal clk : in std_logic;
+		signal sync_in : inout libstored_pkg.msg_t;
+		signal sync_out : in libstored_pkg.msg_t;
+		constant key : std_logic_vector;
+		constant buf : buffer_t;
+		constant last : boolean;
+		constant littleEndian : boolean := true;
+		constant timeout : in time := 1 ms);
+
+	procedure sync_update(signal clk : in std_logic;
+		signal sync_in : inout libstored_pkg.msg_t;
+		signal sync_out : in libstored_pkg.msg_t;
+		constant id_in : std_logic_vector(15 downto 0);
+		constant key : std_logic_vector;
+		constant buf : buffer_t;
+		constant littleEndian : boolean := true;
+		constant timeout : in time := 1 ms);
+
+	procedure sync_wait(signal clk : in std_logic; signal busy : in std_logic;
+		constant timeout : in time := 1 ms);
 
 end libstored_tb_pkg;
 
@@ -463,19 +496,8 @@ package body libstored_tb_pkg is
 	end function;
 
 	function normalize(constant x : std_logic_vector) return std_logic_vector is
-		variable v : std_logic_vector(x'length - 1 downto 0);
 	begin
-		if x'ascending then
-			for i in v'range loop
-				v(i) := x(x'high - i);
-			end loop;
-		else
-			for i in v'range loop
-				v(i) := x(x'low + i);
-			end loop;
-		end if;
-
-		return v;
+		return libstored_pkg.normalize(x);
 	end function;
 
 	function normalize(constant x : str_t) return str_t is
@@ -624,6 +646,45 @@ package body libstored_tb_pkg is
 		sync_in.accept <= '0';
 	end procedure;
 
+	function to_buffer(constant x : std_logic) return buffer_t is
+	begin
+		case x is
+		when '0' => return to_buffer(x"00");
+		when '1' => return to_buffer(x"01");
+		when others => return to_buffer("XXXXXXXX");
+		end case;
+	end function;
+
+	function to_buffer(constant x : std_logic_vector) return buffer_t is
+		variable buf : buffer_t(0 to x'length / 8 - 1);
+		variable n : std_logic_vector(x'length - 1 downto 0);
+	begin
+		n := normalize(x);
+		for i in buf'range loop
+			buf(i) := n(n'high - i * 8 downto n'high - i * 8 - 7);
+		end loop;
+		return buf;
+	end function;
+
+	function to_buffer(constant x : integer; constant width : positive; constant littleEndian : boolean := true) return buffer_t is
+		variable res, v : std_logic_vector(width * 8 - 1 downto 0);
+	begin
+		v := std_logic_vector(to_signed(x, width * 8));
+		if littleEndian then
+			for i in 0 to width - 1 loop
+				res(res'high - i * 8 downto res'high - i * 8 - 7) := v(i * 8 + 7 downto i * 8);
+			end loop;
+		else
+			res := v;
+		end if;
+		return to_buffer(res);
+	end function;
+
+	function to_buffer(constant x : buffer_t) return buffer_t is
+	begin
+		return x;
+	end function;
+
 	procedure sync_welcome(signal clk : in std_logic;
 		signal sync_in : inout libstored_pkg.msg_t;
 		signal sync_out : in libstored_pkg.msg_t;
@@ -675,6 +736,115 @@ package body libstored_tb_pkg is
 
 		sync_in.valid <= '0';
 		sync_in.data <= (others => '-');
+	end procedure;
+
+	procedure sync_update_start(signal clk : in std_logic;
+		signal sync_in : inout libstored_pkg.msg_t;
+		signal sync_out : in libstored_pkg.msg_t;
+		constant id_in : std_logic_vector(15 downto 0);
+		constant littleEndian : boolean := true;
+		constant timeout : in time := 1 ms)
+	is
+		variable deadline : time;
+	begin
+		deadline := now + timeout;
+
+		sync_in.last <= '0';
+		sync_in.valid <= '1';
+
+		if littleEndian then
+			sync_in.data <= x"75";
+		else
+			sync_in.data <= x"55";
+		end if;
+		wait until rising_edge(clk) and sync_out.accept = '1' for deadline - now;
+		assert sync_out.accept = '1' report "Timeout" severity failure;
+
+		sync_in.data <= id_in(15 downto 8);
+		wait until rising_edge(clk) and sync_out.accept = '1' for deadline - now;
+		assert sync_out.accept = '1' report "Timeout" severity failure;
+
+		sync_in.data <= id_in(7 downto 0);
+		wait until rising_edge(clk) and sync_out.accept = '1' for deadline - now;
+		assert sync_out.accept = '1' report "Timeout" severity failure;
+
+		sync_in.valid <= '0';
+	end procedure;
+
+	procedure sync_update_var(signal clk : in std_logic;
+		signal sync_in : inout libstored_pkg.msg_t;
+		signal sync_out : in libstored_pkg.msg_t;
+		constant key : std_logic_vector;
+		constant buf : buffer_t;
+		constant last : boolean;
+		constant littleEndian : boolean := true;
+		constant timeout : in time := 1 ms)
+	is
+		variable deadline : time;
+		variable keyv : std_logic_vector(key'length - 1 downto 0);
+		variable size : std_logic_vector(key'length - 1 downto 0);
+	begin
+		deadline := now + timeout;
+
+		sync_in.valid <= '1';
+
+		keyv := normalize(key);
+		for i in 0 to keyv'length / 8 - 1 loop
+			sync_in.data <= keyv(keyv'high - i * 8 downto keyv'high - i * 8 - 7);
+			wait until rising_edge(clk) and sync_out.accept = '1' for deadline - now;
+			assert sync_out.accept = '1' report "Timeout" severity failure;
+		end loop;
+
+		size := normalize(std_logic_vector(to_unsigned(buf'length, keyv'length)));
+		for i in 0 to size'length / 8 - 1 loop
+			if littleEndian then
+				sync_in.data <= size(i * 8 + 7 downto i * 8);
+			else
+				sync_in.data <= size(size'high - i * 8 downto size'high - i * 8 - 7);
+			end if;
+			wait until rising_edge(clk) and sync_out.accept = '1' for deadline - now;
+			assert sync_out.accept = '1' report "Timeout" severity failure;
+		end loop;
+
+		for i in buf'range loop
+			if i = buf'right and last then
+				sync_in.last <= '1';
+			end if;
+			sync_in.data <= buf(i);
+			wait until rising_edge(clk) and sync_out.accept = '1' for deadline - now;
+			assert sync_out.accept = '1' report "Timeout" severity failure;
+		end loop;
+
+		sync_in.valid <= '0';
+
+		if last then
+			sync_in.data <= (others => '-');
+			sync_in.last <= '-';
+		end if;
+	end procedure;
+
+	procedure sync_update(signal clk : in std_logic;
+		signal sync_in : inout libstored_pkg.msg_t;
+		signal sync_out : in libstored_pkg.msg_t;
+		constant id_in : std_logic_vector(15 downto 0);
+		constant key : std_logic_vector;
+		constant buf : buffer_t;
+		constant littleEndian : boolean := true;
+		constant timeout : in time := 1 ms)
+	is
+		variable deadline : time;
+	begin
+		deadline := now + timeout;
+		sync_update_start(clk, sync_in, sync_out, id_in, littleEndian, deadline - now);
+		sync_update_var(clk, sync_in, sync_out, key, buf, true, littleEndian, deadline - now);
+	end procedure;
+
+	procedure sync_wait(signal clk : in std_logic; signal busy : in std_logic;
+		constant timeout : in time := 1 ms)
+	is
+	begin
+		wait until rising_edge(clk) and busy = '0' for timeout;
+		assert busy = '0' report "Timeout" severity failure;
 	end procedure;
 
 end package body;

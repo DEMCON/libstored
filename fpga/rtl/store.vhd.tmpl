@@ -156,8 +156,6 @@ architecture rtl of {{store.name}}_hdl is
 	signal sync_chained_out_data_i : std_logic_vector(7 downto 0);
 	signal sync_chained_out_i, sync_chained_out_r : std_logic_vector(8 downto 0);
 
-	signal sync_chained_in_accept_i : std_logic;
-
 	signal var_sync_out_data_last, sync_out_data_i : std_logic_vector(7 downto 0);
 	signal var_sync_out_last_last, sync_out_last_i : std_logic;
 	signal var_sync_out_valid_last, sync_out_valid_i : std_logic;
@@ -221,7 +219,7 @@ begin
 			generic map (
 				SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ,
 				DATA_INIT => {{store.name}}_pkg.\{{o.cname|upper}}__INIT\,
-				KEY => {{o|vhdlkey(store=store, littleEndian=store.littleEndian)}},
+				KEY => {{store.name}}_pkg.\{{o.cname|upper}}__KEY\,
 				BUFFER_PADDING_BEFORE => {{o.offset - ns.offset_next}},
 				LITTLE_ENDIAN => {% if store.littleEndian %}true{% else %}false{% endif %},
 				BLOB => {% if o is blob %}true{% else %}false{% endif %},
@@ -350,7 +348,7 @@ begin
 		signal r, r_in : r_t;
 	begin
 
-		process(r, rstn, sync_chained_in.valid, sync_chained_in.last, sync_chained_in_accept_i,
+		process(r, rstn, sync_chained_in.valid, sync_chained_in.last, sync_chained_out_accept_i,
 			sync_out_trigger, id_out_valid, var_sync_out_valid_last, var_sync_out_last_last,
 			var_sync_out_accept_first, var_sync_out_have_changes_last,
 			sync_out_accept_i)
@@ -366,7 +364,7 @@ begin
 			end if;
 
 			v.passthrough := not r.passthrough_last and (r.passthrough or sync_chained_in.valid);
-			v.passthrough_last := sync_chained_in.valid and sync_chained_in.last and sync_chained_in_accept_i;
+			v.passthrough_last := sync_chained_in.valid and sync_chained_in.last and sync_chained_out_accept_i;
 
 			case r.state is
 			when STATE_RESET =>
@@ -586,7 +584,7 @@ begin
 	sync_in_g : if true generate
 		constant PIPE_LENGTH : natural := NUM_VARIABLES / 4 + 1; -- only one in four has buffers
 
-		type state_t is (STATE_RESET, STATE_IDLE,
+		type state_t is (STATE_RESET, STATE_IDLE, STATE_IDLE_COMMIT,
 			STATE_WELCOME, STATE_WELCOME_ID_IN1, STATE_WELCOME_ID_IN2, STATE_WELCOME_ID_OUT1,
 			STATE_WELCOME_ID_OUT2, STATE_WELCOME_BUFFER_WAIT, STATE_WELCOME_BUFFER,
 			STATE_UPDATE, STATE_UPDATE_ID_IN1, STATE_UPDATE_ID_IN2, STATE_UPDATE_PAYLOAD_WAIT,
@@ -600,12 +598,12 @@ begin
 			id_out : std_logic_vector(15 downto 0);
 			id_out_valid : std_logic;
 			sync_buffer : std_logic;
-			cnt : natural range 0 to maximum(PIPE_LENGTH, RETIMING_DEPTH);
+			cnt : natural range 0 to maximum(PIPE_LENGTH, RETIMING_DEPTH + 1);
 		end record;
 
 		signal r, r_in : r_t;
 	begin
-		process(r, rstn, sync_in.valid, sync_in.last, sync_in.data)
+		process(r, rstn, sync_in.valid, sync_in.last, sync_in.data, sync_chained_out_accept_i)
 			variable v : r_t;
 		begin
 			v := r;
@@ -617,7 +615,10 @@ begin
 			case r.state is
 			when STATE_RESET =>
 				v.state := STATE_IDLE;
-			when STATE_IDLE =>
+			when STATE_IDLE | STATE_IDLE_COMMIT =>
+				if v.cnt = 0 then
+					v.state := STATE_IDLE;
+				end if;
 				if sync_in.valid = '1' then
 					if sync_in.last = '1' then
 						v.state := STATE_DROP;
@@ -733,19 +734,19 @@ begin
 					v.cnt := PIPE_LENGTH;
 				end if;
 			when STATE_REPEAT =>
-				if sync_chained_in_accept_i = '1' then
+				if sync_chained_out_accept_i = '1' then
 					v.state := STATE_REPEAT_ID1;
 				end if;
 			when STATE_REPEAT_ID1 =>
-				if sync_chained_in_accept_i = '1' then
+				if sync_chained_out_accept_i = '1' then
 					v.state := STATE_REPEAT_ID2;
 				end if;
 			when STATE_REPEAT_ID2 =>
-				if sync_chained_in_accept_i = '1' then
+				if sync_chained_out_accept_i = '1' then
 					v.state := STATE_PASSTHROUGH;
 				end if;
 			when STATE_PASSTHROUGH =>
-				if sync_in.valid = '1' and sync_in.last = '1' and sync_chained_in_accept_i = '1' then
+				if sync_in.valid = '1' and sync_in.last = '1' and sync_chained_out_accept_i = '1' then
 					v.state := STATE_IDLE;
 				end if;
 			when STATE_WAIT_PIPE =>
@@ -753,8 +754,8 @@ begin
 					v.state := STATE_DONE;
 				end if;
 			when STATE_DONE =>
-				v.state := STATE_IDLE;
-				v.cnt := RETIMING_DEPTH;
+				v.state := STATE_IDLE_COMMIT;
+				v.cnt := RETIMING_DEPTH + 1; -- + 1 is for *_we to *_changed latency
 			when STATE_DROP =>
 				if sync_in.valid = '1' and sync_in.last = '1' then
 					v.state := STATE_IDLE;
@@ -832,7 +833,7 @@ begin
 
 		with r.state select
 			sync_in_busy <=
-				not id_out_valid when STATE_IDLE | STATE_DROP | STATE_DONE | STATE_PASSTHROUGH,
+				not id_out_valid when STATE_IDLE | STATE_DROP | STATE_PASSTHROUGH,
 				'1' when others;
 
 	end generate;

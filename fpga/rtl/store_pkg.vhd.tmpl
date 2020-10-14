@@ -48,6 +48,7 @@ package {{store.name}}_pkg is
 {%     if o.axi != None %}
 	constant \{{o.cname|upper}}__ADDR\ : natural := 16#{{'%x'|format(o.axi)}}#;
 {%     endif %}
+	constant \{{o.cname|upper}}__KEY\ : std_logic_vector := {{o|vhdlkey(store=store, littleEndian=store.littleEndian)}};
 
 {%   endif %}
 {% endfor %}

@@ -174,38 +174,22 @@ begin
 				v.cnt := r.cnt - 1;
 			end if;
 
-			v.save := '0';
-
-			if r.last = '1' then
-				v.state := STATE_IDLE;
+			if r.save = '1' then
+				v.data := (others => '-');
 			end if;
 
-			case v.state is
+			v.save := '0';
+
+			case r.state is
 			when STATE_RESET =>
 				v.state := STATE_IDLE;
-			when STATE_IDLE =>
-				v.data := (others => '-');
-				if sync_in_valid = '1' then
-					if sync_in_buffer = '1' then
-						if BUFFER_PADDING_BEFORE > 0 then
-							v.state := STATE_PADDING;
-							v.cnt := BUFFER_PADDING_BEFORE;
-						else
-							v.state := STATE_BUFFER;
-							v.cnt := r.data'length / 8;
-						end if;
-					else
-						v.state := STATE_UPDATE;
-						v.cnt := KEY_BYTES;
-					end if;
-				end if;
 			when STATE_PADDING =>
 				if v.cnt = 0 then
 					v.state := STATE_BUFFER;
 					v.cnt := r.data'length / 8;
 				end if;
 			when STATE_BUFFER =>
-				if v.cnt = 0 then
+				if r.cnt = 1 then
 					v.state := STATE_BUFFER_PASSTHROUGH;
 					v.len := std_logic_vector(to_unsigned(DATA_BYTES, v.len'length));
 					v.save := '1';
@@ -218,19 +202,14 @@ begin
 			when STATE_UPDATE_LEN =>
 				if v.cnt = 0 then
 					v.cnt := to_integer(unsigned(v.len)) - 1;
-					if BLOB and v.cnt > DATA_BYTES then
+					v.data := (others => '-');
+					if BLOB and v.cnt >= DATA_BYTES then
 						v.state := STATE_UPDATE_DATA_SKIP;
-					elsif not BLOB and v.cnt /= DATA_BYTES then
+					elsif not BLOB and v.cnt /= DATA_BYTES - 1 then
 						v.state := STATE_UPDATE_DATA_SKIP;
 					else
 						v.state := STATE_UPDATE_DATA;
-						v.data := (others => '-');
 					end if;
-				end if;
-			when STATE_UPDATE_DATA =>
-				if v.cnt = 0 then
-					v.state := STATE_UPDATE;
-					v.save := '1';
 				end if;
 			when STATE_UPDATE_SKIP =>
 				if v.cnt = 0 then
@@ -240,11 +219,40 @@ begin
 			when STATE_UPDATE_LEN_SKIP =>
 				if v.cnt = 0 then
 					v.cnt := to_integer(unsigned(v.len));
+					v.data := (others => '-');
 					v.state := STATE_UPDATE_DATA_SKIP;
 				end if;
 			when STATE_UPDATE_DATA_SKIP =>
 				if v.cnt = 0 then
 					v.state := STATE_UPDATE;
+					v.cnt := KEY_BYTES;
+				end if;
+			when others => null;
+			end case;
+
+			if r.last = '1' then
+				v.state := STATE_IDLE;
+			end if;
+
+			case v.state is
+			when STATE_IDLE =>
+				if sync_in_valid = '1' then
+					if sync_in_buffer = '1' then
+--pragma translate_off
+						assert v.save = '0' report "Data lost" severity error;
+--pragma translate_on
+						v.data := (others => '-');
+						if BUFFER_PADDING_BEFORE > 0 then
+							v.state := STATE_PADDING;
+							v.cnt := BUFFER_PADDING_BEFORE;
+						else
+							v.state := STATE_BUFFER;
+							v.cnt := r.data'length / 8;
+						end if;
+					else
+						v.state := STATE_UPDATE;
+						v.cnt := KEY_BYTES;
+					end if;
 				end if;
 			when others => null;
 			end case;
@@ -260,7 +268,7 @@ begin
 				end if;
 			when STATE_UPDATE =>
 				if sync_in_valid = '1' then
-					if sync_in_data /= KEY(r.cnt * 8 - 1 downto r.cnt * 8 - 8) then
+					if sync_in_data /= normalize(KEY)(v.cnt * 8 - 1 downto v.cnt * 8 - 8) then
 						v.state := STATE_UPDATE_SKIP;
 					end if;
 				end if;
@@ -278,6 +286,12 @@ begin
 						v.data := sync_in_data & r.data(r.data'high downto 8);
 					else
 						v.data := r.data(r.data'high - 8 downto 0) & sync_in_data;
+					end if;
+
+					if v.cnt = 0 then
+						v.save := '1';
+						v.state := STATE_UPDATE;
+						v.cnt := KEY_BYTES;
 					end if;
 				end if;
 			when others => null;

@@ -40,6 +40,7 @@ package libstored_pkg is
 	function maximum(constant a, b : integer) return integer;
 	function minimum(constant a, b : integer) return integer;
 	function ceil(constant x : real) return integer;
+	function normalize(constant x : std_logic_vector) return std_logic_vector;
 end libstored_pkg;
 
 package body libstored_pkg is
@@ -65,4 +66,21 @@ package body libstored_pkg is
 	begin
 		return integer(x + 0.5);
 	end function;
+
+	function normalize(constant x : std_logic_vector) return std_logic_vector is
+		variable v : std_logic_vector(x'length - 1 downto 0);
+	begin
+		if x'ascending then
+			for i in v'range loop
+				v(i) := x(x'high - i);
+			end loop;
+		else
+			for i in v'range loop
+				v(i) := x(x'low + i);
+			end loop;
+		end if;
+
+		return v;
+	end function;
+
 end package body;

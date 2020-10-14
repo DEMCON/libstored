@@ -80,9 +80,16 @@ architecture behav of test_fpga is
 	signal \scope__inner_int__in\ : TestStore_pkg.\scope__inner_int__type\;
 	signal \scope__inner_int__in_we\ : std_logic;
 
+	-- some other scope/some other inner bool
+	signal \some_other_scope__some_other_inner_bool__out\ : TestStore_pkg.\some_other_scope__some_other_inner_bool__type\;
+	signal \some_other_scope__some_other_inner_bool__out_changed\ : std_logic;
+	signal \some_other_scope__some_other_inner_bool__in\ : TestStore_pkg.\some_other_scope__some_other_inner_bool__type\;
+	signal \some_other_scope__some_other_inner_bool__in_we\ : std_logic;
+
 	signal axi_m2s : axi_m2s_t;
 	signal axi_s2m : axi_s2m_t;
 	signal sync_in, sync_out : msg_t;
+	signal sync_in_busy : std_logic;
 begin
 
 	store_inst : entity work.TestStore_hdl
@@ -143,8 +150,15 @@ begin
 			\scope__inner_int__in\ => \scope__inner_int__in\,
 			\scope__inner_int__in_we\ => \scope__inner_int__in_we\,
 
+			-- some other scope/some other inner bool
+			\some_other_scope__some_other_inner_bool__out\ => \some_other_scope__some_other_inner_bool__out\,
+			\some_other_scope__some_other_inner_bool__out_changed\ => \some_other_scope__some_other_inner_bool__out_changed\,
+			\some_other_scope__some_other_inner_bool__in\ => \some_other_scope__some_other_inner_bool__in\,
+			\some_other_scope__some_other_inner_bool__in_we\ => \some_other_scope__some_other_inner_bool__in_we\,
+
 			sync_in => sync_in,
 			sync_out => sync_out,
+			sync_in_busy => sync_in_busy,
 
 			s_axi_araddr => axi_m2s.araddr,
 			s_axi_arready => axi_s2m.arready,
@@ -190,6 +204,7 @@ begin
 		variable test : test_t;
 		variable data : std_logic_vector(31 downto 0);
 		variable id_in, id_out : std_logic_vector(15 downto 0);
+		variable buf : buffer_t(0 to TestStore_pkg.BUFFER_LENGTH - 1);
 	begin
 		\default_int8__in_we\ <= '0';
 		\default_int16__in_we\ <= '0';
@@ -199,6 +214,7 @@ begin
 		\array_bool_0__in_we\ <= '0';
 		\array_string_0__in_we\ <= '0';
 		\scope__inner_int__in_we\ <= '0';
+		\some_other_scope__some_other_inner_bool__in_we\ <= '0';
 
 		axi_init(axi_m2s, axi_s2m);
 		sync_init(sync_in, sync_out);
@@ -210,6 +226,8 @@ begin
 		test_init(test);
 		test_verbose(test);
 
+
+
 		test_start(test, "Initial");
 		test_expect_eq(test, \default_int8__out\, 0);
 		test_expect_eq(test, \default_int16__out\, 0);
@@ -218,13 +236,17 @@ begin
 		test_expect_eq(test, \array_bool_0__out\, '1');
 		test_expect_eq(test, \array_string_0__out\, x"00000000");
 
+
+
 		test_start(test, "Set");
 		\default_int8__in\ <= x"12";
 		\default_int8__in_we\ <= '1';
 		wait until rising_edge(clk);
 		\default_int8__in_we\ <= '0';
-		wait until rising_edge(clk) and \default_int8__out_changed\ = '1';
+		wait until rising_edge(clk) and \default_int8__out_changed\ = '1' for 1 ms;
 		test_expect_eq(test, \default_int8__out\, 18);
+
+
 
 		test_start(test, "AXI");
 		axi_read(clk, axi_m2s, axi_s2m, TestStore_pkg.\DEFAULT_INT8__ADDR\, data);
@@ -235,12 +257,51 @@ begin
 
 		test_start(test, "Hello");
 		sync_accept_hello(clk, sync_in, sync_out, TestStore_pkg.HASH, id_in, TestStore_pkg.LITTLE_ENDIAN);
-		sync_welcome(clk, sync_in, sync_out, id_in, x"aabb",
-			(0 to TestStore_pkg.BUFFER_LENGTH - 1 => x"EF"),
---			(x"12", x"34", x"56", x"78", x"9a", x"bc", x"de", x"f0", x"11"),
-			TestStore_pkg.LITTLE_ENDIAN);
+		for i in buf'range loop
+			buf(i) := std_logic_vector(to_unsigned(i, 8));
+		end loop;
+
+		sync_welcome(clk, sync_in, sync_out, id_in, x"aabb", buf, TestStore_pkg.LITTLE_ENDIAN);
+
+
+
+		test_start(test, "UpdateSingle");
+		sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\DEFAULT_INT8__KEY\,
+			to_buffer(x"24"), TestStore_pkg.LITTLE_ENDIAN);
+		sync_wait(clk, sync_in_busy);
+		test_expect_eq(test, \default_int8__out\, 16#24#);
+
+
+
+		test_start(test, "UpdateMulti");
+		sync_update_start(clk, sync_in, sync_out, id_in, TestStore_pkg.LITTLE_ENDIAN);
+		sync_update_var(clk, sync_in, sync_out, TestStore_pkg.\DEFAULT_INT8__KEY\,
+			to_buffer(x"25"), false, TestStore_pkg.LITTLE_ENDIAN);
+		sync_update_var(clk, sync_in, sync_out, TestStore_pkg.\DEFAULT_INT32__KEY\,
+			to_buffer(101, 4), false, TestStore_pkg.LITTLE_ENDIAN);
+		sync_update_var(clk, sync_in, sync_out, TestStore_pkg.\SOME_OTHER_SCOPE__SOME_OTHER_INNER_BOOL__KEY\,
+			to_buffer('0'), true, TestStore_pkg.LITTLE_ENDIAN);
+		sync_wait(clk, sync_in_busy);
+		test_expect_eq(test, \default_int8__out\, 16#25#);
+		test_expect_eq(test, \default_int32__out\, 101);
+		test_expect_eq(test, \some_other_scope__some_other_inner_bool__out\, '0');
+
+
+
+		test_start(test, "UpdateBurst");
+		sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\DEFAULT_INT8__KEY\,
+			to_buffer(x"26"), TestStore_pkg.LITTLE_ENDIAN);
+		sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\DEFAULT_INT8__KEY\,
+			to_buffer(x"27"), TestStore_pkg.LITTLE_ENDIAN);
+		sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\DEFAULT_INT8__KEY\,
+			to_buffer(x"28"), TestStore_pkg.LITTLE_ENDIAN);
+		sync_wait(clk, sync_in_busy);
+		test_expect_eq(test, \default_int8__out\, 16#28#);
+
+
 
 		test_finish(test);
+
 		wait for 1 us;
 		done <= true;
 		wait;
