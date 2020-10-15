@@ -147,11 +147,12 @@ StoreJournal::Seq StoreJournal::toLong(StoreJournal::ShortSeq seq) const {
  * \param key of the object within the store this is the journal of
  * \param len the length of the (changed) data of the object.
  *        This is usually constant, but may change if the object is a string, for example.
+ * \param insertIfNew when \c true, record the change, even if it is not in the journal yet
  */
-void StoreJournal::changed(StoreJournal::Key key, size_t len) {
+void StoreJournal::changed(StoreJournal::Key key, size_t len, bool insertIfNew) {
 	m_partialSeq = true;
 
-	if(!update(key, len, seq(), 0, m_changes.size())) {
+	if(!update(key, len, seq(), 0, m_changes.size()) && insertIfNew) {
 		m_changes.
 #if STORED_cplusplus >= 201103L
 			emplace_back
@@ -410,7 +411,7 @@ void StoreJournal::encodeUpdate(ProtocolLayer& p, StoreJournal::ObjectInfo& o) {
 /*!
  * \brief Decode and apply updates from a #stored::Synchronizer message.
  */
-StoreJournal::Seq StoreJournal::decodeUpdates(void*& buffer, size_t& len) {
+StoreJournal::Seq StoreJournal::decodeUpdates(void*& buffer, size_t& len, bool recordAll) {
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 	bool ok = true;
 
@@ -426,7 +427,7 @@ StoreJournal::Seq StoreJournal::decodeUpdates(void*& buffer, size_t& len) {
 		memcpy(obj, buffer_, size);
 		buffer_ += size;
 		len -= size;
-		changed(key, size);
+		changed(key, size, recordAll);
 	}
 
 	return bumpSeq();
@@ -528,6 +529,13 @@ Synchronizer& SyncConnection::synchronizer() const {
  */
 void SyncConnection::encodeCmd(char cmd, bool last) {
 	encode(&cmd, 1, last);
+}
+
+/*!
+ * \brief Returns if the given store is synchronized over this connection.
+ */
+bool SyncConnection::isSynchronizing(StoreJournal& store) const {
+	return m_store.find(&store) != m_store.end();
 }
 
 /*!
@@ -811,10 +819,12 @@ void SyncConnection::decode(void* buffer, size_t len) {
 		}
 
 		// Make sure that local changes are flushed out first.
-		process(*it->second);
+		StoreJournal& j = *it->second;
+		process(j);
 
 		StoreJournal::Seq seq = 0;
-		if(!(seq = it->second->decodeUpdates(buffer, len))) {
+		bool recordAll = synchronizer().isSynchronizing(j, *this);
+		if(!(seq = it->second->decodeUpdates(buffer, len, recordAll))) {
 			bye(id);
 			break;
 		}
@@ -1060,6 +1070,24 @@ void Synchronizer::process(ProtocolLayer& connection, StoreJournal& j) {
 	SyncConnection* c = toConnection(connection);
 	if(c)
 		c->process(j);
+}
+
+bool Synchronizer::isSynchronizing(StoreJournal& j) const {
+	for(Connections::iterator it = m_connections.begin(); it != m_connections.end(); ++it)
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
+		if(static_cast<SyncConnection*>(*it)->isSynchronizing(j))
+			return true;
+	return false;
+}
+
+bool Synchronizer::isSynchronizing(StoreJournal& j, SyncConnection& notOverConnection) const {
+	for(Connections::iterator it = m_connections.begin(); it != m_connections.end(); ++it) {
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
+		SyncConnection* c = static_cast<SyncConnection*>(*it);
+		if(c != &notOverConnection && c->isSynchronizing(j))
+			return true;
+	}
+	return false;
 }
 
 } // namespace

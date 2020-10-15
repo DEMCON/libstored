@@ -69,11 +69,11 @@
  * of the given store (by hash). All updates, send to me
  * using this reference."
  *
- * `h` \<hash\> \<id\>
+ * (`h` | `H`) \<hash\> \<id\>
  *
  * The hash is returned by the \c hash() function of the store, including the
  * null-terminator. The id is arbitrary chosen by the Synchronizer, and is
- * 16-bit in the store's endianness.
+ * 16-bit in the store's endianness (`h` indicates little endian, `H` is big).
  *
  * ### Welcome (as a response to a Hello)
  *
@@ -81,7 +81,7 @@
  * store with given reference. Any updates to the store at your side,
  * provide them to me with my reference."
  *
- * `w` \<hello id\> \<welcome id\> \<buffer\>
+ * (`w` | `W`) \<hello id\> \<welcome id\> \<buffer\>
  *
  * The hello id is the id as received in the hello message (by the other party).
  * The welcome id is chosen by this Synchronizer, in the same manner.
@@ -91,22 +91,27 @@
  * "Your store, with given reference, has changed.
  * The changes are attached."
  *
- * `u` \<id\> \<updates\>
+ * (`u` | `U`) \<id\> \<updates\>
  *
- * The updates are a sequence of the triple: \<key\> \<length\> \<data\>.
+ * The updates are a sequence of the triplet: \<key\> \<length\> \<data\>.
  * The key and length have the most significant bytes stripped, which would
- * always be 0.  The data is in the store's endianness.
+ * always be 0.  All values is in the store's endianness (`u` is little, `U` is
+ * big endian).
  *
  * ### Bye
  *
  * "I do not need any more updates of the given store (by hash, by id or all)."
  *
- * `b` \<hash\><br>
- * `b` \<id\><br>
- * `b`
+ * (`b` | `B`) \<hash\><br>
+ * (`b` | `B`) \<id\><br>
+ * (`b` | `B`)
  *
  * A bye using the id can be used to respond to another message that has an unknown id.
- * Previous communication sessions remnents can be cleaned up in this way.
+ * Previous communication sessions remnants can be cleaned up in this way.
+ *
+ * `b` indicates that the id is as little endian, `B` indicates big endian.
+ * For the other two variants, there is no difference in endianness, but both
+ * versions are defined for symmetry.
  *
  * \ingroup libstored
  */
@@ -203,7 +208,7 @@ namespace stored {
 		Seq bumpSeq();
 
 		void clean(Seq oldest = 0);
-		void changed(Key key, size_t len);
+		void changed(Key key, size_t len, bool insertIfNew = true);
 		bool hasChanged(Key key, Seq since) const;
 		bool hasChanged(Seq since) const;
 
@@ -235,7 +240,7 @@ namespace stored {
 
 		static char const* decodeHash(void*& buffer, size_t& len);
 		Seq decodeBuffer(void*& buffer, size_t& len);
-		Seq decodeUpdates(void*& buffer, size_t& len);
+		Seq decodeUpdates(void*& buffer, size_t& len, bool recordAll = true);
 
 	protected:
 		/*!
@@ -410,6 +415,8 @@ namespace stored {
 
 		Synchronizer& synchronizer() const;
 
+		bool isSynchronizing(StoreJournal& store) const;
+
 		void source(StoreJournal& store);
 		void drop(StoreJournal& store);
 		void process(StoreJournal& store);
@@ -534,6 +541,9 @@ namespace stored {
 		void process(StoreJournal& j);
 		void process(ProtocolLayer& connection);
 		void process(ProtocolLayer& connection, StoreJournal& j);
+
+		bool isSynchronizing(StoreJournal& j) const;
+		bool isSynchronizing(StoreJournal& j, SyncConnection& notOverConnection) const;
 
 	protected:
 		SyncConnection* toConnection(ProtocolLayer& connection) const;
