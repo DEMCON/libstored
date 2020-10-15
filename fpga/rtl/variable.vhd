@@ -87,12 +87,7 @@ architecture rtl of libstored_variable is
 	constant KEY_BYTES : natural := KEY'length / 8;
 
 	signal data_in_i, data, data_update, data_snapshot : std_logic_vector(DATA_INIT'length - 1 downto 0);
-	signal data_in_we_i, data_out_changed_i, data_snapshot_changed : std_logic;
-
-	signal sync_in_data_next_i : std_logic_vector(7 downto 0);
-	signal sync_in_last_next_i : std_logic;
-	signal sync_in_valid_next_i : std_logic;
-	signal sync_in_buffer_next_i : std_logic;
+	signal data_in_we_i, data_out_changed_i, data_out_changed_r, data_snapshot_changed : std_logic;
 
 	signal sync_out_have_changes_i : std_logic;
 begin
@@ -108,6 +103,12 @@ begin
 				if data_snapshot /= data then
 					data_snapshot_changed <= '1';
 				end if;
+			end if;
+
+			if data_snapshot /= data then
+				data_out_changed_r <= '1';
+			else
+				data_out_changed_r <= '1';
 			end if;
 
 			if data_in_we_i = '1' then
@@ -146,7 +147,7 @@ begin
 
 	data_out_changed <= data_out_changed_i;
 
-	sync_out_have_changes_i <= data_snapshot_changed or sync_out_have_changes_prev;
+	sync_out_have_changes_i <= data_out_changed_r or sync_out_have_changes_prev;
 
 	sync_in_g : if true generate
 		type state_t is (STATE_RESET, STATE_IDLE,
@@ -163,6 +164,11 @@ begin
 		end record;
 
 		signal r, r_in : r_t;
+
+		signal sync_in_data_next_i : std_logic_vector(7 downto 0);
+		signal sync_in_last_next_i : std_logic;
+		signal sync_in_valid_next_i : std_logic;
+		signal sync_in_buffer_next_i : std_logic;
 	begin
 
 		process(r, rstn, sync_in_valid, sync_in_last, sync_in_data, sync_in_buffer)
@@ -365,11 +371,179 @@ begin
 	end generate;
 
 	sync_out_g : if true generate
+		type state_t is (STATE_RESET, STATE_IDLE, STATE_WAIT, STATE_KEY,
+			STATE_LEN, STATE_DATA, STATE_PASSTHROUGH);
+
+		type r_t is record
+			state : state_t;
+			cnt : natural range 0 to maximum(KEY_BYTES, DATA_BYTES);
+			changed : std_logic;
+		end record;
+
+		signal r, r_in : r_t;
+
+		signal sync_out_data_i : std_logic_vector(7 downto 0);
+		signal sync_out_valid_i : std_logic;
+		signal sync_out_accept_i : std_logic;
+		signal sync_out_last_i : std_logic;
+		signal sync_out_accept_prev_i : std_logic;
 	begin
-		-- TODO
+
+		process(r, rstn, sync_out_valid_prev, sync_out_accept_i, sync_in_commit,
+			data_snapshot_changed, sync_out_data_prev, sync_out_last_prev)
+		is
+			variable v : r_t;
+		begin
+			v := r;
+
+			if sync_out_accept_i = '1' and r.cnt > 0 then
+				v.cnt := r.cnt - 1;
+			end if;
+
+			if sync_in_commit = '1' then
+				v.changed := '0';
+			else
+				v.changed := r.changed or data_snapshot_changed;
+			end if;
+
+			case r.state is
+			when STATE_RESET =>
+				v.state := STATE_IDLE;
+			when STATE_IDLE =>
+				if sync_out_valid_prev = '1' then
+					if v.changed = '0' and sync_out_last_prev = '0' then
+						v.state := STATE_PASSTHROUGH;
+					elsif LITTLE_ENDIAN and sync_out_data_prev = x"75" then -- u
+						if sync_out_last_prev = '1' then
+							v.state := STATE_KEY;
+							v.cnt := KEY_BYTES;
+						else
+							v.state := STATE_WAIT;
+						end if;
+					elsif not LITTLE_ENDIAN and sync_out_data_prev = x"55" then -- U
+						if sync_out_last_prev = '1' then
+							v.state := STATE_KEY;
+							v.cnt := KEY_BYTES;
+						else
+							v.state := STATE_WAIT;
+						end if;
+					else
+						v.state := STATE_PASSTHROUGH;
+					end if;
+				end if;
+			when STATE_WAIT =>
+				if sync_out_valid_prev = '1' and sync_out_last_prev = '1' then
+					v.state := STATE_KEY;
+					v.cnt := KEY_BYTES;
+				end if;
+			when STATE_KEY =>
+				if v.cnt = 0 then
+					v.state := STATE_LEN;
+					v.cnt := KEY_BYTES;
+				end if;
+			when STATE_LEN =>
+				if v.cnt = 0 then
+					v.state := STATE_DATA;
+					v.cnt := DATA_BYTES;
+				end if;
+			when STATE_DATA =>
+				if v.cnt = 0 then
+					v.state := STATE_IDLE;
+				end if;
+			when STATE_PASSTHROUGH =>
+				if sync_out_valid_prev = '1' and sync_out_last_prev = '1' then
+					v.state := STATE_IDLE;
+				end if;
+			end case;
+
+			if rstn /= '1' then
+				v.state := STATE_RESET;
+				v.changed := '1';
+			end if;
+
+			r_in <= v;
+		end process;
+
+		process(clk)
+		begin
+			if rising_edge(clk) then
+				r <= r_in;
+			end if;
+		end process;
+
+		with r.state select
+			sync_out_accept_prev_i <=
+				'1' when STATE_IDLE | STATE_WAIT | STATE_PASSTHROUGH,
+				'0' when others;
+
+		sync_out_accept_prev <= sync_out_accept_prev_i;
+
+		process(r, sync_out_data_prev, data_snapshot)
+			variable len : std_logic_vector(KEY'length - 1 downto 0);
+		begin
+			sync_out_data_i <= (others => '-');
+			len := (others => '-');
+
+			case r.state is
+			when STATE_IDLE | STATE_WAIT | STATE_PASSTHROUGH =>
+				sync_out_data_i <= sync_out_data_prev;
+			when STATE_KEY =>
+				if not LITTLE_ENDIAN then
+					sync_out_data_i <= KEY(KEY'high - r.cnt * 8 - 8 downto KEY'high - r.cnt * 8 + 1);
+				else
+					sync_out_data_i <= KEY(r.cnt * 8 - 1 downto r.cnt * 8 - 8);
+				end if;
+			when STATE_LEN =>
+				len := std_logic_vector(to_unsigned(DATA_BYTES, KEY'length));
+				if not LITTLE_ENDIAN then
+					sync_out_data_i <= len(KEY'high - r.cnt * 8 - 8 downto KEY'high - r.cnt * 8 + 1);
+				else
+					sync_out_data_i <= len(r.cnt * 8 - 1 downto r.cnt * 8 - 8);
+				end if;
+			when STATE_DATA =>
+				if not LITTLE_ENDIAN or BLOB then
+					sync_out_data_i <= data_snapshot(data_snapshot'high - r.cnt * 8 + 8 downto data_snapshot'high - r.cnt * 8 + 1);
+				else
+					sync_out_data_i <= data_snapshot(r.cnt * 8 - 1 downto r.cnt * 8 - 8);
+				end if;
+			when others => null;
+			end case;
+		end process;
+
+		with r.state select
+			sync_out_valid_i <=
+				sync_out_valid_prev when STATE_IDLE | STATE_WAIT | STATE_PASSTHROUGH,
+				'1' when STATE_KEY | STATE_LEN | STATE_DATA,
+				'0' when others;
+
+		sync_out_last_i <=
+			'1' when r.state = STATE_DATA and r.cnt = 1 else
+			sync_out_last_prev and not r.changed when r.state = STATE_IDLE else
+			sync_out_last_prev when r.state = STATE_PASSTHROUGH else
+			'0';
 
 		sync_out_buffer_g : if BUFFER_CHAIN generate
+			signal sync_out_i, sync_out_r : std_logic_vector(8 downto 0);
 		begin
+			buffer_inst : entity work.libstored_stream_buffer
+				generic map (
+					WIDTH => sync_out_i'length
+				)
+				port map (
+					clk => clk,
+					rstn => rstn,
+					i => sync_out_i,
+					i_valid => sync_out_valid_i,
+					i_accept => sync_out_accept_i,
+					o => sync_out_r,
+					o_valid => sync_out_valid,
+					o_accept => sync_out_accept
+				);
+
+			sync_out_i <= sync_out_last_i & sync_out_data_i;
+			sync_out_last <= sync_out_r(8);
+			sync_out_data <= sync_out_r(7 downto 0);
+
 			process(clk)
 			begin
 				if rising_edge(clk) then
@@ -378,9 +552,13 @@ begin
 			end process;
 		end generate;
 
-		sync_out_no_buffer_g : if BUFFER_CHAIN generate
+		sync_out_no_buffer_g : if not BUFFER_CHAIN generate
 		begin
 			sync_out_have_changes <= sync_out_have_changes_i;
+			sync_out_valid <= sync_out_valid_i;
+			sync_out_data <= sync_out_data_i;
+			sync_out_last <= sync_out_last_i;
+			sync_out_accept_i <= sync_out_accept;
 		end generate;
 	end generate;
 

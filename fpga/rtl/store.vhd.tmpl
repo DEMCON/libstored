@@ -307,6 +307,7 @@ begin
 	var_sync_out_valid_last <= var_sync_out_valid(var_sync_out_valid'high);
 	var_sync_out_accept(var_sync_out_accept'high) <= var_sync_out_accept_last;
 	var_sync_out_accept_first <= var_sync_out_accept(0);
+	var_sync_out_have_changes(0) <= '0';
 	var_sync_out_have_changes_last <= var_sync_out_have_changes(var_sync_out_have_changes'high);
 
 	sync_out_g : if true generate
@@ -342,7 +343,7 @@ begin
 			id : std_logic_vector(id_out'range);
 			passthrough : std_logic;
 			passthrough_last : std_logic;
-			cnt : natural range 0 to maximum(RETIMING_DEPTH, {{store.name}}_pkg.HASH'length);
+			cnt : natural range 0 to maximum(RETIMING_DEPTH + 1, {{store.name}}_pkg.HASH'length);
 		end record;
 
 		signal r, r_in : r_t;
@@ -415,7 +416,7 @@ begin
 				end if;
 			when STATE_SNAPSHOT =>
 				v.state := STATE_SNAPSHOT_WAIT;
-				v.cnt := RETIMING_DEPTH;
+				v.cnt := RETIMING_DEPTH + 1; -- + 1 for internal snapshot processing of libstored_variable.
 			when STATE_SNAPSHOT_WAIT =>
 				if v.cnt = 0 then
 					v.state := STATE_TRIGGER;
@@ -614,7 +615,9 @@ begin
 
 			case r.state is
 			when STATE_RESET =>
-				v.state := STATE_IDLE;
+				if v.cnt = 0 then
+					v.state := STATE_IDLE;
+				end if;
 			when STATE_IDLE | STATE_IDLE_COMMIT =>
 				if v.cnt = 0 then
 					v.state := STATE_IDLE;
@@ -764,7 +767,7 @@ begin
 
 			if rstn /= '1' then
 				v.state := STATE_RESET;
-				v.cnt := 0;
+				v.cnt := PIPE_LENGTH;
 				v.id_out_valid := '0';
 			end if;
 

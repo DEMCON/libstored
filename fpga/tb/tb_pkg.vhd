@@ -153,6 +153,22 @@ package libstored_tb_pkg is
 	procedure sync_wait(signal clk : in std_logic; signal busy : in std_logic;
 		constant timeout : in time := 1 ms);
 
+	procedure sync_accept_update_start(signal clk : in std_logic;
+		signal sync_in : inout libstored_pkg.msg_t;
+		signal sync_out : in libstored_pkg.msg_t;
+		constant id_out : std_logic_vector(15 downto 0);
+		constant littleEndian : boolean := true;
+		constant timeout : in time := 1 ms);
+
+	procedure sync_accept_update_var(signal clk : in std_logic;
+		signal sync_in : inout libstored_pkg.msg_t;
+		signal sync_out : in libstored_pkg.msg_t;
+		variable key : out std_logic_vector;
+		variable buf : out buffer_t;
+		variable last : out boolean;
+		constant littleEndian : boolean := true;
+		constant timeout : in time := 1 ms);
+
 end libstored_tb_pkg;
 
 package body libstored_tb_pkg is
@@ -845,6 +861,98 @@ package body libstored_tb_pkg is
 	begin
 		wait until rising_edge(clk) and busy = '0' for timeout;
 		assert busy = '0' report "Timeout" severity failure;
+	end procedure;
+
+	procedure sync_accept_update_start(signal clk : in std_logic;
+		signal sync_in : inout libstored_pkg.msg_t;
+		signal sync_out : in libstored_pkg.msg_t;
+		constant id_out : std_logic_vector(15 downto 0);
+		constant littleEndian : boolean := true;
+		constant timeout : in time := 1 ms)
+	is
+		variable deadline : time;
+		variable cmd : std_logic_vector(7 downto 0);
+	begin
+		deadline := now + timeout;
+
+		sync_in.accept <= '1';
+
+		if littleEndian then
+			cmd := x"75";
+		else
+			cmd := x"55";
+		end if;
+
+		msg_loop : while true loop
+			wait until rising_edge(clk) and sync_out.valid = '1' for deadline - now;
+			assert sync_out.valid = '1' report "Timeout" severity failure;
+			if sync_out.data /= cmd then
+				next msg_loop;
+			end if;
+
+			wait until rising_edge(clk) and sync_out.valid = '1' for deadline - now;
+			assert sync_out.valid = '1' report "Timeout" severity failure;
+			if sync_out.data /= id_out(15 downto 8) then
+				next msg_loop;
+			end if;
+
+			wait until rising_edge(clk) and sync_out.valid = '1' for deadline - now;
+			assert sync_out.valid = '1' report "Timeout" severity failure;
+			if sync_out.data /= id_out(7 downto 0) then
+				next msg_loop;
+			end if;
+
+			assert sync_out.last = '0' report "Corrupt message" severity failure;
+			exit;
+		end loop;
+
+		sync_in.accept <= '0';
+	end procedure;
+
+	procedure sync_accept_update_var(signal clk : in std_logic;
+		signal sync_in : inout libstored_pkg.msg_t;
+		signal sync_out : in libstored_pkg.msg_t;
+		variable key : out std_logic_vector;
+		variable buf : out buffer_t;
+		variable last : out boolean;
+		constant littleEndian : boolean := true;
+		constant timeout : in time := 1 ms)
+	is
+		variable deadline : time;
+		variable len : std_logic_vector(key'length - 1 downto 0);
+	begin
+		sync_in.accept <= '1';
+		key := (others => '-');
+		buf := (others => (others => '-'));
+
+		for i in 0 to key'length / 8 - 1 loop
+			wait until rising_edge(clk) and sync_out.valid = '1' for deadline - now;
+			assert sync_out.valid = '1' report "Timeout" severity failure;
+			if littleEndian then
+				key(key'low + i * 8 + 7 downto key'low + i * 8) := sync_out.data;
+			else
+				key(key'high - i * 8 downto key'high - i * 8 - 7) := sync_out.data;
+			end if;
+		end loop;
+
+		for i in 0 to len'length / 8 - 1 loop
+			wait until rising_edge(clk) and sync_out.valid = '1' for deadline - now;
+			assert sync_out.valid = '1' report "Timeout" severity failure;
+			if littleEndian then
+				len(len'low + i * 8 + 7 downto len'low + i * 8) := sync_out.data;
+			else
+				len(len'high - i * 8 downto len'high - i * 8 - 7) := sync_out.data;
+			end if;
+		end loop;
+
+		for i in 0 to to_integer(unsigned(len)) - 1 loop
+			wait until rising_edge(clk) and sync_out.valid = '1' for deadline - now;
+			assert sync_out.valid = '1' report "Timeout" severity failure;
+			buf(buf'low + i) := sync_out.data;
+			last := sync_out.last = '1';
+		end loop;
+
+		sync_in.accept <= '0';
 	end procedure;
 
 end package body;

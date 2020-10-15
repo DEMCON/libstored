@@ -28,27 +28,28 @@ package {{store.name}}_pkg is
 
 	constant HASH : hash_t := {{store.hash|vhdlstr}}; -- {{store.hash}}
 	constant BUFFER_LENGTH : natural := {{store.buffer.size}};
-
 {% if store.littleEndian %}
 	constant LITTLE_ENDIAN : boolean := true;
 {% else %}
 	constant LITTLE_ENDIAN : boolean := false;
 {% endif %}
+	constant KEY_LENGTH : natural := {{(store.objects|first|vhdlkey(store=store, littleEndian=store.littleEndian)|len - 3) * 4}};
 
 {% for o in store.objects %}
 {%   if o is variable %}
 	-- {{o}}
 {%     if o|vhdltype == 'std_logic' %}
 	constant \{{o.cname|upper}}__LENGTH\ : natural := 1;
+	constant \{{o.cname|upper}}__INIT\ : std_logic_vector(7 downto 0) := {{o|vhdlinit}};
 {%     else %}
 	constant \{{o.cname|upper}}__LENGTH\ : natural := {{o.size * 8}};
+	constant \{{o.cname|upper}}__INIT\ : std_logic_vector(\{{o.cname|upper}}__LENGTH\ - 1 downto 0) := {{o|vhdlinit}};
 {%     endif %}
 	subtype \{{o.cname}}__type\ is {{o|vhdltype}};
-	constant \{{o.cname|upper}}__INIT\ : std_logic_vector := {{o|vhdlinit}};
 {%     if o.axi != None %}
 	constant \{{o.cname|upper}}__ADDR\ : natural := 16#{{'%x'|format(o.axi)}}#;
 {%     endif %}
-	constant \{{o.cname|upper}}__KEY\ : std_logic_vector := {{o|vhdlkey(store=store, littleEndian=store.littleEndian)}};
+	constant \{{o.cname|upper}}__KEY\ : std_logic_vector(KEY_LENGTH - 1 downto 0) := {{o|vhdlkey(store=store, littleEndian=store.littleEndian)}};
 
 {%   endif %}
 {% endfor %}

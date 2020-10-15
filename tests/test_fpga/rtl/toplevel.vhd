@@ -205,7 +205,11 @@ begin
 		variable data : std_logic_vector(31 downto 0);
 		variable id_in, id_out : std_logic_vector(15 downto 0);
 		variable buf : buffer_t(0 to TestStore_pkg.BUFFER_LENGTH - 1);
+		variable key : std_logic_vector(TestStore_pkg.KEY_LENGTH - 1 downto 0);
+		variable last : boolean;
 	begin
+		id_out := x"aabb";
+
 		\default_int8__in_we\ <= '0';
 		\default_int16__in_we\ <= '0';
 		\default_int32__in_we\ <= '0';
@@ -261,7 +265,7 @@ begin
 			buf(i) := std_logic_vector(to_unsigned(i, 8));
 		end loop;
 
-		sync_welcome(clk, sync_in, sync_out, id_in, x"aabb", buf, TestStore_pkg.LITTLE_ENDIAN);
+		sync_welcome(clk, sync_in, sync_out, id_in, id_out, buf, TestStore_pkg.LITTLE_ENDIAN);
 
 
 
@@ -297,6 +301,17 @@ begin
 			to_buffer(x"28"), TestStore_pkg.LITTLE_ENDIAN);
 		sync_wait(clk, sync_in_busy);
 		test_expect_eq(test, \default_int8__out\, 16#28#);
+
+
+
+		test_start(test, "UpdateOut");
+		\default_int8__in\ <= x"45";
+		\default_int8__in_we\ <= '1';
+		wait until rising_edge(clk);
+		\default_int8__in_we\ <= '0';
+
+		sync_accept_update_start(clk, sync_in, sync_out, id_out, TestStore_pkg.LITTLE_ENDIAN);
+		sync_accept_update_var(clk, sync_in, sync_out, key, buf, last, TestStore_pkg.LITTLE_ENDIAN);
 
 
 
