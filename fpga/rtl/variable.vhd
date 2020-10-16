@@ -64,7 +64,6 @@ entity libstored_variable is
 		sync_in_buffer_next : out std_logic := '0';
 
 		-- Sync messages generated (or forwarded) by this variable.
-		sync_out_len : out std_logic_vector(LEN_LENGTH - 1 downto 0);
 		sync_out_data : out std_logic_vector(7 downto 0);
 		sync_out_last : out std_logic;
 		sync_out_valid : out std_logic;
@@ -72,7 +71,6 @@ entity libstored_variable is
 		sync_out_have_changes : out std_logic;
 
 		-- Sync messages generated (of forwarded) by another variable, for daisy chaining.
-		sync_out_len_prev : in std_logic_vector(LEN_LENGTH - 1 downto 0) := (others => '-');
 		sync_out_data_prev : in std_logic_vector(7 downto 0) := (others => '-');
 		sync_out_last_prev : in std_logic := '-';
 		sync_out_valid_prev : in std_logic := '0';
@@ -97,6 +95,11 @@ begin
 		if rising_edge(clk) then
 			data_out_changed_i <= '0';
 			data_snapshot_changed <= '0';
+
+			if sync_in_commit = '1' then
+				data_snapshot <= data_in_i;
+				data_snapshot_changed <= '0';
+			end if;
 
 			if sync_out_snapshot = '1' then
 				data_snapshot <= data;
@@ -151,16 +154,16 @@ begin
 
 	sync_in_g : if true generate
 		type state_t is (STATE_RESET, STATE_IDLE,
-			STATE_PADDING, STATE_BUFFER, STATE_BUFFER_PASSTHROUGH,
-			STATE_UPDATE, STATE_UPDATE_LEN, STATE_UPDATE_DATA, STATE_UPDATE_SKIP,
+			STATE_PADDING, STATE_BUFFER, STATE_PASSTHROUGH,
+			STATE_UPDATE_KEY, STATE_UPDATE_LEN, STATE_UPDATE_DATA,
 			STATE_UPDATE_LEN_SKIP, STATE_UPDATE_DATA_SKIP);
 		type r_t is record
 			state : state_t;
 			cnt : natural range 0 to maximum(2**(KEY_BYTES * 8) - 1, maximum(DATA_BYTES, BUFFER_PADDING_BEFORE));
+			offset : natural range 0 to DATA_BYTES - 1;
 			data : std_logic_vector(DATA_BITS - 1 downto 0);
-			len : std_logic_vector(KEY_BYTES * 8 - 1 downto 0);
+			keylen : std_logic_vector(KEY_BYTES * 8 - 1 downto 0);
 			save : std_logic;
-			last : std_logic;
 		end record;
 
 		signal r, r_in : r_t;
@@ -176,137 +179,114 @@ begin
 		begin
 			v := r;
 
-			if sync_in_valid = '1' and r.cnt > 0 then
-				v.cnt := r.cnt - 1;
-			end if;
-
-			if r.save = '1' then
-				v.data := (others => '-');
-			end if;
-
 			v.save := '0';
+
+			if sync_in_valid = '1' then
+				if BLOB then
+					v.data(v.data'high - r.offset * 8 downto v.data'high - r.offset * 8 - 7) := sync_in_data;
+					v.offset := (r.offset + 1) mod DATA_BYTES;
+				elsif LITTLE_ENDIAN then
+					v.data := sync_in_data & r.data(r.data'high downto 8);
+				else
+					v.data := r.data(r.data'high - 8 downto 0) & sync_in_data;
+				end if;
+
+				if LITTLE_ENDIAN then
+					v.keylen := sync_in_data & r.keylen(r.keylen'high downto 8);
+				else
+					v.keylen := r.keylen(r.keylen'high - 8 downto 0) & sync_in_data;
+				end if;
+
+				if r.cnt > 0 then
+					v.cnt := r.cnt - 1;
+				end if;
+			end if;
 
 			case r.state is
 			when STATE_RESET =>
 				v.state := STATE_IDLE;
-			when STATE_PADDING =>
-				if v.cnt = 0 then
-					v.state := STATE_BUFFER;
-					v.cnt := r.data'length / 8;
-				end if;
-			when STATE_BUFFER =>
-				if r.cnt = 1 then
-					v.state := STATE_BUFFER_PASSTHROUGH;
-					v.len := std_logic_vector(to_unsigned(DATA_BYTES, v.len'length));
-					v.save := '1';
-				end if;
-			when STATE_UPDATE =>
-				if v.cnt = 0 then
-					v.state := STATE_UPDATE_LEN;
-					v.cnt := KEY_BYTES;
-				end if;
-			when STATE_UPDATE_LEN =>
-				if v.cnt = 0 then
-					v.cnt := to_integer(unsigned(v.len)) - 1;
-					v.data := (others => '-');
-					if BLOB and v.cnt >= DATA_BYTES then
-						v.state := STATE_UPDATE_DATA_SKIP;
-					elsif not BLOB and v.cnt /= DATA_BYTES - 1 then
-						v.state := STATE_UPDATE_DATA_SKIP;
-					else
-						v.state := STATE_UPDATE_DATA;
-					end if;
-				end if;
-			when STATE_UPDATE_SKIP =>
-				if v.cnt = 0 then
-					v.state := STATE_UPDATE_LEN_SKIP;
-					v.cnt := KEY_BYTES;
-				end if;
-			when STATE_UPDATE_LEN_SKIP =>
-				if v.cnt = 0 then
-					v.cnt := to_integer(unsigned(v.len));
-					v.data := (others => '-');
-					v.state := STATE_UPDATE_DATA_SKIP;
-				end if;
-			when STATE_UPDATE_DATA_SKIP =>
-				if v.cnt = 0 then
-					v.state := STATE_UPDATE;
-					v.cnt := KEY_BYTES;
-				end if;
-			when others => null;
-			end case;
-
-			if r.last = '1' then
-				v.state := STATE_IDLE;
-			end if;
-
-			case v.state is
 			when STATE_IDLE =>
 				if sync_in_valid = '1' then
 					if sync_in_buffer = '1' then
---pragma translate_off
-						assert v.save = '0' report "Data lost" severity error;
---pragma translate_on
-						v.data := (others => '-');
-						if BUFFER_PADDING_BEFORE > 0 then
+						if BUFFER_PADDING_BEFORE > 1 then
 							v.state := STATE_PADDING;
-							v.cnt := BUFFER_PADDING_BEFORE;
-						else
+							v.cnt := BUFFER_PADDING_BEFORE - 1;
+						elsif BUFFER_PADDING_BEFORE = 1 then
 							v.state := STATE_BUFFER;
-							v.cnt := r.data'length / 8;
+							v.offset := 0;
+							v.cnt := DATA_BYTES;
+						elsif DATA_BYTES > 1 then
+							v.state := STATE_BUFFER;
+							v.cnt := DATA_BYTES - 1;
+						else
+							v.state := STATE_PASSTHROUGH;
+							v.save := '1';
 						end if;
 					else
-						v.state := STATE_UPDATE;
-						v.cnt := KEY_BYTES;
+						if KEY_BYTES > 1 then
+							v.state := STATE_UPDATE_KEY;
+							v.cnt := KEY_BYTES - 1;
+						else
+							if v.keylen = normalize(KEY) then
+								v.state := STATE_UPDATE_LEN;
+							else
+								v.state := STATE_UPDATE_LEN_SKIP;
+							end if;
+							v.cnt := KEY_BYTES;
+						end if;
 					end if;
 				end if;
-			when others => null;
-			end case;
-
-			case v.state is
+			when STATE_PADDING =>
+				if v.cnt = 0 then
+					v.state := STATE_BUFFER;
+					v.offset := 0;
+					v.cnt := DATA_BYTES;
+				end if;
 			when STATE_BUFFER =>
-				if sync_in_valid = '1' then
-					if LITTLE_ENDIAN and not BLOB then
-						v.data := sync_in_data & r.data(r.data'high downto 8);
+				if v.cnt = 0 then
+					v.state := STATE_PASSTHROUGH;
+					v.save := '1';
+				end if;
+			when STATE_PASSTHROUGH =>
+				null;
+			when STATE_UPDATE_KEY =>
+				if v.cnt = 0 then
+					v.cnt := KEY_BYTES;
+					if v.keylen = normalize(KEY) then
+						v.state := STATE_UPDATE_LEN;
 					else
-						v.data := r.data(r.data'high - 8 downto 0) & sync_in_data;
+						v.state := STATE_UPDATE_LEN_SKIP;
 					end if;
 				end if;
-			when STATE_UPDATE =>
-				if sync_in_valid = '1' then
-					if sync_in_data /= normalize(KEY)(v.cnt * 8 - 1 downto v.cnt * 8 - 8) then
-						v.state := STATE_UPDATE_SKIP;
-					end if;
+			when STATE_UPDATE_LEN =>
+				if v.cnt = 0 then
+					v.state := STATE_UPDATE_DATA;
+					v.cnt := to_integer(unsigned(v.keylen));
 				end if;
-			when STATE_UPDATE_LEN | STATE_UPDATE_LEN_SKIP =>
-				if sync_in_valid = '1' then
-					if LITTLE_ENDIAN then
-						v.len := sync_in_data & r.len(r.len'high downto 8);
-					else
-						v.len := r.len(r.len'high - 8 downto 0) & sync_in_data;
-					end if;
+			when STATE_UPDATE_LEN_SKIP =>
+				if v.cnt = 0 then
+					v.state := STATE_UPDATE_DATA_SKIP;
+					v.cnt := to_integer(unsigned(v.keylen));
 				end if;
 			when STATE_UPDATE_DATA =>
-				if sync_in_valid = '1' then
-					if LITTLE_ENDIAN and not BLOB then
-						v.data := sync_in_data & r.data(r.data'high downto 8);
-					else
-						v.data := r.data(r.data'high - 8 downto 0) & sync_in_data;
-					end if;
-
-					if v.cnt = 0 then
-						v.save := '1';
-						v.state := STATE_UPDATE;
-						v.cnt := KEY_BYTES;
-					end if;
+				if v.cnt = 0 then
+					v.state := STATE_IDLE;
+					v.save := '1';
 				end if;
-			when others => null;
+			when STATE_UPDATE_DATA_SKIP =>
+				if v.cnt = 0 then
+					v.state := STATE_IDLE;
+				end if;
 			end case;
 
-			v.last := sync_in_valid and sync_in_last;
+			if sync_in_valid = '1' and sync_in_last = '1' then
+				v.state := STATE_IDLE;
+				v.offset := 0;
+			end if;
 
 			if rstn /= '1' then
 				v.state := STATE_RESET;
+				v.offset := 0;
 			end if;
 
 			r_in <= v;
@@ -321,23 +301,15 @@ begin
 				r <= r_in;
 
 				if r_in.save = '1' then
-					if not BLOB then
-						-- always full buffer
-						data_update <= r_in.data;
-					else
-						-- right aligned in r_in.data
-						l := to_integer(unsigned(r_in.len));
-						data_update <= (others => '0');
-						data_update(data_update'high downto data_update'high - l * 8 + 1) <=
-							r_in.data(l * 8 - 1 downto 0);
-					end if;
+					data_update <= r_in.data;
 				end if;
 			end if;
 		end process;
 
-		sync_in_valid_next_i <=
-			'0' when r_in.state = STATE_PADDING or r_in.state = STATE_BUFFER else
-			sync_in_valid;
+		with r.state select
+			sync_in_valid_next_i <=
+				sync_in_valid when STATE_PASSTHROUGH,
+				sync_in_valid and not sync_in_buffer when others;
 
 		sync_in_data_next_i <= sync_in_data;
 		sync_in_last_next_i <= sync_in_last;
@@ -473,7 +445,7 @@ begin
 
 		with r.state select
 			sync_out_accept_prev_i <=
-				'1' when STATE_IDLE | STATE_WAIT | STATE_PASSTHROUGH,
+				sync_out_accept_i when STATE_IDLE | STATE_WAIT | STATE_PASSTHROUGH,
 				'0' when others;
 
 		sync_out_accept_prev <= sync_out_accept_prev_i;

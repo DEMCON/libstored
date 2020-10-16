@@ -41,7 +41,9 @@ entity {{store.name}}_hdl is
 		--! \brief Store ID to use in a Hello message.
 		ID : natural := 1;
 		--! \brief Enabe AXI slave interface.
-		AXI_SLAVE : boolean := false;
+		AXI_SLAVE : boolean := true;
+		--! \brief Inject buffers after every N variables in the internal chain.
+		BUFFER_AFTER_N_VARS : positive := 4;
 
 		--! \brief Flag to indicate that we are in simulation.
 		--! \details This will reduce timing intervals.
@@ -54,20 +56,11 @@ entity {{store.name}}_hdl is
 		clk : in std_logic;
 		rstn : in std_logic;
 
-{% for o in store.objects %}
-{%   if o is variable %}
-		-- {{o}}
-		\{{o.cname}}__out\ : out {{store.name}}_pkg.\{{o.cname}}__type\;
-		\{{o.cname}}__out_changed\ : out std_logic;
-{%     if o|vhdltype == 'std_logic' %}
-		\{{o.cname}}__in\ : in {{store.name}}_pkg.\{{o.cname}}__type\ := '-';
-{%     else %}
-		\{{o.cname}}__in\ : in {{store.name}}_pkg.\{{o.cname}}__type\ := (others => '-');
-{%     endif %}
-		\{{o.cname}}__in_we\ : in std_logic := '0';
-
-{%   endif %}
-{% endfor %}
+		--! \brief Current value of the store's variables.
+		var_out : out {{store.name}}_pkg.var_out_t;
+		--! \brief Update the store's variables.
+		--! \details To write data, set the var_in.*.we signal high for one clock cycle.
+		var_in : in {{store.name}}_pkg.var_in_t := {{store.name}}_pkg.var_in_default;
 
 		--! \brief Incoming sync messages.
 		--! \details Either from protocol stack or another store's sync_chained_out.
@@ -77,7 +70,11 @@ entity {{store.name}}_hdl is
 		--! \details Either to protocol stack or another store's sync_chained_in.
 		sync_out : out msg_t;
 
+		--! \brief Chain input for sync messages.
+		--! \see #sync_out
 		sync_chained_in : in msg_t := msg_term;
+		--! \brief Chain output for sync messages.
+		--! \see #sync_in
 		sync_chained_out : out msg_t;
 
 		--! \brief Trigger a sync immediately.
@@ -223,7 +220,7 @@ begin
 				BUFFER_PADDING_BEFORE => {{o.offset - ns.offset_next}},
 				LITTLE_ENDIAN => {% if store.littleEndian %}true{% else %}false{% endif %},
 				BLOB => {% if o is blob %}true{% else %}false{% endif %},
-				BUFFER_CHAIN => {% if ns.var_i % 4 == 3 %}true{% else %}false{% endif %},
+				BUFFER_CHAIN => {{ns.var_i}} mod BUFFER_AFTER_N_VARS = BUFFER_AFTER_N_VARS - 1,
 				SIMULATION => SIMULATION
 			)
 			port map (
@@ -231,7 +228,7 @@ begin
 				rstn => rstn,
 
 				data_out => data_out_i,
-				data_out_changed => \{{o.cname}}__out_changed\,
+				data_out_changed => var_out.\{{o.cname}}\.changed,
 				data_in => data_in_i,
 				data_in_we => data_in_we_i,
 
@@ -265,33 +262,43 @@ begin
 {%       if o.axi != None %}
 			axi_we(AXI_REG) or
 {%       endif %}
-			\{{o.cname}}__in_we\;
+			var_in.\{{o.cname}}\.we;
 
 {%     if o|vhdltype == 'std_logic' %}
-		\{{o.cname}}__out\ <=
+		var_out.\{{o.cname}}\.value <=
 --pragma translate_off
 			'X' when is_x(data_out_i) else
 --pragma translate_on
 			'1' when data_out_i /= x"00" else
 			'0';
-		data_in_i <= "0000000" & \{{o.cname}}__in\;
+		data_in_i <= "0000000" & var_in.\{{o.cname}}\.value;
 {%       if o.axi != None %}
 		axi_data_rd(AXI_REG) <= (31 downto 8 => '0') & data_out_i;
 {%       endif %}
 {%     else %}
-		\{{o.cname}}__out\ <= {{store.name}}_pkg.\{{o.cname}}__type\(data_out_i);
+		var_out.\{{o.cname}}\.value <= {{store.name}}_pkg.\{{o.cname}}__type\(data_out_i);
 
 		data_in_i <=
 {%       if o.axi != None %}
-			axi_data_wr(data_in_i'length - 1 downto 0) when \{{o.cname}}__in_we\ = '0' and axi_we(AXI_REG) = '1' else
+{%         if o is blob and store.littleEndian %}
+			swap_endian(axi_data_wr(data_in_i'length - 1 downto 0))
+{%         else %}
+			axi_data_wr(data_in_i'length - 1 downto 0)
+{%         endif %}
+				when var_in.\{{o.cname}}\.we = '0' and axi_we(AXI_REG) = '1' else
 {%       endif %}
-			std_logic_vector(\{{o.cname}}__in\);
+			std_logic_vector(var_in.\{{o.cname}}\.value);
 
 {%       if o.axi != None %}
 		process(data_out_i)
 		begin
 			axi_data_rd(AXI_REG) <= (others => '0');
-			axi_data_rd(AXI_REG)(data_out_i'range) <= data_out_i;
+			axi_data_rd(AXI_REG)(data_out_i'range) <=
+{%       if o is blob and store.littleEndian %}
+				swap_endian(data_out_i);
+{%       else %}
+				data_out_i;
+{%       endif %}
 		end process;
 {%       endif %}
 {%     endif %}
@@ -352,7 +359,7 @@ begin
 		process(r, rstn, sync_chained_in.valid, sync_chained_in.last, sync_chained_out_accept_i,
 			sync_out_trigger, id_out_valid, var_sync_out_valid_last, var_sync_out_last_last,
 			var_sync_out_accept_first, var_sync_out_have_changes_last,
-			sync_out_accept_i)
+			sync_out_accept_i, sync_out_hold, id_out)
 			variable v : r_t;
 		begin
 			v := r;
@@ -529,8 +536,13 @@ begin
 				id_in(15 downto 8) when STATE_HELLO_ID1,
 				id_in(7 downto 0) when STATE_HELLO_ID2,
 				var_sync_out_data_last when STATE_UPDATE_CMD,
-				id_out(15 downto 8) when STATE_UPDATE_ID1,
-				id_out(7 downto 0) when STATE_UPDATE_ID2,
+{% if store.littleEndian %}
+				r.id(7 downto 0) when STATE_UPDATE_ID1,
+				r.id(15 downto 8) when STATE_UPDATE_ID2,
+{% else %}
+				r.id(15 downto 8) when STATE_UPDATE_ID1,
+				r.id(7 downto 0) when STATE_UPDATE_ID2,
+{% endif %}
 				var_sync_out_data_last when STATE_UPDATE_PAYLOAD,
 				sync_chained_in.data when others;
 
@@ -558,7 +570,7 @@ begin
 
 		with r.state select
 			var_sync_out_accept_last <=
-				sync_out_accept_i when STATE_UPDATE_PAYLOAD,
+				sync_out_accept_i when STATE_UPDATE_CMD | STATE_UPDATE_PAYLOAD,
 				'0' when others;
 
 	end generate;
@@ -583,7 +595,7 @@ begin
 	sync_out.last <= sync_out_r(8);
 
 	sync_in_g : if true generate
-		constant PIPE_LENGTH : natural := NUM_VARIABLES / 4 + 1; -- only one in four has buffers
+		constant PIPE_LENGTH : natural := NUM_VARIABLES / BUFFER_AFTER_N_VARS + 1;
 
 		type state_t is (STATE_RESET, STATE_IDLE, STATE_IDLE_COMMIT,
 			STATE_WELCOME, STATE_WELCOME_ID_IN1, STATE_WELCOME_ID_IN2, STATE_WELCOME_ID_OUT1,
@@ -782,6 +794,7 @@ begin
 			end if;
 		end process;
 
+		id_out <= r.id_out;
 		id_out_valid <= r.id_out_valid;
 
 		var_sync_in_data(0) <=
@@ -869,6 +882,9 @@ begin
 		s_axi_rvalid <= '0';
 		s_axi_wready <= '0';
 		s_axi_bvalid <= '0';
+		s_axi_bresp <= (others => '-');
+		s_axi_rdata <= (others => '-');
+		s_axi_rresp <= (others => '-');
 
 --pragma translate_off
 		assert not (rising_edge(clk) and (s_axi_arvalid = '1' or s_axi_awvalid = '1'))

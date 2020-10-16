@@ -41,6 +41,7 @@ package libstored_pkg is
 	function minimum(constant a, b : integer) return integer;
 	function ceil(constant x : real) return integer;
 	function normalize(constant x : std_logic_vector) return std_logic_vector;
+	function swap_endian(constant x : std_logic_vector) return std_logic_vector;
 end libstored_pkg;
 
 package body libstored_pkg is
@@ -80,6 +81,16 @@ package body libstored_pkg is
 			end loop;
 		end if;
 
+		return v;
+	end function;
+
+	function swap_endian(constant x : std_logic_vector) return std_logic_vector is
+		variable n, v : std_logic_vector(x'length - 1 downto 0);
+	begin
+		n := normalize(x);
+		for i in 0 to n'length / 8 - 1 loop
+			v(i * 8 + 7 downto i * 8) := n(n'high - i * 8 downto n'high - i * 8 - 7);
+		end loop;
 		return v;
 	end function;
 

@@ -32,59 +32,8 @@ architecture behav of test_fpga is
 	signal clk, rstn : std_logic;
 	signal done : boolean;
 
-	-- default int8
-	signal \default_int8__out\ : TestStore_pkg.\default_int8__type\;
-	signal \default_int8__out_changed\ : std_logic;
-	signal \default_int8__in\ : TestStore_pkg.\default_int8__type\;
-	signal \default_int8__in_we\ : std_logic;
-
-	-- default int16
-	signal \default_int16__out\ : TestStore_pkg.\default_int16__type\;
-	signal \default_int16__out_changed\ : std_logic;
-	signal \default_int16__in\ : TestStore_pkg.\default_int16__type\;
-	signal \default_int16__in_we\ : std_logic;
-
-	-- default int32
-	signal \default_int32__out\ : TestStore_pkg.\default_int32__type\;
-	signal \default_int32__out_changed\ : std_logic;
-	signal \default_int32__in\ : TestStore_pkg.\default_int32__type\;
-	signal \default_int32__in_we\ : std_logic;
-
-	-- default int64
-	signal \default_int64__out\ : TestStore_pkg.\default_int64__type\;
-	signal \default_int64__out_changed\ : std_logic;
-	signal \default_int64__in\ : TestStore_pkg.\default_int64__type\;
-	signal \default_int64__in_we\ : std_logic;
-
-	-- init decimal
-	signal \init_decimal__out\ : TestStore_pkg.\init_decimal__type\;
-	signal \init_decimal__out_changed\ : std_logic;
-	signal \init_decimal__in\ : TestStore_pkg.\init_decimal__type\;
-	signal \init_decimal__in_we\ : std_logic;
-
-	-- array bool[0]
-	signal \array_bool_0__out\ : TestStore_pkg.\array_bool_0__type\;
-	signal \array_bool_0__out_changed\ : std_logic;
-	signal \array_bool_0__in\ : TestStore_pkg.\array_bool_0__type\;
-	signal \array_bool_0__in_we\ : std_logic;
-
-	-- array string[0]
-	signal \array_string_0__out\ : TestStore_pkg.\array_string_0__type\;
-	signal \array_string_0__out_changed\ : std_logic;
-	signal \array_string_0__in\ : TestStore_pkg.\array_string_0__type\;
-	signal \array_string_0__in_we\ : std_logic;
-
-	-- scope/inner int
-	signal \scope__inner_int__out\ : TestStore_pkg.\scope__inner_int__type\;
-	signal \scope__inner_int__out_changed\ : std_logic;
-	signal \scope__inner_int__in\ : TestStore_pkg.\scope__inner_int__type\;
-	signal \scope__inner_int__in_we\ : std_logic;
-
-	-- some other scope/some other inner bool
-	signal \some_other_scope__some_other_inner_bool__out\ : TestStore_pkg.\some_other_scope__some_other_inner_bool__type\;
-	signal \some_other_scope__some_other_inner_bool__out_changed\ : std_logic;
-	signal \some_other_scope__some_other_inner_bool__in\ : TestStore_pkg.\some_other_scope__some_other_inner_bool__type\;
-	signal \some_other_scope__some_other_inner_bool__in_we\ : std_logic;
+	signal var_in : TestStore_pkg.var_in_t;
+	signal var_out : TestStore_pkg.var_out_t;
 
 	signal axi_m2s : axi_m2s_t;
 	signal axi_s2m : axi_s2m_t;
@@ -102,59 +51,8 @@ begin
 			clk => clk,
 			rstn => rstn,
 
-			-- default int8
-			\default_int8__out\ => \default_int8__out\,
-			\default_int8__out_changed\ => \default_int8__out_changed\,
-			\default_int8__in\ => \default_int8__in\,
-			\default_int8__in_we\ => \default_int8__in_we\,
-
-			-- default int16
-			\default_int16__out\ => \default_int16__out\,
-			\default_int16__out_changed\ => \default_int16__out_changed\,
-			\default_int16__in\ => \default_int16__in\,
-			\default_int16__in_we\ => \default_int16__in_we\,
-
-			-- default int32
-			\default_int32__out\ => \default_int32__out\,
-			\default_int32__out_changed\ => \default_int32__out_changed\,
-			\default_int32__in\ => \default_int32__in\,
-			\default_int32__in_we\ => \default_int32__in_we\,
-
-			-- default int64
-			\default_int64__out\ => \default_int64__out\,
-			\default_int64__out_changed\ => \default_int64__out_changed\,
-			\default_int64__in\ => \default_int64__in\,
-			\default_int64__in_we\ => \default_int64__in_we\,
-
-			-- init decimal
-			\init_decimal__out\ => \init_decimal__out\,
-			\init_decimal__out_changed\ => \init_decimal__out_changed\,
-			\init_decimal__in\ => \init_decimal__in\,
-			\init_decimal__in_we\ => \init_decimal__in_we\,
-
-			-- array bool[0]
-			\array_bool_0__out\ => \array_bool_0__out\,
-			\array_bool_0__out_changed\ => \array_bool_0__out_changed\,
-			\array_bool_0__in\ => \array_bool_0__in\,
-			\array_bool_0__in_we\ => \array_bool_0__in_we\,
-
-			-- array string[0]
-			\array_string_0__out\ => \array_string_0__out\,
-			\array_string_0__out_changed\ => \array_string_0__out_changed\,
-			\array_string_0__in\ => \array_string_0__in\,
-			\array_string_0__in_we\ => \array_string_0__in_we\,
-
-			-- scope/inner int
-			\scope__inner_int__out\ => \scope__inner_int__out\,
-			\scope__inner_int__out_changed\ => \scope__inner_int__out_changed\,
-			\scope__inner_int__in\ => \scope__inner_int__in\,
-			\scope__inner_int__in_we\ => \scope__inner_int__in_we\,
-
-			-- some other scope/some other inner bool
-			\some_other_scope__some_other_inner_bool__out\ => \some_other_scope__some_other_inner_bool__out\,
-			\some_other_scope__some_other_inner_bool__out_changed\ => \some_other_scope__some_other_inner_bool__out_changed\,
-			\some_other_scope__some_other_inner_bool__in\ => \some_other_scope__some_other_inner_bool__in\,
-			\some_other_scope__some_other_inner_bool__in_we\ => \some_other_scope__some_other_inner_bool__in_we\,
+			var_out => var_out,
+			var_in => var_in,
 
 			sync_in => sync_in,
 			sync_out => sync_out,
@@ -210,16 +108,7 @@ begin
 	begin
 		id_out := x"aabb";
 
-		\default_int8__in_we\ <= '0';
-		\default_int16__in_we\ <= '0';
-		\default_int32__in_we\ <= '0';
-		\default_int64__in_we\ <= '0';
-		\init_decimal__in_we\ <= '0';
-		\array_bool_0__in_we\ <= '0';
-		\array_string_0__in_we\ <= '0';
-		\scope__inner_int__in_we\ <= '0';
-		\some_other_scope__some_other_inner_bool__in_we\ <= '0';
-
+		var_in <= TestStore_pkg.var_in_default;
 		axi_init(axi_m2s, axi_s2m);
 		sync_init(sync_in, sync_out);
 
@@ -233,22 +122,22 @@ begin
 
 
 		test_start(test, "Initial");
-		test_expect_eq(test, \default_int8__out\, 0);
-		test_expect_eq(test, \default_int16__out\, 0);
-		test_expect_eq(test, \default_int32__out\, 0);
-		test_expect_eq(test, \init_decimal__out\, 42);
-		test_expect_eq(test, \array_bool_0__out\, '1');
-		test_expect_eq(test, \array_string_0__out\, x"00000000");
+		test_expect_eq(test, var_out.\default_int8\.value, 0);
+		test_expect_eq(test, var_out.\default_int16\.value, 0);
+		test_expect_eq(test, var_out.\default_int32\.value, 0);
+		test_expect_eq(test, var_out.\init_decimal\.value, 42);
+		test_expect_eq(test, var_out.\array_bool_0\.value, '1');
+		test_expect_eq(test, var_out.\array_string_0\.value, x"00000000");
 
 
 
 		test_start(test, "Set");
-		\default_int8__in\ <= x"12";
-		\default_int8__in_we\ <= '1';
+		var_in.\default_int8\.value <= x"12";
+		var_in.\default_int8\.we <= '1';
 		wait until rising_edge(clk);
-		\default_int8__in_we\ <= '0';
-		wait until rising_edge(clk) and \default_int8__out_changed\ = '1' for 1 ms;
-		test_expect_eq(test, \default_int8__out\, 18);
+		var_in.\default_int8\.we <= '0';
+		wait until rising_edge(clk) and var_out.\default_int8\.changed = '1' for 1 ms;
+		test_expect_eq(test, var_out.\default_int8\.value, 18);
 
 
 
@@ -257,7 +146,7 @@ begin
 		test_expect_eq(test, data, x"00000012");
 
 		axi_write(clk, axi_m2s, axi_s2m, TestStore_pkg.\DEFAULT_INT16__ADDR\, x"abcd1122");
-		test_expect_eq(test, \default_int16__out\, 16#1122#);
+		test_expect_eq(test, var_out.\default_int16\.value, 16#1122#);
 
 		test_start(test, "Hello");
 		sync_accept_hello(clk, sync_in, sync_out, TestStore_pkg.HASH, id_in, TestStore_pkg.LITTLE_ENDIAN);
@@ -273,7 +162,7 @@ begin
 		sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\DEFAULT_INT8__KEY\,
 			to_buffer(x"24"), TestStore_pkg.LITTLE_ENDIAN);
 		sync_wait(clk, sync_in_busy);
-		test_expect_eq(test, \default_int8__out\, 16#24#);
+		test_expect_eq(test, var_out.\default_int8\.value, 16#24#);
 
 
 
@@ -286,9 +175,9 @@ begin
 		sync_update_var(clk, sync_in, sync_out, TestStore_pkg.\SOME_OTHER_SCOPE__SOME_OTHER_INNER_BOOL__KEY\,
 			to_buffer('0'), true, TestStore_pkg.LITTLE_ENDIAN);
 		sync_wait(clk, sync_in_busy);
-		test_expect_eq(test, \default_int8__out\, 16#25#);
-		test_expect_eq(test, \default_int32__out\, 101);
-		test_expect_eq(test, \some_other_scope__some_other_inner_bool__out\, '0');
+		test_expect_eq(test, var_out.\default_int8\.value, 16#25#);
+		test_expect_eq(test, var_out.\default_int32\.value, 101);
+		test_expect_eq(test, var_out.\some_other_scope__some_other_inner_bool\.value, '0');
 
 
 
@@ -300,18 +189,21 @@ begin
 		sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\DEFAULT_INT8__KEY\,
 			to_buffer(x"28"), TestStore_pkg.LITTLE_ENDIAN);
 		sync_wait(clk, sync_in_busy);
-		test_expect_eq(test, \default_int8__out\, 16#28#);
+		test_expect_eq(test, var_out.\default_int8\.value, 16#28#);
 
 
 
 		test_start(test, "UpdateOut");
-		\default_int8__in\ <= x"45";
-		\default_int8__in_we\ <= '1';
+		var_in.\default_int8\.value <= x"45";
+		var_in.\default_int8\.we <= '1';
 		wait until rising_edge(clk);
-		\default_int8__in_we\ <= '0';
+		var_in.\default_int8\.we <= '0';
 
 		sync_accept_update_start(clk, sync_in, sync_out, id_out, TestStore_pkg.LITTLE_ENDIAN);
 		sync_accept_update_var(clk, sync_in, sync_out, key, buf, last, TestStore_pkg.LITTLE_ENDIAN);
+		test_expect_eq(test, key, TestStore_pkg.\DEFAULT_INT8__KEY\);
+		test_expect_eq(test, buf(0), x"45");
+		test_expect_true(test, last);
 
 
 

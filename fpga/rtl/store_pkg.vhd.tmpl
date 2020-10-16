@@ -35,23 +35,80 @@ package {{store.name}}_pkg is
 {% endif %}
 	constant KEY_LENGTH : natural := {{(store.objects|first|vhdlkey(store=store, littleEndian=store.littleEndian)|len - 3) * 4}};
 
-{% for o in store.objects %}
-{%   if o is variable %}
+{% for o in store.objects|select('variable') %}
 	-- {{o}}
-{%     if o|vhdltype == 'std_logic' %}
+{%   if o|vhdltype == 'std_logic' %}
 	constant \{{o.cname|upper}}__LENGTH\ : natural := 1;
 	constant \{{o.cname|upper}}__INIT\ : std_logic_vector(7 downto 0) := {{o|vhdlinit}};
-{%     else %}
+{%   else %}
 	constant \{{o.cname|upper}}__LENGTH\ : natural := {{o.size * 8}};
 	constant \{{o.cname|upper}}__INIT\ : std_logic_vector(\{{o.cname|upper}}__LENGTH\ - 1 downto 0) := {{o|vhdlinit}};
-{%     endif %}
+{%   endif %}
 	subtype \{{o.cname}}__type\ is {{o|vhdltype}};
-{%     if o.axi != None %}
+{%   if o.axi != None %}
 	constant \{{o.cname|upper}}__ADDR\ : natural := 16#{{'%x'|format(o.axi)}}#;
-{%     endif %}
+{%   endif %}
 	constant \{{o.cname|upper}}__KEY\ : std_logic_vector(KEY_LENGTH - 1 downto 0) := {{o|vhdlkey(store=store, littleEndian=store.littleEndian)}};
 
+	type \{{o.cname}}__out_t\ is record
+		value : \{{o.cname}}__type\;
+		changed : std_logic;
+	end record;
+
+	type \{{o.cname}}__in_t\ is record
+		value : \{{o.cname}}__type\;
+		we : std_logic;
+	end record;
+
+	constant \{{o.cname}}__in_default\ : \{{o.cname}}__in_t\ := (
+{%   if o|vhdltype == 'std_logic' %}
+		value => '-',
+{%   else %}
+		value => (others => '-'),
 {%   endif %}
+		we => '0');
+
 {% endfor %}
+
+
+
+	type var_out_t is record
+{% for o in store.objects|select('variable') %}
+		\{{o.cname}}\ : \{{o.cname}}__out_t\;
+{% endfor %}
+	end record;
+
+	type var_in_t is record
+{% for o in store.objects|select('variable') %}
+		\{{o.cname}}\ : \{{o.cname}}__in_t\;
+{% endfor %}
+	end record;
+
+	constant var_in_default : var_in_t := (
+{% for o in store.objects|select('variable') %}
+		\{{o.cname}}\ => \{{o.cname}}__in_default\{% if not loop.last %},{% endif %}
+
+{% endfor %}
+	);
+
+	function merge(constant a, b : var_in_t) return var_in_t;
 end {{store.name}}_pkg;
 
+package body {{store.name}}_pkg is
+	function merge(constant a, b : var_in_t) return var_in_t is
+		variable v : var_in_t;
+	begin
+		v := b;
+{% for o in store.objects|select('variable') %}
+		if a.\{{o.cname}}\.we = '1' then v.\{{o.cname}}\ := a.\{{o.cname}}\; end if;
+{% endfor %}
+
+--pragma translate_off
+{% for o in store.objects|select('variable') %}
+		if is_x(a.\{{o.cname}}\.we) then v.\{{o.cname}}\.we := 'X'; end if;
+{% endfor %}
+--pragma translate_on
+
+		return v;
+	end function;
+end package body;
