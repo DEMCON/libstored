@@ -228,7 +228,7 @@ begin
 				rstn => rstn,
 
 				data_out => data_out_i,
-				data_out_changed => var_out.\{{o.cname}}\.changed,
+				data_out_updated => var_out.\{{o.cname}}\.updated,
 				data_in => data_in_i,
 				data_in_we => data_in_we_i,
 
@@ -350,7 +350,7 @@ begin
 			id : std_logic_vector(id_out'range);
 			passthrough : std_logic;
 			passthrough_last : std_logic;
-			cnt : natural range 0 to maximum(RETIMING_DEPTH + 1, {{store.name}}_pkg.HASH'length);
+			cnt : natural range 0 to maximum(RETIMING_DEPTH + 2, {{store.name}}_pkg.HASH'length);
 		end record;
 
 		signal r, r_in : r_t;
@@ -423,7 +423,7 @@ begin
 				end if;
 			when STATE_SNAPSHOT =>
 				v.state := STATE_SNAPSHOT_WAIT;
-				v.cnt := RETIMING_DEPTH + 1; -- + 1 for internal snapshot processing of libstored_variable.
+				v.cnt := RETIMING_DEPTH + 2; -- + 2 for internal snapshot processing of libstored_variable.
 			when STATE_SNAPSHOT_WAIT =>
 				if v.cnt = 0 then
 					v.state := STATE_TRIGGER;
@@ -601,7 +601,7 @@ begin
 			STATE_WELCOME, STATE_WELCOME_ID_IN1, STATE_WELCOME_ID_IN2, STATE_WELCOME_ID_OUT1,
 			STATE_WELCOME_ID_OUT2, STATE_WELCOME_BUFFER_WAIT, STATE_WELCOME_BUFFER,
 			STATE_UPDATE, STATE_UPDATE_ID_IN1, STATE_UPDATE_ID_IN2, STATE_UPDATE_PAYLOAD_WAIT,
-			STATE_UPDATE_PAYLOAD,
+			STATE_UPDATE_KEY, STATE_UPDATE_LEN, STATE_UPDATE_DATA, STATE_UPDATE_DATA_LAST,
 			STATE_REPEAT, STATE_REPEAT_ID1, STATE_REPEAT_ID2, STATE_PASSTHROUGH,
 			STATE_WAIT_PIPE, STATE_DONE, STATE_DROP
 			);
@@ -611,7 +611,8 @@ begin
 			id_out : std_logic_vector(15 downto 0);
 			id_out_valid : std_logic;
 			sync_buffer : std_logic;
-			cnt : natural range 0 to maximum(PIPE_LENGTH, RETIMING_DEPTH + 1);
+			cnt : natural range 0 to maximum(PIPE_LENGTH, maximum(RETIMING_DEPTH + 2, 2**{{store.name}}_pkg.KEY_LENGTH - 1));
+			len : std_logic_vector({{store.name}}_pkg.KEY_LENGTH - 1 downto 0);
 		end record;
 
 		signal r, r_in : r_t;
@@ -624,6 +625,12 @@ begin
 			if r.cnt > 0 then
 				v.cnt := r.cnt - 1;
 			end if;
+
+{% if store.littleEndian %}
+			v.len := sync_in.data & r.len(r.len'high downto 8);
+{% else %}
+			v.len := r.len(r.len'high - 8 downto 0) & sync_in.data;
+{% endif %}
 
 			case r.state is
 			when STATE_RESET =>
@@ -740,13 +747,44 @@ begin
 					end if;
 				end if;
 			when STATE_UPDATE_PAYLOAD_WAIT =>
+				-- Waiting for previous commit pipeline latency...
 				if v.cnt = 0 then
-					v.state := STATE_UPDATE_PAYLOAD;
+					v.state := STATE_UPDATE_KEY;
+					v.cnt := {{store.name}}_pkg.KEY_LENGTH / 8;
 				end if;
-			when STATE_UPDATE_PAYLOAD =>
-				if sync_in.valid = '1' and sync_in.last = '1' then
+			when STATE_UPDATE_KEY =>
+				if sync_in.valid = '0' then
+					v.cnt := r.cnt;
+				elsif v.cnt = 0 then
+					v.state := STATE_UPDATE_LEN;
+					v.cnt := {{store.name}}_pkg.KEY_LENGTH / 8;
+				end if;
+			when STATE_UPDATE_LEN =>
+				if sync_in.valid = '0' then
+					v.cnt := r.cnt;
+				elsif v.cnt = 0 then
+					v.cnt := to_integer(unsigned(v.len));
+					if v.cnt > 1 then
+						v.state := STATE_UPDATE_DATA;
+					else
+						v.state := STATE_UPDATE_DATA_LAST;
+					end if;
+				end if;
+			when STATE_UPDATE_DATA =>
+				if sync_in.valid = '0' then
+					v.cnt := r.cnt;
+				elsif v.cnt = 1 then
+					v.state := STATE_UPDATE_DATA_LAST;
+				end if;
+			when STATE_UPDATE_DATA_LAST =>
+				if sync_in.valid = '0' then
+					v.cnt := r.cnt;
+				elsif sync_in.last = '1' then
 					v.state := STATE_WAIT_PIPE;
 					v.cnt := PIPE_LENGTH;
+				else
+					v.state := STATE_UPDATE_KEY;
+					v.cnt := {{store.name}}_pkg.KEY_LENGTH / 8;
 				end if;
 			when STATE_REPEAT =>
 				if sync_chained_out_accept_i = '1' then
@@ -770,7 +808,7 @@ begin
 				end if;
 			when STATE_DONE =>
 				v.state := STATE_IDLE_COMMIT;
-				v.cnt := RETIMING_DEPTH + 1; -- + 1 is for *_we to *_changed latency
+				v.cnt := RETIMING_DEPTH + 2; -- + 2 is for *_we to *_changed latency
 			when STATE_DROP =>
 				if sync_in.valid = '1' and sync_in.last = '1' then
 					v.state := STATE_IDLE;
@@ -797,21 +835,17 @@ begin
 		id_out <= r.id_out;
 		id_out_valid <= r.id_out_valid;
 
-		var_sync_in_data(0) <=
---pragma translate_off
-			(others => '-') when r.state /= STATE_UPDATE_PAYLOAD and r.state /= STATE_WELCOME_BUFFER else
---pragma translate_on
-			sync_in.data;
+		var_sync_in_data(0) <= sync_in.data;
 
-		var_sync_in_last(0) <=
---pragma translate_off
-			'-' when r.state /= STATE_UPDATE_PAYLOAD and r.state /= STATE_WELCOME_BUFFER else
---pragma translate_on
-			sync_in.last;
+		with r.state select
+			var_sync_in_last(0)	<=
+				'1' when STATE_UPDATE_DATA_LAST,
+				sync_in.last when others;
 
-		var_sync_in_valid(0) <=
-			sync_in.valid when r.state = STATE_UPDATE_PAYLOAD or r.state = STATE_WELCOME_BUFFER else
-			'0';
+		with r.state select
+			var_sync_in_valid(0) <=
+				sync_in.valid when STATE_UPDATE_KEY | STATE_UPDATE_LEN | STATE_UPDATE_DATA | STATE_UPDATE_DATA_LAST | STATE_WELCOME_BUFFER,
+			'0' when others;
 
 		var_sync_in_buffer(0) <= r.sync_buffer;
 
@@ -838,7 +872,7 @@ begin
 			sync_out.accept <=
 				sync_chained_out_accept_i when STATE_PASSTHROUGH,
 				'1' when STATE_WELCOME | STATE_WELCOME_ID_IN1 | STATE_WELCOME_ID_IN2 | STATE_WELCOME_ID_OUT1 | STATE_WELCOME_ID_OUT2 | STATE_WELCOME_BUFFER,
-				'1' when STATE_UPDATE | STATE_UPDATE_ID_IN1 | STATE_UPDATE_ID_IN2 | STATE_UPDATE_PAYLOAD,
+				'1' when STATE_UPDATE | STATE_UPDATE_ID_IN1 | STATE_UPDATE_ID_IN2 | STATE_UPDATE_KEY | STATE_UPDATE_LEN | STATE_UPDATE_DATA | STATE_UPDATE_DATA_LAST,
 				'1' when STATE_DROP,
 				'0' when others;
 
@@ -913,7 +947,7 @@ begin
 				v.state := STATE_IDLE;
 			when STATE_IDLE =>
 				if s_axi_arvalid = '1' then
-					v.addr := s_axi_awaddr(31 downto 2) & "00";
+					v.addr := s_axi_araddr(31 downto 2) & "00";
 					v.state := STATE_READ;
 				end if;
 			when STATE_READ =>

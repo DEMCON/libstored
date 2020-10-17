@@ -136,7 +136,7 @@ begin
 		var_in.\default_int8\.we <= '1';
 		wait until rising_edge(clk);
 		var_in.\default_int8\.we <= '0';
-		wait until rising_edge(clk) and var_out.\default_int8\.changed = '1' for 1 ms;
+		wait until rising_edge(clk) and var_out.\default_int8\.updated = '1' for 1 ms;
 		test_expect_eq(test, var_out.\default_int8\.value, 18);
 
 

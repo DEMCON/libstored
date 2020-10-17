@@ -74,7 +74,7 @@ entity libstored_stream_buffer is
 end libstored_stream_buffer;
 
 architecture rtl of libstored_stream_buffer is
-	type state_t is (STATE_RESET, STATE_EMPTY, STATE_HAVE_1, STATE_HAVE_2
+	type state_t is (STATE_EMPTY, STATE_HAVE_1, STATE_HAVE_2
 --pragma translate_off
 		, STATE_ERROR
 --pragma translate_on
@@ -94,12 +94,14 @@ begin
 		v := r;
 
 		case r.state is
-		when STATE_RESET =>
-			v.state := STATE_EMPTY;
 		when STATE_EMPTY =>
+			v.d1 := i;
 			if i_valid = '1' then
-				v.d1 := i;
 				v.state := STATE_HAVE_1;
+--pragma translate_off
+			else
+				v.d1 := (others => '-');
+--pragma translate_on
 			end if;
 		when STATE_HAVE_1 =>
 			if i_valid = '1' and o_accept = '0' then
@@ -133,7 +135,7 @@ begin
 --pragma translate_on
 
 		if rstn /= '1' then
-			v.state := STATE_RESET;
+			v.state := STATE_EMPTY;
 		end if;
 
 		r_in <= v;

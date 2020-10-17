@@ -40,7 +40,7 @@ entity libstored_variable is
 		rstn : in std_logic;
 
 		data_out : out std_logic_vector(DATA_INIT'length - 1 downto 0);
-		data_out_changed : out std_logic;
+		data_out_updated : out std_logic;
 		data_in : in std_logic_vector(DATA_INIT'length - 1 downto 0) := (others => '-');
 		data_in_we : in std_logic := '0';
 
@@ -85,53 +85,43 @@ architecture rtl of libstored_variable is
 	constant KEY_BYTES : natural := KEY'length / 8;
 
 	signal data_in_i, data, data_update, data_snapshot : std_logic_vector(DATA_INIT'length - 1 downto 0);
-	signal data_in_we_i, data_out_changed_i, data_out_changed_r, data_snapshot_changed : std_logic;
+	signal data_in_we_i, data_out_updated_i, data_out_changed : std_logic;
 
-	signal sync_out_have_changes_i : std_logic;
+	signal sync_out_have_changes_i, sync_in_commit_r : std_logic;
 begin
 
 	process(clk)
 	begin
 		if rising_edge(clk) then
-			data_out_changed_i <= '0';
-			data_snapshot_changed <= '0';
-
-			if sync_in_commit = '1' then
-				data_snapshot <= data_in_i;
-				data_snapshot_changed <= '0';
-			end if;
-
-			if sync_out_snapshot = '1' then
-				data_snapshot <= data;
-				if data_snapshot /= data then
-					data_snapshot_changed <= '1';
-				end if;
-			end if;
+			data_out_updated_i <= '0';
+			sync_in_commit_r <= sync_in_commit;
 
 			if data_snapshot /= data then
-				data_out_changed_r <= '1';
+				data_out_changed <= '1';
 			else
-				data_out_changed_r <= '1';
+				data_out_changed <= '0';
+			end if;
+
+			if sync_out_snapshot = '1' or sync_in_commit_r = '1' then
+				data_snapshot <= data;
 			end if;
 
 			if data_in_we_i = '1' then
 				data <= data_in_i;
-
-				if data /= data_in_i then
-					data_out_changed_i <= '1';
-				end if;
+				data_out_updated_i <= '1';
 			end if;
 --pragma translate_off
 			if is_x(data_in_we_i) then
 				data <= (others => 'X');
-				data_out_changed_i <= 'X';
+				data_out_updated_i <= 'X';
 			end if;
 --pragma translate_on
 
 			if rstn /= '1' then
 				data <= DATA_INIT;
 				data_snapshot <= DATA_INIT;
-				data_out_changed_i <= '0';
+				data_out_updated_i <= '0';
+				data_out_changed <= '0';
 			end if;
 		end if;
 	end process;
@@ -148,18 +138,17 @@ begin
 
 	data_in_we_i <= data_in_we or sync_in_commit;
 
-	data_out_changed <= data_out_changed_i;
+	data_out_updated <= data_out_updated_i;
 
-	sync_out_have_changes_i <= data_out_changed_r or sync_out_have_changes_prev;
+	sync_out_have_changes_i <= data_out_changed or sync_out_have_changes_prev;
 
 	sync_in_g : if true generate
 		type state_t is (STATE_RESET, STATE_IDLE,
 			STATE_PADDING, STATE_BUFFER, STATE_PASSTHROUGH,
-			STATE_UPDATE_KEY, STATE_UPDATE_LEN, STATE_UPDATE_DATA,
-			STATE_UPDATE_LEN_SKIP, STATE_UPDATE_DATA_SKIP);
+			STATE_UPDATE_KEY, STATE_UPDATE_LEN, STATE_UPDATE_DATA);
 		type r_t is record
 			state : state_t;
-			cnt : natural range 0 to maximum(2**(KEY_BYTES * 8) - 1, maximum(DATA_BYTES, BUFFER_PADDING_BEFORE));
+			cnt : natural range 0 to maximum(KEY_BYTES, maximum(DATA_BYTES, BUFFER_PADDING_BEFORE));
 			offset : natural range 0 to DATA_BYTES - 1;
 			data : std_logic_vector(DATA_BITS - 1 downto 0);
 			keylen : std_logic_vector(KEY_BYTES * 8 - 1 downto 0);
@@ -230,7 +219,7 @@ begin
 							if v.keylen = normalize(KEY) then
 								v.state := STATE_UPDATE_LEN;
 							else
-								v.state := STATE_UPDATE_LEN_SKIP;
+								v.state := STATE_PASSTHROUGH;
 							end if;
 							v.cnt := KEY_BYTES;
 						end if;
@@ -255,7 +244,7 @@ begin
 					if v.keylen = normalize(KEY) then
 						v.state := STATE_UPDATE_LEN;
 					else
-						v.state := STATE_UPDATE_LEN_SKIP;
+						v.state := STATE_PASSTHROUGH;
 					end if;
 				end if;
 			when STATE_UPDATE_LEN =>
@@ -263,19 +252,10 @@ begin
 					v.state := STATE_UPDATE_DATA;
 					v.cnt := to_integer(unsigned(v.keylen));
 				end if;
-			when STATE_UPDATE_LEN_SKIP =>
-				if v.cnt = 0 then
-					v.state := STATE_UPDATE_DATA_SKIP;
-					v.cnt := to_integer(unsigned(v.keylen));
-				end if;
 			when STATE_UPDATE_DATA =>
 				if v.cnt = 0 then
 					v.state := STATE_IDLE;
 					v.save := '1';
-				end if;
-			when STATE_UPDATE_DATA_SKIP =>
-				if v.cnt = 0 then
-					v.state := STATE_IDLE;
 				end if;
 			end case;
 
@@ -320,10 +300,19 @@ begin
 			process(clk)
 			begin
 				if rising_edge(clk) then
-					sync_in_data_next <= sync_in_data_next_i;
 					sync_in_valid_next <= sync_in_valid_next_i;
-					sync_in_last_next <= sync_in_last_next_i;
-					sync_in_buffer_next <= sync_in_buffer_next_i;
+					if sync_in_valid_next_i = '1' then
+						-- Save some bit flips.
+						sync_in_data_next <= sync_in_data_next_i;
+						sync_in_last_next <= sync_in_last_next_i;
+						sync_in_buffer_next <= sync_in_buffer_next_i;
+--pragma translate_off
+					else
+						sync_in_data_next <= (others => '-');
+						sync_in_last_next <= '-';
+						sync_in_buffer_next <= '-';
+--pragma translate_on
+					end if;
 				end if;
 			end process;
 		end generate;
@@ -361,8 +350,8 @@ begin
 		signal sync_out_accept_prev_i : std_logic;
 	begin
 
-		process(r, rstn, sync_out_valid_prev, sync_out_accept_i, sync_in_commit,
-			data_snapshot_changed, sync_out_data_prev, sync_out_last_prev)
+		process(r, rstn, sync_out_valid_prev, sync_out_accept_i, sync_in_commit_r,
+			data_out_changed, sync_out_data_prev, sync_out_last_prev, sync_out_snapshot)
 		is
 			variable v : r_t;
 		begin
@@ -372,10 +361,8 @@ begin
 				v.cnt := r.cnt - 1;
 			end if;
 
-			if sync_in_commit = '1' then
-				v.changed := '0';
-			else
-				v.changed := r.changed or data_snapshot_changed;
+			if sync_out_snapshot = '1' or sync_in_commit_r = '1' then
+				v.changed := data_out_changed;
 			end if;
 
 			case r.state is
@@ -383,8 +370,10 @@ begin
 				v.state := STATE_IDLE;
 			when STATE_IDLE =>
 				if sync_out_valid_prev = '1' then
-					if v.changed = '0' and sync_out_last_prev = '0' then
-						v.state := STATE_PASSTHROUGH;
+					if v.changed = '0' then
+						if sync_out_last_prev = '0' then
+							v.state := STATE_PASSTHROUGH;
+						end if;
 					elsif LITTLE_ENDIAN and sync_out_data_prev = x"75" then -- u
 						if sync_out_last_prev = '1' then
 							v.state := STATE_KEY;
@@ -430,7 +419,6 @@ begin
 
 			if rstn /= '1' then
 				v.state := STATE_RESET;
-				v.changed := '1';
 			end if;
 
 			r_in <= v;
