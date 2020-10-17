@@ -98,6 +98,37 @@
  * always be 0.  All values is in the store's endianness (`u` is little, `U` is
  * big endian).
  *
+ * Proposal: The updates are a sequence defined as follows:
+ * \<5 MSb key offset, 3 LSb length\> \<additional key bytes\> \<additional length bytes\> \<data\>.
+ * The key offset + 1 is the offset from the previous entry in the updates sequence.
+ * Updates are sent in strict ascending key offset.
+ * The initial key is -1. For example, if the previous key was 10 and the 5 MSb indicate 3,
+ * then the next key is 10 + 3 + 1, so 14. If the 5 MSb are all 1 (so 31), an additional
+ * key byte is added after the first byte (which may be 0). This value is added
+ * to the key offset.  If that value is 255, another key byte is added, etc.
+ *
+ * The 3 LSb bits of the first byte are decoded according to the following list:
+ *
+ * - 0: data length is 1
+ * - 1: data length is 2
+ * - 2: data length is 3
+ * - 3: data length is 4
+ * - 4: data length is 5
+ * - 5: data length is 6
+ * - 6: data length is 7, and an additional length byte follows (like the key offset)
+ * - 7: data length is 8
+ *
+ * Using this scheme, when all variables change within the store, the overhead is always
+ * one byte per variable (plus additional length bytes, but this is uncommon
+ * and fixed for a given store). This is also the upper limit of the update message.
+ * If less variables change, the key offset may be larger, but the total size is always less.
+ *
+ * The asymmetry of having 6 as indicator for additional length bytes is because
+ * this is an unlikely value (7 bytes data), and at least far less common than having
+ * 8 bytes of data.
+ *
+ * The data is sent in the store's endianness (`u` is little, `U` is big endian).
+ *
  * ### Bye
  *
  * "I do not need any more updates of the given store (by hash, by id or all)."
