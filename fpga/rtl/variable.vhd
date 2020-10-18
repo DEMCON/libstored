@@ -120,8 +120,6 @@ begin
 			if rstn /= '1' then
 				data <= DATA_INIT;
 				data_snapshot <= DATA_INIT;
-				data_out_updated_i <= '0';
-				data_out_changed <= '0';
 			end if;
 		end if;
 	end process;
@@ -148,7 +146,7 @@ begin
 			STATE_UPDATE_KEY, STATE_UPDATE_LEN, STATE_UPDATE_DATA);
 		type r_t is record
 			state : state_t;
-			cnt : natural range 0 to maximum(KEY_BYTES, maximum(DATA_BYTES, BUFFER_PADDING_BEFORE));
+			cnt : natural range 0 to maximum(KEY_BYTES, maximum(DATA_BYTES, maximum(1, BUFFER_PADDING_BEFORE) - 1));
 			offset : natural range 0 to DATA_BYTES - 1;
 			data : std_logic_vector(DATA_BITS - 1 downto 0);
 			keylen : std_logic_vector(KEY_BYTES * 8 - 1 downto 0);
@@ -273,10 +271,7 @@ begin
 		end process;
 
 		process(clk)
-			variable l : natural range 0 to 2**(KEY_BYTES * 8) - 1;
 		begin
-			l := 0;
-
 			if rising_edge(clk) then
 				r <= r_in;
 
@@ -388,7 +383,7 @@ begin
 						else
 							v.state := STATE_WAIT;
 						end if;
-					else
+					elsif sync_out_last_prev = '0' then
 						v.state := STATE_PASSTHROUGH;
 					end if;
 				end if;
@@ -419,6 +414,7 @@ begin
 
 			if rstn /= '1' then
 				v.state := STATE_RESET;
+				v.changed := '0';
 			end if;
 
 			r_in <= v;

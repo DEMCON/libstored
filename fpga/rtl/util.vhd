@@ -152,10 +152,10 @@ begin
 		o <=
 --pragma translate_off
 			(others => 'X') when STATE_ERROR,
+			(others => '-') when STATE_EMPTY,
 --pragma translate_on
-			r.d1 when STATE_HAVE_1,
 			r.d2 when STATE_HAVE_2,
-			(others => '-') when others;
+			r.d1 when others;
 
 	with r.state select
 		o_valid <=
