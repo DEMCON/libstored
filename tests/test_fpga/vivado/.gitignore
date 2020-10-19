@@ -4,4 +4,6 @@
 *.sim
 *.xpr
 *.runs
-*.srcs
+*.log
+*.jou
+test_fpga

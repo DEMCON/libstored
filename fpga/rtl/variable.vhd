@@ -30,6 +30,7 @@ entity libstored_variable is
 		LITTLE_ENDIAN : boolean := true;
 		BLOB : boolean := false;
 		BUFFER_CHAIN : boolean := true;
+		VAR_ACCESS : access_t := ACCESS_RW;
 		SIMULATION : boolean := false
 --pragma translate_off
 			or true
@@ -83,6 +84,8 @@ architecture rtl of libstored_variable is
 	constant DATA_BITS : natural := DATA_INIT'length;
 	constant DATA_BYTES : natural := DATA_BITS / 8;
 	constant KEY_BYTES : natural := KEY'length / 8;
+	constant VAR_READ : boolean := VAR_ACCESS = ACCESS_RO or VAR_ACCESS = ACCESS_RW;
+	constant VAR_WRITE : boolean := VAR_ACCESS = ACCESS_WO or VAR_ACCESS = ACCESS_RW;
 
 	signal data_in_i, data, data_update, data_snapshot : std_logic_vector(DATA_INIT'length - 1 downto 0);
 	signal data_in_we_i, data_out_updated_i, data_out_changed : std_logic;
@@ -96,13 +99,13 @@ begin
 			data_out_updated_i <= '0';
 			sync_in_commit_r <= sync_in_commit;
 
-			if data_snapshot /= data then
+			if VAR_WRITE and data_snapshot /= data then
 				data_out_changed <= '1';
 			else
 				data_out_changed <= '0';
 			end if;
 
-			if sync_out_snapshot = '1' or sync_in_commit_r = '1' then
+			if VAR_WRITE and (sync_out_snapshot = '1' or sync_in_commit_r = '1') then
 				data_snapshot <= data;
 			end if;
 
@@ -119,26 +122,35 @@ begin
 
 			if rstn /= '1' then
 				data <= DATA_INIT;
-				data_snapshot <= DATA_INIT;
+				if VAR_WRITE then
+					data_snapshot <= DATA_INIT;
+				end if;
 			end if;
 		end if;
 	end process;
 
-	data_out <= data;
+	data_out <=
+		(others => '0') when not VAR_READ and not VAR_WRITE else
+		data;
 
 	data_in_i <=
-		data_in when data_in_we = '1' else
-		data_update
---pragma translate_off
-			when sync_in_commit = '1' else (others => '-')
---pragma translate_on
-			;
+		data_in when VAR_WRITE and data_in_we = '1' else
+		data_update when VAR_READ and sync_in_commit = '1' else
+		(others => '-');
 
-	data_in_we_i <= data_in_we or sync_in_commit;
+	data_in_we_i <=
+		data_in_we or sync_in_commit when VAR_READ and VAR_WRITE else
+		data_in_we when not VAR_READ and VAR_WRITE else
+		sync_in_commit when VAR_READ and not VAR_WRITE else
+		'0';
 
-	data_out_updated <= data_out_updated_i;
+	data_out_updated <=
+		data_out_updated_i when VAR_READ or VAR_WRITE else
+		'0';
 
-	sync_out_have_changes_i <= data_out_changed or sync_out_have_changes_prev;
+	sync_out_have_changes_i <=
+		data_out_changed or sync_out_have_changes_prev when VAR_WRITE else
+		sync_out_have_changes_prev;
 
 	sync_in_g : if true generate
 		type state_t is (STATE_RESET, STATE_IDLE,
@@ -168,7 +180,7 @@ begin
 
 			v.save := '0';
 
-			if sync_in_valid = '1' then
+			if VAR_READ and sync_in_valid = '1' then
 				if BLOB then
 					v.data(v.data'high - r.offset * 8 downto v.data'high - r.offset * 8 - 7) := sync_in_data;
 					v.offset := (r.offset + 1) mod DATA_BYTES;
@@ -177,7 +189,9 @@ begin
 				else
 					v.data := r.data(r.data'high - 8 downto 0) & sync_in_data;
 				end if;
+			end if;
 
+			if sync_in_valid = '1' then
 				if LITTLE_ENDIAN then
 					v.keylen := sync_in_data & r.keylen(r.keylen'high downto 8);
 				else
@@ -211,10 +225,14 @@ begin
 						end if;
 					else
 						if KEY_BYTES > 1 then
-							v.state := STATE_UPDATE_KEY;
-							v.cnt := KEY_BYTES - 1;
+							if not VAR_READ then
+								v.state := STATE_PASSTHROUGH;
+							else
+								v.state := STATE_UPDATE_KEY;
+								v.cnt := KEY_BYTES - 1;
+							end if;
 						else
-							if v.keylen = normalize(KEY) then
+							if VAR_READ and v.keylen = normalize(KEY) then
 								v.state := STATE_UPDATE_LEN;
 							else
 								v.state := STATE_PASSTHROUGH;
@@ -265,6 +283,7 @@ begin
 			if rstn /= '1' then
 				v.state := STATE_RESET;
 				v.offset := 0;
+				v.cnt := 0;
 			end if;
 
 			r_in <= v;
@@ -275,7 +294,7 @@ begin
 			if rising_edge(clk) then
 				r <= r_in;
 
-				if r_in.save = '1' then
+				if VAR_READ and r_in.save = '1' then
 					data_update <= r_in.data;
 				end if;
 			end if;
@@ -352,11 +371,11 @@ begin
 		begin
 			v := r;
 
-			if sync_out_accept_i = '1' and r.cnt > 0 then
+			if VAR_WRITE and sync_out_accept_i = '1' and r.cnt > 0 then
 				v.cnt := r.cnt - 1;
 			end if;
 
-			if sync_out_snapshot = '1' or sync_in_commit_r = '1' then
+			if VAR_WRITE and (sync_out_snapshot = '1' or sync_in_commit_r = '1') then
 				v.changed := data_out_changed;
 			end if;
 
@@ -365,7 +384,7 @@ begin
 				v.state := STATE_IDLE;
 			when STATE_IDLE =>
 				if sync_out_valid_prev = '1' then
-					if v.changed = '0' then
+					if not VAR_WRITE or v.changed = '0' then
 						if sync_out_last_prev = '0' then
 							v.state := STATE_PASSTHROUGH;
 						end if;
@@ -415,6 +434,11 @@ begin
 			if rstn /= '1' then
 				v.state := STATE_RESET;
 				v.changed := '0';
+				v.cnt := 0;
+			end if;
+
+			if not VAR_WRITE then
+				v.state := STATE_PASSTHROUGH;
 			end if;
 
 			r_in <= v;
@@ -464,6 +488,10 @@ begin
 				end if;
 			when others => null;
 			end case;
+
+			if not VAR_WRITE then
+				sync_out_data_i <= sync_out_data_prev;
+			end if;
 		end process;
 
 		with r.state select
@@ -473,6 +501,7 @@ begin
 				'0' when others;
 
 		sync_out_last_i <=
+			sync_out_last_prev when not VAR_WRITE else
 			'1' when r.state = STATE_DATA and r.cnt = 1 else
 			sync_out_last_prev and not r.changed when r.state = STATE_IDLE else
 			sync_out_last_prev when r.state = STATE_PASSTHROUGH else
@@ -522,6 +551,8 @@ begin
 	assert DATA_BITS mod 8 = 0 report "Data width not multiple of bytes" severity failure;
 	assert KEY'length mod 8 = 0 report "Key width not multiple of bytes" severity failure;
 	assert LEN_LENGTH mod 8 = 0 report "Len width not multiple of bytes" severity failure;
+	assert not (not VAR_WRITE and rising_edge(clk) and data_in_we = '1')
+		report "Writing non-writable variable" severity warning;
 --pragma translate_on
 end rtl;
 

@@ -39,11 +39,14 @@ entity {{store.name}}_hdl is
 		--! \details Set to 0 to disable.
 		SYNC_OUT_INTERVAL_s : real := 0.1;
 		--! \brief Store ID to use in a Hello message.
-		ID : natural := 1;
+		--! \details Set to 0 for auto.
+		ID : natural := 0;
 		--! \brief Enabe AXI slave interface.
 		AXI_SLAVE : boolean := true;
 		--! \brief Inject buffers after every N variables in the internal chain.
 		BUFFER_AFTER_N_VARS : positive := 4;
+		--! \brief Allowed access from the FPGA side.
+		VAR_ACCESS : {{store.name}}_pkg.var_access_t := {{store.name}}_pkg.VAR_ACCESS_RW;
 
 		--! \brief Flag to indicate that we are in simulation.
 		--! \details This will reduce timing intervals.
@@ -69,6 +72,12 @@ entity {{store.name}}_hdl is
 		--! \brief Outgoing sync messages.
 		--! \details Either to protocol stack or another store's sync_chained_in.
 		sync_out : out msg_t;
+
+		--! \brief ID for Hello message.
+		sync_id : out unsigned(15 downto 0);
+		--! \brief #sync_id of previous store, used to auto-generate an ID.
+		--! \details Only used when #ID is 0.
+		sync_chained_id : in unsigned(15 downto 0) := (others => '0');
 
 		--! \brief Chain input for sync messages.
 		--! \see #sync_out
@@ -157,15 +166,11 @@ architecture rtl of {{store.name}}_hdl is
 	signal var_sync_out_last_last, sync_out_last_i : std_logic;
 	signal var_sync_out_valid_last, sync_out_valid_i : std_logic;
 	signal var_sync_out_accept_last, sync_out_accept_i : std_logic;
+	signal sync_in_accept_i : std_logic;
 
 	signal sync_out_i, sync_out_r : std_logic_vector(8 downto 0);
 
-	constant id_in : std_logic_vector(15 downto 0) :=
-{% if store.littleEndian %}
-		std_logic_vector(to_unsigned(ID, 8)) & std_logic_vector(to_unsigned(ID / 256, 8));
-{% else %}
-		std_logic_vector(to_unsigned(ID, 16));
-{% endif %}
+	signal id_in : std_logic_vector(15 downto 0);
 	signal id_out : std_logic_vector(15 downto 0);
 	signal id_out_valid : std_logic;
 
@@ -176,6 +181,36 @@ architecture rtl of {{store.name}}_hdl is
 	signal axi_data_wr : std_logic_vector(31 downto 0);
 	signal axi_we : axi_flag_t;
 begin
+
+	id_auto_g : if ID = 0 generate
+	begin
+		process(clk)
+		begin
+			if rising_edge(clk) then
+				id_in <=
+{% if store.littleEndian %}
+					swap_endian
+{% endif %}
+					(std_logic_vector(sync_chained_id + 1));
+			end if;
+		end process;
+	end generate;
+
+	id_g : if ID /= 0 generate
+	begin
+		id_in <=
+{% if store.littleEndian %}
+			swap_endian
+{% endif %}
+			(std_logic_vector(to_unsigned(ID, id_in'length)));
+	end generate;
+
+	sync_id <=
+		unsigned(
+{% if store.littleEndian %}
+		swap_endian
+{% endif %}
+		(id_in));
 
 	sync_in_commit_inst : entity work.libstored_delay1
 		generic map (
@@ -221,6 +256,7 @@ begin
 				LITTLE_ENDIAN => {% if store.littleEndian %}true{% else %}false{% endif %},
 				BLOB => {% if o is blob %}true{% else %}false{% endif %},
 				BUFFER_CHAIN => {{ns.var_i}} mod BUFFER_AFTER_N_VARS = BUFFER_AFTER_N_VARS - 1,
+				VAR_ACCESS => VAR_ACCESS.\{{o.cname}}\,
 				SIMULATION => SIMULATION
 			)
 			port map (
@@ -573,6 +609,9 @@ begin
 				sync_out_accept_i when STATE_UPDATE_CMD | STATE_UPDATE_PAYLOAD,
 				'0' when others;
 
+		sync_chained_out.accept <=
+			r.passthrough;
+
 	end generate;
 
 	sync_out_buffer_inst : entity work.libstored_stream_buffer
@@ -593,6 +632,7 @@ begin
 	sync_out_i <= sync_out_last_i & sync_out_data_i;
 	sync_out.data <= sync_out_r(7 downto 0);
 	sync_out.last <= sync_out_r(8);
+	sync_out.accept <= sync_in_accept_i;
 
 	sync_in_g : if true generate
 		constant PIPE_LENGTH : natural := NUM_VARIABLES / BUFFER_AFTER_N_VARS + 1;
@@ -654,6 +694,7 @@ begin
 				end if;
 			when STATE_WELCOME =>
 				v.sync_buffer := '1';
+				v.cnt := RETIMING_DEPTH;
 				if sync_in.valid = '1' then
 					if sync_in.last = '1' then
 						v.state := STATE_DROP;
@@ -704,11 +745,14 @@ begin
 					v.id_out_valid := '1';
 					if sync_in.last = '1' then
 						v.state := STATE_DROP;
+					elsif v.cnt = 0 then
+						v.state := STATE_WELCOME_BUFFER;
 					else
 						v.state := STATE_WELCOME_BUFFER_WAIT;
 					end if;
 				end if;
 			when STATE_WELCOME_BUFFER_WAIT =>
+				-- Wait for retiming depth of sync_buffer
 				if v.cnt = 0 then
 					v.state := STATE_WELCOME_BUFFER;
 				end if;
@@ -869,7 +913,7 @@ begin
 			(others => '-');
 
 		with r.state select
-			sync_out.accept <=
+			sync_in_accept_i <=
 				sync_chained_out_accept_i when STATE_PASSTHROUGH,
 				'1' when STATE_WELCOME | STATE_WELCOME_ID_IN1 | STATE_WELCOME_ID_IN2 | STATE_WELCOME_ID_OUT1 | STATE_WELCOME_ID_OUT2 | STATE_WELCOME_BUFFER,
 				'1' when STATE_UPDATE | STATE_UPDATE_ID_IN1 | STATE_UPDATE_ID_IN2 | STATE_UPDATE_KEY | STATE_UPDATE_LEN | STATE_UPDATE_DATA | STATE_UPDATE_DATA_LAST,

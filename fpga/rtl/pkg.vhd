@@ -42,6 +42,8 @@ package libstored_pkg is
 	function ceil(constant x : real) return integer;
 	function normalize(constant x : std_logic_vector) return std_logic_vector;
 	function swap_endian(constant x : std_logic_vector) return std_logic_vector;
+
+	type access_t is (ACCESS_RW, ACCESS_RO, ACCESS_WO, ACCESS_NA);
 end libstored_pkg;
 
 package body libstored_pkg is

@@ -21,12 +21,12 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use work.libstored_pkg.all;
+use work.libstored_pkg;
 
 --! \brief Constants and types for #{{store.name}}_hdl.
 package {{store.name}}_pkg is
 
-	constant HASH : hash_t := {{store.hash|vhdlstr}}; -- {{store.hash}}
+	constant HASH : libstored_pkg.hash_t := {{store.hash|vhdlstr}}; -- {{store.hash}}
 	constant BUFFER_LENGTH : natural := {{store.buffer.size}};
 {% if store.littleEndian %}
 	constant LITTLE_ENDIAN : boolean := true;
@@ -92,6 +92,40 @@ package {{store.name}}_pkg is
 	);
 
 	function merge(constant a, b : var_in_t) return var_in_t;
+
+	type var_access_t is record
+{% for o in store.objects|select('variable') %}
+		\{{o.cname}}\ : libstored_pkg.access_t;
+{% endfor %}
+	end record;
+
+	constant VAR_ACCESS_RW : var_access_t := (
+{% for o in store.objects|select('variable') %}
+		\{{o.cname}}\ => libstored_pkg.ACCESS_RW{% if not loop.last %},{% endif %}
+
+{% endfor %}
+	);
+
+	constant VAR_ACCESS_RO : var_access_t := (
+{% for o in store.objects|select('variable') %}
+		\{{o.cname}}\ => libstored_pkg.ACCESS_RO{% if not loop.last %},{% endif %}
+
+{% endfor %}
+	);
+
+	constant VAR_ACCESS_WO : var_access_t := (
+{% for o in store.objects|select('variable') %}
+		\{{o.cname}}\ => libstored_pkg.ACCESS_WO{% if not loop.last %},{% endif %}
+
+{% endfor %}
+	);
+
+	constant VAR_ACCESS_NA : var_access_t := (
+{% for o in store.objects|select('variable') %}
+		\{{o.cname}}\ => libstored_pkg.ACCESS_NA{% if not loop.last %},{% endif %}
+
+{% endfor %}
+	);
 end {{store.name}}_pkg;
 
 package body {{store.name}}_pkg is

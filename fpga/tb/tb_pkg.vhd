@@ -272,6 +272,8 @@ package body libstored_tb_pkg is
 		else
 			std.textio.write(std.textio.output, "[  FAILED  ] " & to_string(test.suite) & "." & to_string(test.test) &
 				" (" & time'image(now - test.test_start) & ")" & lf);
+
+			report "FAILED" severity failure;
 		end if;
 
 		str_set(test.test, "?");
@@ -699,9 +701,7 @@ package body libstored_tb_pkg is
 	begin
 		v := std_logic_vector(to_signed(x, width * 8));
 		if littleEndian then
-			for i in 0 to width - 1 loop
-				res(res'high - i * 8 downto res'high - i * 8 - 7) := v(i * 8 + 7 downto i * 8);
-			end loop;
+			res := libstored_pkg.swap_endian(v);
 		else
 			res := v;
 		end if;

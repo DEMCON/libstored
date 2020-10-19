@@ -110,6 +110,27 @@ function(libstored_generate target) # add all other models as varargs
     endif()
 endfunction()
 
+if(DEFINED ENV{XILINX_VIVADO})
+	find_program(VIVADO_CMD NAMES vivado PATHS "$ENV{XILINX_VIVADO}/bin")
+endif()
+
+if(NOT VIVADO_CMD)
+	if(WIN32)
+		file(GLOB VIVADO_CMDS "C:/Xilinx/Vivado/*/bin/vivado.bat")
+	else()
+		file(GLOB VIVADO_CMDS "/opt/Xilinx/Vivado/*/bin/vivado")
+	endif()
+
+	if(VIVADO_CMDS)
+		list(SORT VIVADO_CMDS)
+		list(GET VIVADO_CMDS -1 VIVADO_CMD)
+	endif()
+endif()
+
+if(VIVADO_CMD)
+	message(STATUS "Using vivado ${VIVADO_CMD}")
+endif()
+
 option(LIBSTORED_EXAMPLES "Build examples" ON)
 if(LIBSTORED_EXAMPLES)
     add_subdirectory(examples)

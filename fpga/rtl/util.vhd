@@ -33,6 +33,9 @@ end libstored_delay1;
 
 architecture rtl of libstored_delay1 is
 	signal r : std_logic_vector(0 to DELAY - 1);
+
+	attribute retiming_forward : integer;
+	attribute retiming_forward of r : signal is 1;
 begin
 	process(clk)
 	begin
@@ -174,8 +177,8 @@ begin
 			'0' when others;
 
 --pragma translate_off
-	assert not(rising_edge(clk) and is_x(i_valid)) report "Invalid i_valid" severity error;
-	assert not(rising_edge(clk) and is_x(o_accept)) report "Invalid o_accept" severity error;
+	assert not(rising_edge(clk) and rstn = '1' and is_x(i_valid)) report "Invalid i_valid" severity error;
+	assert not(rising_edge(clk) and rstn = '1' and is_x(o_accept)) report "Invalid o_accept" severity error;
 --pragma translate_on
 
 end rtl;

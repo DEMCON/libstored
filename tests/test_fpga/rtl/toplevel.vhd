@@ -32,20 +32,32 @@ architecture behav of test_fpga is
 	signal clk, rstn : std_logic;
 	signal done : boolean;
 
-	signal var_in : TestStore_pkg.var_in_t;
-	signal var_out : TestStore_pkg.var_out_t;
+	signal var_in, var_in2 : TestStore_pkg.var_in_t;
+	signal var_out, var_out2 : TestStore_pkg.var_out_t;
 
 	signal axi_m2s : axi_m2s_t;
 	signal axi_s2m : axi_s2m_t;
-	signal sync_in, sync_out : msg_t;
-	signal sync_in_busy : std_logic;
+	signal sync_in, sync_out, sync_chained_in, sync_chained_out : msg_t;
+	signal sync_in_busy, sync_in_busy2 : std_logic;
+	signal sync_out_hold, sync_out_hold2 : std_logic;
+	signal sync_chained_id : unsigned(15 downto 0);
+
+	function var_access return TestStore_pkg.var_access_t is
+		variable v : TestStore_pkg.var_access_t;
+	begin
+		v := TestStore_pkg.VAR_ACCESS_RW;
+		v.\default_uint16\ := ACCESS_RO;
+		v.\default_uint32\ := ACCESS_WO;
+		v.\default_uint64\ := ACCESS_NA;
+		return v;
+	end function;
 begin
 
 	store_inst : entity work.TestStore_hdl
 		generic map (
 			SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ,
 			AXI_SLAVE => true,
-			SIMULATION => true
+			VAR_ACCESS => var_access
 		)
 		port map (
 			clk => clk,
@@ -57,6 +69,10 @@ begin
 			sync_in => sync_in,
 			sync_out => sync_out,
 			sync_in_busy => sync_in_busy,
+			sync_id => sync_chained_id,
+			sync_chained_in => sync_chained_in,
+			sync_chained_out => sync_chained_out,
+			sync_out_hold => sync_out_hold,
 
 			s_axi_araddr => axi_m2s.araddr,
 			s_axi_arready => axi_s2m.arready,
@@ -74,6 +90,23 @@ begin
 			s_axi_wdata => axi_m2s.wdata,
 			s_axi_wready => axi_s2m.wready,
 			s_axi_wvalid => axi_m2s.wvalid
+		);
+
+	store_inst2 : entity work.TestStore_hdl
+		generic map (
+			SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+
+			var_out => var_out2,
+			var_in => var_in2,
+
+			sync_in => sync_chained_out,
+			sync_out => sync_chained_in,
+			sync_chained_id => sync_chained_id,
+			sync_out_hold => sync_out_hold2
 		);
 
 	process
@@ -101,14 +134,19 @@ begin
 	process
 		variable test : test_t;
 		variable data : std_logic_vector(31 downto 0);
-		variable id_in, id_out : std_logic_vector(15 downto 0);
+		variable id_in, id_out, id_in2, id_out2 : std_logic_vector(15 downto 0);
 		variable buf : buffer_t(0 to TestStore_pkg.BUFFER_LENGTH - 1);
 		variable key : std_logic_vector(TestStore_pkg.KEY_LENGTH - 1 downto 0);
 		variable last : boolean;
 	begin
 		id_out := x"aabb";
+		id_out2 := x"ccdd";
 
 		var_in <= TestStore_pkg.var_in_default;
+		var_in2 <= TestStore_pkg.var_in_default;
+		sync_out_hold <= '0';
+		sync_out_hold2 <= '1';
+
 		axi_init(axi_m2s, axi_s2m);
 		sync_init(sync_in, sync_out);
 
@@ -204,6 +242,94 @@ begin
 		test_expect_eq(test, key, TestStore_pkg.\DEFAULT_INT8__KEY\);
 		test_expect_eq(test, buf(0), x"45");
 		test_expect_true(test, last);
+
+
+
+		test_start(test, "AccessRO");
+		sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\DEFAULT_UINT16__KEY\,
+			to_buffer(16#2345#, 2, TestStore_pkg.LITTLE_ENDIAN), TestStore_pkg.LITTLE_ENDIAN);
+		sync_wait(clk, sync_in_busy);
+		test_expect_eq(test, var_out.\default_uint16\.value, 16#2345#);
+
+		var_in.\default_uint16\.value <= x"1234";
+		var_in.\default_uint16\.we <= '1';
+		wait until rising_edge(clk);
+		var_in.\default_uint16\.we <= '0';
+		wait until rising_edge(clk) and var_out.\default_int32\.updated = '1' for 1 us;
+		wait until rising_edge(clk);
+		test_expect_eq(test, var_out.\default_uint16\.value, 16#2345#);
+
+
+
+		test_start(test, "AccessWO");
+		var_in.\default_uint32\.value <= x"11223344";
+		var_in.\default_uint32\.we <= '1';
+		wait until rising_edge(clk);
+		var_in.\default_uint32\.we <= '0';
+		wait until rising_edge(clk) and var_out.\default_uint32\.updated = '1' for 1 ms;
+		test_expect_eq(test, var_out.\default_uint32\.value, 16#11223344#);
+
+		sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\DEFAULT_UINT32__KEY\,
+			to_buffer(16#22334455#, 4, TestStore_pkg.LITTLE_ENDIAN), TestStore_pkg.LITTLE_ENDIAN);
+		sync_wait(clk, sync_in_busy);
+		test_expect_eq(test, var_out.\default_uint32\.value, 16#11223344#);
+
+
+
+		test_start(test, "AccessNA");
+		var_in.\default_uint64\.value <= x"1122334455667788";
+		var_in.\default_uint64\.we <= '1';
+		wait until rising_edge(clk);
+		var_in.\default_uint64\.we <= '0';
+		wait until rising_edge(clk) and var_out.\default_uint64\.updated = '1' for 1 us;
+		wait until rising_edge(clk);
+		test_expect_eq(test, var_out.\default_uint64\.value, 0);
+
+		sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\DEFAULT_UINT64__KEY\,
+			to_buffer(x"2233445566778899"), TestStore_pkg.LITTLE_ENDIAN);
+		sync_wait(clk, sync_in_busy);
+		test_expect_eq(test, var_out.\default_uint64\.value, 0);
+
+
+
+		test_start(test, "ChainedHello");
+		sync_out_hold2 <= '0';
+		sync_accept_hello(clk, sync_in, sync_out, TestStore_pkg.HASH, id_in2, TestStore_pkg.LITTLE_ENDIAN);
+		for i in buf'range loop
+			buf(i) := std_logic_vector(to_unsigned(i + 16, 8));
+		end loop;
+
+		sync_welcome(clk, sync_in, sync_out, id_in2, id_out2, buf, TestStore_pkg.LITTLE_ENDIAN);
+
+		test_start(test, "ChainedUpdate");
+		var_in.\default_int8\.value <= x"80";
+		var_in.\default_int8\.we <= '1';
+		wait until rising_edge(clk);
+		var_in.\default_int8\.we <= '0';
+		wait until rising_edge(clk) and var_out.\default_int8\.updated = '1' for 1 ms;
+		test_expect_eq(test, var_out.\default_int8\.value, 16#80#);
+
+		sync_update(clk, sync_in, sync_out, id_in2, TestStore_pkg.\DEFAULT_INT8__KEY\,
+			to_buffer(x"81"), TestStore_pkg.LITTLE_ENDIAN);
+		wait until rising_edge(clk) and var_out2.\default_int8\.updated = '1' for 1 ms;
+		test_expect_eq(test, var_out.\default_int8\.value, 16#80#);
+		test_expect_eq(test, var_out2.\default_int8\.value, 16#81#);
+
+
+
+		test_start(test, "ChainedUpdateOut");
+		var_in2.\default_int8\.value <= x"82";
+		var_in2.\default_int8\.we <= '1';
+		wait until rising_edge(clk);
+		var_in2.\default_int8\.we <= '0';
+
+		sync_accept_update_start(clk, sync_in, sync_out, id_out2, TestStore_pkg.LITTLE_ENDIAN);
+		sync_accept_update_var(clk, sync_in, sync_out, key, buf, last, TestStore_pkg.LITTLE_ENDIAN);
+		test_expect_eq(test, key, TestStore_pkg.\DEFAULT_INT8__KEY\);
+		test_expect_eq(test, buf(0), x"82");
+		test_expect_true(test, last);
+		test_expect_eq(test, var_out.\default_int8\.value, 16#80#);
+		test_expect_eq(test, var_out2.\default_int8\.value, 16#82#);
 
 
 
