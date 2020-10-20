@@ -51,6 +51,10 @@ architecture behav of test_fpga is
 		v.\default_uint64\ := ACCESS_NA;
 		return v;
 	end function;
+
+	constant BAUD : natural := 11520000;
+	signal uart_encode_in, uart_decode_out : msg_t;
+	signal uart_rx, uart_tx, uart_cts, uart_rts : std_logic;
 begin
 
 	store_inst : entity work.TestStore_hdl
@@ -109,6 +113,23 @@ begin
 			sync_out_hold => sync_out_hold2
 		);
 
+	UARTLayer_inst : entity work.UARTLayer
+		generic map (
+			SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ,
+			BAUD => BAUD
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			encode_in => uart_encode_in,
+			decode_out => uart_decode_out,
+			rx => uart_rx,
+			tx => uart_tx,
+			cts => uart_cts,
+			rts => uart_rts
+		);
+
+
 	process
 	begin
 		clk <= '0';
@@ -146,6 +167,10 @@ begin
 		var_in2 <= TestStore_pkg.var_in_default;
 		sync_out_hold <= '0';
 		sync_out_hold2 <= '1';
+
+		uart_encode_in <= msg_term;
+		uart_cts <= '0';
+		uart_rx <= '1';
 
 		axi_init(axi_m2s, axi_s2m);
 		sync_init(sync_in, sync_out);
@@ -330,6 +355,28 @@ begin
 		test_expect_true(test, last);
 		test_expect_eq(test, var_out.\default_int8\.value, 16#80#);
 		test_expect_eq(test, var_out2.\default_int8\.value, 16#82#);
+
+
+
+		test_start(test, "UartTx");
+		uart_encode_in.data <= x"12";
+		uart_encode_in.valid <= '1';
+		uart_encode_in.last <= '1';
+		uart_encode_in.accept <= '0';
+		wait until rising_edge(clk) and uart_decode_out.accept = '1' for 1 ms;
+		uart_encode_in.valid <= '0';
+
+
+
+		test_start(test, "UartRx");
+		uart_encode_in.accept <= '0';
+		uart_do_rx(BAUD, uart_rx, x"34");
+		uart_encode_in.accept <= '1';
+		wait until rising_edge(clk) and uart_decode_out.valid = '1' for 1 ms;
+		test_expect_eq(test, uart_decode_out.valid, '1');
+		test_expect_eq(test, uart_decode_out.data, x"34");
+		uart_encode_in.accept <= '0';
+
 
 
 

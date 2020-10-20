@@ -17,6 +17,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use ieee.math_real;
 
 package libstored_pkg is
 	constant SIMULATION_SPEEDUP : real := 1.0e4;
@@ -39,6 +40,7 @@ package libstored_pkg is
 
 	function maximum(constant a, b : integer) return integer;
 	function minimum(constant a, b : integer) return integer;
+	function bits(constant x : natural) return natural;
 	function ceil(constant x : real) return integer;
 	function normalize(constant x : std_logic_vector) return std_logic_vector;
 	function swap_endian(constant x : std_logic_vector) return std_logic_vector;
@@ -65,9 +67,18 @@ package body libstored_pkg is
 		end if;
 	end function;
 
+	function bits(constant x : natural) return natural is
+	begin
+		if x = 0 then
+			return 1;
+		else
+			return integer(math_real.ceil(math_real.log2(real(x + 1))));
+		end if;
+	end function;
+
 	function ceil(constant x : real) return integer is
 	begin
-		return integer(x + 0.5);
+		return integer(math_real.ceil(x));
 	end function;
 
 	function normalize(constant x : std_logic_vector) return std_logic_vector is

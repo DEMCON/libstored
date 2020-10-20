@@ -53,6 +53,41 @@ end rtl;
 
 
 
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity libstored_metastabilize is
+	generic (
+		DELAY : natural := 2
+	);
+	port (
+		clk : in std_logic;
+		rstn : in std_logic := '1';
+		i : in std_logic;
+		o : out std_logic
+	);
+end libstored_metastabilize;
+
+architecture rtl of libstored_metastabilize is
+	signal r : std_logic_vector(0 to DELAY - 1);
+
+	attribute retiming_forward : integer;
+	attribute retiming_forward of r : signal is 0;
+	attribute retiming_backward : integer;
+	attribute retiming_backward of r : signal is 0;
+begin
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			r <= i & r(0 to r'high - 1);
+		end if;
+	end process;
+
+	o <= r(r'high);
+end rtl;
+
+
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -60,7 +95,7 @@ use ieee.numeric_std.all;
 
 entity libstored_stream_buffer is
 	generic (
-		WIDTH : natural
+		WIDTH : positive
 	);
 	port (
 		clk : in std_logic;
@@ -182,3 +217,170 @@ begin
 --pragma translate_on
 
 end rtl;
+
+
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use work.libstored_pkg;
+
+entity libstored_fifo is
+	generic (
+		WIDTH : positive;
+		DEPTH : positive := 1;
+		ALMOST_FULL_REMAINING : natural := 0;
+		ALMOST_EMPTY_REMAINING : natural := 0
+	);
+	port (
+		clk : in std_logic;
+		rstn : in std_logic;
+
+		i : in std_logic_vector(WIDTH - 1 downto 0);
+		i_valid : in std_logic;
+		i_accept : out std_logic;
+		i_commit : in std_logic := '1';
+		i_rollback : in std_logic := '0';
+
+		o : out std_logic_vector(WIDTH - 1 downto 0);
+		o_valid : out std_logic;
+		o_accept : in std_logic;
+		o_commit : in std_logic := '1';
+		o_rollback : in std_logic := '0';
+
+		full : out std_logic;
+		empty : out std_logic;
+		almost_full : out std_logic;
+		almost_empty : out std_logic
+	);
+end libstored_fifo;
+
+architecture rtl of libstored_fifo is
+	constant ACTUAL_DEPTH : positive := 2**(libstored_pkg.bits(libstored_pkg.maximum(ALMOST_FULL_REMAINING + 1, DEPTH)));
+	type fifo_t is array(0 to ACTUAL_DEPTH - 1) of std_logic_vector(WIDTH - 1 downto 0);
+	subtype ptr_t is natural range 0 to ACTUAL_DEPTH - 1;
+
+	shared variable fifo : fifo_t;
+
+	signal rp, rp_next, rp_tmp, rp_tmp_next, wp, wp_tmp, wp_tmp_next : ptr_t;
+	signal full_i, empty_i : std_logic;
+begin
+
+	rp_tmp_next <= (rp_tmp + 1) mod ACTUAL_DEPTH;
+	wp_tmp_next <= (wp_tmp + 1) mod ACTUAL_DEPTH;
+
+	full_i <=
+		'1' when wp_tmp_next = rp else
+		'0';
+
+	full <= full_i;
+	i_accept <= not full_i;
+
+	empty_i <=
+		'1' when rp_tmp = wp else
+		'0';
+
+	empty <= empty_i;
+	o <= fifo(rp_tmp);
+	o_valid <= not empty_i;
+
+	almost_full <=
+		full_i when ALMOST_FULL_REMAINING = 0 else
+		'1' when (rp + ACTUAL_DEPTH - wp_tmp_next) mod ACTUAL_DEPTH <= ALMOST_FULL_REMAINING else
+		'0';
+
+	almost_empty <=
+		empty_i when ALMOST_EMPTY_REMAINING = 0 else
+		'1' when (wp + ACTUAL_DEPTH - rp_tmp) mod ACTUAL_DEPTH <= ALMOST_EMPTY_REMAINING else
+		'0';
+
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			if full_i = '0' and i_valid = '1' and i_rollback = '0' then
+				fifo(wp_tmp) := i;
+				wp_tmp <= wp_tmp_next;
+				if i_commit = '1' then
+					wp <= wp_tmp_next;
+				end if;
+			elsif i_rollback = '1' then
+				wp_tmp <= wp;
+			elsif i_commit = '1' then
+				wp <= wp_tmp;
+			end if;
+
+--pragma translate_off
+			if i_rollback = '1' then
+				if wp < wp_tmp then
+					for i in wp to wp_tmp - 1 loop
+						fifo(i) := (others => '-');
+					end loop;
+				else
+					for i in wp to ACTUAL_DEPTH - 1 loop
+						fifo(i) := (others => '-');
+					end loop;
+					for i in 1 to wp_tmp loop
+						fifo(i - 1) := (others => '-');
+					end loop;
+				end if;
+			end if;
+--pragma translate_on
+
+--pragma translate_off
+			if is_x(i_valid) or is_x(o_accept) or is_x(i_commit) or is_x(i_rollback) then
+				fifo := (others => (others => 'X'));
+				assert rstn /= '1' report "Invalid FIFO control signals" severity warning;
+			end if;
+--pragma translate_on
+
+			if rstn /= '1' then
+--pragma translate_off
+				fifo := (others => (others => '-'));
+--pragma translate_on
+				wp <= 0;
+				wp_tmp <= 0;
+			end if;
+		end if;
+	end process;
+
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			if empty_i = '0' and o_accept = '1' and o_rollback = '0' then
+				rp_tmp <= rp_tmp_next;
+				if i_commit = '1' then
+					rp <= rp_tmp_next;
+				end if;
+			elsif o_rollback = '1' then
+				rp_tmp <= rp;
+			elsif o_commit = '1' then
+				rp <= rp_tmp;
+			end if;
+
+--pragma translate_off
+			if o_rollback = '0' and o_commit = '1' then
+				if rp < rp_tmp then
+					for i in rp to rp_tmp - 1 loop
+						fifo(i) := (others => '-');
+					end loop;
+				else
+					for i in rp to ACTUAL_DEPTH - 1 loop
+						fifo(i) := (others => '-');
+					end loop;
+					for i in 1 to rp_tmp loop
+						fifo(i - 1) := (others => '-');
+					end loop;
+				end if;
+			end if;
+--pragma translate_on
+
+			if rstn /= '1' then
+				rp <= 0;
+				rp_tmp <= 0;
+			end if;
+		end if;
+	end process;
+
+end rtl;
+

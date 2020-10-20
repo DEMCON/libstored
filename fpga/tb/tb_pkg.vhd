@@ -181,6 +181,10 @@ package libstored_tb_pkg is
 		constant littleEndian : boolean := true;
 		constant timeout : in time := 1 ms);
 
+	procedure uart_do_rx(constant baud : integer;
+		signal rx : out std_logic;
+		constant data : std_logic_vector(7 downto 0));
+
 end libstored_tb_pkg;
 
 package body libstored_tb_pkg is
@@ -1008,6 +1012,21 @@ package body libstored_tb_pkg is
 		deadline := now + timeout;
 		sync_accept_update_start(clk, sync_in, sync_out, id_out, littleEndian, deadline - now);
 		sync_accept_update_vars(clk, sync_in, sync_out, deadline - now);
+	end procedure;
+
+	procedure uart_do_rx(constant baud : integer;
+		signal rx : out std_logic;
+		constant data : std_logic_vector(7 downto 0))
+	is
+	begin
+		rx <= '0';
+		wait for 1 sec / real(baud);
+		for i in 0 to 7 loop
+			rx <= data(i);
+			wait for 1 sec / real(baud);
+		end loop;
+		rx <= '1';
+		wait for 1 sec / real(baud);
 	end procedure;
 
 end package body;
