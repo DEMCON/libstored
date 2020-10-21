@@ -23,12 +23,29 @@ use work.libstored_pkg;
 
 package libstored_tb_pkg is
 
+	-----------------------------------------------
+	-- Support types
+	-----------------------------------------------
+
 	type str_t is array(natural range <>) of character;
 	constant STR_NULL : character := del;
 
 	procedure str_set(variable a: inout str_t; constant b : string);
 	function "&"(constant a: str_t; constant b : string) return str_t;
 	function to_string(constant s : str_t) return string;
+
+	type buffer_t is array(natural range <>) of std_logic_vector(7 downto 0);
+
+	function to_buffer(constant x : std_logic) return buffer_t;
+	function to_buffer(constant x : std_logic_vector) return buffer_t;
+	function to_buffer(constant x : integer; constant width : positive; constant littleEndian : boolean := true) return buffer_t;
+	function to_buffer(constant x : buffer_t) return buffer_t;
+
+
+
+	-----------------------------------------------
+	-- Test functions
+	-----------------------------------------------
 
 	type test_t is record
 		suite : str_t(0 to 63);
@@ -57,6 +74,13 @@ package libstored_tb_pkg is
 	procedure test_expect_eq(variable test : inout test_t; constant x: in signed; constant expect : in natural; constant ref : string := "");
 	procedure test_expect_eq(variable test : inout test_t; constant x, expect : in std_logic; constant ref : string := "");
 	procedure test_expect_eq(variable test : inout test_t; constant x, expect : in std_logic_vector; constant ref : string := "");
+	procedure test_expect_eq(variable test : inout test_t;
+		signal clk : in std_logic;
+		signal msg_in : in libstored_pkg.msg_t;
+		signal msg_out : inout libstored_pkg.msg_t;
+		constant expect : buffer_t;
+		constant ref : string := "";
+		constant timeout : time := 1 ms);
 
 	function test_string(constant x : boolean) return string;
 	function test_string(constant x : unsigned) return string;
@@ -68,6 +92,31 @@ package libstored_tb_pkg is
 	function normalize(constant x : std_logic_vector) return std_logic_vector;
 	function normalize(constant x : str_t) return str_t;
 	function normalize(constant x : string) return string;
+
+
+
+	-----------------------------------------------
+	-- Stream test functions
+	-----------------------------------------------
+
+	procedure msg_write(signal clk : in std_logic;
+		signal msg_in : in libstored_pkg.msg_t; signal msg_out : inout libstored_pkg.msg_t;
+		constant buf : buffer_t;
+		constant last : boolean := true;
+		constant timeout : time := 1 ms);
+
+	procedure msg_read(signal clk : in std_logic;
+		signal msg_in : in libstored_pkg.msg_t; signal msg_out : inout libstored_pkg.msg_t;
+		variable buf : out buffer_t;
+		variable len : out natural;
+		variable last : out boolean;
+		constant max_len : natural := 0;
+		constant read_till_last : in boolean := true;
+		constant timeout : time := 1 ms);
+
+	-----------------------------------------------
+	-- AXI test functions
+	-----------------------------------------------
 
 	-- AXI4 LITE master to slave signals
 	type axi_m2s_t is record
@@ -101,6 +150,12 @@ package libstored_tb_pkg is
 		constant addr : in natural; variable data : out std_logic_vector(31 downto 0);
 		constant timeout : in time := 1 ms);
 
+
+
+	-----------------------------------------------
+	-- Store sync test functions
+	-----------------------------------------------
+
 	procedure sync_init(signal sync_in : inout libstored_pkg.msg_t; signal sync_out : in libstored_pkg.msg_t);
 
 	procedure sync_accept_hello(signal clk : in std_logic;
@@ -108,13 +163,6 @@ package libstored_tb_pkg is
 		signal sync_out : in libstored_pkg.msg_t;
 		constant hash : libstored_pkg.hash_t; variable id_in : out std_logic_vector(15 downto 0);
 		constant littleEndian : boolean := true; constant timeout : time := 1 ms);
-
-	type buffer_t is array(natural range <>) of std_logic_vector(7 downto 0);
-
-	function to_buffer(constant x : std_logic) return buffer_t;
-	function to_buffer(constant x : std_logic_vector) return buffer_t;
-	function to_buffer(constant x : integer; constant width : positive; constant littleEndian : boolean := true) return buffer_t;
-	function to_buffer(constant x : buffer_t) return buffer_t;
 
 	procedure sync_welcome(signal clk : in std_logic;
 		signal sync_in : inout libstored_pkg.msg_t;
@@ -181,11 +229,32 @@ package libstored_tb_pkg is
 		constant littleEndian : boolean := true;
 		constant timeout : in time := 1 ms);
 
+
+
+	-----------------------------------------------
+	-- UART test functions
+	-----------------------------------------------
+
+	procedure uart_do_tx(constant baud : integer;
+		signal tx : in std_logic;
+		variable buf : out buffer_t;
+		constant len : positive := 1;
+		constant timeout : time := 1 ms);
+
 	procedure uart_do_rx(constant baud : integer;
 		signal rx : out std_logic;
-		constant data : std_logic_vector(7 downto 0));
+		signal rts : in std_logic;
+		constant buf : buffer_t;
+		constant timeout : time := 1 ms);
+
+
 
 end libstored_tb_pkg;
+
+
+
+
+
 
 package body libstored_tb_pkg is
 
@@ -241,6 +310,43 @@ package body libstored_tb_pkg is
 		return res;
 	end function;
 
+	function to_buffer(constant x : std_logic) return buffer_t is
+	begin
+		case x is
+		when '0' => return to_buffer(x"00");
+		when '1' => return to_buffer(x"01");
+		when others => return to_buffer("XXXXXXXX");
+		end case;
+	end function;
+
+	function to_buffer(constant x : std_logic_vector) return buffer_t is
+		variable buf : buffer_t(0 to x'length / 8 - 1);
+		variable n : std_logic_vector(x'length - 1 downto 0);
+	begin
+		n := normalize(x);
+		for i in buf'range loop
+			buf(i) := n(n'high - i * 8 downto n'high - i * 8 - 7);
+		end loop;
+		return buf;
+	end function;
+
+	function to_buffer(constant x : integer; constant width : positive; constant littleEndian : boolean := true) return buffer_t is
+		variable res, v : std_logic_vector(width * 8 - 1 downto 0);
+	begin
+		v := std_logic_vector(to_signed(x, width * 8));
+		if littleEndian then
+			res := libstored_pkg.swap_endian(v);
+		else
+			res := v;
+		end if;
+		return to_buffer(res);
+	end function;
+
+	function to_buffer(constant x : buffer_t) return buffer_t is
+	begin
+		return x;
+	end function;
+
 	procedure test_init(variable test : inout test_t; constant name : string := "Test") is
 	begin
 		test.checks := 0;
@@ -262,6 +368,9 @@ package body libstored_tb_pkg is
 		test.test_errors := 0;
 		test.test_start := now;
 		std.textio.write(std.textio.output, "[ RUN      ] " & to_string(test.suite) & "." & to_string(test.test) & lf);
+		if test.verbose then
+			report "Start test " & to_string(test.test) severity note;
+		end if;
 	end procedure;
 
 	procedure test_end(variable test : inout test_t) is
@@ -295,6 +404,8 @@ package body libstored_tb_pkg is
 		else
 			std.textio.write(std.textio.output, "[  FAILED  ] " & integer'image(test.checks) & " checks, " &
 				integer'image(test.errors) & " errors" & lf);
+
+			report "FAILED" severity failure;
 		end if;
 	end procedure;
 
@@ -397,6 +508,28 @@ package body libstored_tb_pkg is
 				end if;
 			end loop;
 		end if;
+	end procedure;
+
+	procedure test_expect_eq(variable test : inout test_t;
+		signal clk : in std_logic;
+		signal msg_in : in libstored_pkg.msg_t;
+		signal msg_out : inout libstored_pkg.msg_t;
+		constant expect : buffer_t;
+		constant ref : string := "";
+		constant timeout : time := 1 ms)
+	is
+		variable deadline : time;
+	begin
+		deadline := now + timeout;
+
+		msg_out.valid <= '0';
+		msg_out.accept <= '1';
+		for i in expect'range loop
+			wait until rising_edge(clk) and msg_in.valid = '1' for deadline - now;
+			assert msg_in.valid = '1' report "Timeout" severity failure;
+			test_expect_eq(test, msg_in.data, expect(i), ref);
+		end loop;
+		msg_out.accept <= '0';
 	end procedure;
 
 	function test_string(constant x : boolean) return string is
@@ -566,6 +699,66 @@ package body libstored_tb_pkg is
 		return v;
 	end function;
 
+	procedure msg_write(signal clk : in std_logic;
+		signal msg_in : in libstored_pkg.msg_t; signal msg_out : inout libstored_pkg.msg_t;
+		constant buf : buffer_t;
+		constant last : boolean := true;
+		constant timeout : time := 1 ms)
+	is
+		variable deadline : time;
+	begin
+		deadline := now + timeout;
+		msg_out.accept <= '0';
+		for i in buf'range loop
+			if last and i = buf'right then
+				msg_out.last <= '1';
+			else
+				msg_out.last <= '0';
+			end if;
+			msg_out.data <= buf(i);
+			msg_out.valid <= '1';
+			wait until rising_edge(clk) and msg_in.accept = '1' for deadline - now;
+			assert msg_in.accept = '1' report "Timeout" severity failure;
+		end loop;
+		msg_out.valid <= '0';
+		msg_out.data <= (others => '-');
+		msg_out.last <= '-';
+	end procedure;
+
+	procedure msg_read(signal clk : in std_logic;
+		signal msg_in : in libstored_pkg.msg_t; signal msg_out : inout libstored_pkg.msg_t;
+		variable buf : out buffer_t;
+		variable len : out natural;
+		variable last : out boolean;
+		constant max_len : natural := 0;
+		constant read_till_last : in boolean := true;
+		constant timeout : time := 1 ms)
+	is
+		variable deadline : time;
+		variable l : natural range 0 to buf'length - 1;
+	begin
+		deadline := now + timeout;
+		l := 0;
+		msg_out.valid <= '0';
+		last := false;
+		for i in buf'range loop
+			msg_out.accept <= '1';
+			wait until rising_edge(clk) and msg_in.valid = '1' for deadline - now;
+			assert msg_in.valid = '1' report "Timeout" severity failure;
+			buf(i) := msg_in.data;
+			l := l + 1;
+			last := msg_in.last = '1';
+			if max_len > 0 and max_len = l then
+				exit;
+			end if;
+			if msg_in.last = '1' and read_till_last then
+				exit;
+			end if;
+		end loop;
+		msg_out.accept <= '0';
+		len := l;
+	end procedure;
+
 	procedure axi_init(signal m2s : inout axi_m2s_t; signal s2m : in axi_s2m_t) is
 	begin
 		m2s.arvalid <= '0';
@@ -679,43 +872,6 @@ package body libstored_tb_pkg is
 
 		sync_in.accept <= '0';
 	end procedure;
-
-	function to_buffer(constant x : std_logic) return buffer_t is
-	begin
-		case x is
-		when '0' => return to_buffer(x"00");
-		when '1' => return to_buffer(x"01");
-		when others => return to_buffer("XXXXXXXX");
-		end case;
-	end function;
-
-	function to_buffer(constant x : std_logic_vector) return buffer_t is
-		variable buf : buffer_t(0 to x'length / 8 - 1);
-		variable n : std_logic_vector(x'length - 1 downto 0);
-	begin
-		n := normalize(x);
-		for i in buf'range loop
-			buf(i) := n(n'high - i * 8 downto n'high - i * 8 - 7);
-		end loop;
-		return buf;
-	end function;
-
-	function to_buffer(constant x : integer; constant width : positive; constant littleEndian : boolean := true) return buffer_t is
-		variable res, v : std_logic_vector(width * 8 - 1 downto 0);
-	begin
-		v := std_logic_vector(to_signed(x, width * 8));
-		if littleEndian then
-			res := libstored_pkg.swap_endian(v);
-		else
-			res := v;
-		end if;
-		return to_buffer(res);
-	end function;
-
-	function to_buffer(constant x : buffer_t) return buffer_t is
-	begin
-		return x;
-	end function;
 
 	procedure sync_welcome(signal clk : in std_logic;
 		signal sync_in : inout libstored_pkg.msg_t;
@@ -1014,19 +1170,59 @@ package body libstored_tb_pkg is
 		sync_accept_update_vars(clk, sync_in, sync_out, deadline - now);
 	end procedure;
 
+	procedure uart_do_tx(constant baud : integer;
+		signal tx : in std_logic;
+		variable buf : out buffer_t;
+		constant len : positive := 1;
+		constant timeout : time := 1 ms)
+	is
+		variable deadline : time;
+	begin
+		deadline := now + timeout;
+		for b in 1 to len loop
+			if tx /= '0' then
+				wait until tx = '0' for deadline - now;
+				assert tx = '0' report "Timeout" severity failure;
+			end if;
+			wait for 0.5 sec / real(baud);
+
+			for i in 0 to 7 loop
+				wait for 1 sec / real(baud);
+				buf(b - 1)(i) := tx;
+			end loop;
+
+			wait for 1 sec / real(baud);
+			assert tx = '1' report "Invalid stop bit" severity failure;
+		end loop;
+	end procedure;
+
 	procedure uart_do_rx(constant baud : integer;
 		signal rx : out std_logic;
-		constant data : std_logic_vector(7 downto 0))
+		signal rts : in std_logic;
+		constant buf : buffer_t;
+		constant timeout : time := 1 ms)
 	is
+		variable deadline : time;
 	begin
-		rx <= '0';
-		wait for 1 sec / real(baud);
-		for i in 0 to 7 loop
-			rx <= data(i);
+		deadline := now + timeout;
+
+		for b in buf'range loop
+			if rts /= '0' then
+				wait until rts = '0' for deadline - now;
+				assert rts = '0' report "Timeout" severity failure;
+			end if;
+
+			rx <= '0';
+			wait for 1 sec / real(baud);
+
+			for i in 0 to 7 loop
+				rx <= buf(b)(i);
+				wait for 1 sec / real(baud);
+			end loop;
+
+			rx <= '1';
 			wait for 1 sec / real(baud);
 		end loop;
-		rx <= '1';
-		wait for 1 sec / real(baud);
 	end procedure;
 
 end package body;

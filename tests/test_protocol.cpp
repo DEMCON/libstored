@@ -50,9 +50,9 @@ TEST(AsciiEscapeLayer, Encode) {
 	EXPECT_EQ(ll.encoded().at(0), "123\x7f\x7f");
 
 	ll.encoded().clear();
-	l.encode("\x7f""123", 4);
+	l.encode("\x7f""123\r", 5);
 	EXPECT_EQ(ll.encoded().size(), 1);
-	EXPECT_EQ(ll.encoded().at(0), "\x7f\x7f""123");
+	EXPECT_EQ(ll.encoded().at(0), "\x7f\x7f""123\x7f\x4d");
 }
 
 TEST(AsciiEscapeLayer, Decode) {
@@ -71,7 +71,7 @@ TEST(AsciiEscapeLayer, Decode) {
 	EXPECT_EQ(ll.decoded().at(0), "123\x7f");
 
 	ll.decoded().clear();
-	DECODE(l, "\x7f""A123");
+	DECODE(l, "\x7f""A12\r3");
 	EXPECT_EQ(ll.decoded().size(), 1);
 	EXPECT_EQ(ll.decoded().at(0), "\x01""123");
 }

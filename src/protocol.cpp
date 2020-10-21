@@ -75,7 +75,7 @@ void AsciiEscapeLayer::decode(void* buffer, size_t len) {
 	// Common case: there is no escape character.
 	size_t i = 0;
 	for(; i + 1 < len; i++)
-		if(unlikely(p[i] == Esc))
+		if(unlikely(p[i] == Esc || p[i] == '\r'))
 			goto first_escape;
 
 	// No escape characters.
@@ -86,18 +86,24 @@ first_escape:
 	// Process escape sequences in-place.
 	size_t decodeOffset = i;
 
+	if(p[i] == '\r') {
+		// Just drop.
+	} else {
 escape:
-	if(p[++i] == Esc)
-		p[decodeOffset] = (uint8_t)Esc;
-	else
-		p[decodeOffset] = (uint8_t)p[i] & (uint8_t)EscMask;
-	decodeOffset++;
+		if(p[++i] == Esc)
+			p[decodeOffset] = (uint8_t)Esc;
+		else
+			p[decodeOffset] = (uint8_t)p[i] & (uint8_t)EscMask;
+		decodeOffset++;
+	}
 	i++;
 
 	// The + 1 prevents it from trying to decode an escape character at the end.
 	for(; i + 1 < len; i++, decodeOffset++) {
 		if(unlikely(p[i] == Esc))
 			goto escape;
+		else if(unlikely(p[i] == '\r'))
+			decodeOffset--;
 		else
 			p[decodeOffset] = p[i];
 	}

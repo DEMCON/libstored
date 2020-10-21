@@ -229,7 +229,7 @@ use work.libstored_pkg;
 entity libstored_fifo is
 	generic (
 		WIDTH : positive;
-		DEPTH : positive := 1;
+		DEPTH : natural := 1;
 		ALMOST_FULL_REMAINING : natural := 0;
 		ALMOST_EMPTY_REMAINING : natural := 0
 	);
@@ -257,130 +257,158 @@ entity libstored_fifo is
 end libstored_fifo;
 
 architecture rtl of libstored_fifo is
-	constant ACTUAL_DEPTH : positive := 2**(libstored_pkg.bits(libstored_pkg.maximum(ALMOST_FULL_REMAINING + 1, DEPTH)));
-	type fifo_t is array(0 to ACTUAL_DEPTH - 1) of std_logic_vector(WIDTH - 1 downto 0);
-	subtype ptr_t is natural range 0 to ACTUAL_DEPTH - 1;
-
-	shared variable fifo : fifo_t;
-
-	signal rp, rp_next, rp_tmp, rp_tmp_next, wp, wp_tmp, wp_tmp_next : ptr_t;
-	signal full_i, empty_i : std_logic;
+	constant PASSTHROUGH : boolean := DEPTH = 0 and ALMOST_FULL_REMAINING = 0 and ALMOST_EMPTY_REMAINING = 0;
 begin
 
-	rp_tmp_next <= (rp_tmp + 1) mod ACTUAL_DEPTH;
-	wp_tmp_next <= (wp_tmp + 1) mod ACTUAL_DEPTH;
-
-	full_i <=
-		'1' when wp_tmp_next = rp else
-		'0';
-
-	full <= full_i;
-	i_accept <= not full_i;
-
-	empty_i <=
-		'1' when rp_tmp = wp else
-		'0';
-
-	empty <= empty_i;
-	o <= fifo(rp_tmp);
-	o_valid <= not empty_i;
-
-	almost_full <=
-		full_i when ALMOST_FULL_REMAINING = 0 else
-		'1' when (rp + ACTUAL_DEPTH - wp_tmp_next) mod ACTUAL_DEPTH <= ALMOST_FULL_REMAINING else
-		'0';
-
-	almost_empty <=
-		empty_i when ALMOST_EMPTY_REMAINING = 0 else
-		'1' when (wp + ACTUAL_DEPTH - rp_tmp) mod ACTUAL_DEPTH <= ALMOST_EMPTY_REMAINING else
-		'0';
-
-	process(clk)
+	passthrough_g : if PASSTHROUGH generate
 	begin
-		if rising_edge(clk) then
-			if full_i = '0' and i_valid = '1' and i_rollback = '0' then
-				fifo(wp_tmp) := i;
-				wp_tmp <= wp_tmp_next;
-				if i_commit = '1' then
-					wp <= wp_tmp_next;
-				end if;
-			elsif i_rollback = '1' then
-				wp_tmp <= wp;
-			elsif i_commit = '1' then
-				wp <= wp_tmp;
-			end if;
+		o <=
+--pragma translate_off
+			(others => '-') when i_valid /= '1' else
+--pragma translate_on
+			i;
+
+		o_valid <= i_valid;
+		i_accept <= o_accept;
+
+		full <= not o_accept;
+		empty <= o_accept;
+		almost_full <= not o_accept;
+		almost_empty <= o_accept;
 
 --pragma translate_off
-			if i_rollback = '1' then
-				if wp < wp_tmp then
-					for i in wp to wp_tmp - 1 loop
-						fifo(i) := (others => '-');
+		assert not (rising_edge(clk) and rstn = '1' and (o_commit /= '1' or i_commit /= '1'))
+			report "Cannot commit passthrough fifo" severity error;
+		assert not (rising_edge(clk) and rstn = '1' and (o_rollback /= '0' or i_rollback /= '0'))
+			report "Cannot rollback passthrough fifo" severity error;
+--pragma translate_on
+	end generate;
+
+	buffer_g : if not PASSTHROUGH generate
+		constant ACTUAL_DEPTH : positive := 2**(libstored_pkg.bits(libstored_pkg.maximum(ALMOST_FULL_REMAINING + 1, DEPTH)));
+		type fifo_t is array(0 to ACTUAL_DEPTH - 1) of std_logic_vector(WIDTH - 1 downto 0);
+		subtype ptr_t is natural range 0 to ACTUAL_DEPTH - 1;
+
+		signal fifo : fifo_t;
+
+		signal rp, rp_tmp, rp_tmp_next, wp, wp_tmp, wp_tmp_next : ptr_t;
+		signal o_valid_i, full_i, empty_i : std_logic;
+	begin
+		rp_tmp_next <= (rp_tmp + 1) mod ACTUAL_DEPTH;
+		wp_tmp_next <= (wp_tmp + 1) mod ACTUAL_DEPTH;
+
+		full_i <=
+			'1' when wp_tmp_next = rp else
+			'0';
+
+		full <= full_i;
+		i_accept <= not full_i;
+
+		o_valid <= o_valid_i;
+		empty_i <= not o_valid_i;
+		empty <= empty_i;
+
+		almost_full <=
+			full_i when ALMOST_FULL_REMAINING = 0 else
+			'1' when (rp + ACTUAL_DEPTH - wp_tmp_next) mod ACTUAL_DEPTH <= ALMOST_FULL_REMAINING else
+			'0';
+
+		almost_empty <=
+			empty_i when ALMOST_EMPTY_REMAINING = 0 else
+			'1' when (wp + ACTUAL_DEPTH - rp_tmp) mod ACTUAL_DEPTH <= ALMOST_EMPTY_REMAINING else
+			'0';
+
+		process(clk)
+			variable rp_v : ptr_t;
+
+--pragma translate_off
+			procedure erase_fifo(constant a, b : ptr_t) is
+			begin
+				if a <= b then
+					for i in a + 1 to b loop
+						fifo(i - 1) <= (others => '-');
 					end loop;
 				else
-					for i in wp to ACTUAL_DEPTH - 1 loop
-						fifo(i) := (others => '-');
+					for i in a to ACTUAL_DEPTH - 1 loop
+						fifo(i) <= (others => '-');
 					end loop;
-					for i in 1 to wp_tmp loop
-						fifo(i - 1) := (others => '-');
+					for i in 1 to b loop
+						fifo(i - 1) <= (others => '-');
 					end loop;
 				end if;
-			end if;
+			end procedure;
 --pragma translate_on
+		begin
+			rp_v := rp_tmp;
 
+			if rising_edge(clk) then
+				if empty_i = '0' and o_accept = '1' and o_rollback = '0' then
+					rp_tmp <= rp_tmp_next;
+					rp_v := rp_tmp_next;
+					if i_commit = '1' then
+						rp <= rp_tmp_next;
 --pragma translate_off
-			if is_x(i_valid) or is_x(o_accept) or is_x(i_commit) or is_x(i_rollback) then
-				fifo := (others => (others => 'X'));
-				assert rstn /= '1' report "Invalid FIFO control signals" severity warning;
-			end if;
+						erase_fifo(rp, rp_tmp_next);
 --pragma translate_on
-
-			if rstn /= '1' then
+					end if;
+				elsif o_rollback = '1' then
+					rp_tmp <= rp;
+					rp_v := rp;
+				elsif o_commit = '1' then
+					rp <= rp_tmp;
+					rp_v := rp_tmp;
 --pragma translate_off
-				fifo := (others => (others => '-'));
+					erase_fifo(rp, rp_tmp);
 --pragma translate_on
-				wp <= 0;
-				wp_tmp <= 0;
-			end if;
-		end if;
-	end process;
-
-	process(clk)
-	begin
-		if rising_edge(clk) then
-			if empty_i = '0' and o_accept = '1' and o_rollback = '0' then
-				rp_tmp <= rp_tmp_next;
-				if i_commit = '1' then
-					rp <= rp_tmp_next;
 				end if;
-			elsif o_rollback = '1' then
-				rp_tmp <= rp;
-			elsif o_commit = '1' then
-				rp <= rp_tmp;
-			end if;
 
+				o <= fifo(rp_v);
+
+				if rp_v = wp then
+					o_valid_i <= '0';
 --pragma translate_off
-			if o_rollback = '0' and o_commit = '1' then
-				if rp < rp_tmp then
-					for i in rp to rp_tmp - 1 loop
-						fifo(i) := (others => '-');
-					end loop;
+					o <= (others => '-');
+--pragma translate_on
 				else
-					for i in rp to ACTUAL_DEPTH - 1 loop
-						fifo(i) := (others => '-');
-					end loop;
-					for i in 1 to rp_tmp loop
-						fifo(i - 1) := (others => '-');
-					end loop;
+					o_valid_i <= '1';
 				end if;
-			end if;
+
+				if full_i = '0' and i_valid = '1' and i_rollback = '0' then
+					fifo(wp_tmp) <= i;
+					wp_tmp <= wp_tmp_next;
+					if i_commit = '1' then
+						wp <= wp_tmp_next;
+					end if;
+				elsif i_rollback = '1' then
+					wp_tmp <= wp;
+				elsif i_commit = '1' then
+					wp <= wp_tmp;
+				end if;
+
+--pragma translate_off
+				if i_rollback = '1' then
+					erase_fifo(wp, wp_tmp);
+				end if;
 --pragma translate_on
 
-			if rstn /= '1' then
-				rp <= 0;
-				rp_tmp <= 0;
-			end if;
-		end if;
-	end process;
+--pragma translate_off
+				if is_x(i_valid) or is_x(o_accept) or is_x(i_commit) or is_x(i_rollback) then
+					fifo <= (others => (others => 'X'));
+					assert rstn /= '1' report "Invalid FIFO control signals" severity warning;
+				end if;
+--pragma translate_on
 
+				if rstn /= '1' then
+--pragma translate_off
+					fifo <= (others => (others => '-'));
+--pragma translate_on
+					wp <= 0;
+					wp_tmp <= 0;
+					rp <= 0;
+					rp_tmp <= 0;
+				end if;
+			end if;
+		end process;
+	end generate;
 end rtl;
 

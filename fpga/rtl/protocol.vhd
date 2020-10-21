@@ -37,6 +37,13 @@ entity SegmentationLayer is
 	);
 end SegmentationLayer;
 
+architecture rtl of SegmentationLayer is
+begin
+	-- TODO
+end rtl;
+
+
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -65,6 +72,14 @@ entity ArqLayer is
 	);
 end ArqLayer;
 
+architecture rtl of ArqLayer is
+begin
+	-- TODO
+end rtl;
+
+
+
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -84,6 +99,14 @@ entity Crc8Layer is
 		idle : out std_logic
 	);
 end Crc8Layer;
+
+architecture rtl of Crc8Layer is
+begin
+	-- TODO
+end rtl;
+
+
+
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -105,6 +128,183 @@ entity Crc16Layer is
 	);
 end CRC16Layer;
 
+architecture rtl of CRC16Layer is
+begin
+	-- TODO
+end rtl;
+
+
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use work.libstored_pkg;
+
+entity libstored_droptail is
+	generic (
+		FIFO_DEPTH : natural := 0;
+		TAIL_LENGTH : positive := 1
+	);
+	port (
+		clk : in std_logic;
+		rstn : in std_logic;
+
+		data_in : in std_logic_vector(7 downto 0);
+		valid_in : in std_logic;
+		last_in : in std_logic;
+		accept_in : out std_logic;
+		drop : in std_logic := '1';
+
+		data_out : out std_logic_vector(7 downto 0);
+		valid_out : out std_logic;
+		last_out : out std_logic;
+		accept_out : in std_logic
+	);
+end libstored_droptail;
+
+architecture rtl of libstored_droptail is
+	type state_t is (STATE_NORMAL, STATE_DROP, STATE_FORWARD);
+	type r_t is record
+		state : state_t;
+		cnt : natural range 0 to TAIL_LENGTH + 1;
+		last : std_logic_vector(1 downto 0);
+		last_valid : std_logic;
+	end record;
+
+	signal r, r_in : r_t;
+
+	constant DATA_NORMAL : std_logic_vector(1 downto 0) := "00";
+	constant DATA_LAST : std_logic_vector(1 downto 0) := "01";
+	constant DATA_DROP : std_logic_vector(1 downto 0) := "10";
+
+	signal valid_in_i, valid_out_i, accept_out_i, accept_in_i, last_valid : std_logic;
+	signal last_out_i : std_logic_vector(1 downto 0);
+begin
+	data_fifo_inst : entity work.libstored_fifo
+		generic map (
+			WIDTH => 8,
+			DEPTH => FIFO_DEPTH
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			i => data_in,
+			i_valid => valid_in_i,
+			i_accept => accept_in_i,
+			o => data_out,
+			o_valid => valid_out_i,
+			o_accept => accept_out_i
+		);
+
+	last_fifo_inst : entity work.libstored_fifo
+		generic map (
+			WIDTH => 2,
+			DEPTH => FIFO_DEPTH
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			i => r.last,
+			i_valid => r.last_valid,
+			i_accept => open,
+			o => last_out_i,
+			o_valid => last_valid,
+			o_accept => accept_out_i
+		);
+
+	valid_out <=
+		valid_out_i and last_valid when last_out_i /= DATA_DROP else
+		'0';
+
+	accept_out_i <= valid_out_i and last_valid and accept_out;
+
+	last_out <=
+		'1' when last_out_i = DATA_LAST else
+		'0';
+
+	with r.state select
+		accept_in <=
+			accept_in_i when STATE_NORMAL,
+			'0' when others;
+
+	with r.state select
+		valid_in_i <=
+			valid_in when STATE_NORMAL,
+			'0' when others;
+
+	process(r, rstn, accept_in_i, valid_in, last_in, drop)
+		variable v : r_t;
+	begin
+		v := r;
+
+		v.last := (others => '-');
+		v.last_valid := '0';
+
+		case r.state is
+		when STATE_NORMAL =>
+			if valid_in = '1' and accept_in_i = '1' then
+				v.cnt := r.cnt + 1;
+				if last_in = '1' then
+					if drop = '1' then
+						-- Got whole message, but drop tail.
+						v.state := STATE_DROP;
+					else
+						-- Forward whole message.
+						v.state := STATE_FORWARD;
+					end if;
+				elsif r.cnt = TAIL_LENGTH then
+					if last_in = '0' then
+						-- No end of message, next byte is not part of the tail.
+						v.last := DATA_NORMAL;
+						v.last_valid := '1';
+						v.cnt := r.cnt;
+					end if;
+				end if;
+			end if;
+		when STATE_DROP =>
+			v.last_valid := '1';
+			v.cnt := r.cnt - 1;
+			case v.cnt is
+			when 1 =>
+				v.last := DATA_LAST;
+			when 0 =>
+				v.last := DATA_DROP;
+				v.state := STATE_NORMAL;
+			when others =>
+				v.last := DATA_NORMAL;
+			end case;
+		when STATE_FORWARD =>
+			v.last_valid := '1';
+			v.cnt := r.cnt - 1;
+			case v.cnt is
+			when 0 =>
+				v.last := DATA_LAST;
+				v.state := STATE_NORMAL;
+			when others =>
+				v.last := DATA_NORMAL;
+			end case;
+		end case;
+
+		if rstn /= '1' then
+			v.state := STATE_NORMAL;
+			v.cnt := 0;
+		end if;
+
+		r_in <= v;
+	end process;
+
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			r <= r_in;
+		end if;
+	end process;
+
+end rtl;
+
+
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -112,7 +312,9 @@ use work.libstored_pkg;
 
 entity AsciiEscapeLayer is
 	generic (
-		ESCAPE_ALL : boolean := false
+		ESCAPE_ALL : boolean := false;
+		ENCODE_OUT_FIFO_DEPTH : natural := 0;
+		DECODE_OUT_FIFO_DEPTH : natural := 0
 	);
 	port (
 		clk : in std_logic;
@@ -128,6 +330,213 @@ entity AsciiEscapeLayer is
 	);
 end AsciiEscapeLayer;
 
+architecture rtl of AsciiEscapeLayer is
+begin
+	encode_g : if true generate
+		type state_t is (STATE_DATA, STATE_ESC);
+		type r_t is record
+			state : state_t;
+			esc_data : std_logic_vector(7 downto 0);
+			postpone_last : std_logic;
+		end record;
+
+		signal r, r_in : r_t;
+
+		signal encode_out_i, encode_out_o : std_logic_vector(8 downto 0);
+		signal encode_out_data : std_logic_vector(7 downto 0);
+		signal encode_out_valid, encode_out_accept, encode_out_last : std_logic;
+	begin
+		encode_out_fifo_inst : entity work.libstored_fifo
+			generic map (
+				WIDTH => 9,
+				DEPTH => ENCODE_OUT_FIFO_DEPTH
+			)
+			port map (
+				clk => clk,
+				rstn => rstn,
+				i => encode_out_i,
+				i_valid => encode_out_valid,
+				i_accept => encode_out_accept,
+				o => encode_out_o,
+				o_valid => encode_out.valid,
+				o_accept => decode_in.accept
+			);
+
+		encode_out_i <= encode_out_last & encode_out_data;
+		encode_out.data <= encode_out_o(7 downto 0);
+		encode_out.last <= encode_out_o(8);
+
+		process(r, rstn, encode_in.data, encode_in.valid, encode_in.last, encode_out_accept)
+			variable v : r_t;
+		begin
+			v := r;
+
+			case r.state is
+			when STATE_DATA =>
+				if encode_in.valid = '1' and encode_out_accept = '1' then
+					if ESCAPE_ALL then
+						if unsigned(encode_in.data) < 32 then
+							v.state := STATE_ESC;
+							v.esc_data := encode_in.data or x"40";
+						elsif encode_in.data = x"7f" then
+							v.state := STATE_ESC;
+							v.esc_data := x"7f";
+						end if;
+					else
+						case encode_in.data is
+						when  x"00" -- \0
+							| x"11" -- XON
+							| x"13" -- XOFF
+							| x"1b" -- ESC
+							| x"0d" => -- \r
+							v.state := STATE_ESC;
+							v.esc_data := encode_in.data or x"40";
+						when x"7f" =>
+							v.state := STATE_ESC;
+							v.esc_data := x"7f";
+						when others => null;
+						end case;
+					end if;
+				end if;
+
+				if v.state = STATE_ESC then
+					v.postpone_last := encode_in.last;
+				end if;
+			when STATE_ESC =>
+				if encode_out_accept = '1' then
+					v.state := STATE_DATA;
+				end if;
+			end case;
+
+			if rstn /= '1' then
+				v.state := STATE_DATA;
+				v.postpone_last := '0';
+			end if;
+
+			r_in <= v;
+		end process;
+
+		process(clk)
+		begin
+			if rising_edge(clk) then
+				r <= r_in;
+			end if;
+		end process;
+
+		encode_out_data <=
+			encode_in.data when r.state = STATE_DATA and r_in.state = STATE_DATA else
+			x"7f" when r.state = STATE_DATA else
+			r.esc_data;
+
+		with r.state select
+			encode_out_last <=
+				encode_in.last and not r_in.postpone_last when STATE_DATA,
+				r.postpone_last when STATE_ESC;
+
+		with r.state select
+			encode_out_valid <=
+				encode_in.valid when STATE_DATA,
+				'1' when STATE_ESC;
+
+		with r.state select
+			decode_out.accept <=
+				encode_out_accept when STATE_DATA,
+				'0' when others;
+
+	end generate;
+
+	decode_g : if true generate
+		type state_t is (STATE_DATA, STATE_ESC);
+		type r_t is record
+			state : state_t;
+		end record;
+
+		signal r, r_in : r_t;
+
+		signal decode_out_i, decode_out_o : std_logic_vector(8 downto 0);
+		signal decode_out_data : std_logic_vector(7 downto 0);
+		signal decode_out_valid, decode_out_accept, decode_out_last, decode_out_drop : std_logic;
+		signal decode_in_is_esc : boolean;
+	begin
+		decode_out_fifo_inst : entity work.libstored_droptail
+			generic map (
+				FIFO_DEPTH => DECODE_OUT_FIFO_DEPTH,
+				TAIL_LENGTH => 1 -- Only x"0d" may be removed.
+			)
+			port map (
+				clk => clk,
+				rstn => rstn,
+				data_in => decode_out_data,
+				last_in => decode_out_last,
+				valid_in => decode_out_valid,
+				accept_in => decode_out_accept,
+				drop => decode_out_drop,
+				data_out => decode_out.data,
+				valid_out => decode_out.valid,
+				last_out => decode_out.last,
+				accept_out => encode_in.accept
+			);
+
+		process(r, rstn, decode_in.valid, decode_in.data, decode_in.last, encode_in.accept, decode_out_accept, decode_in_is_esc)
+			variable v : r_t;
+		begin
+			v := r;
+
+			case r.state is
+			when STATE_DATA =>
+				if decode_in.valid = '1' and decode_out_accept = '1' then
+					if decode_in_is_esc and decode_in.last = '0' then
+						v.state := STATE_ESC;
+					end if;
+				end if;
+			when STATE_ESC =>
+				if decode_in.valid = '1' and decode_out_accept = '1' then
+					v.state := STATE_DATA;
+				end if;
+			end case;
+
+			if rstn /= '1' then
+				v.state := STATE_DATA;
+			end if;
+
+			r_in <= v;
+		end process;
+
+		process(clk)
+		begin
+			if rising_edge(clk) then
+				r <= r_in;
+			end if;
+		end process;
+
+		decode_in_is_esc <= decode_in.data = x"7f";
+
+		decode_out_data <=
+			decode_in.data when decode_in_is_esc else
+			decode_in.data and x"1f" when r.state = STATE_ESC else
+			decode_in.data;
+
+		decode_out_valid <=
+			decode_in.valid and decode_in.last when decode_in.data = x"0d" else -- is valid, but will be dropped
+			'0' when r.state = STATE_DATA and decode_in_is_esc and decode_in.last = '0' else
+			decode_in.valid;
+
+		decode_out_last <= decode_in.last;
+
+		encode_out.accept <=
+			decode_out_accept;
+
+		decode_out_drop <=
+			decode_in.last when decode_in.data = x"0d" else
+			'0';
+
+	end generate;
+
+end rtl;
+
+
+
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -135,21 +544,110 @@ use work.libstored_pkg;
 
 entity BufferLayer is
 	generic (
-		DEPTH : positive := 1
+		ENCODE_DEPTH : natural := 1;
+		DECODE_DEPTH : natural := 1
 	);
 	port (
 		clk : in std_logic;
 		rstn : in std_logic;
 
-		encode_in : in libstored_pkg.msg_t;
+		encode_in : in libstored_pkg.msg_t := libstored_pkg.msg_term;
 		encode_out : out libstored_pkg.msg_t;
 
-		decode_in : in libstored_pkg.msg_t;
+		decode_in : in libstored_pkg.msg_t := libstored_pkg.msg_term;
 		decode_out : out libstored_pkg.msg_t;
 
 		idle : out std_logic
 	);
 end BufferLayer;
+
+architecture rtl of BufferLayer is
+	signal encode_empty, decode_empty : std_logic;
+begin
+
+	encode_buf_g : if ENCODE_DEPTH > 0 generate
+		signal encode_i, encode_o : std_logic_vector(8 downto 0);
+	begin
+		encode_fifo_inst : entity work.libstored_fifo
+			generic map (
+				WIDTH => 9,
+				DEPTH => ENCODE_DEPTH
+			)
+			port map (
+				clk => clk,
+				rstn => rstn,
+				i => encode_i,
+				i_valid => encode_in.valid,
+				i_accept => decode_out.accept,
+				o => encode_o,
+				o_valid => encode_out.valid,
+				o_accept => decode_in.accept,
+				empty => encode_empty
+			);
+
+		encode_i <= encode_in.last & encode_in.data;
+		encode_out.data <= encode_o(7 downto 0);
+		encode_out.last <= encode_o(8);
+	end generate;
+
+	encode_nobuf_g : if ENCODE_DEPTH = 0 generate
+	begin
+		encode_out.data <= encode_in.data;
+		encode_out.last <= encode_in.last;
+		encode_out.valid <= encode_in.valid;
+		decode_out.accept <= decode_in.accept;
+
+		process(clk)
+		begin
+			if rising_edge(clk) then
+				encode_empty <= not encode_in.valid;
+			end if;
+		end process;
+	end generate;
+
+	decode_buf_g : if DECODE_DEPTH > 0 generate
+		signal decode_i, decode_o : std_logic_vector(8 downto 0);
+	begin
+		decode_fifo_inst : entity work.libstored_fifo
+			generic map (
+				WIDTH => 9,
+				DEPTH => DECODE_DEPTH
+			)
+			port map (
+				clk => clk,
+				rstn => rstn,
+				i => decode_i,
+				i_valid => decode_in.valid,
+				i_accept => encode_out.accept,
+				o => decode_o,
+				o_valid => decode_out.valid,
+				o_accept => encode_in.accept,
+				empty => decode_empty
+			);
+
+		decode_i <= decode_in.last & decode_in.data;
+		decode_out.data <= decode_o(7 downto 0);
+		decode_out.last <= decode_o(8);
+	end generate;
+
+	decode_nobuf_g : if DECODE_DEPTH = 0 generate
+	begin
+		decode_out.data <= decode_in.data;
+		decode_out.last <= decode_in.last;
+		decode_out.valid <= decode_in.valid;
+		encode_out.accept <= encode_in.accept;
+
+		process(clk)
+		begin
+			if rising_edge(clk) then
+				decode_empty <= not decode_in.valid;
+			end if;
+		end process;
+	end generate;
+
+	idle <= encode_empty and decode_empty;
+end rtl;
+
 
 
 
@@ -159,6 +657,12 @@ use ieee.numeric_std.all;
 use work.libstored_pkg;
 
 entity TerminalLayer is
+	generic (
+		ENCODE_OUT_FIFO_DEPTH : natural := 0;
+		DECODE_IN_FIFO_DEPTH : natural := 0;
+		DECODE_OUT_FIFO_DEPTH : natural := 1;
+		TERMINAL_OUT_FIFO_DEPTH : natural := 1
+	);
 	port (
 		clk : in std_logic;
 		rstn : in std_logic;
@@ -169,7 +673,7 @@ entity TerminalLayer is
 		decode_in : in libstored_pkg.msg_t;
 		decode_out : out libstored_pkg.msg_t;
 
-		terminal_in : in libstored_pkg.msg_t;
+		terminal_in : in libstored_pkg.msg_t := libstored_pkg.msg_term;
 		terminal_out : out libstored_pkg.msg_t;
 
 		idle : out std_logic
@@ -178,8 +682,10 @@ end TerminalLayer;
 
 architecture rtl of TerminalLayer is
 	constant MSG_ESC : std_logic_vector(7 downto 0) := x"1b";
-	constant MSG_START : std_logic_vector(7 downto 0) := x"5f"; -- _
-	constant MSG_END : std_logic_vector(7 downto 0) := x"5c"; -- \
+	constant MSG_START : std_logic_vector(7 downto 0) := x"5f"; -- '_'
+	constant MSG_END : std_logic_vector(7 downto 0) := x"5c";   -- '\'
+
+	signal encode_idle, decode_idle : std_logic;
 begin
 
 	encode_g : if true generate
@@ -189,8 +695,12 @@ begin
 			state : state_t;
 		end record;
 		signal r, r_in : r_t;
+
+		signal encode_out_data : std_logic_vector(7 downto 0);
+		signal encode_out_valid, encode_out_accept : std_logic;
 	begin
-		process(r, rstn, encode_in.valid, encode_in.last, decode_in.accept)
+
+		process(r, rstn, encode_in.valid, encode_in.last, encode_out_accept)
 			variable v : r_t;
 		begin
 			v := r;
@@ -203,23 +713,23 @@ begin
 					v.state := STATE_START_ESC;
 				end if;
 			when STATE_START_ESC =>
-				if decode_in.accept = '1' then
+				if encode_out_accept = '1' then
 					v.state := STATE_START;
 				end if;
 			when STATE_START =>
-				if decode_in.accept = '1' then
+				if encode_out_accept = '1' then
 					v.state := STATE_MSG;
 				end if;
 			when STATE_MSG =>
-				if decode_in.accept = '1' and encode_in.valid = '1' and encode_in.last = '1' then
+				if encode_out_accept = '1' and encode_in.valid = '1' and encode_in.last = '1' then
 					v.state := STATE_END_ESC;
 				end if;
 			when STATE_END_ESC =>
-				if decode_in.accept = '1' then
+				if encode_out_accept = '1' then
 					v.state := STATE_END;
 				end if;
 			when STATE_END =>
-				if decode_in.accept = '1' then
+				if encode_out_accept = '1' then
 					v.state := STATE_IDLE;
 				end if;
 			end case;
@@ -232,7 +742,7 @@ begin
 		end process;
 
 		with r.state select
-			encode_out.data <=
+			encode_out_data <=
 				MSG_ESC when STATE_START_ESC | STATE_END_ESC,
 				MSG_START when STATE_START,
 				MSG_END when STATE_END,
@@ -240,23 +750,38 @@ begin
 				terminal_in.data when others;
 
 		with r.state select
-			encode_out.valid <=
+			encode_out_valid <=
 				'1' when STATE_START_ESC | STATE_START | STATE_END_ESC | STATE_END,
 				encode_in.valid when STATE_MSG,
 				terminal_in.valid when others;
 
 		with r.state select
 			decode_out.accept <=
-				decode_in.accept when STATE_MSG,
+				encode_out_accept when STATE_MSG,
 				'0' when others;
 
 		with r.state select
 			terminal_out.accept <=
-				decode_in.accept when STATE_IDLE,
+				encode_out_accept when STATE_IDLE,
 				'0' when others;
 
-		terminal_out.last <= decode_in.last;
-		decode_out.last <= decode_in.last;
+		fifo_encode_out_inst : entity work.libstored_fifo
+			generic map (
+				WIDTH => 8,
+				DEPTH => ENCODE_OUT_FIFO_DEPTH
+			)
+			port map (
+				clk => clk,
+				rstn => rstn,
+				i => encode_out_data,
+				i_valid => encode_out_valid,
+				i_accept => encode_out_accept,
+				o => encode_out.data,
+				o_valid => encode_out.valid,
+				o_accept => decode_in.accept
+			);
+
+		encode_out.last <= '0';
 
 		process(clk)
 		begin
@@ -264,6 +789,8 @@ begin
 				r <= r_in;
 			end if;
 		end process;
+
+		encode_idle <= '1' when r.state = STATE_IDLE else '0';
 	end generate;
 
 	decode_g : if true generate
@@ -275,6 +802,7 @@ begin
 			rollback_decode : std_logic;
 			commit_terminal : std_logic;
 			rollback_terminal : std_logic;
+			drop : std_logic;
 		end record;
 		signal r, r_in : r_t;
 
@@ -282,12 +810,13 @@ begin
 		signal decode_out_valid, decode_out_accept, decode_out_last : std_logic;
 		signal terminal_out_valid, terminal_out_accept : std_logic;
 		signal decode_in_data : std_logic_vector(7 downto 0);
+		signal decode_out_empty, decode_out_valid_o, decode_out_accept_o : std_logic;
 	begin
 
 		fifo_decode_in_inst : entity work.libstored_fifo
 			generic map (
 				WIDTH => 8,
-				DEPTH => 2
+				DEPTH => DECODE_IN_FIFO_DEPTH
 			)
 			port map (
 				clk => clk,
@@ -303,7 +832,7 @@ begin
 		fifo_decode_out_inst : entity work.libstored_fifo
 			generic map (
 				WIDTH => 8,
-				DEPTH => 2,
+				DEPTH => libstored_pkg.maximum(2, DECODE_OUT_FIFO_DEPTH),
 				ALMOST_EMPTY_REMAINING => 1
 			)
 			port map (
@@ -315,15 +844,16 @@ begin
 				i_commit => r_in.commit_decode,
 				i_rollback => r_in.rollback_decode,
 				o => decode_out.data,
-				o_valid => decode_out.valid,
-				o_accept => decode_in.accept,
-				almost_empty => decode_out_last
+				o_valid => decode_out_valid_o,
+				o_accept => decode_out_accept_o,
+				almost_empty => decode_out_last,
+				empty => decode_out_empty
 			);
 
 		fifo_terminal_out_inst : entity work.libstored_fifo
 			generic map (
 				WIDTH => 8,
-				DEPTH => 2
+				DEPTH => TERMINAL_OUT_FIFO_DEPTH
 			)
 			port map (
 				clk => clk,
@@ -338,9 +868,7 @@ begin
 				o_accept => terminal_in.accept
 			);
 
-		terminal_out.last <= '0';
-
-		process(r, rstn, decode_in_valid, decode_in_accept, decode_in_data)
+		process(r, rstn, decode_in_valid, decode_in_accept, decode_in_data, decode_out_empty)
 			variable v : r_t;
 		begin
 			v := r;
@@ -349,6 +877,7 @@ begin
 			v.rollback_terminal := '0';
 			v.commit_decode := '0';
 			v.commit_terminal := '0';
+			v.drop := '0';
 
 			case r.state is
 			when STATE_RESET =>
@@ -360,12 +889,11 @@ begin
 					v.commit_terminal := '1';
 				end if;
 			when STATE_START_ESC =>
-				if decode_in_valid = '1' and decode_in_accept = '1' then
+				if decode_in_valid = '1' then
 					if decode_in_data = MSG_START then
 						v.state := STATE_MSG;
 						v.rollback_terminal := '1';
-					elsif decode_in_data = MSG_ESC then
-						v.commit_terminal := '1';
+						v.drop := '1';
 					else
 						v.state := STATE_IDLE;
 						v.commit_terminal := '1';
@@ -384,14 +912,16 @@ begin
 					if decode_in_data = MSG_END then
 						v.state := STATE_FLUSH;
 						v.rollback_decode := '1';
-					elsif decode_in_data = MSG_ESC then
-						v.commit_decode := '1';
+						v.drop := '1';
 					else
 						v.state := STATE_MSG;
 						v.commit_decode := '1';
 					end if;
 				end if;
 			when STATE_FLUSH =>
+				if decode_out_empty = '1' then
+					v.state := STATE_IDLE;
+				end if;
 			end case;
 
 			if rstn /= '1' then
@@ -403,18 +933,19 @@ begin
 
 		with r.state select
 			decode_out_valid <=
-				decode_in_valid when STATE_MSG | STATE_END_ESC,
+				decode_in_valid when STATE_MSG,
 				'0' when others;
 
 		with r.state select
 			terminal_out_valid <=
-				decode_in_valid when STATE_IDLE | STATE_START_ESC,
+				decode_in_valid when STATE_IDLE,
 				'0' when others;
 
 		with r.state select
 			decode_in_accept <=
-				terminal_out_accept when STATE_IDLE | STATE_START_ESC,
-				decode_out_accept when STATE_MSG | STATE_END_ESC,
+				terminal_out_accept when STATE_IDLE,
+				decode_out_accept when STATE_MSG,
+				r_in.drop when STATE_START_ESC | STATE_END_ESC,
 				'0' when others;
 
 		with r.state select
@@ -422,13 +953,29 @@ begin
 				decode_out_last when STATE_FLUSH,
 				'0' when others;
 
+		with r.state select
+			decode_out.valid <=
+				decode_out_valid_o when STATE_FLUSH,
+				decode_out_valid_o and not decode_out_last when others;
+
+		with r.state select
+			decode_out_accept_o <=
+				encode_in.accept when STATE_FLUSH,
+				encode_in.accept and not decode_out_last when others;
+
+		terminal_out.last <= '0';
+
 		process(clk)
 		begin
 			if rising_edge(clk) then
 				r <= r_in;
 			end if;
 		end process;
+
+		decode_idle <= '1' when r.state = STATE_IDLE else '0';
 	end generate;
+
+	idle <= encode_idle and decode_idle;
 
 end rtl;
 
@@ -442,7 +989,8 @@ use work.libstored_pkg;
 entity UARTLayer is
 	generic (
 		SYSTEM_CLK_FREQ : integer := 100e6;
-		BAUD : integer := 115200
+		BAUD : integer := 115200;
+		DECODE_OUT_FIFO_DEPTH : natural := 0
 	);
 	port (
 		clk : in std_logic;
@@ -485,9 +1033,10 @@ begin
 			o => cts_i
 		);
 
-	fifo_inst : entity work.libstored_fifo
+	decode_out_fifo_inst : entity work.libstored_fifo
 		generic map (
 			WIDTH => 8,
+			DEPTH => libstored_pkg.maximum(DECODE_OUT_FIFO_DEPTH, 4),
 			ALMOST_FULL_REMAINING => 2
 		)
 		port map (
