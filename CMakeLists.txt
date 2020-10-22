@@ -149,17 +149,8 @@ endif()
 
 find_program(CPPCHECK_CMD NAMES cppcheck)
 if(CPPCHECK_CMD)
-	add_custom_target(cppcheck ALL
-		COMMAND
-			${CPPCHECK_CMD}
-			--enable=warning,style,information
-			--force
-			--inline-suppr
-			--quiet
-			--suppressions-list=${CMAKE_CURRENT_SOURCE_DIR}/.cppcheck_suppr
-			--error-exitcode=1
-#			--xml
-			-I include
+	if(LIBSTORED_EXAMPLES)
+		set(CPPCHECK_EXAMPLES
 			-I examples/1_hello/libstored/include
 			-I examples/2_basic/libstored/include
 			-I examples/3_scope/libstored/include
@@ -171,8 +162,22 @@ if(CPPCHECK_CMD)
 			-I examples/9_fpga/libstored/include
 			-I examples/terminal/libstored/include
 			-I examples/zmqserver/libstored/include
-			src
 			examples
+		)
+	endif()
+	add_custom_target(cppcheck ALL
+		COMMAND
+			${CPPCHECK_CMD}
+			--enable=warning,style,information
+			--force
+			--inline-suppr
+			--quiet
+			--suppressions-list=${CMAKE_CURRENT_SOURCE_DIR}/.cppcheck_suppr
+			--error-exitcode=1
+#			--xml
+			-I include
+			${CPPCHECK_EXAMPLES}
+			src
 #			--check-config
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		VERBATIM
