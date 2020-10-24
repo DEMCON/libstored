@@ -33,6 +33,7 @@ package libstored_tb_pkg is
 	procedure str_set(variable a: inout str_t; constant b : string);
 	function "&"(constant a: str_t; constant b : string) return str_t;
 	function to_string(constant s : str_t) return string;
+	function to_str(constant s : string; constant len : natural := 255) return str_t;
 
 	type buffer_t is array(natural range <>) of std_logic_vector(7 downto 0);
 
@@ -40,6 +41,8 @@ package libstored_tb_pkg is
 	function to_buffer(constant x : std_logic_vector) return buffer_t;
 	function to_buffer(constant x : integer; constant width : positive; constant littleEndian : boolean := true) return buffer_t;
 	function to_buffer(constant x : buffer_t) return buffer_t;
+	function string_encode(constant x : string) return buffer_t;
+	function str_encode(constant x : str_t) return buffer_t;
 
 
 
@@ -310,6 +313,13 @@ package body libstored_tb_pkg is
 		return res;
 	end function;
 
+	function to_str(constant s : string; constant len : natural := 255) return str_t is
+		variable res : str_t(0 to len - 1);
+	begin
+		str_set(res, s);
+		return res;
+	end function;
+
 	function to_buffer(constant x : std_logic) return buffer_t is
 	begin
 		case x is
@@ -345,6 +355,22 @@ package body libstored_tb_pkg is
 	function to_buffer(constant x : buffer_t) return buffer_t is
 	begin
 		return x;
+	end function;
+
+	function string_encode(constant x : string) return buffer_t is
+		variable res : buffer_t(0 to x'length - 1);
+		variable s : string(1 to x'length);
+	begin
+		s := normalize(x);
+		for i in s'range loop
+			res(i - 1) := std_logic_vector(to_unsigned(character'pos(s(i)), 8));
+		end loop;
+		return res;
+	end function;
+
+	function str_encode(constant x : str_t) return buffer_t is
+	begin
+		return string_encode(to_string(x));
 	end function;
 
 	procedure test_init(variable test : inout test_t; constant name : string := "Test") is
@@ -1226,5 +1252,142 @@ package body libstored_tb_pkg is
 	end procedure;
 
 end package body;
+
+
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use ieee.std_logic_textio.all;
+use work.libstored_pkg;
+use work.libstored_tb_pkg;
+
+entity FileLayer is
+	generic (
+		SLEEP_s : real := 100.0e-6;
+		FILENAME_IN : string := "stack_in.txt";
+		FILENAME_OUT : string := "stack_out.txt"
+	);
+	port (
+		clk : in std_logic;
+		rstn : in std_logic;
+
+		encode_in : in libstored_pkg.msg_t;
+		decode_out : out libstored_pkg.msg_t;
+
+		idle : out std_logic
+	);
+end FileLayer;
+
+architecture behav of FileLayer is
+	type file_t is file of character;
+
+	signal fn_in : libstored_tb_pkg.str_t(0 to 255) := libstored_tb_pkg.to_str(FILENAME_IN, 256);
+	signal fn_out : libstored_tb_pkg.str_t(0 to 255) := libstored_tb_pkg.to_str(FILENAME_OUT, 256);
+begin
+
+	read_p : process
+		variable status : file_open_status;
+		file f : file_t;
+		variable v : character;
+	begin
+		idle <= '0';
+		decode_out.last <= '0';
+		decode_out.valid <= '0';
+
+		wait until rising_edge(clk) and rstn = '1' and encode_in.accept = '1';
+		report "Open " & libstored_tb_pkg.to_string(fn_in) & " for reading..." severity note;
+
+		file_open(status, f, libstored_tb_pkg.to_string(fn_in), READ_MODE);
+
+		case status is
+		when OPEN_OK =>
+			report "Reading from " & libstored_tb_pkg.to_string(fn_in) severity note;
+
+			while not endfile(f) loop
+				read(f, v);
+				if v = nul then
+					wait for SLEEP_s * 1 sec;
+					wait until rising_edge(clk);
+				else
+					decode_out.data <= std_logic_vector(to_unsigned(character'pos(v), 8));
+					decode_out.valid <= '1';
+					wait until rising_edge(clk) and encode_in.accept = '1';
+					decode_out.valid <= '0';
+					decode_out.data <= (others => '-');
+				end if;
+			end loop;
+		when STATUS_ERROR =>
+			report "Cannot open " & libstored_tb_pkg.to_string(fn_in) & "; STATUS_ERROR" severity failure;
+			wait;
+		when NAME_ERROR =>
+			report "Cannot open " & libstored_tb_pkg.to_string(fn_in) & "; NAME_ERROR" severity failure;
+			wait;
+		when MODE_ERROR =>
+			report "Cannot open " & libstored_tb_pkg.to_string(fn_in) & "; MODE_ERROR" severity failure;
+			wait;
+		when others =>
+			report "Cannot open " & libstored_tb_pkg.to_string(fn_in) severity failure;
+			wait;
+		end case;
+
+		file_close(f);
+
+		-- Signal end of file.
+		wait until rising_edge(clk);
+		decode_out.data <= x"00";
+		decode_out.last <= '1';
+		decode_out.valid <= '1';
+		wait until rising_edge(clk) and encode_in.accept = '1';
+		decode_out.valid <= '0';
+
+		idle <= '1';
+		wait;
+	end process;
+
+	write_p : process
+		variable status : file_open_status;
+		file f : file_t;
+		variable v : character;
+	begin
+		decode_out.accept <= '0';
+
+		wait until rising_edge(clk) and rstn = '1' and encode_in.valid = '1';
+		report "Open " & libstored_tb_pkg.to_string(fn_out) & " for writing..." severity note;
+
+		file_open(status, f, libstored_tb_pkg.to_string(fn_out), WRITE_MODE);
+
+		case status is
+		when OPEN_OK =>
+			report "Writing to " & libstored_tb_pkg.to_string(fn_out) severity note;
+		when STATUS_ERROR =>
+			report "Cannot open " & libstored_tb_pkg.to_string(fn_out) & "; STATUS_ERROR" severity failure;
+			wait;
+		when NAME_ERROR =>
+			report "Cannot open " & libstored_tb_pkg.to_string(fn_out) & "; NAME_ERROR" severity failure;
+			wait;
+		when MODE_ERROR =>
+			report "Cannot open " & libstored_tb_pkg.to_string(fn_out) & "; MODE_ERROR" severity failure;
+			wait;
+		when others =>
+			report "Cannot open " & libstored_tb_pkg.to_string(fn_out) severity failure;
+			wait;
+		end case;
+
+		while true loop
+			decode_out.accept <= '1';
+			wait until rising_edge(clk) and encode_in.valid = '1';
+			v := character'val(to_integer(unsigned(encode_in.data)));
+			decode_out.accept <= '0';
+
+			write(f, v);
+		end loop;
+
+		file_close(f);
+		wait;
+	end process;
+
+end behav;
 --pragma translate_on
 

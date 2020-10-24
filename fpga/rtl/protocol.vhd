@@ -19,128 +19,6 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.libstored_pkg;
 
-entity SegmentationLayer is
-	generic (
-		MTU : positive
-	);
-	port (
-		clk : in std_logic;
-		rstn : in std_logic;
-
-		encode_in : in libstored_pkg.msg_t;
-		encode_out : out libstored_pkg.msg_t;
-
-		decode_in : in libstored_pkg.msg_t;
-		decode_out : out libstored_pkg.msg_t;
-
-		idle : out std_logic
-	);
-end SegmentationLayer;
-
-architecture rtl of SegmentationLayer is
-begin
-	-- TODO
-end rtl;
-
-
-
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
-use work.libstored_pkg;
-
-entity ArqLayer is
-	generic (
-		SYSTEM_CLK_FREQ : integer := 100e6;
-		ACK_TIMEOUT_s : real := 0.1;
-		SIMULATION : boolean := false
---pragma translate_off
-			or true
---pragma translate_on
-	);
-	port (
-		clk : in std_logic;
-		rstn : in std_logic;
-
-		encode_in : in libstored_pkg.msg_t;
-		encode_out : out libstored_pkg.msg_t;
-
-		decode_in : in libstored_pkg.msg_t;
-		decode_out : out libstored_pkg.msg_t;
-
-		idle : out std_logic
-	);
-end ArqLayer;
-
-architecture rtl of ArqLayer is
-begin
-	-- TODO
-end rtl;
-
-
-
-
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
-use work.libstored_pkg;
-
-entity Crc8Layer is
-	port (
-		clk : in std_logic;
-		rstn : in std_logic;
-
-		encode_in : in libstored_pkg.msg_t;
-		encode_out : out libstored_pkg.msg_t;
-
-		decode_in : in libstored_pkg.msg_t;
-		decode_out : out libstored_pkg.msg_t;
-
-		idle : out std_logic
-	);
-end Crc8Layer;
-
-architecture rtl of Crc8Layer is
-begin
-	-- TODO
-end rtl;
-
-
-
-
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
-use work.libstored_pkg;
-
-entity Crc16Layer is
-	port (
-		clk : in std_logic;
-		rstn : in std_logic;
-
-		encode_in : in libstored_pkg.msg_t;
-		encode_out : out libstored_pkg.msg_t;
-
-		decode_in : in libstored_pkg.msg_t;
-		decode_out : out libstored_pkg.msg_t;
-
-		idle : out std_logic
-	);
-end CRC16Layer;
-
-architecture rtl of CRC16Layer is
-begin
-	-- TODO
-end rtl;
-
-
-
-
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
-use work.libstored_pkg;
-
 entity libstored_droptail is
 	generic (
 		FIFO_DEPTH : natural := 0;
@@ -302,6 +180,147 @@ begin
 	end process;
 
 end rtl;
+
+
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use work.libstored_pkg;
+
+entity SegmentationLayer is
+	generic (
+		MTU : positive
+	);
+	port (
+		clk : in std_logic;
+		rstn : in std_logic;
+
+		encode_in : in libstored_pkg.msg_t;
+		encode_out : out libstored_pkg.msg_t;
+
+		decode_in : in libstored_pkg.msg_t;
+		decode_out : out libstored_pkg.msg_t;
+
+		idle : out std_logic
+	);
+end SegmentationLayer;
+
+architecture rtl of SegmentationLayer is
+begin
+	-- TODO
+--pragma translate_off
+	assert not (rising_edge(clk) and rstn /= '1')
+		report "Not implemented" severity failure;
+--pragma translate_on
+end rtl;
+
+
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use work.libstored_pkg;
+
+entity ArqLayer is
+	generic (
+		SYSTEM_CLK_FREQ : integer := 100e6;
+		ACK_TIMEOUT_s : real := 0.1;
+		SIMULATION : boolean := false
+--pragma translate_off
+			or true
+--pragma translate_on
+	);
+	port (
+		clk : in std_logic;
+		rstn : in std_logic;
+
+		encode_in : in libstored_pkg.msg_t;
+		encode_out : out libstored_pkg.msg_t;
+
+		decode_in : in libstored_pkg.msg_t;
+		decode_out : out libstored_pkg.msg_t;
+
+		idle : out std_logic
+	);
+end ArqLayer;
+
+architecture rtl of ArqLayer is
+begin
+	-- TODO
+--pragma translate_off
+	assert not (rising_edge(clk) and rstn /= '1')
+		report "Not implemented" severity failure;
+--pragma translate_on
+end rtl;
+
+
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use work.libstored_pkg;
+
+entity Crc8Layer is
+	port (
+		clk : in std_logic;
+		rstn : in std_logic;
+
+		encode_in : in libstored_pkg.msg_t;
+		encode_out : out libstored_pkg.msg_t;
+
+		decode_in : in libstored_pkg.msg_t;
+		decode_out : out libstored_pkg.msg_t;
+
+		idle : out std_logic
+	);
+end Crc8Layer;
+
+architecture rtl of Crc8Layer is
+begin
+	-- TODO
+--pragma translate_off
+	assert not (rising_edge(clk) and rstn /= '1')
+		report "Not implemented" severity failure;
+--pragma translate_on
+end rtl;
+
+
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use work.libstored_pkg;
+
+entity Crc16Layer is
+	port (
+		clk : in std_logic;
+		rstn : in std_logic;
+
+		encode_in : in libstored_pkg.msg_t;
+		encode_out : out libstored_pkg.msg_t;
+
+		decode_in : in libstored_pkg.msg_t;
+		decode_out : out libstored_pkg.msg_t;
+
+		idle : out std_logic
+	);
+end CRC16Layer;
+
+architecture rtl of CRC16Layer is
+begin
+	-- TODO
+--pragma translate_off
+	assert not (rising_edge(clk) and rstn /= '1')
+		report "Not implemented" severity failure;
+--pragma translate_on
+end rtl;
+
+
 
 
 
@@ -978,6 +997,7 @@ begin
 	idle <= encode_idle and decode_idle;
 
 end rtl;
+
 
 
 
