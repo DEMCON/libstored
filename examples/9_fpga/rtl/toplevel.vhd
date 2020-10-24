@@ -18,104 +18,191 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+use work.libstored_pkg.all;
 use work.ExampleFpga_pkg;
-
-use work.libstored_tb_pkg.all;
+use work.ExampleFpga2_pkg;
 
 entity example_9_fpga is
+	generic (
+		SYSTEM_CLK_FREQ : integer := 100e6;
+		SIMULATION : boolean := false
+--pragma translate_off
+			or true
+--pragma translate_on
+	);
+	port (
+		clk : in std_logic;
+		rstn : in std_logic;
+
+		rx : in std_logic := '1';
+		tx : out std_logic;
+		cts : in std_logic := '0';
+		rts : out std_logic
+	);
 end entity;
 
-architecture behav of example_9_fpga is
-	constant SYSTEM_CLK_FREQ : integer := 100e6;
+architecture rtl of example_9_fpga is
+	function var_access return ExampleFpga_pkg.var_access_t is
+		variable v : ExampleFpga_pkg.var_access_t;
+	begin
+		v := ExampleFpga_pkg.VAR_ACCESS_RW;
 
-	signal clk, rstn : std_logic;
-	signal done : boolean;
+		-- Save some LUTs by limiting how we are going to access these variables.
+		v.\t_clk\ := ACCESS_WO;
+		v.\default_register_write_count\ := ACCESS_WO;
+		return v;
+	end function;
 
-	signal \default_register__out\ : ExampleFpga_pkg.\default_register__type\;
-	signal \default_register__out_changed\ : std_logic;
-	signal \default_register__in\ : ExampleFpga_pkg.\default_register__type\;
-	signal \default_register__in_we\ : std_logic;
+	signal var_out : ExampleFpga_pkg.var_out_t;
+	signal var_in : ExampleFpga_pkg.var_in_t;
+	signal var2_out : ExampleFpga2_pkg.var_out_t;
+	signal var2_in : ExampleFpga2_pkg.var_in_t;
+	signal sync_in, sync_out, sync_chained_in, sync_chained_out : msg_t;
+	signal sync_chained_id : unsigned(15 downto 0);
 
-	signal \initialized_register__out\ : ExampleFpga_pkg.\initialized_register__type\;
-	signal \initialized_register__out_changed\ : std_logic;
-	signal \initialized_register__in\ : ExampleFpga_pkg.\initialized_register__type\;
-	signal \initialized_register__in_we\ : std_logic;
+	signal term_encode_in, term_decode_out : msg_t;
+	signal uart_encode_in, uart_decode_out : msg_t;
 
-	signal \read_only_register__out\ : ExampleFpga_pkg.\read_only_register__type\;
-	signal \read_only_register__out_changed\ : std_logic;
-	signal \read_only_register__in\ : ExampleFpga_pkg.\read_only_register__type\;
-	signal \read_only_register__in_we\ : std_logic;
+	signal clk_cnt, write_cnt : unsigned(31 downto 0);
 begin
+
+	-----------------------------------------
+	-- Store instances
+	-----------------------------------------
 
 	store_inst : entity work.ExampleFpga_hdl
 		generic map (
 			SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ,
-			SIMULATION => true
+			VAR_ACCESS => var_access,
+			SIMULATION => SIMULATION
 		)
 		port map (
 			clk => clk,
 			rstn => rstn,
-
-			\default_register__out\ => \default_register__out\,
-			\default_register__out_changed\ => \default_register__out_changed\,
-			\default_register__in\ => \default_register__in\,
-			\default_register__in_we\ => \default_register__in_we\,
-
-			\initialized_register__out\ => \initialized_register__out\,
-			\initialized_register__out_changed\ => \initialized_register__out_changed\,
-			\initialized_register__in\ => \initialized_register__in\,
-			\initialized_register__in_we\ => \initialized_register__in_we\,
-
-			\read_only_register__out\ => \read_only_register__out\,
-			\read_only_register__out_changed\ => \read_only_register__out_changed\,
-			\read_only_register__in\ => \read_only_register__in\,
-			\read_only_register__in_we\ => \read_only_register__in_we\
+			var_out => var_out,
+			var_in => var_in,
+			sync_in => sync_in,
+			sync_out => sync_out,
+			sync_id => sync_chained_id,
+			sync_chained_in => sync_chained_out,
+			sync_chained_out => sync_chained_in
 		);
 
-	process
-	begin
-		clk <= '0';
-		wait for 0.5 / real(SYSTEM_CLK_FREQ) * 1 sec;
-		clk <= '1';
-		wait for 0.5 / real(SYSTEM_CLK_FREQ) * 1 sec;
+	store2_inst : entity work.ExampleFpga2_hdl
+		generic map (
+			SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ,
+			SIMULATION => SIMULATION
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			var_out => var2_out,
+			var_in => var2_in,
+			sync_in => sync_chained_in,
+			sync_out => sync_chained_out,
+			sync_chained_id => sync_chained_id
+		);
 
-		if done then
-			wait;
+
+	-----------------------------------------
+	-- Protocol stack for Synchronizer
+	-----------------------------------------
+
+	ASCIIEscapeLayer_inst : entity work.ASCIIEscapeLayer
+		port map (
+			clk => clk,
+			rstn => rstn,
+			encode_in => sync_out,
+			encode_out => term_encode_in,
+			decode_in => term_decode_out,
+			decode_out => sync_in
+		);
+
+	TerminalLayer_inst : entity work.TerminalLayer
+		port map (
+			clk => clk,
+			rstn => rstn,
+			encode_in => term_encode_in,
+			encode_out => uart_encode_in,
+			decode_in => uart_decode_out,
+			decode_out => term_decode_out
+		);
+
+	uart_g : if not SIMULATION generate
+	begin
+		UARTLayer_inst : entity work.UARTLayer
+			generic map (
+				SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ
+			)
+			port map (
+				clk => clk,
+				rstn => rstn,
+				encode_in => uart_encode_in,
+				decode_out => uart_decode_out,
+				rx => rx,
+				tx => tx,
+				cts => cts,
+				rts => rts
+			);
+	end generate;
+
+--pragma translate_off
+	file_g : if SIMULATION generate
+	begin
+		FileLayer_inst : entity work.FileLayer
+			port map (
+				clk => clk,
+				rstn => rstn,
+				encode_in => uart_encode_in,
+				decode_out => uart_decode_out
+			);
+	end generate;
+--pragma translate_on
+
+
+	-----------------------------------------
+	-- Implementation of application
+	-----------------------------------------
+
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			var_in <= ExampleFpga_pkg.var_in_default;
+
+
+
+			-- implementation of ExampleFpga/t (clk)
+			var_in.\t_clk\.value <= resize(clk_cnt, var_in.\t_clk\.value'length);
+			var_in.\t_clk\.we <= '1';
+			clk_cnt <= clk_cnt + 1;
+
+			if rstn /= '1' then
+				var_in.\t_clk\.we <= '0';
+				clk_cnt <= (others => '0');
+			end if;
+
+
+
+			-- implementaton of ExampleFpga/read-only register
+			var_in.\read_only_register\.value <= x"abcd";
+			var_in.\read_only_register\.we <= '1';
+
+
+
+			-- implementation of ExampleFpga/default register write count
+			if var_out.\default_register\.updated = '1' then
+				write_cnt <= write_cnt + 1;
+			end if;
+
+			var_in.\default_register_write_count\.value <=
+				resize(write_cnt, var_in.\default_register_write_count\.value'length);
+			var_in.\default_register_write_count\.we <= '1';
+
+			if rstn /= '1' then
+				write_cnt <= (others => '0');
+				var_in.\default_register_write_count\.we <= '0';
+			end if;
 		end if;
 	end process;
 
-	process
-	begin
-		rstn <= '0';
-		for i in 0 to 15 loop
-			wait until rising_edge(clk);
-		end loop;
-		rstn <= '1';
-		wait;
-	end process;
-
-	process
-		variable test : test_t;
-	begin
-		\default_register__in_we\ <= '0';
-		\initialized_register__in_we\ <= '0';
-		\read_only_register__in_we\ <= '1';
-		\read_only_register__in\ <= x"12345678";
-
-		wait until rising_edge(clk) and rstn = '1';
-		wait until rising_edge(clk);
-		wait until rising_edge(clk);
-
-		test_init(test);
-		test_verbose(test);
-
-		test_start(test, "ReadOnly");
-		test_expect_eq(test, \read_only_register__out\, x"12345678");
-
-		test_finish(test);
-		wait for 1 us;
-		done <= true;
-		wait;
-	end process;
-
-end behav;
+end rtl;

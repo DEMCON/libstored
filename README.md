@@ -405,6 +405,10 @@ generate stuff for you.  This is how to integrate it in your project:
 
 - Now, build your `app`. The generated libstored library is automatically
   built.
+- If you want to use the VHDL store in your Vivado project, create a project
+  for your FPGA, and source the generated file `rtl/vivado.tcl`. This will add
+  all relevant files to your project. Afterwards, just save the project as
+  usualy; the `rtl/vivado.tcl` file is not needed anymore.
 
 Check out the examples of libstored, which are all independent applications
 with their own generated store.
