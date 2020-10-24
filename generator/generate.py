@@ -306,7 +306,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
 
 def generate_cmake(libprefix, model_files, output_dir):
     logger.info("generating CMakeLists.txt")
-    models = map(model_name, model_files)
+    models = list(map(model_name, model_files))
 
     # create the output dir if it does not exist yet
     if not os.path.exists(output_dir):
@@ -315,6 +315,7 @@ def generate_cmake(libprefix, model_files, output_dir):
     jenv = jinja2.Environment(
             loader = jinja2.FileSystemLoader([
                 os.path.join(libstored_dir),
+                os.path.join(libstored_dir, 'fpga', 'vivado'),
             ]),
             trim_blocks = True,
             lstrip_blocks = True)
@@ -324,9 +325,17 @@ def generate_cmake(libprefix, model_files, output_dir):
     jenv.filters['escapebs'] = escapebs
 
     cmake_tmpl = jenv.get_template('CMakeLists.txt.tmpl')
+    vivado_tmpl = jenv.get_template('vivado.tcl.tmpl')
 
     with open(os.path.join(output_dir, 'CMakeLists.txt'), 'w') as f:
         f.write(cmake_tmpl.render(
+            libstored_dir=libstored_dir,
+            models=models,
+            libprefix=libprefix,
+            ))
+
+    with open(os.path.join(output_dir, 'rtl', 'vivado.tcl'), 'w') as f:
+        f.write(vivado_tmpl.render(
             libstored_dir=libstored_dir,
             models=models,
             libprefix=libprefix,
