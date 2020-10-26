@@ -6,8 +6,9 @@
 
 **What is it?**  
 A generator for a C++ class (store) with your application's variables, and a
-tool set to synchronize updates between processes, and debug it remotely.
-See also the [presentation](https://demcon.github.io/libstored/libstored.sozi.html).
+tool set to synchronize updates between processes (including FPGA), and debug
+it remotely.  See also the
+[presentation](https://demcon.github.io/libstored/libstored.sozi.html).
 
 **When do I need it?**  
 When you have a distributed application in need of synchronization, and/or you
@@ -43,12 +44,13 @@ changes.  This library helps you managing data in three ways:
 1. Using a simple language, you can define which variables, types, etc., you
    need. Next, a C++ class is generated, with these variables, but also with
    iterators, run-time name lookup, synchronization hooks, and more. This is
-   your _store_.
+   your _store_. Additionally, a VHDL implementation is generated too, such
+   that the store can also be used on an FPGA.
 2. These stores can be synchronized between different instances via arbitrary
    communication channels.  So, you can build a distributed system over multiple
-   processes or hardware nodes, via lossy and lossless channels, over TCP, CAN,
-   serial, you name it. When some node writes to its store, this update is
-   distributed through your application.
+   processes or hardware nodes like microcontrollers and FPGAs, via lossy and
+   lossless channels, over TCP, CAN, serial, you name it. When some node writes
+   to its store, this update is distributed through your application.
 3. The store can be accessed via a debugging protocol. Using this protocol, all
    objects in the store can be read/written or sampled at high frequency for nice
    plots. It offers streams to have a sort of stdout redirection or debugging
@@ -61,6 +63,8 @@ See next sections for details, but the following is worth to mention here:
 - All code is normal C++, there are no platform-dependent constructs used.
   Therefore, all platforms are supported: Windows/Linux/Mac/bare
   metal (newlib), x86/ARM, gcc/clang/MSVC/armcc).
+- The VHDL implementation is also generic, but only developed for Xilinx (using
+  Vivado).
 - The store and all other libstored classes are not thread-safe.
   Using threads is troubling anyway, use [fibers](https://github.com/jhrutgers/zth) instead.
 
@@ -134,7 +138,8 @@ simple and efficient, but has the following limitations:
 See [the doxygen documentation](https://demcon.github.io/libstored/group__libstored__synchronizer.html) for more details.
 
 The topology is arbitrary, as long as every store instance has one root, where
-it gets its initial copy from. You could, for example, construct the following topology:
+it gets its initial copy from. You could, for example, construct the following
+topology:
 
 	B   C
 	 \ /
@@ -157,6 +162,10 @@ possible, and you can define it based on your application's needs.
 The example [`8_sync`](examples/8_sync) implements an application with two
 stores, which can be connected arbitrarily using command line arguments. You
 can play with it to see the synchronization.
+
+The store implementation in VHDL integrates a Synchronizer instance.  However,
+it cannot be used as in intermediate node in the topology as described above;
+the FPGA has to be a leaf.
 
 ### <a name="debug"></a>libstored - Store for Embedded Debugger
 
@@ -189,6 +198,11 @@ at compile time, and great for performance, but harder to manage when you start
 debugging. The debugging protocol is ASCII based, writable by hand, easy to use
 dynamic lookup of variable names, and has support to easily add custom
 commands by adding another capability in a subclass of stored::Debugger.
+
+The FPGA does not support the debugging protocol. If you want to debug the
+FPGA, instantiate the store, which includes a Synchronizer, and use a bridge in
+C++ that has the same store, a Synchronizer connected to the FPGA, and a
+Debugger instance. The connect to this C++ bridge.
 
 ### <a name="debug_ex"></a>Example
 
@@ -408,7 +422,7 @@ generate stuff for you.  This is how to integrate it in your project:
 - If you want to use the VHDL store in your Vivado project, create a project
   for your FPGA, and source the generated file `rtl/vivado.tcl`. This will add
   all relevant files to your project. Afterwards, just save the project as
-  usualy; the `rtl/vivado.tcl` file is not needed anymore.
+  usually; the `rtl/vivado.tcl` file is not needed anymore.
 
 Check out the examples of libstored, which are all independent applications
 with their own generated store.
