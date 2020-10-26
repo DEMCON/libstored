@@ -69,11 +69,11 @@
  * of the given store (by hash). All updates, send to me
  * using this reference."
  *
- * `h` \<hash\> \<id\>
+ * (`h` | `H`) \<hash\> \<id\>
  *
  * The hash is returned by the \c hash() function of the store, including the
  * null-terminator. The id is arbitrary chosen by the Synchronizer, and is
- * 16-bit in the store's endianness.
+ * 16-bit in the store's endianness (`h` indicates little endian, `H` is big).
  *
  * ### Welcome (as a response to a Hello)
  *
@@ -81,7 +81,7 @@
  * store with given reference. Any updates to the store at your side,
  * provide them to me with my reference."
  *
- * `w` \<hello id\> \<welcome id\> \<buffer\>
+ * (`w` | `W`) \<hello id\> \<welcome id\> \<buffer\>
  *
  * The hello id is the id as received in the hello message (by the other party).
  * The welcome id is chosen by this Synchronizer, in the same manner.
@@ -91,22 +91,58 @@
  * "Your store, with given reference, has changed.
  * The changes are attached."
  *
- * `u` \<id\> \<updates\>
+ * (`u` | `U`) \<id\> \<updates\>
  *
- * The updates are a sequence of the triple: \<key\> \<length\> \<data\>.
+ * The updates are a sequence of the triplet: \<key\> \<length\> \<data\>.
  * The key and length have the most significant bytes stripped, which would
- * always be 0.  The data is in the store's endianness.
+ * always be 0.  All values is in the store's endianness (`u` is little, `U` is
+ * big endian).
+ *
+ * Proposal: The updates are a sequence defined as follows:
+ * \<5 MSb key offset, 3 LSb length\> \<additional key bytes\> \<additional length bytes\> \<data\>.
+ * The key offset + 1 is the offset from the previous entry in the updates sequence.
+ * Updates are sent in strict ascending key offset.
+ * The initial key is -1. For example, if the previous key was 10 and the 5 MSb indicate 3,
+ * then the next key is 10 + 3 + 1, so 14. If the 5 MSb are all 1 (so 31), an additional
+ * key byte is added after the first byte (which may be 0). This value is added
+ * to the key offset.  If that value is 255, another key byte is added, etc.
+ *
+ * The 3 LSb bits of the first byte are decoded according to the following list:
+ *
+ * - 0: data length is 1
+ * - 1: data length is 2
+ * - 2: data length is 3
+ * - 3: data length is 4
+ * - 4: data length is 5
+ * - 5: data length is 6
+ * - 6: data length is 7, and an additional length byte follows (like the key offset)
+ * - 7: data length is 8
+ *
+ * Using this scheme, when all variables change within the store, the overhead is always
+ * one byte per variable (plus additional length bytes, but this is uncommon
+ * and fixed for a given store). This is also the upper limit of the update message.
+ * If less variables change, the key offset may be larger, but the total size is always less.
+ *
+ * The asymmetry of having 6 as indicator for additional length bytes is because
+ * this is an unlikely value (7 bytes data), and at least far less common than having
+ * 8 bytes of data.
+ *
+ * The data is sent in the store's endianness (`u` is little, `U` is big endian).
  *
  * ### Bye
  *
  * "I do not need any more updates of the given store (by hash, by id or all)."
  *
- * `b` \<hash\><br>
- * `b` \<id\><br>
- * `b`
+ * (`b` | `B`) \<hash\><br>
+ * (`b` | `B`) \<id\><br>
+ * (`b` | `B`)
  *
  * A bye using the id can be used to respond to another message that has an unknown id.
- * Previous communication sessions remnents can be cleaned up in this way.
+ * Previous communication sessions remnants can be cleaned up in this way.
+ *
+ * `b` indicates that the id is as little endian, `B` indicates big endian.
+ * For the other two variants, there is no difference in endianness, but both
+ * versions are defined for symmetry.
  *
  * \ingroup libstored
  */
@@ -203,7 +239,7 @@ namespace stored {
 		Seq bumpSeq();
 
 		void clean(Seq oldest = 0);
-		void changed(Key key, size_t len);
+		void changed(Key key, size_t len, bool insertIfNew = true);
 		bool hasChanged(Key key, Seq since) const;
 		bool hasChanged(Seq since) const;
 
@@ -235,7 +271,7 @@ namespace stored {
 
 		static char const* decodeHash(void*& buffer, size_t& len);
 		Seq decodeBuffer(void*& buffer, size_t& len);
-		Seq decodeUpdates(void*& buffer, size_t& len);
+		Seq decodeUpdates(void*& buffer, size_t& len, bool recordAll = true);
 
 	protected:
 		/*!
@@ -410,6 +446,8 @@ namespace stored {
 
 		Synchronizer& synchronizer() const;
 
+		bool isSynchronizing(StoreJournal& store) const;
+
 		void source(StoreJournal& store);
 		void drop(StoreJournal& store);
 		void process(StoreJournal& store);
@@ -534,6 +572,9 @@ namespace stored {
 		void process(StoreJournal& j);
 		void process(ProtocolLayer& connection);
 		void process(ProtocolLayer& connection, StoreJournal& j);
+
+		bool isSynchronizing(StoreJournal& j) const;
+		bool isSynchronizing(StoreJournal& j, SyncConnection& notOverConnection) const;
 
 	protected:
 		SyncConnection* toConnection(ProtocolLayer& connection) const;

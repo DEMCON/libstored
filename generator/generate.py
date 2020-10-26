@@ -22,6 +22,8 @@ import argparse
 import jinja2
 import re
 import hashlib
+import struct
+from functools import reduce
 
 import sys
 import os
@@ -97,6 +99,77 @@ def stype(o):
         t += ' | Type::FlagFunction'
     return t
 
+def vhdltype(o):
+    return {
+            'bool': 'std_logic',
+            'int8': 'signed(7 downto 0)',
+            'uint8': 'unsigned(7 downto 0)',
+            'int16': 'signed(15 downto 0)',
+            'uint16': 'unsigned(15 downto 0)',
+            'int32': 'signed(31 downto 0)',
+            'uint32': 'unsigned(31 downto 0)',
+            'int64': 'signed(63 downto 0)',
+            'uint64': 'unsigned(63 downto 0)',
+            'float': 'std_logic_vector(31 downto 0)',
+            'double': 'std_logic_vector(63 downto 0)',
+            'ptr32': 'std_logic_vector(31 downto 0)',
+            'ptr64': 'std_logic_vector(63 downto 0)',
+            'blob': 'std_logic_vector(%d downto 0)' % (o.size * 8 - 1),
+            'string': 'std_logic_vector(%d downto 0)' % (o.size * 8 - 1),
+    }[o.type]
+
+def vhdlinit(o):
+    b = lambda: 'x"' + (('00' * o.size) + reduce(lambda a, b: '%02x' % b + a, o.encode(o.init, False)))[-o.size * 2:] + '"'
+
+    b = None
+    if o.init != None:
+        b = ('00' * o.size)
+        b += reduce(lambda a, b: a + ('%02x' % b), o.encode(o.init, False), '')
+        b = f'x"{b[-o.size * 2:]}"'
+
+    return {
+            'bool': "(7 downto 0 => '0')" if o.init == None or b == 'x"00"' else "(7 downto 1 => '0', 0 => '1')",
+            'int8': "(7 downto 0 => '0')" if o.init == None else b,
+            'uint8': "(7 downto 0 => '0')" if o.init == None else b,
+            'int16': "(15 downto 0 => '0')" if o.init == None else b,
+            'uint16': "(15 downto 0 => '0')" if o.init == None else b,
+            'int32': "(31 downto 0 => '0')" if o.init == None else b,
+            'uint32': "(31 downto 0 => '0')" if o.init == None else b,
+            'int64': "(63 downto 0 => '0')" if o.init == None else b,
+            'uint64': "(63 downto 0 => '0')" if o.init == None else b,
+            'float': "(31 downto 0 => '0')" if o.init == None else b,
+            'double': "(63 downto 0 => '0')" if o.init == None else b,
+            'ptr32': "(31 downto 0 => '0')" if o.init == None else b,
+            'ptr64': "(63 downto 0 => '0')" if o.init == None else b,
+            'blob': "(%d downto 0 => '0')" % (o.size * 8 - 1) if o.init == None else b,
+            'string': "(%d downto 0 => '0')" % (o.size * 8 - 1) if o.init == None else b,
+    }[o.type]
+
+def vhdlstr(s):
+    return '(' + ', '.join(map(lambda c: 'x"%02x"' % c, s.encode())) + ')'
+
+def vhdlkey(o, store, littleEndian):
+    key = struct.pack(('<' if littleEndian else '>') + 'I', o.offset)
+    if store.buffer.size >= 0x1000000:
+        pass
+    elif store.buffer.size >= 0x10000:
+        if littleEndian:
+            key = key[:3]
+        else:
+            key = key[1:]
+    elif store.buffer.size >= 0x100:
+        if littleEndian:
+            key = key[:2]
+        else:
+            key = key[2:]
+    else:
+        if littleEndian:
+            key = key[:1]
+        else:
+            key = key[3:]
+
+    return 'x"' + ''.join(map(lambda x: '%02x' % x, key)) + '"'
+
 def carray(a):
     s = ''
     line = 0
@@ -110,6 +183,20 @@ def carray(a):
 
 def escapebs(s):
     return re.sub(r'\\', r'\\\\', s)
+
+def rtfstring(s):
+    return re.sub(r'([\\{}])', r'\\\1', s)
+
+def csvstring(s):
+    needEscape = False
+    for c in ['\r','\n','"',',']:
+        if c in s:
+            needEscape = True
+
+    if not needEscape:
+        return s
+
+    return '"' + re.sub(r'"', r'""', s) + '"'
 
 def model_name(model_file):
     return os.path.splitext(os.path.split(model_file)[1])[0]
@@ -158,6 +245,10 @@ def generate_store(model_file, output_dir, littleEndian=True):
         os.mkdir(os.path.join(output_dir, 'include'))
     if not os.path.exists(os.path.join(output_dir, 'src')):
         os.mkdir(os.path.join(output_dir, 'src'))
+    if not os.path.exists(os.path.join(output_dir, 'doc')):
+        os.mkdir(os.path.join(output_dir, 'doc'))
+    if not os.path.exists(os.path.join(output_dir, 'rtl')):
+        os.mkdir(os.path.join(output_dir, 'rtl'))
 
     # now generate the code
 
@@ -165,16 +256,24 @@ def generate_store(model_file, output_dir, littleEndian=True):
             loader = jinja2.FileSystemLoader([
                 os.path.join(libstored_dir, 'include', 'libstored'),
                 os.path.join(libstored_dir, 'src'),
+                os.path.join(libstored_dir, 'doc'),
+                os.path.join(libstored_dir, 'fpga', 'rtl'),
             ]),
             trim_blocks = True,
             lstrip_blocks = True)
 
     jenv.filters['ctype'] = ctype
     jenv.filters['stype'] = stype
+    jenv.filters['vhdltype'] = vhdltype
+    jenv.filters['vhdlinit'] = vhdlinit
+    jenv.filters['vhdlstr'] = vhdlstr
+    jenv.filters['vhdlkey'] = vhdlkey
     jenv.filters['cname'] = types.cname
     jenv.filters['carray'] = carray
     jenv.filters['len'] = len
-    jenv.filters['hasfunction' ] = has_function
+    jenv.filters['hasfunction'] = has_function
+    jenv.filters['rtfstring'] = rtfstring
+    jenv.filters['csvstring'] = csvstring
     jenv.tests['variable'] = is_variable
     jenv.tests['function'] = is_function
     jenv.tests['blob'] = is_blob
@@ -182,6 +281,10 @@ def generate_store(model_file, output_dir, littleEndian=True):
 
     store_h_tmpl = jenv.get_template('store.h.tmpl')
     store_cpp_tmpl = jenv.get_template('store.cpp.tmpl')
+    store_rtf_tmpl = jenv.get_template('store.rtf.tmpl')
+    store_csv_tmpl = jenv.get_template('store.csv.tmpl')
+    store_vhd_tmpl = jenv.get_template('store.vhd.tmpl')
+    store_pkg_vhd_tmpl = jenv.get_template('store_pkg.vhd.tmpl')
 
     with open(os.path.join(output_dir, 'include', model_name(model_file) + '.h'), 'w') as f:
         f.write(store_h_tmpl.render(store=model))
@@ -189,9 +292,21 @@ def generate_store(model_file, output_dir, littleEndian=True):
     with open(os.path.join(output_dir, 'src', model_name(model_file) + '.cpp'), 'w') as f:
         f.write(store_cpp_tmpl.render(store=model))
 
+    with open(os.path.join(output_dir, 'doc', model_name(model_file) + '.rtf'), 'w') as f:
+        f.write(store_rtf_tmpl.render(store=model))
+
+    with open(os.path.join(output_dir, 'doc', model_name(model_file) + '.csv'), 'w') as f:
+        f.write(store_csv_tmpl.render(store=model))
+
+    with open(os.path.join(output_dir, 'rtl', model_name(model_file) + '.vhd'), 'w') as f:
+        f.write(store_vhd_tmpl.render(store=model))
+
+    with open(os.path.join(output_dir, 'rtl', model_name(model_file) + '_pkg.vhd'), 'w') as f:
+        f.write(store_pkg_vhd_tmpl.render(store=model))
+
 def generate_cmake(libprefix, model_files, output_dir):
     logger.info("generating CMakeLists.txt")
-    models = map(model_name, model_files)
+    models = list(map(model_name, model_files))
 
     # create the output dir if it does not exist yet
     if not os.path.exists(output_dir):
@@ -200,6 +315,7 @@ def generate_cmake(libprefix, model_files, output_dir):
     jenv = jinja2.Environment(
             loader = jinja2.FileSystemLoader([
                 os.path.join(libstored_dir),
+                os.path.join(libstored_dir, 'fpga', 'vivado'),
             ]),
             trim_blocks = True,
             lstrip_blocks = True)
@@ -209,9 +325,17 @@ def generate_cmake(libprefix, model_files, output_dir):
     jenv.filters['escapebs'] = escapebs
 
     cmake_tmpl = jenv.get_template('CMakeLists.txt.tmpl')
+    vivado_tmpl = jenv.get_template('vivado.tcl.tmpl')
 
     with open(os.path.join(output_dir, 'CMakeLists.txt'), 'w') as f:
         f.write(cmake_tmpl.render(
+            libstored_dir=libstored_dir,
+            models=models,
+            libprefix=libprefix,
+            ))
+
+    with open(os.path.join(output_dir, 'rtl', 'vivado.tcl'), 'w') as f:
+        f.write(vivado_tmpl.render(
             libstored_dir=libstored_dir,
             models=models,
             libprefix=libprefix,

@@ -1,0 +1,9 @@
+*.cache
+*.hw
+*.ip_user_files
+*.sim
+*.xpr
+*.runs
+*.log
+*.jou
+test_fpga

@@ -16,6 +16,8 @@
    id="svg8"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
    sodipodi:docname="libstored.svg">
+  <title
+     id="title7701">libstored</title>
   <defs
      id="defs2">
     <filter
@@ -347,8 +349,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.919596"
-     inkscape:cx="441.10985"
-     inkscape:cy="102.24521"
+     inkscape:cx="424.30227"
+     inkscape:cy="88.179915"
      inkscape:document-units="mm"
      inkscape:current-layer="layer2"
      showgrid="false"
@@ -365,8 +367,25 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title>libstored</dc:title>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/by-sa/4.0/" />
       </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/by-sa/4.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Notice" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Attribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#ShareAlike" />
+      </cc:License>
     </rdf:RDF>
   </metadata>
   <g
@@ -1093,15 +1112,14 @@
        y="185.85065" />
     <text
        xml:space="preserve"
-       style="display:inline;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.39762497px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#858585;fill-opacity:1;stroke:none;stroke-width:0.19993009"
-       x="71.422867"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.39762497px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;display:inline;fill:#858585;fill-opacity:1;stroke:none;stroke-width:0.19993009"
+       x="65.542938"
        y="255.99001"
        id="text151-7-0-7-6-5-0"><tspan
-         style="stroke-width:0.19993009"
          sodipodi:role="line"
-         id="tspan6366-4"
-         x="71.422867"
-         y="255.99001">Device/process/node</tspan></text>
+         id="tspan1101"
+         x="65.542938"
+         y="255.99001">Device/process/node/FPGA</tspan></text>
     <rect
        style="display:inline;fill:#ffd399;fill-opacity:1;stroke:#e78400;stroke-width:0.06932154;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4620-2-3-2-8-9"
@@ -1478,24 +1496,25 @@
          id="tspan7648">libstored</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:0.69223952px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.17305988"
-       x="105.34347"
-       y="275.75937"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:0.6922558px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.17305988"
+       x="105.41029"
+       y="275.39188"
        id="text5791-68-3-9-9-9-1"><tspan
-         style="stroke-width:0.17305988"
          sodipodi:role="line"
-         x="105.34347"
-         y="275.75937"
-         id="tspan7646-3">LGPLv3, gcc/MSVC/clang/armcc,</tspan><tspan
-         style="stroke-width:0.17305988"
+         id="tspan1103"
+         x="105.41029"
+         y="275.39188">LGPLv3, gcc/MSVC/clang/armcc,</tspan><tspan
          sodipodi:role="line"
-         x="105.34347"
-         y="276.62466"
-         id="tspan7650-1">Linux, Windows, Mac, bare metal</tspan><tspan
-         style="stroke-width:0.17305988"
+         id="tspan1105"
+         x="105.41029"
+         y="276.2572">Linux, Windows, Mac, bare metal</tspan><tspan
          sodipodi:role="line"
-         x="105.34347"
-         y="277.48996"
-         id="tspan7648-4">C++98 and higher</tspan></text>
+         id="tspan1107"
+         x="105.41029"
+         y="277.12253">C++98 and higher, VHDL,</tspan><tspan
+         sodipodi:role="line"
+         id="tspan1109"
+         x="105.41029"
+         y="277.98782">Xilinx Vivado</tspan></text>
   </g>
 </svg>

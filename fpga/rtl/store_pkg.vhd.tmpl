@@ -1,0 +1,148 @@
+{#
+-- vim:filetype=vhdl
+
+-- libstored, a Store for Embedded Debugger.
+-- Copyright (C) 2020  Jochem Rutgers
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU Lesser General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU Lesser General Public License for more details.
+--
+-- You should have received a copy of the GNU Lesser General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#}
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+use work.libstored_pkg;
+
+--! \brief Constants and types for #{{store.name}}_hdl.
+package {{store.name}}_pkg is
+
+	constant HASH : libstored_pkg.hash_t := {{store.hash|vhdlstr}}; -- {{store.hash}}
+	constant BUFFER_LENGTH : natural := {{store.buffer.size}};
+{% if store.littleEndian %}
+	constant LITTLE_ENDIAN : boolean := true;
+{% else %}
+	constant LITTLE_ENDIAN : boolean := false;
+{% endif %}
+	constant KEY_LENGTH : natural := {{(store.objects|first|vhdlkey(store=store, littleEndian=store.littleEndian)|len - 3) * 4}};
+
+{% for o in store.objects|select('variable') %}
+	-- {{o}}
+{%   if o|vhdltype == 'std_logic' %}
+	constant \{{o.cname|upper}}__LENGTH\ : natural := 1;
+	constant \{{o.cname|upper}}__INIT\ : std_logic_vector(7 downto 0) := {{o|vhdlinit}};
+{%   else %}
+	constant \{{o.cname|upper}}__LENGTH\ : natural := {{o.size * 8}};
+	constant \{{o.cname|upper}}__INIT\ : std_logic_vector(\{{o.cname|upper}}__LENGTH\ - 1 downto 0) := {{o|vhdlinit}};
+{%   endif %}
+	subtype \{{o.cname}}__type\ is {{o|vhdltype}};
+{%   if o.axi != None %}
+	constant \{{o.cname|upper}}__ADDR\ : natural := 16#{{'%x'|format(o.axi)}}#;
+{%   endif %}
+	constant \{{o.cname|upper}}__KEY\ : std_logic_vector(KEY_LENGTH - 1 downto 0) := {{o|vhdlkey(store=store, littleEndian=store.littleEndian)}};
+
+	type \{{o.cname}}__out_t\ is record
+		value : \{{o.cname}}__type\;
+		updated : std_logic;
+	end record;
+
+	type \{{o.cname}}__in_t\ is record
+		value : \{{o.cname}}__type\;
+		we : std_logic;
+	end record;
+
+	constant \{{o.cname}}__in_default\ : \{{o.cname}}__in_t\ := (
+{%   if o|vhdltype == 'std_logic' %}
+		value => '-',
+{%   else %}
+		value => (others => '-'),
+{%   endif %}
+		we => '0');
+
+{% endfor %}
+
+
+
+	type var_out_t is record
+{% for o in store.objects|select('variable') %}
+		\{{o.cname}}\ : \{{o.cname}}__out_t\;
+{% endfor %}
+	end record;
+
+	type var_in_t is record
+{% for o in store.objects|select('variable') %}
+		\{{o.cname}}\ : \{{o.cname}}__in_t\;
+{% endfor %}
+	end record;
+
+	constant var_in_default : var_in_t := (
+{% for o in store.objects|select('variable') %}
+		\{{o.cname}}\ => \{{o.cname}}__in_default\{% if not loop.last %},{% endif %}
+
+{% endfor %}
+	);
+
+	function merge(constant a, b : var_in_t) return var_in_t;
+
+	type var_access_t is record
+{% for o in store.objects|select('variable') %}
+		\{{o.cname}}\ : libstored_pkg.access_t;
+{% endfor %}
+	end record;
+
+	constant VAR_ACCESS_RW : var_access_t := (
+{% for o in store.objects|select('variable') %}
+		\{{o.cname}}\ => libstored_pkg.ACCESS_RW{% if not loop.last %},{% endif %}
+
+{% endfor %}
+	);
+
+	constant VAR_ACCESS_RO : var_access_t := (
+{% for o in store.objects|select('variable') %}
+		\{{o.cname}}\ => libstored_pkg.ACCESS_RO{% if not loop.last %},{% endif %}
+
+{% endfor %}
+	);
+
+	constant VAR_ACCESS_WO : var_access_t := (
+{% for o in store.objects|select('variable') %}
+		\{{o.cname}}\ => libstored_pkg.ACCESS_WO{% if not loop.last %},{% endif %}
+
+{% endfor %}
+	);
+
+	constant VAR_ACCESS_NA : var_access_t := (
+{% for o in store.objects|select('variable') %}
+		\{{o.cname}}\ => libstored_pkg.ACCESS_NA{% if not loop.last %},{% endif %}
+
+{% endfor %}
+	);
+end {{store.name}}_pkg;
+
+package body {{store.name}}_pkg is
+	function merge(constant a, b : var_in_t) return var_in_t is
+		variable v : var_in_t;
+	begin
+		v := b;
+{% for o in store.objects|select('variable') %}
+		if a.\{{o.cname}}\.we = '1' then v.\{{o.cname}}\ := a.\{{o.cname}}\; end if;
+{% endfor %}
+
+--pragma translate_off
+{% for o in store.objects|select('variable') %}
+		if is_x(a.\{{o.cname}}\.we) then v.\{{o.cname}}\.we := 'X'; end if;
+{% endfor %}
+--pragma translate_on
+
+		return v;
+	end function;
+end package body;

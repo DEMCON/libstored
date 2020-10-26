@@ -71,6 +71,10 @@ function(libstored_generate target) # add all other models as varargs
         OUTPUT ${target}-libstored.timestamp
         DEPENDS ${LIBSTORED_SOURCE_DIR}/include/libstored/store.h.tmpl
         DEPENDS ${LIBSTORED_SOURCE_DIR}/src/store.cpp.tmpl
+        DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.rtf.tmpl
+        DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.csv.tmpl
+        DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store.vhd.tmpl
+        DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store_pkg.vhd.tmpl
         DEPENDS ${LIBSTORED_SOURCE_DIR}/CMakeLists.txt.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/generate.py
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/dsl/grammar.tx
@@ -106,6 +110,27 @@ function(libstored_generate target) # add all other models as varargs
     endif()
 endfunction()
 
+if(DEFINED ENV{XILINX_VIVADO})
+	find_program(VIVADO_CMD NAMES vivado PATHS "$ENV{XILINX_VIVADO}/bin")
+endif()
+
+if(NOT VIVADO_CMD)
+	if(WIN32)
+		file(GLOB VIVADO_CMDS "C:/Xilinx/Vivado/*/bin/vivado.bat")
+	else()
+		file(GLOB VIVADO_CMDS "/opt/Xilinx/Vivado/*/bin/vivado")
+	endif()
+
+	if(VIVADO_CMDS)
+		list(SORT VIVADO_CMDS)
+		list(GET VIVADO_CMDS -1 VIVADO_CMD)
+	endif()
+endif()
+
+if(VIVADO_CMD)
+	message(STATUS "Using vivado ${VIVADO_CMD}")
+endif()
+
 option(LIBSTORED_EXAMPLES "Build examples" ON)
 if(LIBSTORED_EXAMPLES)
     add_subdirectory(examples)
@@ -124,6 +149,22 @@ endif()
 
 find_program(CPPCHECK_CMD NAMES cppcheck)
 if(CPPCHECK_CMD)
+	if(LIBSTORED_EXAMPLES)
+		set(CPPCHECK_EXAMPLES
+			-I examples/1_hello/libstored/include
+			-I examples/2_basic/libstored/include
+			-I examples/3_scope/libstored/include
+			-I examples/4_function/libstored/include
+			-I examples/5_debug/libstored/include
+			-I examples/6_hooks/libstored/include
+			-I examples/7_protocol/libstored/include
+			-I examples/8_sync/libstored/include
+			-I examples/9_fpga/libstored/include
+			-I examples/terminal/libstored/include
+			-I examples/zmqserver/libstored/include
+			examples
+		)
+	endif()
 	add_custom_target(cppcheck ALL
 		COMMAND
 			${CPPCHECK_CMD}
@@ -135,18 +176,8 @@ if(CPPCHECK_CMD)
 			--error-exitcode=1
 #			--xml
 			-I include
-			-I examples/1_hello/libstored/include
-			-I examples/2_basic/libstored/include
-			-I examples/3_scope/libstored/include
-			-I examples/4_function/libstored/include
-			-I examples/5_debug/libstored/include
-			-I examples/6_hooks/libstored/include
-			-I examples/7_protocol/libstored/include
-			-I examples/8_sync/libstored/include
-			-I examples/terminal/libstored/include
-			-I examples/zmqserver/libstored/include
+			${CPPCHECK_EXAMPLES}
 			src
-			examples
 #			--check-config
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		VERBATIM

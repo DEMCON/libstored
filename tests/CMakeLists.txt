@@ -92,3 +92,16 @@ add_test(
 )
 set_tests_properties(ZmqClient PROPERTIES TIMEOUT 60)
 
+if(VIVADO_CMD)
+	if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test_fpga/vivado/test_fpga/test_fpga.xpr)
+		execute_process(
+			COMMAND ${VIVADO_CMD} -mode batch -source test_fpga.tcl
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test_fpga/vivado
+		)
+	endif()
+
+	add_test(
+		NAME FPGA
+		COMMAND $<SHELL_PATH:${VIVADO_CMD}> -mode batch -source ${CMAKE_CURRENT_SOURCE_DIR}/test_fpga/run.tcl ${CMAKE_CURRENT_SOURCE_DIR}/test_fpga/vivado/test_fpga/test_fpga.xpr
+	)
+endif()

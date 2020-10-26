@@ -1,0 +1,91 @@
+{#
+# vim:filetype=tcl
+#
+# libstored, a Store for Embedded Debugger.
+# Copyright (C) 2020  Jochem Rutgers
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#}
+
+# In Vivado, create a new project and source this script.  All relevant
+# libstored files will be added to your project.  Afterwards, this script is
+# not required anymore; just use your project file.
+
+set libstored_dir [ file normalize "{{libstored_dir|escapebs}}" ]
+set script_path [ file dirname [ file normalize [ info script ] ] ]
+set store_dir [ file normalize "$script_path/.." ]
+
+# Create 'sources_1' fileset (if not found)
+if {[string equal [get_filesets -quiet sources_1] ""]} {
+  create_fileset -srcset sources_1
+}
+
+# Set 'sources_1' fileset object
+set obj [get_filesets sources_1]
+set files [list \
+ "[file normalize "$libstored_dir/fpga/rtl/pkg.vhd"]"\
+ "[file normalize "$libstored_dir/fpga/rtl/util.vhd"]"\
+ "[file normalize "$libstored_dir/fpga/rtl/variable.vhd"]"\
+ "[file normalize "$libstored_dir/fpga/rtl/protocol.vhd"]"\
+{% for m in models %}
+ "[file normalize "$store_dir/rtl/{{m}}.vhd"]"\
+ "[file normalize "$store_dir/rtl/{{m}}_pkg.vhd"]"\
+{% endfor %}
+]
+add_files -norecurse -fileset $obj $files
+
+# Set 'sources_1' fileset file properties for local files
+set file "rtl/pkg.vhd"
+set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
+set_property "file_type" "VHDL" $file_obj
+
+set file "rtl/util.vhd"
+set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
+set_property "file_type" "VHDL" $file_obj
+
+set file "rtl/variable.vhd"
+set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
+set_property "file_type" "VHDL" $file_obj
+
+set file "rtl/protocol.vhd"
+set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
+set_property "file_type" "VHDL" $file_obj
+
+{% for m in models %}
+set file "rtl/{{m}}.vhd"
+set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
+set_property "file_type" "VHDL" $file_obj
+
+set file "rtl/{{m}}_pkg.vhd"
+set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
+set_property "file_type" "VHDL" $file_obj
+
+{% endfor %}
+# Create 'sim_1' fileset (if not found)
+if {[string equal [get_filesets -quiet sim_1] ""]} {
+  create_fileset -simset sim_1
+}
+
+# Set 'sim_1' fileset object
+set obj [get_filesets sim_1]
+set files [list \
+ "[file normalize "$libstored_dir/fpga/tb/tb_pkg.vhd"]"\
+]
+add_files -norecurse -fileset $obj $files
+
+# Set 'sim_1' fileset file properties for local files
+set file "tb/tb_pkg.vhd"
+set file_obj [get_files -of_objects [get_filesets sim_1] [list "*$file"]]
+set_property "file_type" "VHDL" $file_obj
+

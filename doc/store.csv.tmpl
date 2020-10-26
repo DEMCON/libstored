@@ -1,0 +1,11 @@
+Name,C,Type,Init,Offset / function,AXI,Size
+{% for o in store.objects -%}
+{{o.name|csvstring}},{{o.cname}},
+{%-    if o is function -%}
+({{o.type}}{% if o is blob %}:{{o.size}}{% endif %}),{{o.f}},,
+{%    else -%}
+{{o.type}}{% if o is blob %}:{{o.size}}{% endif %},
+{%- if o.init == None %}0{% else %}{{o.init}}{% endif %},{{o.offset}},
+{%- if o.axi != None %}{{o.axi}}{% endif %},{{o.size}},
+{%   endif -%}
+{%- endfor -%}

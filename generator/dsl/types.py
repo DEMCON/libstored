@@ -23,6 +23,35 @@ import sys
 
 cnames = {}
 
+def is_reserved_name(s):
+    return s in [
+        # C++
+        'alignas', 'alignof', 'and', 'and_eq', 'asm', 'atomic_cancel',
+        'atomic_commit', 'atomic_noexcept', 'auto', 'bitand', 'bitor', 'bool',
+        'break', 'case', 'catch', 'char', 'char8_t', 'char16_t', 'char32_t',
+        'class', 'compl', 'concept', 'const', 'consteval', 'constexpr',
+        'constinit', 'const_cast', 'continue', 'co_await', 'co_return',
+        'co_yield', 'decltype', 'default', 'delete', 'do', 'double',
+        'dynamic_cast', 'else', 'enum', 'explicit', 'export', 'extern',
+        'false', 'float', 'for', 'friend', 'goto', 'if', 'inline', 'int',
+        'long', 'mutable', 'namespace', 'new', 'noexcept', 'not', 'not_eq',
+        'nullptr', 'operator', 'or', 'or_eq', 'private', 'protected', 'public',
+        'reflexpr', 'register', 'reinterpret_cast', 'requires', 'return',
+        'short', 'signed', 'sizeof', 'static', 'static_assert', 'static_cast',
+        'struct', 'switch', 'synchronized', 'template', 'this', 'thread_local',
+        'throw', 'true', 'try', 'typedef', 'typeid', 'typename', 'union',
+        'unsigned', 'using', 'virtual', 'void', 'volatile', 'wchar_t', 'while',
+        'xor', 'xor_eq',
+        # C
+        'auto', 'break', 'case', 'char', 'const', 'continue', 'default', 'do',
+        'double', 'else', 'enum', 'extern', 'float', 'for', 'goto', 'if',
+        'inline', 'int', 'long', 'register', 'restrict', 'return', 'short',
+        'signed', 'sizeof', 'static', 'struct', 'switch', 'typedef', 'union',
+        'unsigned', 'void', 'volatile', 'while', '_Alignas', '_Alignof',
+        '_Atomic', '_Bool', '_Complex', '_Generic', '_Imaginary', '_Noreturn',
+        '_Static_assert', '_Thread_local',
+    ]
+
 def cname(s):
     if s in cnames:
         return cnames[s]
@@ -32,6 +61,12 @@ def cname(s):
     c = re.sub(r'^__', '', c)
     c = re.sub(r'^[^A-Za-z]_*', '_', c)
     c = re.sub(r'_+$', '', c)
+
+    if s == '':
+        c = 'obj'
+
+    if is_reserved_name(c):
+        c += "_obj"
 
     u = c
     i = 2
@@ -395,6 +430,7 @@ class Store(object):
         self.generateBuffer()
         self.generateDirectory()
         self.extractArrayAccessors()
+        self.generateAxiAddresses()
 
     def flattenScope(self, scope):
         res = []
@@ -485,6 +521,15 @@ class Store(object):
         # Save the grouped objects, which will later be used to generate nested switch statements.
         self.arrays = [ArrayLookup(x) for x in grouped_objects.values()]
 
+    def generateAxiAddresses(self):
+        addr = 0
+        for o in self.objects:
+            if isinstance(o, Variable):
+                assert(o.len == 1)
+                if o.size <= 4:
+                    o.axi = addr
+                    addr += 4
+
 
 class Object(object):
     def __init__(self, parent, name, len = 0):
@@ -532,6 +577,7 @@ class Variable(Object):
             self.size = type.blob.size
             self.init = None
             self.len = type.blob.len
+        self.axi = None
 
     def isBlob(self):
         return self.type in ['blob', 'string']
@@ -573,6 +619,7 @@ class Function(Object):
         super().__init__(self, name, len)
         self.parent = parent
         self.offset = self.f
+        self.axi = None
         if type.fixed != None:
             self.type = type.fixed.type
             self.size = csize(type.fixed.type)
