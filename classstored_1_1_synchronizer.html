@@ -93,7 +93,7 @@ $(document).ready(function(){initNavTree('classstored_1_1_synchronizer.html','')
 <p>A <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a> holds a set of stores, and a set of SyncConnections. A store can be synchronized over multiple connections simultaneously. </p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="8_sync_2main_8cpp-example.html#_a0">8_sync/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00469">469</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00507">507</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>&gt;</code></p>
 <table class="memberdecls">
@@ -117,6 +117,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5c8a59faccb30c08910551500d08ad75"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizer.html#a5c8a59faccb30c08910551500d08ad75">disconnect</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> &amp;connection)</td></tr>
 <tr class="memdesc:a5c8a59faccb30c08910551500d08ad75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disconnect the given connection from this <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a>.  <a href="#a5c8a59faccb30c08910551500d08ad75">More...</a><br /></td></tr>
 <tr class="separator:a5c8a59faccb30c08910551500d08ad75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbcaf3052a055128cb786d621c9d18c0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizer.html#adbcaf3052a055128cb786d621c9d18c0">isSynchronizing</a> (<a class="el" href="classstored_1_1_store_journal.html">StoreJournal</a> &amp;j) const</td></tr>
+<tr class="separator:adbcaf3052a055128cb786d621c9d18c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d4dd69d96ce0c318873a0d0d3723280"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizer.html#a5d4dd69d96ce0c318873a0d0d3723280">isSynchronizing</a> (<a class="el" href="classstored_1_1_store_journal.html">StoreJournal</a> &amp;j, <a class="el" href="classstored_1_1_sync_connection.html">SyncConnection</a> &amp;notOverConnection) const</td></tr>
+<tr class="separator:a5d4dd69d96ce0c318873a0d0d3723280"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a141a57011f946f70f4b4e04d4a22001c"><td class="memTemplParams" colspan="2">template&lt;typename Store &gt; </td></tr>
 <tr class="memitem:a141a57011f946f70f4b4e04d4a22001c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizer.html#a141a57011f946f70f4b4e04d4a22001c">map</a> (<a class="el" href="classstored_1_1_synchronizable.html">Synchronizable</a>&lt; Store &gt; &amp;store)</td></tr>
 <tr class="memdesc:a141a57011f946f70f4b4e04d4a22001c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a store in this <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a>.  <a href="#a141a57011f946f70f4b4e04d4a22001c">More...</a><br /></td></tr>
@@ -266,7 +270,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Dtor. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00964">964</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00974">974</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -291,7 +295,7 @@ Protected Member Functions</h2></td></tr>
 <p>A <a class="el" href="classstored_1_1_sync_connection.html" title="A one-to-one connection to synchronize one or more stores. ">stored::SyncConnection</a> is instantiated on top of the given protocol stack. This <a class="el" href="classstored_1_1_sync_connection.html" title="A one-to-one connection to synchronize one or more stores. ">SyncConnection</a> is the OSI Application layer of the synchronization prococol. </p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="8_sync_2main_8cpp-example.html#a24">8_sync/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00988">988</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00998">998</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -314,7 +318,57 @@ Protected Member Functions</h2></td></tr>
 <p>Disconnect the given connection from this <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a>. </p>
 <p>Provide the connection as given to <a class="el" href="classstored_1_1_synchronizer.html#a77e661d364e06752cda6b162414ef74c" title="Connect the given connection to this Synchronizer. ">connect()</a> before. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00999">999</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l01009">1009</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+
+</div>
+</div>
+<a id="adbcaf3052a055128cb786d621c9d18c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbcaf3052a055128cb786d621c9d18c0">&#9670;&nbsp;</a></span>isSynchronizing() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool stored::Synchronizer::isSynchronizing </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classstored_1_1_store_journal.html">StoreJournal</a> &amp;&#160;</td>
+          <td class="paramname"><em>j</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l01075">1075</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a5d4dd69d96ce0c318873a0d0d3723280"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d4dd69d96ce0c318873a0d0d3723280">&#9670;&nbsp;</a></span>isSynchronizing() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool stored::Synchronizer::isSynchronizing </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classstored_1_1_store_journal.html">StoreJournal</a> &amp;&#160;</td>
+          <td class="paramname"><em>j</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classstored_1_1_sync_connection.html">SyncConnection</a> &amp;&#160;</td>
+          <td class="paramname"><em>notOverConnection</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l01083">1083</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -347,7 +401,7 @@ template&lt;typename Store &gt; </div>
 <p>Register a store in this <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a>. </p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="8_sync_2main_8cpp-example.html#a16">8_sync/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00482">482</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00520">520</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
 
 </div>
 </div>
@@ -436,7 +490,7 @@ template&lt;typename Store &gt; </div>
 <p>Process updates for the given store on all connections. </p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="8_sync_2main_8cpp-example.html#a12">8_sync/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00521">521</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00559">559</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
 
 </div>
 </div>
@@ -478,7 +532,7 @@ template&lt;typename Store &gt; </div>
 
 <p>Process updates for the given store on the given connection. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00529">529</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00567">567</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
 
 </div>
 </div>
@@ -499,7 +553,7 @@ template&lt;typename Store &gt; </div>
 
 <p>Process updates for all connections and all stores. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l01030">1030</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l01040">1040</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -521,7 +575,7 @@ template&lt;typename Store &gt; </div>
 
 <p>Process updates for the given journal on all connections. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l01038">1038</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l01048">1048</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -543,7 +597,7 @@ template&lt;typename Store &gt; </div>
 
 <p>Process updates for all stores on the given connection. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l01047">1047</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l01057">1057</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -575,7 +629,7 @@ template&lt;typename Store &gt; </div>
 
 <p>Process updates for the given store on the given connection. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l01059">1059</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l01069">1069</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -619,7 +673,7 @@ template&lt;typename Store &gt; </div>
 <p>The full store's buffer is received from the <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a> via the <code>connection</code>. Afterwards, updates and exchanged bidirectionally. </p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="8_sync_2main_8cpp-example.html#a25">8_sync/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00509">509</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00547">547</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
 
 </div>
 </div>
@@ -651,7 +705,7 @@ template&lt;typename Store &gt; </div>
 <p>Provide the connection as given to <a class="el" href="classstored_1_1_synchronizer.html#a77e661d364e06752cda6b162414ef74c" title="Connect the given connection to this Synchronizer. ">connect()</a> before.</p>
 <dl class="section return"><dt>Returns</dt><dd>the <a class="el" href="classstored_1_1_sync_connection.html" title="A one-to-one connection to synchronize one or more stores. ">SyncConnection</a>, or <code>nullptr</code> when not found </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l01015">1015</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l01025">1025</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -674,7 +728,7 @@ template&lt;typename Store &gt; </div>
 <p>Find a registered store given an hash. </p>
 <dl class="section return"><dt>Returns</dt><dd>the store, or <code>nullptr</code> when not found </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00975">975</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00985">985</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -706,7 +760,7 @@ template&lt;typename Store &gt; </div>
 
 <p>Deregister a store from this <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00490">490</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00528">528</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
 
 </div>
 </div>

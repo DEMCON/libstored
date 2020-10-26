@@ -24,6 +24,7 @@ var classstored_1_1_sync_connection =
     [ "flush", "classstored_1_1_sync_connection.html#a654466d2b7502efdbd5b1b1e95263194", null ],
     [ "helloAgain", "classstored_1_1_sync_connection.html#a35d7dda4726e481fbee2f3bce8456458", null ],
     [ "helloAgain", "classstored_1_1_sync_connection.html#a37e99c9f86122ddf27e855c699324ce0", null ],
+    [ "isSynchronizing", "classstored_1_1_sync_connection.html#a50170418af57d1349684a1e84ec6f037", null ],
     [ "mtu", "classstored_1_1_sync_connection.html#a88195d7cdb7129ac7bc625ffeb24d449", null ],
     [ "nextId", "classstored_1_1_sync_connection.html#a51b47bed04727a1095e90288cd777b35", null ],
     [ "operator=", "classstored_1_1_sync_connection.html#a6639455b75a42a36ed66aafca1056677", null ],

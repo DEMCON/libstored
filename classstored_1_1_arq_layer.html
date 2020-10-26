@@ -484,7 +484,7 @@ Static Protected Member Functions</h2></td></tr>
 <p>Ctor. </p>
 <p>If <code>maxEncodeBuffer</code> is non-zero, it defines the upper limit of the combined length of all queued messages for encoding. If the limit is hit, the <a class="el" href="classstored_1_1_arq_layer.html#a1d3b18fc5b159e527b087385ac961e52afec9d8b5d2c8fe338525458da4909a48" title="The maximum buffer capactiy has passed. ">EventEncodeBufferOverflow</a> event is passed to the callback. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00442">442</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00448">448</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -513,7 +513,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Dtor. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00463">463</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00469">469</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -557,7 +557,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a357b029311be09df61e019682a848ab5">stored::ProtocolLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00484">484</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00490">490</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -581,7 +581,7 @@ Static Protected Member Functions</h2></td></tr>
 <p>To use the function, first call <a class="el" href="classstored_1_1_arq_layer.html#ad385593c1549539ec000943046860404" title="Reset the flag for didTransmit(). ">resetDidTransmit()</a>, then execute the code you want to check, and then check <a class="el" href="classstored_1_1_arq_layer.html#a72a34dd87ec3fcee83db2a44f7e8a8e5" title="Checks if a full message has been transmitted. ">didTransmit()</a>.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_arq_layer.html#ad385593c1549539ec000943046860404" title="Reset the flag for didTransmit(). ">resetDidTransmit()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00663">663</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00669">669</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -691,7 +691,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#ae5dab6177c1448d1ce5ac04a69c9b4e4">stored::ProtocolLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00550">550</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00556">556</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -721,7 +721,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Forward the given event to the registered callback, if any. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00612">612</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00618">618</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -754,7 +754,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a654466d2b7502efdbd5b1b1e95263194">stored::ProtocolLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00576">576</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00582">582</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -776,7 +776,7 @@ Static Protected Member Functions</h2></td></tr>
 <p>Send a keep-alive packet to check the connection. </p>
 <p>It actually retransmits the message that is currently processed (waiting for an ack), or sends a dummy message in case the encode queue is empty. Either way, <a class="el" href="classstored_1_1_arq_layer.html#a7fc718f8b8c05aef735e2c861535eabc" title="Returns the number of consecutive retransmits of the same message. ">retransmits()</a> and the <a class="el" href="classstored_1_1_arq_layer.html#a1d3b18fc5b159e527b087385ac961e52a67b425c96fa51d033359fbea7f1c344a" title="RetransmitCallbackThreshold has been reached on the current message. ">EventRetransmit</a> can be used afterwards to determine the quality of the link. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00693">693</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00699">699</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -809,7 +809,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a88195d7cdb7129ac7bc625ffeb24d449">stored::ProtocolLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00641">641</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00647">647</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -839,7 +839,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Compute the next sequence number. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00636">636</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00642">642</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -924,7 +924,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Drop front of encode queue. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00708">708</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00714">714</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -964,7 +964,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Push the given buffer into the encode queue. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00725">725</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00731">731</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -994,7 +994,7 @@ Static Protected Member Functions</h2></td></tr>
 <p>Adds an entry in the encode queue, but do not populate the contents. </p>
 <p>The returned buffer can be used to put the message in. This should include the sequence number as the first byte. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00739">739</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00745">745</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -1025,7 +1025,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classstored_1_1_protocol_layer.html#a53fe78a7b405b981649112d9c84fe762">stored::ProtocolLayer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00470">470</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00476">476</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -1047,7 +1047,7 @@ Static Protected Member Functions</h2></td></tr>
 <p>Reset the flag for <a class="el" href="classstored_1_1_arq_layer.html#a72a34dd87ec3fcee83db2a44f7e8a8e5" title="Checks if a full message has been transmitted. ">didTransmit()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_arq_layer.html#a72a34dd87ec3fcee83db2a44f7e8a8e5" title="Checks if a full message has been transmitted. ">didTransmit()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00671">671</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00677">677</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -1069,7 +1069,7 @@ Static Protected Member Functions</h2></td></tr>
 <p>Returns the number of consecutive retransmits of the same message. </p>
 <p>Use this function to determine whether the connection is still alive. It is application-defined what the threshold is of too many retransmits. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00681">681</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00687">687</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -1269,7 +1269,7 @@ template&lt;typename F &gt; </div>
 
 <p>Free all unused memory. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00771">771</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00777">777</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -1330,7 +1330,7 @@ template&lt;typename F &gt; </div>
 <p>(Re)transmits the first message in the queue. </p>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if something has been sent, <code>false</code> if the queue is empty </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00585">585</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00591">591</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>
@@ -1382,7 +1382,7 @@ template&lt;typename F &gt; </div>
 
 <p>Checks if this layer is waiting for an ack. </p>
 
-<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00539">539</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="protocol_8cpp_source.html#l00545">545</a> of file <a class="el" href="protocol_8cpp_source.html">protocol.cpp</a>.</p>
 
 </div>
 </div>

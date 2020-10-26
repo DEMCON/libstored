@@ -3,6 +3,7 @@ var searchData=
   ['rand',['rand',['../classstored_1_1_zmq_server_store_objects.html#afd0dca6acba4e7bde2c9122b498f34b6',1,'stored::ZmqServerStoreObjects']]],
   ['rawlayer',['RawLayer',['../classed2_1_1protocol_1_1_raw_layer.html',1,'ed2::protocol']]],
   ['read',['read',['../classed2_1_1zmq__client_1_1_object.html#a07dce26d633545af02bc560528f5938d',1,'ed2.zmq_client.Object.read(self, tryToGetAlias=True)'],['../classed2_1_1zmq__client_1_1_object.html#a07dce26d633545af02bc560528f5938d',1,'ed2.zmq_client.Object.read(self, tryToGetAlias=True)']]],
+  ['read_5fonly_5fregister',['read_only_register',['../classstored_1_1_example_fpga_objects.html#a4f89fad63d8c83e24efd0b3bbc975458',1,'stored::ExampleFpgaObjects']]],
   ['readme_2emd',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
   ['readmem',['readMem',['../classed2_1_1zmq__client_1_1_zmq_client.html#ad69cc28a3d398cfc4921e2a2e540e93d',1,'ed2.zmq_client.ZmqClient.readMem(self, pointer, size)'],['../classed2_1_1zmq__client_1_1_zmq_client.html#ad69cc28a3d398cfc4921e2a2e540e93d',1,'ed2.zmq_client.ZmqClient.readMem(self, pointer, size)']]],
   ['recv',['recv',['../classstored_1_1_zmq_layer.html#a1a284926a6e41e19475e0a4e20c9a1cf',1,'stored::ZmqLayer::recv()'],['../classstored_1_1_debug_zmq_layer.html#a85dff6acf4316281ef3f0912981f9f1f',1,'stored::DebugZmqLayer::recv()']]],

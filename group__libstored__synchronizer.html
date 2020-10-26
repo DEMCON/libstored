@@ -101,23 +101,39 @@ $(document).ready(function(){initNavTree('group__libstored__synchronizer.html','
 <p>The protocol for synchronization consists of four messages. These are sent when appropriate, not in a request-response paradigm. There is no acknowledge. Invalid messages are just ignored.</p>
 <h3>Hello</h3>
 <p>"I would like to have the full state and future changes of the given store (by hash). All updates, send to me using this reference."</p>
-<p><code>h</code> &lt;hash&gt; &lt;id&gt;</p>
-<p>The hash is returned by the <code>hash()</code> function of the store, including the null-terminator. The id is arbitrary chosen by the Synchronizer, and is 16-bit in the store's endianness.</p>
+<p>(<code>h</code> | <code>H</code>) &lt;hash&gt; &lt;id&gt;</p>
+<p>The hash is returned by the <code>hash()</code> function of the store, including the null-terminator. The id is arbitrary chosen by the Synchronizer, and is 16-bit in the store's endianness (<code>h</code> indicates little endian, <code>H</code> is big).</p>
 <h3>Welcome (as a response to a Hello)</h3>
 <p>"You are welcome. Here is the full buffer state, upon your request, of the store with given reference. Any updates to the store at your side, provide them to me with my reference."</p>
-<p><code>w</code> &lt;hello id&gt; &lt;welcome id&gt; &lt;buffer&gt;</p>
+<p>(<code>w</code> | <code>W</code>) &lt;hello id&gt; &lt;welcome id&gt; &lt;buffer&gt;</p>
 <p>The hello id is the id as received in the hello message (by the other party). The welcome id is chosen by this Synchronizer, in the same manner.</p>
 <h3>Update</h3>
 <p>"Your store, with given reference, has changed.
 The changes are attached."</p>
-<p><code>u</code> &lt;id&gt; &lt;updates&gt;</p>
-<p>The updates are a sequence of the triple: &lt;key&gt; &lt;length&gt; &lt;data&gt;. The key and length have the most significant bytes stripped, which would always be 0. The data is in the store's endianness.</p>
+<p>(<code>u</code> | <code>U</code>) &lt;id&gt; &lt;updates&gt;</p>
+<p>The updates are a sequence of the triplet: &lt;key&gt; &lt;length&gt; &lt;data&gt;. The key and length have the most significant bytes stripped, which would always be 0. All values is in the store's endianness (<code>u</code> is little, <code>U</code> is big endian).</p>
+<p>Proposal: The updates are a sequence defined as follows: &lt;5 MSb key offset, 3 LSb length&gt; &lt;additional key bytes&gt; &lt;additional length bytes&gt; &lt;data&gt;. The key offset + 1 is the offset from the previous entry in the updates sequence. Updates are sent in strict ascending key offset. The initial key is -1. For example, if the previous key was 10 and the 5 MSb indicate 3, then the next key is 10 + 3 + 1, so 14. If the 5 MSb are all 1 (so 31), an additional key byte is added after the first byte (which may be 0). This value is added to the key offset. If that value is 255, another key byte is added, etc.</p>
+<p>The 3 LSb bits of the first byte are decoded according to the following list:</p>
+<ul>
+<li>0: data length is 1</li>
+<li>1: data length is 2</li>
+<li>2: data length is 3</li>
+<li>3: data length is 4</li>
+<li>4: data length is 5</li>
+<li>5: data length is 6</li>
+<li>6: data length is 7, and an additional length byte follows (like the key offset)</li>
+<li>7: data length is 8</li>
+</ul>
+<p>Using this scheme, when all variables change within the store, the overhead is always one byte per variable (plus additional length bytes, but this is uncommon and fixed for a given store). This is also the upper limit of the update message. If less variables change, the key offset may be larger, but the total size is always less.</p>
+<p>The asymmetry of having 6 as indicator for additional length bytes is because this is an unlikely value (7 bytes data), and at least far less common than having 8 bytes of data.</p>
+<p>The data is sent in the store's endianness (<code>u</code> is little, <code>U</code> is big endian).</p>
 <h3>Bye</h3>
 <p>"I do not need any more updates of the given store (by hash, by id or all)."</p>
-<p><code>b</code> &lt;hash&gt;<br />
- <code>b</code> &lt;id&gt;<br />
- <code>b</code></p>
-<p>A bye using the id can be used to respond to another message that has an unknown id. Previous communication sessions remnents can be cleaned up in this way. </p>
+<p>(<code>b</code> | <code>B</code>) &lt;hash&gt;<br />
+ (<code>b</code> | <code>B</code>) &lt;id&gt;<br />
+ (<code>b</code> | <code>B</code>)</p>
+<p>A bye using the id can be used to respond to another message that has an unknown id. Previous communication sessions remnants can be cleaned up in this way.</p>
+<p><code>b</code> indicates that the id is as little endian, <code>B</code> indicates big endian. For the other two variants, there is no difference in endianness, but both versions are defined for symmetry. </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>

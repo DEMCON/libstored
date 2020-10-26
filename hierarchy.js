@@ -54,6 +54,22 @@ var hierarchy =
     [ "stored::ExampleDebugSomeStoreObjects< ExampleDebugSomeStoreBase< Implementation_ >, Implementation_ >", "classstored_1_1_example_debug_some_store_objects.html", [
       [ "stored::ExampleDebugSomeStoreBase< Implementation_ >", "classstored_1_1_example_debug_some_store_base.html", null ]
     ] ],
+    [ "stored::ExampleFpga2Objects< ExampleFpga2Base< ExampleFpga2 >, ExampleFpga2 >", "classstored_1_1_example_fpga2_objects.html", [
+      [ "stored::ExampleFpga2Base< ExampleFpga2 >", "classstored_1_1_example_fpga2_base.html", [
+        [ "stored::ExampleFpga2", "classstored_1_1_example_fpga2.html", null ]
+      ] ]
+    ] ],
+    [ "stored::ExampleFpga2Objects< ExampleFpga2Base< Implementation_ >, Implementation_ >", "classstored_1_1_example_fpga2_objects.html", [
+      [ "stored::ExampleFpga2Base< Implementation_ >", "classstored_1_1_example_fpga2_base.html", null ]
+    ] ],
+    [ "stored::ExampleFpgaObjects< ExampleFpgaBase< ExampleFpga >, ExampleFpga >", "classstored_1_1_example_fpga_objects.html", [
+      [ "stored::ExampleFpgaBase< ExampleFpga >", "classstored_1_1_example_fpga_base.html", [
+        [ "stored::ExampleFpga", "classstored_1_1_example_fpga.html", null ]
+      ] ]
+    ] ],
+    [ "stored::ExampleFpgaObjects< ExampleFpgaBase< Implementation_ >, Implementation_ >", "classstored_1_1_example_fpga_objects.html", [
+      [ "stored::ExampleFpgaBase< Implementation_ >", "classstored_1_1_example_fpga_base.html", null ]
+    ] ],
     [ "stored::ExampleFunctionObjects< ExampleFunctionBase< ExampleFunction >, ExampleFunction >", "classstored_1_1_example_function_objects.html", [
       [ "stored::ExampleFunctionBase< ExampleFunction >", "classstored_1_1_example_function_base.html", [
         [ "stored::ExampleFunction", "classstored_1_1_example_function.html", null ]
@@ -126,7 +142,6 @@ var hierarchy =
     [ "stored::ExampleSync2Objects< ExampleSync2Base< Implementation_ >, Implementation_ >", "classstored_1_1_example_sync2_objects.html", [
       [ "stored::ExampleSync2Base< Implementation_ >", "classstored_1_1_example_sync2_base.html", null ]
     ] ],
-    [ "stored::ExampleSyncBase< ExampleSync >", "classstored_1_1_example_sync_base.html", null ],
     [ "stored::ExampleTerminalObjects< ExampleTerminalBase< ExampleTerminal >, ExampleTerminal >", "classstored_1_1_example_terminal_objects.html", [
       [ "stored::ExampleTerminalBase< ExampleTerminal >", "classstored_1_1_example_terminal_base.html", [
         [ "stored::ExampleTerminal", "classstored_1_1_example_terminal.html", null ]
@@ -159,6 +174,10 @@ var hierarchy =
     [ "stored::ExampleDebugAnotherStoreObjects< Base_, Implementation_ >", "classstored_1_1_example_debug_another_store_objects.html", null ],
     [ "stored::ExampleDebugSomeStoreData", "structstored_1_1_example_debug_some_store_data.html", null ],
     [ "stored::ExampleDebugSomeStoreObjects< Base_, Implementation_ >", "classstored_1_1_example_debug_some_store_objects.html", null ],
+    [ "stored::ExampleFpga2Data", "structstored_1_1_example_fpga2_data.html", null ],
+    [ "stored::ExampleFpga2Objects< Base_, Implementation_ >", "classstored_1_1_example_fpga2_objects.html", null ],
+    [ "stored::ExampleFpgaData", "structstored_1_1_example_fpga_data.html", null ],
+    [ "stored::ExampleFpgaObjects< Base_, Implementation_ >", "classstored_1_1_example_fpga_objects.html", null ],
     [ "stored::ExampleFunctionData", "structstored_1_1_example_function_data.html", null ],
     [ "stored::ExampleFunctionObjects< Base_, Implementation_ >", "classstored_1_1_example_function_objects.html", null ],
     [ "stored::ExampleHelloData", "structstored_1_1_example_hello_data.html", null ],
@@ -173,10 +192,6 @@ var hierarchy =
     [ "stored::ExampleSync1Objects< Base_, Implementation_ >", "classstored_1_1_example_sync1_objects.html", null ],
     [ "stored::ExampleSync2Data", "structstored_1_1_example_sync2_data.html", null ],
     [ "stored::ExampleSync2Objects< Base_, Implementation_ >", "classstored_1_1_example_sync2_objects.html", null ],
-    [ "stored::ExampleSyncBase< Implementation_ >", "classstored_1_1_example_sync_base.html", [
-      [ "stored::ExampleSync", "classstored_1_1_example_sync.html", null ]
-    ] ],
-    [ "stored::ExampleSyncData", "structstored_1_1_example_sync_data.html", null ],
     [ "stored::ExampleTerminalData", "structstored_1_1_example_terminal_data.html", null ],
     [ "stored::ExampleTerminalObjects< Base_, Implementation_ >", "classstored_1_1_example_terminal_objects.html", null ],
     [ "stored::Function< T, Container >", "classstored_1_1_function.html", null ],
@@ -277,6 +292,7 @@ var hierarchy =
     [ "stored::impl::StoreVariable< Base, Implementation, bool, 1u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, bool, 20u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, bool, 21u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
+    [ "stored::impl::StoreVariable< Base, Implementation, bool, 34u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, bool, 86u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, bool, 8u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, bool, 96u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
@@ -295,6 +311,7 @@ var hierarchy =
     [ "stored::impl::StoreVariable< Base, Implementation, int32_t, 8u, 4 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, int64_t, 0u, 8 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, int64_t, 32u, 8 >", "classstored_1_1impl_1_1_store_variable.html", null ],
+    [ "stored::impl::StoreVariable< Base, Implementation, int8_t, 0u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, int8_t, 100u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, int8_t, 101u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, int8_t, 102u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
@@ -307,8 +324,13 @@ var hierarchy =
     [ "stored::impl::StoreVariable< Base, Implementation, int8_t, 8u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, int8_t, 97u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, int8_t, 99u, 1 >", "classstored_1_1impl_1_1_store_variable.html", null ],
+    [ "stored::impl::StoreVariable< Base, Implementation, uint16_t, 32u, 2 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, uint16_t, 82u, 2 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, uint16_t, 94u, 2 >", "classstored_1_1impl_1_1_store_variable.html", null ],
+    [ "stored::impl::StoreVariable< Base, Implementation, uint32_t, 0u, 4 >", "classstored_1_1impl_1_1_store_variable.html", null ],
+    [ "stored::impl::StoreVariable< Base, Implementation, uint32_t, 16u, 4 >", "classstored_1_1impl_1_1_store_variable.html", null ],
+    [ "stored::impl::StoreVariable< Base, Implementation, uint32_t, 20u, 4 >", "classstored_1_1impl_1_1_store_variable.html", null ],
+    [ "stored::impl::StoreVariable< Base, Implementation, uint32_t, 24u, 4 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, uint32_t, 60u, 4 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, uint32_t, 68u, 4 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariable< Base, Implementation, uint32_t, 8u, 4 >", "classstored_1_1impl_1_1_store_variable.html", null ],
@@ -320,11 +342,13 @@ var hierarchy =
     [ "stored::impl::StoreVariable< Base, Implementation, void *, 76u, 4 >", "classstored_1_1impl_1_1_store_variable.html", null ],
     [ "stored::impl::StoreVariantV< Base, Implementation, Type::Blob, 0u, 16u >", "classstored_1_1impl_1_1_store_variant_v.html", null ],
     [ "stored::impl::StoreVariantV< Base, Implementation, Type::Blob, 16u, 16u >", "classstored_1_1impl_1_1_store_variant_v.html", null ],
+    [ "stored::impl::StoreVariantV< Base, Implementation, Type::Blob, 28u, 3u >", "classstored_1_1impl_1_1_store_variant_v.html", null ],
     [ "stored::impl::StoreVariantV< Base, Implementation, Type::String, 16u, 15u >", "classstored_1_1impl_1_1_store_variant_v.html", null ],
     [ "stored::impl::StoreVariantV< Base, Implementation, Type::String, 16u, 32u >", "classstored_1_1impl_1_1_store_variant_v.html", null ],
     [ "stored::impl::StoreVariantV< Base, Implementation, Type::String, 68u, 4u >", "classstored_1_1impl_1_1_store_variant_v.html", null ],
     [ "stored::impl::StoreVariantV< Base, Implementation, Type::String, 76u, 4u >", "classstored_1_1impl_1_1_store_variant_v.html", null ],
     [ "stored::impl::StoreVariantV< Base, Implementation, Type::String, 84u, 4u >", "classstored_1_1impl_1_1_store_variant_v.html", null ],
+    [ "stored::impl::StoreVariantV< Base, Implementation, Type::String, 8u, 6u >", "classstored_1_1impl_1_1_store_variant_v.html", null ],
     [ "stored::impl::toIntType< false, sizeof(char)>", "structstored_1_1impl_1_1to_int_type.html", [
       [ "stored::toType< char >", "structstored_1_1to_type_3_01char_01_4.html", null ],
       [ "stored::toType< unsigned char >", "structstored_1_1to_type_3_01unsigned_01char_01_4.html", null ]

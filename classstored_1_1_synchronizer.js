@@ -6,6 +6,8 @@ var classstored_1_1_synchronizer =
     [ "~Synchronizer", "classstored_1_1_synchronizer.html#ab18af921b07af600d95d8902a66fcbba", null ],
     [ "connect", "classstored_1_1_synchronizer.html#a77e661d364e06752cda6b162414ef74c", null ],
     [ "disconnect", "classstored_1_1_synchronizer.html#a5c8a59faccb30c08910551500d08ad75", null ],
+    [ "isSynchronizing", "classstored_1_1_synchronizer.html#adbcaf3052a055128cb786d621c9d18c0", null ],
+    [ "isSynchronizing", "classstored_1_1_synchronizer.html#a5d4dd69d96ce0c318873a0d0d3723280", null ],
     [ "map", "classstored_1_1_synchronizer.html#a141a57011f946f70f4b4e04d4a22001c", null ],
     [ "operator=", "classstored_1_1_synchronizer.html#a79c6cd962526431640297ff1817c5489", null ],
     [ "operator=", "classstored_1_1_synchronizer.html#acc2811e9d12a27654cedbc47c79f6f35", null ],

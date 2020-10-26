@@ -2,6 +2,7 @@ var searchData=
 [
   ['types',['types',['../group__libstored__types.html',1,'']]],
   ['t',['t',['../classed2_1_1zmq__client_1_1_object.html#a3d66ba43564e6a225c07eaab22d9f330',1,'ed2.zmq_client.Object.t(self)'],['../classed2_1_1zmq__client_1_1_object.html#a3d66ba43564e6a225c07eaab22d9f330',1,'ed2.zmq_client.Object.t(self)']]],
+  ['t_5fclk',['t_clk',['../classstored_1_1_example_fpga_objects.html#a2ec47b8a9e78bbf3efb208e177253bea',1,'stored::ExampleFpgaObjects']]],
   ['t_5fus',['t_us',['../classstored_1_1_zmq_server_store_objects.html#acf0663ca658e0ff759487ddc35ce0dcb',1,'stored::ZmqServerStoreObjects']]],
   ['terminallayer',['TerminalLayer',['../classed2_1_1protocol_1_1_terminal_layer.html',1,'ed2.protocol.TerminalLayer'],['../classstored_1_1_terminal_layer.html',1,'stored::TerminalLayer'],['../classstored_1_1_terminal_layer.html#ae159ad7d286f1f1f456f4fe42e9955b7',1,'stored::TerminalLayer::TerminalLayer(TerminalLayer const &amp;)=delete'],['../classstored_1_1_terminal_layer.html#aca51711c2c62bc1ccaf6f3d5ba5baf1f',1,'stored::TerminalLayer::TerminalLayer(TerminalLayer &amp;&amp;)=delete'],['../classstored_1_1_terminal_layer.html#a3aae8bd600dea82390da7d94a9be1b7f',1,'stored::TerminalLayer::TerminalLayer(int nonDebugDecodeFd=-1, int encodeFd=-1, ProtocolLayer *up=nullptr, ProtocolLayer *down=nullptr)']]],
   ['test42',['test42',['../classstored_1_1_example_basic_objects.html#aa7e0bf6f7f091b3cc497b3d208fcf4f8',1,'stored::ExampleBasicObjects']]],
