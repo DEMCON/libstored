@@ -1,0 +1,212 @@
+#ifndef __LIBSTORED_POLLER_H
+#define __LIBSTORED_POLLER_H
+/*
+ * libstored, a Store for Embedded Debugger.
+ * Copyright (C) 2020  Jochem Rutgers
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#ifdef __cplusplus
+
+#include <libstored/macros.h>
+#include <libstored/zmq.h>
+
+#include <cstdarg>
+
+#ifdef STORED_HAVE_ZMQ
+#  include <zmq.h>
+#endif
+
+#ifdef STORED_HAVE_ZTH
+#  include <zth>
+#endif
+
+#ifdef STORED_OS_WINDOWS
+#  include <winsock2.h>
+#endif
+
+#ifdef STORED_OS_WINDOWS
+#  ifdef STORED_HAVE_ZTH
+// We cannot use Zth's poll, as it does not support Windows very well.
+// But we have to use Zth's waiter and polling for events instead using WFMO.
+#    define STORED_POLL_ZTH_WAITER
+#  else
+// Use Windows's WaitForMultipleObjects.
+#    define STORED_POLL_WFMO
+#  endif
+#else
+#  ifdef STORED_HAVE_ZTH
+#    ifdef ZTH_HAVE_POLLER
+// Use Zth's poll to do a fiber-aware poll.
+#      define STORED_POLL_ZTH
+#    else
+// There is no poller. Bare metal?
+#      define STORED_POLL_ZTH_WAITER
+#    endif
+#  elif defined(STORED_HAVE_ZMQ)
+// Use libzmq's poll, as it might handle poll on ZMQ sockets more efficiently.
+#    define STORED_POLL_ZMQ
+#  elif defined(STORED_OS_GENERIC) || defined(STORED_OS_BAREMETAL)
+// There is no poll() available.
+#    define STORED_POLL_LOOP
+#  else
+// Use use the OS's poll.
+#    define STORED_POLL_POLL
+#  endif
+#endif
+
+namespace stored {
+
+	/*!
+	 * \brief A generic way of \c poll() for any blockable resource.
+	 */
+	class Poller {
+		CLASS_NOCOPY(Poller)
+	public:
+#ifdef STORED_POLL_ZMQ
+		enum { PollIn = ZMQ_POLLIN, PollOut = ZMQ_POLLOUT, PollErr = ZMQ_POLLERR };
+#elif defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH) || defined(STORED_POLL_ZTH_WAITER)
+		enum { PollIn = POLLIN, PollOut = POLLOUT, PollErr = POLLERR };
+#else
+		enum { PollIn = 1, PollOut = 2, POLLERR = 4 };
+#endif
+
+		Event {
+			Event() : type(TypeNone), user_data(), events() {}
+			Event(Type type, ...)
+				: type(type), user_data(), events()
+			{
+				va_list args;
+				va_start(args, events);
+
+				switch(type) {
+				case TypeFd: fd = va_arg(args, int);
+#ifdef STORED_OS_WINDOWS
+				case TypeWinSock: winsock = va_arg(args, SOCKET);
+				case TypeHandle: handle = va_arg(args, HANDLE);
+#endif
+#ifdef STORED_HAVE_ZMQ
+				case TypeZmqSock: zmqsock = va_arg(args, void*);
+				case TypeZmq: zmq = va_args(args, ZmqLayer*);
+#endif
+				default:;
+				}
+
+				va_end(args);
+			}
+
+			enum Type {
+				TypeNone,
+				TypeFd,
+#ifdef STORED_OS_WINDOWS
+				TypeWinSock,
+				TypeHandle,
+#endif
+#ifdef STORED_HAVE_ZMQ
+				TypeZmqSock,
+				TypeZmq
+#endif
+			};
+
+			Type type;
+			union {
+				int fd;
+#ifdef STORED_OS_WINDOWS
+				SOCKET winsock;
+				HANDLE handle;
+#endif
+#ifdef STORED_HAVE_ZMQ
+				void* zmqsock;
+				ZmqLayer* zmq;
+#endif
+			};
+			void* user_data;
+			short events;
+
+#  if defined(STORED_POLL_ZTH)
+			zth_pollfd_t* pollfd;
+#  elif defined(STORED_POLL_POLL)
+			pollfd_t* pollfd;
+#  endif
+
+			bool operator==(Event const& e) const {
+				if(type != e.type)
+					return false;
+
+				switch(type) {
+				case TypeNone: return true;
+				case TypeFd: return fd == e.fd;
+#ifdef STORED_OS_WINDOWS
+				case TypeWinSock: return winsock == e.winsock;
+				case TypeHandle: return handle == e.handle;
+#endif
+#ifdef STORED_HAVE_ZMQ
+				case TypeZmqSock: return zmqsock == e.zmqsock;
+				case TypeZmq: return zmq == zmq;
+#endif
+				default:
+					return false;
+				}
+			}
+		};
+
+		Poller();
+		~Poller();
+
+#ifdef STORED_POLL_ZMQ
+		std::vector<zmq_poller_event_t> const* poll(long timeout_us);
+#else
+		std::vector<Event> const* poll(long timeout_us);
+#endif
+
+		int add(int fd, void* user_data, short events);
+		int modify(int fd, short events);
+		int remove(int fd);
+#ifdef STORED_OS_WINDOWS
+		int add(SOCKET socket, void* user_data, short events);
+		int modify(SOCKET socket, short events);
+		int remove(SOCKET socket);
+
+		int add(HANDLE handle, void* user_data, short events);
+		int modify(HANDLE handle, short events);
+		int remove(HANDLE handle);
+#endif
+#ifdef STORED_HAVE_ZMQ
+		int add(void* socket, void* user_data, short events);
+		int modify(void* socket, short events);
+		int remove(void* socket);
+
+		int add(ZmqLayer& layer, void* user_data, short events);
+		int modify(ZmqLayer& layer, short events);
+		int remove(ZmqLayer& layer);
+#endif
+	protected:
+		int add(Event const& e, void* user_data, short events);
+		int remove(Event const& e, short events);
+		Event* find(Event const& e);
+
+	private:
+		std::deque<Event> m_events;
+#ifdef STORED_POLL_ZMQ
+		void* m_poller;
+		std::vector<zmq_poller_event_t> m_lastEvents;
+#else
+		std::vector<Event> m_lastEvents;
+#endif
+	};
+
+} // namespace
+#endif // __cplusplus
+#endif // __LIBSTORED_POLLER_H
