@@ -264,7 +264,7 @@ namespace stored {
 		}
 #endif
 
-		void encodeHash(ProtocolLayer& p, bool last = false);
+		void encodeHash(ProtocolLayer& p, bool last = false) const;
 		static void encodeHash(ProtocolLayer& p, char const* hash, bool last = false);
 		Seq encodeBuffer(ProtocolLayer& p, bool last = false);
 		Seq encodeUpdates(ProtocolLayer& p, Seq sinceSeq, bool last = false);
@@ -392,6 +392,7 @@ namespace stored {
 				if(Config::EnableAssert) {
 					bool ok = true;
 					(void)ok;
+					// cppcheck-suppress assertWithSideEffect
 					stored_assert(journal().keyToBuffer(key, (StoreJournal::Size)len, &ok) == buffer);
 					stored_assert(ok);
 				}
@@ -459,7 +460,7 @@ namespace stored {
 		Id nextId();
 		void encodeCmd(char cmd, bool last = false);
 		void encodeId(Id id, bool last = false);
-		char decodeCmd(void*& buffer, size_t& len);
+		static char decodeCmd(void*& buffer, size_t& len);
 		static Id decodeId(void*& buffer, size_t& len);
 
 		void bye();

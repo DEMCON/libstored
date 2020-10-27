@@ -26,6 +26,7 @@ int main()
     // All variables can be accessed by name too. This is encoded in a
     // directory with scopes (see later examples), but this requires to add the
     // root /.
+	// cppcheck-suppress unreadVariable
     h.find("/hello").variable<int32_t>() = 43;
 
     // Check if it changed.

@@ -107,8 +107,8 @@ int memcmp_swap(void const* a, void const* b, size_t len) {
 	unsigned char const* a_ = static_cast<unsigned char const*>(a);
 	unsigned char const* b_ = static_cast<unsigned char const*>(b);
 
-	size_t i;
-	for(i = 0; i < len; i++)
+	size_t i = 0;
+	for(; i < len; i++)
 		if(a_[i] != b_[len - i - 1])
 			goto diff;
 

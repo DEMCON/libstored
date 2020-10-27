@@ -89,6 +89,9 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 				"-cppcoreguidelines-pro-bounds-array-to-pointer-decay,"
 				"-cppcoreguidelines-pro-type-union-access,"
 				"-cppcoreguidelines-pro-bounds-pointer-arithmetic,"
+				"-cppcoreguidelines-avoid-goto,"
+				"-cppcoreguidelines-avoid-magic-numbers,"
+				"-cppcoreguidelines-avoid-c-arrays,"
 
 				"hicpp-*,"
 				"-hicpp-braces-around-statements,"
@@ -97,17 +100,23 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 				"-hicpp-use-auto,"
 				"-hicpp-no-malloc,"
 				"-hicpp-use-override,"
+				"-hicpp-uppercase-literal-suffix,"
+				"-hicpp-avoid-goto,"
+				"-hicpp-avoid-c-arrays,"
 
 				"performance-*,"
 				"clang-analyzer-*,"
 				"bugprone-*,"
 				"portability-*,"
 				"misc-*,"
+				"-misc-non-private-member-variables-in-classes,"
 
 				"readability-*,"
 				"-readability-braces-around-statements,"
 				"-readability-implicit-bool-conversion,"
 				"-readability-else-after-return,"
+				"-readability-uppercase-literal-suffix,"
+				"-readability-magic-numbers,"
 			)
 			set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
 				"-header-filter=.*includ/libstored.*")

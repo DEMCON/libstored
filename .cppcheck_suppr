@@ -3,3 +3,4 @@
 missingIncludeSystem:*
 cstyleCast:*
 unmatchedSuppression:*
+constParameter:*

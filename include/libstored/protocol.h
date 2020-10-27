@@ -325,7 +325,7 @@ namespace stored {
 		virtual size_t mtu() const override;
 
 	protected:
-		char needEscape(char c);
+		char needEscape(char c) const;
 
 	private:
 		bool const m_all;
@@ -368,9 +368,9 @@ namespace stored {
 		 */
 		virtual void writeToFd(int fd, void const* buffer, size_t len) = 0;
 #else
-		void writeToFd(int fd, void const* buffer, size_t len);
+		virtual void writeToFd(int fd, void const* buffer, size_t len);
 
-public:
+	public:
 		static void writeToFd_(int fd, void const* buffer, size_t len);
 #endif
 

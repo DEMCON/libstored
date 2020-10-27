@@ -91,9 +91,9 @@ first_escape:
 	} else {
 escape:
 		if(p[++i] == Esc)
-			p[decodeOffset] = (uint8_t)Esc;
+			p[decodeOffset] = (char)Esc;
 		else
-			p[decodeOffset] = (uint8_t)p[i] & (uint8_t)EscMask;
+			p[decodeOffset] = (char)((uint8_t)p[i] & (uint8_t)EscMask);
 		decodeOffset++;
 	}
 	i++;
@@ -114,7 +114,7 @@ escape:
 	base::decode(p, decodeOffset);
 }
 
-char AsciiEscapeLayer::needEscape(char c) {
+char AsciiEscapeLayer::needEscape(char c) const {
 	if(!((uint8_t)c & (uint8_t)~(uint8_t)AsciiEscapeLayer::EscMask)) {
 		if(!m_all) {
 			// Only escape what conflicts with other protocols.
@@ -524,6 +524,7 @@ next:
 		if(!didTransmit())
 			transmit();
 
+		// cppcheck-suppress duplicateCondition
 		if(!didTransmit()) {
 			base::encode(nullptr, 0, true);
 			m_didTransmit = true;
@@ -743,7 +744,7 @@ void ArqLayer::pushEncodeQueue(void const* buffer, size_t len) {
  * the sequence number as the first byte.
  */
 std::string& ArqLayer::pushEncodeQueueRaw() {
-	std::string* s;
+	std::string* s = nullptr;
 
 	if(m_spare.empty()) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)

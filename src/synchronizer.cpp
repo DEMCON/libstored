@@ -54,7 +54,7 @@ uint8_t StoreJournal::keySize(size_t bufferSize) {
 	uint8_t s = 0;
 	while(bufferSize) {
 		s++;
-		bufferSize >>= 8;
+		bufferSize >>= 8u;
 	}
 	return s;
 }
@@ -310,7 +310,7 @@ void StoreJournal::clean(StoreJournal::Seq oldest) {
 /*!
  * \brief Encode the store's hash into a Synchronizer message.
  */
-void StoreJournal::encodeHash(ProtocolLayer& p, bool last) {
+void StoreJournal::encodeHash(ProtocolLayer& p, bool last) const {
 	encodeHash(p, hash(), last);
 }
 
@@ -329,8 +329,8 @@ void StoreJournal::encodeHash(ProtocolLayer& p, char const* hash, bool last) {
  */
 char const* StoreJournal::decodeHash(void*& buffer, size_t& len) {
 	char* buffer_ = static_cast<char*>(buffer);
-	size_t i;
-	for(i = 0; i < len && buffer_[i]; i++);
+	size_t i = 0;
+	for(; i < len && buffer_[i]; i++);
 
 	if(i == len) {
 		// \0 not found

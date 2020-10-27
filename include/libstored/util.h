@@ -156,7 +156,7 @@
  */
 #  define CLASS_NO_WEAK_VTABLE \
 	protected: \
-		virtual void force_to_translation_unit();
+		void force_to_translation_unit();
 /*!
  * \see CLASS_NO_WEAK_VTABLE
  */

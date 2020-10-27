@@ -308,6 +308,7 @@ namespace stored {
 		 */
 		Key bufferToKey(void const* buffer) const {
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+			// cppcheck-suppress assertWithSideEffect
 			stored_assert((uintptr_t)buffer >= (uintptr_t)this->buffer() && (uintptr_t)buffer < (uintptr_t)this->buffer() + sizeof(m_data.buffer));
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 			return (uintptr_t)buffer - (uintptr_t)this->buffer();

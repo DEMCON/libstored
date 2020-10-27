@@ -94,7 +94,7 @@ void* ZmqLayer::socket() const {
  * Use this socket to determine if recv() would block.
  */
 ZmqLayer::socket_type ZmqLayer::fd() {
-	socket_type socket;
+	socket_type socket; // NOLINT(cppcoreguidelines-init-variables)
 	size_t size = sizeof(socket);
 
 	if(zmq_getsockopt(m_socket, ZMQ_FD, &socket, &size) == -1) {
@@ -116,7 +116,7 @@ ZmqLayer::socket_type ZmqLayer::fd() {
  */
 int ZmqLayer::recv(bool block) {
 	int res = 0;
-	int more;
+	int more = 0;
 
 	zmq_msg_t msg;
 
@@ -223,6 +223,7 @@ DebugZmqLayer::DebugZmqLayer(void* context, int port, ProtocolLayer* up, Protoco
 	if(lastError())
 		return;
 
+	// NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
 	char bind[32] = {};
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
 	snprintf(bind, sizeof(bind), "tcp://*:%" PRIu16, (uint16_t)port);
@@ -262,7 +263,7 @@ SyncZmqLayer::SyncZmqLayer(void* context, char const* endpoint, bool listen, Pro
 	if(lastError())
 		return;
 
-	int res;
+	int res = 0;
 	if(listen)
 		res = zmq_bind(socket(), endpoint);
 	else

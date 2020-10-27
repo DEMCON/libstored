@@ -470,8 +470,8 @@ public:
 		template <typename T>
 		__attribute__((malloc,returns_nonnull,warn_unused_result))
 		T* alloc(size_t count = 1, size_t align = sizeof(T)) {
-			size_t size = count * sizeof(T);
-			if(unlikely(size == 0)) {
+			size_t alloc_size = count * sizeof(T);
+			if(unlikely(alloc_size == 0)) {
 				if(unlikely(!m_buffer))
 					reserve(spare);
 				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -483,7 +483,7 @@ public:
 			if(padding == align)
 				padding = 0;
 
-			if(unlikely(m_total + size + padding < m_total)) {
+			if(unlikely(m_total + alloc_size + padding < m_total)) {
 				// Wrap around -> overflow.
 #ifdef __cpp_exceptions
 				throw std::bad_alloc();
@@ -497,31 +497,31 @@ public:
 				// The padding (which may be 0) still fits in the buffer.
 				m_size = (size_type)(m_size + padding);
 				// Now reserve the size, which still may add a new chunk.
-				if(unlikely(m_size + size > bs))
+				if(unlikely(m_size + alloc_size > bs))
 					// Reserve all we probably need, if we are reserving anyway.
-					reserve(std::max(max() - this->size(), size));
+					reserve(std::max(max() - this->size(), alloc_size));
 			} else {
 				// Not enough room for the padding, let alone the size.
 				// Just create a new buffer, which has always the correct alignment.
-				bufferPush(std::max(max() - this->size(), size + spare));
+				bufferPush(std::max(max() - this->size(), alloc_size + spare));
 			}
 
 			char* p = m_buffer + m_size;
-			m_size = (size_type)(m_size + size);
+			m_size = (size_type)(m_size + alloc_size);
 
 			// Do count the padding, even it was not allocated, as it might be
 			// required anyway if the buffers are coalesced.
-			m_total = (size_type)(m_total + padding + size);
+			m_total = (size_type)(m_total + padding + alloc_size);
 
 			if(unlikely(m_total > m_max))
 				m_max = m_total;
 
 #ifdef STORED_HAVE_VALGRIND
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,hicpp-no-assembler)
-			(void)VALGRIND_MAKE_MEM_UNDEFINED(p, size);
+			(void)VALGRIND_MAKE_MEM_UNDEFINED(p, alloc_size);
 #else
 			if(Config::Debug)
-				memset(p, 0xef, size);
+				memset(p, 0xef, alloc_size);
 #endif
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return reinterpret_cast<T*>(p);

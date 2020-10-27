@@ -513,6 +513,7 @@ namespace stored {
 			new(m_buffer) DebugVariantTyped<Container>(variant);
 			// Check if the cast of variant() works properly.
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+			// cppcheck-suppress assertWithSideEffect
 			stored_assert(static_cast<DebugVariantBase*>(reinterpret_cast<DebugVariantTyped<Container>*>(m_buffer)) == &this->variant());
 		}
 

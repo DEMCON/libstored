@@ -173,9 +173,9 @@ notfound:
 	// So, check both it and --it.
 
 	if(                              it != m_map.end() && checkPrefix(name, it->first, len))
-		goto gotit;
+		goto gotit; // NOLINT(bugprone-branch-clone)
 	else if(it != m_map.begin() && --it != m_map.end() && checkPrefix(name, it->first, len))
-		goto gotit;
+		goto gotit; // NOLINT(bugprone-branch-clone)
 	else
 		goto notfound;
 
@@ -361,7 +361,7 @@ void Debugger::setIdentification(char const* identification) {
  * \see #setVersions()
  */
 bool Debugger::version(ProtocolLayer& response) {
-	char* buffer;
+	char* buffer = nullptr;
 	size_t len = encodeHex(Config::DebuggerVersion, buffer);
 	response.encode(buffer, len, false);
 
@@ -413,8 +413,8 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		// Request: '?'
 		// Response: <list of command chars>
 
-		char* c;
-		size_t cs;
+		char* c = nullptr;
+		size_t cs = 0;
 		capabilities(c, cs);
 		response.setPurgeableResponse();
 		response.encode(c, cs, true);
@@ -750,8 +750,8 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 			goto error;
 
 		if(len == 1) {
-			void const* buffer;
-			size_t bufferlen;
+			void const* buffer = nullptr;
+			size_t bufferlen = 0;
 			streams(buffer, bufferlen);
 			if(bufferlen == 0)
 				goto error;
@@ -885,7 +885,7 @@ bool Debugger::runMacro(char m, ProtocolLayer& response) {
 	size_t pos = 0;
 	do {
 		size_t nextpos = definition.find(sep, ++pos);
-		size_t len;
+		size_t len = 0;
 		if(nextpos == std::string::npos)
 			len = definition.size() - pos;
 		else
@@ -902,7 +902,7 @@ bool Debugger::runMacro(char m, ProtocolLayer& response) {
  * \brief Encode the 4 LSb into ASCII hex.
  */
 static char encodeNibble(uint8_t n) {
-	n &= 0xf;
+	n &= 0xfu;
 	return (char)((n < 10 ? '0' : 'a' - 10) + n);
 }
 
@@ -998,8 +998,8 @@ bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len) {
 		return false;
 
 	char const* src = static_cast<char const*>(data);
-	size_t binlen;
-	uint8_t* bin;
+	size_t binlen = 0;
+	uint8_t* bin = nullptr;
 
 	bool ok = true;
 
@@ -1058,9 +1058,10 @@ void Debugger::listCmdCallback(char const* name, DebugVariant& variant, void* ar
 	ListCmdCallbackArg* a = (ListCmdCallbackArg*)arg;
 
 	// encodeHex() uses the spm for its result.
+	// cppcheck-suppress unreadVariable
 	ScratchPad<>::Snapshot snapshot = a->that->spm().snapshot();
-	char const* buf;
-	size_t buflen;
+	char const* buf = nullptr;
+	size_t buflen = 0;
 
 	// Append type.
 	buflen = a->that->encodeHex((uint8_t)variant.type(), buf, false);

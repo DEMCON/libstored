@@ -807,9 +807,9 @@ namespace stored {
 		 * \see #get(void*, size_t) const
 		 */
 		std::vector<char> get() const {
-			std::vector<char> buffer(size());
-			get(&buffer[0], buffer.size());
-			return buffer;
+			std::vector<char> buf(size());
+			get(&buf[0], buf.size());
+			return buf;
 		}
 
 		/*!
