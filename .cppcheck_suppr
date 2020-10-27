@@ -2,5 +2,8 @@
 *:*/extern/googletest/*
 missingIncludeSystem:*
 cstyleCast:*
-unmatchedSuppression:*
 constParameter:*
+unmatchedSuppression:*
+unmatchedSuppression:examples/1_hello/main.cpp
+unmatchedSuppression:src/debugger.cpp
+unmatchedSuppression:src/protocol.cpp
