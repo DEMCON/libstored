@@ -165,7 +165,8 @@ if(CPPCHECK_CMD)
 			examples
 		)
 	endif()
-	add_custom_target(cppcheck ALL
+
+	add_custom_target(cppcheck
 		COMMAND
 			${CPPCHECK_CMD}
 			--enable=warning,style,information
@@ -182,5 +183,10 @@ if(CPPCHECK_CMD)
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		VERBATIM
 	)
+
+	option(LIBSTORED_CPPCHECK "Run cppcheck by default" ON)
+	if(LIBSTORED_CPPCHECK)
+		add_custom_target(cppcheck-all ALL DEPENDS cppcheck)
+	endif()
 endif()
 
