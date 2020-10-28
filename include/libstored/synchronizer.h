@@ -273,6 +273,8 @@ namespace stored {
 		Seq decodeBuffer(void*& buffer, size_t& len);
 		Seq decodeUpdates(void*& buffer, size_t& len, bool recordAll = true);
 
+		void reserveHeap(size_t storeVariableCount);
+
 	protected:
 		/*!
 		 * \brief Element in the \c m_changes administration.
@@ -383,6 +385,32 @@ namespace stored {
 
 		StoreJournal const& journal() const { return m_journal; }
 		StoreJournal& journal() { return m_journal; }
+
+		/*!
+		 * \brief Reserve worst-case heap usage.
+		 *
+		 * Afterwards, the store and synchronizer will not use any additional
+		 * heap, which makes it possible to use it in a not-async-signal-safe context,
+		 * like an interrupt handler.
+		 */
+		void reserveHeap() {
+			journal().reserveHeap(Base::VariableCount);
+		}
+
+		enum {
+			/*! \brief Maximum size of any Synchronizer message for this store. */
+			MaxMessageSize =
+				std::max( std::max( std::max(
+					// Hello
+					1 /*cmd*/ + 40 /*hash*/ + 1 /*nul*/ + 2 /*id*/,
+					// Welcome
+					1 /*cmd*/ + 2 * 2 /*ids*/ + Base::BufferSize),
+					// Update
+					1 /*cmd*/ + 2 /*id*/ + Base::BufferSize + Base::VariableCount * 8 /*offset/length*/),
+					// Bye
+					1 /*cmd*/ + 40 /*hash*/
+				),
+		};
 
 	protected:
 		void __hookExitX(Type::type type, void* buffer, size_t len, bool changed) {

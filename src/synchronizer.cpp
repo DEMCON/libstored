@@ -484,6 +484,16 @@ void* StoreJournal::keyToBuffer(StoreJournal::Key key, StoreJournal::Size len, b
 	return static_cast<char*>(m_buffer) + key;
 }
 
+/*!
+ * \brief Pre-allocate memory for the given number of variables.
+ *
+ * As long as the number of changed variables remains below this number,
+ * no heap operations are performed during synchronization.
+ */
+void StoreJournal::reserveHeap(size_t storeVariableCount) {
+	m_changes.reserve(storeVariableCount);
+}
+
 
 
 /////////////////////////////
