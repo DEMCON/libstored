@@ -351,8 +351,14 @@ namespace stored {
 	 * If it should be synchronizable, use #Synchronizable like this:
 	 *
 	 * \code
-	 * class ActualStore : public Synchronizable<MyStoreBase<ActualStore> > {
-	 * ...
+	 * class ActualStore : public stored::Synchronizable<stored::MyStoreBase<ActualStore> > {
+	 *     CLASS_NOCOPY(ActualStore)
+	 * public:
+	 *     typedef stored::Synchronizable<stored::MyStoreBase<ActualStore> > base;
+	 *     using typename base::Implementation;
+	 *     friend class stored::MyStoreBase<ActualStore>;
+	 *     ActualStore() is_default
+	 *     ...
 	 * };
 	 * \endcode
 	 *

@@ -83,30 +83,8 @@ namespace stored {
 		enum { PollIn = 1, PollOut = 2, POLLERR = 4 };
 #endif
 
-		Event {
-			Event() : type(TypeNone), user_data(), events() {}
-			Event(Type type, ...)
-				: type(type), user_data(), events()
-			{
-				va_list args;
-				va_start(args, events);
-
-				switch(type) {
-				case TypeFd: fd = va_arg(args, int);
-#ifdef STORED_OS_WINDOWS
-				case TypeWinSock: winsock = va_arg(args, SOCKET);
-				case TypeHandle: handle = va_arg(args, HANDLE);
-#endif
-#ifdef STORED_HAVE_ZMQ
-				case TypeZmqSock: zmqsock = va_arg(args, void*);
-				case TypeZmq: zmq = va_args(args, ZmqLayer*);
-#endif
-				default:;
-				}
-
-				va_end(args);
-			}
-
+		class Event {
+		public:
 			enum Type {
 				TypeNone,
 				TypeFd,
@@ -119,6 +97,38 @@ namespace stored {
 				TypeZmq
 #endif
 			};
+
+			Event()
+				: type(TypeNone), user_data(), events()
+#ifdef STORED_POLL_WFMO
+				, h()
+#endif
+			{}
+
+			Event(Type type, ...)
+				: type(type), user_data(), events()
+#ifdef STORED_POLL_WFMO
+				, h()
+#endif
+			{
+				va_list args;
+				va_start(args, type);
+
+				switch(type) {
+				case TypeFd: fd = va_arg(args, int); break;
+#ifdef STORED_OS_WINDOWS
+				case TypeWinSock: winsock = va_arg(args, SOCKET); break;
+				case TypeHandle: handle = va_arg(args, HANDLE); break;
+#endif
+#ifdef STORED_HAVE_ZMQ
+				case TypeZmqSock: zmqsock = va_arg(args, void*); break;
+				case TypeZmq: zmq = va_arg(args, stored::ZmqLayer*); break;
+#endif
+				default:;
+				}
+
+				va_end(args);
+			}
 
 			Type type;
 			union {
@@ -139,6 +149,8 @@ namespace stored {
 			zth_pollfd_t* pollfd;
 #  elif defined(STORED_POLL_POLL)
 			pollfd_t* pollfd;
+#  elif defined(STORED_POLL_WFMO)
+			HANDLE h;
 #  endif
 
 			bool operator==(Event const& e) const {
@@ -154,7 +166,7 @@ namespace stored {
 #endif
 #ifdef STORED_HAVE_ZMQ
 				case TypeZmqSock: return zmqsock == e.zmqsock;
-				case TypeZmq: return zmq == zmq;
+				case TypeZmq: return zmq == e.zmq;
 #endif
 				default:
 					return false;
@@ -166,9 +178,11 @@ namespace stored {
 		~Poller();
 
 #ifdef STORED_POLL_ZMQ
-		std::vector<zmq_poller_event_t> const* poll(long timeout_us);
+		typedef std::vector<zmq_poller_event_t> Result;
+		Result const* poll(long timeout_us);
 #else
-		std::vector<Event> const* poll(long timeout_us);
+		typedef std::vector<Event> Result;
+		Result const* poll(long timeout_us);
 #endif
 
 		int add(int fd, void* user_data, short events);
@@ -179,9 +193,9 @@ namespace stored {
 		int modify(SOCKET socket, short events);
 		int remove(SOCKET socket);
 
-		int add(HANDLE handle, void* user_data, short events);
-		int modify(HANDLE handle, short events);
-		int remove(HANDLE handle);
+		int addh(HANDLE handle, void* user_data, short events);
+		int modifyh(HANDLE handle, short events);
+		int removeh(HANDLE handle);
 #endif
 #ifdef STORED_HAVE_ZMQ
 		int add(void* socket, void* user_data, short events);
@@ -194,16 +208,25 @@ namespace stored {
 #endif
 	protected:
 		int add(Event const& e, void* user_data, short events);
-		int remove(Event const& e, short events);
+		int modify(Event const& e, short events);
+		int remove(Event const& e);
+#ifndef STORED_POLL_ZMQ
 		Event* find(Event const& e);
+#endif
 
 	private:
-		std::deque<Event> m_events;
 #ifdef STORED_POLL_ZMQ
 		void* m_poller;
-		std::vector<zmq_poller_event_t> m_lastEvents;
+		Result m_lastEvents;
 #else
-		std::vector<Event> m_lastEvents;
+		std::deque<Event> m_events;
+		Result m_lastEvents;
+#endif
+#if defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH)
+		std::vector<pollfd_t> m_lastEventsFd;
+#endif
+#ifdef STORED_POLL_WFMO
+		std::vector<HANDLE> m_lastEventsH;
 #endif
 	};
 

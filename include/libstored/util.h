@@ -423,6 +423,7 @@ namespace stored {
 	size_t strncpy(char* __restrict__ dst, char const* __restrict__ src, size_t len);
 	int strncmp(char const* __restrict__ str1, size_t len1, char const* __restrict__ str2, size_t len2 = std::numeric_limits<size_t>::max());
 
+	char const* banner();
 } // namespace
 
 /*!

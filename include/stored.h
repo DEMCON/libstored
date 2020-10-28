@@ -36,5 +36,6 @@
 #include <libstored/protocol.h>
 #include <libstored/zmq.h>
 #include <libstored/synchronizer.h>
+#include <libstored/poller.h>
 
 #endif // __LIBSTORED_H

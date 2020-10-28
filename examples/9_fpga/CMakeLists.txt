@@ -1,4 +1,4 @@
-add_custom_target(9_fpga ALL)
+add_executable(9_fpga main.cpp)
 libstored_generate(9_fpga ExampleFpga.st ExampleFpga2.st)
 
 if(VIVADO_CMD)
