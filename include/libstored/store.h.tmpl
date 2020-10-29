@@ -131,6 +131,18 @@ namespace stored {
 	 * Heap is fine. Static allocations is fine too, as the constructor and
 	 * destructor are trivial.
 	 *
+	 * To inherit the base class, you can use the following template:
+	 *
+	 * \code
+	 * class {{store.name}} : public STORE_BASECLASS({{store.name}}Base, {{store.name}}) {
+	 *     STORE_CLASS_BODY({{store.name}}Base, {{store.name}})
+	 * public:
+	 *     // Your class implementation, such as:
+	 *     {{store.name}}() is_default
+	 *     // ...
+	 * };
+	 * \endcode
+	 *
 	 * \see #stored::{{store.name}}
 	 * \see #stored::{{store.name}}Data
 	 * \ingroup libstored_stores
@@ -457,11 +469,9 @@ namespace stored {
 	 * \brief Default {{store.name}}Base implementation.
 	 * \ingroup libstored_stores
 	 */
-	class {{store.name}} : public {{store.name}}Base<{{store.name}}> {
-		CLASS_NOCOPY({{store.name}})
+	class {{store.name}} : public STORE_BASECLASS({{store.name}}Base, {{store.name}}) {
+		STORE_CLASS_BODY({{store.name}}Base, {{store.name}})
 	public:
-		typedef {{store.name}}Base<{{store.name}}> base;
-		friend class {{store.name}}Base<{{store.name}}>;
 		/*! \copydoc stored::{{store.name}}Base::{{store.name}}Base() */
 		{{store.name}}() is_default
 	};

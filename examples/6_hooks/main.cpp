@@ -9,11 +9,9 @@
 
 #include <cstdio>
 
-class SyncedExampleHooks : public stored::ExampleHooksBase<SyncedExampleHooks> {
-	CLASS_NOCOPY(SyncedExampleHooks)
+class SyncedExampleHooks : public STORE_BASECLASS(ExampleHooksBase, SyncedExampleHooks) {
+	STORE_CLASS_BODY(ExampleHooksBase, SyncedExampleHooks)
 public:
-	typedef stored::ExampleHooksBase<SyncedExampleHooks> base;
-	friend class stored::ExampleHooksBase<SyncedExampleHooks>;
 	SyncedExampleHooks() {}
 
 protected:

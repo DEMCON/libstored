@@ -362,6 +362,16 @@ namespace stored {
 	 * };
 	 * \endcode
 	 *
+	 * Or with a few macros:
+	 *
+	 * \code
+	 * class ActualStore: public STORE_SYNC_BASECLASS(MyStoreBase, ActualStore) {
+	 *     STORE_SYNC_CLASS_BODY(MyStoreBase, ActualStore)
+	 * public:
+	 *     ActualStore() is_default
+	 * };
+	 * \endcode
+	 *
 	 * Now, \c ActualStore inherits from \c Synchronizable, which inherits from \c MyStoreBase.
 	 * However, \c ActualStore is still used as the final implementation.
 	 *
@@ -403,20 +413,26 @@ namespace stored {
 			journal().reserveHeap(Base::VariableCount);
 		}
 
+#define MAX2(a,b)		((a) > (b) ? (a) : (b))
+#define MAX3(a,b,c)		MAX2(MAX2((a), (b)), (c))
+#define MAX4(a,b,c,d)	MAX3(MAX2((a), (b)), (c), (d))
 		enum {
 			/*! \brief Maximum size of any Synchronizer message for this store. */
 			MaxMessageSize =
-				std::max( std::max( std::max(
+				MAX4(
 					// Hello
 					1 /*cmd*/ + 40 /*hash*/ + 1 /*nul*/ + 2 /*id*/,
 					// Welcome
-					1 /*cmd*/ + 2 * 2 /*ids*/ + Base::BufferSize),
+					1 /*cmd*/ + 2 * 2 /*ids*/ + Base::BufferSize,
 					// Update
-					1 /*cmd*/ + 2 /*id*/ + Base::BufferSize + Base::VariableCount * 8 /*offset/length*/),
+					1 /*cmd*/ + 2 /*id*/ + Base::BufferSize + Base::VariableCount * 8 /*offset/length*/,
 					// Bye
 					1 /*cmd*/ + 40 /*hash*/
 				),
 		};
+#undef MAX4
+#undef MAX3
+#undef MAX2
 
 	protected:
 		void __hookExitX(Type::type type, void* buffer, size_t len, bool changed) {
@@ -440,6 +456,17 @@ namespace stored {
 	private:
 		StoreJournal m_journal;
 	};
+
+#define STORE_SYNC_BASECLASS(Base, Impl) stored::Synchronizable<stored::Base<Impl > >
+
+#define STORE_SYNC_CLASS_BODY(Base, Impl) \
+	CLASS_NOCOPY(Impl) \
+public: \
+	typedef STORE_SYNC_BASECLASS(Base, Impl) base; \
+	using typename base::Implementation; \
+	friend class STORE_BASECLASS(Base, Impl); \
+private:
+
 
 	class Synchronizer;
 

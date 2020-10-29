@@ -2077,6 +2077,10 @@ EXPAND_AS_DEFINED      = \
 						UNUSED_PAR \
 						is_default \
 						CLASS_NOCOPY \
+						STORE_SYNC_BASECLASS \
+						STORE_SYNC_CLASS_BODY \
+						STORE_BASECLASS \
+						STORE_CLASS_BODY \
 
 
 # If the SKIP_FUNCTION_MACROS tag is set to YES then doxygen's preprocessor will

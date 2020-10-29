@@ -433,5 +433,15 @@ namespace stored {
 template <typename R, typename T>
 __attribute__((pure)) R saturated_cast(T value) { return stored::impl::saturated_cast_helper<R>::cast(value); }
 
+#define STORE_BASECLASS(Base, Impl) stored::Base<Impl >
+
+#define STORE_CLASS_BODY(Base, Impl) \
+	CLASS_NOCOPY(Impl) \
+public: \
+	typedef STORE_BASECLASS(Base, Impl) base; \
+	using typename base::Implementation; \
+	friend class STORE_BASECLASS(Base, Impl); \
+private:
+
 #endif // __cplusplus
 #endif // __LIBSTORED_UTIL_H

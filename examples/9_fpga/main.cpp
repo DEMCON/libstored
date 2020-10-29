@@ -5,21 +5,17 @@
 #include <conio.h>
 #include <unistd.h>
 
-class ExampleFpga : public stored::Synchronizable<stored::ExampleFpgaBase<ExampleFpga>> {
-	CLASS_NOCOPY(ExampleFpga)
+
+
+class ExampleFpga : public STORE_SYNC_BASECLASS(ExampleFpgaBase, ExampleFpga) {
+	STORE_SYNC_CLASS_BODY(ExampleFpgaBase, ExampleFpga)
 public:
-	typedef stored::Synchronizable<stored::ExampleFpgaBase<ExampleFpga>> base;
-	using typename base::Implementation;
-	friend class stored::ExampleFpgaBase<ExampleFpga>;
 	ExampleFpga() is_default
 };
 
-class ExampleFpga2 : public stored::Synchronizable<stored::ExampleFpga2Base<ExampleFpga2>> {
-	CLASS_NOCOPY(ExampleFpga2)
+class ExampleFpga2 : public STORE_SYNC_BASECLASS(ExampleFpga2Base, ExampleFpga2) {
+	STORE_SYNC_CLASS_BODY(ExampleFpga2Base, ExampleFpga2)
 public:
-	typedef stored::Synchronizable<stored::ExampleFpga2Base<ExampleFpga2>> base;
-	using typename base::Implementation;
-	friend class stored::ExampleFpga2Base<ExampleFpga2>;
 	ExampleFpga2() is_default
 };
 

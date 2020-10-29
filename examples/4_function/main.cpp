@@ -3,6 +3,8 @@
  * \brief Example to show how functions work.
  */
 
+#include <stored>
+
 #include "ExampleFunction.h"
 
 #include <ctime>
@@ -13,11 +15,9 @@
 #endif
 
 // Create a subclass of stored::ExampleFunctionBase to define the side effects of the functions.
-class MyExample : public stored::ExampleFunctionBase<MyExample> {
-	CLASS_NOCOPY(MyExample)
+class MyExample : public STORE_BASECLASS(ExampleFunctionBase, MyExample) {
+	STORE_CLASS_BODY(ExampleFunctionBase, MyExample)
 public:
-	typedef stored::ExampleFunctionBase<MyExample> base;
-	friend class stored::ExampleFunctionBase<MyExample>;
 	MyExample() : m_echo() {}
 
 protected:
