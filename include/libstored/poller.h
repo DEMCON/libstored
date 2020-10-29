@@ -21,9 +21,12 @@
 #ifdef __cplusplus
 
 #include <libstored/macros.h>
+#include <libstored/util.h>
 #include <libstored/zmq.h>
 
 #include <cstdarg>
+#include <vector>
+#include <deque>
 
 #ifdef STORED_HAVE_ZMQ
 #  include <zmq.h>
@@ -65,6 +68,10 @@
 // Use use the OS's poll.
 #    define STORED_POLL_POLL
 #  endif
+#endif
+
+#if defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH) || defined(STORED_POLL_ZTH_WAITER)
+#  include <poll.h>
 #endif
 
 namespace stored {
@@ -148,7 +155,7 @@ namespace stored {
 #  if defined(STORED_POLL_ZTH)
 			zth_pollfd_t* pollfd;
 #  elif defined(STORED_POLL_POLL)
-			pollfd_t* pollfd;
+			struct ::pollfd* pollfd;
 #  elif defined(STORED_POLL_WFMO)
 			HANDLE h;
 #  endif
@@ -223,7 +230,7 @@ namespace stored {
 		Result m_lastEvents;
 #endif
 #if defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH)
-		std::vector<pollfd_t> m_lastEventsFd;
+		std::vector<pollfd> m_lastEventsFd;
 #endif
 #ifdef STORED_POLL_WFMO
 		std::vector<HANDLE> m_lastEventsH;

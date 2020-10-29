@@ -222,7 +222,7 @@ Poller::Result const* Poller::poll(long timeout_us) {
 
 	stored_assert(m_lastEventsH.size() < MAXIMUM_WAIT_OBJECTS);
 
-	DWORD res = WaitForMultipleObjects((DWORD)m_lastEventsH.size(), &m_lastEventsH[0], FALSE, (DWORD)((timeout_us + 999L) / 1000L));
+	DWORD res = WaitForMultipleObjects((DWORD)m_lastEventsH.size(), &m_lastEventsH[0], FALSE, (DWORD)(timeout_us >= 0 ? (timeout_us + 999L) / 1000L) : INFINITE);
 
 	HANDLE h = nullptr;
 
@@ -256,7 +256,7 @@ Poller::Result const* Poller::poll(long timeout_us) {
 Poller::Result const* Poller::poll(long timeout_us) {
 	m_lastEvents.resize(m_events.size());
 
-	int res = zmq_poller_wait_all(m_poller, &m_lastEvents[0], m_lastEvents.size(), (timeout_us + 999L) / 1000L);
+	int res = zmq_poller_wait_all(m_poller, &m_lastEvents[0], m_lastEvents.size(), timeout_us >= 0 ? (timeout_us + 999L) / 1000L : -1L);
 
 	if(res == -1) {
 		errno = zmq_errno();
@@ -273,13 +273,13 @@ Poller::Result const* Poller::poll(long timeout_us) {
 Poller::Result const* Poller::poll(long timeout_us) {
 	m_lastEventsFd.resize(m_events.size());
 	size_t i = 0;
-	for(std::deque<Events>::iterator it = m_events.begin(); it != m_events.end(); ++it) {
-		pollfd_t& e = m_lastEventsFd[i];
+	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it) {
+		pollfd& e = m_lastEventsFd[i];
 
 		it->pollfd = &e;
 		e.events = it->events;
 
-		switch(e.type) {
+		switch(it->type) {
 		case Event::TypeFd:
 			e.fd = it->fd;
 #if defined(STORED_POLL_ZTH) && defined(ZTH_HAVE_ZMQ)
@@ -304,7 +304,7 @@ Poller::Result const* Poller::poll(long timeout_us) {
 #ifdef STORED_POLL_ZTH
 		zth::io
 #endif
-		::poll(&m_lastEvents[0], m_lastEvents.size(), timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us);
+		::poll(&m_lastEventsFd[0], m_lastEventsFd.size(), (int)(timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us));
 
 	switch(res) {
 	case -1:
@@ -316,21 +316,21 @@ Poller::Result const* Poller::poll(long timeout_us) {
 	}
 
 	m_lastEvents.clear();
-	for(std::deque<Events>::iterator it = m_events.begin(); it != m_events.end(); ++it) {
+	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it) {
 		if(it->pollfd && it->pollfd->revents) {
 			m_lastEvents.push_back(*it);
 			m_lastEvents.back().events = it->pollfd->revents;
 		}
 	}
 
-	return m_lastEvents;
+	return &m_lastEvents;
 }
 #endif
 
 #ifdef STORED_POLL_LOOP
-Poller::Result const* Poller::poll(long timeout_us) {
+Poller::Result const* Poller::poll(long UNUSED_PAR(timeout_us)) {
 	// TODO
-	return m_lastEvents;
+	return &m_lastEvents;
 }
 #endif
 
