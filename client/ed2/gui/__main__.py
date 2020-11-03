@@ -114,6 +114,8 @@ def lognplot_send(lognplot, o):
 
 
 if __name__ == '__main__':
+    QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     QCoreApplication.setApplicationName("Embedded Debugger")
 
     parser = argparse.ArgumentParser(description='ZMQ command line client')

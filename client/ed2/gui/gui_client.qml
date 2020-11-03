@@ -122,6 +122,9 @@ Window {
                     text: obj.valueString
                     placeholderText: obj && obj.t ? "" : "value?"
                     readOnly: format.currentText === 'bytes'
+                    background.antialiasing: true
+                    topPadding: 0
+                    bottomPadding: 0
 
                     onAccepted: {
                         obj.valueString = displayText
@@ -164,6 +167,7 @@ Window {
                     Layout.preferredWidth: parent.height
                     indicator.height: height * 0.618
                     indicator.width: height * 0.618
+                    indicator.antialiasing: true
 
                     ToolTip.text: "Enable auto-refresh"
                     ToolTip.visible: hovered
@@ -201,6 +205,9 @@ Window {
                 Layout.fillWidth: true
                 placeholderText: "enter regex filter"
                 onTextChanged: regexTimer.restart()
+                background.antialiasing: true
+                topPadding: 0
+                bottomPadding: 0
 
                 Timer {
                     id: regexTimer
@@ -216,6 +223,9 @@ Window {
                 Layout.preferredWidth: root.fontSize * 5
                 placeholderText: "poll interval (s)"
                 horizontalAlignment: Text.AlignRight
+                background.antialiasing: true
+                topPadding: 0
+                bottomPadding: 0
 
                 ToolTip.text: "poll interval (s)"
                 ToolTip.visible: hovered
@@ -279,6 +289,9 @@ Window {
             font.pixelSize: root.fontSize
             Layout.fillWidth: true
             placeholderText: "enter command"
+            background.antialiasing: true
+            topPadding: 0
+            bottomPadding: 0
 
             onAccepted: {
                 rep.text = client.req(text)
@@ -298,6 +311,7 @@ Window {
             }
 
             background: Rectangle {
+                antialiasing: true
                 border.color: "#c0c0c0"
             }
         }

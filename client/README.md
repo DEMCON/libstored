@@ -11,6 +11,8 @@ Execute these modules like `python3 -m ed2.gui`, optionally with `-?` argument
 to get some more help:
 
 - `ed2.gui`: a GUI that connects to a debug target.
+  The GUI has by default high DPI support. If the scaling is not satisfactory,
+  try setting the `QT_SCALE_FACTOR` environment variable before starting the GUI.
 - `ed2.cli`: a command line interface that connects to a debug target.
 - `ed2.wrapper.stdio`: a stdin/stdout wrapper, which is a bridge between
   Embedded Debugger messages within the stdin/stdout streams of the application
