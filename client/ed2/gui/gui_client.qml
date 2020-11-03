@@ -46,7 +46,7 @@ Window {
         root.title = text
     }
 
-    readonly property int fontSize: 12
+    readonly property int fontSize: 10
 
     Component {
         id: objectRow
@@ -95,9 +95,25 @@ Window {
                     Layout.fillHeight: true
                     Layout.preferredWidth: root.fontSize * 8
                     currentIndex: strToIndex(obj.format)
+                    topPadding: 0
+                    bottomPadding: 0
+                    indicator.height: format.height * 0.618
+                    indicator.width: indicator.height * 1.5
+                    popup.font.pixelSize: root.fontSize
+                    popup.contentItem.height: format.height
 
                     onCurrentTextChanged: {
                         obj.format = currentText
+                    }
+
+                    contentItem: Label {
+                        text: format.displayText
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        verticalAlignment: Text.AlignVCenter
+                        font.pixelSize: root.fontSize
+                        leftPadding: root.fontSize / 2
+                        elide: Text.ElideRight
                     }
                 }
 
@@ -183,6 +199,7 @@ Window {
                     Layout.fillHeight: true
                     Layout.preferredWidth: implicitWidth
                     text: "Refresh"
+                    font.pixelSize: root.fontSize
                     onClicked: {
                         obj.asyncRead()
                     }
@@ -208,6 +225,7 @@ Window {
                 background.antialiasing: true
                 topPadding: 0
                 bottomPadding: 0
+                font.pixelSize: root.fontSize
 
                 Timer {
                     id: regexTimer
@@ -226,6 +244,7 @@ Window {
                 background.antialiasing: true
                 topPadding: 0
                 bottomPadding: 0
+                font.pixelSize: root.fontSize
 
                 ToolTip.text: "poll interval (s)"
                 ToolTip.visible: hovered
@@ -252,6 +271,7 @@ Window {
                 id: refreshAllButton
                 Layout.fillHeight: true
                 text: "Refresh all"
+                font.pixelSize: root.fontSize
                 onClicked: {
                     for(var i = 0; i < objects.rowCount(); i++)
                         objects.sourceModel.at(objects.mapToSource(objects.index(i, 0)).row).asyncRead()
