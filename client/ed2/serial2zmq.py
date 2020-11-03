@@ -40,13 +40,18 @@ class Serial2Zmq(Stream2Zmq):
         if events.get(self.stdin_socket, 0) & zmq.POLLIN:
             self.sendToApp(self.stdin_socket.recv())
         if events.get(self.serial_socket, 0) & zmq.POLLIN:
-            self.recvFromApp(self.serial_socket.recv())
+            self.decode(self.serial_socket.recv())
 
     def sendToApp(self, data):
         if len(data) > 0:
             self.serial.write(data)
             self.serial.flush()
             self.logger.info('sent ' + str(data))
+
+    def encode(self, data):
+        if len(data) > 0:
+            self.sendToApp(data)
+            super().encode(data)
 
     def close(self):
         super().close()
