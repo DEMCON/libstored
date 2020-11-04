@@ -253,7 +253,7 @@ bool StoreJournal::hasChanged(Seq since) const {
 		return false;
 
 	size_t pivot = m_changes.size() / 2;
-	return m_changes[pivot].highest >= since;
+	return toLong(m_changes[pivot].highest) >= since;
 }
 
 /*!
