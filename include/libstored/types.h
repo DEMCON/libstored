@@ -333,10 +333,10 @@ namespace stored {
 		{}
 
 		/*! \copydoc stored::Variable::Variable() */
-		// cppcheck-suppress uninitMemberVar
 		Variable()
+			: m_container()
 #ifdef _DEBUG
-			: m_entry() {}
+			, m_entry() {}
 #else
 			is_default
 #endif
@@ -344,6 +344,7 @@ namespace stored {
 		/*! \copydoc stored::Variable::Variable(Variable const&) */
 		Variable(Variable const& v)
 			: base()
+			, m_container()
 #ifdef _DEBUG
 			, m_entry()
 #endif
