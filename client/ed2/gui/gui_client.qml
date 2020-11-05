@@ -68,9 +68,12 @@ Window {
                     font.pixelSize: root.fontSize
                     fontSizeMode: Text.VerticalFit
 
-                    ToolTip.text: obj.name + (obj.alias ? "\nAlias: " + obj.alias : "")
-                    ToolTip.visible: mouseArea.containsMouse
-                    ToolTip.delay: 1000
+                    ToolTip {
+                        text: obj.name + (obj.alias ? "\nAlias: " + obj.alias : "")
+                        visible: mouseArea.containsMouse
+                        delay: 1000
+                        font.pixelSize: root.fontSize
+                    }
 
                     MouseArea {
                         id: mouseArea
@@ -173,9 +176,12 @@ Window {
                         }
                     }
 
-                    ToolTip.text: obj ? obj.name + "\nLast update: " + obj.tString : ""
-                    ToolTip.visible: hovered && obj && obj.tString
-                    ToolTip.delay: 1000
+                    ToolTip {
+                        text: obj ? obj.name + "\nLast update: " + obj.tString : ""
+                        visible: parent.hovered && obj && obj.tString
+                        delay: 1000
+                        font.pixelSize: root.fontSize
+                    }
                 }
 
                 CheckBox {
@@ -206,9 +212,12 @@ Window {
                         }
                     }
 
-                    ToolTip.text: "Enable auto-refresh"
-                    ToolTip.visible: hovered
-                    ToolTip.delay: 1000
+                    ToolTip {
+                        text: "Enable auto-refresh"
+                        visible: parent.hovered
+                        delay: 1000
+                        font.pixelSize: root.fontSize
+                    }
 
                     checked: obj.polling
 
@@ -267,9 +276,12 @@ Window {
                 bottomPadding: 0
                 font.pixelSize: root.fontSize
 
-                ToolTip.text: "poll interval (s)"
-                ToolTip.visible: hovered
-                ToolTip.delay: 1000
+                ToolTip {
+                    text: "poll interval (s)"
+                    visible: parent.hovered
+                    delay: 1000
+                    font.pixelSize: root.fontSize
+                }
 
                 property string valueString: client ? client.defaultPollInterval : ""
                 text: valueString
