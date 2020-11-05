@@ -179,11 +179,32 @@ Window {
                 }
 
                 CheckBox {
+                    id: autoRefresh
                     Layout.fillHeight: true
                     Layout.preferredWidth: parent.height
-                    indicator.height: height * 0.618
-                    indicator.width: height * 0.618
-                    indicator.antialiasing: true
+
+                    indicator: Rectangle {
+                        height: autoRefresh.height * 0.618
+                        width: autoRefresh.height * 0.618
+                        antialiasing: true
+
+                        x: autoRefresh.leftPadding + (autoRefresh.availableWidth - width) / 2
+                        y: autoRefresh.topPadding + (autoRefresh.availableHeight - height) / 2
+
+                        color: autoRefresh.down ? autoRefresh.palette.light : autoRefresh.palette.base
+                        border.width: autoRefresh.visualFocus ? 2 : 1
+                        border.color: autoRefresh.visualFocus ? autoRefresh.palette.highlight : autoRefresh.palette.mid
+
+                        Rectangle {
+                            width: parent.width * 0.618
+                            height: parent.width * 0.618
+                            antialiasing: true
+                            x: (parent.width - width) / 2
+                            y: (parent.height - height) / 2
+                            color: autoRefresh.palette.text
+                            visible: autoRefresh.checkState === Qt.Checked
+                        }
+                    }
 
                     ToolTip.text: "Enable auto-refresh"
                     ToolTip.visible: hovered
