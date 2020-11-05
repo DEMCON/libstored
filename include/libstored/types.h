@@ -336,10 +336,9 @@ namespace stored {
 		Variable()
 			: m_container()
 #ifdef _DEBUG
-			, m_entry() {}
-#else
-			is_default
+			, m_entry()
 #endif
+		{}
 
 		/*! \copydoc stored::Variable::Variable(Variable const&) */
 		Variable(Variable const& v)
