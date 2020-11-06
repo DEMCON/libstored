@@ -963,7 +963,7 @@ class ZmqClient(QObject):
                 if len(chunks) != 3:
                     # Strange name
                     continue
-                elif chunks[2].name.startsWith('t ('):
+                elif chunks[2].startswith('t ('):
                     # Got some
                     t = o
                     break;
