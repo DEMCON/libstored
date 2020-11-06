@@ -69,10 +69,13 @@ Window {
                     fontSizeMode: Text.VerticalFit
 
                     ToolTip {
-                        text: obj.name + (obj.alias ? "\nAlias: " + obj.alias : "")
                         visible: mouseArea.containsMouse
                         delay: 1000
                         font.pixelSize: root.fontSize
+                        background.antialiasing: true
+                        contentItem: Label {
+                            text: obj.name + (obj.alias ? "\nAlias: " + obj.alias : "")
+                        }
                     }
 
                     MouseArea {
@@ -177,10 +180,13 @@ Window {
                     }
 
                     ToolTip {
-                        text: obj ? obj.name + "\nLast update: " + obj.tString : ""
                         visible: parent.hovered && obj && obj.tString
                         delay: 1000
                         font.pixelSize: root.fontSize
+                        background.antialiasing: true
+                        contentItem: Label {
+                            text: obj ? obj.name + "\nLast update: " + obj.tString : ""
+                        }
                     }
                 }
 
@@ -217,6 +223,7 @@ Window {
                         visible: parent.hovered
                         delay: 1000
                         font.pixelSize: root.fontSize
+                        background.antialiasing: true
                     }
 
                     checked: obj.polling
@@ -277,10 +284,13 @@ Window {
                 font.pixelSize: root.fontSize
 
                 ToolTip {
-                    text: "poll interval (s)"
                     visible: parent.hovered
                     delay: 1000
                     font.pixelSize: root.fontSize
+                    background.antialiasing: true
+                    contentItem: Label {
+                        text: "poll interval (s).\nThis value is used when auto-refresh is (re)enabled."
+                    }
                 }
 
                 property string valueString: client ? client.defaultPollInterval : ""
