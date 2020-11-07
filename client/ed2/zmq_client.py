@@ -32,6 +32,36 @@ from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, \
 from .zmq_server import ZmqServer
 from .csv import CsvExport
 
+class SignalRateLimiter(QObject):
+    def __init__(self, src, dst, window_s=0.2, parent=None):
+        super().__init__(parent=parent)
+        self._timer = QTimer(parent=self)
+        self._timer.timeout.connect(self._emit)
+        self._timer.setSingleShot(False)
+        self._timer.setInterval(window_s * 1000)
+        self._dst = dst
+        self._idle = True
+        self._suppressed = False
+        src.connect(self._receive)
+
+    @Slot()
+    def _receive(self):
+        if self._idle:
+            self._idle = False
+            self._dst.emit()
+            self._timer.start()
+        else:
+            self._suppressed = True
+
+    def _emit(self):
+        if self._suppressed:
+            self._dst.emit()
+            self._suppressed = False
+        else:
+            self._timer.stop()
+            self._idle = True;
+
+
 ##
 # \brief A variable or function as handled by a ZmqClient
 #
@@ -40,6 +70,7 @@ from .csv import CsvExport
 # \ingroup libstored_client
 class Object(QObject):
     valueChanged = Signal()
+    valueStringChanged = Signal()
     valueUpdated = Signal()
     pollingChanged = Signal()
     aliasChanged = Signal()
@@ -61,6 +92,7 @@ class Object(QObject):
         self._format = None
         self._format_set(self.formats[0])
         self._autoCsv = False
+        self._valueChangedRateLimiter = SignalRateLimiter(self.valueChanged, self.valueStringChanged, parent=self)
 
     @property
     def type(self):
@@ -432,7 +464,7 @@ class Object(QObject):
         except ValueError:
             return False
 
-    @Property(str, notify=valueChanged)
+    @Property(str, notify=valueStringChanged)
     def valueString(self):
         v = self._value
         if v == None:

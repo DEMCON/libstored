@@ -170,7 +170,7 @@ Window {
 
                     Connections {
                         target: obj
-                        function onValueChanged() {
+                        function onValueStringChanged() {
                             if(obj && !valueField.editing) {
                                 valueField.text = obj.valueString
                                 valueField.refreshed = true
