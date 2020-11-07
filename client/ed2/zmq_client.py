@@ -30,6 +30,7 @@ from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, \
     QEvent, QCoreApplication, QStandardPaths, QSocketNotifier, QEventLoop
 
 from .zmq_server import ZmqServer
+from .csv import CsvExport
 
 ##
 # \brief A variable or function as handled by a ZmqClient
@@ -59,6 +60,7 @@ class Object(QObject):
         self._pollInterval_s = None
         self._format = None
         self._format_set(self.formats[0])
+        self._autoCsv = False
 
     @property
     def type(self):
@@ -221,7 +223,7 @@ class Object(QObject):
         return self.decodeReadRep(rep)
 
     # Decode a read reply.
-    def decodeReadRep(self, rep, t = None):
+    def decodeReadRep(self, rep, t=None):
         if rep == b'?':
             return None
         value = self._decode(rep)
@@ -374,6 +376,8 @@ class Object(QObject):
         elif value != self._value:
             self._value = value
             self.valueChanged.emit()
+            if self._autoCsv and self._polling and self._client.csv != None and not self._client._tracing.enabled:
+                self._client.csv.write(t)
 
         self.valueUpdated.emit()
 
@@ -513,6 +517,7 @@ class Object(QObject):
 
     def _pollSlow(self, interval_s):
         self._pollSetFlag(True)
+        self._autoCsv = True
         self._pollInterval_s = interval_s
 
         self._read()
@@ -532,7 +537,7 @@ class Object(QObject):
 
     def _pollRead(self):
         if self.alias == None:
-            # Do a sequenial read to get an alias.
+            # Do a sequential read to get an alias.
             self._read(True)
         else:
             # Now we have an alias, do async reads.
@@ -540,6 +545,7 @@ class Object(QObject):
 
     def _pollFast(self, interval_s):
         self._pollSetFlag(True)
+        self._autoCsv = False
         self._pollInterval_s = interval_s
         if self._pollTimer != None:
             self._pollTimer.stop()
@@ -548,6 +554,11 @@ class Object(QObject):
         if self._polling != enable:
             self._polling = enable
             self.pollingChanged.emit()
+            if self._client.csv:
+                if enable:
+                    self._client.csv.add(self)
+                else:
+                    self._client.csv.remove(self)
 
     def _state(self):
         res = ''
@@ -666,6 +677,9 @@ class Macro(object):
         for i in range(0, len(values)):
             if cb[i + skip] != None:
                 cb[i + skip](values[i], t)
+
+        if self._client.csv != None:
+            self._client.csv.write(t)
 
         return True
 
@@ -803,7 +817,7 @@ class ZmqClient(QObject):
     slowPollInterval_s = 2.0
     defaultPollIntervalChanged = Signal()
 
-    def __init__(self, address='localhost', port=ZmqServer.default_port, parent=None, t=None):
+    def __init__(self, address='localhost', port=ZmqServer.default_port, csv=None, parent=None, t=None):
         super().__init__(parent=parent)
         self.logger = logging.getLogger(__name__)
         self._context = zmq.Context()
@@ -818,6 +832,10 @@ class ZmqClient(QObject):
         self._objects = None
         self._fastPollMacro = None
         self._fastPollTimer = None
+        if csv == None:
+            self.csv = None
+        else:
+            self.csv = CsvExport(filename=csv, parent=self)
         self._t = t
         self._timestampToTime = lambda x: x
         self._t0 = 0

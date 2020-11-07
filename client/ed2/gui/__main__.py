@@ -118,12 +118,15 @@ if __name__ == '__main__':
     QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     QCoreApplication.setApplicationName("Embedded Debugger")
 
-    parser = argparse.ArgumentParser(description='ZMQ command line client')
+    parser = argparse.ArgumentParser(description='ZMQ command line client', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
     parser.add_argument('-p', dest='port', type=int, default=ZmqServer.default_port, help='port')
     parser.add_argument('-l', dest='lognplot', type=str, nargs='?', default=None, help='Connect to lognplot server', const='localhost')
     parser.add_argument('-P', dest='lognplotport', type=int, default=12345, help='Lognplot port to connect to')
     parser.add_argument('-v', dest='verbose', default=False, help='Enable verbose output', action='store_true')
+    parser.add_argument('-f', dest='csv', default=None, nargs='?',
+        help='Log auto-refreshed data to csv file. ' +
+            'The file is truncated upon startup and when the set of auto-refreshed objects change.', const='log.csv')
 
     args = parser.parse_args()
 
@@ -134,7 +137,7 @@ if __name__ == '__main__':
     app.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "twotone_bug_report_black_48dp.png")))
     engine = QQmlApplicationEngine(parent=app)
 
-    client = ZmqClient(args.server, args.port)
+    client = ZmqClient(args.server, args.port, csv=args.csv)
     engine.rootContext().setContextProperty("client", client)
 
     model = ObjectListModel(client.list(), parent=app)

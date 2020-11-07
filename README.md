@@ -256,17 +256,20 @@ The `examples/terminal/terminal` application could be debugged as follows:
   escaped debugger frames from `stdout`, which are forwarded to a ZeroMQ
   interface.
 - Connect a client, such as `python3 -m ed2.gui`.
+  Instead of using `lognplot`, the GUI can also write all auto-refreshed data
+  to a CSV file when the `-f log.csv` is passed on the command line. Then,
+  [Kst](https://kst-plot.kde.org/) can be used for live viewing the file.
 
 The structure of this setup is:
 
-	+---------+
-	| ed2.gui |                    terminal interface
-	+---------+                            |
-	      |                                |
-	      | ZeroMQ REQ/REP channel         |
-	      |                                |
-	+-------------------+                  |
-	| ed2.wrapper.stdio | -----------------+
+	+---------+        +---------+           +-----+
+	| ed2.gui | -----> | log.csv | --------> | Kst |
+	+---------+        +---------+           +-----+
+	      |
+	      | ZeroMQ REQ/REP channel
+	      |
+	+-------------------+
+	| ed2.wrapper.stdio | ---------- terminal interface
 	+-------------------+
 	      |
 	      | stdin/stdout (mixed terminal interface
