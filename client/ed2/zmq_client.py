@@ -76,6 +76,7 @@ class Object(QObject):
     aliasChanged = Signal()
     formatChanged = Signal()
     tUpdated = Signal()
+    tStringChanged = Signal()
 
     def __init__(self, name, type, size, client=None):
         super().__init__(parent=client)
@@ -93,6 +94,7 @@ class Object(QObject):
         self._format_set(self.formats[0])
         self._autoCsv = False
         self._valueChangedRateLimiter = SignalRateLimiter(self.valueChanged, self.valueStringChanged, parent=self)
+        self._tUpdatedChangedRateLimiter = SignalRateLimiter(self.tUpdated, self.tStringChanged, parent=self)
 
     @property
     def type(self):
@@ -403,8 +405,12 @@ class Object(QObject):
             # Old value.
             return
 
-        self._t = t
-        self.tUpdated.emit()
+        updated = False
+
+        if self._t != t:
+            self._t = t
+            self.tUpdated.emit()
+            updated = True
 
         if isinstance(value, float) and math.isnan(value) and isinstance(self._value, float) and math.isnan(self._value):
             # Not updated, even though value != self._value would be True
@@ -414,14 +420,16 @@ class Object(QObject):
             self.valueChanged.emit()
             if self._autoCsv and self._polling and self._client.csv != None and not self._client._tracing.enabled:
                 self._client.csv.write(t)
+            updated = True
 
-        self.valueUpdated.emit()
+        if updated:
+            self.valueUpdated.emit()
 
     @Property(float, notify=tUpdated)
     def t(self):
         return self._t
 
-    @Property(str, notify=tUpdated)
+    @Property(str, notify=tStringChanged)
     def tString(self):
         if self._t == None:
             return None
