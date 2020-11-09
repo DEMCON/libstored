@@ -399,6 +399,10 @@ class Object(QObject):
         if t == None:
             t = time.time()
 
+        if self._t != None and t < self._t:
+            # Old value.
+            return
+
         self._t = t
         self.tUpdated.emit()
 
