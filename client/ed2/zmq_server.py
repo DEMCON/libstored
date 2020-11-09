@@ -20,6 +20,7 @@ import zmq
 import threading
 import io
 import logging
+import serial
 
 from . import protocol
 
@@ -71,6 +72,8 @@ class ZmqServer(protocol.ProtocolLayer):
         try:
             if isinstance(stream, io.TextIOBase):
                 r = lambda: stream.readline().encode()
+            elif isinstance(stream, serial.Serial):
+                r = lambda: stream.read(max(1, stream.inWaiting()))
             else:
                 r = lambda: stream.read(1)
 

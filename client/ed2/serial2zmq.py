@@ -38,9 +38,9 @@ class Serial2Zmq(Stream2Zmq):
     def poll(self, timeout_s = None):
         events = super().poll(timeout_s)
         if events.get(self.stdin_socket, 0) & zmq.POLLIN:
-            self.sendToApp(self.stdin_socket.recv())
+            self.recvAll(self.stdin_socket, self.sendToApp)
         if events.get(self.serial_socket, 0) & zmq.POLLIN:
-            self.decode(self.serial_socket.recv())
+            self.recvAll(self.serial_socket, self.decode)
 
     def sendToApp(self, data):
         if len(data) > 0:
