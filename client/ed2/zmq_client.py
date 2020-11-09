@@ -738,7 +738,8 @@ class Tracing(Macro):
 
         self._enabled = None
         self._decimate = 1
-        self._pending = False
+        self._streamPending = False
+        self._streamQueued = False
 
         cap = self.client.capabilities()
         if not 't' in cap:
@@ -821,13 +822,21 @@ class Tracing(Macro):
         return self._stream
 
     def process(self):
-        if self._pending:
+        if self._streamPending:
+            self._streamQueued = True
             return
-        self._pending = True
+        self._streamPending = True
         self.client.stream(self._stream, raw=True, callback=self._process)
 
     def _process(self, s):
-        self._pending = False
+        if self._streamQueued and self.client.useEventLoop:
+            assert self._streamPending
+            # Immediately send out another request.
+            self._streamQueued = False
+            self.client.stream(self._stream, raw=True, callback=self._process)
+        else:
+            self._streamPending = False
+
         time = self.client.time()
         for sample in s.split(b'\n;'):
             # The first value is the time stamp.
@@ -983,13 +992,12 @@ class ZmqClient(QObject):
         self.logger.debug('req async recv %s', resp)
         assert(self._reqQueue != [])
         req, callback = self._reqQueue.pop(0)
+        self._reqAsyncSendNext()
         if callback != None:
             callback(resp)
         elif resp == b'?':
             # We got an error back, but no callback was specified. Report it anyway.
             self.logger.warning('Req %s returned an error, which was not handled', req)
-
-        self._reqAsyncSendNext()
 
     def _reqAsyncFlush(self):
         while self._reqQueue != []:
