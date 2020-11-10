@@ -20,6 +20,8 @@
 
 #ifdef __cplusplus
 
+#define ZMQ_BUILD_DRAFT_API
+
 #include <libstored/macros.h>
 #include <libstored/util.h>
 #include <libstored/zmq.h>
@@ -72,6 +74,9 @@
 
 #if defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH) || defined(STORED_POLL_ZTH_WAITER)
 #  include <poll.h>
+#endif
+#ifdef STORED_POLL_ZMQ
+#  include <zmq.h>
 #endif
 
 namespace stored {
@@ -185,7 +190,7 @@ namespace stored {
 		~Poller();
 
 #ifdef STORED_POLL_ZMQ
-		typedef std::vector<zmq_poller_event_t> Result;
+		typedef std::vector<struct zmq_poller_event_t> Result;
 		Result const* poll(long timeout_us);
 #else
 		typedef std::vector<Event> Result;

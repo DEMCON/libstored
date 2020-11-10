@@ -34,7 +34,7 @@ Poller::Poller()
 
 Poller::~Poller() {
 #ifdef STORED_POLL_ZMQ
-	zmq_poller_destroy(m_poller);
+	zmq_poller_destroy(&m_poller);
 	m_poller = nullptr;
 #endif
 }
@@ -107,13 +107,12 @@ int Poller::remove(ZmqLayer& layer) {
 int Poller::add(Poller::Event const& e, void* user_data, short events) {
 	switch(e.type) {
 	case Event::TypeFd:
-		return zmq_poller_add_fd(m_poller, e.fd, e.user_data, e.events) == -1 ? zmq_errno() : 0;
+		return zmq_poller_add_fd(m_poller, e.fd, user_data, events) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmqSock:
-		return zmq_poller_add(m_poller, e.zmqsock, e.user_data, e.events) == -1 ? zmq_errno() : 0;
+		return zmq_poller_add(m_poller, e.zmqsock, user_data, events) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmq:
-		return zmq_poller_add(m_poller, e.zmq->socket(), e.user_data, e.events) == -1 ? zmq_errno() : 0;
+		return zmq_poller_add(m_poller, e.zmq->socket(), user_data, events) == -1 ? zmq_errno() : 0;
 	default:
-		m_events.pop_back();
 		return EINVAL;
 	}
 }
@@ -121,11 +120,11 @@ int Poller::add(Poller::Event const& e, void* user_data, short events) {
 int Poller::modify(Poller::Event const& e, short events) {
 	switch(e.type) {
 	case Event::TypeFd:
-		return zmq_poller_modify_fd(m_poller, e.fd, e.events) == -1 ? zmq_errno() : 0;
+		return zmq_poller_modify_fd(m_poller, e.fd, events) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmqSock:
-		return zmq_poller_modify(m_poller, e.zmqsock, e.events) == -1 ? zmq_errno() : 0;
+		return zmq_poller_modify(m_poller, e.zmqsock, events) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmq:
-		return zmq_poller_modify(m_poller, e.zmq->socket(), e.events) == -1 ? zmq_errno() : 0;
+		return zmq_poller_modify(m_poller, e.zmq->socket(), events) == -1 ? zmq_errno() : 0;
 	default:
 		return EINVAL;
 	}
@@ -254,17 +253,17 @@ Poller::Result const* Poller::poll(long timeout_us) {
 
 #ifdef STORED_POLL_ZMQ
 Poller::Result const* Poller::poll(long timeout_us) {
-	m_lastEvents.resize(m_events.size());
+	m_lastEvents.resize(16); // Some arbitrary number. re-poll() to get the rest.
 
-	int res = zmq_poller_wait_all(m_poller, &m_lastEvents[0], m_lastEvents.size(), timeout_us >= 0 ? (timeout_us + 999L) / 1000L : -1L);
+	int res = zmq_poller_wait_all(m_poller, &m_lastEvents[0], (int)m_lastEvents.size(), timeout_us >= 0 ? (timeout_us + 999L) / 1000L : -1L);
 
-	if(res == -1) {
+	if(res < 0) {
 		errno = zmq_errno();
 		return nullptr;
 	}
 
-	stored_assert(res <= m_lastEvents.size());
-	m_lastEvents.resize(res);
+	stored_assert((size_t)res <= m_lastEvents.size());
+	m_lastEvents.resize((size_t)res);
 	return &m_lastEvents;
 }
 #endif
