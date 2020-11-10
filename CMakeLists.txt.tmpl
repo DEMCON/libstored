@@ -26,11 +26,19 @@ file(TO_CMAKE_PATH "{{libstored_dir|escapebs}}" libstored_dir)
 add_library({{libprefix}}libstored
 	${libstored_dir}/include/stored
 	${libstored_dir}/include/stored.h
-	${libstored_dir}/include/libstored/macros.h
-	${libstored_dir}/include/libstored/types.h
+	${libstored_dir}/include/stored_config.h
+	${libstored_dir}/include/libstored/compress.h
+	${libstored_dir}/include/libstored/config.h
+	${libstored_dir}/include/libstored/debugger.h
 	${libstored_dir}/include/libstored/directory.h
+	${libstored_dir}/include/libstored/macros.h
+	${libstored_dir}/include/libstored/poller.h
+	${libstored_dir}/include/libstored/spm.h
+	${libstored_dir}/include/libstored/synchronizer.h
+	${libstored_dir}/include/libstored/types.h
 	${libstored_dir}/include/libstored/util.h
 	${libstored_dir}/include/libstored/zmq.h
+	${libstored_dir}/src/compress.cpp
 	${libstored_dir}/src/directory.cpp
 	${libstored_dir}/src/debugger.cpp
 	${libstored_dir}/src/poller.cpp
@@ -78,6 +86,10 @@ if(LIBSTORED_HAVE_LIBZMQ)
 		PRIVATE $<TARGET_PROPERTY:libzmq,INTERFACE_INCLUDE_DIRECTORIES>
 	)
 	target_link_libraries({{libprefix}}libstored INTERFACE libzmq)
+endif()
+
+if(LIBSTORED_HAVE_HEATSHRINK)
+	target_link_libraries({{libprefix}}libstored PUBLIC heatshrink)
 endif()
 
 if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")

@@ -13,3 +13,10 @@ if(LIBSTORED_HAVE_LIBZMQ)
 		add_subdirectory(libzmq)
 	endif()
 endif()
+
+if(LIBSTORED_HAVE_HEATSHRINK)
+	add_library(heatshrink heatshrink/heatshrink_encoder.c heatshrink/heatshrink_decoder.c)
+	target_include_directories(heatshrink PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/heatshrink)
+	target_compile_definitions(heatshrink INTERFACE STORED_HAVE_HEATSHRINK)
+endif()
+

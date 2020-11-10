@@ -17,6 +17,7 @@
  */
 
 #include "libstored/protocol.h"
+#include "libstored/compress.h"
 #include "gtest/gtest.h"
 #include "LoggingLayer.h"
 
@@ -798,6 +799,25 @@ TEST(ArqLayer, Callback) {
 		top.flush();
 
 	EXPECT_EQ(event, stored::ArqLayer::EventRetransmit);
+}
+
+TEST(CompressLayer, Compress) {
+	LoggingLayer top;
+	stored::CompressLayer l;
+	l.wrap(top);
+	LoggingLayer bottom;
+	bottom.wrap(l);
+
+	top.encode("Hello World! Nice World!", 24u);
+	EXPECT_EQ(bottom.encoded().size(), 1u);
+	std::string& msg = bottom.encoded().at(0);
+	printBuffer(msg);
+	EXPECT_LE(msg.size(), 24u);
+
+	// std::string cannot be modified in place; copy needed.
+	std::vector<char> buf(msg.begin(), msg.end());
+	bottom.decode(&buf[0], buf.size());
+	EXPECT_EQ(top.decoded().at(0), "Hello World! Nice World!");
 }
 
 } // namespace

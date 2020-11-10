@@ -48,6 +48,7 @@ else()
 endif()
 
 option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
+option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
 
 add_subdirectory(extern)
 

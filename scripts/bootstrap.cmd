@@ -38,7 +38,7 @@ if errorlevel 1 goto error
 python.exe -m pip install wheel
 if errorlevel 1 goto error
 
-python.exe -m pip install textx jinja2 pyzmq pyside2 pyserial lognplot PyQt5 natsort crcmod
+python.exe -m pip install textx jinja2 pyzmq pyside2 pyserial lognplot PyQt5 natsort crcmod heatshrink2
 if errorlevel 1 goto error
 
 :done
