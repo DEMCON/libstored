@@ -512,7 +512,7 @@ private:
 
 		void source(StoreJournal& store);
 		void drop(StoreJournal& store);
-		void process(StoreJournal& store);
+		StoreJournal::Seq process(StoreJournal& store);
 		void decode(void* buffer, size_t len) override final;
 
 		virtual void reset() override;
@@ -626,14 +626,14 @@ private:
 		 * \brief Process updates for the given store on the given connection.
 		 */
 		template <typename Store>
-		void process(ProtocolLayer& connection, Synchronizable<Store>& store) {
-			process(connection, store.journal());
+		StoreJournal::Seq process(ProtocolLayer& connection, Synchronizable<Store>& store) {
+			return process(connection, store.journal());
 		}
 
 		void process();
 		void process(StoreJournal& j);
 		void process(ProtocolLayer& connection);
-		void process(ProtocolLayer& connection, StoreJournal& j);
+		StoreJournal::Seq process(ProtocolLayer& connection, StoreJournal& j);
 
 		bool isSynchronizing(StoreJournal& j) const;
 		bool isSynchronizing(StoreJournal& j, SyncConnection& notOverConnection) const;

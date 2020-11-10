@@ -719,20 +719,22 @@ againIn:
 /*!
  * \brief Send out all updates of the given store.
  */
-void SyncConnection::process(StoreJournal& store) {
+StoreJournal::Seq SyncConnection::process(StoreJournal& store) {
 	StoreMap::iterator s = m_store.find(&store);
 	if(s == m_store.end())
 		// Unknown store.
-		return;
+		return 0;
 	if(!store.hasChanged(s->second.seq))
 		// No recent changes.
-		return;
+		return 0;
 
 	encodeCmd(Update);
 	encodeId(s->second.idOut, false);
 	// Make sure to set the process seq before the last part of the encode is sent.
-	s->second.seq = store.encodeUpdates(*this, s->second.seq);
+	StoreJournal::Seq res = s->second.seq = store.encodeUpdates(*this, s->second.seq);
 	encode();
+
+	return res;
 }
 
 /*!
@@ -1076,10 +1078,12 @@ void Synchronizer::process(ProtocolLayer& connection) {
 /*!
  * \brief Process updates for the given store on the given connection.
  */
-void Synchronizer::process(ProtocolLayer& connection, StoreJournal& j) {
+StoreJournal::Seq Synchronizer::process(ProtocolLayer& connection, StoreJournal& j) {
 	SyncConnection* c = toConnection(connection);
 	if(c)
-		c->process(j);
+		return c->process(j);
+
+	return 0;
 }
 
 bool Synchronizer::isSynchronizing(StoreJournal& j) const {
