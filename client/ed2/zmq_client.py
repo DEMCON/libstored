@@ -27,7 +27,7 @@ import math
 import logging
 
 from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, \
-    QEvent, QCoreApplication, QStandardPaths, QSocketNotifier, QEventLoop
+    QEvent, QCoreApplication, QStandardPaths, QSocketNotifier, QEventLoop, SIGNAL
 
 from .zmq_server import ZmqServer
 from .csv import CsvExport
@@ -42,10 +42,10 @@ class SignalRateLimiter(QObject):
         self._dst = dst
         self._idle = True
         self._suppressed = False
-        src.connect(self._receive)
+        src.connect(self.receive)
 
     @Slot()
-    def _receive(self):
+    def receive(self):
         if self._idle:
             self._idle = False
             self._dst.emit()
@@ -95,6 +95,16 @@ class Object(QObject):
         self._autoCsv = False
         self._valueChangedRateLimiter = SignalRateLimiter(self.valueChanged, self.valueStringChanged, parent=self)
         self._tUpdatedChangedRateLimiter = SignalRateLimiter(self.tUpdated, self.tStringChanged, parent=self)
+        self._suppressSetSignals = False
+
+    def optimizeSignals(self):
+        self._suppressSetSignals = True
+        if self.receivers(SIGNAL("tUpdated()")) > 1: # ignore rate limiter
+            self._suppressSetSignals = False
+        elif self.receivers(SIGNAL("valueChanged()")) > 1: # ignore rate limiter
+            self._suppressSetSignals = False
+        elif self.receivers(SIGNAL("valueUpdated()")) > 0:
+            self._suppressSetSignals = False
 
     @property
     def type(self):
@@ -409,7 +419,10 @@ class Object(QObject):
 
         if self._t != t:
             self._t = t
-            self.tUpdated.emit()
+            if not self._suppressSetSignals:
+                self.tUpdated.emit()
+            else:
+                self._tUpdatedChangedRateLimiter.receive()
             updated = True
 
         if isinstance(value, float) and math.isnan(value) and isinstance(self._value, float) and math.isnan(self._value):
@@ -417,12 +430,15 @@ class Object(QObject):
             pass
         elif value != self._value:
             self._value = value
-            self.valueChanged.emit()
+            if not self._suppressSetSignals:
+                self.valueChanged.emit()
+            else:
+                self._valueChangedRateLimiter.receive()
             if self._autoCsv and self._polling and self._client.csv != None and not self._client._tracing.enabled:
                 self._client.csv.write(t)
             updated = True
 
-        if updated:
+        if updated and not self._suppressSetSignals:
             self.valueUpdated.emit()
 
     @Property(float, notify=tUpdated)
@@ -588,6 +604,10 @@ class Object(QObject):
             self._asyncRead()
 
     def _pollFast(self, interval_s):
+        if interval_s < 0.01:
+            self.optimizeSignals()
+        else:
+            self._suppressSetSignals = False
         self._pollSetFlag(True)
         self._autoCsv = False
         self._pollInterval_s = interval_s
@@ -596,6 +616,8 @@ class Object(QObject):
 
     def _pollSetFlag(self, enable):
         if self._polling != enable:
+            if not enable:
+                self._suppressSetSignals = False
             self._polling = enable
             self.pollingChanged.emit()
             if self._client.csv:
