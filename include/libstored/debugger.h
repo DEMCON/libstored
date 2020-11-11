@@ -235,6 +235,40 @@
  *
  * The number of streams and the maximum buffer size of a stream may be limited.
  *
+ * Depending on stored::Config::CompressStreams, the data returned by `s`
+ * is compressed using heatshrink (window=8, lookahead=4). Every chunk of data
+ * returned by `s` is part of a single stream, and must be decompressed as
+ * such. As (de)compression is stateful, all data from the start of the stream is
+ * required for decompression. Moreover, stream data may remain in the compressor
+ * before retrievable via `s`.
+ *
+ * To detect if the stream is compressed, and to forcibly flush out and reset
+ * the compressed stream, use the Flush (`f`) command. A flush will terminate
+ * the current stream, push out the last bit of data from the compressor's buffers
+ * and restart the compressor's state. So, a normal startup sequence of a
+ * debug client would be:
+ *
+ * - Check if `f` capability exists. If not, done; no compression is used on streams.
+ * - Flush out all streams: execute `f`.
+ * - Drop all streams, as the start of the stream is possibly missing: execute `sx`
+ *   for every stream returned by `s`.
+ *
+ * Afterwards, pass all data received from `s` through the heatshrink decoder.
+ *
+ * ### Flush
+ *
+ * Flush out and reset a stream (see also Streams). When this capability does not
+ * exist, streams are not compressed. If it does exist, all streams are compressed.
+ * Use this function to initialize the stream if the (de)compressing state is unknown,
+ * or to force out the last data (for example, the last trace data).
+ *
+ * Request: `f` \<char\> ?
+ *
+ * Response: `!`
+ *
+ * The optional char is the stream name. If omitted, all streams are flushed and reset.
+ * The response is always `!`, regardless of whether the stream existed or had data.
+ *
  * ### Tracing
  *
  * Executes a macro every time the application invokes stored::Debugger::trace().
@@ -296,8 +330,8 @@
  * 	sT
  * 	...
  *
- * Now, the returned stream buffer contains triplets of time, /some variable,
- * /some other variable, like this:
+ * Now, the returned stream buffer (after decompressing) contains triplets of
+ * time, /some variable, /some other variable, like this:
  *
  * 	101,1,2;102,1,2;103,1,2;
  *
@@ -314,6 +348,7 @@
 #include <libstored/util.h>
 #include <libstored/spm.h>
 #include <libstored/protocol.h>
+#include <libstored/compress.h>
 
 #include <new>
 #include <utility>
@@ -327,6 +362,101 @@
 #endif
 
 namespace stored {
+
+	template <bool Compress = Config::CompressStreams>
+	class Stream : public ProtocolLayer {
+		CLASS_NOCOPY(Stream)
+		friend class Stream<true>;
+	public:
+		typedef ProtocolLayer base;
+
+		Stream() is_default
+		~Stream() final is_default
+
+		void decode(void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) final {}
+
+		void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
+			m_buffer.append((char const*)buffer, len);
+		}
+
+		using base::encode;
+
+		size_t mtu() const final {
+			return 0;
+		}
+
+		std::string const& buffer() const {
+			return m_buffer;
+		}
+
+		bool flush() final {
+			return true;
+		}
+
+		void clear() {
+			m_buffer.clear();
+		}
+
+		bool empty() const {
+			return m_buffer.empty();
+		}
+
+	protected:
+		std::string& buffer() {
+			return m_buffer;
+		}
+
+	private:
+		std::string m_buffer;
+	};
+
+	template<>
+	class Stream<true> : public ProtocolLayer {
+		CLASS_NOCOPY(Stream)
+	public:
+		typedef ProtocolLayer base;
+
+		Stream()
+		{
+			m_compress.wrap(*this);
+			m_string.wrap(m_compress);
+		}
+
+		~Stream() final is_default
+
+		void decode(void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) final {}
+
+		void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
+			m_compress.encode(buffer, len, false);
+		}
+
+		using base::encode;
+
+		size_t mtu() const final {
+			return 0;
+		}
+
+		bool flush() final {
+			m_compress.encode();
+			return m_compress.flush();
+		}
+
+		void clear() {
+			m_string.buffer().clear();
+		}
+
+		bool empty() const {
+			return m_compress.idle() && m_string.empty();
+		}
+
+		std::string const& buffer() const {
+			return m_string.buffer();
+		}
+
+	private:
+		CompressLayer m_compress;
+		Stream<false> m_string;
+	};
 
 #ifdef STORED_COMPILER_ARMCC
 #  pragma clang diagnostic push
@@ -822,6 +952,7 @@ namespace stored {
 		static char const CmdWriteMem = 'W';
 		static char const CmdStream = 's';
 		static char const CmdTrace = 't';
+		static char const CmdFlush = 'f';
 		static char const Ack = '!';
 		static char const Nack = '?';
 
@@ -834,8 +965,8 @@ namespace stored {
 
 		size_t stream(char s, char const* data);
 		size_t stream(char s, char const* data, size_t len);
-		std::string* stream(char s, bool alloc = false);
-		std::string const* stream(char s) const;
+		Stream<>* stream(char s, bool alloc = false);
+		Stream<> const* stream(char s) const;
 		char const* streams(void const*& buffer, size_t& len);
 
 		void trace();
@@ -891,7 +1022,13 @@ namespace stored {
 		size_t m_macroSize;
 
 		/*! \brief The streams map type. */
-		typedef std::map<char, std::string> StreamMap;
+		typedef std::map<char,
+#if STORED_cplusplus >= 201103L
+			std::unique_ptr<Stream<>>
+#else
+			Stream<>*
+#endif
+			> StreamMap;
 		/*! \brief The streams. */
 		StreamMap m_streams;
 

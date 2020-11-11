@@ -88,6 +88,8 @@ Debugger::~Debugger()
 {
 	for(StoreMap::iterator it = m_map.begin(); it != m_map.end(); ++it)
 		cleanup(it->second);
+	for(StreamMap::iterator it = m_streams.begin(); it != m_streams.end(); ++it)
+		cleanup(it->second);
 }
 #else
 	= default;
@@ -329,6 +331,8 @@ void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
 		list[len++] = CmdStream;
 	if(Config::DebuggerTrace)
 		list[len++] = CmdTrace;
+	if(Config::CompressStreams)
+		list[len++] = CmdFlush;
 
 	stored_assert(len < maxlen);
 	list[len] = 0;
@@ -764,18 +768,40 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		char const* suffix = &p[2];
 		size_t suffixlen = len - 2;
 
-		std::string* str = stream(s);
+		Stream<>* str = stream(s);
 		if(!str)
 			goto error;
 
 		if(tracing() && s == m_traceStream)
 			response.setPurgeableResponse();
 
-		response.encode(str->data(), str->size(), false);
+		std::string const& strstr = str->buffer();
+		response.encode(strstr.data(), strstr.size(), false);
 		str->clear();
 
 		response.encode(suffix, suffixlen);
 		return;
+	}
+	case CmdFlush: {
+		// Flush a stream
+		// Request: 'f' <stream char> ?
+		//
+		// Response: '!'
+
+		if(!Config::CompressStreams)
+			goto error;
+
+		if(len == 1) {
+			for(StreamMap::iterator it = m_streams.begin(); it != m_streams.end(); ++it)
+				it->second->flush();
+		} else if(len == 2) {
+			Stream<>* str = stream(p[1]);
+			if(str)
+				str->flush();
+		} else
+			goto error;
+
+		break;
 	}
 	case CmdTrace: {
 		// Configure trace
@@ -1105,13 +1131,13 @@ size_t Debugger::stream(char s, char const* data, size_t len) {
 		// This is ambiguous in the 's' command return.
 		return 0;
 
-	std::string* str = stream(s, true);
+	Stream<>* str = stream(s, true);
 	if(!str)
 		return 0;
 
-	len = std::min(len, Config::DebuggerStreamBuffer - str->size());
+	len = std::min(len, Config::DebuggerStreamBuffer - str->buffer().size());
 
-	str->append(data, len);
+	str->encode(data, len);
 
 	return len;
 }
@@ -1120,9 +1146,16 @@ size_t Debugger::stream(char s, char const* data, size_t len) {
  * \brief Returns the stream buffer given a stream name.
  * \return the stream or \c nullptr when there is no stream with the given name
  */
-std::string const* Debugger::stream(char s) const {
+Stream<> const* Debugger::stream(char s) const {
 	StreamMap::const_iterator it = m_streams.find(s);
-	return it == m_streams.end() ? nullptr : &it->second;
+	if(it == m_streams.end())
+		return nullptr;
+
+#if STORED_cplusplus < 201103L
+	return it->second;
+#else
+	return it->second.get();
+#endif
 }
 
 /*!
@@ -1130,33 +1163,56 @@ std::string const* Debugger::stream(char s) const {
  * \param s the stream name
  * \param alloc when set to \c true, try to allocate the stream if it does not exist yet
  */
-std::string* Debugger::stream(char s, bool alloc) {
+Stream<>* Debugger::stream(char s, bool alloc) {
 	StreamMap::iterator it = m_streams.find(s);
 
-	if(it != m_streams.end())
-		return &it->second;
-	else if(alloc) {
-		if(m_streams.size() >= Config::DebuggerStreams) {
+	if(it != m_streams.end()) {
+#if STORED_cplusplus < 201103L
+		return it->second;
+#else
+		return it->second.get();
+#endif
+	} else if(alloc) {
+		StreamMap::mapped_type recycle = nullptr;
+
+		bool cleaned = true;
+		while(cleaned && m_streams.size() >= Config::DebuggerStreams) {
 			// Out of buffers. Check if we can recycle something.
-			bool cleaned = true;
-			while(cleaned) {
-				cleaned = false;
-				for(StreamMap::iterator it2 = m_streams.begin(); it2 != m_streams.end(); ++it2)
-					if(it2->second.empty()) {
-						// Got one.
-						m_streams.erase(it2);
-						cleaned = true;
-						break;
-					}
-			}
+			cleaned = false;
+			for(StreamMap::iterator it2 = m_streams.begin(); it2 != m_streams.end(); ++it2)
+				if(it2->second->empty()) {
+					// Got one.
+					if(!recycle) {
+#if STORED_cplusplus < 201103L
+						recycle = it2->second;
+#else
+						recycle = std::move(it2->second);
+#endif
+					} else
+						cleanup(it2->second);
+
+					m_streams.erase(it2);
+					cleaned = true;
+					break;
+				}
 		}
 
-		if(m_streams.size() < Config::DebuggerStreams)
+		if(m_streams.size() < Config::DebuggerStreams) {
 			// Add a new stream.
-			return &m_streams.insert(std::make_pair(s, std::string())).first->second;
-		else
+#if STORED_cplusplus < 201103L
+			return m_streams.insert(std::make_pair(s,
+				recycle ? recycle :	new Stream<>() // NOLINT(cppcoreguidelines-owning-memory)
+				)).first->second;
+#else
+			if(!recycle)
+				recycle.reset(new Stream<>()); // NOLINT(cppcoreguidelines-owning-memory)
+			return m_streams.emplace(s,std::move(recycle)).first->second.get();
+#endif
+		} else {
 			// Out of buffers.
+			stored_assert(!recycle);
 			return nullptr;
+		}
 	} else
 		return nullptr;
 }
@@ -1173,37 +1229,13 @@ char const* Debugger::streams(void const*& buffer, size_t& len) {
 
 	len = 0;
 	for(StreamMap::const_iterator it = m_streams.begin(); it != m_streams.end(); ++it)
-		if(!it->second.empty())
+		if(!it->second->empty())
 			b[len++] = it->first;
 
 	b[len] = 0;
 	buffer = b;
 	return b;
 }
-
-/*!
- * \brief Helper layer to encode into std::string.
- * \see #stored::Debugger::trace()
- */
-class StringEncoder : public ProtocolLayer {
-public:
-	typedef ProtocolLayer base;
-
-	explicit StringEncoder(std::string& s)
-		: m_s(s)
-	{}
-
-	void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
-		m_s.append(static_cast<char const*>(buffer), len);
-	}
-
-	using base::encode;
-
-	void setPurgeableResponse(bool UNUSED_PAR(purgeable) = true) final {}
-
-private:
-	std::string& m_s;
-};
 
 /*!
  * \brief Executes the trace macro and appends the output to the trace buffer.
@@ -1226,25 +1258,25 @@ void Debugger::trace() {
 
 	m_traceCount = 0;
 
-	std::string* str = stream(m_traceStream, true);
+	Stream<>* str = stream(m_traceStream, true);
 	if(!str)
 		// Out of streams.
 		return;
 
-	size_t oldSize = str->size();
+	size_t oldSize = str->buffer().size();
 	if(oldSize >= Config::DebuggerStreamBuffer)
 		// No more space in buffer for another sample.
 		return;
 
 	// Note that runMacro() may overrun the defined maximum buffer size,
 	// but samples are never truncated.
-
-	StringEncoder stringEncoder(*str);
-	if(!runMacro(m_traceMacro, stringEncoder)) {
-		// Revert.
-		str->resize(oldSize);
-		return;
-	}
+	runMacro(m_traceMacro, *str);
+	// If runMacro() returns false, the macro does not exist, and the Stream
+	// is untouched, or there was an error while executing it. If the Stream
+	// is compressed, the internal state cannot be restored once the first
+	// byte is pushed in the Stream. In that case, the contents may be
+	// corrupt. However, this only happens if one defines a wrong macro,
+	// which is a user-error anyway.
 
 	// Success.
 }

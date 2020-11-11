@@ -44,6 +44,7 @@ CompressLayer::CompressLayer(ProtocolLayer* up, ProtocolLayer* down)
 	, m_encoder()
 	, m_decoder()
 	, m_decodeBufferSize()
+	, m_state()
 {
 }
 
@@ -56,12 +57,16 @@ CompressLayer::~CompressLayer() {
 }
 
 void CompressLayer::decode(void* buffer, size_t len) {
+	stored_assert(len == 0 || buffer);
+
 	if(!buffer || !len)
 		return;
 
 	if(unlikely(!m_decoder))
 		if(!(m_decoder = heatshrink_decoder_alloc(DecodeInputBuffer, Window, Lookahead)))
 			throw std::bad_alloc();
+
+	m_state |= FlagDecoding;
 
 	m_decodeBufferSize = 0;
 
@@ -82,6 +87,7 @@ void CompressLayer::decode(void* buffer, size_t len) {
 		decoderPoll();
 
 	base::decode(&m_decodeBuffer[0], m_decodeBufferSize);
+	m_state &= (uint8_t)~FlagDecoding;
 }
 
 void CompressLayer::decoderPoll() {
@@ -105,12 +111,13 @@ void CompressLayer::decoderPoll() {
 }
 
 void CompressLayer::encode(void const* buffer, size_t len, bool last) {
-	if(!buffer || !len)
-		return;
+	stored_assert(len == 0 || buffer);
 
 	if(unlikely(!m_encoder))
 		if(!(m_encoder = heatshrink_encoder_alloc(Window, Lookahead)))
 			throw std::bad_alloc();
+
+	m_state |= FlagEncoding;
 
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 	uint8_t* in_buf = (uint8_t*)buffer;
@@ -130,8 +137,9 @@ void CompressLayer::encode(void const* buffer, size_t len, bool last) {
 	if(last) {
 		while(heatshrink_encoder_finish(&encoder()) == HSER_FINISH_MORE)
 			encoderPoll();
-		base::encode();
+		base::encode(nullptr, 0, true);
 		heatshrink_encoder_reset(&encoder());
+		m_state &= (uint8_t)~FlagEncoding;
 	}
 }
 
@@ -143,7 +151,7 @@ void CompressLayer::encoderPoll() {
 		HSE_poll_res res = heatshrink_encoder_poll(&encoder(), out_buf, sizeof(out_buf), &output_size);
 
 		if(output_size > 0)
-			base::encode(out_buf, output_size);
+			base::encode(out_buf, output_size, false);
 
 		switch(res) {
 		case HSER_POLL_EMPTY:
@@ -161,6 +169,10 @@ size_t CompressLayer::mtu() const {
 	// Use the SegmentationLayer for that.
 	stored_assert(base::mtu() == 0);
 	return 0;
+}
+
+bool CompressLayer::idle() const {
+	return m_state == 0;
 }
 
 } // namespace

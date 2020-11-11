@@ -43,6 +43,9 @@ namespace stored {
 			Window = 8,
 			Lookahead = 4,
 			DecodeInputBuffer = 32,
+
+			FlagEncoding = 1,
+			FlagDecoding = 2,
 		};
 
 		CompressLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
@@ -53,6 +56,10 @@ namespace stored {
 		using base::encode;
 		virtual size_t mtu() const override;
 
+		void setPurgeableResponse(bool UNUSED_PAR(purgeable) = true) final {}
+
+		bool idle() const;
+
 	protected:
 		void encoderPoll();
 		void decoderPoll();
@@ -62,6 +69,7 @@ namespace stored {
 		void* m_decoder;
 		std::vector<uint8_t> m_decodeBuffer;
 		size_t m_decodeBufferSize;
+		uint8_t m_state;
 	};
 
 } // namespace
