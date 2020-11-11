@@ -269,6 +269,10 @@
  * The optional char is the stream name. If omitted, all streams are flushed and reset.
  * The response is always `!`, regardless of whether the stream existed or had data.
  *
+ * The stream is blocked until it is read out by `s`. This way, the last data
+ * is not lost, but new data could be dropped if this takes too long. If you want
+ * an atomic flush-retrieve, use a macro.
+ *
  * ### Tracing
  *
  * Executes a macro every time the application invokes stored::Debugger::trace().
@@ -370,12 +374,15 @@ namespace stored {
 	public:
 		typedef ProtocolLayer base;
 
-		Stream() is_default
+		Stream() : m_block() {}
 		~Stream() final is_default
 
 		void decode(void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) final {}
 
 		void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
+			if(blocked())
+				return;
+
 			m_buffer.append((char const*)buffer, len);
 		}
 
@@ -390,15 +397,29 @@ namespace stored {
 		}
 
 		bool flush() final {
+			block();
 			return true;
 		}
 
 		void clear() {
 			m_buffer.clear();
+			unblock();
 		}
 
 		bool empty() const {
 			return m_buffer.empty();
+		}
+
+		void block() {
+			m_block = true;
+		}
+
+		void unblock() {
+			m_block = false;
+		}
+
+		bool blocked() const {
+			return m_block;
 		}
 
 	protected:
@@ -408,6 +429,7 @@ namespace stored {
 
 	private:
 		std::string m_buffer;
+		bool m_block;
 	};
 
 	template<>
@@ -427,6 +449,9 @@ namespace stored {
 		void decode(void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) final {}
 
 		void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
+			if(blocked())
+				return;
+
 			m_compress.encode(buffer, len, false);
 		}
 
@@ -442,7 +467,7 @@ namespace stored {
 		}
 
 		void clear() {
-			m_string.buffer().clear();
+			m_string.clear();
 		}
 
 		bool empty() const {
@@ -451,6 +476,18 @@ namespace stored {
 
 		std::string const& buffer() const {
 			return m_string.buffer();
+		}
+
+		void block() {
+			m_string.block();
+		}
+
+		void unblock() {
+			m_string.unblock();
+		}
+
+		bool blocked() const {
+			return m_string.blocked();
 		}
 
 	private:

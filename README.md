@@ -141,13 +141,13 @@ The topology is arbitrary, as long as every store instance has one root, where
 it gets its initial copy from. You could, for example, construct the following
 topology:
 
-	B   C
-	 \ /
-	  A
-	  |
-	  D--E--F
-	 / \
-	G   H
+	 B   C
+	  \ /
+	   A
+	   |
+	G--D--E--F
+	   |
+	   H
 
 Assume that A is the first node, of all other nodes gets the initial copy from.
 So, D registers at A, then E gets it from D, F from E, etc. After setup, any
@@ -183,8 +183,12 @@ layers of the OSI stack to get the debugging protocol in and out of your
 system.  Although the protocol fits nicely to ZeroMQ, a TCP stream, or `stdio`
 via terminal, the complexity of integrating this depends on your embedded
 device.  However, once you implemented this data transport, you can access the
-store, and observe and manipulate it using an Embedded Debugger (PC) client,
-where libstored provides Python classes, a CLI and GUI interface.
+store, and observe and manipulate it using an Embedded Debugger (PC) client.
+Moreover, the protocol supports arbitrary streams (like stdout) from the
+application to the client, and has high-speed tracing of store variables. These
+streams are optionally [heatshrink](https://github.com/atomicobject/heatshrink)
+compressed.  libstored provides Python classes for your custom scripts, a CLI
+and GUI interface.
 
 Your application can have one store with one debugging interface, but also
 multiple stores with one debugging interface, or one store with multiple
@@ -290,7 +294,8 @@ the [doxygen documentation](https://demcon.github.io/libstored/group__libstored_
 These commands are implemented in the stored::Debugger class and ready to be
 used in your application.
 
-However, the request/response messages should be wrapped in a OSI-like protocol stack, which is described in more detail in the
+However, the request/response messages should be wrapped in a OSI-like protocol
+stack, which is described in more detail in the
 [documentation too](https://demcon.github.io/libstored/group__libstored__protocol.html)).
 This stack depends on your application. A few standard protocol layers are
 available, which allow to build a stack for lossless channels (stdio/TCP/some

@@ -25,6 +25,7 @@ import sys
 import os
 import math
 import logging
+import heatshrink2
 
 from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, \
     QEvent, QCoreApplication, QStandardPaths, QSocketNotifier, QEventLoop, SIGNAL
@@ -642,6 +643,80 @@ class Object(QObject):
         else:
             return ''
 
+class Stream(object):
+    def __init__(self, client, name, raw=False):
+        self._client = client
+        self._raw = raw
+
+        if not isinstance(name, str) or len(name) != 1:
+            raise ValueError('Invalid stream name ' + s)
+
+        self._name = name
+        self._finishing = False
+        self._flushing = False
+        self._decoder = None
+
+        cap = self._client.capabilities()
+        if not 's' in cap:
+            raise ValueError('Stream capability missing')
+
+        self._compressed = 'f' in self._client.capabilities()
+        self.reset()
+
+    @property
+    def client(self):
+        return self._client
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def raw(self):
+        return self._raw
+
+    def poll(self, suffix='', callback=None):
+        req = b's' + (self.name + suffix).encode()
+        if callback == None:
+            return self._decode(self.client.req(req))
+        else:
+            return self.client.reqAsync(req, lambda x: callback(self._decode(x)))
+
+    def _decode(self, x):
+        if self._decoder != None:
+            x = self._decoder.fill(x)
+            if self._finishing:
+                x += self._decoder.finish()
+                self._reset()
+
+        if not self.raw:
+            x = x.decode()
+        return x
+
+    def flush(self):
+        if self._compressed and not self._flushing and not self._finishing:
+            self._flushing = True
+            self.client.reqAsync(b'f' + self.name.encode(), callback=lambda x: self._finish())
+
+    def _finish(self):
+        if self._flushing:
+            self._flushing = False
+            self._finishing = True
+
+    def reset(self):
+        if self._compressed:
+            self.client.reqAsync(b'f' + self.name.encode(), lambda x: None)
+            # Drop old data, as we missed the start of the stream.
+            self.client.reqAsync(b's' + self.name.encode(), lambda x: None)
+            self._reset()
+
+    def _reset(self):
+        if self._compressed:
+            self._decoder = heatshrink2.core.Encoder(heatshrink2.core.Reader(window_sz2=8, lookahead_sz2=4))
+            self._finishing = False
+            self._flushing = False
+
+
 ##
 # \brief Macro object as returned by ZmqClient.acquireMacro()
 #
@@ -762,6 +837,7 @@ class Tracing(Macro):
         self._decimate = 1
         self._streamPending = False
         self._streamQueued = False
+        self._partial = b''
 
         cap = self.client.capabilities()
         if not 't' in cap:
@@ -773,7 +849,7 @@ class Tracing(Macro):
         if not 's' in cap:
             raise ValueError('Stream capability missing')
 
-        self._stream = stream
+        self._stream = self._client.stream(stream, raw=True)
 
         # Start with sample separator.
         self.add('e\n', None, 'e')
@@ -800,7 +876,7 @@ class Tracing(Macro):
     def _update(self):
         super()._update()
         # Remove existing samples from buffer, as the layout is changing.
-        self.client.stream(self._stream, raw=True)
+        self._stream.reset()
         self._updateTracing()
 
     def _updateTracing(self, force=False):
@@ -812,7 +888,7 @@ class Tracing(Macro):
             self._enabled = False
             self.client.req(b't')
         elif force or not self._enabled:
-            rep = self.client.req(b't' + self.macro + self.stream.encode() + ('%x' % self.decimate).encode()).decode()
+            rep = self.client.req(b't' + self.macro + self.stream.name.encode() + ('%x' % self.decimate).encode()).decode()
             if rep != '!':
                 raise ValueError('Cannot configure tracing')
             self._enabled = True
@@ -848,19 +924,21 @@ class Tracing(Macro):
             self._streamQueued = True
             return
         self._streamPending = True
-        self.client.stream(self._stream, raw=True, callback=self._process)
+        self._stream.poll(callback=self._process)
 
     def _process(self, s):
         if self._streamQueued and self.client.useEventLoop:
             assert self._streamPending
             # Immediately send out another request.
             self._streamQueued = False
-            self.client.stream(self._stream, raw=True, callback=self._process)
+            self._stream.poll(callback=self._process)
         else:
             self._streamPending = False
 
+        samples = (self._partial + s).split(b'\n;')
+        self._partial = samples[-1]
         time = self.client.time()
-        for sample in s.split(b'\n;'):
+        for sample in samples[0:-1]:
             # The first value is the time stamp.
             t_data = sample.split(b';', 1)
             if len(t_data) < 2:
@@ -899,6 +977,7 @@ class ZmqClient(QObject):
         self._socket = self._context.socket(zmq.REQ)
         self._socket.connect(f'tcp://{address}:{port}')
         self._defaultPollInterval = 1
+        self._capabilities = None
         self._availableAliases = None
         self._temporaryAliases = {}
         self._permanentAliases = {}
@@ -926,6 +1005,9 @@ class ZmqClient(QObject):
         app = QCoreApplication.instance()
         if app != None:
             app.aboutToQuit.connect(self._aboutToQuit)
+
+        if 'f' in self.capabilities():
+            self.logger.debug('Streams are compressed')
 
         try:
             self._tracing = Tracing(self)
@@ -980,7 +1062,7 @@ class ZmqClient(QObject):
             if callback != None:
                 callback(rep)
             elif rep == b'?':
-                self.logger.warning('Req %s returned an error, which was not handled', req)
+                self.logger.warning('Async req returned an error, which was not handled')
             return
 
         self._reqQueue.append((message, callback))
@@ -1117,7 +1199,9 @@ class ZmqClient(QObject):
 
     @Slot(result=str)
     def capabilities(self):
-        return self.req(b'?').decode()
+        if self._capabilities == None:
+            self._capabilities = self.req('?')
+        return self._capabilities
 
     @Slot(result=str)
     def echo(self, s):
@@ -1248,19 +1332,8 @@ class ZmqClient(QObject):
         else:
             return list(map(lambda b: chr(b), rep))
 
-    def stream(self, s, suffix='', raw=False, callback=None):
-        if not isinstance(s, str) or len(s) != 1:
-            raise ValueError('Invalid stream name ' + s)
-
-        req = b's' + (s + suffix).encode()
-        if callback == None:
-            data = self.req(req)
-            if not raw:
-                data = data.decode()
-            return data
-        else:
-            self.reqAsync(req, lambda x, raw=raw, callback=callback: callback(x if raw else x.decode()))
-            return None
+    def stream(self, s, raw=False):
+        return Stream(self, s, raw)
 
     @Property(float, notify=defaultPollIntervalChanged)
     def defaultPollInterval(self):
