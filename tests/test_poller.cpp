@@ -21,10 +21,7 @@
 #include "gtest/gtest.h"
 
 #include <unistd.h>
-
-#ifdef STORED_OS_POSIX
-#  include <poll.h>
-#endif
+#include <poll.h>
 
 #ifdef STORED_HAVE_ZMQ
 #  include <zmq.h>
@@ -32,7 +29,6 @@
 
 namespace {
 
-#ifdef STORED_OS_POSIX
 TEST(Poller, Pipe) {
 	int fd[2];
 	ASSERT_EQ(pipe(fd), 0);
@@ -120,7 +116,6 @@ TEST(Poller, Pipe) {
 	EXPECT_EQ(res->at(0).events, stored::Poller::PollErr);
 	EXPECT_EQ(res->at(0).user_data, (void*)2);
 }
-#endif // STORED_OS_POSIX
 
 #if defined(STORED_HAVE_ZMQ) && !defined(STORED_POLL_POLL) && !defined(STORED_POLL_LOOP) && !defined(STORED_POLL_ZTH_LOOP)
 TEST(Poller, Zmq) {
@@ -164,7 +159,7 @@ TEST(Poller, Zmq) {
 
 } // namespace
 
-#if defined(STORED_OS_POSIX) && (defined(STORED_POLL_LOOP) || defined(STORED_POLL_ZTH_LOOP))
+#if defined(STORED_POLL_LOOP) || defined(STORED_POLL_ZTH_LOOP)
 namespace stored {
 	int poll_once(Poller::Event const& e, short& revents) {
 		switch(e.type) {

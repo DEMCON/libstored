@@ -223,7 +223,7 @@ Poller::Result const* Poller::poll(long timeout_us) {
 
 	stored_assert(m_lastEventsH.size() < MAXIMUM_WAIT_OBJECTS);
 
-	DWORD res = WaitForMultipleObjects((DWORD)m_lastEventsH.size(), &m_lastEventsH[0], FALSE, (DWORD)(timeout_us >= 0 ? (timeout_us + 999L) / 1000L) : INFINITE);
+	DWORD res = WaitForMultipleObjects((DWORD)m_lastEventsH.size(), &m_lastEventsH[0], FALSE, timeout_us >= 0 ? (DWORD)((timeout_us + 999L) / 1000L) : INFINITE);
 
 	HANDLE h = nullptr;
 

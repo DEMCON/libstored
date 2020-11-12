@@ -28,10 +28,7 @@ target_compile_definitions(teststore-libstored PUBLIC STORED_POLL_${LIBSTORED_PO
 macro(libstored_add_test TESTNAME)
 	add_executable(${TESTNAME} ${ARGN})
 	target_link_libraries(${TESTNAME} gtest gmock gtest_main teststore-libstored)
-	gtest_discover_tests(${TESTNAME}
-		WORKING_DIRECTORY ${PROJECT_DIR}
-		PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${PROJECT_DIR}"
-	)
+	gtest_discover_tests(${TESTNAME})
 	set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
 endmacro()
 
@@ -44,7 +41,14 @@ libstored_add_test(test_spm test_spm.cpp)
 libstored_add_test(test_protocol test_protocol.cpp)
 libstored_add_test(test_debugger test_debugger.cpp)
 libstored_add_test(test_synchronizer test_synchronizer.cpp)
-libstored_add_test(test_poller test_poller.cpp)
+if(WIN32)
+	libstored_add_test(test_poller test_poller_win.cpp)
+	add_custom_command(TARGET test_poller PRE_LINK
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> ${CMAKE_CURRENT_BINARY_DIR}
+		VERBATIM)
+else()
+	libstored_add_test(test_poller test_poller.cpp)
+endif()
 
 if(HAVE_VALGRIND AND LIBSTORED_EXAMPLES)
 	macro(libstored_example_test EXAMPLE)
@@ -110,3 +114,4 @@ if(VIVADO_CMD)
 		COMMAND $<SHELL_PATH:${VIVADO_CMD}> -mode batch -source ${CMAKE_CURRENT_SOURCE_DIR}/test_fpga/run.tcl ${CMAKE_CURRENT_SOURCE_DIR}/test_fpga/vivado/test_fpga/test_fpga.xpr
 	)
 endif()
+
