@@ -9,6 +9,8 @@ list(APPEND ed2_src
 	ed2/gui/__main__.py
 	ed2/gui/gui_client.qml
 	ed2/gui/twotone_bug_report_black_48dp.png
+	ed2/csv.py
+	ed2/protocol.py
 	ed2/serial2zmq.py
 	ed2/stdio2zmq.py
 	ed2/stream2zmq.py

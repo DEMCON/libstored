@@ -975,7 +975,9 @@ class ZmqClient(QObject):
         self.logger = logging.getLogger(__name__)
         self._context = zmq.Context()
         self._socket = self._context.socket(zmq.REQ)
+        self.logger.debug('Connecting to %s:%d...', address, port)
         self._socket.connect(f'tcp://{address}:{port}')
+        self.logger.debug('Connected')
         self._defaultPollInterval = 1
         self._capabilities = None
         self._availableAliases = None
@@ -1290,6 +1292,15 @@ class ZmqClient(QObject):
             return obj.pop()
         else:
             return obj
+
+    def __getitem__(self, x):
+        obj = self.find(x)
+        if isinstance(obj, Object):
+            return obj
+        elif obj == None:
+            raise ValueError(f'Cannot find object with name "{x}"')
+        else:
+            raise ValueError(f'Object name "{x}" is ambiguous')
 
     @Slot(result=str)
     def identification(self):
