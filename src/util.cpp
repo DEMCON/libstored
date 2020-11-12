@@ -209,8 +209,8 @@ char const* banner() {
 #ifdef STORED_HAVE_ZTH
 		" zth"
 #endif
-#ifdef STORED_POLL_ZTH_WAITER
-		" poll=waiter"
+#ifdef STORED_POLL_ZTH_WFMO
+		" poll=zth-wfmo"
 #endif
 #ifdef STORED_POLL_WFMO
 		" poll=wfmo"
@@ -223,6 +223,9 @@ char const* banner() {
 #endif
 #ifdef STORED_POLL_LOOP
 		" poll=loop"
+#endif
+#ifdef STORED_POLL_ZTH_LOOP
+		" poll=zth-loop"
 #endif
 #ifdef STORED_POLL_POLL
 		" poll=poll"

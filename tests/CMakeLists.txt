@@ -1,3 +1,6 @@
+# The value will be appended to a STORED_POLL_ define.
+set(LIBSTORED_POLL "AUTO" CACHE STRING "Poll method")
+
 if(MSVC)
 	add_compile_options(/W1 /WX)
 
@@ -20,6 +23,7 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/extern/googletest" "extern/googletest")
 
 add_custom_target(teststore)
 libstored_generate(teststore TestStore.st)
+target_compile_definitions(teststore-libstored PUBLIC STORED_POLL_${LIBSTORED_POLL})
 
 macro(libstored_add_test TESTNAME)
 	add_executable(${TESTNAME} ${ARGN})
@@ -40,6 +44,7 @@ libstored_add_test(test_spm test_spm.cpp)
 libstored_add_test(test_protocol test_protocol.cpp)
 libstored_add_test(test_debugger test_debugger.cpp)
 libstored_add_test(test_synchronizer test_synchronizer.cpp)
+libstored_add_test(test_poller test_poller.cpp)
 
 if(HAVE_VALGRIND AND LIBSTORED_EXAMPLES)
 	macro(libstored_example_test EXAMPLE)

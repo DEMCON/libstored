@@ -25,6 +25,7 @@
 
 namespace stored {
 
+// NOLINTNEXTLINE(hicpp-use-equals-default)
 Poller::Poller()
 {
 #ifdef STORED_POLL_ZMQ
@@ -32,6 +33,7 @@ Poller::Poller()
 #endif
 }
 
+// NOLINTNEXTLINE(hicpp-use-equals-default)
 Poller::~Poller() {
 #ifdef STORED_POLL_ZMQ
 	zmq_poller_destroy(&m_poller);
@@ -193,7 +195,7 @@ Poller::Event* Poller::find(Poller::Event const& e) {
 }
 #endif // !STORED_POLL_ZMQ
 
-#ifdef STORED_POLL_ZTH_WAITER
+#ifdef STORED_POLL_ZTH_WFMO
 Poller::Result const* Poller::poll(long timeout_us) {
 	// TODO
 	return m_lastEvents;
@@ -272,7 +274,7 @@ Poller::Result const* Poller::poll(long timeout_us) {
 Poller::Result const* Poller::poll(long timeout_us) {
 	m_lastEventsFd.resize(m_events.size());
 	size_t i = 0;
-	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it) {
+	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it, ++i) {
 		pollfd& e = m_lastEventsFd[i];
 
 		it->pollfd = &e;
@@ -286,11 +288,11 @@ Poller::Result const* Poller::poll(long timeout_us) {
 			break;
 		case Event::TypeZmqSock:
 			e.fd = -1;
-			e.socket = i->zmqsock;
+			e.socket = it->zmqsock;
 			break;
 		case Event::TypeZmq:
 			e.fd = -1;
-			e.socket = i->zmq->socket();
+			e.socket = it->zmq->socket();
 #endif
 			break;
 		default:
@@ -299,6 +301,7 @@ Poller::Result const* Poller::poll(long timeout_us) {
 		}
 	}
 
+retry:
 	int res =
 #ifdef STORED_POLL_ZTH
 		zth::io
@@ -307,7 +310,13 @@ Poller::Result const* Poller::poll(long timeout_us) {
 
 	switch(res) {
 	case -1:
-		return nullptr;
+		switch(errno) {
+		case EINTR:
+		case EAGAIN:
+			goto retry;
+		default:
+			return nullptr;
+		}
 	case 0:
 		errno = EAGAIN;
 		return nullptr;
@@ -326,10 +335,64 @@ Poller::Result const* Poller::poll(long timeout_us) {
 }
 #endif
 
+#if defined(STORED_POLL_LOOP) || defined(STORED_POLL_ZTH_LOOP)
+bool Poller::poll_once() {
+	if(!m_lastEvents.empty())
+		return true;
+
+	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it) {
+		short revents = 0;
+		if(stored::poll_once(*it, revents))
+			// Error
+			continue;
+		if(!((unsigned short)revents & (unsigned short)it->events))
+			// Not the events we requested
+			continue;
+		m_lastEvents.push_back(*it);
+		m_lastEvents.back().events = revents;
+	}
+
+	return !m_lastEvents.empty();
+}
+#endif
+
 #ifdef STORED_POLL_LOOP
-Poller::Result const* Poller::poll(long UNUSED_PAR(timeout_us)) {
-	// TODO
-	return &m_lastEvents;
+Poller::Result const* Poller::poll(long timeout_us) {
+	m_lastEvents.clear();
+
+	do {
+		if(poll_once())
+			return &m_lastEvents;
+
+		// We don't have a proper platform-independent way to get the current time.
+		// So, only keep polling if infinite time was requested.
+	} while(timeout_us < 0);
+
+	return nullptr;
+}
+#endif
+
+#ifdef STORED_POLL_ZTH_LOOP
+bool Poller::zth_poll_once() {
+	return poll_once() || zth::Timestamp::now() > m_timeout;
+}
+
+Poller::Result const* Poller::poll(long timeout_us) {
+	m_lastEvents.clear();
+
+	if(timeout_us == 0) {
+		poll_once();
+	} else if(timeout_us < 0) {
+		zth::waitUntil(*this, &Poller::poll_once);
+	} else {
+		m_timeout = zth::Timestamp::now();
+		m_timeout += zth::TimeInterval(
+			(time_t)(timeout_us / 1000000l),
+			(timeout_us % 1000000l) * 1000l);
+		zth::waitUntil(*this, &Poller::zth_poll_once);
+	}
+
+	return m_lastEvents.empty() ? nullptr : &m_lastEvents;
 }
 #endif
 
