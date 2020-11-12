@@ -127,6 +127,9 @@ if __name__ == '__main__':
     parser.add_argument('-f', dest='csv', default=None, nargs='?',
         help='Log auto-refreshed data to csv file. ' +
             'The file is truncated upon startup and when the set of auto-refreshed objects change.', const='log.csv')
+    parser.add_argument('-m', dest='multi', default=False,
+        help='Enable multi-mode; allow multiple simultaneous connections to the same target, ' +
+            'but it is less efficient.', action='store_true')
 
     args = parser.parse_args()
 
@@ -137,7 +140,7 @@ if __name__ == '__main__':
     app.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "twotone_bug_report_black_48dp.png")))
     engine = QQmlApplicationEngine(parent=app)
 
-    client = ZmqClient(args.server, args.port, csv=args.csv)
+    client = ZmqClient(args.server, args.port, csv=args.csv, multi=args.multi)
     engine.rootContext().setContextProperty("client", client)
 
     model = ObjectListModel(client.list(), parent=app)

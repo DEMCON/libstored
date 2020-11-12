@@ -970,9 +970,10 @@ class ZmqClient(QObject):
     slowPollInterval_s = 2.0
     defaultPollIntervalChanged = Signal()
 
-    def __init__(self, address='localhost', port=ZmqServer.default_port, csv=None, parent=None, t=None):
+    def __init__(self, address='localhost', port=ZmqServer.default_port, csv=None, multi=False, parent=None, t=None):
         super().__init__(parent=parent)
         self.logger = logging.getLogger(__name__)
+        self._multi = multi
         self._context = zmq.Context()
         self._socket = self._context.socket(zmq.REQ)
         self.logger.debug('Connecting to %s:%d...', address, port)
@@ -1203,6 +1204,10 @@ class ZmqClient(QObject):
     def capabilities(self):
         if self._capabilities == None:
             self._capabilities = self.req('?')
+            if self._multi:
+                # Remove capabilities that are stateful at the embedded side.
+                self._capabilities = re.sub(r'[amstf]', '', self._capabilities)
+
         return self._capabilities
 
     @Slot(result=str)
