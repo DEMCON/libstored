@@ -422,11 +422,6 @@ namespace stored {
 			return m_block;
 		}
 
-	protected:
-		std::string& buffer() {
-			return m_buffer;
-		}
-
 	private:
 		std::string m_buffer;
 		bool m_block;
@@ -471,7 +466,11 @@ namespace stored {
 		}
 
 		bool empty() const {
-			return m_compress.idle() && m_string.empty();
+			return
+#ifdef STORED_HAVE_HEATSHRINK
+				m_compress.idle() &&
+#endif
+				m_string.empty();
 		}
 
 		std::string const& buffer() const {

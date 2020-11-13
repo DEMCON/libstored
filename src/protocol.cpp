@@ -1565,7 +1565,8 @@ wait_prev_write:
 				}
 			} else {
 				if(WriteFileEx(m_handle, &m_bufferWrite[offset],
-					(DWORD)m_writeLen, &m_overlappedWrite, &writeCompletionRoutine))
+					(DWORD)m_writeLen, &m_overlappedWrite,
+					(LPOVERLAPPED_COMPLETION_ROUTINE)(void*)&writeCompletionRoutine))
 					return 0;
 				else
 					goto error;
@@ -1607,7 +1608,9 @@ void NamedPipeLayer::encode(void const* buffer, size_t len, bool last) {
 	memcpy(&m_bufferWrite[0], buffer, len);
 	setLastError(0);
 	resetOverlappedWrite();
-	if(WriteFileEx(m_handle, &m_bufferWrite[0], (DWORD)len, &m_overlappedWrite, &writeCompletionRoutine)) {
+	if(WriteFileEx(m_handle, &m_bufferWrite[0], (DWORD)len, &m_overlappedWrite,
+		(LPOVERLAPPED_COMPLETION_ROUTINE)(void*)&writeCompletionRoutine))
+	{
 		// Already finished.
 	} else {
 		switch(GetLastError()) {

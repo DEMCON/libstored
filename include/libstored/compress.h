@@ -19,16 +19,15 @@
  */
 
 #include <libstored/macros.h>
+#include <libstored/protocol.h>
 
 #ifdef __cplusplus
 #ifndef STORED_HAVE_HEATSHRINK
-namespace {
+namespace stored {
 	// No compression available, just use a pass-through.
 	typedef ProtocolLayer CompressLayer;
 }
 #else // STORED_HAVE_HEATSHRINK
-
-#include <libstored/protocol.h>
 
 #include <vector>
 

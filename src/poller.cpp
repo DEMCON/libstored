@@ -108,7 +108,7 @@ static int fd_to_HANDLE(int fd, HANDLE& h) {
 
 		h = dummyEventReset;
 		return 0;
-	} else if(fd == fileno(stdout) || fd == fileno(stderr)) {
+	} else if(fd == _fileno(stdout) || fd == _fileno(stderr)) {
 		// Cannot WaitFor... on stdout/stderr. Always return immediately using a dummy event.
 		if(!dummyEventSet)
 			if(!(dummyEventSet = CreateEvent(NULL, TRUE, TRUE, NULL)))
@@ -386,7 +386,7 @@ Poller::Result const* Poller::poll(long timeout_us) {
 	DWORD res = WaitForMultipleObjectsEx((DWORD)m_lastEventsH.size(), &m_lastEventsH[0], FALSE, timeout_us >= 0 ? (DWORD)((timeout_us + 999L) / 1000L) : INFINITE, TRUE);
 
 	HANDLE h = nullptr;
-	int index = 0;
+	DWORD index = 0;
 	short revents = 0;
 
 	while(true) {
@@ -443,7 +443,7 @@ Poller::Result const* Poller::poll(long timeout_us) {
 
 		// WaitForMultipleObjects() only returns the first handle that was finished.
 		// But we would like to return them all. Check the rest too.
-		m_lastEventsH.erase(m_lastEventsH.begin() + index);
+		m_lastEventsH.erase(m_lastEventsH.begin() + (int)index);
 		if(m_lastEventsH.empty())
 			break;
 

@@ -89,7 +89,7 @@ if(LIBSTORED_HAVE_LIBZMQ)
 endif()
 
 if(WIN32)
-	target_link_libraries({{libprefix}}libstored INTERFACE -lws2_32)
+	target_link_libraries({{libprefix}}libstored INTERFACE ws2_32)
 endif()
 
 if(LIBSTORED_HAVE_HEATSHRINK)
