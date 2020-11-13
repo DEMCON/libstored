@@ -30,6 +30,8 @@
 namespace {
 
 TEST(Poller, Pipe) {
+	puts(stored::banner());
+
 	int fd[2];
 	ASSERT_EQ(pipe(fd), 0);
 

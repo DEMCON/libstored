@@ -1444,5 +1444,318 @@ Loopback::Loopback(ProtocolLayer& a, ProtocolLayer& b)
 
 
 
+#ifdef STORED_OS_WINDOWS
+//////////////////////////////
+// NamedPipeLayer
+//
+
+NamedPipeLayer::NamedPipeLayer(char const* name, ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_state(StateInit)
+	, m_lastError()
+	, m_handle(INVALID_HANDLE_VALUE)
+	, m_overlappedRead()
+	, m_overlappedWrite()
+	, m_this(this)
+	, m_bufferRead()
+	, m_writeLen()
+{
+	setLastError(0);
+	stored_assert(name);
+
+	m_name = "\\\\.\\pipe\\";
+	m_name += name;
+
+	m_bufferRead = (char*)malloc(BufferSize);
+	if(!m_bufferRead) {
+		m_state = StateError;
+		setLastError(ENOMEM);
+		return;
+	}
+
+	m_overlappedRead.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	if(!m_overlappedRead.hEvent) {
+		m_overlappedRead.hEvent = INVALID_HANDLE_VALUE;
+		m_state = StateError;
+		setLastError(ENOMEM);
+		return;
+	}
+
+	m_handle = CreateNamedPipe(m_name.c_str(),
+		PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED,
+		PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT,
+		1, BufferSize, BufferSize,
+		0, NULL);
+
+	if(m_handle == INVALID_HANDLE_VALUE) {
+		setLastError(EAGAIN);
+		m_state = StateError;
+		return;
+	}
+
+	if(ConnectNamedPipe(m_handle, &m_overlappedRead)) {
+		// Connected immediately.
+		m_state = StateReady;
+	} else {
+		switch(GetLastError()) {
+		case ERROR_IO_INCOMPLETE:
+		case ERROR_IO_PENDING:
+			m_state = StateConnecting;
+			break;
+		case ERROR_PIPE_CONNECTED:
+			// The client arrived early.
+			m_state = StateReady;
+			break;
+		default:
+			m_state = StateError;
+			setLastError(EIO);
+		}
+	}
+
+	recv();
+}
+
+NamedPipeLayer::~NamedPipeLayer() {
+	if(m_handle != INVALID_HANDLE_VALUE) {
+		FlushFileBuffers(m_handle);
+		CancelIo(m_handle);
+		DisconnectNamedPipe(m_handle);
+		CloseHandle(m_handle);
+	}
+
+	free(m_bufferRead);
+}
+
+int NamedPipeLayer::finishWrite(bool block) {
+	size_t offset = 0;
+
+wait_prev_write:
+	if(!HasOverlappedIoCompleted(&m_overlappedWrite)) {
+		// Check if the previous write was finished.
+		DWORD written = 0;
+		if(!GetOverlappedResult(m_handle, &m_overlappedWrite, &written, block)) {
+			switch(GetLastError()) {
+			case ERROR_IO_INCOMPLETE:
+			case ERROR_IO_PENDING:
+				stored_assert(!block);
+				return 0;
+			default:
+				goto error;
+			}
+		}
+
+		while(written < m_writeLen) {
+			// Restart for the remaining data.
+			offset += written;
+			resetOverlappedWrite();
+			m_writeLen -= written;
+			if(block) {
+				if(WriteFile(m_handle, &m_bufferWrite[offset],
+					(DWORD)m_writeLen, &written, &m_overlappedWrite))
+				{
+					// Completed immediately.
+				} else {
+					switch(GetLastError()) {
+					case ERROR_IO_INCOMPLETE:
+					case ERROR_IO_PENDING:
+						goto wait_prev_write;
+					default:
+						goto error;
+					}
+				}
+			} else {
+				if(WriteFileEx(m_handle, &m_bufferWrite[offset],
+					(DWORD)m_writeLen, &m_overlappedWrite, &writeCompletionRoutine))
+					return 0;
+				else
+					goto error;
+			}
+		}
+	}
+
+	return 0;
+
+error:
+	m_state = StateError;
+	return setLastError(EIO);
+}
+
+void NamedPipeLayer::writeCompletionRoutine(DWORD dwErrorCode, DWORD UNUSED_PAR(dwNumberOfBytesTransfered), LPOVERLAPPED lpOverlapped) {
+	NamedPipeLayer* that = (NamedPipeLayer*)((intptr_t)lpOverlapped + sizeof(*lpOverlapped));
+	stored_assert(that);
+
+	if(dwErrorCode == 0) {
+		that->m_state = StateError;
+		that->setLastError(EIO);
+	} else {
+		// Make sure all data has been transferred.
+		that->finishWrite(false);
+	}
+}
+
+void NamedPipeLayer::encode(void const* buffer, size_t len, bool last) {
+	if(m_state == StateConnecting)
+		recv(true);
+	if(m_state == StateError)
+		return;
+
+	finishWrite(true);
+
+	// Issue a new write.
+	stored_assert(len < (size_t)std::numeric_limits<DWORD>::max());
+	m_bufferWrite.resize(len);
+	memcpy(&m_bufferWrite[0], buffer, len);
+	setLastError(0);
+	resetOverlappedWrite();
+	if(WriteFileEx(m_handle, &m_bufferWrite[0], (DWORD)len, &m_overlappedWrite, &writeCompletionRoutine)) {
+		// Already finished.
+	} else {
+		switch(GetLastError()) {
+		case ERROR_IO_INCOMPLETE:
+		case ERROR_IO_PENDING:
+			break;
+		default:
+			goto error;
+		}
+	}
+
+	// Done. It might be the case that the write already finished, but
+	// not all data has been written. Let the next invocation of encode() handle that.
+	base::encode(buffer, len, last);
+	return;
+
+error:
+	m_state = StateError;
+	setLastError(EIO);
+}
+
+HANDLE NamedPipeLayer::handle() {
+	return m_overlappedRead.hEvent;
+}
+
+int NamedPipeLayer::recv(bool block) {
+	bool didDecode = false;
+
+again:
+	setLastError(0);
+
+	switch(m_state) {
+	case StateConnecting: {
+		DWORD dummy = 0;
+		if(GetOverlappedResult(m_handle, &m_overlappedRead, &dummy, block)) {
+			m_state = StateReady;
+			didDecode = true;
+			goto again;
+		} else {
+			switch(GetLastError()) {
+			case ERROR_IO_INCOMPLETE:
+			case ERROR_IO_PENDING:
+				return setLastError(EAGAIN);
+			default:
+				m_state = StateError;
+				return setLastError(EIO);
+			}
+		}
+	}
+	case StateReady: {
+		DWORD readable = 0;
+
+		if(!PeekNamedPipe(m_handle, NULL, 0, NULL, &readable, NULL)) {
+			m_state = StateError;
+			return setLastError(EIO);
+		}
+
+		if(readable == 0) {
+			// There is nothing to read. Issue a read of 1 byte, which will overlap/block.
+			readable = 1;
+		}
+
+		// Read everything there is to read.
+		// This should be finished quickly.
+		resetOverlappedRead();
+		if(ReadFile(m_handle, m_bufferRead,
+			std::min<DWORD>(BufferSize, readable),
+			&readable, &m_overlappedRead))
+		{
+			// Finished immediately.
+			decode(m_bufferRead, (size_t)readable);
+			didDecode = true;
+			goto again;
+		} else {
+			switch(GetLastError()) {
+			case ERROR_IO_INCOMPLETE:
+			case ERROR_IO_PENDING:
+				// The read is pending.
+				m_state = StateReading;
+				if(block && !didDecode)
+					goto again;
+				return setLastError(didDecode ? 0 : EAGAIN);
+			default:
+				m_state = StateError;
+				return setLastError(EIO);
+			}
+		}
+		break;
+	}
+
+	case StateReading: {
+		DWORD read = 0;
+		if(GetOverlappedResult(m_handle, &m_overlappedRead, &read, block)) {
+			// Finished the previous read.
+			decode(m_bufferRead, read);
+			didDecode = true;
+			m_state = StateReady;
+			// Go issue the next read.
+			goto again;
+		} else {
+			switch(GetLastError()) {
+			case ERROR_IO_INCOMPLETE:
+			case ERROR_IO_PENDING:
+				// Still waiting.
+				return setLastError(EAGAIN);
+			default:
+				m_state = StateError;
+				return setLastError(EIO);
+			}
+		}
+		break;
+	}
+
+	case StateError:
+		return setLastError(EINVAL);
+
+	case StateInit:
+		// We should not remain in these states.
+	default:
+		stored_assert(false);
+		return EINVAL;
+	}
+}
+
+void NamedPipeLayer::resetOverlappedRead() {
+	HANDLE hEvent = m_overlappedRead.hEvent;
+	memset(&m_overlappedRead, 0, sizeof(m_overlappedRead));
+	m_overlappedRead.hEvent = hEvent;
+	ResetEvent(hEvent);
+}
+
+void NamedPipeLayer::resetOverlappedWrite() {
+	memset(&m_overlappedWrite, 0, sizeof(m_overlappedWrite));
+}
+
+std::string const& NamedPipeLayer::name() const {
+	return m_name;
+}
+
+int NamedPipeLayer::lastError() const {
+	return m_lastError;
+}
+
+int NamedPipeLayer::setLastError(int e) {
+	return m_lastError = e;
+}
+
+#endif // STORED_OS_WINDOWS
+
 } // namespace
 

@@ -900,6 +900,65 @@ namespace stored {
 		impl::Loopback1 m_b2a;
 	};
 
+#ifdef STORED_OS_WINDOWS
+	/*!
+	 * \brief Server end of a named pipe.
+	 *
+	 * The client end is easier; it is just a file-like create/open/write/close API.
+	 */
+	class NamedPipeLayer : public ProtocolLayer {
+		CLASS_NOCOPY(NamedPipeLayer)
+	public:
+		typedef ProtocolLayer base;
+
+		enum { BufferSize = 1024 };
+
+		NamedPipeLayer(char const* name, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~NamedPipeLayer() override;
+
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+
+		HANDLE handle();
+		int recv(bool block = false);
+		std::string const& name() const;
+		int lastError() const;
+
+	protected:
+		int setLastError(int e);
+		void resetOverlappedRead();
+		void resetOverlappedWrite();
+		int finishWrite(bool block);
+
+		static void writeCompletionRoutine(DWORD dwErrorCode, DWORD dwNumberOfBytesTransfered, LPOVERLAPPED lpOverlapped);
+
+		enum State {
+			StateInit = 0,
+			StateConnecting,
+			StateReady,
+			StateReading,
+			StateError,
+		};
+
+	private:
+		State m_state;
+		int m_lastError;
+		std::string m_name;
+		HANDLE m_handle;
+		OVERLAPPED m_overlappedRead;
+
+		struct {
+			// The order of this struct is assumed by writeCompletionRoutine().
+			OVERLAPPED m_overlappedWrite;
+			NamedPipeLayer* const m_this;
+		};
+
+		char* m_bufferRead;
+		std::vector<char> m_bufferWrite;
+		size_t m_writeLen;
+	};
+#endif
+
 } // namespace
 #endif // __cplusplus
 

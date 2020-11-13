@@ -27,6 +27,8 @@
 namespace {
 
 TEST(Poller, Win) {
+	puts(stored::banner());
+
 	EXPECT_TRUE(true);
 
 	HANDLE e = CreateEvent(NULL, TRUE, FALSE, NULL);

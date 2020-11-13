@@ -87,10 +87,6 @@
 #  if _MSC_VER >= 1925
 #    pragma warning(disable: 5204)
 #  endif
-#  pragma warning(push)
-#  pragma warning(disable: 4668)
-#  include <Windows.h>
-#  pragma warning(pop)
 #  include <BaseTsd.h>
 typedef SSIZE_T ssize_t;
 #  define __attribute__(...)
@@ -131,6 +127,17 @@ typedef SSIZE_T ssize_t;
 #  define __USE_MINGW_ANSI_STDIO 1
 #  if defined(UNICODE) || defined(_UNICODE)
 #    error Do not use UNICODE. Use ANSI with UTF-8 instead.
+#  endif
+#  ifdef STORED_COMPILER_MSVC
+#    pragma warning(push)
+#    pragma warning(disable: 4668)
+#  endif
+#  ifdef STORED_HAVE_ZMQ
+#    include <winsock2.h>
+#  endif
+#  include <Windows.h>
+#  ifdef STORED_COMPILER_MSVC
+#    pragma warning(pop)
 #  endif
 #elif defined(__linux__)
 #  define STORED_OS_LINUX 1

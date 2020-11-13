@@ -88,6 +88,10 @@ if(LIBSTORED_HAVE_LIBZMQ)
 	target_link_libraries({{libprefix}}libstored INTERFACE libzmq)
 endif()
 
+if(WIN32)
+	target_link_libraries({{libprefix}}libstored INTERFACE -lws2_32)
+endif()
+
 if(LIBSTORED_HAVE_HEATSHRINK)
 	target_link_libraries({{libprefix}}libstored PUBLIC heatshrink)
 endif()

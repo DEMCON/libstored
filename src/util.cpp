@@ -209,6 +209,9 @@ char const* banner() {
 #ifdef STORED_HAVE_ZTH
 		" zth"
 #endif
+#ifdef STORED_HAVE_ZMQ
+		" zmq"
+#endif
 #ifdef STORED_POLL_ZTH_WFMO
 		" poll=zth-wfmo"
 #endif

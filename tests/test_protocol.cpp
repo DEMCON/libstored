@@ -21,6 +21,8 @@
 #include "gtest/gtest.h"
 #include "LoggingLayer.h"
 
+#include <fcntl.h>
+
 #define DECODE(stack, str)	do { char msg_[] = "" str; (stack).decode(msg_, sizeof(msg_) - 1); } while(0)
 
 namespace {
@@ -819,5 +821,37 @@ TEST(CompressLayer, Compress) {
 	bottom.decode(&buf[0], buf.size());
 	EXPECT_EQ(top.decoded().at(0), "Hello World! Nice World!");
 }
+
+#ifdef STORED_OS_WINDOWS
+TEST(NamedPipeLayer, Pipe) {
+	LoggingLayer top;
+	stored::NamedPipeLayer l("test");
+	l.wrap(top);
+
+	EXPECT_EQ(l.lastError(), EAGAIN);
+
+	int fd = open("\\\\.\\pipe\\test", O_RDWR);
+	ASSERT_NE(fd, -1);
+	write(fd, "hello", 5);
+	EXPECT_EQ(l.recv(), 0);
+	EXPECT_EQ(top.decoded().at(0), "hello");
+
+	write(fd, " world", 6);
+	EXPECT_EQ(l.recv(), 0);
+	EXPECT_EQ(top.decoded().at(1), " "); // It blocked on one char.
+	EXPECT_EQ(top.decoded().at(2), "world"); // The rest will follow.
+
+	// Noting to receive.
+	EXPECT_EQ(l.recv(), EAGAIN);
+
+	l.encode("Zip-a-Dee-Doo-Dah", 17);
+	char buf[32] = {};
+	EXPECT_EQ(read(fd, buf, sizeof(buf)), 17);
+	EXPECT_EQ(std::string(buf), "Zip-a-Dee-Doo-Dah");
+
+	close(fd);
+	EXPECT_EQ(l.recv(), EIO);
+}
+#endif
 
 } // namespace

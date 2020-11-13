@@ -43,9 +43,11 @@ libstored_add_test(test_debugger test_debugger.cpp)
 libstored_add_test(test_synchronizer test_synchronizer.cpp)
 if(WIN32)
 	libstored_add_test(test_poller test_poller_win.cpp)
-	add_custom_command(TARGET test_poller PRE_LINK
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> ${CMAKE_CURRENT_BINARY_DIR}
-		VERBATIM)
+	if(LIBSTORED_HAVE_LIBZMQ)
+		add_custom_command(TARGET test_poller PRE_LINK
+			COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> ${CMAKE_CURRENT_BINARY_DIR}
+			VERBATIM)
+	endif()
 else()
 	libstored_add_test(test_poller test_poller.cpp)
 endif()
@@ -92,14 +94,17 @@ else()
 	set(ENV_PATH_SEP ":")
 endif()
 
-add_test(
-	NAME ZmqClient
-	COMMAND ${CMAKE_COMMAND} -E env
-		PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/../client
-		"PATH=$<SHELL_PATH:$<TARGET_FILE_DIR:libzmq>>${ENV_PATH_SEP}$ENV{PATH}"
-		${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_ZmqClient.py $<TARGET_FILE:zmqserver>
-)
-set_tests_properties(ZmqClient PROPERTIES TIMEOUT 60)
+if(LIBSTORED_HAVE_LIBZMQ)
+	add_test(
+		NAME ZmqClient
+		COMMAND ${CMAKE_COMMAND} -E env
+			PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/../client
+			"PATH=$<SHELL_PATH:$<TARGET_FILE_DIR:libzmq>>${ENV_PATH_SEP}$ENV{PATH}"
+			${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_ZmqClient.py $<TARGET_FILE:zmqserver>
+	)
+
+	set_tests_properties(ZmqClient PROPERTIES TIMEOUT 60)
+endif()
 
 if(VIVADO_CMD)
 	if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test_fpga/vivado/test_fpga/test_fpga.xpr)

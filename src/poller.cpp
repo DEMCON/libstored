@@ -42,11 +42,6 @@ Poller::~Poller() {
 }
 
 #ifdef STORED_OS_WINDOWS
-static int socket_to_SOCKET(void* zmq, SOCKET& win) {
-	size_t len = sizeof(win);
-	return zmq_getsockopt(zmq, ZMQ_FD, &win, &len) ? errno : 0;
-}
-
 static int setEvents(SOCKET s, HANDLE h, short events) {
 	stored_assert(s != INVALID_SOCKET);
 	stored_assert(h);
@@ -145,6 +140,12 @@ int Poller::remove(int fd) {
 	return res ? res : remove(e);
 }
 
+#  ifdef STORED_HAVE_ZMQ
+static int socket_to_SOCKET(void* zmq, SOCKET& win) {
+	size_t len = sizeof(win);
+	return zmq_getsockopt(zmq, ZMQ_FD, &win, &len) ? errno : 0;
+}
+
 int Poller::add(void* socket, void* user_data, short events) {
 	return add(Event(Event::TypeZmqSock, socket), user_data, events);
 }
@@ -168,7 +169,7 @@ int Poller::modify(ZmqLayer& layer, short events) {
 int Poller::remove(ZmqLayer& layer) {
 	return remove(Event(Event::TypeZmq, &layer));
 }
-
+#  endif // STORED_HAVE_ZMQ
 #else // !STORED_OS_WINDOWS
 
 int Poller::add(int fd, void* user_data, short events) {
@@ -319,7 +320,7 @@ int Poller::modify(Poller::Event const& e, short events) {
 					return res;
 				return setEvents(s, it->h, events);
 			}
-			case Event::TypeZmq: {
+			case Event::TypeZmq:
 				return setEvents(it->zmq->fd(), it->h, events);
 #  endif
 			default:;
@@ -327,7 +328,6 @@ int Poller::modify(Poller::Event const& e, short events) {
 #endif
 			return 0;
 		}
-	}
 
 	return EINVAL;
 }
@@ -383,7 +383,7 @@ Poller::Result const* Poller::poll(long timeout_us) {
 	stored_assert(m_lastEventsH.size() < MAXIMUM_WAIT_OBJECTS);
 
 	// First try.
-	DWORD res = WaitForMultipleObjects((DWORD)m_lastEventsH.size(), &m_lastEventsH[0], FALSE, timeout_us >= 0 ? (DWORD)((timeout_us + 999L) / 1000L) : INFINITE);
+	DWORD res = WaitForMultipleObjectsEx((DWORD)m_lastEventsH.size(), &m_lastEventsH[0], FALSE, timeout_us >= 0 ? (DWORD)((timeout_us + 999L) / 1000L) : INFINITE, TRUE);
 
 	HANDLE h = nullptr;
 	int index = 0;
@@ -392,6 +392,11 @@ Poller::Result const* Poller::poll(long timeout_us) {
 	while(true) {
 		if(res == WAIT_TIMEOUT) {
 			errno = 0;
+			break;
+		} else if(res == WAIT_IO_COMPLETION) {
+			// Completion routine is executed.
+			// Just retry.
+			errno = EINTR;
 			break;
 		} else if(res >= WAIT_OBJECT_0 && res < WAIT_OBJECT_0 + m_lastEventsH.size()) {
 			h = m_lastEventsH[index = res - WAIT_OBJECT_0];
@@ -414,15 +419,21 @@ Poller::Result const* Poller::poll(long timeout_us) {
 					if(zmq_getsockopt(it->zmqsock, ZMQ_EVENTS, &zmq_events, &len))
 						revents = 0;
 					revents &= (short)zmq_events;
+					WSAResetEvent(it->h);
 					break;
 				case Event::TypeZmq:
 					if(zmq_getsockopt(it->zmq->socket(), ZMQ_EVENTS, &zmq_events, &len))
 						revents = 0;
 					revents &= (short)zmq_events;
+					WSAResetEvent(it->h);
 					break;
 				default:;
 				}
 #endif
+
+				if(it->type == Event::TypeWinSock)
+					WSAResetEvent(it->h);
+
 				if(revents) {
 					m_lastEvents.push_back(*it);
 					m_lastEvents.back().events = revents;
