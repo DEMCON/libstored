@@ -41,19 +41,38 @@ Poller::~Poller() {
 #endif
 }
 
-int Poller::add(int fd, void* user_data, short events) {
-	return add(Event(Event::TypeFd, fd), user_data, events);
-}
-
-int Poller::modify(int fd, short events) {
-	return modify(Event(Event::TypeFd, fd), events);
-}
-
-int Poller::remove(int fd) {
-	return remove(Event(Event::TypeFd, fd));
-}
-
 #ifdef STORED_OS_WINDOWS
+static int socket_to_SOCKET(void* zmq, SOCKET& win) {
+	size_t len = sizeof(win);
+	return zmq_getsockopt(zmq, ZMQ_FD, &win, &len) ? errno : 0;
+}
+
+static int setEvents(SOCKET s, HANDLE h, short events) {
+	stored_assert(s != INVALID_SOCKET);
+	stored_assert(h);
+
+	long e = FD_CLOSE;
+	if(events & Poller::PollIn)
+		e |= FD_READ | FD_ACCEPT | FD_OOB;
+	if(events & Poller::PollOut)
+		e |= FD_WRITE;
+
+	if(WSAEventSelect(s, h, e))
+		return EIO;
+
+	return 0;
+}
+
+static int SOCKET_to_HANDLE(SOCKET UNUSED_PAR(s), HANDLE& h) {
+	stored_assert(s != INVALID_SOCKET);
+
+	if(!h)
+		if(!(h = WSACreateEvent()))
+			return ENOMEM;
+
+	return 0;
+}
+
 int Poller::add(SOCKET socket, void* user_data, short events) {
 	return add(Event(Event::TypeWinSock, socket), user_data, events);
 }
@@ -77,9 +96,55 @@ int Poller::modifyh(HANDLE handle, short events) {
 int Poller::removeh(HANDLE handle) {
 	return remove(Event(Event::TypeHandle, handle));
 }
-#endif
 
-#ifdef STORED_HAVE_ZMQ
+static HANDLE dummyEventSet;
+static HANDLE dummyEventReset;
+
+static int fd_to_HANDLE(int fd, HANDLE& h) {
+	intptr_t res = _get_osfhandle(fd);
+	if((HANDLE)res == INVALID_HANDLE_VALUE) {
+		return EINVAL;
+	} else if(res == -2) {
+		// stdin/stdout/stderr has no stream associated
+		// Always block.
+		if(!dummyEventReset)
+			if(!(dummyEventReset = CreateEvent(NULL, TRUE, FALSE, NULL)))
+				return EIO;
+
+		h = dummyEventReset;
+		return 0;
+	} else if(fd == fileno(stdout) || fd == fileno(stderr)) {
+		// Cannot WaitFor... on stdout/stderr. Always return immediately using a dummy event.
+		if(!dummyEventSet)
+			if(!(dummyEventSet = CreateEvent(NULL, TRUE, TRUE, NULL)))
+				return EIO;
+
+		h = dummyEventSet;
+		return 0;
+	} else {
+		h = (HANDLE)res;
+		return 0;
+	}
+}
+
+int Poller::add(int fd, void* user_data, short events) {
+	Event e(Event::TypeFd, fd);
+	int res = fd_to_HANDLE(fd, e.h);
+	return res ? res : add(e, user_data, events);
+}
+
+int Poller::modify(int fd, short events) {
+	Event e(Event::TypeFd, fd);
+	int res = fd_to_HANDLE(fd, e.h);
+	return res ? res : modify(e, events);
+}
+
+int Poller::remove(int fd) {
+	Event e(Event::TypeFd, fd);
+	int res = fd_to_HANDLE(fd, e.h);
+	return res ? res : remove(e);
+}
+
 int Poller::add(void* socket, void* user_data, short events) {
 	return add(Event(Event::TypeZmqSock, socket), user_data, events);
 }
@@ -103,6 +168,46 @@ int Poller::modify(ZmqLayer& layer, short events) {
 int Poller::remove(ZmqLayer& layer) {
 	return remove(Event(Event::TypeZmq, &layer));
 }
+
+#else // !STORED_OS_WINDOWS
+
+int Poller::add(int fd, void* user_data, short events) {
+	return add(Event(Event::TypeFd, fd), user_data, events);
+}
+
+int Poller::modify(int fd, short events) {
+	return modify(Event(Event::TypeFd, fd), events);
+}
+
+int Poller::remove(int fd) {
+	return remove(Event(Event::TypeFd, fd));
+}
+
+#  ifdef STORED_HAVE_ZMQ
+int Poller::add(void* socket, void* user_data, short events) {
+	return add(Event(Event::TypeZmqSock, socket), user_data, events);
+}
+
+int Poller::modify(void* socket, short events) {
+	return modify(Event(Event::TypeZmqSock, socket), events);
+}
+
+int Poller::remove(void* socket) {
+	return remove(Event(Event::TypeZmqSock, socket));
+}
+
+int Poller::add(ZmqLayer& layer, void* user_data, short events) {
+	return add(Event(Event::TypeZmq, &layer), user_data, events);
+}
+
+int Poller::modify(ZmqLayer& layer, short events) {
+	return modify(Event(Event::TypeZmq, &layer), events);
+}
+
+int Poller::remove(ZmqLayer& layer) {
+	return remove(Event(Event::TypeZmq, &layer));
+}
+#  endif
 #endif
 
 #ifdef STORED_POLL_ZMQ
@@ -162,6 +267,39 @@ int Poller::add(Poller::Event const& e, void* user_data, short events) {
 	b.user_data = user_data;
 	b.events = events;
 
+#ifdef STORED_OS_WINDOWS
+	int res = 0;
+	switch(b.type) {
+	case Event::TypeWinSock:
+		if((res = SOCKET_to_HANDLE(b.winsock, b.h)))
+			return res;
+		if((res = setEvents(b.winsock, b.h, events)))
+			WSACloseEvent(b.h);
+		return res;
+#  ifdef STORED_HAVE_ZMQ
+	case Event::TypeZmqSock: {
+		SOCKET s = INVALID_SOCKET;
+		if((res = socket_to_SOCKET(b.zmqsock, s)))
+			return res;
+		if((res = SOCKET_to_HANDLE(s, b.h)))
+			return res;
+		if((res = setEvents(s, b.h, events)))
+			WSACloseEvent(b.h);
+		return res;
+	}
+	case Event::TypeZmq: {
+		SOCKET s = b.zmq->fd();
+		if((res = SOCKET_to_HANDLE(s, b.h)))
+			return res;
+		if((res = setEvents(s, b.h, events)))
+			WSACloseEvent(b.h);
+		return res;
+	}
+#  endif
+	default:;
+	}
+#endif
+
 	return 0;
 }
 
@@ -169,8 +307,27 @@ int Poller::modify(Poller::Event const& e, short events) {
 	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it)
 		if(*it == e) {
 			it->events = events;
+#ifdef STORED_OS_WINDOWS
+			switch(it->type) {
+			case Event::TypeWinSock:
+				return setEvents(it->winsock, it->h, events);
+#  ifdef STORED_HAVE_ZMQ
+			case Event::TypeZmqSock: {
+				SOCKET s = INVALID_SOCKET;
+				int res = 0;
+				if((res = socket_to_SOCKET(it->zmqsock, s)))
+					return res;
+				return setEvents(s, it->h, events);
+			}
+			case Event::TypeZmq: {
+				return setEvents(it->zmq->fd(), it->h, events);
+#  endif
+			default:;
+			}
+#endif
 			return 0;
 		}
+	}
 
 	return EINVAL;
 }
@@ -179,6 +336,18 @@ int Poller::remove(Poller::Event const& e) {
 	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end();)
 		if(*it == e) {
 			m_events.erase(it);
+#ifdef SOTRED_OS_WINDOWS
+			switch(it->type) {
+			case Event::TypeWinSock:
+#  ifdef STORED_HAVE_ZMQ
+			case Event::TypeZmqSock:
+			case Event::TypeZmq:
+#  endif
+				WSACloseEvent(it->h);
+				break;
+			default:;
+			}
+#endif
 			return 0;
 		} else
 			++it;
@@ -204,52 +373,73 @@ Poller::Result const* Poller::poll(long timeout_us) {
 
 #ifdef STORED_POLL_WFMO
 Poller::Result const* Poller::poll(long timeout_us) {
+	m_lastEvents.clear();
 	m_lastEventsH.clear();
-	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it) {
-		if(!it->h) {
-			switch(it->type) {
-			case Event::TypeFd:
-				it->h = (HANDLE)_get_osfhandle(it->fd);
-				break;
-			case Event::TypeHandle:
-				it->h = it->handle;
-				break;
-			default:
-				continue;
-			}
-		}
-		m_lastEventsH.push_back(it->h);
-	}
+
+	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it)
+		if(it->h)
+			m_lastEventsH.push_back(it->h);
 
 	stored_assert(m_lastEventsH.size() < MAXIMUM_WAIT_OBJECTS);
 
+	// First try.
 	DWORD res = WaitForMultipleObjects((DWORD)m_lastEventsH.size(), &m_lastEventsH[0], FALSE, timeout_us >= 0 ? (DWORD)((timeout_us + 999L) / 1000L) : INFINITE);
 
 	HANDLE h = nullptr;
+	int index = 0;
+	short revents = 0;
 
-	if(res == WAIT_TIMEOUT) {
-		errno = 0;
-		return nullptr;
-	} else if(res >= WAIT_OBJECT_0 && res < WAIT_OBJECT_0 + m_lastEventsH.size()) {
-		h = m_lastEventsH[res - WAIT_OBJECT_0];
-	} else if(res >= WAIT_ABANDONED_0 && res < WAIT_ABANDONED_0 + m_lastEventsH.size()) {
-		h = m_lastEventsH[res - WAIT_ABANDONED_0];
-	} else {
-		errno = EINVAL;
-		return nullptr;
-	}
-
-	m_lastEvents.clear();
-	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it)
-		if(it->h == h) {
-			m_lastEvents.push_back(*it);
-			return &m_lastEvents;
+	while(true) {
+		if(res == WAIT_TIMEOUT) {
+			errno = 0;
+			break;
+		} else if(res >= WAIT_OBJECT_0 && res < WAIT_OBJECT_0 + m_lastEventsH.size()) {
+			h = m_lastEventsH[index = res - WAIT_OBJECT_0];
+			revents = PollIn | PollOut;
+		} else if(res >= WAIT_ABANDONED_0 && res < WAIT_ABANDONED_0 + m_lastEventsH.size()) {
+			h = m_lastEventsH[index = res - WAIT_ABANDONED_0];
+			revents = PollErr;
+		} else {
+			errno = EINVAL;
+			break;
 		}
 
-	// We should not get here.
-	stored_assert(false);
-	errno = EINVAL;
-	return nullptr;
+		for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it)
+			if(it->h == h) {
+#ifdef STORED_HAVE_ZMQ
+				int zmq_events = ZMQ_POLLIN | ZMQ_POLLOUT;
+				size_t len = sizeof(zmq_events);
+				switch(it->type) {
+				case Event::TypeZmqSock:
+					if(zmq_getsockopt(it->zmqsock, ZMQ_EVENTS, &zmq_events, &len))
+						revents = 0;
+					revents &= (short)zmq_events;
+					break;
+				case Event::TypeZmq:
+					if(zmq_getsockopt(it->zmq->socket(), ZMQ_EVENTS, &zmq_events, &len))
+						revents = 0;
+					revents &= (short)zmq_events;
+					break;
+				default:;
+				}
+#endif
+				if(revents) {
+					m_lastEvents.push_back(*it);
+					m_lastEvents.back().events = revents;
+				}
+				break;
+			}
+
+		// WaitForMultipleObjects() only returns the first handle that was finished.
+		// But we would like to return them all. Check the rest too.
+		m_lastEventsH.erase(m_lastEventsH.begin() + index);
+		if(m_lastEventsH.empty())
+			break;
+
+		res = WaitForMultipleObjects((DWORD)m_lastEventsH.size(), &m_lastEventsH[0], FALSE, 0);
+	}
+
+	return m_lastEvents.empty() ? nullptr : &m_lastEvents;
 }
 #endif
 

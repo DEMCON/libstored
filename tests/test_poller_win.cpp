@@ -28,6 +28,40 @@ namespace {
 
 TEST(Poller, Win) {
 	EXPECT_TRUE(true);
+
+	HANDLE e = CreateEvent(NULL, TRUE, FALSE, NULL);
+	ASSERT_NE(e, (HANDLE)NULL);
+
+	stored::Poller poller;
+
+	// Test HANDLE
+	poller.addh(e, (void*)1, stored::Poller::PollIn);
+
+	auto res = poller.poll(0);
+	EXPECT_EQ(res, nullptr);
+
+	EXPECT_EQ(SetEvent(e), TRUE);
+	res = poller.poll(0);
+	ASSERT_NE(res, nullptr);
+	ASSERT_EQ(res->size(), 1);
+	EXPECT_EQ(res->at(0).handle, e);
+	EXPECT_EQ(res->at(0).user_data, (void*)1);
+
+	// Test fd (non-socket)
+	EXPECT_EQ(poller.add(fileno(stdin), (void*)2, stored::Poller::PollIn), 0);
+	EXPECT_EQ(poller.add(fileno(stdout), (void*)2, stored::Poller::PollOut), 0);
+	res = poller.poll(0);
+	ASSERT_NE(res, nullptr);
+	EXPECT_GE(res->size(), 2); // stdin may or may not be readable. stdout is always writable.
+
+	EXPECT_EQ(poller.remove(fileno(stdin)), 0);
+	EXPECT_EQ(poller.remove(fileno(stdout)), 0);
+
+	EXPECT_EQ(ResetEvent(e), TRUE);
+	res = poller.poll(0);
+	EXPECT_EQ(res, nullptr);
+
+	CloseHandle(e);
 }
 
 #if defined(STORED_HAVE_ZMQ)

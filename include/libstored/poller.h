@@ -125,7 +125,7 @@ namespace stored {
 #ifndef STORED_POLL_ZMQ
 				, user_data(), events()
 #endif
-#ifdef STORED_POLL_WFMO
+#ifdef STORED_OS_WINDOWS
 				, h()
 #endif
 			{}
@@ -135,7 +135,7 @@ namespace stored {
 #ifndef STORED_POLL_ZMQ
 				, user_data(), events()
 #endif
-#ifdef STORED_POLL_WFMO
+#ifdef STORED_OS_WINDOWS
 				, h()
 #endif
 			{
@@ -146,7 +146,7 @@ namespace stored {
 				case TypeFd: fd = va_arg(args, int); break;
 #ifdef STORED_OS_WINDOWS
 				case TypeWinSock: winsock = va_arg(args, SOCKET); break;
-				case TypeHandle: handle = va_arg(args, HANDLE); break;
+				case TypeHandle: h = handle = va_arg(args, HANDLE); break;
 #endif
 #ifdef STORED_HAVE_ZMQ
 				case TypeZmqSock: zmqsock = va_arg(args, void*); break;
@@ -179,7 +179,7 @@ namespace stored {
 			zth_pollfd_t* pollfd;
 #elif defined(STORED_POLL_POLL)
 			struct ::pollfd* pollfd;
-#elif defined(STORED_POLL_WFMO)
+#elif defined(STORED_OS_WINDOWS)
 			HANDLE h;
 #endif
 
@@ -264,7 +264,7 @@ namespace stored {
 #if defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH)
 		std::vector<pollfd> m_lastEventsFd;
 #endif
-#ifdef STORED_POLL_WFMO
+#ifdef STORED_OS_WINDOWS
 		std::vector<HANDLE> m_lastEventsH;
 #endif
 	};
