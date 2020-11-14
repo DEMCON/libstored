@@ -120,6 +120,7 @@ StoreJournal::Seq StoreJournal::bumpSeq(bool force) {
  * \brief Convert to short seq.
  * \param seq the seq to convert, which must be within the current ShortSeqWindow
  */
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 StoreJournal::ShortSeq StoreJournal::toShort(StoreJournal::Seq seq) const {
 	stored_assert(seq <= m_seq);
 	stored_assert(m_seq - seq < ShortSeqWindow);
