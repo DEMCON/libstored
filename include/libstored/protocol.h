@@ -919,7 +919,7 @@ namespace stored {
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
 		using base::encode;
 
-		HANDLE handle();
+		HANDLE handle() const;
 		int recv(bool block = false);
 		std::string const& name() const;
 		int lastError() const;

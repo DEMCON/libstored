@@ -100,7 +100,7 @@ ZmqLayer::socket_type ZmqLayer::fd() {
 	if(zmq_getsockopt(m_socket, ZMQ_FD, &socket, &size) == -1) {
 		setLastError(errno);
 #ifdef STORED_OS_WINDOWS
-		return INVALID_SOCKET;
+		return INVALID_SOCKET; // NOLINT(hicpp-signed-bitwise)
 #else
 		return -1;
 #endif

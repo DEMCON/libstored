@@ -1,5 +1,6 @@
 *:*/extern/libzmq/*
 *:*/extern/googletest/*
+*:*/extern/heatshrink/*
 missingIncludeSystem:*
 cstyleCast:*
 constParameter:*

@@ -79,7 +79,12 @@
 #elif defined(_MSC_VER)
 #  define STORED_COMPILER_MSVC
 #  ifndef UNUSED_PAR
-#    define UNUSED_PAR(name)	name
+#    ifdef __clang__
+// That's odd. Probably clang-tidy.
+#      define UNUSED_PAR(name)	name /* NOLINT(clang-diagnostic-unused-parameter,misc-unused-parameters) */
+#    else
+#      define UNUSED_PAR(name)	name
+#   endif
 #  endif
 #  define NOMINMAX
 #  define _USE_MATH_DEFINES

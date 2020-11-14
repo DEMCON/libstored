@@ -25,6 +25,7 @@
 #include <libstored/macros.h>
 #include <libstored/util.h>
 #include <libstored/zmq.h>
+#include <libstored/protocol.h>
 
 #include <cstdarg>
 #include <vector>
@@ -113,6 +114,7 @@ namespace stored {
 #ifdef STORED_OS_WINDOWS
 				TypeWinSock,
 				TypeHandle,
+				TypeNamedPipe,
 #endif
 #ifdef STORED_HAVE_ZMQ
 				TypeZmqSock,
@@ -147,10 +149,11 @@ namespace stored {
 #ifdef STORED_OS_WINDOWS
 				case TypeWinSock: winsock = va_arg(args, SOCKET); break;
 				case TypeHandle: h = handle = va_arg(args, HANDLE); break;
+				case TypeNamedPipe: namedpipe = va_arg(args, NamedPipeLayer*); break;
 #endif
 #ifdef STORED_HAVE_ZMQ
 				case TypeZmqSock: zmqsock = va_arg(args, void*); break;
-				case TypeZmq: zmq = va_arg(args, stored::ZmqLayer*); break;
+				case TypeZmq: zmq = va_arg(args, ZmqLayer*); break;
 #endif
 				default:;
 				}
@@ -164,6 +167,7 @@ namespace stored {
 #ifdef STORED_OS_WINDOWS
 				SOCKET winsock;
 				HANDLE handle;
+				NamedPipeLayer* namedpipe;
 #endif
 #ifdef STORED_HAVE_ZMQ
 				void* zmqsock;
@@ -193,6 +197,7 @@ namespace stored {
 #ifdef STORED_OS_WINDOWS
 				case TypeWinSock: return winsock == e.winsock;
 				case TypeHandle: return handle == e.handle;
+				case TypeNamedPipe: return namedpipe == e.namedpipe;
 #endif
 #ifdef STORED_HAVE_ZMQ
 				case TypeZmqSock: return zmqsock == e.zmqsock;
@@ -226,6 +231,10 @@ namespace stored {
 		int addh(HANDLE handle, void* user_data, short events);
 		int modifyh(HANDLE handle, short events);
 		int removeh(HANDLE handle);
+
+		int add(NamedPipeLayer& layer, void* user_data, short events);
+		int modify(NamedPipeLayer& layer, short events);
+		int remove(NamedPipeLayer& layer);
 #endif
 #ifdef STORED_HAVE_ZMQ
 		int add(void* socket, void* user_data, short events);

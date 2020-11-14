@@ -23,6 +23,13 @@
 #  include <io.h>
 #endif
 
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define EVENTS_IS_SET(e, flag)	((bool)((unsigned short)(e) & (unsigned short)(flag)))
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define EVENTS_SET(e, flag)		((e) = (short)((unsigned short)(e) | (unsigned short)(flag)))
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define EVENTS_CLEAR(e, flag)	((e) = (short)((unsigned short)(e) & (unsigned short)~(unsigned short)(flag)))
+
 namespace stored {
 
 // NOLINTNEXTLINE(hicpp-use-equals-default)
@@ -43,14 +50,17 @@ Poller::~Poller() {
 
 #ifdef STORED_OS_WINDOWS
 static int setEvents(SOCKET s, HANDLE h, short events) {
-	stored_assert(s != INVALID_SOCKET);
+	stored_assert(s != INVALID_SOCKET); // NOLINT(hicpp-signed-bitwise)
 	stored_assert(h);
 
-	long e = FD_CLOSE;
-	if(events & Poller::PollIn)
-		e |= FD_READ | FD_ACCEPT | FD_OOB;
-	if(events & Poller::PollOut)
-		e |= FD_WRITE;
+	long e = FD_CLOSE; // NOLINT(hicpp-signed-bitwise)
+	if(EVENTS_IS_SET(events, Poller::PollIn)) {
+		EVENTS_SET(e, FD_READ); // NOLINT(hicpp-signed-bitwise)
+		EVENTS_SET(e, FD_ACCEPT); // NOLINT(hicpp-signed-bitwise)
+		EVENTS_SET(e, FD_OOB); // NOLINT(hicpp-signed-bitwise)
+	}
+	if(EVENTS_IS_SET(events, Poller::PollOut))
+		EVENTS_SET(e, FD_WRITE); // NOLINT(hicpp-signed-bitwise)
 
 	if(WSAEventSelect(s, h, e))
 		return EIO;
@@ -59,7 +69,7 @@ static int setEvents(SOCKET s, HANDLE h, short events) {
 }
 
 static int SOCKET_to_HANDLE(SOCKET UNUSED_PAR(s), HANDLE& h) {
-	stored_assert(s != INVALID_SOCKET);
+	stored_assert(s != INVALID_SOCKET); // NOLINT(hicpp-signed-bitwise)
 
 	if(!h)
 		if(!(h = WSACreateEvent()))
@@ -92,11 +102,13 @@ int Poller::removeh(HANDLE handle) {
 	return remove(Event(Event::TypeHandle, handle));
 }
 
-static HANDLE dummyEventSet;
-static HANDLE dummyEventReset;
+static HANDLE dummyEventSet; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+static HANDLE dummyEventReset; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 static int fd_to_HANDLE(int fd, HANDLE& h) {
 	intptr_t res = _get_osfhandle(fd);
+
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 	if((HANDLE)res == INVALID_HANDLE_VALUE) {
 		return EINVAL;
 	} else if(res == -2) {
@@ -117,7 +129,7 @@ static int fd_to_HANDLE(int fd, HANDLE& h) {
 		h = dummyEventSet;
 		return 0;
 	} else {
-		h = (HANDLE)res;
+		h = (HANDLE)res; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
 		return 0;
 	}
 }
@@ -138,6 +150,18 @@ int Poller::remove(int fd) {
 	Event e(Event::TypeFd, fd);
 	int res = fd_to_HANDLE(fd, e.h);
 	return res ? res : remove(e);
+}
+
+int Poller::add(NamedPipeLayer& layer, void* user_data, short events) {
+	return add(Event(Event::TypeNamedPipe, &layer), user_data, events);
+}
+
+int Poller::modify(NamedPipeLayer& layer, short events) {
+	return modify(Event(Event::TypeNamedPipe, &layer), events);
+}
+
+int Poller::remove(NamedPipeLayer& layer) {
+	return remove(Event(Event::TypeNamedPipe, &layer));
 }
 
 #  ifdef STORED_HAVE_ZMQ
@@ -277,9 +301,12 @@ int Poller::add(Poller::Event const& e, void* user_data, short events) {
 		if((res = setEvents(b.winsock, b.h, events)))
 			WSACloseEvent(b.h);
 		return res;
+	case Event::TypeNamedPipe:
+		b.h = b.namedpipe->handle();
+		break;
 #  ifdef STORED_HAVE_ZMQ
 	case Event::TypeZmqSock: {
-		SOCKET s = INVALID_SOCKET;
+		SOCKET s = INVALID_SOCKET; // NOLINT(hicpp-signed-bitwise)
 		if((res = socket_to_SOCKET(b.zmqsock, s)))
 			return res;
 		if((res = SOCKET_to_HANDLE(s, b.h)))
@@ -314,7 +341,7 @@ int Poller::modify(Poller::Event const& e, short events) {
 				return setEvents(it->winsock, it->h, events);
 #  ifdef STORED_HAVE_ZMQ
 			case Event::TypeZmqSock: {
-				SOCKET s = INVALID_SOCKET;
+				SOCKET s = INVALID_SOCKET; // NOLINT(hicpp-signed-bitwise)
 				int res = 0;
 				if((res = socket_to_SOCKET(it->zmqsock, s)))
 					return res;
@@ -400,10 +427,13 @@ Poller::Result const* Poller::poll(long timeout_us) {
 			break;
 		} else if(res >= WAIT_OBJECT_0 && res < WAIT_OBJECT_0 + m_lastEventsH.size()) {
 			h = m_lastEventsH[index = res - WAIT_OBJECT_0];
-			revents = PollIn | PollOut;
+			revents = 0;
+			EVENTS_SET(revents, PollIn);
+			EVENTS_SET(revents, PollOut);
 		} else if(res >= WAIT_ABANDONED_0 && res < WAIT_ABANDONED_0 + m_lastEventsH.size()) {
 			h = m_lastEventsH[index = res - WAIT_ABANDONED_0];
-			revents = PollErr;
+			revents = 0;
+			EVENTS_SET(revents, PollErr);
 		} else {
 			errno = EINVAL;
 			break;
@@ -412,19 +442,19 @@ Poller::Result const* Poller::poll(long timeout_us) {
 		for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it)
 			if(it->h == h) {
 #ifdef STORED_HAVE_ZMQ
-				int zmq_events = ZMQ_POLLIN | ZMQ_POLLOUT;
+				int zmq_events = ZMQ_POLLIN | ZMQ_POLLOUT; // NOLINT(hicpp-signed-bitwise)
 				size_t len = sizeof(zmq_events);
 				switch(it->type) {
 				case Event::TypeZmqSock:
 					if(zmq_getsockopt(it->zmqsock, ZMQ_EVENTS, &zmq_events, &len))
 						revents = 0;
-					revents &= (short)zmq_events;
+					revents = (short)((unsigned short)revents & (unsigned short)zmq_events);
 					WSAResetEvent(it->h);
 					break;
 				case Event::TypeZmq:
 					if(zmq_getsockopt(it->zmq->socket(), ZMQ_EVENTS, &zmq_events, &len))
 						revents = 0;
-					revents &= (short)zmq_events;
+					revents = (short)((unsigned short)revents & (unsigned short)zmq_events);
 					WSAResetEvent(it->h);
 					break;
 				default:;

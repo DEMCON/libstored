@@ -28,6 +28,7 @@
 #endif
 
 #if defined(STORED_OS_WINDOWS)
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #  define write(fd, buffer, count) _write(fd, buffer, (unsigned int)(count))
 #endif
 
@@ -1453,7 +1454,7 @@ NamedPipeLayer::NamedPipeLayer(char const* name, ProtocolLayer* up, ProtocolLaye
 	: base(up, down)
 	, m_state(StateInit)
 	, m_lastError()
-	, m_handle(INVALID_HANDLE_VALUE)
+	, m_handle(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
 	, m_overlappedRead()
 	, m_overlappedWrite()
 	, m_this(this)
@@ -1466,7 +1467,8 @@ NamedPipeLayer::NamedPipeLayer(char const* name, ProtocolLayer* up, ProtocolLaye
 	m_name = "\\\\.\\pipe\\";
 	m_name += name;
 
-	m_bufferRead = (char*)malloc(BufferSize);
+	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc)
+	m_bufferRead = static_cast<char*>(malloc(BufferSize));
 	if(!m_bufferRead) {
 		m_state = StateError;
 		setLastError(ENOMEM);
@@ -1475,6 +1477,7 @@ NamedPipeLayer::NamedPipeLayer(char const* name, ProtocolLayer* up, ProtocolLaye
 
 	m_overlappedRead.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	if(!m_overlappedRead.hEvent) {
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 		m_overlappedRead.hEvent = INVALID_HANDLE_VALUE;
 		m_state = StateError;
 		setLastError(ENOMEM);
@@ -1482,11 +1485,12 @@ NamedPipeLayer::NamedPipeLayer(char const* name, ProtocolLayer* up, ProtocolLaye
 	}
 
 	m_handle = CreateNamedPipe(m_name.c_str(),
-		PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED,
-		PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT,
+		PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED, // NOLINT(hicpp-signed-bitwise)
+		PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT, // NOLINT(hicpp-signed-bitwise)
 		1, BufferSize, BufferSize,
 		0, NULL);
 
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 	if(m_handle == INVALID_HANDLE_VALUE) {
 		setLastError(EAGAIN);
 		m_state = StateError;
@@ -1516,6 +1520,7 @@ NamedPipeLayer::NamedPipeLayer(char const* name, ProtocolLayer* up, ProtocolLaye
 }
 
 NamedPipeLayer::~NamedPipeLayer() {
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 	if(m_handle != INVALID_HANDLE_VALUE) {
 		FlushFileBuffers(m_handle);
 		CancelIo(m_handle);
@@ -1523,6 +1528,7 @@ NamedPipeLayer::~NamedPipeLayer() {
 		CloseHandle(m_handle);
 	}
 
+	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc)
 	free(m_bufferRead);
 }
 
@@ -1566,6 +1572,7 @@ wait_prev_write:
 			} else {
 				if(WriteFileEx(m_handle, &m_bufferWrite[offset],
 					(DWORD)m_writeLen, &m_overlappedWrite,
+					// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 					(LPOVERLAPPED_COMPLETION_ROUTINE)(void*)&writeCompletionRoutine))
 					return 0;
 				else
@@ -1582,7 +1589,8 @@ error:
 }
 
 void NamedPipeLayer::writeCompletionRoutine(DWORD dwErrorCode, DWORD UNUSED_PAR(dwNumberOfBytesTransfered), LPOVERLAPPED lpOverlapped) {
-	NamedPipeLayer* that = (NamedPipeLayer*)((intptr_t)lpOverlapped + sizeof(*lpOverlapped));
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+	NamedPipeLayer* that = (NamedPipeLayer*)((uintptr_t)lpOverlapped + sizeof(*lpOverlapped));
 	stored_assert(that);
 
 	if(dwErrorCode == 0) {
@@ -1609,6 +1617,7 @@ void NamedPipeLayer::encode(void const* buffer, size_t len, bool last) {
 	setLastError(0);
 	resetOverlappedWrite();
 	if(WriteFileEx(m_handle, &m_bufferWrite[0], (DWORD)len, &m_overlappedWrite,
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 		(LPOVERLAPPED_COMPLETION_ROUTINE)(void*)&writeCompletionRoutine))
 	{
 		// Already finished.
@@ -1632,7 +1641,7 @@ error:
 	setLastError(EIO);
 }
 
-HANDLE NamedPipeLayer::handle() {
+HANDLE NamedPipeLayer::handle() const {
 	return m_overlappedRead.hEvent;
 }
 

@@ -29,13 +29,13 @@ static heatshrink_encoder& encoder_(void* e) {
 	stored_assert(e);
 	return *static_cast<heatshrink_encoder*>(e);
 }
-#define encoder() (encoder_(m_encoder))
+#define encoder() (encoder_(m_encoder)) // NOLINT(cppcoreguidelines-macro-usage)
 
 static heatshrink_decoder& decoder_(void* d) {
 	stored_assert(d);
 	return *static_cast<heatshrink_decoder*>(d);
 }
-#define decoder() (decoder_(m_decoder))
+#define decoder() (decoder_(m_decoder)) // NOLINT(cppcoreguidelines-macro-usage)
 
 namespace stored {
 
@@ -66,7 +66,7 @@ void CompressLayer::decode(void* buffer, size_t len) {
 		if(!(m_decoder = heatshrink_decoder_alloc(DecodeInputBuffer, Window, Lookahead)))
 			throw std::bad_alloc();
 
-	m_state |= FlagDecoding;
+	m_state |= (uint8_t)FlagDecoding;
 
 	m_decodeBufferSize = 0;
 
@@ -87,7 +87,7 @@ void CompressLayer::decode(void* buffer, size_t len) {
 		decoderPoll();
 
 	base::decode(&m_decodeBuffer[0], m_decodeBufferSize);
-	m_state &= (uint8_t)~FlagDecoding;
+	m_state &= (uint8_t)~(uint8_t)FlagDecoding;
 }
 
 void CompressLayer::decoderPoll() {
@@ -117,7 +117,7 @@ void CompressLayer::encode(void const* buffer, size_t len, bool last) {
 		if(!(m_encoder = heatshrink_encoder_alloc(Window, Lookahead)))
 			throw std::bad_alloc();
 
-	m_state |= FlagEncoding;
+	m_state |= (uint8_t)FlagEncoding;
 
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 	uint8_t* in_buf = (uint8_t*)buffer;
@@ -139,7 +139,7 @@ void CompressLayer::encode(void const* buffer, size_t len, bool last) {
 			encoderPoll();
 		base::encode(nullptr, 0, true);
 		heatshrink_encoder_reset(&encoder());
-		m_state &= (uint8_t)~FlagEncoding;
+		m_state &= (uint8_t)~(uint8_t)FlagEncoding;
 	}
 }
 

@@ -1,6 +1,8 @@
 # The value will be appended to a STORED_POLL_ define.
 set(LIBSTORED_POLL "AUTO" CACHE STRING "Poll method")
 
+set(LIBSTORED_CLANG_TIDY "OFF")
+
 if(MSVC)
 	add_compile_options(/W1 /WX)
 

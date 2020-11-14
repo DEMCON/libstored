@@ -109,6 +109,7 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 				"-cppcoreguidelines-avoid-goto,"
 				"-cppcoreguidelines-avoid-magic-numbers,"
 				"-cppcoreguidelines-avoid-c-arrays,"
+				"-cppcoreguidelines-pro-type-vararg,"
 
 				"hicpp-*,"
 				"-hicpp-braces-around-statements,"
@@ -120,6 +121,7 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 				"-hicpp-uppercase-literal-suffix,"
 				"-hicpp-avoid-goto,"
 				"-hicpp-avoid-c-arrays,"
+				"-hicpp-vararg,"
 
 				"performance-*,"
 				"clang-analyzer-*,"
@@ -127,6 +129,7 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 				"portability-*,"
 				"misc-*,"
 				"-misc-non-private-member-variables-in-classes,"
+				"-misc-no-recursion,"
 
 				"readability-*,"
 				"-readability-braces-around-statements,"
@@ -136,7 +139,11 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 				"-readability-magic-numbers,"
 			)
 			set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
-				"-header-filter=.*includ/libstored.*")
+				"--extra-arg=-I${libstored_dir}/include"
+				"--extra-arg=-I${libstored_dir}/extern/libzmq/include"
+				"--extra-arg=-I${libstored_dir}/extern/heatshrink"
+				"--extra-arg=-I${CMAKE_CURRENT_SOURCE_DIR}/include"
+				"-header-filter=.*include/libstored.*")
 		endif()
 
 		set_target_properties({{libprefix}}libstored
