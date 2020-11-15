@@ -98,12 +98,20 @@ namespace stored {
 	class Poller {
 		CLASS_NOCOPY(Poller)
 	public:
+		typedef unsigned short events_t;
+
 #ifdef STORED_POLL_ZMQ
-		enum { PollIn = ZMQ_POLLIN, PollOut = ZMQ_POLLOUT, PollErr = ZMQ_POLLERR };
+		static events_t const PollIn = (events_t)ZMQ_POLLIN;
+		static events_t const PollOut = (events_t)ZMQ_POLLOUT;
+		static events_t const PollErr = (events_t)ZMQ_POLLERR;
 #elif defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH) || defined(STORED_POLL_ZTH_WFMO)
-		enum { PollIn = POLLIN, PollOut = POLLOUT, PollErr = POLLERR };
+		static events_t const PollIn = (events_t)POLLIN;
+		static events_t const PollOut = (events_t)POLLOUT;
+		static events_t const PollErr = (events_t)POLLERR;
 #else
-		enum { PollIn = 1, PollOut = 2, PollErr = 4 };
+		static events_t const PollIn = 1u;
+		static events_t const PollOut = 2u;
+		static events_t const PollErr = 4u;
 #endif
 
 		class Event {
@@ -176,7 +184,7 @@ namespace stored {
 			};
 #if !defined(STORED_POLL_ZMQ)
 			void* user_data;
-			short events;
+			events_t events;
 #endif
 
 #if defined(STORED_POLL_ZTH)
@@ -220,34 +228,34 @@ namespace stored {
 		Result const* poll(long timeout_us = -1);
 #endif
 
-		int add(int fd, void* user_data, short events);
-		int modify(int fd, short events);
+		int add(int fd, void* user_data, events_t events);
+		int modify(int fd, events_t events);
 		int remove(int fd);
 #ifdef STORED_OS_WINDOWS
-		int add(SOCKET socket, void* user_data, short events);
-		int modify(SOCKET socket, short events);
+		int add(SOCKET socket, void* user_data, events_t events);
+		int modify(SOCKET socket, events_t events);
 		int remove(SOCKET socket);
 
-		int addh(HANDLE handle, void* user_data, short events);
-		int modifyh(HANDLE handle, short events);
+		int addh(HANDLE handle, void* user_data, events_t events);
+		int modifyh(HANDLE handle, events_t events);
 		int removeh(HANDLE handle);
 
-		int add(NamedPipeLayer& layer, void* user_data, short events);
-		int modify(NamedPipeLayer& layer, short events);
+		int add(NamedPipeLayer& layer, void* user_data, events_t events);
+		int modify(NamedPipeLayer& layer, events_t events);
 		int remove(NamedPipeLayer& layer);
 #endif
 #ifdef STORED_HAVE_ZMQ
-		int add(void* socket, void* user_data, short events);
-		int modify(void* socket, short events);
+		int add(void* socket, void* user_data, events_t events);
+		int modify(void* socket, events_t events);
 		int remove(void* socket);
 
-		int add(ZmqLayer& layer, void* user_data, short events);
-		int modify(ZmqLayer& layer, short events);
+		int add(ZmqLayer& layer, void* user_data, events_t events);
+		int modify(ZmqLayer& layer, events_t events);
 		int remove(ZmqLayer& layer);
 #endif
 	protected:
-		int add(Event const& e, void* user_data, short events);
-		int modify(Event const& e, short events);
+		int add(Event const& e, void* user_data, events_t events);
+		int modify(Event const& e, events_t events);
 		int remove(Event const& e);
 #ifndef STORED_POLL_ZMQ
 		Event* find(Event const& e);
@@ -290,7 +298,7 @@ namespace stored {
 	 * \param revents the events of the poll, which may be 0 if there were no events
 	 * \return 0 on success, otherwise an errno
 	 */
-	int poll_once(Poller::Event const& e, short& revents);
+	int poll_once(Poller::Event const& e, Poller::events_t& revents);
 #endif
 
 } // namespace

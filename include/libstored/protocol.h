@@ -900,16 +900,78 @@ namespace stored {
 		impl::Loopback1 m_b2a;
 	};
 
+	class Poller;
+
+	class FileLayer : public ProtocolLayer {
+		CLASS_NOCOPY(FileLayer)
+	public:
+		typedef ProtocolLayer base;
+
+		enum { BufferSize = 128 };
+
+		explicit FileLayer(int fd, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit FileLayer(char const* name, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+#ifdef STORED_OS_WINDOWS
+		explicit FileLayer(HANDLE h, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+#endif
+
+		virtual ~FileLayer() override;
+
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+
+#ifdef STORED_OS_WINDOWS
+		HANDLE fd() const;
+#else
+		int fd() const;
+#endif
+		int recv(bool block = false);
+		int lastError() const;
+
+	protected:
+		void init();
+		void close();
+		int setLastError(int e);
+		int block(bool forReading);
+
+#ifdef STORED_OS_WINDOWS
+		void resetOverlappedRead();
+		void resetOverlappedWrite();
+		int finishWrite(bool block);
+		static void writeCompletionRoutine(DWORD dwErrorCode, DWORD dwNumberOfBytesTransfered, LPOVERLAPPED lpOverlapped);
+#endif
+
+	private:
+#ifdef STORED_OS_WINDOWS
+		HANDLE m_handle;
+		OVERLAPPED m_overlappedRead;
+
+		struct {
+			// The order of this struct is assumed by writeCompletionRoutine().
+			OVERLAPPED m_overlappedWrite;
+			NamedPipeLayer* const m_this;
+		};
+
+		std::vector<char> m_bufferWrite;
+		size_t m_writeLen;
+#else
+		int m_fd;
+		Poller* m_poller;
+#endif
+		std::vector<char> m_bufferRead;
+		int m_lastError;
+	};
+
 #ifdef STORED_OS_WINDOWS
 	/*!
 	 * \brief Server end of a named pipe.
 	 *
 	 * The client end is easier; it is just a file-like create/open/write/close API.
 	 */
-	class NamedPipeLayer : public ProtocolLayer {
+	class NamedPipeLayer : public FileLayer {
 		CLASS_NOCOPY(NamedPipeLayer)
 	public:
-		typedef ProtocolLayer base;
+		typedef FileLayer base;
 
 		enum { BufferSize = 1024 };
 
@@ -919,19 +981,9 @@ namespace stored {
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
 		using base::encode;
 
-		HANDLE handle() const;
-		int recv(bool block = false);
 		std::string const& name() const;
-		int lastError() const;
 
 	protected:
-		int setLastError(int e);
-		void resetOverlappedRead();
-		void resetOverlappedWrite();
-		int finishWrite(bool block);
-
-		static void writeCompletionRoutine(DWORD dwErrorCode, DWORD dwNumberOfBytesTransfered, LPOVERLAPPED lpOverlapped);
-
 		enum State {
 			StateInit = 0,
 			StateConnecting,
@@ -942,20 +994,7 @@ namespace stored {
 
 	private:
 		State m_state;
-		int m_lastError;
 		std::string m_name;
-		HANDLE m_handle;
-		OVERLAPPED m_overlappedRead;
-
-		struct {
-			// The order of this struct is assumed by writeCompletionRoutine().
-			OVERLAPPED m_overlappedWrite;
-			NamedPipeLayer* const m_this;
-		};
-
-		char* m_bufferRead;
-		std::vector<char> m_bufferWrite;
-		size_t m_writeLen;
 	};
 #endif
 

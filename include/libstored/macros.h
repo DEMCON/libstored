@@ -137,9 +137,7 @@ typedef SSIZE_T ssize_t;
 #    pragma warning(push)
 #    pragma warning(disable: 4668)
 #  endif
-#  ifdef STORED_HAVE_ZMQ
-#    include <winsock2.h>
-#  endif
+#  include <winsock2.h>
 #  include <Windows.h>
 #  ifdef STORED_COMPILER_MSVC
 #    pragma warning(pop)

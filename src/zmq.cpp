@@ -201,7 +201,7 @@ int ZmqLayer::lastError() const {
  * \brief Saves the given error for #lastError().
  */
 void ZmqLayer::setLastError(int error) {
-	m_error = error;
+	errno = m_error = error;
 }
 
 
