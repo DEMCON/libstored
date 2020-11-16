@@ -83,7 +83,7 @@ TEST(Poller, Zmq) {
 	ASSERT_NE(res, nullptr);
 	ASSERT_EQ(res->size(), 1);
 	EXPECT_EQ(res->at(0).user_data, (void*)2);
-	EXPECT_EQ(res->at(0).events, stored::Poller::PollOut);
+	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollOut);
 
 	zmq_send(req, "Hi", 2, 0);
 

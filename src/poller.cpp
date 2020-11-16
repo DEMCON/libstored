@@ -49,7 +49,7 @@ Poller::~Poller() {
 }
 
 #ifdef STORED_OS_WINDOWS
-static int setEvents(SOCKET s, HANDLE h, events_t events) {
+static int setEvents(SOCKET s, HANDLE h, Poller::events_t events) {
 	stored_assert(s != INVALID_SOCKET); // NOLINT(hicpp-signed-bitwise)
 	stored_assert(h);
 
@@ -235,11 +235,25 @@ int Poller::remove(ZmqLayer& layer) {
 #  endif
 #endif
 
+int Poller::add(FileLayer& layer, void* user_data, events_t events) {
+	return add(Event(Event::TypeFile, &layer), user_data, events);
+}
+
+int Poller::modify(FileLayer& layer, events_t events) {
+	return modify(Event(Event::TypeFile, &layer), events);
+}
+
+int Poller::remove(FileLayer& layer) {
+	return remove(Event(Event::TypeFile, &layer));
+}
+
 #ifdef STORED_POLL_ZMQ
 int Poller::add(Poller::Event const& e, void* user_data, events_t events) {
 	switch(e.type) {
 	case Event::TypeFd:
 		return zmq_poller_add_fd(m_poller, e.fd, user_data, (short)events) == -1 ? zmq_errno() : 0;
+	case Event::TypeFile:
+		return zmq_poller_add_fd(m_poller, e.file->fd(), user_data, (short)events) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmqSock:
 		return zmq_poller_add(m_poller, e.zmqsock, user_data, (short)events) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmq:
@@ -253,6 +267,8 @@ int Poller::modify(Poller::Event const& e, events_t events) {
 	switch(e.type) {
 	case Event::TypeFd:
 		return zmq_poller_modify_fd(m_poller, e.fd, (short)events) == -1 ? zmq_errno() : 0;
+	case Event::TypeFile:
+		return zmq_poller_modify_fd(m_poller, e.file->fd(), (short)events) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmqSock:
 		return zmq_poller_modify(m_poller, e.zmqsock, (short)events) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmq:
@@ -266,6 +282,8 @@ int Poller::remove(Poller::Event const& e) {
 	switch(e.type) {
 	case Event::TypeFd:
 		return zmq_poller_remove_fd(m_poller, e.fd) == -1 ? zmq_errno() : 0;
+	case Event::TypeFile:
+		return zmq_poller_remove_fd(m_poller, e.file->fd()) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmqSock:
 		return zmq_poller_remove(m_poller, e.zmqsock) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmq:
@@ -295,6 +313,9 @@ int Poller::add(Poller::Event const& e, void* user_data, events_t events) {
 #ifdef STORED_OS_WINDOWS
 	int res = 0;
 	switch(b.type) {
+	case Event::TypeFile:
+		b.h = b.file->fd();
+		break;
 	case Event::TypeWinSock:
 		if((res = SOCKET_to_HANDLE(b.winsock, b.h)))
 			return res;
@@ -302,7 +323,7 @@ int Poller::add(Poller::Event const& e, void* user_data, events_t events) {
 			WSACloseEvent(b.h);
 		return res;
 	case Event::TypeNamedPipe:
-		b.h = b.namedpipe->handle();
+		b.h = b.namedpipe->fd();
 		break;
 #  ifdef STORED_HAVE_ZMQ
 	case Event::TypeZmqSock: {
@@ -395,14 +416,14 @@ Poller::Event* Poller::find(Poller::Event const& e) {
 #endif // !STORED_POLL_ZMQ
 
 #ifdef STORED_POLL_ZTH_WFMO
-Poller::Result const* Poller::poll(long timeout_us) {
+Poller::Result const* Poller::poll(long timeout_us, bool suspend) {
 	// TODO
 	return m_lastEvents;
 }
 #endif
 
 #ifdef STORED_POLL_WFMO
-Poller::Result const* Poller::poll(long timeout_us) {
+Poller::Result const* Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
 	m_lastEvents.clear();
 	m_lastEventsH.clear();
 
@@ -488,7 +509,7 @@ Poller::Result const* Poller::poll(long timeout_us) {
 #endif
 
 #ifdef STORED_POLL_ZMQ
-Poller::Result const* Poller::poll(long timeout_us) {
+Poller::Result const* Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
 	m_lastEvents.resize(16); // Some arbitrary number. re-poll() to get the rest.
 
 	int res = zmq_poller_wait_all(m_poller, &m_lastEvents[0], (int)m_lastEvents.size(), timeout_us >= 0 ? (timeout_us + 999L) / 1000L : -1L);
@@ -505,7 +526,7 @@ Poller::Result const* Poller::poll(long timeout_us) {
 #endif
 
 #if defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH)
-Poller::Result const* Poller::poll(long timeout_us) {
+Poller::Result const* Poller::poll(long timeout_us, bool suspend) {
 	m_lastEventsFd.resize(m_events.size());
 	size_t i = 0;
 	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it, ++i) {
@@ -517,6 +538,12 @@ Poller::Result const* Poller::poll(long timeout_us) {
 		switch(it->type) {
 		case Event::TypeFd:
 			e.fd = it->fd;
+#if defined(STORED_POLL_ZTH) && defined(ZTH_HAVE_ZMQ)
+			e.socket = nullptr;
+#endif
+			break;
+		case Event::TypeFile:
+			e.fd = it->file->fd();
 #if defined(STORED_POLL_ZTH) && defined(ZTH_HAVE_ZMQ)
 			e.socket = nullptr;
 			break;
@@ -536,11 +563,22 @@ Poller::Result const* Poller::poll(long timeout_us) {
 	}
 
 retry:
-	int res =
+	int res = 0;
+
+	if(suspend) {
+		// Just suspend; not fiber-aware.
+#if defined(STORED_POLL_ZTH) && defined(ZTH_HAVE_LIBZMQ)
+		::zmq_poll
+#else
+		::poll
+#endif
+			(&m_lastEventsFd[0], m_lastEventsFd.size(), (int)(timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us));
+	} else {
 #ifdef STORED_POLL_ZTH
 		zth::io
 #endif
 		::poll(&m_lastEventsFd[0], m_lastEventsFd.size(), (int)(timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us));
+	}
 
 	switch(res) {
 	case -1:
@@ -591,7 +629,7 @@ bool Poller::poll_once() {
 #endif
 
 #ifdef STORED_POLL_LOOP
-Poller::Result const* Poller::poll(long timeout_us) {
+Poller::Result const* Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
 	m_lastEvents.clear();
 
 	do {
@@ -611,19 +649,28 @@ bool Poller::zth_poll_once() {
 	return poll_once() || zth::Timestamp::now() > m_timeout;
 }
 
-Poller::Result const* Poller::poll(long timeout_us) {
+Poller::Result const* Poller::poll(long timeout_us, bool suspend) {
 	m_lastEvents.clear();
 
 	if(timeout_us == 0) {
 		poll_once();
 	} else if(timeout_us < 0) {
-		zth::waitUntil(*this, &Poller::poll_once);
+		if(suspend)
+			// Do not allow context switching. Just do busy-wait.
+			while(!poll_once());
+		else
+			zth::waitUntil(*this, &Poller::poll_once);
 	} else {
 		m_timeout = zth::Timestamp::now();
 		m_timeout += zth::TimeInterval(
 			(time_t)(timeout_us / 1000000l),
 			(timeout_us % 1000000l) * 1000l);
-		zth::waitUntil(*this, &Poller::zth_poll_once);
+
+		if(suspend) {
+			// Do not allow context switching. Just do busy-wait.
+			while(!zth_poll_once());
+		else
+			zth::waitUntil(*this, &Poller::zth_poll_once);
 	}
 
 	return m_lastEvents.empty() ? nullptr : &m_lastEvents;

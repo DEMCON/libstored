@@ -49,6 +49,9 @@ if(WIN32)
 		add_custom_command(TARGET test_poller PRE_LINK
 			COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> ${CMAKE_CURRENT_BINARY_DIR}
 			VERBATIM)
+		add_custom_command(TARGET test_protocol PRE_LINK
+			COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> ${CMAKE_CURRENT_BINARY_DIR}
+			VERBATIM)
 	endif()
 else()
 	libstored_add_test(test_poller test_poller.cpp)

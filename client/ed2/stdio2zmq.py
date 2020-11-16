@@ -43,11 +43,13 @@ class Stdio2Zmq(Stream2Zmq):
         if events.get(self.stdout_socket, 0) & zmq.POLLIN:
             self.recvAll(self.stdout_socket, self.decode)
         if self.process.poll() != None:
+            self.logger.debug('Process terminated with exit code %d', self.process.returncode)
             sys.exit(self.process.returncode)
 
     def sendToApp(self, data):
         if len(data) == 0:
             # Our stdin has closed, close the process's too.
+            self.logger.debug('stdin closed; shutdown')
             self.process.stdin.close()
         else:
             self.process.stdin.write(data)
@@ -59,6 +61,7 @@ class Stdio2Zmq(Stream2Zmq):
             super().encode(data)
 
     def close(self):
+        self.logger.debug('Closing; terminate process')
         self.process.terminate()
         super().close()
 

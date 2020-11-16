@@ -823,7 +823,7 @@ TEST(CompressLayer, Compress) {
 }
 
 #ifdef STORED_OS_WINDOWS
-TEST(NamedPipeLayer, Pipe) {
+TEST(FileLayer, Pipe) {
 	LoggingLayer top;
 	stored::NamedPipeLayer l("test");
 	l.wrap(top);
@@ -841,7 +841,7 @@ TEST(NamedPipeLayer, Pipe) {
 	EXPECT_EQ(top.decoded().at(1), " "); // It blocked on one char.
 	EXPECT_EQ(top.decoded().at(2), "world"); // The rest will follow.
 
-	// Noting to receive.
+	// Nothing to receive.
 	EXPECT_EQ(l.recv(), EAGAIN);
 
 	l.encode("Zip-a-Dee-Doo-Dah", 17);
@@ -851,6 +851,18 @@ TEST(NamedPipeLayer, Pipe) {
 
 	close(fd);
 	EXPECT_EQ(l.recv(), EIO);
+
+	LoggingLayer ftop;
+	stored::FileLayer f("\\\\.\\pipe\\test");
+	f.wrap(ftop);
+	f.encode("When You Wish", 13);
+	l.recv();
+	EXPECT_EQ(top.decoded().at(3), "When You Wish");
+
+	l.encode(" Upon a Star", 12);
+	f.recv();
+	EXPECT_EQ(ftop.decoded().at(0), " ");
+	EXPECT_EQ(ftop.decoded().at(1), "Upon a Star");
 }
 #endif
 

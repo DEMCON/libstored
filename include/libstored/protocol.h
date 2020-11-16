@@ -120,6 +120,27 @@
 #include <string>
 #include <deque>
 
+#if STORED_cplusplus >= 201103L
+#  include <functional>
+#endif
+
+#ifdef STORED_COMPILER_MSVC
+#  include <io.h>
+#  ifndef STDERR_FILENO
+#    define STDERR_FILENO		_fileno(stderr)
+#  endif
+#  ifndef STDOUT_FILENO
+#    define STDOUT_FILENO		_fileno(stdout)
+#  endif
+#  ifndef STDIN_FILENO
+#    define STDIN_FILENO		_fileno(stdin)
+#  endif
+#elif !defined(STORED_OS_BAREMETAL)
+#  include <unistd.h>
+#endif
+
+#include <stdio.h>
+
 namespace stored {
 
 	/*!
@@ -348,7 +369,21 @@ namespace stored {
 		static char const EscEnd   = '\\';   // ST
 		enum { MaxBuffer = 1024 };
 
-		explicit TerminalLayer(int nonDebugDecodeFd = -1, int encodeFd = -1, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		typedef void(NonDebugDecodeCallback)(void* buf, size_t len);
+
+#if STORED_cplusplus >= 201103L
+		template <typename F,
+			SFINAE_IS_FUNCTION(F, NonDebugDecodeCallback, int) = 0>
+		explicit TerminalLayer(F&& cb, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
+			: TerminalLayer(up, down)
+		{
+			m_nonDebugDecodeCallback = std::forward<F>(cb);
+		}
+#else
+		explicit TerminalLayer(NonDebugDecodeCallback* cb, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+#endif
+		explicit TerminalLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+
 		virtual ~TerminalLayer() override;
 
 		virtual void decode(void* buffer, size_t len) override;
@@ -357,28 +392,20 @@ namespace stored {
 		virtual size_t mtu() const override;
 		virtual void reset() override;
 
+		virtual void nonDebugEncode(void* buffer, size_t len);
+
 	protected:
 		virtual void nonDebugDecode(void* buffer, size_t len);
 		void encodeStart();
 		void encodeEnd();
 
-#ifdef STORED_OS_BAREMETAL
-		/*!
-		 * \brief Write a buffer to a file descriptor.
-		 */
-		virtual void writeToFd(int fd, void const* buffer, size_t len) = 0;
-#else
-		virtual void writeToFd(int fd, void const* buffer, size_t len);
-
-	public:
-		static void writeToFd_(int fd, void const* buffer, size_t len);
-#endif
-
 	private:
-		/*! \brief The file descriptor to write non-debug decoded data to. */
-		int m_nonDebugDecodeFd;
-		/*! \brief The file descriptor to write injected debug frames to. */
-		int m_encodeFd;
+		/*! \brief The callback to write non-debug decoded data to. */
+#if STORED_cplusplus >= 201103L
+		std::function<NonDebugDecodeCallback> m_nonDebugDecodeCallback;
+#else
+		NonDebugDecodeCallback* m_nonDebugDecodeCallback;
+#endif
 
 		/*! \brief States of frame extraction. */
 		enum State { StateNormal, StateNormalEsc, StateDebug, StateDebugEsc };
@@ -909,10 +936,13 @@ namespace stored {
 
 		enum { BufferSize = 128 };
 
-		explicit FileLayer(int fd, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
-		explicit FileLayer(char const* name, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit FileLayer(int fd_r, int fd_w = -1, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit FileLayer(char const* name_r, char const* name_w = nullptr, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 #ifdef STORED_OS_WINDOWS
-		explicit FileLayer(HANDLE h, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit FileLayer(HANDLE h_r, HANDLE h_w = INVALID_HANDLE_VALUE, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+protected:
+		explicit FileLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+public:
 #endif
 
 		virtual ~FileLayer() override;
@@ -921,45 +951,78 @@ namespace stored {
 		using base::encode;
 
 #ifdef STORED_OS_WINDOWS
-		HANDLE fd() const;
+		virtual HANDLE fd() const;
 #else
 		int fd() const;
 #endif
-		int recv(bool block = false);
+		virtual int recv(bool block = false);
 		int lastError() const;
 
+		bool isOpen() const;
+
 	protected:
-		void init();
-		void close();
+		virtual void close();
 		int setLastError(int e);
-		int block(bool forReading);
+		virtual int block(bool forReading);
 
 #ifdef STORED_OS_WINDOWS
+		HANDLE handle_r() const;
+		HANDLE handle_w() const;
+		void init(HANDLE h_r, HANDLE h_w);
+		virtual int startRead();
+		virtual size_t available();
 		void resetOverlappedRead();
 		void resetOverlappedWrite();
-		int finishWrite(bool block);
+		virtual int finishWrite(bool block);
 		static void writeCompletionRoutine(DWORD dwErrorCode, DWORD dwNumberOfBytesTransfered, LPOVERLAPPED lpOverlapped);
+#else
+		void init();
 #endif
 
 	private:
 #ifdef STORED_OS_WINDOWS
-		HANDLE m_handle;
+		HANDLE m_handle_r;
+		HANDLE m_handle_w;
+	protected:
 		OVERLAPPED m_overlappedRead;
 
 		struct {
 			// The order of this struct is assumed by writeCompletionRoutine().
 			OVERLAPPED m_overlappedWrite;
-			NamedPipeLayer* const m_this;
+			FileLayer* const m_this;
 		};
 
 		std::vector<char> m_bufferWrite;
 		size_t m_writeLen;
+	private:
 #else
-		int m_fd;
-		Poller* m_poller;
+		int m_fd_r;
+		int m_fd_w;
 #endif
-		std::vector<char> m_bufferRead;
+		Poller* m_poller;
 		int m_lastError;
+	protected:
+		std::vector<char> m_bufferRead;
+	};
+
+	class StdioLayer : public FileLayer {
+		CLASS_NOCOPY(StdioLayer)
+	public:
+		typedef FileLayer base;
+		explicit StdioLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~StdioLayer() override is_default
+
+#ifdef STORED_OS_WINDOWS
+		virtual HANDLE fd() const override;
+		virtual int recv(bool block = false) override;
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+	protected:
+		virtual int startRead() override;
+	private:
+		bool m_pipe_r;
+		bool m_pipe_w;
+#endif
 	};
 
 #ifdef STORED_OS_WINDOWS
@@ -977,18 +1040,17 @@ namespace stored {
 
 		NamedPipeLayer(char const* name, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~NamedPipeLayer() override;
-
-		virtual void encode(void const* buffer, size_t len, bool last = true) override;
-		using base::encode;
-
 		std::string const& name() const;
+		virtual int recv(bool block = false) override;
+		HANDLE handle() const;
 
 	protected:
+		virtual void close() override;
+		virtual int startRead();
 		enum State {
 			StateInit = 0,
 			StateConnecting,
-			StateReady,
-			StateReading,
+			StateConnected,
 			StateError,
 		};
 

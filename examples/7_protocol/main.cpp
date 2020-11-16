@@ -103,7 +103,6 @@ public:
 			buffer_[i] = lossyByte(static_cast<char const*>(buffer)[i]);
 
 		printBuffer(buffer_, len, "< ");
-		stored::TerminalLayer::writeToFd_(STDOUT_FILENO, buffer_, len);
 		base::encode(buffer_, len, last);
 	}
 
@@ -184,6 +183,9 @@ int main() {
 	LossyChannel lossy;
 	lossy.wrap(buffer);
 
+	stored::StdioLayer stdio;
+	stdio.wrap(lossy);
+
 	setvbuf(stdin, NULL, _IONBF, 0);
 	setvbuf(stdout, NULL, _IONBF, 0);
 
@@ -193,13 +195,13 @@ int main() {
 	srand48((long)time(NULL));
 #endif
 
-	char buf[16];
-	ssize_t len;
-	do {
-		len = read(STDIN_FILENO, buf, sizeof(buf));
-		if(len > 0)
-			lossy.decode(buf, (size_t)len);
-	} while(len > 0);
+	stored::Poller poller;
+	poller.add(stdio, nullptr, stored::Poller::PollIn);
+
+	while(stdio.isOpen()) {
+		poller.poll();
+		stdio.recv();
+	}
 
 	return 0;
 }

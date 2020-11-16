@@ -119,6 +119,7 @@ namespace stored {
 			enum Type {
 				TypeNone,
 				TypeFd,
+				TypeFile,
 #ifdef STORED_OS_WINDOWS
 				TypeWinSock,
 				TypeHandle,
@@ -154,6 +155,7 @@ namespace stored {
 
 				switch(type) {
 				case TypeFd: fd = va_arg(args, int); break;
+				case TypeFile: file = va_arg(args, FileLayer*); break;
 #ifdef STORED_OS_WINDOWS
 				case TypeWinSock: winsock = va_arg(args, SOCKET); break;
 				case TypeHandle: h = handle = va_arg(args, HANDLE); break;
@@ -172,6 +174,7 @@ namespace stored {
 			Type type;
 			union {
 				int fd;
+				FileLayer* file;
 #ifdef STORED_OS_WINDOWS
 				SOCKET winsock;
 				HANDLE handle;
@@ -202,6 +205,7 @@ namespace stored {
 				switch(type) {
 				case TypeNone: return true;
 				case TypeFd: return fd == e.fd;
+				case TypeFile: return file == e.file;
 #ifdef STORED_OS_WINDOWS
 				case TypeWinSock: return winsock == e.winsock;
 				case TypeHandle: return handle == e.handle;
@@ -222,15 +226,20 @@ namespace stored {
 
 #ifdef STORED_POLL_ZMQ
 		typedef std::vector<struct zmq_poller_event_t> Result;
-		Result const* poll(long timeout_us = -1);
+		Result const* poll(long timeout_us = -1, bool suspend = false);
 #else
 		typedef std::vector<Event> Result;
-		Result const* poll(long timeout_us = -1);
+		Result const* poll(long timeout_us = -1, bool suspend = false);
 #endif
 
 		int add(int fd, void* user_data, events_t events);
 		int modify(int fd, events_t events);
 		int remove(int fd);
+
+		int add(FileLayer& layer, void* user_data, events_t events);
+		int modify(FileLayer& layer, events_t events);
+		int remove(FileLayer& layer);
+
 #ifdef STORED_OS_WINDOWS
 		int add(SOCKET socket, void* user_data, events_t events);
 		int modify(SOCKET socket, events_t events);
