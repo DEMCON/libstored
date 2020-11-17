@@ -20,6 +20,8 @@
 #include "libstored/poller.h"
 #include "gtest/gtest.h"
 
+#include "LoggingLayer.h"
+
 #include <unistd.h>
 #include <poll.h>
 
@@ -38,8 +40,8 @@ TEST(Poller, Pipe) {
 	char buf = '0';
 
 	// Check if the pipe works at all.
-	write(fd[1], "1", 1);
-	read(fd[0], &buf, 1);
+	EXPECT_EQ(write(fd[1], "1", 1), 1);
+	EXPECT_EQ(read(fd[0], &buf, 1), 1);
 	EXPECT_EQ(buf, '1');
 
 	stored::Poller poller;
@@ -49,7 +51,7 @@ TEST(Poller, Pipe) {
 	EXPECT_EQ(res, nullptr);
 
 	// Put something in the pipe.
-	write(fd[1], "2", 1);
+	EXPECT_EQ(write(fd[1], "2", 1), 1);
 	res = poller.poll(0);
 	ASSERT_NE(res, nullptr);
 	ASSERT_EQ(res->size(), 1);
@@ -58,7 +60,7 @@ TEST(Poller, Pipe) {
 	EXPECT_EQ(res->at(0).user_data, (void*)1);
 
 	// Drain pipe.
-	read(fd[0], &buf, 1);
+	EXPECT_EQ(read(fd[0], &buf, 1), 1);
 	EXPECT_EQ(buf, '2');
 	res = poller.poll(0);
 	EXPECT_EQ(res, nullptr);
@@ -72,7 +74,7 @@ TEST(Poller, Pipe) {
 	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollOut);
 	EXPECT_EQ(res->at(0).user_data, (void*)2);
 
-	write(fd[1], "3", 1);
+	EXPECT_EQ(write(fd[1], "3", 1), 1);
 	res = poller.poll(0);
 	ASSERT_NE(res, nullptr);
 	ASSERT_EQ(res->size(), 2);
@@ -94,7 +96,7 @@ TEST(Poller, Pipe) {
 	}
 
 	// Drain pipe again.
-	read(fd[0], &buf, 1);
+	EXPECT_EQ(read(fd[0], &buf, 1), 1);
 	EXPECT_EQ(buf, '3');
 	res = poller.poll(0);
 	ASSERT_NE(res, nullptr);
@@ -160,51 +162,3 @@ TEST(Poller, Zmq) {
 #endif // STORED_HAVE_ZMQ
 
 } // namespace
-
-#if defined(STORED_POLL_LOOP) || defined(STORED_POLL_ZTH_LOOP)
-namespace stored {
-	int poll_once(Poller::Event const& e, short& revents) {
-		switch(e.type) {
-		case Poller::Event::TypeFd: {
-			struct pollfd fd = {};
-			fd.fd = e.fd;
-			if(e.events & Poller::PollIn)
-				fd.events |= POLLIN;
-			if(e.events & Poller::PollOut)
-				fd.events |= POLLOUT;
-			if(e.events & Poller::PollErr)
-				fd.events |= POLLERR;
-
-do_poll:
-			switch(poll(&fd, 1, 0)) {
-			case 0:
-				// Timeout
-				return 0;
-			case 1:
-				// Got it.
-				revents = 0;
-				if(fd.revents & POLLIN)
-					revents |= (short)Poller::PollIn;
-				if(fd.revents & POLLOUT)
-					revents |= (short)Poller::PollOut;
-				if(fd.revents & POLLERR)
-					revents |= (short)Poller::PollErr;
-				return 0;
-			case -1:
-				switch(errno) {
-				case EINTR:
-				case EAGAIN:
-					goto do_poll;
-				default:
-					return errno;
-				}
-			default:
-				return EINVAL;
-			}
-		}
-		default:
-			return EINVAL;
-		}
-	}
-} // namespace
-#endif
