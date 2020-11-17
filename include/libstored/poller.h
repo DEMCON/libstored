@@ -139,6 +139,7 @@ namespace stored {
 #endif
 			{}
 
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 			explicit Event(int /*Type*/ type, ...)
 				: type((Type)type)
 #ifndef STORED_POLL_ZMQ

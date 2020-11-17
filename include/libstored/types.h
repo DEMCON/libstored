@@ -245,7 +245,7 @@ namespace stored {
 #if STORED_cplusplus >= 201103L
 		explicit
 #endif
-		operator type() const { return get(); }
+		operator type() const { return get(); } // NOLINT(hicpp-explicit-conversions)
 
 		/*!
 		 * \brief Sets the value.
@@ -400,7 +400,7 @@ namespace stored {
 #if STORED_cplusplus >= 201103L
 		explicit
 #endif
-		operator type() const { return get(); }
+		operator type() const { return get(); } // NOLINT(hicpp-explicit-conversions)
 
 		/*!
 		 * \copydoc stored::Variable::set()
@@ -548,7 +548,7 @@ namespace stored {
 #if STORED_cplusplus >= 201103L
 		explicit
 #endif
-		operator type() const { return get(); }
+		operator type() const { return get(); } // NOLINT(hicpp-explicit-conversions)
 
 		/*!
 		 * \brief Calls the function and write its value in the given buffer.
@@ -1260,7 +1260,7 @@ namespace stored {
 #if STORED_cplusplus >= 201103L
 			explicit
 #endif
-			operator type() const { return get(); }
+			operator type() const { return get(); } // NOLINT(hicpp-explicit-conversions)
 
 			template <typename U>
 			U as() const { return saturated_cast<U>(get()); }

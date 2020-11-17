@@ -119,6 +119,7 @@
 #include <vector>
 #include <string>
 #include <deque>
+#include <cerrno>
 
 #if STORED_cplusplus >= 201103L
 #  include <functional>

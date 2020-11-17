@@ -518,7 +518,7 @@ Poller::Result const* Poller::poll(long timeout_us, bool suspend) {
 		pollfd& e = m_lastEventsFd[i];
 
 		it->pollfd = &e;
-		e.events = it->events;
+		e.events = (short)it->events;
 
 		switch(it->type) {
 		case Event::TypeFd:
@@ -586,7 +586,7 @@ retry:
 	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it) {
 		if(it->pollfd && it->pollfd->revents) {
 			m_lastEvents.push_back(*it);
-			m_lastEvents.back().events = it->pollfd->revents;
+			m_lastEvents.back().events = (events_t)it->pollfd->revents;
 		}
 	}
 

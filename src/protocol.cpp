@@ -1540,7 +1540,7 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 			goto error;
 
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
-	} else if((r = open(name_r, O_RDONLY | O_CREAT | O_NONBLOCK)) == -1) {
+	} else if((r = open(name_r, O_RDONLY | O_CREAT | O_NONBLOCK, 0666)) == -1) {
 		goto error;
 
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
