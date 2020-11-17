@@ -30,7 +30,7 @@ if [ -e build ]; then
 		# Override build type
 		pushd build > /dev/null
 		BUILD_TYPE="$1"
-		shift
+		shift || true
 		cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" .. "$@"
 		popd > /dev/null
 	fi
@@ -43,7 +43,7 @@ else
 
 	mkdir build
 	pushd build > /dev/null
-	shift
+	shift || true
 	cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" .. "$@"
 	popd > /dev/null
 fi

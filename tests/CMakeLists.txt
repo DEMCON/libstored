@@ -62,11 +62,14 @@ if(LIBSTORED_EXAMPLES)
 		if(HAVE_VALGRIND)
 			add_test(NAME ${EXAMPLE}-valgrind
 				COMMAND valgrind --error-exitcode=1 --leak-check=full $<TARGET_FILE:${EXAMPLE}>)
-			add_test(NAME ${EXAMPLE}-run
-				COMMAND sh -c "$<TARGET_FILE:${EXAMPLE}> > ${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt")
-		else()
+		endif()
+
+		if(WIN32)
 			add_test(NAME ${EXAMPLE}-run
 				COMMAND ${CMAKE_COMMAND} -E chdir $<TARGET_FILE_DIR:${EXAMPLE}> $ENV{ComSpec} /C "$<SHELL_PATH:$<TARGET_FILE:${EXAMPLE}>> > $<SHELL_PATH:${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt>")
+		else()
+			add_test(NAME ${EXAMPLE}-run
+				COMMAND sh -c "$<TARGET_FILE:${EXAMPLE}> > ${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt")
 		endif()
 
 		if(EXISTS ${PROJECT_SOURCE_DIR}/examples/${EXAMPLE}/output.txt)
