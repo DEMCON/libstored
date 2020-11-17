@@ -1435,68 +1435,125 @@ Loopback::Loopback(ProtocolLayer& a, ProtocolLayer& b)
 
 
 
+//////////////////////////////
+// PolledLayer
+//
+
+PolledLayer::~PolledLayer() {
+	close();
+
+	if(m_poller)
+		delete m_poller;
+}
+
+int PolledLayer::block(PolledLayer::fd_type fd, bool forReading, bool suspend) {
+	setLastError(0);
+
+	Poller& poller = this->poller();
+
+	Poller::events_t events = forReading ? Poller::PollIn : Poller::PollOut;
+
+	int err = 0;
+	int res;
+	if((res = poller.add(fd, nullptr, events))) {
+		err = res;
+		goto done;
+	}
+
+	while(true) {
+		Poller::Result const* pres = poller.poll(-1, suspend);
+
+		if(!pres || pres->empty()) {
+			// Should not happen.
+			err = EINVAL;
+			break;
+		} else if((*pres)[0].events & events) {
+			// Got it.
+			break;
+		}
+	}
+
+	if((res = poller.remove(fd)))
+		if(!err)
+			err = res;
+
+done:
+	if(err)
+		close();
+
+	return setLastError(err);
+}
+
+Poller& PolledLayer::poller() {
+	if(!m_poller)
+		m_poller = new Poller();
+
+	return *m_poller;
+}
+
 
 //////////////////////////////
 // FileLayer
 //
 
-int FileLayer::lastError() const {
-	return m_lastError;
-}
-
-int FileLayer::setLastError(int e) {
-	return errno = m_lastError = e;
-}
-
 #ifndef STORED_OS_WINDOWS
+
+FileLayer::FileLayer(ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_fd_r(-1)
+	, m_fd_w(-1)
+{
+	setLastError(EBADF);
+}
 
 FileLayer::FileLayer(int fd_r, int fd_w, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
-	, m_fd_r(fd_r)
-	, m_fd_w(fd_w == -1 ? fd_r : fd_w)
-	, m_poller()
-	, m_lastError(EBADF)
+	, m_fd_r(-1)
+	, m_fd_w(-1)
 {
 #  ifdef STORED_OS_POSIX
 	fcntl(fd_r, F_SETFL, fcntl(fd_r, F_GETFL) | O_NONBLOCK);
 	fcntl(fd_w, F_SETFL, fcntl(fd_w, F_GETFL) | O_NONBLOCK);
 #  endif
 
-	init();
+	init(fd_r, fd_w == -1 ? fd_r : fd_w);
 }
 
 FileLayer::FileLayer(char const* name, char const* name, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_fd_r(-1)
 	, m_fd_w(-1)
-	, m_poller()
-	, m_lastError(EBADF)
 {
+	int r = -1;
+	int w = -1;
+
 	if(!name_w || strcmp(name_r, name_w) == 0) {
-		if((m_fd_w = m_fd_r = open(name_r, O_RDWR | O_APPEND | O_CREAT | O_NONBLOCK, 0666)) == -1)
+		if((w = r = open(name_r, O_RDWR | O_APPEND | O_CREAT | O_NONBLOCK, 0666)) == -1)
 			goto error;
-	} else if((m_fd_r = open(name_r, O_RDONLY | O_CREAT | O_NONBLOCK)) == -1) {
+	} else if((r = open(name_r, O_RDONLY | O_CREAT | O_NONBLOCK)) == -1) {
 		goto error;
-	} else if((m_fd_w = open(name_w, O_WRONLY | O_APPEND | O_CREAT | O_NONBLOCK, 0666)) == -1) {
+	} else if((w = open(name_w, O_WRONLY | O_APPEND | O_CREAT | O_NONBLOCK, 0666)) == -1) {
 		goto error;
 	}
 
-	init();
+	init(r, w);
 	return;
 
 error:
-	if(m_fd_r != -1) {
-		::close(m_fd_r);
-		m_fd_r = -1;
-	}
-	if(m_fd_w != -1) {
-		::close(m_fd_w);
-		m_fd_w = -1;
-	}
-	setLastError(errno);
+	if(r != -1)
+		::close(r);
+	if(w != -1)
+		::close(w);
+	setLastError(errno ? errno : EBADF);
 }
 
-void FileLayer::init() {
+void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w) {
+	stored_assert(m_fd_r == -1);
+	stored_assert(m_fd_w == -1);
+
+	m_fd_r = fd_r;
+	m_fd_w = fd_w;
+
 	if(m_fd_r == -1 || m_fd_w == -1) {
 		setLastError(EBADF);
 	} else {
@@ -1506,17 +1563,20 @@ void FileLayer::init() {
 }
 
 FileLayer::~FileLayer() {
-	if(m_poller)
-		delete m_poller;
-
 	close();
 }
 
 void FileLayer::close() {
 	if(m_fd_r != -1)
 		::close(m_fd_r);
+
 	if(m_fd_w != -1 && m_fd_r != m_fd_w)
 		::close(m_fd_w);
+
+	m_fd_r = -1;
+	m_fd_w = -1;
+
+	base::close();
 }
 
 bool FileLayer::isOpen() const {
@@ -1547,7 +1607,7 @@ void FileLayer::encode(void const* buffer, size_t len, bool last) {
 				if(!block)
 					goto error;
 
-				if(this->block(false))
+				if(this->block(m_fd_w, false, m_fd_w == STDOUT_FILENO))
 					return lastError();
 
 				// We should be able to write more now. Retry.
@@ -1577,16 +1637,24 @@ done:
 	base::encode(buffer, len, last);
 }
 
-int FileLayer::fd() const {
+FileLayer::fd_type FileLayer::fd() const {
 	return m_fd_r;
 }
 
+Filelayer::fd_type fd_r() const {
+	return m_fd_r;
+}
+
+Filelayer::fd_type fd_w() const {
+	return m_fd_w;
+}
+
 int FileLayer::recv(bool block) {
-	if(m_fd_r == -1)
+	if(fd_r() == -1)
 		return setLastError(EBADF);
 
 again:
-	ssize_t cnt = read(m_fd_r, &m_bufferRead[0], m_bufferRead.size());
+	ssize_t cnt = read(fd_r(), &m_bufferRead[0], m_bufferRead.size());
 
 	if(cnt == -1) {
 		switch(errno) {
@@ -1595,7 +1663,7 @@ again:
 			if(!block)
 				return setLastError(errno);
 
-			if(this->block(true))
+			if(this->block(fd_r(), true))
 				return lastError();
 
 			goto again;
@@ -1613,43 +1681,16 @@ again:
 	}
 }
 
-int FileLayer::block(bool forReading) {
-	Poller::events_t events = forReading ? Poller::PollIn : Poller::PollOut;
-	int fd = forReading ? m_fd_r : m_fd_w;
-
-	if(!m_poller)
-		m_poller = new Poller();
-
-	if((errno = m_poller->add(fd, nullptr, events)))
-		return setLastError(errno);
-
-	// Go block.
-	Poller::Result const* res = m_poller->poll(-1, fd == STDOUT_FILENO);
-
-	if(!res || res->empty() || !((*res)[0].events & events)) {
-		m_poller->remove(fd);
-		return setLastError(EINVAL);
-	}
-
-	if((errno = m_poller->remove(fd)))
-		return setLastError(errno);
-
-	return 0;
-}
-
-
 #else // STORED_OS_WINDOWS
 
 FileLayer::FileLayer(int fd_r, int fd_w, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
-	, m_handle_r(INVALID_HANDLE_VALUE)
-	, m_handle_w(INVALID_HANDLE_VALUE)
+	, m_fd_r(INVALID_HANDLE_VALUE)
+	, m_fd_w(INVALID_HANDLE_VALUE)
 	, m_overlappedRead()
 	, m_overlappedWrite()
 	, m_this(this)
 	, m_writeLen()
-	, m_poller()
-	, m_lastError(EBADF)
 {
 	HANDLE h_r = (HANDLE)_get_osfhandle(fd_r);
 	HANDLE h_w = fd_w == -1 ? h_r : (HANDLE)_get_osfhandle(fd_w);
@@ -1658,15 +1699,15 @@ FileLayer::FileLayer(int fd_r, int fd_w, ProtocolLayer* up, ProtocolLayer* down)
 
 FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
-	, m_handle_r(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
-	, m_handle_w(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+	, m_fd_r(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+	, m_fd_w(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
 	, m_overlappedRead()
 	, m_overlappedWrite()
 	, m_this(this)
 	, m_writeLen()
-	, m_poller()
-	, m_lastError(EBADF)
 {
+	setLastError(EBADF);
+
 	if(!name_w || strcmp(name_r, name_w) == 0) {
 		HANDLE h;
 		if((h = CreateFile(name_r, GENERIC_READ | GENERIC_WRITE,
@@ -1706,34 +1747,31 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 
 FileLayer::FileLayer(HANDLE h_r, HANDLE h_w, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
-	, m_handle_r(INVALID_HANDLE_VALUE)
-	, m_handle_w(INVALID_HANDLE_VALUE)
+	, m_fd_r(INVALID_HANDLE_VALUE)
+	, m_fd_w(INVALID_HANDLE_VALUE)
 	, m_overlappedRead()
 	, m_overlappedWrite()
 	, m_this(this)
 	, m_writeLen()
-	, m_poller()
-	, m_lastError(EBADF)
 {
 	init(h_r, h_w == INVALID_HANDLE_VALUE ? h_r : h_w);
 }
 
 FileLayer::FileLayer(ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
-	, m_handle_r(INVALID_HANDLE_VALUE)
-	, m_handle_w(INVALID_HANDLE_VALUE)
+	, m_fd_r(INVALID_HANDLE_VALUE)
+	, m_fd_w(INVALID_HANDLE_VALUE)
 	, m_overlappedRead()
 	, m_overlappedWrite()
 	, m_this(this)
 	, m_writeLen()
-	, m_poller()
-	, m_lastError(EBADF)
 {
+	setLastError(EBADF);
 }
 
-void FileLayer::init(HANDLE h_r, HANDLE h_w) {
-	stored_assert(m_handle_r == INVALID_HANDLE_VALUE);
-	stored_assert(m_handle_w == INVALID_HANDLE_VALUE);
+void FileLayer::init(FileLayer::fd_type h_r, FileLayer::fd_type h_w) {
+	stored_assert(m_fd_r == INVALID_HANDLE_VALUE);
+	stored_assert(m_fd_w == INVALID_HANDLE_VALUE);
 
 	if(h_r == INVALID_HANDLE_VALUE) {
 		setLastError(EBADF);
@@ -1745,8 +1783,8 @@ void FileLayer::init(HANDLE h_r, HANDLE h_w) {
 		goto error;
 	}
 
-	m_handle_r = h_r;
-	m_handle_w = h_w;
+	m_fd_r = h_r;
+	m_fd_w = h_w;
 
 	setLastError(0);
 
@@ -1780,25 +1818,22 @@ error:
 
 FileLayer::~FileLayer() {
 	close();
-
-	if(m_poller)
-		delete m_poller;
 }
 
 void FileLayer::close() {
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
-	if(m_handle_r != m_handle_w && m_handle_w != INVALID_HANDLE_VALUE) {
-		FlushFileBuffers(m_handle_w);
-		CancelIo(m_handle_w);
-		CloseHandle(m_handle_w);
+	if(m_fd_r != m_fd_w && m_fd_w != INVALID_HANDLE_VALUE) {
+		FlushFileBuffers(m_fd_w);
+		CancelIo(m_fd_w);
+		CloseHandle(m_fd_w);
 	}
-	m_handle_w = INVALID_HANDLE_VALUE;
+	m_fd_w = INVALID_HANDLE_VALUE;
 
-	if(m_handle_r != INVALID_HANDLE_VALUE) {
-		FlushFileBuffers(m_handle_r);
-		CancelIo(m_handle_r);
-		CloseHandle(m_handle_r);
-		m_handle_r = INVALID_HANDLE_VALUE;
+	if(m_fd_r != INVALID_HANDLE_VALUE) {
+		FlushFileBuffers(m_fd_r);
+		CancelIo(m_fd_r);
+		CloseHandle(m_fd_r);
+		m_fd_r = INVALID_HANDLE_VALUE;
 	}
 
 	if(m_overlappedRead.hEvent) {
@@ -1810,36 +1845,12 @@ void FileLayer::close() {
 		CloseHandle(m_overlappedWrite.hEvent);
 		m_overlappedWrite.hEvent = NULL;
 	}
+
+	base::close();
 }
 
 bool FileLayer::isOpen() const {
-	return m_handle_r != INVALID_HANDLE_VALUE;
-}
-
-int FileLayer::block(bool forReading) {
-	if(!m_poller)
-		m_poller = new Poller();
-
-	HANDLE h = forReading ? m_overlappedRead.hEvent : m_overlappedWrite.hEvent;
-	int res = 0;
-	Poller::Result const* result = nullptr;
-
-	if((res = m_poller->addh(h, nullptr, Poller::PollIn)))
-		goto error;
-
-	result = m_poller->poll(-1);
-	if(!result || result->empty() || !((*result)[0].events & Poller::PollIn))
-		goto error;
-
-	if((res = m_poller->removeh(h)))
-		goto error;
-
-	return 0;
-
-error:
-	m_poller->removeh(h);
-	close();
-	return setLastError(res);
+	return m_fd_r != INVALID_HANDLE_VALUE;
 }
 
 int FileLayer::finishWrite(bool block) {
@@ -1848,11 +1859,11 @@ int FileLayer::finishWrite(bool block) {
 wait_prev_write:
 	if(!HasOverlappedIoCompleted(&m_overlappedWrite)) {
 		if(block)
-			if(this->block(false))
+			if(this->block(fd_w(), false))
 				return lastError();
 
 		DWORD written = 0;
-		if(!GetOverlappedResult(m_handle_w, &m_overlappedWrite, &written, FALSE)) {
+		if(!GetOverlappedResult(fd_w(), &m_overlappedWrite, &written, FALSE)) {
 			switch(GetLastError()) {
 			case ERROR_IO_INCOMPLETE:
 			case ERROR_IO_PENDING:
@@ -1869,7 +1880,7 @@ wait_prev_write:
 			resetOverlappedWrite();
 			m_writeLen -= written;
 			if(block) {
-				if(WriteFile(m_handle_w, &m_bufferWrite[offset],
+				if(WriteFile(fd_w(), &m_bufferWrite[offset],
 					(DWORD)m_writeLen, &written, &m_overlappedWrite))
 				{
 					// Completed immediately.
@@ -1883,7 +1894,7 @@ wait_prev_write:
 					}
 				}
 			} else {
-				if(WriteFileEx(m_handle_w, &m_bufferWrite[offset],
+				if(WriteFileEx(fd_w(), &m_bufferWrite[offset],
 					(DWORD)m_writeLen, &m_overlappedWrite,
 					// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 					(LPOVERLAPPED_COMPLETION_ROUTINE)(void*)&writeCompletionRoutine))
@@ -1895,7 +1906,6 @@ wait_prev_write:
 	}
 
 	SetEvent(m_overlappedWrite.hEvent);
-
 	return 0;
 
 error:
@@ -1918,7 +1928,7 @@ void FileLayer::writeCompletionRoutine(DWORD dwErrorCode, DWORD UNUSED_PAR(dwNum
 }
 
 void FileLayer::encode(void const* buffer, size_t len, bool last) {
-	if(m_handle_w == INVALID_HANDLE_VALUE) {
+	if(fd_w() == INVALID_HANDLE_VALUE) {
 done:
 		// Done. It might be the case that the write already finished, but
 		// not all data has been written. Let the next invocation of encode() handle that.
@@ -1934,7 +1944,7 @@ done:
 	memcpy(&m_bufferWrite[0], buffer, len);
 	setLastError(0);
 	resetOverlappedWrite();
-	if(WriteFileEx(m_handle_w, &m_bufferWrite[0], (DWORD)len, &m_overlappedWrite,
+	if(WriteFileEx(fd_w(), &m_bufferWrite[0], (DWORD)len, &m_overlappedWrite,
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 		(LPOVERLAPPED_COMPLETION_ROUTINE)(void*)&writeCompletionRoutine))
 	{
@@ -1957,23 +1967,23 @@ error:
 	goto done;
 }
 
-HANDLE FileLayer::fd() const {
+FileLayer::fd_type FileLayer::fd() const {
 	return m_overlappedRead.hEvent;
 }
 
-HANDLE FileLayer::handle_r() const {
-	return m_handle_r;
+FileLayer::fd_type FileLayer::fd_r() const {
+	return m_fd_r;
 }
 
-HANDLE FileLayer::handle_w() const {
-	return m_handle_w;
+FileLayer::fd_type FileLayer::fd_w() const {
+	return m_fd_w;
 }
 
 int FileLayer::startRead() {
 	bool didDecode = false;
 
 again:
-	if(m_handle_r == INVALID_HANDLE_VALUE)
+	if(m_fd_r == INVALID_HANDLE_VALUE)
 		return setLastError(EBADF);
 
 	size_t readable = available();
@@ -1993,7 +2003,7 @@ again:
 	// Read everything there is to read.
 	// This should be finished quickly.
 	resetOverlappedRead();
-	if(ReadFile(m_handle_r, &m_bufferRead[0],
+	if(ReadFile(m_fd_r, &m_bufferRead[0],
 		(DWORD)readable,
 		&bytesRead, &m_overlappedRead))
 	{
@@ -2015,20 +2025,20 @@ again:
 }
 
 size_t FileLayer::available() {
-	if(m_handle_r == INVALID_HANDLE_VALUE)
+	if(m_fd_r == INVALID_HANDLE_VALUE)
 		return 0;
 
-	switch(GetFileType(m_handle_r)) {
+	switch(GetFileType(m_fd_r)) {
 	case FILE_TYPE_DISK: {
 		LONG posHigh = 0L;
-		DWORD res = SetFilePointer(m_handle_r, 0L, &posHigh, FILE_CURRENT);
+		DWORD res = SetFilePointer(m_fd_r, 0L, &posHigh, FILE_CURRENT);
 		if(res == INVALID_SET_FILE_POINTER)
 			return 0;
 
 		size_t pos = (size_t)res | ((size_t)posHigh << 32u);
 
 		DWORD sizeHigh = 0;
-		res = GetFileSize(m_handle_r, &sizeHigh);
+		res = GetFileSize(m_fd_r, &sizeHigh);
 		if(res == INVALID_FILE_SIZE)
 			return 0;
 
@@ -2039,7 +2049,7 @@ size_t FileLayer::available() {
 	}
 	case FILE_TYPE_PIPE: {
 		DWORD readable = 0;
-		if(!PeekNamedPipe(m_handle_r, NULL, 0, NULL, &readable, NULL))
+		if(!PeekNamedPipe(m_fd_r, NULL, 0, NULL, &readable, NULL))
 			return 0;
 
 		if(readable == 0)
@@ -2060,12 +2070,12 @@ int FileLayer::recv(bool block) {
 	setLastError(0);
 
 	if(block)
-		if(this->block(true))
+		if(this->block(fd_r(), true))
 			return lastError();
 
 again:
 	DWORD read = 0;
-	if(GetOverlappedResult(m_handle_r, &m_overlappedRead, &read, FALSE)) {
+	if(GetOverlappedResult(m_fd_r, &m_overlappedRead, &read, FALSE)) {
 		// Finished the previous read.
 		decode(&m_bufferRead[0], read);
 		didDecode = true;
@@ -2082,7 +2092,7 @@ again:
 
 			if(block) {
 				// Go block till we are readable.
-				if(this->block(true))
+				if(this->block(fd_r(), true))
 					return lastError();
 
 				goto again;
@@ -2095,6 +2105,14 @@ again:
 			return setLastError(EIO);
 		}
 	}
+}
+
+OVERLAPPED& FileLayer::overlappedRead() {
+	return m_overlappedRead;
+}
+
+OVERLAPPED& FileLayer::overlappedWrite() {
+	return m_overlappedWrite;
 }
 
 void FileLayer::resetOverlappedRead() {
@@ -2149,6 +2167,7 @@ NamedPipeLayer::~NamedPipeLayer() {
 
 void NamedPipeLayer::close() {
 	if(handle() != INVALID_HANDLE_VALUE) {
+		// Don't really close, just reconnect.
 		FlushFileBuffers(handle());
 		CancelIo(handle());
 		DisconnectNamedPipe(handle());
@@ -2164,7 +2183,7 @@ int NamedPipeLayer::recv(bool block) {
 again:
 	switch(m_state) {
 	case StateInit:
-		if(ConnectNamedPipe(handle(), &m_overlappedRead)) {
+		if(ConnectNamedPipe(handle(), &overlappedRead())) {
 			// Connected immediately.
 			m_state = StateConnected;
 			didDecode = true;
@@ -2191,9 +2210,9 @@ again:
 	case StateConnecting: {
 		DWORD dummy = 0;
 		if(block)
-			this->block(true);
+			this->block(fd_r(), true);
 
-		if(GetOverlappedResult(handle(), &m_overlappedRead, &dummy, FALSE)) {
+		if(GetOverlappedResult(fd_r(), &overlappedRead(), &dummy, FALSE)) {
 			m_state = StateConnected;
 			if(startRead())
 				return lastError();
@@ -2243,7 +2262,7 @@ std::string const& NamedPipeLayer::name() const {
 }
 
 HANDLE NamedPipeLayer::handle() const {
-	return handle_r();
+	return fd_r();
 }
 
 #endif // STORED_OS_WINDOWS
@@ -2257,43 +2276,76 @@ HANDLE NamedPipeLayer::handle() const {
 #ifdef STORED_OS_WINDOWS
 StdioLayer::StdioLayer(ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
+	, m_fd_r(GetStdHandle(STD_INPUT_HANDLE))
+	, m_fd_w(GetStdHandle(STD_OUTPUT_HANDLE))
 	, m_pipe_r()
 	, m_pipe_w()
 {
-	HANDLE h_r = GetStdHandle(STD_INPUT_HANDLE);
-	HANDLE h_w = GetStdHandle(STD_OUTPUT_HANDLE);
-
 	DWORD mode = 0;
-	if(GetConsoleMode(h_r, &mode)) {
-		SetConsoleMode(h_r, mode & ~(ENABLE_MOUSE_INPUT | ENABLE_WINDOW_INPUT));
-		FlushConsoleInputBuffer(h_r);
+	if(GetConsoleMode(m_fd_r, &mode)) {
+		SetConsoleMode(m_fd_r, mode & ~(ENABLE_MOUSE_INPUT | ENABLE_WINDOW_INPUT));
+		FlushConsoleInputBuffer(m_fd_r);
 	} else {
 		// stdin is probably redirected, in which case it is a named pipe.
 		m_pipe_r = true;
 	}
 
-	if(GetConsoleMode(h_w, &mode)) {
-		SetConsoleMode(h_w, mode | 4 /*ENABLE_VIRTUAL_TERMINAL_PROCESSING*/ );
+	if(GetConsoleMode(m_fd_w, &mode)) {
+		SetConsoleMode(m_fd_w, mode | 4 /*ENABLE_VIRTUAL_TERMINAL_PROCESSING*/ );
 	} else {
 		// stdout is probably redirected, in which case it is a named pipe.
 		m_pipe_w = true;
 	}
 
-	init(h_r, h_w);
+	m_bufferRead.resize(BufferSize);
+}
+
+bool StdioLayer::isPipeIn() const {
+	return m_pipe_r;
+}
+
+bool StdioLayer::isPipeOut() const {
+	return m_pipe_w;
+}
+
+int StdioLayer::block(fd_type UNUSED_PAR(fd), bool UNUSED_PAR(forReading), bool UNUSED_PAR(suspend)) {
+	stored_assert(false);
+	return setLastError(EINVAL);
+}
+
+bool StdioLayer::isOpen() const {
+	return m_fd_r != INVALID_HANDLE_VALUE;
+}
+
+void StdioLayer::close() {
+	if(m_fd_r != INVALID_HANDLE_VALUE && isPipeIn()) {
+		CloseHandle(m_fd_r);
+		m_fd_r = INVALID_HANDLE_VALUE;
+	}
+
+	base::close();
+}
+
+StdioLayer::fd_type StdioLayer::fd_r() const {
+	return m_fd_r;
+}
+
+StdioLayer::fd_type StdioLayer::fd_w() const {
+	return m_fd_w;
 }
 
 // Guess what, Overlapped I/O is not supported on the console...
 int StdioLayer::recv(bool block) {
-	if(handle_r() == INVALID_HANDLE_VALUE)
+	if(fd_r() == INVALID_HANDLE_VALUE)
 		return setLastError(EBADF);
 
 	bool didDecode = false;
 	DWORD cnt = 0;
 again:
-	if(m_pipe_r) {
-		if(!PeekNamedPipe(handle_r(), NULL, 0, NULL, &cnt, NULL))
+	if(isPipeIn()) {
+		if(!PeekNamedPipe(fd_r(), NULL, 0, NULL, &cnt, NULL))
 			goto error;
-	} else if(!GetNumberOfConsoleInputEvents(handle_r(), &cnt)){
+	} else if(!GetNumberOfConsoleInputEvents(fd_r(), &cnt)){
 		goto error;
 	}
 
@@ -2309,7 +2361,7 @@ again:
 	if((size_t)cnt > m_bufferRead.size())
 		cnt = (DWORD)m_bufferRead.size();
 
-	if(ReadFile(handle_r(), &m_bufferRead[0], cnt, &cnt, NULL)) {
+	if(ReadFile(fd_r(), &m_bufferRead[0], cnt, &cnt, NULL)) {
 		decode(&m_bufferRead[0], (size_t)cnt);
 		didDecode = true;
 		goto again;
@@ -2321,10 +2373,10 @@ error:
 }
 
 void StdioLayer::encode(void const* buffer, size_t len, bool last) {
-	if(handle_w() == INVALID_HANDLE_VALUE) {
+	if(fd_w() == INVALID_HANDLE_VALUE) {
 		setLastError(EBADF);
 done:
-		base::base::encode(buffer, len, last);
+		base::encode(buffer, len, last);
 		return;
 	}
 
@@ -2332,7 +2384,7 @@ done:
 	size_t rem = len;
 	while(rem > 0) {
 		DWORD written = 0;
-		if(!WriteFile(handle_w(), buf, (DWORD)rem, &written, NULL)) {
+		if(!WriteFile(fd_w(), buf, (DWORD)rem, &written, NULL)) {
 			close();
 			setLastError(EIO);
 			goto done;
@@ -2345,12 +2397,8 @@ done:
 	goto done;
 }
 
-int StdioLayer::startRead() {
-	return setLastError(0);
-}
-
-HANDLE StdioLayer::fd() const {
-	return handle_r();
+StdioLayer::fd_type StdioLayer::fd() const {
+	return fd_r();
 }
 
 #else // !STORED_OS_WINDOWS

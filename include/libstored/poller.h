@@ -119,11 +119,10 @@ namespace stored {
 			enum Type {
 				TypeNone,
 				TypeFd,
-				TypeFile,
+				TypePolledLayer,
 #ifdef STORED_OS_WINDOWS
 				TypeWinSock,
 				TypeHandle,
-				TypeNamedPipe,
 #endif
 #ifdef STORED_HAVE_ZMQ
 				TypeZmqSock,
@@ -155,11 +154,10 @@ namespace stored {
 
 				switch(type) {
 				case TypeFd: fd = va_arg(args, int); break;
-				case TypeFile: file = va_arg(args, FileLayer*); break;
+				case TypePolledLayer: polledLayer = va_arg(args, PolledLayer*); break;
 #ifdef STORED_OS_WINDOWS
 				case TypeWinSock: winsock = va_arg(args, SOCKET); break;
 				case TypeHandle: h = handle = va_arg(args, HANDLE); break;
-				case TypeNamedPipe: namedpipe = va_arg(args, NamedPipeLayer*); break;
 #endif
 #ifdef STORED_HAVE_ZMQ
 				case TypeZmqSock: zmqsock = va_arg(args, void*); break;
@@ -174,11 +172,10 @@ namespace stored {
 			Type type;
 			union {
 				int fd;
-				FileLayer* file;
+				PolledLayer* polledLayer;
 #ifdef STORED_OS_WINDOWS
 				SOCKET winsock;
 				HANDLE handle;
-				NamedPipeLayer* namedpipe;
 #endif
 #ifdef STORED_HAVE_ZMQ
 				void* zmqsock;
@@ -205,11 +202,10 @@ namespace stored {
 				switch(type) {
 				case TypeNone: return true;
 				case TypeFd: return fd == e.fd;
-				case TypeFile: return file == e.file;
+				case TypePolledLayer: return polledLayer == e.polledLayer;
 #ifdef STORED_OS_WINDOWS
 				case TypeWinSock: return winsock == e.winsock;
 				case TypeHandle: return handle == e.handle;
-				case TypeNamedPipe: return namedpipe == e.namedpipe;
 #endif
 #ifdef STORED_HAVE_ZMQ
 				case TypeZmqSock: return zmqsock == e.zmqsock;
@@ -236,9 +232,9 @@ namespace stored {
 		int modify(int fd, events_t events);
 		int remove(int fd);
 
-		int add(FileLayer& layer, void* user_data, events_t events);
-		int modify(FileLayer& layer, events_t events);
-		int remove(FileLayer& layer);
+		int add(PolledLayer& layer, void* user_data, events_t events);
+		int modify(PolledLayer& layer, events_t events);
+		int remove(PolledLayer& layer);
 
 #ifdef STORED_OS_WINDOWS
 		int add(SOCKET socket, void* user_data, events_t events);
@@ -248,10 +244,6 @@ namespace stored {
 		int addh(HANDLE handle, void* user_data, events_t events);
 		int modifyh(HANDLE handle, events_t events);
 		int removeh(HANDLE handle);
-
-		int add(NamedPipeLayer& layer, void* user_data, events_t events);
-		int modify(NamedPipeLayer& layer, events_t events);
-		int remove(NamedPipeLayer& layer);
 #endif
 #ifdef STORED_HAVE_ZMQ
 		int add(void* socket, void* user_data, events_t events);

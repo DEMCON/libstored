@@ -152,18 +152,6 @@ int Poller::remove(int fd) {
 	return res ? res : remove(e);
 }
 
-int Poller::add(NamedPipeLayer& layer, void* user_data, events_t events) {
-	return add(Event(Event::TypeNamedPipe, &layer), user_data, events);
-}
-
-int Poller::modify(NamedPipeLayer& layer, events_t events) {
-	return modify(Event(Event::TypeNamedPipe, &layer), events);
-}
-
-int Poller::remove(NamedPipeLayer& layer) {
-	return remove(Event(Event::TypeNamedPipe, &layer));
-}
-
 #  ifdef STORED_HAVE_ZMQ
 static int socket_to_SOCKET(void* zmq, SOCKET& win) {
 	size_t len = sizeof(win);
@@ -232,19 +220,19 @@ int Poller::modify(ZmqLayer& layer, events_t events) {
 int Poller::remove(ZmqLayer& layer) {
 	return remove(Event(Event::TypeZmq, &layer));
 }
-#  endif
-#endif
+#  endif // STORED_HAVE_ZMQ
+#endif // !STORED_OS_WINDOWS
 
-int Poller::add(FileLayer& layer, void* user_data, events_t events) {
-	return add(Event(Event::TypeFile, &layer), user_data, events);
+int Poller::add(PolledLayer& layer, void* user_data, events_t events) {
+	return add(Event(Event::TypePolledLayer, &layer), user_data, events);
 }
 
-int Poller::modify(FileLayer& layer, events_t events) {
-	return modify(Event(Event::TypeFile, &layer), events);
+int Poller::modify(PolledLayer& layer, events_t events) {
+	return modify(Event(Event::TypePolledLayer, &layer), events);
 }
 
-int Poller::remove(FileLayer& layer) {
-	return remove(Event(Event::TypeFile, &layer));
+int Poller::remove(PolledLayer& layer) {
+	return remove(Event(Event::TypePolledLayer, &layer));
 }
 
 #ifdef STORED_POLL_ZMQ
@@ -252,8 +240,8 @@ int Poller::add(Poller::Event const& e, void* user_data, events_t events) {
 	switch(e.type) {
 	case Event::TypeFd:
 		return zmq_poller_add_fd(m_poller, e.fd, user_data, (short)events) == -1 ? zmq_errno() : 0;
-	case Event::TypeFile:
-		return zmq_poller_add_fd(m_poller, e.file->fd(), user_data, (short)events) == -1 ? zmq_errno() : 0;
+	case Event::TypePolledLayer:
+		return zmq_poller_add_fd(m_poller, e.polledLayer->fd(), user_data, (short)events) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmqSock:
 		return zmq_poller_add(m_poller, e.zmqsock, user_data, (short)events) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmq:
@@ -267,8 +255,8 @@ int Poller::modify(Poller::Event const& e, events_t events) {
 	switch(e.type) {
 	case Event::TypeFd:
 		return zmq_poller_modify_fd(m_poller, e.fd, (short)events) == -1 ? zmq_errno() : 0;
-	case Event::TypeFile:
-		return zmq_poller_modify_fd(m_poller, e.file->fd(), (short)events) == -1 ? zmq_errno() : 0;
+	case Event::TypePolledLayer:
+		return zmq_poller_modify_fd(m_poller, e.polledLayer->fd(), (short)events) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmqSock:
 		return zmq_poller_modify(m_poller, e.zmqsock, (short)events) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmq:
@@ -282,8 +270,8 @@ int Poller::remove(Poller::Event const& e) {
 	switch(e.type) {
 	case Event::TypeFd:
 		return zmq_poller_remove_fd(m_poller, e.fd) == -1 ? zmq_errno() : 0;
-	case Event::TypeFile:
-		return zmq_poller_remove_fd(m_poller, e.file->fd()) == -1 ? zmq_errno() : 0;
+	case Event::TypePolledLayer:
+		return zmq_poller_remove_fd(m_poller, e.polledLayer->fd()) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmqSock:
 		return zmq_poller_remove(m_poller, e.zmqsock) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmq:
@@ -313,8 +301,8 @@ int Poller::add(Poller::Event const& e, void* user_data, events_t events) {
 #ifdef STORED_OS_WINDOWS
 	int res = 0;
 	switch(b.type) {
-	case Event::TypeFile:
-		b.h = b.file->fd();
+	case Event::TypePolledLayer:
+		b.h = b.polledLayer->fd();
 		break;
 	case Event::TypeWinSock:
 		if((res = SOCKET_to_HANDLE(b.winsock, b.h)))
@@ -322,9 +310,6 @@ int Poller::add(Poller::Event const& e, void* user_data, events_t events) {
 		if((res = setEvents(b.winsock, b.h, events)))
 			WSACloseEvent(b.h);
 		return res;
-	case Event::TypeNamedPipe:
-		b.h = b.namedpipe->fd();
-		break;
 #  ifdef STORED_HAVE_ZMQ
 	case Event::TypeZmqSock: {
 		SOCKET s = INVALID_SOCKET; // NOLINT(hicpp-signed-bitwise)
@@ -542,7 +527,7 @@ Poller::Result const* Poller::poll(long timeout_us, bool suspend) {
 			e.socket = nullptr;
 #endif
 			break;
-		case Event::TypeFile:
+		case Event::TypePolledLayer:
 			e.fd = it->file->fd();
 #if defined(STORED_POLL_ZTH) && defined(ZTH_HAVE_ZMQ)
 			e.socket = nullptr;
