@@ -57,9 +57,22 @@ else()
 	libstored_add_test(test_poller test_poller.cpp)
 endif()
 
-if(HAVE_VALGRIND AND LIBSTORED_EXAMPLES)
+if(LIBSTORED_EXAMPLES)
 	macro(libstored_example_test EXAMPLE)
-		add_test(NAME ${EXAMPLE} COMMAND valgrind --error-exitcode=1 --leak-check=full ${CMAKE_CURRENT_BINARY_DIR}/../examples/${EXAMPLE}/${EXAMPLE})
+		if(HAVE_VALGRIND)
+			add_test(NAME ${EXAMPLE}-valgrind
+				COMMAND valgrind --error-exitcode=1 --leak-check=full ${PROJECT_SOURCE_DIR}/examples/${EXAMPLE}/${EXAMPLE})
+			add_test(NAME ${EXAMPLE}-run
+				COMMAND sh -c "$<TARGET_FILE:${EXAMPLE}> > ${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt")
+		else()
+			add_test(NAME ${EXAMPLE}-run
+				COMMAND ${CMAKE_COMMAND} -E chdir $<TARGET_FILE_DIR:${EXAMPLE}> $ENV{ComSpec} /C "$<SHELL_PATH:$<TARGET_FILE:${EXAMPLE}>> > $<SHELL_PATH:${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt>")
+		endif()
+
+		if(EXISTS ${PROJECT_SOURCE_DIR}/examples/${EXAMPLE}/output.txt)
+			add_test(NAME ${EXAMPLE}-output
+				COMMAND ${CMAKE_COMMAND} -E compare_files --ignore-eol ${PROJECT_SOURCE_DIR}/examples/${EXAMPLE}/output.txt ${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt)
+		endif()
 	endmacro()
 
 	libstored_example_test(1_hello)
