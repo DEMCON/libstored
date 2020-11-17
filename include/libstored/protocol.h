@@ -989,7 +989,6 @@ public:
 		explicit FileLayer(char const* name_r, char const* name_w = nullptr, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 #ifdef STORED_OS_WINDOWS
 		explicit FileLayer(HANDLE h_r, HANDLE h_w = INVALID_HANDLE_VALUE, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
-public:
 #endif
 
 		virtual ~FileLayer() override;
@@ -1006,6 +1005,7 @@ public:
 		fd_type fd_r() const;
 		fd_type fd_w() const;
 		virtual void close() override;
+		void close_();
 
 #ifdef STORED_OS_WINDOWS
 		OVERLAPPED& overlappedRead();
@@ -1055,12 +1055,13 @@ public:
 		NamedPipeLayer(char const* name, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~NamedPipeLayer() override;
 		std::string const& name() const;
-		virtual int recv(bool block = false) override;
+		int recv(bool block = false) final;
 		HANDLE handle() const;
 
 	protected:
-		virtual void close() override;
-		virtual int startRead();
+		void close() final;
+		void close_();
+		int startRead() final;
 		enum State {
 			StateInit = 0,
 			StateConnecting,
@@ -1082,7 +1083,7 @@ public:
 		enum { BufferSize = 128 };
 
 		explicit StdioLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
-		virtual ~StdioLayer() override is_default
+		virtual ~StdioLayer() override;
 
 		virtual bool isOpen() const override;
 		virtual fd_type fd() const override;
@@ -1098,6 +1099,7 @@ public:
 		fd_type fd_w() const;
 		virtual int block(fd_type fd, bool forReading, bool suspend = false) override;
 		virtual void close() override;
+		void close_();
 	private:
 		fd_type m_fd_r;
 		fd_type m_fd_w;

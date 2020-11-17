@@ -2,8 +2,6 @@
 #include "ExampleFpga.h"
 #include "ExampleFpga2.h"
 
-#include <conio.h>
-#include <unistd.h>
 
 
 
@@ -40,21 +38,17 @@ int main() {
 	synchronizer.connect(ascii);
 	stored::TerminalLayer term;
 	term.wrap(ascii);
-//	stored::FileLayer file;
-//	file.wrap(term);
+	stored::StdioLayer file; // TODO: redirect to xsim
+	file.wrap(term);
 
 	stored::Poller poller;
-	poller.add(STDIN_FILENO, nullptr, stored::Poller::PollIn);
+	poller.add(file, nullptr, stored::Poller::PollIn);
+	poller.add(zmq, nullptr, stored::Poller::PollIn);
+
 	while(true) {
-		stored::Poller::Result const* res = poller.poll(2000000);
-		if(!res) {
-			printf("timeout %d\n", errno);
-		} else {
-			printf("event %d\n", (int)res->size());
-			INPUT_RECORD r[512];
-			DWORD read;
-			ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), r, 512, &read );
-		}
+		poller.poll();
+		zmq.recv();
+		file.recv();
 	}
 }
 

@@ -115,11 +115,18 @@ function(libstored_generate target) # add all other models as varargs
 		if(target_type STREQUAL "EXECUTABLE")
 			# Missing dll's... Really annoying. Just copy the libzmq.dll to wherever
 			# it is possibly needed.
-			add_custom_command(TARGET ${target} POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> $<TARGET_FILE_DIR:${target}>/libzmq.dll
-				COMMAND ${CMAKE_STRIP} $<SHELL_PATH:$<TARGET_FILE_DIR:${target}>/libzmq.dll>
-				VERBATIM
-			)
+			if(CMAKE_STRIP)
+				add_custom_command(TARGET ${target} POST_BUILD
+					COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> $<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:libzmq>
+					COMMAND ${CMAKE_STRIP} $<SHELL_PATH:$<TARGET_FILE_DIR:${target}>/libzmq.dll>
+					VERBATIM
+				)
+			else()
+				add_custom_command(TARGET ${target} POST_BUILD
+					COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> $<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:libzmq>
+					VERBATIM
+				)
+			endif()
 		endif()
 	endif()
 endfunction()
