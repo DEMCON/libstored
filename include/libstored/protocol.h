@@ -139,7 +139,7 @@
 #  include <unistd.h>
 #endif
 
-#include <stdio.h>
+#include <cstdio>
 
 namespace stored {
 
@@ -333,7 +333,7 @@ namespace stored {
 		static char const Esc      = '\x7f'; // DEL
 		static char const EscMask  = '\x1f'; // data bits of the next char
 
-		AsciiEscapeLayer(bool all = false, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit AsciiEscapeLayer(bool all = false, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 
 		/*!
 		 * \copydoc stored::ProtocolLayer::~ProtocolLayer()
@@ -441,7 +441,7 @@ namespace stored {
 		static char const ContinueMarker = 'C';
 		static char const EndMarker = 'E';
 
-		SegmentationLayer(size_t mtu = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit SegmentationLayer(size_t mtu = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		/*! \brief Dtor. */
 		virtual ~SegmentationLayer() override is_default
 
@@ -515,7 +515,7 @@ namespace stored {
 			RetransmitCallbackThreshold = 10,
 		};
 
-		ArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit ArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~ArqLayer() override;
 
 		virtual void decode(void* buffer, size_t len) override;
@@ -725,7 +725,7 @@ namespace stored {
 	public:
 		typedef ProtocolLayer base;
 
-		DebugArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit DebugArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		/*! \brief Dtor. */
 		virtual ~DebugArqLayer() override is_default
 
@@ -784,7 +784,7 @@ namespace stored {
 
 		enum { polynomial = 0xa6, init = 0xff };
 
-		Crc8Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit Crc8Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		/*! \brief Dtor. */
 		virtual ~Crc8Layer() override is_default
 
@@ -816,7 +816,7 @@ namespace stored {
 
 		enum { polynomial = 0xbaad, init = 0xffff };
 
-		Crc16Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit Crc16Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		/*! \brief Dtor. */
 		virtual ~Crc16Layer() override is_default
 
@@ -849,7 +849,7 @@ namespace stored {
 	public:
 		typedef ProtocolLayer base;
 
-		BufferLayer(size_t size = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit BufferLayer(size_t size = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		/*! \brief Destructor. */
 		virtual ~BufferLayer() override is_default
 
@@ -878,7 +878,7 @@ namespace stored {
 	public:
 		typedef ProtocolLayer base;
 
-		PrintLayer(FILE* f = stdout, char const* name = nullptr, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit PrintLayer(FILE* f = stdout, char const* name = nullptr, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~PrintLayer() override is_default
 
 		virtual void decode(void* buffer, size_t len) override;
@@ -922,6 +922,7 @@ namespace stored {
 		CLASS_NOCOPY(Loopback)
 	public:
 		Loopback(ProtocolLayer& a, ProtocolLayer& b);
+		~Loopback() is_default
 	private:
 		impl::Loopback1 m_a2b;
 		impl::Loopback1 m_b2a;

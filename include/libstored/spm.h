@@ -401,7 +401,7 @@ private:
 		 * \brief Returns the buffer within the given chunk.
 		 */
 		static char* buffer(void* chunk) {
-			return (char*)chunk + chunkHeader;
+			return static_cast<char*>(chunk) + chunkHeader;
 		}
 
 		/*!

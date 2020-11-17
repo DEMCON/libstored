@@ -383,7 +383,7 @@ namespace stored {
 			if(blocked())
 				return;
 
-			m_buffer.append((char const*)buffer, len);
+			m_buffer.append(static_cast<char const*>(buffer), len);
 		}
 
 		using base::encode;
@@ -678,9 +678,8 @@ namespace stored {
 
 			new(m_buffer) DebugVariantTyped<Container>(variant);
 			// Check if the cast of variant() works properly.
-			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			// cppcheck-suppress assertWithSideEffect
-			stored_assert(static_cast<DebugVariantBase*>(reinterpret_cast<DebugVariantTyped<Container>*>(m_buffer)) == &this->variant());
+			stored_assert(static_cast<DebugVariantBase*>(reinterpret_cast<DebugVariantTyped<Container>*>(m_buffer)) == &this->variant()); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 		}
 
 		size_t get(void* dst, size_t len = 0) const final {
@@ -961,7 +960,7 @@ namespace stored {
 		list(F&& f) const {
 			std::function<ListCallback> f_ = f;
 			auto cb = [](char const* name, DebugVariant& variant, void* f__) {
-				(*(std::function<ListCallback>*)f__)(name, variant);
+				(*static_cast<std::function<ListCallback>*>(f__))(name, variant);
 			};
 			list(static_cast<ListCallbackArg*>(cb), &f_);
 		}

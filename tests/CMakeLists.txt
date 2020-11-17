@@ -61,7 +61,7 @@ if(LIBSTORED_EXAMPLES)
 	macro(libstored_example_test EXAMPLE)
 		if(HAVE_VALGRIND)
 			add_test(NAME ${EXAMPLE}-valgrind
-				COMMAND valgrind --error-exitcode=1 --leak-check=full ${PROJECT_SOURCE_DIR}/examples/${EXAMPLE}/${EXAMPLE})
+				COMMAND valgrind --error-exitcode=1 --leak-check=full $<TARGET_FILE:${EXAMPLE}>)
 			add_test(NAME ${EXAMPLE}-run
 				COMMAND sh -c "$<TARGET_FILE:${EXAMPLE}> > ${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt")
 		else()

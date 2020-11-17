@@ -528,7 +528,7 @@ Poller::Result const* Poller::poll(long timeout_us, bool suspend) {
 #endif
 			break;
 		case Event::TypePolledLayer:
-			e.fd = it->file->fd();
+			e.fd = it->polledLayer->fd();
 #if defined(STORED_POLL_ZTH) && defined(ZTH_HAVE_ZMQ)
 			e.socket = nullptr;
 			break;
@@ -552,17 +552,19 @@ retry:
 
 	if(suspend) {
 		// Just suspend; not fiber-aware.
+		res =
 #if defined(STORED_POLL_ZTH) && defined(ZTH_HAVE_LIBZMQ)
-		::zmq_poll
+			::zmq_poll
 #else
-		::poll
+			::poll
 #endif
-			(&m_lastEventsFd[0], m_lastEventsFd.size(), (int)(timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us));
+				(&m_lastEventsFd[0], m_lastEventsFd.size(), (int)(timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us));
 	} else {
+		res =
 #ifdef STORED_POLL_ZTH
-		zth::io
+			zth::io
 #endif
-		::poll(&m_lastEventsFd[0], m_lastEventsFd.size(), (int)(timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us));
+			::poll(&m_lastEventsFd[0], m_lastEventsFd.size(), (int)(timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us));
 	}
 
 	switch(res) {

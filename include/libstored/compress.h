@@ -47,7 +47,7 @@ namespace stored {
 			FlagDecoding = 2,
 		};
 
-		CompressLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit CompressLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~CompressLayer() override;
 
 		virtual void decode(void* buffer, size_t len) override;

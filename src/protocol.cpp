@@ -25,6 +25,7 @@
 #  include <fcntl.h>
 #elif !defined(STORED_OS_BAREMETAL)
 #  include <unistd.h>
+#  include <fcntl.h>
 #endif
 
 #if defined(STORED_OS_WINDOWS)
@@ -1471,7 +1472,7 @@ int PolledLayer::block(PolledLayer::fd_type fd, bool forReading, bool suspend) {
 			// Should not happen.
 			err = EINVAL;
 			break;
-		} else if((*pres)[0].events & events) {
+		} else if((Poller::events_t)(*pres)[0].events & events) {
 			// Got it.
 			break;
 		}
@@ -1516,14 +1517,16 @@ FileLayer::FileLayer(int fd_r, int fd_w, ProtocolLayer* up, ProtocolLayer* down)
 	, m_fd_w(-1)
 {
 #  ifdef STORED_OS_POSIX
+	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	fcntl(fd_r, F_SETFL, fcntl(fd_r, F_GETFL) | O_NONBLOCK);
+	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	fcntl(fd_w, F_SETFL, fcntl(fd_w, F_GETFL) | O_NONBLOCK);
 #  endif
 
 	init(fd_r, fd_w == -1 ? fd_r : fd_w);
 }
 
-FileLayer::FileLayer(char const* name, char const* name, ProtocolLayer* up, ProtocolLayer* down)
+FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_fd_r(-1)
 	, m_fd_w(-1)
@@ -1532,10 +1535,15 @@ FileLayer::FileLayer(char const* name, char const* name, ProtocolLayer* up, Prot
 	int w = -1;
 
 	if(!name_w || strcmp(name_r, name_w) == 0) {
+		// NOLINTNEXTLINE(hicpp-signed-bitwise)
 		if((w = r = open(name_r, O_RDWR | O_APPEND | O_CREAT | O_NONBLOCK, 0666)) == -1)
 			goto error;
+
+	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	} else if((r = open(name_r, O_RDONLY | O_CREAT | O_NONBLOCK)) == -1) {
 		goto error;
+
+	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	} else if((w = open(name_w, O_WRONLY | O_APPEND | O_CREAT | O_NONBLOCK, 0666)) == -1) {
 		goto error;
 	}
@@ -1551,6 +1559,7 @@ error:
 	setLastError(errno ? errno : EBADF);
 }
 
+// cppcheck-suppress passedByValue
 void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w) {
 	stored_assert(m_fd_r == -1);
 	stored_assert(m_fd_w == -1);
@@ -1594,10 +1603,12 @@ bool FileLayer::isOpen() const {
 void FileLayer::encode(void const* buffer, size_t len, bool last) {
 	if(m_fd_w == -1) {
 		setLastError(EBADF);
-		goto done;
+done:
+		base::encode(buffer, len, last);
+		return;
 	}
 
-	char const* buf = (char const*)buffer;
+	char const* buf = static_cast<char const*>(buffer);
 	size_t buflen = len;
 
 	if(m_fd_w == STDOUT_FILENO)
@@ -1610,13 +1621,12 @@ void FileLayer::encode(void const* buffer, size_t len, bool last) {
 		switch(written) {
 		case -1:
 			switch(errno) {
-			case EAGAIN:
-			case EWOULDBLOCK: {
-				if(!block)
-					goto error;
-
+#if EAGAIN != EWOULDBLOCK
+			case EWOULDBLOCK:
+#endif
+			case EAGAIN: {
 				if(this->block(m_fd_w, false, m_fd_w == STDOUT_FILENO))
-					return lastError();
+					return;
 
 				// We should be able to write more now. Retry.
 				continue;
@@ -1641,19 +1651,18 @@ void FileLayer::encode(void const* buffer, size_t len, bool last) {
 error:
 	close();
 	setLastError(errno ? errno : EIO);
-done:
-	base::encode(buffer, len, last);
+	goto done;
 }
 
 FileLayer::fd_type FileLayer::fd() const {
 	return m_fd_r;
 }
 
-Filelayer::fd_type fd_r() const {
+FileLayer::fd_type FileLayer::fd_r() const {
 	return m_fd_r;
 }
 
-Filelayer::fd_type fd_w() const {
+FileLayer::fd_type FileLayer::fd_w() const {
 	return m_fd_w;
 }
 
@@ -1667,7 +1676,9 @@ again:
 	if(cnt == -1) {
 		switch(errno) {
 		case EAGAIN:
+#if EAGAIN != EWOULDBLOCK
 		case EWOULDBLOCK:
+#endif
 			if(!block)
 				return setLastError(errno);
 

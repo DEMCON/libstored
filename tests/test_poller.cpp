@@ -54,7 +54,7 @@ TEST(Poller, Pipe) {
 	ASSERT_NE(res, nullptr);
 	ASSERT_EQ(res->size(), 1);
 	EXPECT_EQ(res->at(0).fd, fd[0]);
-	EXPECT_EQ(res->at(0).events, stored::Poller::PollIn);
+	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollIn);
 	EXPECT_EQ(res->at(0).user_data, (void*)1);
 
 	// Drain pipe.
@@ -69,7 +69,7 @@ TEST(Poller, Pipe) {
 	ASSERT_NE(res, nullptr);
 	ASSERT_EQ(res->size(), 1);
 	EXPECT_EQ(res->at(0).fd, fd[1]);
-	EXPECT_EQ(res->at(0).events, stored::Poller::PollOut);
+	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollOut);
 	EXPECT_EQ(res->at(0).user_data, (void*)2);
 
 	write(fd[1], "3", 1);
@@ -79,17 +79,17 @@ TEST(Poller, Pipe) {
 	// The order is undefined.
 	if(res->at(0).fd == fd[0]) {
 		EXPECT_EQ(res->at(1).fd, fd[1]);
-		EXPECT_EQ(res->at(1).events, stored::Poller::PollOut);
+		EXPECT_EQ(res->at(1).events, (stored::Poller::events_t)stored::Poller::PollOut);
 		EXPECT_EQ(res->at(1).user_data, (void*)2);
 		EXPECT_EQ(res->at(0).fd, fd[0]);
-		EXPECT_EQ(res->at(0).events, stored::Poller::PollIn);
+		EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollIn);
 		EXPECT_EQ(res->at(0).user_data, (void*)1);
 	} else {
 		EXPECT_EQ(res->at(0).fd, fd[1]);
-		EXPECT_EQ(res->at(0).events, stored::Poller::PollOut);
+		EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollOut);
 		EXPECT_EQ(res->at(0).user_data, (void*)2);
 		EXPECT_EQ(res->at(1).fd, fd[0]);
-		EXPECT_EQ(res->at(1).events, stored::Poller::PollIn);
+		EXPECT_EQ(res->at(1).events, (stored::Poller::events_t)stored::Poller::PollIn);
 		EXPECT_EQ(res->at(1).user_data, (void*)1);
 	}
 
@@ -100,11 +100,11 @@ TEST(Poller, Pipe) {
 	ASSERT_NE(res, nullptr);
 	ASSERT_EQ(res->size(), 1);
 	EXPECT_EQ(res->at(0).fd, fd[1]);
-	EXPECT_EQ(res->at(0).events, stored::Poller::PollOut);
+	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollOut);
 	EXPECT_EQ(res->at(0).user_data, (void*)2);
 
 	// Only check for errors now.
-	EXPECT_EQ(poller.modify(fd[1], stored::Poller::PollErr), 0);
+	EXPECT_EQ(poller.modify(fd[1], (stored::Poller::events_t)stored::Poller::PollErr), 0);
 	res = poller.poll(0);
 	EXPECT_EQ(res, nullptr); // not writable anymore
 
@@ -115,7 +115,7 @@ TEST(Poller, Pipe) {
 	ASSERT_NE(res, nullptr);
 	ASSERT_EQ(res->size(), 1);
 	EXPECT_EQ(res->at(0).fd, fd[1]);
-	EXPECT_EQ(res->at(0).events, stored::Poller::PollErr);
+	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollErr);
 	EXPECT_EQ(res->at(0).user_data, (void*)2);
 }
 
@@ -136,7 +136,7 @@ TEST(Poller, Zmq) {
 	ASSERT_NE(res, nullptr);
 	ASSERT_EQ(res->size(), 1);
 	EXPECT_EQ(res->at(0).user_data, (void*)2);
-	EXPECT_EQ(res->at(0).events, stored::Poller::PollOut);
+	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollOut);
 
 	zmq_send(req, "Hi", 2, 0);
 

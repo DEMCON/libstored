@@ -20,8 +20,6 @@
 
 #ifdef __cplusplus
 
-#define ZMQ_BUILD_DRAFT_API
-
 #include <libstored/macros.h>
 #include <libstored/util.h>
 #include <libstored/zmq.h>
@@ -130,6 +128,7 @@ namespace stored {
 #endif
 			};
 
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 			Event()
 				: type(TypeNone)
 #ifndef STORED_POLL_ZMQ
@@ -140,8 +139,8 @@ namespace stored {
 #endif
 			{}
 
-			Event(Type type, ...)
-				: type(type)
+			explicit Event(int /*Type*/ type, ...)
+				: type((Type)type)
 #ifndef STORED_POLL_ZMQ
 				, user_data(), events()
 #endif
@@ -221,7 +220,7 @@ namespace stored {
 		~Poller();
 
 #ifdef STORED_POLL_ZMQ
-		typedef std::vector<struct zmq_poller_event_t> Result;
+		typedef std::vector<zmq_poller_event_t> Result;
 		Result const* poll(long timeout_us = -1, bool suspend = false);
 #else
 		typedef std::vector<Event> Result;

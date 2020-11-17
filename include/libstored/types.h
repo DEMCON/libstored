@@ -102,13 +102,12 @@ namespace stored {
 		static size_t size(type t) { return !isFixed(t) ? 0u : (size_t)(t & MaskSize) + 1u; }
 		/*! \brief Checks if endianness of given type is swapped in the store's buffer. */
 		static bool isStoreSwapped(type t) {
-			return Config::StoreInLittleEndian !=
+			return
 #ifdef STORED_LITTLE_ENDIAN
-				true
-#else
-				false
+				!
 #endif
-			&& Type::isFixed(t);
+				Config::StoreInLittleEndian
+				&& Type::isFixed(t);
 		}
 	};
 
@@ -1190,6 +1189,7 @@ namespace stored {
 		static inline StoreBase& objectToStore(T& o) {
 			static_assert(sizeof(T) == sizeof(typename StoreBase::Objects), "");
 			void* o_ = (void*)&o;
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return *static_cast<StoreBase*>(reinterpret_cast<typename StoreBase::Objects*>(o_));
 		}
 
@@ -1209,18 +1209,22 @@ namespace stored {
 				static_assert(size_ == sizeof(type), "");
 				return objectToStore<Store>(*this).template _variable<type>(offset);
 			}
+			// NOLINTNEXTLINE(hicpp-explicit-conversions)
 			operator Variable_type() const { return variable(); }
 
 			Variant_type variant() const { return Variant_type(variable()); }
+			// NOLINTNEXTLINE(hicpp-explicit-conversions)
 			operator Variant_type() const { return variant(); }
 
 			type get() const { return variable().get(); }
+			// NOLINTNEXTLINE(hicpp-explicit-conversions)
 			operator type() const { return get(); }
 
 			template <typename U>
 			U as() const { return saturated_cast<U>(get()); }
 
 			void set(type value) { variable().set(value); }
+			// NOLINTNEXTLINE(cppcoreguidelines-c-copy-assignment-signature,misc-unconventional-assign-operator)
 			Variable_type operator=(type value) {
 				Variable_type v = variable();
 				v.set(value);
@@ -1245,9 +1249,11 @@ namespace stored {
 			Function_type function() const {
 				return objectToStore<Store>(*this).template _function<type>(F);
 			}
+			// NOLINTNEXTLINE(hicpp-explicit-conversions)
 			operator Function_type() const { return function(); }
 
 			Variant_type variant() const { return Variant_type(function()); }
+			// NOLINTNEXTLINE(hicpp-explicit-conversions)
 			operator Variant_type() const { return variant(); }
 
 			type get() const { return function().get(); }
@@ -1268,6 +1274,7 @@ namespace stored {
 			size_t set(void* src, size_t len) { return function().set(src, len); }
 			void operator()(type value) { function()(value); }
 
+			// NOLINTNEXTLINE(cppcoreguidelines-c-copy-assignment-signature,misc-unconventional-assign-operator)
 			Function_type operator=(type value) {
 				Function_type f = function();
 				f.set(value);
@@ -1290,6 +1297,7 @@ namespace stored {
 			Variant_type variant() const {
 				return objectToStore<Store>(*this)._variantv(type_, offset, size_);
 			}
+			// NOLINTNEXTLINE(hicpp-explicit-conversions)
 			operator Variant_type() const { return variant(); }
 
 			size_t get(void* dst, size_t len = 0) const { return variant().get(dst, len); }
@@ -1316,6 +1324,7 @@ namespace stored {
 			Variant_type variant() const {
 				return objectToStore<Store>(*this)._variantf(type_, F, size_);
 			}
+			// NOLINTNEXTLINE(hicpp-explicit-conversions)
 			operator Variant_type() const { return variant(); }
 
 			size_t get(void* dst, size_t len = 0) const { return variant().get(dst, len); }

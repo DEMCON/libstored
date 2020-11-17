@@ -230,6 +230,7 @@ namespace stored {
 		};
 
 		StoreJournal(char const* hash, void* buffer, size_t size);
+		~StoreJournal() is_default
 
 		static uint8_t keySize(size_t bufferSize);
 		void* keyToBuffer(Key key, Size len = 0, bool* ok = nullptr) const;
@@ -387,7 +388,7 @@ namespace stored {
 
 #if STORED_cplusplus >= 201103L
 		template <typename... Args>
-		Synchronizable(Args&&... args)
+		explicit Synchronizable(Args&&... args)
 			: base(std::forward<Args>(args)...)
 #else
 		Synchronizable()
@@ -396,8 +397,10 @@ namespace stored {
 			, m_journal(base::hash(), base::buffer(), sizeof(base::data().buffer))
 		{
 			// Useless without hooks.
+			// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert)
 			stored_assert(Config::EnableHooks);
 		}
+		~Synchronizable() is_default
 
 		StoreJournal const& journal() const { return m_journal; }
 		StoreJournal& journal() { return m_journal; }
@@ -591,6 +594,7 @@ private:
 			m_storeMap.erase(store.hash());
 
 			for(Connections::iterator it = m_connections.begin(); it != m_connections.end(); ++it)
+				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
 				static_cast<SyncConnection*>(*it)->drop(store.journal());
 		}
 

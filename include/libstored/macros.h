@@ -121,6 +121,11 @@ typedef SSIZE_T ssize_t;
 #  define STORED_FALLTHROUGH
 #endif
 
+#ifdef STORED_HAVE_ZMQ
+// For the poller.
+#  define ZMQ_BUILD_DRAFT_API
+#endif
+
 
 //////////////////////////////////////////////////
 // Platform
