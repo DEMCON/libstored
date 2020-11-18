@@ -54,6 +54,29 @@ add_subdirectory(extern)
 
 set(LIBSTORED_SOURCE_DIR ${PROJECT_SOURCE_DIR} CACHE STRING "Path to the libstored sources" FORCE)
 
+# Not safe against parallel execution if the target directory is used more than once.
+function(libstored_copy_dlls target)
+	if(WIN32 AND LIBSTORED_HAVE_LIBZMQ)
+		get_target_property(target_type ${target} TYPE)
+		if(target_type STREQUAL "EXECUTABLE")
+			# Missing dll's... Really annoying. Just copy the libzmq.dll to wherever
+			# it is possibly needed.
+			if(CMAKE_STRIP)
+				add_custom_command(TARGET ${target} PRE_LINK
+					COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> $<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:libzmq>
+					COMMAND ${CMAKE_STRIP} $<SHELL_PATH:$<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:libzmq>>
+					VERBATIM
+				)
+			else()
+				add_custom_command(TARGET ${target} PRE_LINK
+					COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> $<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:libzmq>
+					VERBATIM
+				)
+			endif()
+		endif()
+	endif()
+endfunction()
+
 function(libstored_generate target) # add all other models as varargs
     foreach(model IN ITEMS ${ARGN})
         list(APPEND models ${CMAKE_CURRENT_SOURCE_DIR}/${model})
@@ -110,25 +133,7 @@ function(libstored_generate target) # add all other models as varargs
         add_dependencies(doc ${target}-libstored-generate)
     endif()
 
-	if(WIN32 AND LIBSTORED_HAVE_LIBZMQ)
-		get_target_property(target_type ${target} TYPE)
-		if(target_type STREQUAL "EXECUTABLE")
-			# Missing dll's... Really annoying. Just copy the libzmq.dll to wherever
-			# it is possibly needed.
-			if(CMAKE_STRIP)
-				add_custom_command(TARGET ${target} PRE_LINK
-					COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> $<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:libzmq>
-					COMMAND ${CMAKE_STRIP} $<SHELL_PATH:$<TARGET_FILE_DIR:${target}>/libzmq.dll>
-					VERBATIM
-				)
-			else()
-				add_custom_command(TARGET ${target} PRE_LINK
-					COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> $<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:libzmq>
-					VERBATIM
-				)
-			endif()
-		endif()
-	endif()
+	libstored_copy_dlls(${target})
 endfunction()
 
 if(DEFINED ENV{XILINX_VIVADO})
