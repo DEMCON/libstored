@@ -61,7 +61,7 @@ TEST(Poller, Win) {
 	EXPECT_EQ(ResetEvent(e), TRUE);
 	res = &poller.poll(0);
 	EXPECT_NE(errno, 0);
-	EXPECT_TRUE(res.empty());
+	EXPECT_TRUE(res->empty());
 
 	CloseHandle(e);
 }
