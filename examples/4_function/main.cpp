@@ -9,6 +9,7 @@
 
 #include <ctime>
 #include <cstdio>
+#include <cstdlib>
 
 #ifdef STORED_COMPILER_MSVC
 #  pragma warning(disable: 4996)
@@ -34,6 +35,11 @@ protected:
 		value = (uint64_t)time(NULL);
 	}
 
+	void __rand(bool set, int32_t& value) {
+		if(!set)
+			value = ::rand();
+	}
+
 	void __echo_0(bool set, int32_t& value) { __echo(0, set, value); }
 	void __echo_1(bool set, int32_t& value) { __echo(1, set, value); }
 
@@ -56,8 +62,13 @@ private:
 int main() {
 	MyExample e;
 
-	time_t now = (time_t)e.time_s.get();
-	printf("time = %s\n", ctime(&now));
+//	time_t now = (time_t)e.time_s.get();
+//	printf("time = %s\n", ctime(&now));
+
+	srand(42);
+	printf("rand = %" PRId32 "\n", e.rand.get());
+	printf("rand = %" PRId32 "\n", e.rand.get());
+	printf("rand = %" PRId32 "\n", e.rand.get());
 
 	e.echo_0.set(10);
 	e.echo_1.set(11);

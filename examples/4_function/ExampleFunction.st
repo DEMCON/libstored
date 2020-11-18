@@ -7,5 +7,6 @@
 // The side effect is to be defined in your application. See main.cpp.
 
 (uint64) time (s)   // The number of seconds since the Epoch.
+(int32) rand		// A pseudo-random number.
 (int32)[2] echo	    // Print every value written to it.
 

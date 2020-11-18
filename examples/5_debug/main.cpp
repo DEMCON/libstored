@@ -23,6 +23,7 @@ public:
 	explicit PrintfPhysical(ProtocolLayer& up)
 		: base(&up)
 		, m_encoding()
+		, m_silenced()
 	{
 		up.setDown(this);
 	}
@@ -35,27 +36,35 @@ public:
 	}
 
 	void decode(void* buffer, size_t len) final {
-		printf(">>   %.*s\n", (int)len, (char const*)buffer);
+		if(!m_silenced)
+			printf(">>   %.*s\n", (int)len, (char const*)buffer);
 		base::decode(buffer, len);
 	}
 
 	void encode(void const* buffer, size_t len, bool last = true) final {
 		if(!m_encoding) {
-			printf("<<   ");
+			if(!m_silenced)
+				printf("<<   ");
 			m_encoding = true;
 		}
 
-		if(len)
+		if(len && !m_silenced)
 			printf("%.*s", (int)len, (char const*)buffer);
 
 		if(last) {
-			printf("\n");
+			if(!m_silenced)
+				printf("\n");
 			m_encoding = false;
 		}
 	}
 
+	void silence(bool silenced) {
+		m_silenced = silenced;
+	}
+
 private:
 	bool m_encoding;
+	bool m_silenced;
 };
 
 // Extend the capabilities with the 'z' command.
@@ -137,7 +146,6 @@ int main() {
 	PrintfPhysical phy(debugger);
 	phy.decode("?");
 	phy.decode("i");
-	phy.decode("v");
 	phy.decode("r/ExampleDebugAnotherStore/j");
 	phy.decode("wf00f/SomeStore/i");
 	phy.decode("r/SomeStore/i");
@@ -149,6 +157,10 @@ int main() {
 	phy.decode("*");
 	phy.decode("m*");
 
+	// Suppress output, such that the application always prints the same.
+	// This is handy for testing the behavior of the application by unit tests.
+	phy.silence(true);
+
 	int mem = 0xbeef;
 	char buffer[32] = {};
 	snprintf(buffer, sizeof(buffer), "R%" PRIxPTR " %zu", (uintptr_t)&mem, sizeof(mem));
@@ -158,6 +170,8 @@ int main() {
 	phy.decode(buffer);
 
 	printf("mem = 0x%x\n", mem);
+
+	phy.silence(false);
 
 	phy.decode("s");
 	debugger.stream('A', "Hello");

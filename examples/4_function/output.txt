@@ -1,0 +1,9 @@
+rand = 71876166
+rand = 708592740
+rand = 1483128881
+set echo[0] = 10
+set echo[1] = 11
+get echo[0] = 10
+echo[0] returned 10
+get echo[1] = 11
+echo[1] returned 11
