@@ -18,34 +18,52 @@ import unittest
 import subprocess
 import ed2
 import sys
+import logging
 from PySide2.QtCore import QCoreApplication
 
 class ZmqClientTest(unittest.TestCase):
 
     binary = None
+    logger = logging.getLogger(__name__)
 
     @classmethod
     def setUpClass(cls):
+        cls.logger.info(f'Starting {cls.binary}...')
         cls.process = subprocess.Popen([cls.binary],
             stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
+        cls.c = ed2.ZmqClient()
+
     @classmethod
     def tearDownClass(cls):
+        cls.logger.info(f'Stopping {cls.binary}...')
         cls.process.terminate()
 
     def test_dummy(self):
         self.assertTrue(True)
 
     def test_ed2_version(self):
-        print(ed2.__version__)
+        print(f'Library version {ed2.__version__}')
 
     def test_identification(self):
-        c = ed2.ZmqClient()
-        self.assertEqual(c.identification(), 'zmqserver')
+        self.assertEqual(self.c.identification(), 'zmqserver')
 
     def test_version(self):
-        c = ed2.ZmqClient()
-        self.assertEqual(c.version().split(' ')[0], '2')
+        self.assertEqual(self.c.version().split(' ')[0], '2')
+
+    def test_capabilities(self):
+        c = self.c.capabilities()
+        self.assertTrue('?' in c)
+        self.assertTrue('r' in c)
+        self.assertTrue('w' in c)
+        self.assertTrue('l' in c)
+
+    def test_echo(self):
+        self.assertEqual(self.c.echo('Tales as old as time...'), 'Tales as old as time...')
+
+    def test_list(self):
+        self.assertTrue(self.c['/an int8'] != None)
+        self.assertTrue(self.c['/comp/an'] != None)
 
 if __name__ == '__main__':
     if len(sys.argv) == 0 or not 'zmqserver' in sys.argv[-1]:
@@ -55,6 +73,8 @@ if __name__ == '__main__':
     del sys.argv[-1]
 
     app = QCoreApplication()
+
+    logging.basicConfig(level=logging.INFO)
 
     unittest.main()
 

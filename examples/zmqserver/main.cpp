@@ -87,17 +87,29 @@ int main() {
 
 	printf("Connect via ZMQ to debug this application.\n");
 
+	stored::Poller poller;
+
+	if((errno = poller.add(zmqLayer, nullptr, stored::Poller::PollIn))) {
+		printf("Cannot add to poller; %s\n", strerror(errno));
+		exit(1);
+	}
+
 	time_t t = time(NULL);
+
 	while(true) {
-		if(zmqLayer.recv() == 0)
+		if(poller.poll(100000).empty()) { // 100 ms
+			if(errno != EAGAIN) {
+				printf("Cannot poll; %s\n", strerror(errno));
+				exit(1);
+			} // else timeout
+		} else if(zmqLayer.recv()) {
+			printf("Cannot recv; %s\n", strerror(errno));
+			exit(1);
+		} else {
 			store.incMessages();
+		}
 
 		// As an example, call debugger.trace() roughly once per second.
-		zmq_pollitem_t items[1];
-		items[0].socket = zmqLayer.socket();
-		items[0].events = ZMQ_POLLIN;
-		zmq_poll(items, 1, 100);
-
 		time_t now = time(NULL);
 		if(t != now) {
 			t = now;
