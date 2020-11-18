@@ -173,7 +173,7 @@ error_recv:
 	zmq_msg_close(&msg);
 error_msg:
 	if(!res)
-		res = EIO;
+		res = EAGAIN;
 	setLastError(res);
 	return res;
 }

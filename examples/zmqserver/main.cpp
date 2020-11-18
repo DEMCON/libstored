@@ -98,11 +98,15 @@ int main() {
 
 	while(true) {
 		if(poller.poll(100000).empty()) { // 100 ms
-			if(errno != EAGAIN) {
+			switch(errno) {
+			case EINTR:
+			case EAGAIN:
+				break;
+			default:
 				perror("Cannot poll");
 				exit(1);
 			} // else timeout
-		} else if(zmqLayer.recv()) {
+		} else if((errno = zmqLayer.recv())) {
 			perror("Cannot recv");
 			exit(1);
 		} else {

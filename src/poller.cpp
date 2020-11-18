@@ -410,6 +410,8 @@ Poller::Result const& Poller::poll(long timeout_us, bool suspend) {
 
 #ifdef STORED_POLL_WFMO
 Poller::Result const& Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
+	errno = 0;
+
 	m_lastEvents.clear();
 	if(m_events.empty()) {
 		errno = EFAULT;
@@ -494,6 +496,9 @@ Poller::Result const& Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
 
 		res = WaitForMultipleObjects((DWORD)m_lastEventsH.size(), &m_lastEventsH[0], FALSE, 0);
 	}
+
+	if(m_lastEvents.empty() && !errno)
+		errno = EAGAIN;
 
 	return m_lastEvents;
 }
