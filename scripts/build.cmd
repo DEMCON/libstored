@@ -1,6 +1,6 @@
 @echo off
 
-rem Usage: build.cmd [CMAKE_BUILD_TYPE]
+rem Usage: build.cmd [CMAKE_BUILD_TYPE <other args for cmake>...]
 
 
 set here=%~dp0
@@ -20,7 +20,8 @@ if "%CMAKE_BUILD_TYPE%." == "." set CMAKE_BUILD_TYPE=Debug
 
 pushd build
 rem Build with explicit build type
-cmake -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE% "-GMinGW Makefiles" ..
+shift
+cmake -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE% "-GMinGW Makefiles" .. %1 %2 %3 %4 %5 %6 %7 %8 %9
 if errorlevel 1 goto error_popd
 popd
 goto build
@@ -31,7 +32,8 @@ if "%CMAKE_BUILD_TYPE%." == "." goto build
 
 pushd build
 rem Override previous build type
-cmake -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE% ..
+shift
+cmake -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE% .. %1 %2 %3 %4 %5 %6 %7 %8 %9
 if errorlevel 1 goto error_popd
 popd
 

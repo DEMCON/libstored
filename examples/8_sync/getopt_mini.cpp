@@ -1,6 +1,6 @@
 #include "getopt_mini.h"
 
-#ifndef STORED_OS_POSIX
+#ifdef STORED_COMPILER_MSVC
 
 #include <stddef.h>
 
@@ -54,4 +54,4 @@ int getopt(int argc, char* const* argv, char const* options) {
 	return optopt;
 }
 
-#endif // STORED_OS_LINUX
+#endif // STORED_COMPILER_MSVC

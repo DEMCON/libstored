@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Usage: build.sh [CMAKE_BUILD_TYPE]
+# Usage: build.sh [CMAKE_BUILD_TYPE [<other cmake arguments>]]
 
 
 function gotErr {
@@ -29,7 +29,9 @@ if [ -e build ]; then
 	if [ ! -z "$1" ]; then
 		# Override build type
 		pushd build > /dev/null
-		cmake -DCMAKE_BUILD_TYPE="$1" ..
+		BUILD_TYPE="$1"
+		shift || true
+		cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" .. "$@"
 		popd > /dev/null
 	fi
 else
@@ -41,7 +43,8 @@ else
 
 	mkdir build
 	pushd build > /dev/null
-	cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" ..
+	shift || true
+	cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" .. "$@"
 	popd > /dev/null
 fi
 

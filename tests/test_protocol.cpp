@@ -17,8 +17,11 @@
  */
 
 #include "libstored/protocol.h"
+#include "libstored/compress.h"
 #include "gtest/gtest.h"
 #include "LoggingLayer.h"
+
+#include <fcntl.h>
 
 #define DECODE(stack, str)	do { char msg_[] = "" str; (stack).decode(msg_, sizeof(msg_) - 1); } while(0)
 
@@ -799,5 +802,68 @@ TEST(ArqLayer, Callback) {
 
 	EXPECT_EQ(event, stored::ArqLayer::EventRetransmit);
 }
+
+TEST(CompressLayer, Compress) {
+	LoggingLayer top;
+	stored::CompressLayer l;
+	l.wrap(top);
+	LoggingLayer bottom;
+	bottom.wrap(l);
+
+	top.encode("Hello World! Nice World!", 24u);
+	EXPECT_EQ(bottom.encoded().size(), 1u);
+	std::string& msg = bottom.encoded().at(0);
+	printBuffer(msg);
+	EXPECT_LE(msg.size(), 24u);
+
+	// std::string cannot be modified in place; copy needed.
+	std::vector<char> buf(msg.begin(), msg.end());
+	bottom.decode(&buf[0], buf.size());
+	EXPECT_EQ(top.decoded().at(0), "Hello World! Nice World!");
+}
+
+#ifdef STORED_OS_WINDOWS
+TEST(FileLayer, Pipe) {
+	LoggingLayer top;
+	stored::NamedPipeLayer l("test");
+	l.wrap(top);
+
+	EXPECT_EQ(l.lastError(), EAGAIN);
+
+	int fd = open("\\\\.\\pipe\\test", O_RDWR);
+	ASSERT_NE(fd, -1);
+	write(fd, "hello", 5);
+	EXPECT_EQ(l.recv(), 0);
+	EXPECT_EQ(top.decoded().at(0), "hello");
+
+	write(fd, " world", 6);
+	EXPECT_EQ(l.recv(), 0);
+	EXPECT_EQ(top.decoded().at(1), " "); // It blocked on one char.
+	EXPECT_EQ(top.decoded().at(2), "world"); // The rest will follow.
+
+	// Nothing to receive.
+	EXPECT_EQ(l.recv(), EAGAIN);
+
+	l.encode("Zip-a-Dee-Doo-Dah", 17);
+	char buf[32] = {};
+	EXPECT_EQ(read(fd, buf, sizeof(buf)), 17);
+	EXPECT_EQ(std::string(buf), "Zip-a-Dee-Doo-Dah");
+
+	close(fd);
+	EXPECT_EQ(l.recv(), EIO);
+
+	LoggingLayer ftop;
+	stored::FileLayer f("\\\\.\\pipe\\test");
+	f.wrap(ftop);
+	f.encode("When You Wish", 13);
+	l.recv();
+	EXPECT_EQ(top.decoded().at(3), "When You Wish");
+
+	l.encode(" Upon a Star", 12);
+	f.recv();
+	EXPECT_EQ(ftop.decoded().at(0), " ");
+	EXPECT_EQ(ftop.decoded().at(1), "Upon a Star");
+}
+#endif
 
 } // namespace

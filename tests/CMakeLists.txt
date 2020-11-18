@@ -1,3 +1,8 @@
+# The value will be appended to a STORED_POLL_ define.
+set(LIBSTORED_POLL "AUTO" CACHE STRING "Poll method")
+
+set(LIBSTORED_CLANG_TIDY "OFF")
+
 if(MSVC)
 	add_compile_options(/W1 /WX)
 
@@ -20,15 +25,17 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/extern/googletest" "extern/googletest")
 
 add_custom_target(teststore)
 libstored_generate(teststore TestStore.st)
+target_compile_definitions(teststore-libstored PUBLIC STORED_POLL_${LIBSTORED_POLL})
 
 macro(libstored_add_test TESTNAME)
 	add_executable(${TESTNAME} ${ARGN})
 	target_link_libraries(${TESTNAME} gtest gmock gtest_main teststore-libstored)
-	gtest_discover_tests(${TESTNAME}
-		WORKING_DIRECTORY ${PROJECT_DIR}
-		PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${PROJECT_DIR}"
-	)
+	gtest_discover_tests(${TESTNAME})
 	set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
+	if(CMAKE_GENERATOR MATCHES "Visual Studio.*")
+		# Every binary has its own output directory.
+		libstored_copy_dlls(${TESTNAME})
+	endif()
 endmacro()
 
 libstored_add_test(test_types test_types.cpp)
@@ -40,10 +47,45 @@ libstored_add_test(test_spm test_spm.cpp)
 libstored_add_test(test_protocol test_protocol.cpp)
 libstored_add_test(test_debugger test_debugger.cpp)
 libstored_add_test(test_synchronizer test_synchronizer.cpp)
+if(WIN32)
+	libstored_add_test(test_poller test_poller_win.cpp)
+	if(LIBSTORED_HAVE_LIBZMQ)
+		add_custom_command(TARGET test_poller PRE_LINK
+			COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> ${CMAKE_CURRENT_BINARY_DIR}
+			VERBATIM)
+		add_custom_command(TARGET test_protocol PRE_LINK
+			COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> ${CMAKE_CURRENT_BINARY_DIR}
+			VERBATIM)
+	endif()
+else()
+	libstored_add_test(test_poller test_poller.cpp)
+endif()
 
-if(HAVE_VALGRIND AND LIBSTORED_EXAMPLES)
+if(CMAKE_GENERATOR MATCHES ".*Makefiles.*")
+	# All test binaries are put in the same directory.
+	# Only copy the dlls once.
+	libstored_copy_dlls(test_debugger)
+endif()
+
+if(LIBSTORED_EXAMPLES)
 	macro(libstored_example_test EXAMPLE)
-		add_test(NAME ${EXAMPLE} COMMAND valgrind --error-exitcode=1 --leak-check=full ${CMAKE_CURRENT_BINARY_DIR}/../examples/${EXAMPLE}/${EXAMPLE})
+		if(HAVE_VALGRIND)
+			add_test(NAME ${EXAMPLE}-valgrind
+				COMMAND valgrind --error-exitcode=1 --leak-check=full $<TARGET_FILE:${EXAMPLE}>)
+		endif()
+
+		if(WIN32)
+			add_test(NAME ${EXAMPLE}-run
+				COMMAND ${CMAKE_COMMAND} -E chdir $<TARGET_FILE_DIR:${EXAMPLE}> $ENV{ComSpec} /C "$<SHELL_PATH:$<TARGET_FILE:${EXAMPLE}>> > $<SHELL_PATH:${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt>")
+		else()
+			add_test(NAME ${EXAMPLE}-run
+				COMMAND sh -c "$<TARGET_FILE:${EXAMPLE}> > ${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt")
+		endif()
+
+		if(EXISTS ${PROJECT_SOURCE_DIR}/examples/${EXAMPLE}/output.txt)
+			add_test(NAME ${EXAMPLE}-output
+				COMMAND ${CMAKE_COMMAND} -E compare_files --ignore-eol ${PROJECT_SOURCE_DIR}/examples/${EXAMPLE}/output.txt ${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt)
+		endif()
 	endmacro()
 
 	libstored_example_test(1_hello)
@@ -83,14 +125,17 @@ else()
 	set(ENV_PATH_SEP ":")
 endif()
 
-add_test(
-	NAME ZmqClient
-	COMMAND ${CMAKE_COMMAND} -E env
-		PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/../client
-		"PATH=$<SHELL_PATH:$<TARGET_FILE_DIR:libzmq>>${ENV_PATH_SEP}$ENV{PATH}"
-		${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_ZmqClient.py $<TARGET_FILE:zmqserver>
-)
-set_tests_properties(ZmqClient PROPERTIES TIMEOUT 60)
+if(LIBSTORED_HAVE_LIBZMQ)
+	add_test(
+		NAME ZmqClient
+		COMMAND ${CMAKE_COMMAND} -E env
+			PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/../client
+			"PATH=$<SHELL_PATH:$<TARGET_FILE_DIR:libzmq>>${ENV_PATH_SEP}$ENV{PATH}"
+			${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_ZmqClient.py $<TARGET_FILE:zmqserver>
+	)
+
+	set_tests_properties(ZmqClient PROPERTIES TIMEOUT 60)
+endif()
 
 if(VIVADO_CMD)
 	if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test_fpga/vivado/test_fpga/test_fpga.xpr)
@@ -105,3 +150,4 @@ if(VIVADO_CMD)
 		COMMAND $<SHELL_PATH:${VIVADO_CMD}> -mode batch -source ${CMAKE_CURRENT_SOURCE_DIR}/test_fpga/run.tcl ${CMAKE_CURRENT_SOURCE_DIR}/test_fpga/vivado/test_fpga/test_fpga.xpr
 	)
 endif()
+

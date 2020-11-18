@@ -4,3 +4,6 @@
 [submodule "extern/libzmq"]
 	path = extern/libzmq
 	url = https://github.com/zeromq/libzmq.git
+[submodule "extern/heatshrink"]
+	path = extern/heatshrink
+	url = https://github.com/atomicobject/heatshrink.git

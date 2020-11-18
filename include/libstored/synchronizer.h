@@ -230,6 +230,7 @@ namespace stored {
 		};
 
 		StoreJournal(char const* hash, void* buffer, size_t size);
+		~StoreJournal() is_default
 
 		static uint8_t keySize(size_t bufferSize);
 		void* keyToBuffer(Key key, Size len = 0, bool* ok = nullptr) const;
@@ -264,7 +265,7 @@ namespace stored {
 		}
 #endif
 
-		void encodeHash(ProtocolLayer& p, bool last = false);
+		void encodeHash(ProtocolLayer& p, bool last = false) const;
 		static void encodeHash(ProtocolLayer& p, char const* hash, bool last = false);
 		Seq encodeBuffer(ProtocolLayer& p, bool last = false);
 		Seq encodeUpdates(ProtocolLayer& p, Seq sinceSeq, bool last = false);
@@ -272,6 +273,8 @@ namespace stored {
 		static char const* decodeHash(void*& buffer, size_t& len);
 		Seq decodeBuffer(void*& buffer, size_t& len);
 		Seq decodeUpdates(void*& buffer, size_t& len, bool recordAll = true);
+
+		void reserveHeap(size_t storeVariableCount);
 
 	protected:
 		/*!
@@ -349,8 +352,24 @@ namespace stored {
 	 * If it should be synchronizable, use #Synchronizable like this:
 	 *
 	 * \code
-	 * class ActualStore : public Synchronizable<MyStoreBase<ActualStore> > {
-	 * ...
+	 * class ActualStore : public stored::Synchronizable<stored::MyStoreBase<ActualStore> > {
+	 *     CLASS_NOCOPY(ActualStore)
+	 * public:
+	 *     typedef stored::Synchronizable<stored::MyStoreBase<ActualStore> > base;
+	 *     using typename base::Implementation;
+	 *     friend class stored::MyStoreBase<ActualStore>;
+	 *     ActualStore() is_default
+	 *     ...
+	 * };
+	 * \endcode
+	 *
+	 * Or with a few macros:
+	 *
+	 * \code
+	 * class ActualStore: public STORE_SYNC_BASECLASS(MyStoreBase, ActualStore) {
+	 *     STORE_SYNC_CLASS_BODY(MyStoreBase, ActualStore)
+	 * public:
+	 *     ActualStore() is_default
 	 * };
 	 * \endcode
 	 *
@@ -369,7 +388,7 @@ namespace stored {
 
 #if STORED_cplusplus >= 201103L
 		template <typename... Args>
-		Synchronizable(Args&&... args)
+		explicit Synchronizable(Args&&... args)
 			: base(std::forward<Args>(args)...)
 #else
 		Synchronizable()
@@ -378,11 +397,45 @@ namespace stored {
 			, m_journal(base::hash(), base::buffer(), sizeof(base::data().buffer))
 		{
 			// Useless without hooks.
+			// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert)
 			stored_assert(Config::EnableHooks);
 		}
+		~Synchronizable() is_default
 
 		StoreJournal const& journal() const { return m_journal; }
 		StoreJournal& journal() { return m_journal; }
+
+		/*!
+		 * \brief Reserve worst-case heap usage.
+		 *
+		 * Afterwards, the store and synchronizer will not use any additional
+		 * heap, which makes it possible to use it in a not-async-signal-safe context,
+		 * like an interrupt handler.
+		 */
+		void reserveHeap() {
+			journal().reserveHeap(Base::VariableCount);
+		}
+
+#define MAX2(a,b)		((a) > (b) ? (a) : (b))
+#define MAX3(a,b,c)		MAX2(MAX2((a), (b)), (c))
+#define MAX4(a,b,c,d)	MAX3(MAX2((a), (b)), (c), (d))
+		enum {
+			/*! \brief Maximum size of any Synchronizer message for this store. */
+			MaxMessageSize =
+				MAX4(
+					// Hello
+					1 /*cmd*/ + 40 /*hash*/ + 1 /*nul*/ + 2 /*id*/,
+					// Welcome
+					1 /*cmd*/ + 2 * 2 /*ids*/ + Base::BufferSize,
+					// Update
+					1 /*cmd*/ + 2 /*id*/ + Base::BufferSize + Base::VariableCount * 8 /*offset/length*/,
+					// Bye
+					1 /*cmd*/ + 40 /*hash*/
+				),
+		};
+#undef MAX4
+#undef MAX3
+#undef MAX2
 
 	protected:
 		void __hookExitX(Type::type type, void* buffer, size_t len, bool changed) {
@@ -392,6 +445,7 @@ namespace stored {
 				if(Config::EnableAssert) {
 					bool ok = true;
 					(void)ok;
+					// cppcheck-suppress assertWithSideEffect
 					stored_assert(journal().keyToBuffer(key, (StoreJournal::Size)len, &ok) == buffer);
 					stored_assert(ok);
 				}
@@ -405,6 +459,17 @@ namespace stored {
 	private:
 		StoreJournal m_journal;
 	};
+
+#define STORE_SYNC_BASECLASS(Base, Impl) stored::Synchronizable<stored::Base<Impl > >
+
+#define STORE_SYNC_CLASS_BODY(Base, Impl) \
+	CLASS_NOCOPY(Impl) \
+public: \
+	typedef STORE_SYNC_BASECLASS(Base, Impl) base; \
+	using typename base::Implementation; \
+	friend class STORE_BASECLASS(Base, Impl); \
+private:
+
 
 	class Synchronizer;
 
@@ -450,7 +515,7 @@ namespace stored {
 
 		void source(StoreJournal& store);
 		void drop(StoreJournal& store);
-		void process(StoreJournal& store);
+		StoreJournal::Seq process(StoreJournal& store);
 		void decode(void* buffer, size_t len) override final;
 
 		virtual void reset() override;
@@ -459,7 +524,7 @@ namespace stored {
 		Id nextId();
 		void encodeCmd(char cmd, bool last = false);
 		void encodeId(Id id, bool last = false);
-		char decodeCmd(void*& buffer, size_t& len);
+		static char decodeCmd(void*& buffer, size_t& len);
 		static Id decodeId(void*& buffer, size_t& len);
 
 		void bye();
@@ -529,6 +594,7 @@ namespace stored {
 			m_storeMap.erase(store.hash());
 
 			for(Connections::iterator it = m_connections.begin(); it != m_connections.end(); ++it)
+				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
 				static_cast<SyncConnection*>(*it)->drop(store.journal());
 		}
 
@@ -564,14 +630,14 @@ namespace stored {
 		 * \brief Process updates for the given store on the given connection.
 		 */
 		template <typename Store>
-		void process(ProtocolLayer& connection, Synchronizable<Store>& store) {
-			process(connection, store.journal());
+		StoreJournal::Seq process(ProtocolLayer& connection, Synchronizable<Store>& store) {
+			return process(connection, store.journal());
 		}
 
 		void process();
 		void process(StoreJournal& j);
 		void process(ProtocolLayer& connection);
-		void process(ProtocolLayer& connection, StoreJournal& j);
+		StoreJournal::Seq process(ProtocolLayer& connection, StoreJournal& j);
 
 		bool isSynchronizing(StoreJournal& j) const;
 		bool isSynchronizing(StoreJournal& j, SyncConnection& notOverConnection) const;

@@ -81,5 +81,55 @@ void printBuffer(std::string const& s, char const* prefix = nullptr, FILE* f = s
 	printBuffer(s.data(), s.size(), prefix, f);
 }
 
+#if defined(STORED_POLL_LOOP) || defined(STORED_POLL_ZTH_LOOP)
+#  include "libstored/poller.h"
+#  include <poll.h>
+namespace stored {
+	int poll_once(Poller::Event const& e, Poller::events_t& revents) {
+		switch(e.type) {
+		case Poller::Event::TypeFd: {
+			struct pollfd fd = {};
+			fd.fd = e.fd;
+			if(e.events & Poller::PollIn)
+				fd.events |= POLLIN;
+			if(e.events & Poller::PollOut)
+				fd.events |= POLLOUT;
+			if(e.events & Poller::PollErr)
+				fd.events |= POLLERR;
+
+do_poll:
+			switch(poll(&fd, 1, 0)) {
+			case 0:
+				// Timeout
+				return 0;
+			case 1:
+				// Got it.
+				revents = 0;
+				if(fd.revents & POLLIN)
+					revents |= (short)Poller::PollIn;
+				if(fd.revents & POLLOUT)
+					revents |= (short)Poller::PollOut;
+				if(fd.revents & POLLERR)
+					revents |= (short)Poller::PollErr;
+				return 0;
+			case -1:
+				switch(errno) {
+				case EINTR:
+				case EAGAIN:
+					goto do_poll;
+				default:
+					return errno;
+				}
+			default:
+				return EINVAL;
+			}
+		}
+		default:
+			return EINVAL;
+		}
+	}
+} // namespace
+#endif
+
 #endif // __cplusplus
 #endif // TESTS_LOGGING_LAYER_H

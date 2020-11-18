@@ -18,16 +18,18 @@
 
 #include <libstored/protocol.h>
 #include <libstored/util.h>
+#include <libstored/poller.h>
 
-#ifndef STORED_OS_BAREMETAL
-#  ifdef STORED_COMPILER_MSVC
-#    include <io.h>
-#  else
-#    include <unistd.h>
-#  endif
+#ifdef STORED_OS_WINDOWS
+#  include <io.h>
+#  include <fcntl.h>
+#elif !defined(STORED_OS_BAREMETAL)
+#  include <unistd.h>
+#  include <fcntl.h>
 #endif
 
 #if defined(STORED_OS_WINDOWS)
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #  define write(fd, buffer, count) _write(fd, buffer, (unsigned int)(count))
 #endif
 
@@ -91,9 +93,9 @@ first_escape:
 	} else {
 escape:
 		if(p[++i] == Esc)
-			p[decodeOffset] = (uint8_t)Esc;
+			p[decodeOffset] = (char)Esc;
 		else
-			p[decodeOffset] = (uint8_t)p[i] & (uint8_t)EscMask;
+			p[decodeOffset] = (char)((uint8_t)p[i] & (uint8_t)EscMask);
 		decodeOffset++;
 	}
 	i++;
@@ -114,7 +116,7 @@ escape:
 	base::decode(p, decodeOffset);
 }
 
-char AsciiEscapeLayer::needEscape(char c) {
+char AsciiEscapeLayer::needEscape(char c) const {
 	if(!((uint8_t)c & (uint8_t)~(uint8_t)AsciiEscapeLayer::EscMask)) {
 		if(!m_all) {
 			// Only escape what conflicts with other protocols.
@@ -180,15 +182,25 @@ size_t AsciiEscapeLayer::mtu() const {
 // TerminalLayer
 //
 
+#if STORED_cplusplus < 201103L
 /*!
  * \copydoc stored::ProtocolLayer::ProtocolLayer(ProtocolLayer*,ProtocolLayer*)
  * \param nonDebugDecodeFd the file descriptor to write data to that are not part of debug messages during decode(). Set to -1 to drop this data.
- * \param encodeFd the file descriptor to write encoded debug messages to. Set to -1 to drop this data.
  */
-TerminalLayer::TerminalLayer(int nonDebugDecodeFd, int encodeFd, ProtocolLayer* up, ProtocolLayer* down)
+TerminalLayer::TerminalLayer(NonDebugDecodeCallback* cb, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
-	, m_nonDebugDecodeFd(nonDebugDecodeFd)
-	, m_encodeFd(encodeFd)
+	, m_nonDebugDecodeCallback(cb)
+	, m_decodeState(StateNormal)
+	, m_encodeState()
+{
+}
+#endif
+
+TerminalLayer::TerminalLayer(ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+#if STORED_cplusplus < 201103L
+	, m_nonDebugDecodeCallback()
+#endif
 	, m_decodeState(StateNormal)
 	, m_encodeState()
 {
@@ -219,7 +231,8 @@ void TerminalLayer::decode(void* buffer, size_t len) {
 			break;
 		case StateNormalEsc:
 			if(likely(c == EscStart)) {
-				nonDebugDecode(static_cast<char*>(buffer) + nonDebugOffset, i - nonDebugOffset - 1); // Also skip the ESC
+				if(i - nonDebugOffset > 1u)
+					nonDebugDecode(static_cast<char*>(buffer) + nonDebugOffset, i - nonDebugOffset - 1); // Also skip the ESC
 				m_decodeState = StateDebug;
 				nonDebugOffset = len;
 			} else
@@ -250,41 +263,23 @@ void TerminalLayer::decode(void* buffer, size_t len) {
 		nonDebugDecode(static_cast<char*>(buffer) + nonDebugOffset, len - nonDebugOffset);
 }
 
+void TerminalLayer::nonDebugEncode(void* buffer, size_t len) {
+	stored_assert(!m_encodeState);
+	encode(buffer, len, true);
+}
+
 /*!
  * \brief Receptor of non-debug data during decode().
  *
  * Default implementation writes to the \c nonDebugDecodeFd, as supplied to the constructor.
  */
 void TerminalLayer::nonDebugDecode(void* buffer, size_t len) {
-	writeToFd(m_nonDebugDecodeFd, buffer, len);
+	if(m_nonDebugDecodeCallback)
+		m_nonDebugDecodeCallback(buffer, len);
 }
-
-#ifndef STORED_OS_BAREMETAL
-/*!
- * \brief Helper function to write a buffer to a file descriptor.
- *
- * By default calls #writeToFd_().
- */
-void TerminalLayer::writeToFd(int fd, void const* buffer, size_t len) {
-	writeToFd_(fd, buffer, len);
-}
-
-/*!
- * \brief Write the given buffer to a file descriptor.
- */
-void TerminalLayer::writeToFd_(int fd, void const* buffer, size_t len) {
-	if(fd < 0)
-		return;
-
-	ssize_t res = 0;
-	for(size_t i = 0; res >= 0 && i < len; i += (size_t)res)
-		res = write(fd, static_cast<char const*>(buffer) + i, (len - i));
-}
-#endif
 
 void TerminalLayer::encode(void const* buffer, size_t len, bool last) {
 	encodeStart();
-	writeToFd(m_encodeFd, buffer, len);
 	base::encode(buffer, len, false);
 	if(last)
 		encodeEnd();
@@ -301,7 +296,6 @@ void TerminalLayer::encodeStart() {
 
 	m_encodeState = true;
 	char start[2] = {Esc, EscStart};
-	writeToFd(m_encodeFd, start, sizeof(start));
 	base::encode((void*)start, sizeof(start), false);
 }
 
@@ -313,7 +307,6 @@ void TerminalLayer::encodeEnd() {
 		return;
 
 	char end[2] = {Esc, EscEnd};
-	writeToFd(m_encodeFd, end, sizeof(end));
 	base::encode((void*)end, sizeof(end), true);
 	m_encodeState = false;
 }
@@ -524,6 +517,7 @@ next:
 		if(!didTransmit())
 			transmit();
 
+		// cppcheck-suppress duplicateCondition
 		if(!didTransmit()) {
 			base::encode(nullptr, 0, true);
 			m_didTransmit = true;
@@ -743,7 +737,7 @@ void ArqLayer::pushEncodeQueue(void const* buffer, size_t len) {
  * the sequence number as the first byte.
  */
 std::string& ArqLayer::pushEncodeQueueRaw() {
-	std::string* s;
+	std::string* s = nullptr;
 
 	if(m_spare.empty()) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
@@ -1441,6 +1435,1049 @@ Loopback::Loopback(ProtocolLayer& a, ProtocolLayer& b)
 {
 }
 
+
+
+
+//////////////////////////////
+// PolledLayer
+//
+
+PolledLayer::~PolledLayer() {
+	// We would like to close(), but at this point, the subclass was
+	// already destructed. So, make sure to close the handles
+	// in your subclass dtor.
+	//close();
+
+	delete m_poller;
+}
+
+int PolledLayer::block(PolledLayer::fd_type fd, bool forReading, bool suspend) {
+	setLastError(0);
+
+	Poller& poller = this->poller();
+
+	Poller::events_t events = forReading ? Poller::PollIn : Poller::PollOut;
+
+	int err = 0;
+	int res = 0;
+	if((res = poller.add(fd, nullptr, events))) {
+		err = res;
+		goto done;
+	}
+
+	while(true) {
+		Poller::Result const& pres = poller.poll(-1, suspend);
+
+		if(pres.empty()) {
+			// Should not happen.
+			err = EINVAL;
+			break;
+		} else if(((Poller::events_t)pres[0].events) & (Poller::events_t)(Poller::PollErr | Poller::PollHup)) {
+			// Something is wrong with the pipe/socket.
+			err = EIO;
+			break;
+		} else if(((Poller::events_t)pres[0].events) & events) {
+			// Got it.
+			break;
+		}
+	}
+
+	if((res = poller.remove(fd)))
+		if(!err)
+			err = res;
+
+done:
+	if(err)
+		close();
+
+	return setLastError(err);
+}
+
+Poller& PolledLayer::poller() {
+	if(!m_poller)
+		m_poller = new Poller(); // NOLINT(cppcoreguidelines-owning-memory)
+
+	return *m_poller;
+}
+
+
+//////////////////////////////
+// FileLayer
+//
+
+#ifndef STORED_OS_WINDOWS
+
+FileLayer::FileLayer(ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_fd_r(-1)
+	, m_fd_w(-1)
+{
+	setLastError(EBADF);
+}
+
+FileLayer::FileLayer(int fd_r, int fd_w, ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_fd_r(-1)
+	, m_fd_w(-1)
+{
+#  ifdef STORED_OS_POSIX
+	// NOLINTNEXTLINE(hicpp-signed-bitwise)
+	fcntl(fd_r, F_SETFL, fcntl(fd_r, F_GETFL) | O_NONBLOCK);
+	// NOLINTNEXTLINE(hicpp-signed-bitwise)
+	fcntl(fd_w, F_SETFL, fcntl(fd_w, F_GETFL) | O_NONBLOCK);
+#  endif
+
+	init(fd_r, fd_w == -1 ? fd_r : fd_w);
+}
+
+FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_fd_r(-1)
+	, m_fd_w(-1)
+{
+	int r = -1;
+	int w = -1;
+
+	if(!name_w || strcmp(name_r, name_w) == 0) {
+		// NOLINTNEXTLINE(hicpp-signed-bitwise)
+		if((w = r = open(name_r, O_RDWR | O_APPEND | O_CREAT | O_NONBLOCK, 0666)) == -1)
+			goto error;
+
+	// NOLINTNEXTLINE(hicpp-signed-bitwise)
+	} else if((r = open(name_r, O_RDONLY | O_CREAT | O_NONBLOCK, 0666)) == -1) {
+		goto error;
+
+	// NOLINTNEXTLINE(hicpp-signed-bitwise)
+	} else if((w = open(name_w, O_WRONLY | O_APPEND | O_CREAT | O_NONBLOCK, 0666)) == -1) {
+		goto error;
+	}
+
+	init(r, w);
+	return;
+
+error:
+	if(r != -1)
+		::close(r);
+	if(w != -1)
+		::close(w);
+	setLastError(errno ? errno : EBADF);
+}
+
+// cppcheck-suppress passedByValue
+void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w) {
+	stored_assert(m_fd_r == -1);
+	stored_assert(m_fd_w == -1);
+
+	m_fd_r = fd_r;
+	m_fd_w = fd_w;
+
+	if(m_fd_r == -1 || m_fd_w == -1) {
+		setLastError(EBADF);
+	} else {
+		m_bufferRead.resize(BufferSize);
+		setLastError(0);
+	}
+}
+
+FileLayer::~FileLayer() {
+	close_();
+}
+
+void FileLayer::close() {
+	close_();
+}
+
+void FileLayer::close_() {
+	if(m_fd_r != -1)
+		::close(m_fd_r);
+
+	if(m_fd_w != -1 && m_fd_r != m_fd_w)
+		::close(m_fd_w);
+
+	m_fd_r = -1;
+	m_fd_w = -1;
+
+	base::close();
+}
+
+bool FileLayer::isOpen() const {
+	return m_fd_r != -1;
+}
+
+void FileLayer::encode(void const* buffer, size_t len, bool last) {
+	if(m_fd_w == -1) {
+		setLastError(EBADF);
+done:
+		base::encode(buffer, len, last);
+		return;
+	}
+
+	char const* buf = static_cast<char const*>(buffer);
+	size_t buflen = len;
+
+	if(m_fd_w == STDOUT_FILENO)
+		// Do not reorder stdout's FILE buffer and our write()s. Flush first.
+		fflush(stdout);
+
+	while(buflen > 0) {
+		ssize_t written = write(m_fd_w, buf, buflen);
+
+		switch(written) {
+		case -1:
+			switch(errno) {
+#if EAGAIN != EWOULDBLOCK
+			case EWOULDBLOCK:
+#endif
+			case EAGAIN: {
+				if(this->block(m_fd_w, false, m_fd_w == STDOUT_FILENO))
+					return;
+
+				// We should be able to write more now. Retry.
+				continue;
+			}
+			default:
+				goto error;
+			}
+			break;
+		case 0:
+			errno = EIO;
+			goto error;
+		default:
+			stored_assert(buflen >= (size_t)written);
+			buflen -= (size_t)written;
+			buf += written;
+		}
+	}
+
+	setLastError(0);
+	goto done;
+
+error:
+	close();
+	setLastError(errno ? errno : EIO);
+	goto done;
+}
+
+FileLayer::fd_type FileLayer::fd() const {
+	return m_fd_r;
+}
+
+FileLayer::fd_type FileLayer::fd_r() const {
+	return m_fd_r;
+}
+
+FileLayer::fd_type FileLayer::fd_w() const {
+	return m_fd_w;
+}
+
+int FileLayer::recv(bool block) {
+	if(fd_r() == -1)
+		return setLastError(EBADF);
+
+again:
+	ssize_t cnt = read(fd_r(), &m_bufferRead[0], m_bufferRead.size());
+
+	if(cnt == -1) {
+		switch(errno) {
+		case EAGAIN:
+#if EAGAIN != EWOULDBLOCK
+		case EWOULDBLOCK:
+#endif
+			if(!block)
+				return setLastError(errno);
+
+			if(this->block(fd_r(), true))
+				return lastError();
+
+			goto again;
+		default:
+			close();
+			return setLastError(errno);
+		}
+	} else if(cnt == 0) {
+		// EOF
+		close();
+		return setLastError(EAGAIN);
+	} else {
+		decode(&m_bufferRead[0], (size_t)cnt);
+		return setLastError(0);
+	}
+}
+
+#else // STORED_OS_WINDOWS
+
+static bool isValidHandle(HANDLE h) {
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+	return h != INVALID_HANDLE_VALUE;
+}
+
+// Convenience ctor for use. Do not use in subclass.
+FileLayer::FileLayer(int fd_r, int fd_w, ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_fd_r(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+	, m_fd_w(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+	, m_overlappedRead()
+	, m_overlappedWrite()
+	, m_this(this)
+	, m_writeLen()
+{
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+	HANDLE h_r = (HANDLE)_get_osfhandle(fd_r);
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+	HANDLE h_w = fd_w == -1 ? h_r : (HANDLE)_get_osfhandle(fd_w);
+	init(h_r, h_w);
+}
+
+// Convenience ctor for use. Do not use in subclass.
+FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_fd_r(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+	, m_fd_w(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+	, m_overlappedRead()
+	, m_overlappedWrite()
+	, m_this(this)
+	, m_writeLen()
+{
+	setLastError(EBADF);
+
+	if(!name_w || strcmp(name_r, name_w) == 0) {
+		HANDLE h = INVALID_HANDLE_VALUE; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+		if(!isValidHandle((h = CreateFile(name_r,
+			GENERIC_READ | GENERIC_WRITE,					// NOLINT(hicpp-signed-bitwise)
+			FILE_SHARE_READ | FILE_SHARE_WRITE,				// NOLINT(hicpp-signed-bitwise)
+			NULL, OPEN_ALWAYS,
+			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,	// NOLINT(hicpp-signed-bitwise)
+			NULL))))
+		{
+			setLastError(EINVAL);
+			return;
+		}
+
+		init(h, h);
+	} else {
+		HANDLE h_r = INVALID_HANDLE_VALUE; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+		if(!isValidHandle((h_r = CreateFile(name_r,
+			GENERIC_READ,
+			FILE_SHARE_READ | FILE_SHARE_WRITE,				// NOLINT(hicpp-signed-bitwise)
+			NULL, OPEN_ALWAYS,
+			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,	// NOLINT(hicpp-signed-bitwise)
+			NULL))))
+		{
+			setLastError(EINVAL);
+			return;
+		}
+
+		HANDLE h_w = INVALID_HANDLE_VALUE; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+		if(!isValidHandle((h_w = CreateFile(name_w,
+			GENERIC_WRITE,
+			FILE_SHARE_READ | FILE_SHARE_WRITE,				// NOLINT(hicpp-signed-bitwise)
+			NULL, OPEN_ALWAYS,
+			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,	// NOLINT(hicpp-signed-bitwise)
+			NULL))))
+		{
+			setLastError(EINVAL);
+			return;
+		}
+
+		init(h_r, h_w);
+	}
+}
+
+// Convenience ctor for use. Do not use in subclass.
+FileLayer::FileLayer(HANDLE h_r, HANDLE h_w, ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_fd_r(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+	, m_fd_w(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+	, m_overlappedRead()
+	, m_overlappedWrite()
+	, m_this(this)
+	, m_writeLen()
+{
+	init(h_r, !isValidHandle(h_w) ? h_r : h_w);
+}
+
+FileLayer::FileLayer(ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_fd_r(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+	, m_fd_w(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+	, m_overlappedRead()
+	, m_overlappedWrite()
+	, m_this(this)
+	, m_writeLen()
+{
+	setLastError(EBADF);
+}
+
+void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w) {
+	stored_assert(!isValidHandle(m_fd_r));
+	stored_assert(!isValidHandle(m_fd_w));
+
+	if(!isValidHandle(fd_r)) {
+		setLastError(EBADF);
+		goto error;
+	}
+
+	if(!isValidHandle(fd_w)) {
+		setLastError(EBADF);
+		goto error;
+	}
+
+	m_fd_r = fd_r;
+	m_fd_w = fd_w;
+
+	setLastError(0);
+
+	m_bufferRead.resize(BufferSize);
+
+	m_overlappedRead.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	if(!m_overlappedRead.hEvent) {
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+		m_overlappedRead.hEvent = INVALID_HANDLE_VALUE;
+		setLastError(ENOMEM);
+		goto error;
+	}
+
+	m_overlappedWrite.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	if(!m_overlappedWrite.hEvent) {
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+		m_overlappedWrite.hEvent = INVALID_HANDLE_VALUE;
+		setLastError(ENOMEM);
+		goto error;
+	}
+
+	// If init() is called by a ctor, which was invoked by a subclass,
+	// FileLayer::startRead() is called, not the one of the subclass.
+	// Therefore, a subclass should use the FileRead(up,down) ctor, and
+	// call init() afterwards.
+	//
+	// NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
+	startRead();
+	return;
+
+error:
+	close_();
+
+	if(!lastError())
+		setLastError(EIO);
+}
+
+FileLayer::~FileLayer() {
+	close_();
+}
+
+void FileLayer::close() {
+	close_();
+}
+
+void FileLayer::close_() {
+	if(m_fd_r != m_fd_w && isValidHandle(m_fd_w)) {
+		FlushFileBuffers(m_fd_w);
+		CancelIo(m_fd_w);
+		CloseHandle(m_fd_w);
+	}
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+	m_fd_w = INVALID_HANDLE_VALUE;
+
+	if(isValidHandle(m_fd_r)) {
+		FlushFileBuffers(m_fd_r);
+		CancelIo(m_fd_r);
+		CloseHandle(m_fd_r);
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+		m_fd_r = INVALID_HANDLE_VALUE;
+	}
+
+	if(m_overlappedRead.hEvent) {
+		CloseHandle(m_overlappedRead.hEvent);
+		m_overlappedRead.hEvent = NULL;
+	}
+
+	if(m_overlappedWrite.hEvent) {
+		CloseHandle(m_overlappedWrite.hEvent);
+		m_overlappedWrite.hEvent = NULL;
+	}
+
+	base::close();
+}
+
+bool FileLayer::isOpen() const {
+	return isValidHandle(m_fd_r);
+}
+
+int FileLayer::finishWrite(bool block) {
+	size_t offset = 0;
+
+wait_prev_write:
+	if(!HasOverlappedIoCompleted(&m_overlappedWrite)) {
+		if(block)
+			if(this->block(fd_w(), false))
+				return lastError();
+
+		DWORD written = 0;
+		if(!GetOverlappedResult(fd_w(), &m_overlappedWrite, &written, FALSE)) {
+			switch(GetLastError()) {
+			case ERROR_IO_INCOMPLETE:
+			case ERROR_IO_PENDING:
+				stored_assert(!block);
+				return 0;
+			default:
+				goto error;
+			}
+		}
+
+		while(written < m_writeLen) {
+			// Restart for the remaining data.
+			offset += written;
+			resetOverlappedWrite();
+			m_writeLen -= written;
+			if(block) {
+				if(WriteFile(fd_w(), &m_bufferWrite[offset],
+					(DWORD)m_writeLen, &written, &m_overlappedWrite))
+				{
+					// Completed immediately.
+				} else {
+					switch(GetLastError()) {
+					case ERROR_IO_INCOMPLETE:
+					case ERROR_IO_PENDING:
+						goto wait_prev_write;
+					default:
+						goto error;
+					}
+				}
+			} else {
+				if(WriteFileEx(fd_w(), &m_bufferWrite[offset],
+					(DWORD)m_writeLen, &m_overlappedWrite,
+					// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+					(LPOVERLAPPED_COMPLETION_ROUTINE)(void*)&writeCompletionRoutine))
+					return 0;
+				else
+					goto error;
+			}
+		}
+	}
+
+	SetEvent(m_overlappedWrite.hEvent);
+	return 0;
+
+error:
+	close();
+	return setLastError(EIO);
+}
+
+void FileLayer::writeCompletionRoutine(DWORD dwErrorCode, DWORD UNUSED_PAR(dwNumberOfBytesTransfered), LPOVERLAPPED lpOverlapped) {
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+	FileLayer* that = (FileLayer*)((uintptr_t)lpOverlapped + sizeof(*lpOverlapped));
+	stored_assert(that);
+
+	if(dwErrorCode == 0) {
+		that->close();
+		that->setLastError(EIO);
+	} else {
+		// Make sure all data has been transferred.
+		that->finishWrite(false);
+	}
+}
+
+void FileLayer::encode(void const* buffer, size_t len, bool last) {
+	if(!isValidHandle(fd_w())) {
+done:
+		// Done. It might be the case that the write already finished, but
+		// not all data has been written. Let the next invocation of encode() handle that.
+		base::encode(buffer, len, last);
+		return;
+	}
+
+	finishWrite(true);
+
+	// Issue a new write.
+	stored_assert(len < (size_t)std::numeric_limits<DWORD>::max());
+	m_bufferWrite.resize(len);
+	memcpy(&m_bufferWrite[0], buffer, len);
+	setLastError(0);
+	resetOverlappedWrite();
+	if(WriteFileEx(fd_w(), &m_bufferWrite[0], (DWORD)len, &m_overlappedWrite,
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+		(LPOVERLAPPED_COMPLETION_ROUTINE)(void*)&writeCompletionRoutine))
+	{
+		// Already finished.
+	} else {
+		switch(GetLastError()) {
+		case ERROR_IO_INCOMPLETE:
+		case ERROR_IO_PENDING:
+			break;
+		default:
+			goto error;
+		}
+	}
+
+	goto done;
+
+error:
+	close();
+	setLastError(EIO);
+	goto done;
+}
+
+FileLayer::fd_type FileLayer::fd() const {
+	return m_overlappedRead.hEvent;
+}
+
+FileLayer::fd_type FileLayer::fd_r() const {
+	return m_fd_r;
+}
+
+FileLayer::fd_type FileLayer::fd_w() const {
+	return m_fd_w;
+}
+
+int FileLayer::startRead() {
+	bool didDecode = false;
+
+again:
+	if(!isValidHandle(m_fd_r))
+		return setLastError(EBADF);
+
+	size_t readable = available();
+	if(readable == 0) {
+		close();
+		return setLastError(EIO);
+	}
+
+	if(readable > m_bufferRead.size())
+		readable = m_bufferRead.size();
+
+	if(readable > std::numeric_limits<DWORD>::max())
+		readable = std::numeric_limits<DWORD>::max();
+
+	DWORD bytesRead = 0;
+
+	// Read everything there is to read.
+	// This should be finished quickly.
+	resetOverlappedRead();
+	if(ReadFile(m_fd_r, &m_bufferRead[0],
+		(DWORD)readable,
+		&bytesRead, &m_overlappedRead))
+	{
+		// Finished immediately.
+		decode(&m_bufferRead[0], (size_t)bytesRead);
+		didDecode = true;
+		goto again;
+	} else {
+		switch(GetLastError()) {
+		case ERROR_IO_INCOMPLETE:
+		case ERROR_IO_PENDING:
+			// The read is pending.
+			return setLastError(didDecode ? 0 : EAGAIN);
+		default:
+			close();
+			return setLastError(EIO);
+		}
+	}
+}
+
+size_t FileLayer::available() {
+	if(!isValidHandle(m_fd_r))
+		return 0;
+
+	switch(GetFileType(m_fd_r)) {
+	case FILE_TYPE_DISK: {
+		LONG posHigh = 0L;
+		DWORD res = SetFilePointer(m_fd_r, 0L, &posHigh, FILE_CURRENT);
+		if(res == INVALID_SET_FILE_POINTER)
+			return 0;
+
+		uint64_t pos = (uint64_t)res | ((uint64_t)posHigh << 32u);
+
+		DWORD sizeHigh = 0;
+		res = GetFileSize(m_fd_r, &sizeHigh);
+		if(res == INVALID_FILE_SIZE)
+			return 0;
+
+		uint64_t size = (uint64_t)res | ((uint64_t)sizeHigh << 32u);
+
+		stored_assert(size >= pos);
+
+		uint64_t avail = size - pos;
+		return (size_t)std::min<uint64_t>(avail, std::numeric_limits<size_t>::max());
+	}
+	case FILE_TYPE_PIPE: {
+		DWORD readable = 0;
+		if(!PeekNamedPipe(m_fd_r, NULL, 0, NULL, &readable, NULL))
+			return 0;
+
+		if(readable == 0)
+			// There is nothing to read. Issue a read of 1 byte, which will overlap/block.
+			return 1;
+
+		return (size_t)readable;
+	}
+	default:
+		// Read byte-by-byte.
+		return 1;
+	}
+}
+
+int FileLayer::recv(bool block) {
+	bool didDecode = false;
+
+	setLastError(0);
+
+	if(block)
+		if(this->block(fd_r(), true))
+			return lastError();
+
+again:
+	DWORD read = 0;
+	if(GetOverlappedResult(m_fd_r, &m_overlappedRead, &read, FALSE)) {
+		// Finished the previous read.
+		decode(&m_bufferRead[0], read);
+		// Go issue the next read.
+		return startRead() == EAGAIN ? setLastError(0) : lastError();
+	} else {
+		switch(GetLastError()) {
+		case ERROR_IO_INCOMPLETE:
+		case ERROR_IO_PENDING:
+			// Still waiting.
+			if(didDecode)
+				// But we did something already.
+				return setLastError(0);
+
+			if(block) {
+				// Go block till we are readable.
+				if(this->block(fd_r(), true))
+					return lastError();
+
+				goto again;
+			}
+
+			// Non blocking.
+			return setLastError(EAGAIN);
+		default:
+			close();
+			return setLastError(EIO);
+		}
+	}
+}
+
+OVERLAPPED& FileLayer::overlappedRead() {
+	return m_overlappedRead;
+}
+
+OVERLAPPED& FileLayer::overlappedWrite() {
+	return m_overlappedWrite;
+}
+
+void FileLayer::resetOverlappedRead() {
+	HANDLE hEvent = m_overlappedRead.hEvent;
+	memset(&m_overlappedRead, 0, sizeof(m_overlappedRead));
+	m_overlappedRead.hEvent = hEvent;
+	ResetEvent(hEvent);
+}
+
+void FileLayer::resetOverlappedWrite() {
+	HANDLE hEvent = m_overlappedWrite.hEvent;
+	memset(&m_overlappedWrite, 0, sizeof(m_overlappedWrite));
+	m_overlappedWrite.hEvent = hEvent;
+	ResetEvent(hEvent);
+}
+
+
+
+//////////////////////////////
+// NamedPipeLayer
+//
+
+NamedPipeLayer::NamedPipeLayer(char const* name, ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_state(StateInit)
+{
+	stored_assert(name);
+
+	m_name = "\\\\.\\pipe\\";
+	m_name += name;
+
+	HANDLE h = CreateNamedPipe(m_name.c_str(),
+		PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED, // NOLINT(hicpp-signed-bitwise)
+		PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT, // NOLINT(hicpp-signed-bitwise)
+		1, BufferSize, BufferSize,
+		0, NULL);
+
+	if(!isValidHandle(h)) {
+		close_();
+		setLastError(EAGAIN);
+		return;
+	}
+
+	init(h, h);
+}
+
+NamedPipeLayer::~NamedPipeLayer() {
+	close_();
+}
+
+void NamedPipeLayer::close_() {
+	if(isValidHandle(handle())) {
+		FlushFileBuffers(handle());
+		CancelIo(handle());
+		DisconnectNamedPipe(handle());
+	}
+
+	base::close();
+}
+
+void NamedPipeLayer::close() {
+	if(isValidHandle(handle())) {
+		// Don't really close, just reconnect.
+		FlushFileBuffers(handle());
+		CancelIo(handle());
+		DisconnectNamedPipe(handle());
+		m_state = StateInit;
+		setLastError(EIO);
+		// Reconnect.
+		recv();
+	}
+}
+
+int NamedPipeLayer::recv(bool block) {
+	bool didDecode = false;
+again:
+	switch(m_state) {
+	case StateInit:
+		if(ConnectNamedPipe(handle(), &overlappedRead())) {
+			// Connected immediately.
+			m_state = StateConnected;
+			didDecode = true;
+			goto again;
+		} else {
+			switch(GetLastError()) {
+			case ERROR_IO_INCOMPLETE:
+			case ERROR_IO_PENDING:
+				m_state = StateConnecting;
+				return setLastError(EAGAIN);
+			case ERROR_PIPE_CONNECTED:
+				// The client arrived early.
+				m_state = StateConnected;
+				didDecode = true;
+				goto again;
+			default:
+				close();
+				// Give up.
+				m_state = StateError;
+				return setLastError(EIO);
+			}
+		}
+		break;
+	case StateConnecting: {
+		DWORD dummy = 0;
+		if(block)
+			this->block(fd_r(), true);
+
+		if(GetOverlappedResult(fd_r(), &overlappedRead(), &dummy, FALSE)) {
+			m_state = StateConnected;
+			if(startRead())
+				return lastError();
+			didDecode = true;
+			goto again;
+		} else {
+			switch(GetLastError()) {
+			case ERROR_IO_INCOMPLETE:
+			case ERROR_IO_PENDING:
+				return setLastError(EAGAIN);
+			default:
+				m_state = StateError;
+				return setLastError(EIO);
+			}
+		}
+	}
+	case StateConnected:
+		if(base::recv(block) == EAGAIN && didDecode)
+			return setLastError(0);
+		else
+			return lastError();
+
+	case StateError:
+		return setLastError(EINVAL);
+
+	default:
+		stored_assert(false);
+		return EINVAL;
+	}
+}
+
+int NamedPipeLayer::startRead() {
+	switch(m_state) {
+	case StateInit:
+		return recv(false);
+	case StateConnected:
+		return base::startRead();
+	case StateError:
+		return setLastError(EINVAL);
+	default:
+		return setLastError(EAGAIN);
+	}
+}
+
+std::string const& NamedPipeLayer::name() const {
+	return m_name;
+}
+
+HANDLE NamedPipeLayer::handle() const {
+	return fd_r();
+}
+
+#endif // STORED_OS_WINDOWS
+
+
+
+//////////////////////////////
+// StdioLayer
+//
+
+#ifdef STORED_OS_WINDOWS
+StdioLayer::StdioLayer(ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_fd_r(GetStdHandle(STD_INPUT_HANDLE))
+	, m_fd_w(GetStdHandle(STD_OUTPUT_HANDLE))
+	, m_pipe_r()
+	, m_pipe_w()
+{
+	DWORD mode = 0;
+	if(GetConsoleMode(m_fd_r, &mode)) {
+		// NOLINTNEXTLINE(hicpp-signed-bitwise)
+		SetConsoleMode(m_fd_r, mode & ~(DWORD)(ENABLE_MOUSE_INPUT | ENABLE_WINDOW_INPUT));
+		FlushConsoleInputBuffer(m_fd_r);
+	} else {
+		// stdin is probably redirected, in which case it is a named pipe.
+		m_pipe_r = true;
+	}
+
+	if(GetConsoleMode(m_fd_w, &mode)) {
+		// NOLINTNEXTLINE(hicpp-signed-bitwise)
+		SetConsoleMode(m_fd_w, mode | 4 /*ENABLE_VIRTUAL_TERMINAL_PROCESSING*/ );
+	} else {
+		// stdout is probably redirected, in which case it is a named pipe.
+		m_pipe_w = true;
+	}
+
+	m_bufferRead.resize(BufferSize);
+}
+
+StdioLayer::~StdioLayer() {
+	close_();
+}
+
+bool StdioLayer::isPipeIn() const {
+	return m_pipe_r;
+}
+
+bool StdioLayer::isPipeOut() const {
+	return m_pipe_w;
+}
+
+int StdioLayer::block(fd_type UNUSED_PAR(fd), bool UNUSED_PAR(forReading), bool UNUSED_PAR(suspend)) {
+	stored_assert(false);
+	return setLastError(EINVAL);
+}
+
+bool StdioLayer::isOpen() const {
+	return isValidHandle(m_fd_r);
+}
+
+void StdioLayer::close() {
+	close_();
+}
+
+void StdioLayer::close_() {
+	if(isValidHandle(m_fd_r) && isPipeIn()) {
+		CloseHandle(m_fd_r);
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+		m_fd_r = INVALID_HANDLE_VALUE;
+	}
+
+	base::close();
+}
+
+StdioLayer::fd_type StdioLayer::fd_r() const {
+	return m_fd_r;
+}
+
+StdioLayer::fd_type StdioLayer::fd_w() const {
+	return m_fd_w;
+}
+
+// Guess what, Overlapped I/O is not supported on the console...
+int StdioLayer::recv(bool block) {
+	if(!isValidHandle(fd_r()))
+		return setLastError(EBADF);
+
+	bool didDecode = false;
+	DWORD cnt = 0;
+again:
+	if(isPipeIn()) {
+		if(!PeekNamedPipe(fd_r(), NULL, 0, NULL, &cnt, NULL))
+			goto error;
+	} else if(!GetNumberOfConsoleInputEvents(fd_r(), &cnt)){
+		goto error;
+	}
+
+	if(cnt == 0) {
+		if(didDecode)
+			return setLastError(0);
+		if(!block)
+			return EAGAIN;
+
+		cnt = 1;
+	}
+
+	if((size_t)cnt > m_bufferRead.size())
+		cnt = (DWORD)m_bufferRead.size();
+
+	if(ReadFile(fd_r(), &m_bufferRead[0], cnt, &cnt, NULL)) {
+		decode(&m_bufferRead[0], (size_t)cnt);
+		didDecode = true;
+		goto again;
+	}
+
+error:
+	close();
+	return setLastError(EIO);
+}
+
+void StdioLayer::encode(void const* buffer, size_t len, bool last) {
+	if(!isValidHandle(fd_w())) {
+		setLastError(EBADF);
+done:
+		base::encode(buffer, len, last);
+		return;
+	}
+
+	char const* buf = static_cast<char const*>(buffer);
+	size_t rem = len;
+	while(rem > 0) {
+		DWORD written = 0;
+		if(!WriteFile(fd_w(), buf, (DWORD)rem, &written, NULL)) {
+			close();
+			setLastError(EIO);
+			goto done;
+		}
+
+		buf += written;
+		rem -= written;
+	}
+
+	goto done;
+}
+
+StdioLayer::fd_type StdioLayer::fd() const {
+	return fd_r();
+}
+
+#else // !STORED_OS_WINDOWS
+
+StdioLayer::StdioLayer(ProtocolLayer* up, ProtocolLayer* down)
+	: base(STDIN_FILENO, STDOUT_FILENO, up, down)
+{}
+
+#endif // !STORED_OS_WINDOWS
 
 
 } // namespace

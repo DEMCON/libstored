@@ -26,13 +26,22 @@ file(TO_CMAKE_PATH "{{libstored_dir|escapebs}}" libstored_dir)
 add_library({{libprefix}}libstored
 	${libstored_dir}/include/stored
 	${libstored_dir}/include/stored.h
-	${libstored_dir}/include/libstored/macros.h
-	${libstored_dir}/include/libstored/types.h
+	${libstored_dir}/include/stored_config.h
+	${libstored_dir}/include/libstored/compress.h
+	${libstored_dir}/include/libstored/config.h
+	${libstored_dir}/include/libstored/debugger.h
 	${libstored_dir}/include/libstored/directory.h
+	${libstored_dir}/include/libstored/macros.h
+	${libstored_dir}/include/libstored/poller.h
+	${libstored_dir}/include/libstored/spm.h
+	${libstored_dir}/include/libstored/synchronizer.h
+	${libstored_dir}/include/libstored/types.h
 	${libstored_dir}/include/libstored/util.h
 	${libstored_dir}/include/libstored/zmq.h
+	${libstored_dir}/src/compress.cpp
 	${libstored_dir}/src/directory.cpp
 	${libstored_dir}/src/debugger.cpp
+	${libstored_dir}/src/poller.cpp
 	${libstored_dir}/src/protocol.cpp
 	${libstored_dir}/src/synchronizer.cpp
 	${libstored_dir}/src/util.cpp
@@ -79,9 +88,17 @@ if(LIBSTORED_HAVE_LIBZMQ)
 	target_link_libraries({{libprefix}}libstored INTERFACE libzmq)
 endif()
 
+if(WIN32)
+	target_link_libraries({{libprefix}}libstored INTERFACE ws2_32)
+endif()
+
+if(LIBSTORED_HAVE_HEATSHRINK)
+	target_link_libraries({{libprefix}}libstored PUBLIC heatshrink)
+endif()
+
 if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 	find_program(CLANG_TIDY_EXE NAMES "clang-tidy" DOC "Path to clang-tidy executable")
-	if(CLANG_TIDY_EXE AND NOT CMAKE_CROSSCOMPILING)
+	if(CLANG_TIDY_EXE AND NOT CMAKE_CROSSCOMPILING AND (NOT CMAKE_CXX_STANDARD OR CMAKE_CXX_STANDARD EQUAL 14))
 		option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ON)
 		if(LIBSTORED_CLANG_TIDY)
 			string(CONCAT CLANG_TIDY_CHECKS "-checks="
@@ -89,6 +106,10 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 				"-cppcoreguidelines-pro-bounds-array-to-pointer-decay,"
 				"-cppcoreguidelines-pro-type-union-access,"
 				"-cppcoreguidelines-pro-bounds-pointer-arithmetic,"
+				"-cppcoreguidelines-avoid-goto,"
+				"-cppcoreguidelines-avoid-magic-numbers,"
+				"-cppcoreguidelines-avoid-c-arrays,"
+				"-cppcoreguidelines-pro-type-vararg,"
 
 				"hicpp-*,"
 				"-hicpp-braces-around-statements,"
@@ -97,20 +118,32 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 				"-hicpp-use-auto,"
 				"-hicpp-no-malloc,"
 				"-hicpp-use-override,"
+				"-hicpp-uppercase-literal-suffix,"
+				"-hicpp-avoid-goto,"
+				"-hicpp-avoid-c-arrays,"
+				"-hicpp-vararg,"
 
 				"performance-*,"
 				"clang-analyzer-*,"
 				"bugprone-*,"
 				"portability-*,"
 				"misc-*,"
+				"-misc-non-private-member-variables-in-classes,"
+				"-misc-no-recursion,"
 
 				"readability-*,"
 				"-readability-braces-around-statements,"
 				"-readability-implicit-bool-conversion,"
 				"-readability-else-after-return,"
+				"-readability-uppercase-literal-suffix,"
+				"-readability-magic-numbers,"
 			)
 			set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
-				"-header-filter=.*includ/libstored.*")
+				"--extra-arg=-I${libstored_dir}/include"
+				"--extra-arg=-I${libstored_dir}/extern/libzmq/include"
+				"--extra-arg=-I${libstored_dir}/extern/heatshrink"
+				"--extra-arg=-I${CMAKE_CURRENT_SOURCE_DIR}/include"
+				"-header-filter=.*include/libstored.*")
 		endif()
 
 		set_target_properties({{libprefix}}libstored

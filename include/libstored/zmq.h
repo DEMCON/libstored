@@ -65,6 +65,7 @@ namespace stored {
 
 	protected:
 		void setLastError(int error);
+		int recv1(bool block = false);
 
 	private:
 		/*! \brief The ZeroMQ context. */
@@ -88,6 +89,7 @@ namespace stored {
 	 * \ingroup libstored_protocol
 	 */
 	class DebugZmqLayer : public ZmqLayer {
+		CLASS_NOCOPY(DebugZmqLayer)
 	public:
 		typedef ZmqLayer base;
 
@@ -95,7 +97,7 @@ namespace stored {
 			DefaultPort = 19026,
 		};
 
-		DebugZmqLayer(void* context = nullptr, int port = DefaultPort, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit DebugZmqLayer(void* context = nullptr, int port = DefaultPort, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		/*! \brief Dtor. */
 		virtual ~DebugZmqLayer() override is_default
 
@@ -107,6 +109,7 @@ namespace stored {
 	 * \ingroup libstored_protocol
 	 */
 	class SyncZmqLayer : public ZmqLayer {
+		CLASS_NOCOPY(SyncZmqLayer)
 	public:
 		typedef ZmqLayer base;
 

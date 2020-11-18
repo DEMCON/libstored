@@ -79,18 +79,19 @@
 #elif defined(_MSC_VER)
 #  define STORED_COMPILER_MSVC
 #  ifndef UNUSED_PAR
-#    define UNUSED_PAR(name)	name
+#    ifdef __clang__
+// That's odd. Probably clang-tidy.
+#      define UNUSED_PAR(name)	name /* NOLINT(clang-diagnostic-unused-parameter,misc-unused-parameters) */
+#    else
+#      define UNUSED_PAR(name)	name
+#   endif
 #  endif
 #  define NOMINMAX
 #  define _USE_MATH_DEFINES
-#  pragma warning(disable: 4061 4068 4100 4127 4324 4514 4571 4625 4626 4706 4710 4711 4774 4789 4820 5026 5027 5039 5045)
+#  pragma warning(disable: 4061 4068 4100 4127 4200 4201 4296 4324 4355 4514 4571 4625 4626 4706 4710 4711 4774 4789 4820 5026 5027 5039 5045)
 #  if _MSC_VER >= 1925
 #    pragma warning(disable: 5204)
 #  endif
-#  pragma warning(push)
-#  pragma warning(disable: 4668)
-#  include <Windows.h>
-#  pragma warning(pop)
 #  include <BaseTsd.h>
 typedef SSIZE_T ssize_t;
 #  define __attribute__(...)
@@ -120,6 +121,11 @@ typedef SSIZE_T ssize_t;
 #  define STORED_FALLTHROUGH
 #endif
 
+#ifdef STORED_HAVE_ZMQ
+// For the poller.
+#  define ZMQ_BUILD_DRAFT_API
+#endif
+
 
 //////////////////////////////////////////////////
 // Platform
@@ -131,6 +137,15 @@ typedef SSIZE_T ssize_t;
 #  define __USE_MINGW_ANSI_STDIO 1
 #  if defined(UNICODE) || defined(_UNICODE)
 #    error Do not use UNICODE. Use ANSI with UTF-8 instead.
+#  endif
+#  ifdef STORED_COMPILER_MSVC
+#    pragma warning(push)
+#    pragma warning(disable: 4668)
+#  endif
+#  include <winsock2.h>
+#  include <Windows.h>
+#  ifdef STORED_COMPILER_MSVC
+#    pragma warning(pop)
 #  endif
 #elif defined(__linux__)
 #  define STORED_OS_LINUX 1

@@ -39,7 +39,7 @@ if __name__ == '__main__':
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
 
-    client = ZmqClient(args.server, args.port)
+    client = ZmqClient(args.server, args.port, multi=True)
 
     try:
         prefix = '>  '

@@ -1,0 +1,3 @@
+hello=0 world=0
+hello=42 world=3.14
+hello=43 world=3.14

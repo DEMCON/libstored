@@ -86,7 +86,7 @@ notfound:
 			if(nameEnd)
 				goto notfound;
 
-			uint8_t skip;
+			uint8_t skip = 0;
 			for(skip = *p++; skip > 0 && len > 0 && *name; skip--, name++, len--) {
 				switch(*name) {
 				case '/':

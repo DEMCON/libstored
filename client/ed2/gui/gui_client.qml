@@ -46,7 +46,7 @@ Window {
         root.title = text
     }
 
-    readonly property int fontSize: 12
+    readonly property int fontSize: 10
 
     Component {
         id: objectRow
@@ -68,9 +68,15 @@ Window {
                     font.pixelSize: root.fontSize
                     fontSizeMode: Text.VerticalFit
 
-                    ToolTip.text: obj.name + (obj.alias ? "\nAlias: " + obj.alias : "")
-                    ToolTip.visible: mouseArea.containsMouse
-                    ToolTip.delay: 1000
+                    ToolTip {
+                        visible: mouseArea.containsMouse
+                        delay: 1000
+                        font.pixelSize: root.fontSize
+                        background.antialiasing: true
+                        contentItem: Label {
+                            text: obj.name + (obj.alias ? "\nAlias: " + obj.alias : "")
+                        }
+                    }
 
                     MouseArea {
                         id: mouseArea
@@ -95,9 +101,25 @@ Window {
                     Layout.fillHeight: true
                     Layout.preferredWidth: root.fontSize * 8
                     currentIndex: strToIndex(obj.format)
+                    topPadding: 0
+                    bottomPadding: 0
+                    indicator.height: format.height * 0.618
+                    indicator.width: indicator.height * 1.5
+                    popup.font.pixelSize: root.fontSize
+                    popup.contentItem.height: format.height
 
                     onCurrentTextChanged: {
                         obj.format = currentText
+                    }
+
+                    contentItem: Label {
+                        text: format.displayText
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        verticalAlignment: Text.AlignVCenter
+                        font.pixelSize: root.fontSize
+                        leftPadding: root.fontSize / 2
+                        elide: Text.ElideRight
                     }
                 }
 
@@ -122,6 +144,9 @@ Window {
                     text: obj.valueString
                     placeholderText: obj && obj.t ? "" : "value?"
                     readOnly: format.currentText === 'bytes'
+                    background.antialiasing: true
+                    topPadding: 0
+                    bottomPadding: 0
 
                     onAccepted: {
                         obj.valueString = displayText
@@ -145,7 +170,7 @@ Window {
 
                     Connections {
                         target: obj
-                        function onValueChanged() {
+                        function onValueStringChanged() {
                             if(obj && !valueField.editing) {
                                 valueField.text = obj.valueString
                                 valueField.refreshed = true
@@ -154,20 +179,52 @@ Window {
                         }
                     }
 
-                    ToolTip.text: obj ? obj.name + "\nLast update: " + obj.tString : ""
-                    ToolTip.visible: hovered && obj && obj.tString
-                    ToolTip.delay: 1000
+                    ToolTip {
+                        visible: parent.hovered && obj && obj.tString
+                        delay: 1000
+                        font.pixelSize: root.fontSize
+                        background.antialiasing: true
+                        contentItem: Label {
+                            text: obj ? obj.name + "\nLast update: " + obj.tString : ""
+                        }
+                    }
                 }
 
                 CheckBox {
+                    id: autoRefresh
                     Layout.fillHeight: true
                     Layout.preferredWidth: parent.height
-                    indicator.height: height * 0.618
-                    indicator.width: height * 0.618
 
-                    ToolTip.text: "Enable auto-refresh"
-                    ToolTip.visible: hovered
-                    ToolTip.delay: 1000
+                    indicator: Rectangle {
+                        height: autoRefresh.height * 0.618
+                        width: autoRefresh.height * 0.618
+                        antialiasing: true
+
+                        x: autoRefresh.leftPadding + (autoRefresh.availableWidth - width) / 2
+                        y: autoRefresh.topPadding + (autoRefresh.availableHeight - height) / 2
+
+                        color: autoRefresh.down ? autoRefresh.palette.light : autoRefresh.palette.base
+                        border.width: autoRefresh.visualFocus ? 2 : 1
+                        border.color: autoRefresh.visualFocus ? autoRefresh.palette.highlight : autoRefresh.palette.mid
+
+                        Rectangle {
+                            width: parent.width * 0.618
+                            height: parent.width * 0.618
+                            antialiasing: true
+                            x: (parent.width - width) / 2
+                            y: (parent.height - height) / 2
+                            color: autoRefresh.palette.text
+                            visible: autoRefresh.checkState === Qt.Checked
+                        }
+                    }
+
+                    ToolTip {
+                        text: "Enable auto-refresh"
+                        visible: parent.hovered
+                        delay: 1000
+                        font.pixelSize: root.fontSize
+                        background.antialiasing: true
+                    }
 
                     checked: obj.polling
 
@@ -179,6 +236,7 @@ Window {
                     Layout.fillHeight: true
                     Layout.preferredWidth: implicitWidth
                     text: "Refresh"
+                    font.pixelSize: root.fontSize
                     onClicked: {
                         obj.asyncRead()
                     }
@@ -201,6 +259,10 @@ Window {
                 Layout.fillWidth: true
                 placeholderText: "enter regex filter"
                 onTextChanged: regexTimer.restart()
+                background.antialiasing: true
+                topPadding: 0
+                bottomPadding: 0
+                font.pixelSize: root.fontSize
 
                 Timer {
                     id: regexTimer
@@ -216,10 +278,20 @@ Window {
                 Layout.preferredWidth: root.fontSize * 5
                 placeholderText: "poll interval (s)"
                 horizontalAlignment: Text.AlignRight
+                background.antialiasing: true
+                topPadding: 0
+                bottomPadding: 0
+                font.pixelSize: root.fontSize
 
-                ToolTip.text: "poll interval (s)"
-                ToolTip.visible: hovered
-                ToolTip.delay: 1000
+                ToolTip {
+                    visible: parent.hovered
+                    delay: 1000
+                    font.pixelSize: root.fontSize
+                    background.antialiasing: true
+                    contentItem: Label {
+                        text: "poll interval (s).\nThis value is used when auto-refresh is (re)enabled."
+                    }
+                }
 
                 property string valueString: client ? client.defaultPollInterval : ""
                 text: valueString
@@ -242,6 +314,7 @@ Window {
                 id: refreshAllButton
                 Layout.fillHeight: true
                 text: "Refresh all"
+                font.pixelSize: root.fontSize
                 onClicked: {
                     for(var i = 0; i < objects.rowCount(); i++)
                         objects.sourceModel.at(objects.mapToSource(objects.index(i, 0)).row).asyncRead()
@@ -279,6 +352,9 @@ Window {
             font.pixelSize: root.fontSize
             Layout.fillWidth: true
             placeholderText: "enter command"
+            background.antialiasing: true
+            topPadding: 0
+            bottomPadding: 0
 
             onAccepted: {
                 rep.text = client.req(text)
@@ -298,6 +374,7 @@ Window {
             }
 
             background: Rectangle {
+                antialiasing: true
                 border.color: "#c0c0c0"
             }
         }

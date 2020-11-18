@@ -156,7 +156,7 @@
  */
 #  define CLASS_NO_WEAK_VTABLE \
 	protected: \
-		virtual void force_to_translation_unit();
+		void force_to_translation_unit();
 /*!
  * \see CLASS_NO_WEAK_VTABLE
  */
@@ -423,6 +423,7 @@ namespace stored {
 	size_t strncpy(char* __restrict__ dst, char const* __restrict__ src, size_t len);
 	int strncmp(char const* __restrict__ str1, size_t len1, char const* __restrict__ str2, size_t len2 = std::numeric_limits<size_t>::max());
 
+	char const* banner();
 } // namespace
 
 /*!
@@ -431,6 +432,16 @@ namespace stored {
  */
 template <typename R, typename T>
 __attribute__((pure)) R saturated_cast(T value) { return stored::impl::saturated_cast_helper<R>::cast(value); }
+
+#define STORE_BASECLASS(Base, Impl) stored::Base<Impl >
+
+#define STORE_CLASS_BODY(Base, Impl) \
+	CLASS_NOCOPY(Impl) \
+public: \
+	typedef STORE_BASECLASS(Base, Impl) base; \
+	using typename base::Implementation; \
+	friend class STORE_BASECLASS(Base, Impl); \
+private:
 
 #endif // __cplusplus
 #endif // __LIBSTORED_UTIL_H

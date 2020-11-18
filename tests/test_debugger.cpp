@@ -297,6 +297,15 @@ TEST(Debugger, WriteMem) {
 #endif
 }
 
+static std::string decompress(std::string const& s) {
+	LoggingLayer decompressed;
+	stored::CompressLayer decompress;
+	decompress.wrap(decompressed);
+	std::vector<char> buf(s.begin(), s.end());
+	decompress.decode(&buf[0], buf.size());
+	return decompressed.decoded().at(0);
+}
+
 TEST(Debugger, Stream) {
 	stored::Debugger d;
 	stored::TestStore store;
@@ -315,20 +324,24 @@ TEST(Debugger, Stream) {
 	d.stream('2', "a "); // no room for this stream
 	d.stream('1', "small ");
 
+	d.stream('1')->flush();
 	DECODE(d, "s1");
-	EXPECT_EQ(ll.encoded().at(1), "it's small ");
+	EXPECT_EQ(decompress(ll.encoded().at(1)), "it's small ");
 	DECODE(d, "s1");
 	EXPECT_EQ(ll.encoded().at(2), "");
 
 	d.stream('1', "world ");
+	d.stream('1')->flush();
 	DECODE(d, "s1");
-	EXPECT_EQ(ll.encoded().at(3), "world ");
+	EXPECT_EQ(decompress(ll.encoded().at(3)), "world ");
 
 	d.stream('3', "after "); // stream 1 is empty, so 3 is using 1's space
 	d.stream('3', "all");
+	d.stream('3')->flush();
 	d.stream('1', "world "); // no room for this stream
+	EXPECT_EQ(d.stream('1'), nullptr);
 	DECODE(d, "s3");
-	EXPECT_EQ(ll.encoded().at(4), "after all");
+	EXPECT_EQ(decompress(ll.encoded().at(4)), "after all");
 
 	DECODE(d, "s2");
 	EXPECT_EQ(ll.encoded().at(5), "?");
@@ -350,39 +363,43 @@ TEST(Debugger, Trace) {
 	EXPECT_EQ(ll.encoded().at(1), "!");
 
 	d.trace();
+	DECODE(d, "f");
 	DECODE(d, "sT");
-	EXPECT_EQ(ll.encoded().at(2), "0;");
+	EXPECT_EQ(decompress(ll.encoded().at(3)), "0;");
 
 	store.default_uint8 = 1;
 	d.trace();
 	store.default_uint8 = 2;
 	d.trace();
 
+	DECODE(d, "fT");
 	DECODE(d, "sT");
-	EXPECT_EQ(ll.encoded().at(3), "1;2;");
+	EXPECT_EQ(decompress(ll.encoded().at(5)), "1;2;");
 
 	// Set decimate
 	DECODE(d, "ttT3");
-	EXPECT_EQ(ll.encoded().at(4), "!");
+	EXPECT_EQ(ll.encoded().at(6), "!");
 
 	for(int i = 4; i < 10; i++) {
 		store.default_uint8 = (uint8_t)i;
 		d.trace();
 	}
 
+	DECODE(d, "fT");
 	DECODE(d, "sT");
-	EXPECT_EQ(ll.encoded().at(5), "6;9;");
+	EXPECT_EQ(decompress(ll.encoded().at(8)), "6;9;");
 
 	// Disable
 	DECODE(d, "t");
-	EXPECT_EQ(ll.encoded().at(6), "!");
+	EXPECT_EQ(ll.encoded().at(9), "!");
 
 	d.trace();
 	d.trace();
 	d.trace();
 
+	DECODE(d, "f");
 	DECODE(d, "sT");
-	EXPECT_EQ(ll.encoded().at(7), "");
+	EXPECT_EQ(ll.encoded().at(11), "");
 }
 
 

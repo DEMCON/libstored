@@ -54,7 +54,7 @@ uint8_t StoreJournal::keySize(size_t bufferSize) {
 	uint8_t s = 0;
 	while(bufferSize) {
 		s++;
-		bufferSize >>= 8;
+		bufferSize >>= 8u;
 	}
 	return s;
 }
@@ -120,6 +120,7 @@ StoreJournal::Seq StoreJournal::bumpSeq(bool force) {
  * \brief Convert to short seq.
  * \param seq the seq to convert, which must be within the current ShortSeqWindow
  */
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 StoreJournal::ShortSeq StoreJournal::toShort(StoreJournal::Seq seq) const {
 	stored_assert(seq <= m_seq);
 	stored_assert(m_seq - seq < ShortSeqWindow);
@@ -253,7 +254,7 @@ bool StoreJournal::hasChanged(Seq since) const {
 		return false;
 
 	size_t pivot = m_changes.size() / 2;
-	return m_changes[pivot].highest >= since;
+	return toLong(m_changes[pivot].highest) >= since;
 }
 
 /*!
@@ -310,7 +311,7 @@ void StoreJournal::clean(StoreJournal::Seq oldest) {
 /*!
  * \brief Encode the store's hash into a Synchronizer message.
  */
-void StoreJournal::encodeHash(ProtocolLayer& p, bool last) {
+void StoreJournal::encodeHash(ProtocolLayer& p, bool last) const {
 	encodeHash(p, hash(), last);
 }
 
@@ -329,8 +330,8 @@ void StoreJournal::encodeHash(ProtocolLayer& p, char const* hash, bool last) {
  */
 char const* StoreJournal::decodeHash(void*& buffer, size_t& len) {
 	char* buffer_ = static_cast<char*>(buffer);
-	size_t i;
-	for(i = 0; i < len && buffer_[i]; i++);
+	size_t i = 0;
+	for(; i < len && buffer_[i]; i++);
 
 	if(i == len) {
 		// \0 not found
@@ -482,6 +483,16 @@ void* StoreJournal::keyToBuffer(StoreJournal::Key key, StoreJournal::Size len, b
 	if(ok && len && key + len > bufferSize())
 		*ok = false;
 	return static_cast<char*>(m_buffer) + key;
+}
+
+/*!
+ * \brief Pre-allocate memory for the given number of variables.
+ *
+ * As long as the number of changed variables remains below this number,
+ * no heap operations are performed during synchronization.
+ */
+void StoreJournal::reserveHeap(size_t storeVariableCount) {
+	m_changes.reserve(storeVariableCount);
 }
 
 
@@ -709,20 +720,22 @@ againIn:
 /*!
  * \brief Send out all updates of the given store.
  */
-void SyncConnection::process(StoreJournal& store) {
+StoreJournal::Seq SyncConnection::process(StoreJournal& store) {
 	StoreMap::iterator s = m_store.find(&store);
 	if(s == m_store.end())
 		// Unknown store.
-		return;
+		return 0;
 	if(!store.hasChanged(s->second.seq))
 		// No recent changes.
-		return;
+		return 0;
 
 	encodeCmd(Update);
 	encodeId(s->second.idOut, false);
 	// Make sure to set the process seq before the last part of the encode is sent.
-	s->second.seq = store.encodeUpdates(*this, s->second.seq);
+	StoreJournal::Seq res = s->second.seq = store.encodeUpdates(*this, s->second.seq);
 	encode();
+
+	return res;
 }
 
 /*!
@@ -1066,10 +1079,12 @@ void Synchronizer::process(ProtocolLayer& connection) {
 /*!
  * \brief Process updates for the given store on the given connection.
  */
-void Synchronizer::process(ProtocolLayer& connection, StoreJournal& j) {
+StoreJournal::Seq Synchronizer::process(ProtocolLayer& connection, StoreJournal& j) {
 	SyncConnection* c = toConnection(connection);
 	if(c)
-		c->process(j);
+		return c->process(j);
+
+	return 0;
 }
 
 bool Synchronizer::isSynchronizing(StoreJournal& j) const {

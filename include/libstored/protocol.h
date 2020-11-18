@@ -119,6 +119,28 @@
 #include <vector>
 #include <string>
 #include <deque>
+#include <cerrno>
+
+#if STORED_cplusplus >= 201103L
+#  include <functional>
+#endif
+
+#ifdef STORED_COMPILER_MSVC
+#  include <io.h>
+#  ifndef STDERR_FILENO
+#    define STDERR_FILENO		_fileno(stderr)
+#  endif
+#  ifndef STDOUT_FILENO
+#    define STDOUT_FILENO		_fileno(stdout)
+#  endif
+#  ifndef STDIN_FILENO
+#    define STDIN_FILENO		_fileno(stdin)
+#  endif
+#elif !defined(STORED_OS_BAREMETAL)
+#  include <unistd.h>
+#endif
+
+#include <cstdio>
 
 namespace stored {
 
@@ -312,7 +334,7 @@ namespace stored {
 		static char const Esc      = '\x7f'; // DEL
 		static char const EscMask  = '\x1f'; // data bits of the next char
 
-		AsciiEscapeLayer(bool all = false, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit AsciiEscapeLayer(bool all = false, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 
 		/*!
 		 * \copydoc stored::ProtocolLayer::~ProtocolLayer()
@@ -325,7 +347,7 @@ namespace stored {
 		virtual size_t mtu() const override;
 
 	protected:
-		char needEscape(char c);
+		char needEscape(char c) const;
 
 	private:
 		bool const m_all;
@@ -348,7 +370,21 @@ namespace stored {
 		static char const EscEnd   = '\\';   // ST
 		enum { MaxBuffer = 1024 };
 
-		explicit TerminalLayer(int nonDebugDecodeFd = -1, int encodeFd = -1, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		typedef void(NonDebugDecodeCallback)(void* buf, size_t len);
+
+#if STORED_cplusplus >= 201103L
+		template <typename F,
+			SFINAE_IS_FUNCTION(F, NonDebugDecodeCallback, int) = 0>
+		explicit TerminalLayer(F&& cb, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
+			: TerminalLayer(up, down)
+		{
+			m_nonDebugDecodeCallback = std::forward<F>(cb);
+		}
+#else
+		explicit TerminalLayer(NonDebugDecodeCallback* cb, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+#endif
+		explicit TerminalLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+
 		virtual ~TerminalLayer() override;
 
 		virtual void decode(void* buffer, size_t len) override;
@@ -357,28 +393,20 @@ namespace stored {
 		virtual size_t mtu() const override;
 		virtual void reset() override;
 
+		virtual void nonDebugEncode(void* buffer, size_t len);
+
 	protected:
 		virtual void nonDebugDecode(void* buffer, size_t len);
 		void encodeStart();
 		void encodeEnd();
 
-#ifdef STORED_OS_BAREMETAL
-		/*!
-		 * \brief Write a buffer to a file descriptor.
-		 */
-		virtual void writeToFd(int fd, void const* buffer, size_t len) = 0;
-#else
-		void writeToFd(int fd, void const* buffer, size_t len);
-
-public:
-		static void writeToFd_(int fd, void const* buffer, size_t len);
-#endif
-
 	private:
-		/*! \brief The file descriptor to write non-debug decoded data to. */
-		int m_nonDebugDecodeFd;
-		/*! \brief The file descriptor to write injected debug frames to. */
-		int m_encodeFd;
+		/*! \brief The callback to write non-debug decoded data to. */
+#if STORED_cplusplus >= 201103L
+		std::function<NonDebugDecodeCallback> m_nonDebugDecodeCallback;
+#else
+		NonDebugDecodeCallback* m_nonDebugDecodeCallback;
+#endif
 
 		/*! \brief States of frame extraction. */
 		enum State { StateNormal, StateNormalEsc, StateDebug, StateDebugEsc };
@@ -414,7 +442,7 @@ public:
 		static char const ContinueMarker = 'C';
 		static char const EndMarker = 'E';
 
-		SegmentationLayer(size_t mtu = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit SegmentationLayer(size_t mtu = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		/*! \brief Dtor. */
 		virtual ~SegmentationLayer() override is_default
 
@@ -488,7 +516,7 @@ public:
 			RetransmitCallbackThreshold = 10,
 		};
 
-		ArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit ArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~ArqLayer() override;
 
 		virtual void decode(void* buffer, size_t len) override;
@@ -698,7 +726,7 @@ public:
 	public:
 		typedef ProtocolLayer base;
 
-		DebugArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit DebugArqLayer(size_t maxEncodeBuffer = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		/*! \brief Dtor. */
 		virtual ~DebugArqLayer() override is_default
 
@@ -757,7 +785,7 @@ public:
 
 		enum { polynomial = 0xa6, init = 0xff };
 
-		Crc8Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit Crc8Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		/*! \brief Dtor. */
 		virtual ~Crc8Layer() override is_default
 
@@ -789,7 +817,7 @@ public:
 
 		enum { polynomial = 0xbaad, init = 0xffff };
 
-		Crc16Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit Crc16Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		/*! \brief Dtor. */
 		virtual ~Crc16Layer() override is_default
 
@@ -822,7 +850,7 @@ public:
 	public:
 		typedef ProtocolLayer base;
 
-		BufferLayer(size_t size = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit BufferLayer(size_t size = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		/*! \brief Destructor. */
 		virtual ~BufferLayer() override is_default
 
@@ -851,7 +879,7 @@ public:
 	public:
 		typedef ProtocolLayer base;
 
-		PrintLayer(FILE* f = stdout, char const* name = nullptr, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit PrintLayer(FILE* f = stdout, char const* name = nullptr, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~PrintLayer() override is_default
 
 		virtual void decode(void* buffer, size_t len) override;
@@ -895,10 +923,204 @@ public:
 		CLASS_NOCOPY(Loopback)
 	public:
 		Loopback(ProtocolLayer& a, ProtocolLayer& b);
+		~Loopback() is_default
 	private:
 		impl::Loopback1 m_a2b;
 		impl::Loopback1 m_b2a;
 	};
+
+	class Poller;
+
+	class PolledLayer : public ProtocolLayer {
+		CLASS_NOCOPY(PolledLayer)
+	public:
+		typedef ProtocolLayer base;
+
+#ifdef STORED_OS_WINDOWS
+		typedef HANDLE fd_type;
+#else
+		typedef int fd_type;
+#endif
+
+	protected:
+		explicit PolledLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
+			: base(up, down)
+			, m_lastError()
+			, m_poller()
+		{}
+
+	public:
+		virtual ~PolledLayer() override;
+
+		int lastError() const { return m_lastError; }
+
+		virtual bool isOpen() const { return true; }
+
+		virtual fd_type fd() const = 0;
+
+		virtual int recv(bool block = false) = 0;
+
+	protected:
+		Poller& poller();
+
+		virtual int block(fd_type fd, bool forReading, bool suspend = false);
+
+		virtual void close() {}
+
+		int setLastError(int e) {
+			return errno = m_lastError = e;
+		}
+
+	private:
+		int m_lastError;
+		Poller* m_poller;
+	};
+
+	class FileLayer : public PolledLayer {
+		CLASS_NOCOPY(FileLayer)
+	public:
+		typedef PolledLayer base;
+		using base::fd_type;
+
+		enum { BufferSize = 128 };
+
+protected:
+		explicit FileLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+public:
+		explicit FileLayer(int fd_r, int fd_w = -1, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit FileLayer(char const* name_r, char const* name_w = nullptr, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+#ifdef STORED_OS_WINDOWS
+		explicit FileLayer(HANDLE h_r, HANDLE h_w = INVALID_HANDLE_VALUE, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+#endif
+
+		virtual ~FileLayer() override;
+
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+
+		virtual fd_type fd() const override;
+		virtual int recv(bool block = false) override;
+		virtual bool isOpen() const override;
+
+	protected:
+		void init(fd_type fd_r, fd_type fd_w);
+		fd_type fd_r() const;
+		fd_type fd_w() const;
+		virtual void close() override;
+		void close_();
+
+#ifdef STORED_OS_WINDOWS
+		OVERLAPPED& overlappedRead();
+		OVERLAPPED& overlappedWrite();
+		void resetOverlappedRead();
+		void resetOverlappedWrite();
+		virtual size_t available();
+		virtual int startRead();
+		virtual int finishWrite(bool block);
+
+	private:
+		static void writeCompletionRoutine(DWORD dwErrorCode, DWORD dwNumberOfBytesTransfered, LPOVERLAPPED lpOverlapped);
+#endif
+
+	private:
+		fd_type m_fd_r;
+		fd_type m_fd_w;
+		std::vector<char> m_bufferRead;
+
+#ifdef STORED_OS_WINDOWS
+		OVERLAPPED m_overlappedRead;
+
+		struct {
+			// The order of this struct is assumed by writeCompletionRoutine().
+			OVERLAPPED m_overlappedWrite;
+			FileLayer* const m_this;
+		};
+
+		std::vector<char> m_bufferWrite;
+		size_t m_writeLen;
+#endif
+	};
+
+#ifdef STORED_OS_WINDOWS
+	/*!
+	 * \brief Server end of a named pipe.
+	 *
+	 * The client end is easier; it is just a file-like create/open/write/close API.
+	 */
+	class NamedPipeLayer : public FileLayer {
+		CLASS_NOCOPY(NamedPipeLayer)
+	public:
+		typedef FileLayer base;
+
+		enum { BufferSize = 1024 };
+
+		NamedPipeLayer(char const* name, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~NamedPipeLayer() override;
+		std::string const& name() const;
+		int recv(bool block = false) final;
+		HANDLE handle() const;
+
+	protected:
+		void close() final;
+		void close_();
+		int startRead() final;
+		enum State {
+			StateInit = 0,
+			StateConnecting,
+			StateConnected,
+			StateError,
+		};
+
+	private:
+		State m_state;
+		std::string m_name;
+	};
+
+	class StdioLayer : public PolledLayer {
+		CLASS_NOCOPY(StdioLayer)
+	public:
+		typedef PolledLayer base;
+		using base::fd_type;
+
+		enum { BufferSize = 128 };
+
+		explicit StdioLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~StdioLayer() override;
+
+		virtual bool isOpen() const override;
+		virtual fd_type fd() const override;
+		virtual int recv(bool block = false) override;
+
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+
+		bool isPipeIn() const;
+		bool isPipeOut() const;
+	protected:
+		fd_type fd_r() const;
+		fd_type fd_w() const;
+		virtual int block(fd_type fd, bool forReading, bool suspend = false) override;
+		virtual void close() override;
+		void close_();
+	private:
+		fd_type m_fd_r;
+		fd_type m_fd_w;
+		bool m_pipe_r;
+		bool m_pipe_w;
+		std::vector<char> m_bufferRead;
+	};
+
+#else // !STORED_OS_WINDOWS
+
+	class StdioLayer : public FileLayer {
+		CLASS_NOCOPY(StdioLayer)
+	public:
+		typedef FileLayer base;
+		explicit StdioLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~StdioLayer() override is_default
+	};
+
+#endif // !STORED_OS_WINDOWS
 
 } // namespace
 #endif // __cplusplus

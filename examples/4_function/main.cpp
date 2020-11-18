@@ -3,21 +3,22 @@
  * \brief Example to show how functions work.
  */
 
+#include <stored>
+
 #include "ExampleFunction.h"
 
 #include <ctime>
 #include <cstdio>
+#include <cstdlib>
 
 #ifdef STORED_COMPILER_MSVC
 #  pragma warning(disable: 4996)
 #endif
 
 // Create a subclass of stored::ExampleFunctionBase to define the side effects of the functions.
-class MyExample : public stored::ExampleFunctionBase<MyExample> {
-	CLASS_NOCOPY(MyExample)
+class MyExample : public STORE_BASECLASS(ExampleFunctionBase, MyExample) {
+	STORE_CLASS_BODY(ExampleFunctionBase, MyExample)
 public:
-	typedef stored::ExampleFunctionBase<MyExample> base;
-	friend class stored::ExampleFunctionBase<MyExample>;
 	MyExample() : m_echo() {}
 
 protected:
@@ -32,6 +33,15 @@ protected:
 			return; // read-only
 
 		value = (uint64_t)time(NULL);
+	}
+
+	void __rand(bool set, int32_t& value) {
+		if(!set) {
+			int32_t a = 48271;
+			int32_t m = 2147483647;
+			static int32_t seed = 42;
+			value = seed = (a * seed) % m;
+		}
 	}
 
 	void __echo_0(bool set, int32_t& value) { __echo(0, set, value); }
@@ -56,8 +66,13 @@ private:
 int main() {
 	MyExample e;
 
-	time_t now = (time_t)e.time_s.get();
-	printf("time = %s\n", ctime(&now));
+//	time_t now = (time_t)e.time_s.get();
+//	printf("time = %s\n", ctime(&now));
+
+	srand(42);
+	printf("rand = %" PRId32 "\n", e.rand.get());
+	printf("rand = %" PRId32 "\n", e.rand.get());
+	printf("rand = %" PRId32 "\n", e.rand.get());
 
 	e.echo_0.set(10);
 	e.echo_1.set(11);

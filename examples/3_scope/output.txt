@@ -1,0 +1,3 @@
+/scope/an int by API: 123
+/scope/an int by find(): 123
+G = 9.81

@@ -94,13 +94,13 @@ void* ZmqLayer::socket() const {
  * Use this socket to determine if recv() would block.
  */
 ZmqLayer::socket_type ZmqLayer::fd() {
-	socket_type socket;
+	socket_type socket; // NOLINT(cppcoreguidelines-init-variables)
 	size_t size = sizeof(socket);
 
 	if(zmq_getsockopt(m_socket, ZMQ_FD, &socket, &size) == -1) {
 		setLastError(errno);
 #ifdef STORED_OS_WINDOWS
-		return INVALID_SOCKET;
+		return INVALID_SOCKET; // NOLINT(hicpp-signed-bitwise)
 #else
 		return -1;
 #endif
@@ -111,12 +111,12 @@ ZmqLayer::socket_type ZmqLayer::fd() {
 }
 
 /*!
- * \brief Try to receive data from the ZeroMQ REP socket, and decode() it.
+ * \brief Try to receive a message from the ZeroMQ REP socket, and decode() it.
  * \param block if \c true, this function will block on receiving data from the ZeroMQ socket
  */
-int ZmqLayer::recv(bool block) {
+int ZmqLayer::recv1(bool block) {
 	int res = 0;
-	int more;
+	int more = 0;
 
 	zmq_msg_t msg;
 
@@ -173,9 +173,39 @@ error_recv:
 	zmq_msg_close(&msg);
 error_msg:
 	if(!res)
-		res = EIO;
+		res = EAGAIN;
 	setLastError(res);
 	return res;
+}
+
+/*!
+ * \brief Try to receive all available data from the ZeroMQ REP socket, and decode() it.
+ * \param block if \c true, this function will block on receiving data from the ZeroMQ socket
+ */
+int ZmqLayer::recv(bool block) {
+	bool first = true;
+
+	while(true) {
+		int res = recv1(block && first);
+
+		switch(res) {
+		case 0:
+			// Got more.
+			break;
+		case EAGAIN:
+			// That's it.
+			if(!first) {
+				// We already got something, so don't make this an error.
+				setLastError(0);
+				return 0;
+			}
+			// fall-through
+		default:
+			return res;
+		}
+
+		first = false;
+	}
 }
 
 /*!
@@ -201,7 +231,7 @@ int ZmqLayer::lastError() const {
  * \brief Saves the given error for #lastError().
  */
 void ZmqLayer::setLastError(int error) {
-	m_error = error;
+	errno = m_error = error;
 }
 
 
@@ -223,6 +253,7 @@ DebugZmqLayer::DebugZmqLayer(void* context, int port, ProtocolLayer* up, Protoco
 	if(lastError())
 		return;
 
+	// NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
 	char bind[32] = {};
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
 	snprintf(bind, sizeof(bind), "tcp://*:%" PRIu16, (uint16_t)port);
@@ -262,7 +293,7 @@ SyncZmqLayer::SyncZmqLayer(void* context, char const* endpoint, bool listen, Pro
 	if(lastError())
 		return;
 
-	int res;
+	int res = 0;
 	if(listen)
 		res = zmq_bind(socket(), endpoint);
 	else
@@ -273,4 +304,6 @@ SyncZmqLayer::SyncZmqLayer(void* context, char const* endpoint, bool listen, Pro
 }
 
 } // namespace
+#else // !STORED_HAVE_ZMQ
+char dummy_char_to_make_zmq_cpp_non_empty;
 #endif // STORED_HAVE_ZMQ

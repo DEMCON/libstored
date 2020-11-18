@@ -139,6 +139,15 @@ namespace stored {
 
 		/*! \brief When \c true, stored::Debugger implements the trace capability. */
 		static bool const DebuggerTrace = DebuggerStreams > 0 && DebuggerMacro > 0;
+
+		/*! \brief When \c true, all streams (including) trace are compressed using stored::CompressLayer. */
+		static bool const CompressStreams =
+#ifdef STORED_HAVE_HEATSHRINK
+			true;
+#else
+			false;
+#endif
+
 	};
 } // namespace
 #endif // __cplusplus

@@ -17,6 +17,7 @@
  */
 
 #include <libstored/util.h>
+#include <libstored/poller.h>
 
 #include <cstring>
 #include <cinttypes>
@@ -107,8 +108,8 @@ int memcmp_swap(void const* a, void const* b, size_t len) {
 	unsigned char const* a_ = static_cast<unsigned char const*>(a);
 	unsigned char const* b_ = static_cast<unsigned char const*>(b);
 
-	size_t i;
-	for(i = 0; i < len; i++)
+	size_t i = 0;
+	for(; i < len; i++)
 		if(a_[i] != b_[len - i - 1])
 			goto diff;
 
@@ -151,6 +152,91 @@ std::string string_literal(void const* buffer, size_t len, char const* prefix) {
 	}
 
 	return s;
+}
+
+/*!
+ * \brief Return a single-line string that contains relevant configuration information of libstored.
+ * \ingroup libstored_util
+ */
+char const* banner() {
+	return
+		"libstored"
+#if STORED_cplusplus < 201103L
+		" C++98"
+#elif STORED_cplusplus == 201103L
+		" C++11"
+#elif STORED_cplusplus == 201402L
+		" C++14"
+#elif STORED_cplusplus == 201703L
+		" C++17"
+#endif
+#ifdef STORED_COMPILER_CLANG
+		" clang"
+#endif
+#ifdef STORED_COMPILER_GCC
+		" gcc"
+#endif
+#ifdef STORED_COMPILER_ARMCC
+		" armcc"
+#endif
+#ifdef STORED_COMPILER_MSVC
+		" msvc"
+#endif
+#ifdef STORED_OS_WINDOWS
+		" win"
+#endif
+#ifdef STORED_OS_LINUX
+		" linux"
+#endif
+#ifdef STORED_OS_OSC
+		" osx"
+#endif
+#ifdef STORED_OS_BAREMETAL
+		" baremetal"
+#endif
+#ifdef STORED_OS_GENERIC
+		" generic"
+#endif
+#ifdef STORED_LITTLE_ENDIAN
+		" le"
+#endif
+#ifdef STORED_BIG_ENDIAN
+		" be"
+#endif
+#if defined(STORED_HAVE_VALGRIND) && !defined(NVALGRIND)
+		" valgrind"
+#endif
+#ifdef STORED_HAVE_ZTH
+		" zth"
+#endif
+#ifdef STORED_HAVE_ZMQ
+		" zmq"
+#endif
+#ifdef STORED_POLL_ZTH_WFMO
+		" poll=zth-wfmo"
+#endif
+#ifdef STORED_POLL_WFMO
+		" poll=wfmo"
+#endif
+#ifdef STORED_POLL_ZTH
+		" poll=zth"
+#endif
+#ifdef STORED_POLL_ZMQ
+		" poll=zmq"
+#endif
+#ifdef STORED_POLL_LOOP
+		" poll=loop"
+#endif
+#ifdef STORED_POLL_ZTH_LOOP
+		" poll=zth-loop"
+#endif
+#ifdef STORED_POLL_POLL
+		" poll=poll"
+#endif
+#ifdef _DEBUG
+		" debug"
+#endif
+		;
 }
 
 } // namespace

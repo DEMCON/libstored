@@ -11,6 +11,9 @@ on:
       - master
   workflow_dispatch:
 
+env:
+  CTEST_OUTPUT_ON_FAILURE: 1
+
 jobs:
   build-ubuntu:
     runs-on: ubuntu-latest

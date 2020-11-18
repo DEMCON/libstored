@@ -24,25 +24,17 @@
 
 static stored::Synchronizer synchronizer;
 
-class ExampleSync2 : public stored::Synchronizable<stored::ExampleSync2Base<ExampleSync2> > {
-	CLASS_NOCOPY(ExampleSync2)
+class ExampleSync2 : public STORE_SYNC_BASECLASS(ExampleSync2Base, ExampleSync2) {
+	STORE_SYNC_CLASS_BODY(ExampleSync2Base, ExampleSync2)
 public:
-	typedef stored::Synchronizable<stored::ExampleSync2Base<ExampleSync2> > base;
-	using typename base::Implementation;
-	friend class stored::ExampleSync2Base<ExampleSync2>;
-
 	ExampleSync2() is_default
 };
 
 static ExampleSync2 store2;
 
-class ExampleSync1 : public stored::Synchronizable<stored::ExampleSync1Base<ExampleSync1> > {
-	CLASS_NOCOPY(ExampleSync1)
+class ExampleSync1 : public STORE_SYNC_BASECLASS(ExampleSync1Base, ExampleSync1) {
+	STORE_SYNC_CLASS_BODY(ExampleSync1Base, ExampleSync1)
 public:
-	typedef stored::Synchronizable<stored::ExampleSync1Base<ExampleSync1> > base;
-	using typename base::Implementation;
-	friend class stored::ExampleSync1Base<ExampleSync1>;
-
 	ExampleSync1() is_default
 
 protected:

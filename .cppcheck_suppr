@@ -1,5 +1,10 @@
 *:*/extern/libzmq/*
 *:*/extern/googletest/*
+*:*/extern/heatshrink/*
 missingIncludeSystem:*
 cstyleCast:*
+constParameter:*
 unmatchedSuppression:*
+unmatchedSuppression:examples/1_hello/main.cpp
+unmatchedSuppression:src/debugger.cpp
+unmatchedSuppression:src/protocol.cpp

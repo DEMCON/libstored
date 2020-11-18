@@ -25,11 +25,43 @@ import sys
 import os
 import math
 import logging
+import heatshrink2
 
 from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, \
-    QEvent, QCoreApplication, QStandardPaths, QSocketNotifier, QEventLoop
+    QEvent, QCoreApplication, QStandardPaths, QSocketNotifier, QEventLoop, SIGNAL
 
 from .zmq_server import ZmqServer
+from .csv import CsvExport
+
+class SignalRateLimiter(QObject):
+    def __init__(self, src, dst, window_s=0.2, parent=None):
+        super().__init__(parent=parent)
+        self._timer = QTimer(parent=self)
+        self._timer.timeout.connect(self._emit)
+        self._timer.setSingleShot(False)
+        self._timer.setInterval(window_s * 1000)
+        self._dst = dst
+        self._idle = True
+        self._suppressed = False
+        src.connect(self.receive)
+
+    @Slot()
+    def receive(self):
+        if self._idle:
+            self._idle = False
+            self._dst.emit()
+            self._timer.start()
+        else:
+            self._suppressed = True
+
+    def _emit(self):
+        if self._suppressed:
+            self._dst.emit()
+            self._suppressed = False
+        else:
+            self._timer.stop()
+            self._idle = True;
+
 
 ##
 # \brief A variable or function as handled by a ZmqClient
@@ -39,11 +71,13 @@ from .zmq_server import ZmqServer
 # \ingroup libstored_client
 class Object(QObject):
     valueChanged = Signal()
+    valueStringChanged = Signal()
     valueUpdated = Signal()
     pollingChanged = Signal()
     aliasChanged = Signal()
     formatChanged = Signal()
     tUpdated = Signal()
+    tStringChanged = Signal()
 
     def __init__(self, name, type, size, client=None):
         super().__init__(parent=client)
@@ -59,6 +93,19 @@ class Object(QObject):
         self._pollInterval_s = None
         self._format = None
         self._format_set(self.formats[0])
+        self._autoCsv = False
+        self._valueChangedRateLimiter = SignalRateLimiter(self.valueChanged, self.valueStringChanged, parent=self)
+        self._tUpdatedChangedRateLimiter = SignalRateLimiter(self.tUpdated, self.tStringChanged, parent=self)
+        self._suppressSetSignals = False
+
+    def optimizeSignals(self):
+        self._suppressSetSignals = True
+        if self.receivers(SIGNAL("tUpdated()")) > 1: # ignore rate limiter
+            self._suppressSetSignals = False
+        elif self.receivers(SIGNAL("valueChanged()")) > 1: # ignore rate limiter
+            self._suppressSetSignals = False
+        elif self.receivers(SIGNAL("valueUpdated()")) > 0:
+            self._suppressSetSignals = False
 
     @property
     def type(self):
@@ -221,7 +268,7 @@ class Object(QObject):
         return self.decodeReadRep(rep)
 
     # Decode a read reply.
-    def decodeReadRep(self, rep, t = None):
+    def decodeReadRep(self, rep, t=None):
         if rep == b'?':
             return None
         value = self._decode(rep)
@@ -365,23 +412,41 @@ class Object(QObject):
         if t == None:
             t = time.time()
 
-        self._t = t
-        self.tUpdated.emit()
+        if self._t != None and t < self._t:
+            # Old value.
+            return
+
+        updated = False
+
+        if self._t != t:
+            self._t = t
+            if not self._suppressSetSignals:
+                self.tUpdated.emit()
+            else:
+                self._tUpdatedChangedRateLimiter.receive()
+            updated = True
 
         if isinstance(value, float) and math.isnan(value) and isinstance(self._value, float) and math.isnan(self._value):
             # Not updated, even though value != self._value would be True
             pass
         elif value != self._value:
             self._value = value
-            self.valueChanged.emit()
+            if not self._suppressSetSignals:
+                self.valueChanged.emit()
+            else:
+                self._valueChangedRateLimiter.receive()
+            if self._autoCsv and self._polling and self._client.csv != None and not self._client._tracing.enabled:
+                self._client.csv.write(t)
+            updated = True
 
-        self.valueUpdated.emit()
+        if updated and not self._suppressSetSignals:
+            self.valueUpdated.emit()
 
     @Property(float, notify=tUpdated)
     def t(self):
         return self._t
 
-    @Property(str, notify=tUpdated)
+    @Property(str, notify=tStringChanged)
     def tString(self):
         if self._t == None:
             return None
@@ -428,7 +493,7 @@ class Object(QObject):
         except ValueError:
             return False
 
-    @Property(str, notify=valueChanged)
+    @Property(str, notify=valueStringChanged)
     def valueString(self):
         v = self._value
         if v == None:
@@ -513,6 +578,7 @@ class Object(QObject):
 
     def _pollSlow(self, interval_s):
         self._pollSetFlag(True)
+        self._autoCsv = True
         self._pollInterval_s = interval_s
 
         self._read()
@@ -532,22 +598,34 @@ class Object(QObject):
 
     def _pollRead(self):
         if self.alias == None:
-            # Do a sequenial read to get an alias.
+            # Do a sequential read to get an alias.
             self._read(True)
         else:
             # Now we have an alias, do async reads.
             self._asyncRead()
 
     def _pollFast(self, interval_s):
+        if interval_s < 0.01:
+            self.optimizeSignals()
+        else:
+            self._suppressSetSignals = False
         self._pollSetFlag(True)
+        self._autoCsv = False
         self._pollInterval_s = interval_s
         if self._pollTimer != None:
             self._pollTimer.stop()
 
     def _pollSetFlag(self, enable):
         if self._polling != enable:
+            if not enable:
+                self._suppressSetSignals = False
             self._polling = enable
             self.pollingChanged.emit()
+            if self._client.csv:
+                if enable:
+                    self._client.csv.add(self)
+                else:
+                    self._client.csv.remove(self)
 
     def _state(self):
         res = ''
@@ -564,6 +642,80 @@ class Object(QObject):
                 f'except:\n    pass\n'
         else:
             return ''
+
+class Stream(object):
+    def __init__(self, client, name, raw=False):
+        self._client = client
+        self._raw = raw
+
+        if not isinstance(name, str) or len(name) != 1:
+            raise ValueError('Invalid stream name ' + s)
+
+        self._name = name
+        self._finishing = False
+        self._flushing = False
+        self._decoder = None
+
+        cap = self._client.capabilities()
+        if not 's' in cap:
+            raise ValueError('Stream capability missing')
+
+        self._compressed = 'f' in self._client.capabilities()
+        self.reset()
+
+    @property
+    def client(self):
+        return self._client
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def raw(self):
+        return self._raw
+
+    def poll(self, suffix='', callback=None):
+        req = b's' + (self.name + suffix).encode()
+        if callback == None:
+            return self._decode(self.client.req(req))
+        else:
+            return self.client.reqAsync(req, lambda x: callback(self._decode(x)))
+
+    def _decode(self, x):
+        if self._decoder != None:
+            x = self._decoder.fill(x)
+            if self._finishing:
+                x += self._decoder.finish()
+                self._reset()
+
+        if not self.raw:
+            x = x.decode()
+        return x
+
+    def flush(self):
+        if self._compressed and not self._flushing and not self._finishing:
+            self._flushing = True
+            self.client.reqAsync(b'f' + self.name.encode(), callback=lambda x: self._finish())
+
+    def _finish(self):
+        if self._flushing:
+            self._flushing = False
+            self._finishing = True
+
+    def reset(self):
+        if self._compressed:
+            self.client.reqAsync(b'f' + self.name.encode(), lambda x: None)
+            # Drop old data, as we missed the start of the stream.
+            self.client.reqAsync(b's' + self.name.encode(), lambda x: None)
+            self._reset()
+
+    def _reset(self):
+        if self._compressed:
+            self._decoder = heatshrink2.core.Encoder(heatshrink2.core.Reader(window_sz2=8, lookahead_sz2=4))
+            self._finishing = False
+            self._flushing = False
+
 
 ##
 # \brief Macro object as returned by ZmqClient.acquireMacro()
@@ -667,6 +819,9 @@ class Macro(object):
             if cb[i + skip] != None:
                 cb[i + skip](values[i], t)
 
+        if self._client.csv != None:
+            self._client.csv.write(t)
+
         return True
 
     def __len__(self):
@@ -680,7 +835,9 @@ class Tracing(Macro):
 
         self._enabled = None
         self._decimate = 1
-        self._pending = False
+        self._streamPending = False
+        self._streamQueued = False
+        self._partial = b''
 
         cap = self.client.capabilities()
         if not 't' in cap:
@@ -692,7 +849,7 @@ class Tracing(Macro):
         if not 's' in cap:
             raise ValueError('Stream capability missing')
 
-        self._stream = stream
+        self._stream = self._client.stream(stream, raw=True)
 
         # Start with sample separator.
         self.add('e\n', None, 'e')
@@ -712,14 +869,14 @@ class Tracing(Macro):
     def __del__(self):
         try:
             self._enabled = False
-            self.client.req(b't')
+            self.client.reqAsync(b't')
         except:
             pass
 
     def _update(self):
         super()._update()
         # Remove existing samples from buffer, as the layout is changing.
-        self.client.stream(self._stream, raw=True)
+        self._stream.reset()
         self._updateTracing()
 
     def _updateTracing(self, force=False):
@@ -731,7 +888,7 @@ class Tracing(Macro):
             self._enabled = False
             self.client.req(b't')
         elif force or not self._enabled:
-            rep = self.client.req(b't' + self.macro + self.stream.encode() + ('%x' % self.decimate).encode()).decode()
+            rep = self.client.req(b't' + self.macro + self.stream.name.encode() + ('%x' % self.decimate).encode()).decode()
             if rep != '!':
                 raise ValueError('Cannot configure tracing')
             self._enabled = True
@@ -763,15 +920,25 @@ class Tracing(Macro):
         return self._stream
 
     def process(self):
-        if self._pending:
+        if self._streamPending:
+            self._streamQueued = True
             return
-        self._pending = True
-        self.client.stream(self._stream, raw=True, callback=self._process)
+        self._streamPending = True
+        self._stream.poll(callback=self._process)
 
     def _process(self, s):
-        self._pending = False
+        if self._streamQueued and self.client.useEventLoop:
+            assert self._streamPending
+            # Immediately send out another request.
+            self._streamQueued = False
+            self._stream.poll(callback=self._process)
+        else:
+            self._streamPending = False
+
+        samples = (self._partial + s).split(b'\n;')
+        self._partial = samples[-1]
         time = self.client.time()
-        for sample in s.split(b'\n;'):
+        for sample in samples[0:-1]:
             # The first value is the time stamp.
             t_data = sample.split(b';', 1)
             if len(t_data) < 2:
@@ -803,13 +970,17 @@ class ZmqClient(QObject):
     slowPollInterval_s = 2.0
     defaultPollIntervalChanged = Signal()
 
-    def __init__(self, address='localhost', port=ZmqServer.default_port, parent=None, t=None):
+    def __init__(self, address='localhost', port=ZmqServer.default_port, csv=None, multi=False, parent=None, t=None):
         super().__init__(parent=parent)
         self.logger = logging.getLogger(__name__)
+        self._multi = multi
         self._context = zmq.Context()
         self._socket = self._context.socket(zmq.REQ)
+        self.logger.debug('Connecting to %s:%d...', address, port)
         self._socket.connect(f'tcp://{address}:{port}')
+        self.logger.debug('Connected')
         self._defaultPollInterval = 1
+        self._capabilities = None
         self._availableAliases = None
         self._temporaryAliases = {}
         self._permanentAliases = {}
@@ -818,6 +989,10 @@ class ZmqClient(QObject):
         self._objects = None
         self._fastPollMacro = None
         self._fastPollTimer = None
+        if csv == None:
+            self.csv = None
+        else:
+            self.csv = CsvExport(filename=csv, parent=self)
         self._t = t
         self._timestampToTime = lambda x: x
         self._t0 = 0
@@ -833,6 +1008,9 @@ class ZmqClient(QObject):
         app = QCoreApplication.instance()
         if app != None:
             app.aboutToQuit.connect(self._aboutToQuit)
+
+        if 'f' in self.capabilities():
+            self.logger.debug('Streams are compressed')
 
         try:
             self._tracing = Tracing(self)
@@ -878,7 +1056,12 @@ class ZmqClient(QObject):
 
     def reqAsync(self, message, callback=None):
         if isinstance(message,str):
-            self.reqAsync(message.encode()).decode()
+            message = message.encode()
+            if callback == None:
+                self.reqAsync(message)
+            else:
+                self.reqAsync(message, lambda rep: callback(rep.decode()))
+            return
 
         if not self.useEventLoop:
             # Without event loop, async does not work.
@@ -887,7 +1070,7 @@ class ZmqClient(QObject):
             if callback != None:
                 callback(rep)
             elif rep == b'?':
-                self.logger.warning('Req %s returned an error, which was not handled', req)
+                self.logger.warning('Async req returned an error, which was not handled')
             return
 
         self._reqQueue.append((message, callback))
@@ -921,13 +1104,12 @@ class ZmqClient(QObject):
         self.logger.debug('req async recv %s', resp)
         assert(self._reqQueue != [])
         req, callback = self._reqQueue.pop(0)
+        self._reqAsyncSendNext()
         if callback != None:
             callback(resp)
         elif resp == b'?':
             # We got an error back, but no callback was specified. Report it anyway.
             self.logger.warning('Req %s returned an error, which was not handled', req)
-
-        self._reqAsyncSendNext()
 
     def _reqAsyncFlush(self):
         while self._reqQueue != []:
@@ -963,7 +1145,7 @@ class ZmqClient(QObject):
                 if len(chunks) != 3:
                     # Strange name
                     continue
-                elif chunks[2].name.startsWith('t ('):
+                elif chunks[2].startswith('t ('):
                     # Got some
                     t = o
                     break;
@@ -1025,7 +1207,13 @@ class ZmqClient(QObject):
 
     @Slot(result=str)
     def capabilities(self):
-        return self.req(b'?').decode()
+        if self._capabilities == None:
+            self._capabilities = self.req('?')
+            if self._multi:
+                # Remove capabilities that are stateful at the embedded side.
+                self._capabilities = re.sub(r'[amstf]', '', self._capabilities)
+
+        return self._capabilities
 
     @Slot(result=str)
     def echo(self, s):
@@ -1115,6 +1303,15 @@ class ZmqClient(QObject):
         else:
             return obj
 
+    def __getitem__(self, x):
+        obj = self.find(x)
+        if isinstance(obj, Object):
+            return obj
+        elif obj == None:
+            raise ValueError(f'Cannot find object with name "{x}"')
+        else:
+            raise ValueError(f'Object name "{x}" is ambiguous')
+
     @Slot(result=str)
     def identification(self):
         try:
@@ -1156,19 +1353,8 @@ class ZmqClient(QObject):
         else:
             return list(map(lambda b: chr(b), rep))
 
-    def stream(self, s, suffix='', raw=False, callback=None):
-        if not isinstance(s, str) or len(s) != 1:
-            raise ValueError('Invalid stream name ' + s)
-
-        req = b's' + (s + suffix).encode()
-        if callback == None:
-            data = self.req(req)
-            if not raw:
-                data = data.decode()
-            return data
-        else:
-            self.reqAsync(req, lambda x, raw=raw, callback=callback: callback(x if raw else x.decode()))
-            return None
+    def stream(self, s, raw=False):
+        return Stream(self, s, raw)
 
     @Property(float, notify=defaultPollIntervalChanged)
     def defaultPollInterval(self):

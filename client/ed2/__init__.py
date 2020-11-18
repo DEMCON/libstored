@@ -25,6 +25,7 @@ from .zmq_server import ZmqServer
 from .zmq_client import ZmqClient
 from .stdio2zmq import Stdio2Zmq
 from .serial2zmq import Serial2Zmq
+from .csv import CsvExport
 from . import protocol
 
 protocol.registerLayerType(ZmqServer)

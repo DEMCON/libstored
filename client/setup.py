@@ -12,8 +12,8 @@ here = os.path.dirname(os.path.realpath(__file__))
 #    long_description = fh.read()
 
 setuptools.setup(
-	name = 'ed2',
-	version = ed2.__version__,
+    name = 'ed2',
+    version = ed2.__version__,
     description = 'Embedded Debugger protocol as used by libstored',
     author = 'Jochem Rutgers',
     author_email = 'jochem.rutgers@demcon.com',
@@ -21,7 +21,7 @@ setuptools.setup(
 #    long_description_content_type="text/markdown",
     url = 'https://github.com/DEMCON/libstored',
     license = 'LGPL3+',
-	packages = setuptools.find_packages(where=here),
+    packages = setuptools.find_packages(where=here),
     install_requires = [
         'pyside2',
         'pyserial',
@@ -29,6 +29,7 @@ setuptools.setup(
         'pyzmq',
         'lognplot',
         'crcmod',
+        'heatshrink2',
     ],
     python_requires='>=3.6',
     classifiers=[

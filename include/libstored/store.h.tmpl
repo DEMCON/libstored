@@ -131,6 +131,18 @@ namespace stored {
 	 * Heap is fine. Static allocations is fine too, as the constructor and
 	 * destructor are trivial.
 	 *
+	 * To inherit the base class, you can use the following template:
+	 *
+	 * \code
+	 * class {{store.name}} : public STORE_BASECLASS({{store.name}}Base, {{store.name}}) {
+	 *     STORE_CLASS_BODY({{store.name}}Base, {{store.name}})
+	 * public:
+	 *     // Your class implementation, such as:
+	 *     {{store.name}}() is_default
+	 *     // ...
+	 * };
+	 * \endcode
+	 *
 	 * \see #stored::{{store.name}}
 	 * \see #stored::{{store.name}}Data
 	 * \ingroup libstored_stores
@@ -149,7 +161,18 @@ namespace stored {
 		/*! \brief Returns the name of store, which can be used as prefix for #stored::Debugger. */
 		char const* name() const { return "/{{store.name}}"; }
 		/*! \brief Returns a unique hash of the store. */
-		char const* hash() const { return "{{store.hash}}"; }
+		static char const* hash() { return "{{store.hash}}"; }
+
+		enum {
+			/*! \brief Number of objects in the store. */
+			ObjectCount = {{store.objects|len}},
+			/*! \brief Number of variables in the store. */
+			VariableCount = {{store.objects|select('variable')|list|len}},
+			/*! \brief Number of functions in the store. */
+			FunctionCount = {{store.objects|select('function')|list|len}},
+			/*! \brief Buffer size. */
+			BufferSize = {{store.buffer.size}},
+		};
 
 		/*! \brief Returns the reference to the implementation.*/
 		Implementation const& implementation() const { return *static_cast<Implementation const*>(this); }
@@ -308,6 +331,7 @@ namespace stored {
 		 */
 		Key bufferToKey(void const* buffer) const {
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+			// cppcheck-suppress assertWithSideEffect
 			stored_assert((uintptr_t)buffer >= (uintptr_t)this->buffer() && (uintptr_t)buffer < (uintptr_t)this->buffer() + sizeof(m_data.buffer));
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 			return (uintptr_t)buffer - (uintptr_t)this->buffer();
@@ -445,11 +469,9 @@ namespace stored {
 	 * \brief Default {{store.name}}Base implementation.
 	 * \ingroup libstored_stores
 	 */
-	class {{store.name}} : public {{store.name}}Base<{{store.name}}> {
-		CLASS_NOCOPY({{store.name}})
+	class {{store.name}} : public STORE_BASECLASS({{store.name}}Base, {{store.name}}) {
+		STORE_CLASS_BODY({{store.name}}Base, {{store.name}})
 	public:
-		typedef {{store.name}}Base<{{store.name}}> base;
-		friend class {{store.name}}Base<{{store.name}}>;
 		/*! \copydoc stored::{{store.name}}Base::{{store.name}}Base() */
 		{{store.name}}() is_default
 	};

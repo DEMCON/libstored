@@ -1,0 +1,51 @@
+/SomeStore/i = 4
+/SomeStore/i = 5
+/OtherInstanceOfSomeStore/i = 4
+/ExampleDebugAnotherStore/j = 101
+i2 = 5
+>>   ?
+<<   ?rwelamivRWstf
+>>   i
+<<   5_debug
+>>   r/ExampleDebugAnotherStore/j
+<<   65
+>>   wf00f/SomeStore/i
+<<   !
+>>   r/SomeStore/i
+<<   f00f
+>>   eHello World!!1
+<<   Hello World!!1
+>>   l
+<<   3b4/ExampleDebugAnotherStore/j
+3b4/OtherInstanceOfSomeStore/i
+3b4/SomeStore/i
+
+>>   a0/SomeStore/i
+<<   !
+>>   r0
+<<   f00f
+>>   m* r0 e; r0 e; r/ExampleDebugAnotherStore/j
+<<   !
+>>   *
+<<   f00f;f00f;65
+>>   m*
+<<   !
+mem = 0xfeca
+>>   s
+<<   ?
+>>   s
+<<   A
+>>   sA
+<<   
+>>   sA
+<<   
+>>   s
+<<   A
+>>   sA/
+<<   /
+>>   sB/
+<<   ?
+>>   ?
+<<   ?rwelamvRWstfz
+>>   z
+<<   Zzzz

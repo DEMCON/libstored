@@ -35,6 +35,7 @@ class Stream2Zmq(protocol.ProtocolLayer):
         self.logger = logging.getLogger(__name__)
         self._stack_def = f'zmq={port},' + stack
         self._timeout_s = timeout_s
+        self._zmq = None
         self.reset()
 
     def reset(self):
@@ -43,6 +44,7 @@ class Stream2Zmq(protocol.ProtocolLayer):
             if isinstance(l, protocol.TerminalLayer):
                 l.fdout = self.stdout
         self.wrap(self._stack)
+        self._zmq = None
 
     def encode(self, data):
         self.logger.debug('encode ' + str(bytes(data)))
@@ -75,12 +77,26 @@ class Stream2Zmq(protocol.ProtocolLayer):
 
         return self.zmq.poll(timeout_s)
 
+    def recvAll(self, socket, f):
+        try:
+            while True:
+                # Drain socket.
+                f(socket.recv(flags=zmq.NOBLOCK))
+        except zmq.ZMQError as e:
+            if e.errno == zmq.EAGAIN:
+                pass
+            else:
+                raise
+
     def registerStream(self, stream, f=True):
         return self.zmq.registerStream(stream, f)
 
     @property
     def zmq(self):
-        return next(iter(self._stack))
+        if self._zmq == None:
+            # Cache the zmq layer.
+            self._zmq = next(iter(self._stack))
+        return self._zmq
 
     def close(self):
         self.zmq.close()
