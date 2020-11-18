@@ -29,10 +29,14 @@ class ZmqClientTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.logger.info(f'Starting {cls.binary}...')
-        cls.process = subprocess.Popen([cls.binary],
-            stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        cls.process = subprocess.Popen(
+            [cls.binary], bufsize=0,
+            stdin=subprocess.DEVNULL, stdout=sys.stdout, stderr=sys.stdout)
 
+        cls.logger.info(f'Connecting...')
         cls.c = ed2.ZmqClient()
+
+        cls.logger.info(f'Connected')
 
     @classmethod
     def tearDownClass(cls):

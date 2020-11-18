@@ -65,6 +65,7 @@ namespace stored {
 
 	protected:
 		void setLastError(int error);
+		int recv1(bool block = false);
 
 	private:
 		/*! \brief The ZeroMQ context. */

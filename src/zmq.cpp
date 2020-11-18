@@ -111,10 +111,10 @@ ZmqLayer::socket_type ZmqLayer::fd() {
 }
 
 /*!
- * \brief Try to receive data from the ZeroMQ REP socket, and decode() it.
+ * \brief Try to receive a message from the ZeroMQ REP socket, and decode() it.
  * \param block if \c true, this function will block on receiving data from the ZeroMQ socket
  */
-int ZmqLayer::recv(bool block) {
+int ZmqLayer::recv1(bool block) {
 	int res = 0;
 	int more = 0;
 
@@ -176,6 +176,36 @@ error_msg:
 		res = EIO;
 	setLastError(res);
 	return res;
+}
+
+/*!
+ * \brief Try to receive all available data from the ZeroMQ REP socket, and decode() it.
+ * \param block if \c true, this function will block on receiving data from the ZeroMQ socket
+ */
+int ZmqLayer::recv(bool block) {
+	bool first = true;
+
+	while(true) {
+		int res = recv1(block && first);
+
+		switch(res) {
+		case 0:
+			// Got more.
+			break;
+		case EAGAIN:
+			// That's it.
+			if(!first) {
+				// We already got something, so don't make this an error.
+				setLastError(0);
+				return 0;
+			}
+			// fall-through
+		default:
+			return res;
+		}
+
+		first = false;
+	}
 }
 
 /*!
