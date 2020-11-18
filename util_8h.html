@@ -171,6 +171,10 @@ Macros</h2></td></tr>
 <tr class="separator:gaa0672ea7123854cc5f51902a06c473fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a13bce87e38bd3a150e7062d8fdb6a823"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="util_8h.html#a13bce87e38bd3a150e7062d8fdb6a823">SFINAE_IS_FUNCTION</a>(T,  F,  T_OK)&#160;&#160;&#160;T_OK</td></tr>
 <tr class="separator:a13bce87e38bd3a150e7062d8fdb6a823"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad225f313e5aac4f408188c9bce413d5e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="util_8h.html#ad225f313e5aac4f408188c9bce413d5e">STORE_BASECLASS</a>(Base,  Impl)&#160;&#160;&#160;stored::Base&lt;Impl &gt;</td></tr>
+<tr class="separator:ad225f313e5aac4f408188c9bce413d5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37e56df26175f2fb676ae46c8c7f4560"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="util_8h.html#a37e56df26175f2fb676ae46c8c7f4560">STORE_CLASS_BODY</a>(Base,  Impl)</td></tr>
+<tr class="separator:a37e56df26175f2fb676ae46c8c7f4560"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab750e51b876450a0a4ad419588a82a4d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__libstored__util.html#gab750e51b876450a0a4ad419588a82a4d">stored_assert</a>(expr)&#160;&#160;&#160;do { if(::<a class="el" href="structstored_1_1_default_config.html#a6d57db674741d0587772c3c496c2bb45">stored::Config::EnableAssert</a>) { assert(expr); } } while(false)</td></tr>
 <tr class="memdesc:gab750e51b876450a0a4ad419588a82a4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Like <code>assert()</code>, but only emits code when <a class="el" href="structstored_1_1_default_config.html#a6d57db674741d0587772c3c496c2bb45" title="When true, enable stored_assert() checks. ">stored::Config::EnableAssert</a>.  <a href="group__libstored__util.html#gab750e51b876450a0a4ad419588a82a4d">More...</a><br /></td></tr>
 <tr class="separator:gab750e51b876450a0a4ad419588a82a4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -183,6 +187,9 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ga71f6523e78ab1e12c33e895142a0e262"><td class="memItemLeft" align="right" valign="top">char const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__libstored__util.html#ga71f6523e78ab1e12c33e895142a0e262">stored::banner</a> ()</td></tr>
+<tr class="memdesc:ga71f6523e78ab1e12c33e895142a0e262"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a single-line string that contains relevant configuration information of libstored.  <a href="group__libstored__util.html#ga71f6523e78ab1e12c33e895142a0e262">More...</a><br /></td></tr>
+<tr class="separator:ga71f6523e78ab1e12c33e895142a0e262"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaaaa850b08b762f712e9dd4b57bf5a4f2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__libstored__util.html#gaaaa850b08b762f712e9dd4b57bf5a4f2">stored::memcmp_swap</a> (void const  *a, void const  *b, size_t len)</td></tr>
 <tr class="memdesc:gaaaa850b08b762f712e9dd4b57bf5a4f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">memcmp() with endianness swapping.  <a href="group__libstored__util.html#gaaaa850b08b762f712e9dd4b57bf5a4f2">More...</a><br /></td></tr>
 <tr class="separator:gaaaa850b08b762f712e9dd4b57bf5a4f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -227,7 +234,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">protected</span>: \</div><div class="line">        virtual <span class="keywordtype">void</span> force_to_translation_unit();</div></div><!-- fragment -->
+<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">protected</span>: \</div><div class="line">        void force_to_translation_unit();</div></div><!-- fragment -->
 <p>Macro to make sure that the containing class emits its vtable in one translation unit. </p>
 <p>Use <a class="el" href="util_8h.html#ac56d4e0f94ae6fa721af21e4f11c4ec5">CLASS_NO_WEAK_VTABLE_DEF()</a> in one .cpp file. </p>
 
@@ -279,7 +286,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="4_function_2main_8cpp-example.html#a2">4_function/main.cpp</a>, <a class="el" href="5_debug_2main_8cpp-example.html#a2">5_debug/main.cpp</a>, <a class="el" href="6_hooks_2main_8cpp-example.html#a2">6_hooks/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#a6">7_protocol/main.cpp</a>, and <a class="el" href="8_sync_2main_8cpp-example.html#a3">8_sync/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a2">5_debug/main.cpp</a>, and <a class="el" href="7_protocol_2main_8cpp-example.html#a5">7_protocol/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00132">132</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
 
@@ -296,7 +303,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a13">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#a13">7_protocol/main.cpp</a>, <a class="el" href="8_sync_2main_8cpp-example.html#a8">8_sync/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#a6">terminal/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a14">5_debug/main.cpp</a>, <a class="el" href="7_protocol_2main_8cpp-example.html#a12">7_protocol/main.cpp</a>, <a class="el" href="8_sync_2main_8cpp-example.html#a6">8_sync/main.cpp</a>, and <a class="el" href="terminal_2main_8cpp-example.html#a4">terminal/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00170">170</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
 
@@ -343,6 +350,70 @@ Functions</h2></td></tr>
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00114">114</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+
+</div>
+</div>
+<a id="ad225f313e5aac4f408188c9bce413d5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad225f313e5aac4f408188c9bce413d5e">&#9670;&nbsp;</a></span>STORE_BASECLASS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define STORE_BASECLASS</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Base, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Impl&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;stored::Base&lt;Impl &gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="4_function_2main_8cpp-example.html#a1">4_function/main.cpp</a>, and <a class="el" href="6_hooks_2main_8cpp-example.html#a1">6_hooks/main.cpp</a>.</dd>
+</dl>
+<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00436">436</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+
+</div>
+</div>
+<a id="a37e56df26175f2fb676ae46c8c7f4560"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37e56df26175f2fb676ae46c8c7f4560">&#9670;&nbsp;</a></span>STORE_CLASS_BODY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define STORE_CLASS_BODY</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Base, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Impl&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="util_8h.html#a51b700a941b8d8d0f4c446dc2af5ce79">CLASS_NOCOPY</a>(Impl) \</div><div class="line">public: \</div><div class="line">    typedef <a class="code" href="util_8h.html#ad225f313e5aac4f408188c9bce413d5e">STORE_BASECLASS</a>(Base, Impl) base; \</div><div class="line">    using <span class="keyword">typename</span> base::Implementation; \</div><div class="line">    friend <span class="keyword">class </span><a class="code" href="util_8h.html#ad225f313e5aac4f408188c9bce413d5e">STORE_BASECLASS</a>(Base, Impl); \</div><div class="line">private:</div><div class="ttc" id="util_8h_html_a51b700a941b8d8d0f4c446dc2af5ce79"><div class="ttname"><a href="util_8h.html#a51b700a941b8d8d0f4c446dc2af5ce79">CLASS_NOCOPY</a></div><div class="ttdeci">#define CLASS_NOCOPY(Class)</div><div class="ttdoc">Emits the copy/move constructor/assignment such that copy/move is not allowed. </div><div class="ttdef"><b>Definition:</b> <a href="util_8h_source.html#l00132">util.h:132</a></div></div>
+<div class="ttc" id="util_8h_html_ad225f313e5aac4f408188c9bce413d5e"><div class="ttname"><a href="util_8h.html#ad225f313e5aac4f408188c9bce413d5e">STORE_BASECLASS</a></div><div class="ttdeci">#define STORE_BASECLASS(Base, Impl)</div><div class="ttdef"><b>Definition:</b> <a href="util_8h_source.html#l00436">util.h:436</a></div></div>
+</div><!-- fragment --><dl><dt><b>Examples: </b></dt><dd><a class="el" href="4_function_2main_8cpp-example.html#a2">4_function/main.cpp</a>, and <a class="el" href="6_hooks_2main_8cpp-example.html#a2">6_hooks/main.cpp</a>.</dd>
+</dl>
+<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00438">438</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
 
 </div>
 </div>

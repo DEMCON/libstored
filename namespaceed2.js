@@ -1,6 +1,7 @@
 var namespaceed2 =
 [
     [ "cli", "namespaceed2_1_1cli.html", null ],
+    [ "csv", "namespaceed2_1_1csv.html", "namespaceed2_1_1csv" ],
     [ "gui", "namespaceed2_1_1gui.html", "namespaceed2_1_1gui" ],
     [ "protocol", "namespaceed2_1_1protocol.html", "namespaceed2_1_1protocol" ],
     [ "serial2zmq", "namespaceed2_1_1serial2zmq.html", "namespaceed2_1_1serial2zmq" ],

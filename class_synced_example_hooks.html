@@ -82,6 +82,7 @@ $(document).ready(function(){initNavTree('class_synced_example_hooks.html','');}
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pro-types">Protected Types</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
@@ -108,17 +109,19 @@ Inheritance diagram for SyncedExampleHooks:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a9b49e9e3d181fb84e2c8c3831b775ac7"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_hooks_base.html">stored::ExampleHooksBase</a>&lt; <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_synced_example_hooks.html#a9b49e9e3d181fb84e2c8c3831b775ac7">base</a></td></tr>
-<tr class="separator:a9b49e9e3d181fb84e2c8c3831b775ac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a866f9879fd6d9a3e44139bdffcb0a5a5"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="separator:a866f9879fd6d9a3e44139bdffcb0a5a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a969648ac0015ea43808c65a9e1dbe5b8"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_hooks_base.html">stored::ExampleHooksBase</a>&lt; <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_synced_example_hooks.html#a969648ac0015ea43808c65a9e1dbe5b8">base</a></td></tr>
+<tr class="separator:a969648ac0015ea43808c65a9e1dbe5b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaae070c8cca6ddc516ac84a89c11f099"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_hooks_base.html#a50acbe9a370da949f9a595807b5ba53e">ExampleHooksBase</a>&lt; <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_objects.html#aaae070c8cca6ddc516ac84a89c11f099">Base</a></td></tr>
 <tr class="separator:aaae070c8cca6ddc516ac84a89c11f099"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e0fe4df5ec6d039989a195dbc06e759"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a></td></tr>
+<tr class="memitem:a7e0fe4df5ec6d039989a195dbc06e759"><td class="memItemLeft" align="right" valign="top">typedef Implementation_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_synced_example_hooks.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a></td></tr>
 <tr class="memdesc:a7e0fe4df5ec6d039989a195dbc06e759"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the actual implementation, which is the (lowest) subclass.  <a href="#a7e0fe4df5ec6d039989a195dbc06e759">More...</a><br /></td></tr>
 <tr class="separator:a7e0fe4df5ec6d039989a195dbc06e759"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab70bf2dadfacf78e0335a68b9859535"><td class="memItemLeft" align="right" valign="top">typedef uintptr_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#aab70bf2dadfacf78e0335a68b9859535">Key</a></td></tr>
 <tr class="memdesc:aab70bf2dadfacf78e0335a68b9859535"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of a key.  <a href="#aab70bf2dadfacf78e0335a68b9859535">More...</a><br /></td></tr>
 <tr class="separator:aab70bf2dadfacf78e0335a68b9859535"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7771afa934a38ffb6511f4374ef940eb"><td class="memItemLeft" align="right" valign="top">typedef std::map&lt; std::string, Variant&lt; <a class="el" href="classstored_1_1_example_hooks_objects.html#a76a641ea0119cece18da85ee8bac609b">Implementation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#a7771afa934a38ffb6511f4374ef940eb">ObjectMap</a></td></tr>
+<tr class="memitem:a7771afa934a38ffb6511f4374ef940eb"><td class="memItemLeft" align="right" valign="top">typedef std::map&lt; std::string, Variant&lt; <a class="el" href="class_synced_example_hooks.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#a7771afa934a38ffb6511f4374ef940eb">ObjectMap</a></td></tr>
 <tr class="memdesc:a7771afa934a38ffb6511f4374ef940eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map as generated by <a class="el" href="classstored_1_1_example_hooks_base.html#a007ad57368f5d37d5ccc68d1c06edf33" title="Create a name to Variant map for the store. ">map()</a>.  <a href="#a7771afa934a38ffb6511f4374ef940eb">More...</a><br /></td></tr>
 <tr class="separator:a7771afa934a38ffb6511f4374ef940eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0dbde8cf8c1eb5b3a0d9ba2d205802ec"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_hooks_objects.html#a863fe6b3ef8c009ac1517a9d52e80316">ExampleHooksObjects</a>&lt; <a class="el" href="classstored_1_1_example_hooks_base.html#a50acbe9a370da949f9a595807b5ba53e">ExampleHooksBase</a>, <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#a0dbde8cf8c1eb5b3a0d9ba2d205802ec">Objects</a></td></tr>
@@ -137,16 +140,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a88fbf24291de8e04c8ab488046f8af51"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_hooks_base.html#aab70bf2dadfacf78e0335a68b9859535">Key</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#a88fbf24291de8e04c8ab488046f8af51">bufferToKey</a> (void const *<a class="el" href="classstored_1_1_example_hooks_base.html#acbcccd37c284ef9fb488b020c60b8f07">buffer</a>) const</td></tr>
 <tr class="memdesc:a88fbf24291de8e04c8ab488046f8af51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a variable's buffer to a key.  <a href="#a88fbf24291de8e04c8ab488046f8af51">More...</a><br /></td></tr>
 <tr class="separator:a88fbf24291de8e04c8ab488046f8af51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e474128547bad6be05e70d9e972d16f"><td class="memItemLeft" align="right" valign="top">Variant&lt; <a class="el" href="classstored_1_1_example_hooks_objects.html#a76a641ea0119cece18da85ee8bac609b">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#a7e474128547bad6be05e70d9e972d16f">find</a> (char const *<a class="el" href="classstored_1_1_example_hooks_base.html#ae250e59ef42389d24f1fde21e3cb972f">name</a>, size_t len=std::numeric_limits&lt; size_t &gt;::max())</td></tr>
+<tr class="memitem:a7e474128547bad6be05e70d9e972d16f"><td class="memItemLeft" align="right" valign="top">Variant&lt; <a class="el" href="class_synced_example_hooks.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#a7e474128547bad6be05e70d9e972d16f">find</a> (char const *<a class="el" href="classstored_1_1_example_hooks_base.html#ae250e59ef42389d24f1fde21e3cb972f">name</a>, size_t len=std::numeric_limits&lt; size_t &gt;::max())</td></tr>
 <tr class="memdesc:a7e474128547bad6be05e70d9e972d16f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds an object with the given name.  <a href="#a7e474128547bad6be05e70d9e972d16f">More...</a><br /></td></tr>
 <tr class="separator:a7e474128547bad6be05e70d9e972d16f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b5ed4ae373632c4765831f531388e73"><td class="memItemLeft" align="right" valign="top">char const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#a4b5ed4ae373632c4765831f531388e73">hash</a> () const</td></tr>
-<tr class="memdesc:a4b5ed4ae373632c4765831f531388e73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique hash of the store.  <a href="#a4b5ed4ae373632c4765831f531388e73">More...</a><br /></td></tr>
-<tr class="separator:a4b5ed4ae373632c4765831f531388e73"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af87992befe97d4ef18455da0b4cc4dc2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_hooks_objects.html#a76a641ea0119cece18da85ee8bac609b">Implementation</a> const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#af87992befe97d4ef18455da0b4cc4dc2">implementation</a> () const</td></tr>
+<tr class="memitem:af87992befe97d4ef18455da0b4cc4dc2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_synced_example_hooks.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a> const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#af87992befe97d4ef18455da0b4cc4dc2">implementation</a> () const</td></tr>
 <tr class="memdesc:af87992befe97d4ef18455da0b4cc4dc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the reference to the implementation.  <a href="#af87992befe97d4ef18455da0b4cc4dc2">More...</a><br /></td></tr>
 <tr class="separator:af87992befe97d4ef18455da0b4cc4dc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24f9fa08bf447de079b43c5a89a54ccb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_hooks_objects.html#a76a641ea0119cece18da85ee8bac609b">Implementation</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#a24f9fa08bf447de079b43c5a89a54ccb">implementation</a> ()</td></tr>
+<tr class="memitem:a24f9fa08bf447de079b43c5a89a54ccb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_synced_example_hooks.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#a24f9fa08bf447de079b43c5a89a54ccb">implementation</a> ()</td></tr>
 <tr class="memdesc:a24f9fa08bf447de079b43c5a89a54ccb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the reference to the implementation.  <a href="#a24f9fa08bf447de079b43c5a89a54ccb">More...</a><br /></td></tr>
 <tr class="separator:a24f9fa08bf447de079b43c5a89a54ccb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c7209d1c126e2c6b5fe61de962bf829"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#a5c7209d1c126e2c6b5fe61de962bf829">list</a> (F f, void *arg, char const *prefix=nullptr)</td></tr>
@@ -164,25 +164,31 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae250e59ef42389d24f1fde21e3cb972f"><td class="memItemLeft" align="right" valign="top">char const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#ae250e59ef42389d24f1fde21e3cb972f">name</a> () const</td></tr>
 <tr class="memdesc:ae250e59ef42389d24f1fde21e3cb972f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name of store, which can be used as prefix for <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>.  <a href="#ae250e59ef42389d24f1fde21e3cb972f">More...</a><br /></td></tr>
 <tr class="separator:ae250e59ef42389d24f1fde21e3cb972f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ed70860c7de729bb0b46c5b4cb69dfe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_synced_example_hooks.html#a4ed70860c7de729bb0b46c5b4cb69dfe">operator=</a> (<a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a> const &amp;)=delete</td></tr>
-<tr class="memdesc:a4ed70860c7de729bb0b46c5b4cb69dfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted assignment operator.  <a href="#a4ed70860c7de729bb0b46c5b4cb69dfe">More...</a><br /></td></tr>
-<tr class="separator:a4ed70860c7de729bb0b46c5b4cb69dfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a811459ba2b89cc6c9c2b3ed1b7391dc6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_synced_example_hooks.html#a811459ba2b89cc6c9c2b3ed1b7391dc6">operator=</a> (<a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a> &amp;&amp;)=delete</td></tr>
 <tr class="memdesc:a811459ba2b89cc6c9c2b3ed1b7391dc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted move assignment operator.  <a href="#a811459ba2b89cc6c9c2b3ed1b7391dc6">More...</a><br /></td></tr>
 <tr class="separator:a811459ba2b89cc6c9c2b3ed1b7391dc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ed70860c7de729bb0b46c5b4cb69dfe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_synced_example_hooks.html#a4ed70860c7de729bb0b46c5b4cb69dfe">operator=</a> (<a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a> const &amp;)=delete</td></tr>
+<tr class="memdesc:a4ed70860c7de729bb0b46c5b4cb69dfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted assignment operator.  <a href="#a4ed70860c7de729bb0b46c5b4cb69dfe">More...</a><br /></td></tr>
+<tr class="separator:a4ed70860c7de729bb0b46c5b4cb69dfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe89177ef302a87f49cccdf78aa840b8"><td class="memItemLeft" align="right" valign="top">uint8_t const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#afe89177ef302a87f49cccdf78aa840b8">shortDirectory</a> () const</td></tr>
 <tr class="memdesc:afe89177ef302a87f49cccdf78aa840b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the short directory.  <a href="#afe89177ef302a87f49cccdf78aa840b8">More...</a><br /></td></tr>
 <tr class="separator:afe89177ef302a87f49cccdf78aa840b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:af47180b7c2b4fbe64d4f8123a3b27038"><td class="memItemLeft" align="right" valign="top">static char const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#af47180b7c2b4fbe64d4f8123a3b27038">hash</a> ()</td></tr>
+<tr class="memdesc:af47180b7c2b4fbe64d4f8123a3b27038"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique hash of the store.  <a href="#af47180b7c2b4fbe64d4f8123a3b27038">More...</a><br /></td></tr>
+<tr class="separator:af47180b7c2b4fbe64d4f8123a3b27038"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a982fa8db0e4738c71a197f278f3faab6"><td class="memItemLeft" align="right" valign="top">impl::StoreFunction&lt; <a class="el" href="classstored_1_1_example_hooks_objects.html#aaae070c8cca6ddc516ac84a89c11f099">Base</a>, <a class="el" href="classstored_1_1_example_hooks_objects.html#a76a641ea0119cece18da85ee8bac609b">Implementation</a>, int32_t, 1u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_objects.html#a982fa8db0e4738c71a197f278f3faab6">function</a></td></tr>
+<tr class="memitem:a982fa8db0e4738c71a197f278f3faab6"><td class="memItemLeft" align="right" valign="top">impl::StoreFunction&lt; <a class="el" href="classstored_1_1_example_hooks_objects.html#aaae070c8cca6ddc516ac84a89c11f099">Base</a>, <a class="el" href="class_synced_example_hooks.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a>, int32_t, 1u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_objects.html#a982fa8db0e4738c71a197f278f3faab6">function</a></td></tr>
 <tr class="memdesc:a982fa8db0e4738c71a197f278f3faab6"><td class="mdescLeft">&#160;</td><td class="mdescRight">function  <a href="#a982fa8db0e4738c71a197f278f3faab6">More...</a><br /></td></tr>
 <tr class="separator:a982fa8db0e4738c71a197f278f3faab6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2cb68b8bf80aa16e4f907d27f44bd77f"><td class="memItemLeft" align="right" valign="top">impl::StoreVariable&lt; <a class="el" href="classstored_1_1_example_hooks_objects.html#aaae070c8cca6ddc516ac84a89c11f099">Base</a>, <a class="el" href="classstored_1_1_example_hooks_objects.html#a76a641ea0119cece18da85ee8bac609b">Implementation</a>, int32_t, 8u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_objects.html#a2cb68b8bf80aa16e4f907d27f44bd77f">variable_1</a></td></tr>
+<tr class="memitem:a2cb68b8bf80aa16e4f907d27f44bd77f"><td class="memItemLeft" align="right" valign="top">impl::StoreVariable&lt; <a class="el" href="classstored_1_1_example_hooks_objects.html#aaae070c8cca6ddc516ac84a89c11f099">Base</a>, <a class="el" href="class_synced_example_hooks.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a>, int32_t, 8u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_objects.html#a2cb68b8bf80aa16e4f907d27f44bd77f">variable_1</a></td></tr>
 <tr class="memdesc:a2cb68b8bf80aa16e4f907d27f44bd77f"><td class="mdescLeft">&#160;</td><td class="mdescRight">variable 1  <a href="#a2cb68b8bf80aa16e4f907d27f44bd77f">More...</a><br /></td></tr>
 <tr class="separator:a2cb68b8bf80aa16e4f907d27f44bd77f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a64023cf3cb76353cd5d3b797da4b2348"><td class="memItemLeft" align="right" valign="top">impl::StoreVariable&lt; <a class="el" href="classstored_1_1_example_hooks_objects.html#aaae070c8cca6ddc516ac84a89c11f099">Base</a>, <a class="el" href="classstored_1_1_example_hooks_objects.html#a76a641ea0119cece18da85ee8bac609b">Implementation</a>, int32_t, 0u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_objects.html#a64023cf3cb76353cd5d3b797da4b2348">variable_2</a></td></tr>
+<tr class="memitem:a64023cf3cb76353cd5d3b797da4b2348"><td class="memItemLeft" align="right" valign="top">impl::StoreVariable&lt; <a class="el" href="classstored_1_1_example_hooks_objects.html#aaae070c8cca6ddc516ac84a89c11f099">Base</a>, <a class="el" href="class_synced_example_hooks.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a>, int32_t, 0u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_objects.html#a64023cf3cb76353cd5d3b797da4b2348">variable_2</a></td></tr>
 <tr class="memdesc:a64023cf3cb76353cd5d3b797da4b2348"><td class="mdescLeft">&#160;</td><td class="mdescRight">variable 2  <a href="#a64023cf3cb76353cd5d3b797da4b2348">More...</a><br /></td></tr>
 <tr class="separator:a64023cf3cb76353cd5d3b797da4b2348"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -238,20 +244,19 @@ Friends</h2></td></tr>
 <tr class="separator:a023a60940054ae1929f2cd43263c81b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a9b49e9e3d181fb84e2c8c3831b775ac7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9b49e9e3d181fb84e2c8c3831b775ac7">&#9670;&nbsp;</a></span>base</h2>
+<a id="a969648ac0015ea43808c65a9e1dbe5b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a969648ac0015ea43808c65a9e1dbe5b8">&#9670;&nbsp;</a></span>base</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="classstored_1_1_example_hooks_base.html">stored::ExampleHooksBase</a>&lt;<a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a>&gt; <a class="el" href="class_synced_example_hooks.html#a9b49e9e3d181fb84e2c8c3831b775ac7">SyncedExampleHooks::base</a></td>
+          <td class="memname">typedef stored:: <a class="el" href="classstored_1_1_example_hooks_base.html#a50acbe9a370da949f9a595807b5ba53e">ExampleHooksBase</a>&lt; <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a> &gt; <a class="el" href="class_synced_example_hooks.html#a969648ac0015ea43808c65a9e1dbe5b8">SyncedExampleHooks::base</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a4">6_hooks/main.cpp</a>.</dd>
-</dl>
-<p class="definition">Definition at line <a class="el" href="6__hooks_2main_8cpp_source.html#l00015">15</a> of file <a class="el" href="6__hooks_2main_8cpp_source.html">main.cpp</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="6__hooks_2main_8cpp_source.html#l00013">13</a> of file <a class="el" href="6__hooks_2main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -301,7 +306,7 @@ Friends</h2></td></tr>
 
 <p>The type of the data structure. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00126">126</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00149">149</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -310,24 +315,16 @@ Friends</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a>  <a class="el" href="classstored_1_1_example_hooks_base.html">stored::ExampleHooksBase</a>&lt; <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a>  &gt;::<a class="el" href="classstored_1_1_example_hooks_objects.html#a76a641ea0119cece18da85ee8bac609b">Implementation</a></td>
+          <td class="memname">typedef Implementation_ <a class="el" href="classstored_1_1_example_hooks_base.html">stored::ExampleHooksBase</a>&lt; Implementation_ &gt;::<a class="el" href="class_synced_example_hooks.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>Type of the actual implementation, which is the (lowest) subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00113">113</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00125">125</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -354,7 +351,7 @@ Friends</h2></td></tr>
 <p>Type of a key. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_hooks_base.html#a88fbf24291de8e04c8ab488046f8af51" title="Converts a variable&#39;s buffer to a key. ">bufferToKey()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00231">231</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00254">254</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -368,7 +365,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">typedef std::map&lt;std::string, Variant&lt;<a class="el" href="classstored_1_1_example_hooks_objects.html#a76a641ea0119cece18da85ee8bac609b">Implementation</a>&gt; &gt; <a class="el" href="classstored_1_1_example_hooks_base.html">stored::ExampleHooksBase</a>&lt; <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a>  &gt;::<a class="el" href="classstored_1_1_example_hooks_base.html#a7771afa934a38ffb6511f4374ef940eb">ObjectMap</a></td>
+          <td class="memname">typedef std::map&lt;std::string, Variant&lt;<a class="el" href="class_synced_example_hooks.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a>&gt; &gt; <a class="el" href="classstored_1_1_example_hooks_base.html">stored::ExampleHooksBase</a>&lt; <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a>  &gt;::<a class="el" href="classstored_1_1_example_hooks_base.html#a7771afa934a38ffb6511f4374ef940eb">ObjectMap</a></td>
         </tr>
       </table>
   </td>
@@ -380,7 +377,7 @@ Friends</h2></td></tr>
 
 <p>Map as generated by <a class="el" href="classstored_1_1_example_hooks_base.html#a007ad57368f5d37d5ccc68d1c06edf33" title="Create a name to Variant map for the store. ">map()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00353">353</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00377">377</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -404,7 +401,32 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00111">111</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00123">123</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="a866f9879fd6d9a3e44139bdffcb0a5a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a866f9879fd6d9a3e44139bdffcb0a5a5">&#9670;&nbsp;</a></span>anonymous enum</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">anonymous enum</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00131">131</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -487,9 +509,9 @@ Friends</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a5">6_hooks/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a4">6_hooks/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="6__hooks_2main_8cpp_source.html#l00017">17</a> of file <a class="el" href="6__hooks_2main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="6__hooks_2main_8cpp_source.html#l00015">15</a> of file <a class="el" href="6__hooks_2main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -527,9 +549,9 @@ Friends</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a6">6_hooks/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a5">6_hooks/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="6__hooks_2main_8cpp_source.html#l00020">20</a> of file <a class="el" href="6__hooks_2main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="6__hooks_2main_8cpp_source.html#l00018">18</a> of file <a class="el" href="6__hooks_2main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -572,9 +594,9 @@ Friends</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a12">6_hooks/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a11">6_hooks/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="6__hooks_2main_8cpp_source.html#l00032">32</a> of file <a class="el" href="6__hooks_2main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="6__hooks_2main_8cpp_source.html#l00030">30</a> of file <a class="el" href="6__hooks_2main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -617,9 +639,9 @@ Friends</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a7">6_hooks/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a6">6_hooks/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="6__hooks_2main_8cpp_source.html#l00022">22</a> of file <a class="el" href="6__hooks_2main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="6__hooks_2main_8cpp_source.html#l00020">20</a> of file <a class="el" href="6__hooks_2main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -662,9 +684,9 @@ Friends</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a13">6_hooks/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a12">6_hooks/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="6__hooks_2main_8cpp_source.html#l00037">37</a> of file <a class="el" href="6__hooks_2main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="6__hooks_2main_8cpp_source.html#l00035">35</a> of file <a class="el" href="6__hooks_2main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -713,9 +735,9 @@ Friends</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a11">6_hooks/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a10">6_hooks/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="6__hooks_2main_8cpp_source.html#l00027">27</a> of file <a class="el" href="6__hooks_2main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="6__hooks_2main_8cpp_source.html#l00025">25</a> of file <a class="el" href="6__hooks_2main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -743,9 +765,9 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the buffer with all variable data. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a9">6_hooks/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a8">6_hooks/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00132">132</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00155">155</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -774,7 +796,7 @@ Friends</h2></td></tr>
 
 <p>Returns the buffer with all variable data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00134">134</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00157">157</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -806,9 +828,9 @@ Friends</h2></td></tr>
 <p>A key is unique for all variables of the same store, but identical for the same variables across different instances of the same store class. Therefore, the key can be used to synchronize between instances of the same store. A key does not contain meta data, such as type or length. It is up to the synchronization library to make sure that these properties are handled well.</p>
 <p>For synchronization, when <a class="el" href="classstored_1_1_example_hooks_base.html#acb4f8f88ca21c4383e1c4d44233f7c32" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a> or <a class="el" href="classstored_1_1_example_hooks_base.html#a742b4b4aceeb66786c5c10a0c4d82535" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a> is invoked, one can compute the key of the object that is accessed. The key can be used, for example, in a key-to-Variant map. When data arrives from another party, the key can be used to find the proper Variant in the map.</p>
 <p>This way, data exchange is type-safe, as the Variant can check if the data format matches the expected type. However, one cannot process data if the key is not set yet in the map. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a10">6_hooks/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a9">6_hooks/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00253">253</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00276">276</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -861,7 +883,7 @@ Friends</h2></td></tr>
 <p>Function callback resolver. </p>
 <p>This is the callback for a Function and a Variant, which converts a call to the function identifier to an actual function call within the Implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00209">209</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00232">232</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -890,7 +912,7 @@ Friends</h2></td></tr>
 
 <p>Returns the container for all the store's data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00128">128</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00151">151</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -919,7 +941,7 @@ Friends</h2></td></tr>
 
 <p>Returns the container for all the store's data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00130">130</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00153">153</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -933,7 +955,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Variant&lt;<a class="el" href="classstored_1_1_example_hooks_objects.html#a76a641ea0119cece18da85ee8bac609b">Implementation</a>&gt; <a class="el" href="classstored_1_1_example_hooks_base.html">stored::ExampleHooksBase</a>&lt; <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a>  &gt;::find </td>
+          <td class="memname">Variant&lt;<a class="el" href="class_synced_example_hooks.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a>&gt; <a class="el" href="classstored_1_1_example_hooks_base.html">stored::ExampleHooksBase</a>&lt; <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a>  &gt;::find </td>
           <td>(</td>
           <td class="paramtype">char const *&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -959,14 +981,14 @@ Friends</h2></td></tr>
 
 <p>Finds an object with the given name. </p>
 <dl class="section return"><dt>Returns</dt><dd>the object, or an invalid <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">stored::Variant</a> if not found. </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a20">6_hooks/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a19">6_hooks/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00332">332</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00356">356</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
-<a id="a4b5ed4ae373632c4765831f531388e73"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4b5ed4ae373632c4765831f531388e73">&#9670;&nbsp;</a></span>hash()</h2>
+<a id="af47180b7c2b4fbe64d4f8123a3b27038"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af47180b7c2b4fbe64d4f8123a3b27038">&#9670;&nbsp;</a></span>hash()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -975,22 +997,22 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">char const* <a class="el" href="classstored_1_1_example_hooks_base.html">stored::ExampleHooksBase</a>&lt; <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a>  &gt;::hash </td>
+          <td class="memname">static char const* <a class="el" href="classstored_1_1_example_hooks_base.html">stored::ExampleHooksBase</a>&lt; <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a>  &gt;::hash </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">inherited</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Returns a unique hash of the store. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00117">117</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00129">129</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1037,7 +1059,7 @@ Friends</h2></td></tr>
 <p>Hook when read-only access to a given variable is to be acquired. </p>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_hooks_base.html#a2a6200904318e780bb9d2c4a34dd9dd9" title="Hook when read-only access to a given variable is released. ">hookExitRO()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00282">282</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00306">306</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1084,7 +1106,7 @@ Friends</h2></td></tr>
 <p>Hook when exclusive access to a given variable is to be acquired. </p>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_hooks_base.html#aa969ed2e35469305e4273b3ed818f823" title="Hook when exclusive access to a given variable is released. ">hookExitX()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00265">265</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00289">289</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1131,7 +1153,7 @@ Friends</h2></td></tr>
 <p>Hook when read-only access to a given variable is released. </p>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_hooks_base.html#a742b4b4aceeb66786c5c10a0c4d82535" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00289">289</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00313">313</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1184,7 +1206,7 @@ Friends</h2></td></tr>
 <p>Hook when exclusive access to a given variable is released. </p>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_hooks_base.html#acb4f8f88ca21c4383e1c4d44233f7c32" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00275">275</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00299">299</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1198,7 +1220,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1_example_hooks_objects.html#a76a641ea0119cece18da85ee8bac609b">Implementation</a> const&amp; <a class="el" href="classstored_1_1_example_hooks_base.html">stored::ExampleHooksBase</a>&lt; <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a>  &gt;::implementation </td>
+          <td class="memname"><a class="el" href="class_synced_example_hooks.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a> const&amp; <a class="el" href="classstored_1_1_example_hooks_base.html">stored::ExampleHooksBase</a>&lt; <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a>  &gt;::implementation </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1213,7 +1235,7 @@ Friends</h2></td></tr>
 
 <p>Returns the reference to the implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00120">120</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00143">143</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1227,7 +1249,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1_example_hooks_objects.html#a76a641ea0119cece18da85ee8bac609b">Implementation</a>&amp; <a class="el" href="classstored_1_1_example_hooks_base.html">stored::ExampleHooksBase</a>&lt; <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a>  &gt;::implementation </td>
+          <td class="memname"><a class="el" href="class_synced_example_hooks.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a>&amp; <a class="el" href="classstored_1_1_example_hooks_base.html">stored::ExampleHooksBase</a>&lt; <a class="el" href="class_synced_example_hooks.html">SyncedExampleHooks</a>  &gt;::implementation </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1242,7 +1264,7 @@ Friends</h2></td></tr>
 
 <p>Returns the reference to the implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00122">122</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00145">145</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1289,7 +1311,7 @@ Friends</h2></td></tr>
 <p>Calls a callback for every object in the <a class="el" href="classstored_1_1_example_hooks_base.html#a0c6df7152fe76972c4b8e3ffab852d6c" title="Retuns the long directory. ">longDirectory()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758" title="Iterates over all objects in the directory and invoke a callback for every object. ">stored::list()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00341">341</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00365">365</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1320,7 +1342,7 @@ Friends</h2></td></tr>
 <p>Calls a callback for every object in the <a class="el" href="classstored_1_1_example_hooks_base.html#a0c6df7152fe76972c4b8e3ffab852d6c" title="Retuns the long directory. ">longDirectory()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758" title="Iterates over all objects in the directory and invoke a callback for every object. ">stored::list()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00349">349</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00373">373</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1350,7 +1372,7 @@ Friends</h2></td></tr>
 <p>Retuns the long directory. </p>
 <p>When not available, the short directory is returned. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00326">326</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00350">350</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1381,7 +1403,7 @@ Friends</h2></td></tr>
 <p>Create a name to Variant map for the store. </p>
 <p>Generating the map may be expensive and the result is not cached. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00360">360</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00384">384</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1410,7 +1432,7 @@ Friends</h2></td></tr>
 
 <p>Returns the name of store, which can be used as prefix for <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00115">115</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00127">127</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1495,7 +1517,7 @@ Friends</h2></td></tr>
 
 <p>Returns the short directory. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00322">322</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00346">346</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1520,7 +1542,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="6__hooks_2main_8cpp_source.html#l00016">16</a> of file <a class="el" href="6__hooks_2main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="6__hooks_2main_8cpp_source.html#l00013">13</a> of file <a class="el" href="6__hooks_2main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -1535,7 +1557,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">impl::StoreFunction&lt;<a class="el" href="classstored_1_1_example_hooks_objects.html#aaae070c8cca6ddc516ac84a89c11f099">Base</a>,<a class="el" href="classstored_1_1_example_hooks_objects.html#a76a641ea0119cece18da85ee8bac609b">Implementation</a>,int32_t,1u&gt; stored::ExampleHooksObjects&lt; ExampleHooksBase&lt; SyncedExampleHooks &gt; , SyncedExampleHooks  &gt;::function</td>
+          <td class="memname">impl::StoreFunction&lt;<a class="el" href="classstored_1_1_example_hooks_objects.html#aaae070c8cca6ddc516ac84a89c11f099">Base</a>,<a class="el" href="class_synced_example_hooks.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a>,int32_t,1u&gt; stored::ExampleHooksObjects&lt; ExampleHooksBase&lt; SyncedExampleHooks &gt; , SyncedExampleHooks  &gt;::function</td>
         </tr>
       </table>
   </td>
@@ -1546,7 +1568,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>function </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a15">6_hooks/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a14">6_hooks/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00078">78</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
@@ -1562,7 +1584,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">impl::StoreVariable&lt;<a class="el" href="classstored_1_1_example_hooks_objects.html#aaae070c8cca6ddc516ac84a89c11f099">Base</a>,<a class="el" href="classstored_1_1_example_hooks_objects.html#a76a641ea0119cece18da85ee8bac609b">Implementation</a>,int32_t,8u,4&gt; stored::ExampleHooksObjects&lt; ExampleHooksBase&lt; SyncedExampleHooks &gt; , SyncedExampleHooks  &gt;::variable_1</td>
+          <td class="memname">impl::StoreVariable&lt;<a class="el" href="classstored_1_1_example_hooks_objects.html#aaae070c8cca6ddc516ac84a89c11f099">Base</a>,<a class="el" href="class_synced_example_hooks.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a>,int32_t,8u,4&gt; stored::ExampleHooksObjects&lt; ExampleHooksBase&lt; SyncedExampleHooks &gt; , SyncedExampleHooks  &gt;::variable_1</td>
         </tr>
       </table>
   </td>
@@ -1573,7 +1595,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>variable 1 </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a18">6_hooks/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#a17">6_hooks/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00074">74</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
@@ -1589,7 +1611,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">impl::StoreVariable&lt;<a class="el" href="classstored_1_1_example_hooks_objects.html#aaae070c8cca6ddc516ac84a89c11f099">Base</a>,<a class="el" href="classstored_1_1_example_hooks_objects.html#a76a641ea0119cece18da85ee8bac609b">Implementation</a>,int32_t,0u,4&gt; stored::ExampleHooksObjects&lt; ExampleHooksBase&lt; SyncedExampleHooks &gt; , SyncedExampleHooks  &gt;::variable_2</td>
+          <td class="memname">impl::StoreVariable&lt;<a class="el" href="classstored_1_1_example_hooks_objects.html#aaae070c8cca6ddc516ac84a89c11f099">Base</a>,<a class="el" href="class_synced_example_hooks.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a>,int32_t,0u,4&gt; stored::ExampleHooksObjects&lt; ExampleHooksBase&lt; SyncedExampleHooks &gt; , SyncedExampleHooks  &gt;::variable_2</td>
         </tr>
       </table>
   </td>

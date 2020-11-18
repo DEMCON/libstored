@@ -82,6 +82,7 @@ $(document).ready(function(){initNavTree('classstored_1_1_example_sync1_base.htm
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pro-types">Protected Types</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
@@ -98,12 +99,12 @@ class stored::ExampleSync1Base&lt; Implementation_ &gt;</h3>
 <p>Base class with default interface of all <a class="el" href="classstored_1_1_example_sync1.html" title="Default ExampleSync1Base implementation. ">ExampleSync1</a> implementations. </p>
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code>Implementation_</code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="el" href="classstored_1_1_example_sync1.html" title="Default ExampleSync1Base implementation. ">stored::ExampleSync1</a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_sync1.html" title="Default ExampleSync1Base implementation. ">stored::ExampleSync1</a> </dd>
+<p>To inherit the base class, you can use the following template:</p>
+<div class="fragment"><div class="line"><span class="keyword">class </span><a class="code" href="class_example_sync1.html">ExampleSync1</a> : <span class="keyword">public</span> <a class="code" href="util_8h.html#ad225f313e5aac4f408188c9bce413d5e">STORE_BASECLASS</a>(ExampleSync1Base, ExampleSync1) {</div><div class="line">    <a class="code" href="util_8h.html#a37e56df26175f2fb676ae46c8c7f4560">STORE_CLASS_BODY</a>(<a class="code" href="classstored_1_1_example_sync1_base.html#a7ee55ef2a021cfcdc48fb3003bb43bf1">ExampleSync1Base</a>, <a class="code" href="class_example_sync1.html">ExampleSync1</a>)</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    <span class="comment">// Your class implementation, such as:</span></div><div class="line">    <a class="code" href="class_example_sync1.html">ExampleSync1</a>() <a class="code" href="util_8h.html#a5e97f6533b7a0a1e8b49c4cea10f75fc">is_default</a></div><div class="line">    <span class="comment">// ...</span></div><div class="line">};</div></div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_sync1.html" title="Default ExampleSync1Base implementation. ">stored::ExampleSync1</a> </dd>
 <dd>
 <a class="el" href="structstored_1_1_example_sync1_data.html" title="Data storage of ExampleSync1Base. ">stored::ExampleSync1Data</a> </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="8_sync_2main_8cpp-example.html#_a10">8_sync/main.cpp</a>.</dd>
-</dl>
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00104">104</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00116">116</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -118,6 +119,12 @@ Inheritance diagram for stored::ExampleSync1Base&lt; Implementation_ &gt;:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
+<tr class="memitem:acda96aecae317c2347419bfdb245fcb3"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="classstored_1_1_example_sync1_base.html#acda96aecae317c2347419bfdb245fcb3a2150d0445df8f0c9bc19483b7b8f075e">ObjectCount</a> = 3, 
+<a class="el" href="classstored_1_1_example_sync1_base.html#acda96aecae317c2347419bfdb245fcb3a1ba80f66e3d0b1a1f64802fc12cb0cf3">VariableCount</a> = 2, 
+<a class="el" href="classstored_1_1_example_sync1_base.html#acda96aecae317c2347419bfdb245fcb3aa0dc1c7f45b2bd2c9e0501caf53bd5f2">FunctionCount</a> = 1, 
+<a class="el" href="classstored_1_1_example_sync1_base.html#acda96aecae317c2347419bfdb245fcb3ab37ea209d76b1d1223de21891029d278">BufferSize</a> = 12
+ }</td></tr>
+<tr class="separator:acda96aecae317c2347419bfdb245fcb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ed4e2d69a560594a25a408db71b28b4"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_sync1_base.html">ExampleSync1Base</a>&lt; Implementation_ &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_sync1_objects.html#a8ed4e2d69a560594a25a408db71b28b4">Base</a></td></tr>
 <tr class="separator:a8ed4e2d69a560594a25a408db71b28b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0197e75bf079853c6c2f23fe62fa5be"><td class="memItemLeft" align="right" valign="top">typedef Implementation_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_sync1_base.html#aa0197e75bf079853c6c2f23fe62fa5be">Implementation</a></td></tr>
@@ -146,9 +153,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2f9ee158a13ceb4e5b2a4837ce5527be"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_sync1_base.html#aa0197e75bf079853c6c2f23fe62fa5be">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_sync1_base.html#a2f9ee158a13ceb4e5b2a4837ce5527be">find</a> (char const *<a class="el" href="classstored_1_1_example_sync1_base.html#a8395ff1b39fd87a4b1584c15815440b1">name</a>, size_t len=std::numeric_limits&lt; size_t &gt;::max())</td></tr>
 <tr class="memdesc:a2f9ee158a13ceb4e5b2a4837ce5527be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds an object with the given name.  <a href="#a2f9ee158a13ceb4e5b2a4837ce5527be">More...</a><br /></td></tr>
 <tr class="separator:a2f9ee158a13ceb4e5b2a4837ce5527be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4cd523aa941cdea55a838fea7f2df5db"><td class="memItemLeft" align="right" valign="top">char const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_sync1_base.html#a4cd523aa941cdea55a838fea7f2df5db">hash</a> () const</td></tr>
-<tr class="memdesc:a4cd523aa941cdea55a838fea7f2df5db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique hash of the store.  <a href="#a4cd523aa941cdea55a838fea7f2df5db">More...</a><br /></td></tr>
-<tr class="separator:a4cd523aa941cdea55a838fea7f2df5db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab07bb4a67ae7eaa9bce2b2b843c98784"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_sync1_base.html#aa0197e75bf079853c6c2f23fe62fa5be">Implementation</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_sync1_base.html#ab07bb4a67ae7eaa9bce2b2b843c98784">implementation</a> () const</td></tr>
 <tr class="memdesc:ab07bb4a67ae7eaa9bce2b2b843c98784"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the reference to the implementation.  <a href="#ab07bb4a67ae7eaa9bce2b2b843c98784">More...</a><br /></td></tr>
 <tr class="separator:ab07bb4a67ae7eaa9bce2b2b843c98784"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -181,6 +185,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad41640466c2828e1771ee993e302be92"><td class="memItemLeft" align="right" valign="top">uint8_t const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_sync1_base.html#ad41640466c2828e1771ee993e302be92">shortDirectory</a> () const</td></tr>
 <tr class="memdesc:ad41640466c2828e1771ee993e302be92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the short directory.  <a href="#ad41640466c2828e1771ee993e302be92">More...</a><br /></td></tr>
 <tr class="separator:ad41640466c2828e1771ee993e302be92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a76fdf86052d62bf83c87eb3b3af9b40a"><td class="memItemLeft" align="right" valign="top">static char const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_sync1_base.html#a76fdf86052d62bf83c87eb3b3af9b40a">hash</a> ()</td></tr>
+<tr class="memdesc:a76fdf86052d62bf83c87eb3b3af9b40a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique hash of the store.  <a href="#a76fdf86052d62bf83c87eb3b3af9b40a">More...</a><br /></td></tr>
+<tr class="separator:a76fdf86052d62bf83c87eb3b3af9b40a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -320,7 +330,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>The type of the data structure. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00126">126</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00149">149</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -340,7 +350,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of the actual implementation, which is the (lowest) subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00113">113</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00125">125</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -361,7 +371,7 @@ template&lt;typename Implementation_&gt; </div>
 <p><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of a key. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_sync1_base.html#a31fd83df9dbbde19148f8368e648c7ce" title="Converts a variable&#39;s buffer to a key. ">bufferToKey()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00231">231</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00254">254</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -381,7 +391,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Map as generated by <a class="el" href="classstored_1_1_example_sync1_base.html#ad8fea86b781c98550550465c955b56b2" title="Create a name to Variant map for the store. ">map()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00353">353</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00377">377</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -399,7 +409,36 @@ template&lt;typename Implementation_&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00111">111</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00123">123</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="acda96aecae317c2347419bfdb245fcb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acda96aecae317c2347419bfdb245fcb3">&#9670;&nbsp;</a></span>anonymous enum</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Implementation_&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">anonymous enum</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="acda96aecae317c2347419bfdb245fcb3a2150d0445df8f0c9bc19483b7b8f075e"></a>ObjectCount&#160;</td><td class="fielddoc"><p>Number of objects in the store. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="acda96aecae317c2347419bfdb245fcb3a1ba80f66e3d0b1a1f64802fc12cb0cf3"></a>VariableCount&#160;</td><td class="fielddoc"><p>Number of variables in the store. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="acda96aecae317c2347419bfdb245fcb3aa0dc1c7f45b2bd2c9e0501caf53bd5f2"></a>FunctionCount&#160;</td><td class="fielddoc"><p>Number of functions in the store. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="acda96aecae317c2347419bfdb245fcb3ab37ea209d76b1d1223de21891029d278"></a>BufferSize&#160;</td><td class="fielddoc"><p>Buffer size. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00131">131</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -540,7 +579,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_sync1_base.html#a741d9f7e2b7cfaca2a9d2fd175a0d7e5" title="Hook when read-only access to a given variable is released. ">hookExitRO()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00308">308</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00332">332</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -590,7 +629,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_sync1_base.html#a5103650d607911405b31710b9e88ac2f" title="Hook when exclusive access to a given variable is released. ">hookExitX()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00296">296</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00320">320</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -640,7 +679,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_sync1_base.html#a122cb12bad151565fe82ba1d6d4d2a8a" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00314">314</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00338">338</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -696,7 +735,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_sync1_base.html#a50a11717d4da1698e3a4c11f6f72a366" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00302">302</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00326">326</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -737,9 +776,8 @@ template&lt;typename Implementation_&gt; </div>
 </div><div class="memdoc">
 
 <p>Callback for sync <a class="el" href="classstored_1_1_example_sync2.html" title="Default ExampleSync2Base implementation. ">ExampleSync2</a>. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="8_sync_2main_8cpp-example.html#a11">8_sync/main.cpp</a>.</dd>
-</dl>
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00224">224</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00247">247</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -770,7 +808,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the buffer with all variable data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00132">132</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00155">155</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -801,7 +839,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the buffer with all variable data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00134">134</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00157">157</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -836,7 +874,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>For synchronization, when <a class="el" href="classstored_1_1_example_sync1_base.html#a50a11717d4da1698e3a4c11f6f72a366" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a> or <a class="el" href="classstored_1_1_example_sync1_base.html#a122cb12bad151565fe82ba1d6d4d2a8a" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a> is invoked, one can compute the key of the object that is accessed. The key can be used, for example, in a key-to-Variant map. When data arrives from another party, the key can be used to find the proper <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> in the map.</p>
 <p>This way, data exchange is type-safe, as the <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> can check if the data format matches the expected type. However, one cannot process data if the key is not set yet in the map. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00253">253</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00276">276</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -891,7 +929,7 @@ template&lt;typename Implementation_&gt; </div>
 <p><a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">Function</a> callback resolver. </p>
 <p>This is the callback for a <a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">Function</a> and a <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a>, which converts a call to the function identifier to an actual function call within the Implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00209">209</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00232">232</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -922,7 +960,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the container for all the store's data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00128">128</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00151">151</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -953,7 +991,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the container for all the store's data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00130">130</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00153">153</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -996,12 +1034,12 @@ template&lt;typename Implementation_&gt; </div>
 <p>Finds an object with the given name. </p>
 <dl class="section return"><dt>Returns</dt><dd>the object, or an invalid <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">stored::Variant</a> if not found. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00332">332</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00356">356</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
-<a id="a4cd523aa941cdea55a838fea7f2df5db"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4cd523aa941cdea55a838fea7f2df5db">&#9670;&nbsp;</a></span>hash()</h2>
+<a id="a76fdf86052d62bf83c87eb3b3af9b40a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76fdf86052d62bf83c87eb3b3af9b40a">&#9670;&nbsp;</a></span>hash()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1012,22 +1050,22 @@ template&lt;typename Implementation_&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">char const* <a class="el" href="classstored_1_1_example_sync1_base.html">stored::ExampleSync1Base</a>&lt; Implementation_ &gt;::hash </td>
+          <td class="memname">static char const* <a class="el" href="classstored_1_1_example_sync1_base.html">stored::ExampleSync1Base</a>&lt; Implementation_ &gt;::hash </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Returns a unique hash of the store. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00117">117</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00129">129</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1076,7 +1114,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Hook when read-only access to a given variable is to be acquired. </p>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_sync1_base.html#a741d9f7e2b7cfaca2a9d2fd175a0d7e5" title="Hook when read-only access to a given variable is released. ">hookExitRO()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00282">282</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00306">306</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1125,7 +1163,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Hook when exclusive access to a given variable is to be acquired. </p>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_sync1_base.html#a5103650d607911405b31710b9e88ac2f" title="Hook when exclusive access to a given variable is released. ">hookExitX()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00265">265</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00289">289</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1174,7 +1212,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Hook when read-only access to a given variable is released. </p>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_sync1_base.html#a122cb12bad151565fe82ba1d6d4d2a8a" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00289">289</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00313">313</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1229,7 +1267,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Hook when exclusive access to a given variable is released. </p>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_sync1_base.html#a50a11717d4da1698e3a4c11f6f72a366" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00275">275</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00299">299</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1260,7 +1298,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the reference to the implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00120">120</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00143">143</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1291,7 +1329,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the reference to the implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00122">122</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00145">145</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1342,7 +1380,7 @@ template&lt;typename F &gt; </div>
 <p>Calls a callback for every object in the <a class="el" href="classstored_1_1_example_sync1_base.html#a9651957a0795dc0fd27d707f97f5fd4f" title="Retuns the long directory. ">longDirectory()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758" title="Iterates over all objects in the directory and invoke a callback for every object. ">stored::list()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00341">341</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00365">365</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1377,7 +1415,7 @@ template&lt;typename F &gt; </div>
 <p>Calls a callback for every object in the <a class="el" href="classstored_1_1_example_sync1_base.html#a9651957a0795dc0fd27d707f97f5fd4f" title="Retuns the long directory. ">longDirectory()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758" title="Iterates over all objects in the directory and invoke a callback for every object. ">stored::list()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00349">349</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00373">373</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1409,7 +1447,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Retuns the long directory. </p>
 <p>When not available, the short directory is returned. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00326">326</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00350">350</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1442,7 +1480,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Create a name to <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> map for the store. </p>
 <p>Generating the map may be expensive and the result is not cached. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00360">360</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00384">384</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1473,7 +1511,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the name of store, which can be used as prefix for <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00115">115</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00127">127</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1564,7 +1602,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the short directory. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00322">322</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00346">346</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1593,7 +1631,7 @@ template&lt;typename T , typename I &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00198">198</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00221">221</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1621,7 +1659,7 @@ template&lt;typename Store , typename Implementation , typename T , unsigned int
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00169">169</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00192">192</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1649,7 +1687,7 @@ template&lt;typename Store_ , typename Implementation__ , typename T_ , size_t o
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00156">156</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00179">179</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1677,7 +1715,7 @@ template&lt;typename Store , typename Implementation , Type::type type_, unsigne
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00192">192</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00215">215</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1705,7 +1743,7 @@ template&lt;typename Store , typename Implementation , Type::type type_, size_t 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00181">181</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00204">204</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1733,7 +1771,7 @@ template&lt;typename T , typename I , bool H&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00197">197</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00220">220</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1759,7 +1797,7 @@ template&lt;typename Implementation_&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00199">199</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00222">222</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>
 </div>
@@ -1811,8 +1849,7 @@ template&lt;typename Implementation_&gt; </div>
 </div><div class="memdoc">
 
 <p>i </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="8_sync_2main_8cpp-example.html#a29">8_sync/main.cpp</a>.</dd>
-</dl>
+
 <p class="definition">Definition at line <a class="el" href="_example_sync1_8h_source.html#l00074">74</a> of file <a class="el" href="_example_sync1_8h_source.html">ExampleSync1.h</a>.</p>
 
 </div>

@@ -4,7 +4,7 @@ var group__libstored__protocol =
       [ "base", "classstored_1_1_arq_layer.html#af614b4f50851434d0ffa0dc9f7388f20", null ],
       [ "EventCallback", "classstored_1_1_arq_layer.html#a035b726e630d83552d9587b3b37c3ec8", null ],
       [ "EventCallbackArg", "classstored_1_1_arq_layer.html#a0fa6e75d37245bfe70669aae2982d8e3", null ],
-      [ "RetransmitCallbackThreshold", "classstored_1_1_arq_layer.html#afd3c6c47dbbc8673fd0cfea97a00b233a39ab31057c8c5eea4f5e0afb1a8fcbc7", null ],
+      [ "RetransmitCallbackThreshold", "classstored_1_1_arq_layer.html#ad50ec60b848261f45640a39380f3ed74a39ab31057c8c5eea4f5e0afb1a8fcbc7", null ],
       [ "EncodeState", "classstored_1_1_arq_layer.html#a5afc54c8eec96b06ba9c0a99d4dca7c1", [
         [ "EncodeStateIdle", "classstored_1_1_arq_layer.html#a5afc54c8eec96b06ba9c0a99d4dca7c1adc66734e4631a5349dcaba9bcf8dd524", null ],
         [ "EncodeStateEncoding", "classstored_1_1_arq_layer.html#a5afc54c8eec96b06ba9c0a99d4dca7c1a6a87d422220f79f0357e0f9c8d2dce8b", null ]
@@ -60,7 +60,7 @@ var group__libstored__protocol =
       [ "encode", "classstored_1_1_ascii_escape_layer.html#a3db26741f80800ade6a58055dc89b5ee", null ],
       [ "flush", "classstored_1_1_ascii_escape_layer.html#a654466d2b7502efdbd5b1b1e95263194", null ],
       [ "mtu", "classstored_1_1_ascii_escape_layer.html#ac773513d7ef5330f9fc7b46f08e79442", null ],
-      [ "needEscape", "classstored_1_1_ascii_escape_layer.html#a33e7f784862e460cfb2abc8abdc467a6", null ],
+      [ "needEscape", "classstored_1_1_ascii_escape_layer.html#a67ca09a867826eb4f22e9b7f78ceb0b6", null ],
       [ "operator=", "classstored_1_1_ascii_escape_layer.html#a761638029c05f18dcc581d72c2d2f97f", null ],
       [ "operator=", "classstored_1_1_ascii_escape_layer.html#a7dcc38422a0a43d76d5c2cc7706f0724", null ],
       [ "reset", "classstored_1_1_ascii_escape_layer.html#a53fe78a7b405b981649112d9c84fe762", null ],
@@ -95,8 +95,8 @@ var group__libstored__protocol =
     ] ],
     [ "Crc16Layer", "classstored_1_1_crc16_layer.html", [
       [ "base", "classstored_1_1_crc16_layer.html#ae4465a77b90af4bc3c5f8d7f9816a376", null ],
-      [ "polynomial", "classstored_1_1_crc16_layer.html#a2fdc38bd0332dfd195fd43a6463534c9aee711989700375651ca8a9c3cc313fa9", null ],
-      [ "init", "classstored_1_1_crc16_layer.html#a2fdc38bd0332dfd195fd43a6463534c9aeb8e182958fd03c1968f253e0bcb11c6", null ],
+      [ "polynomial", "classstored_1_1_crc16_layer.html#a58ea0fcf8981aa38941947c057f00ffaaee711989700375651ca8a9c3cc313fa9", null ],
+      [ "init", "classstored_1_1_crc16_layer.html#a58ea0fcf8981aa38941947c057f00ffaaeb8e182958fd03c1968f253e0bcb11c6", null ],
       [ "Crc16Layer", "classstored_1_1_crc16_layer.html#af23ed68b74cf787171cf53ba75214b79", null ],
       [ "Crc16Layer", "classstored_1_1_crc16_layer.html#ae66d540b57828de03a564e6384ab220e", null ],
       [ "Crc16Layer", "classstored_1_1_crc16_layer.html#ac332e25fb8984cdc0c95dc2905e3cb62", null ],
@@ -119,8 +119,8 @@ var group__libstored__protocol =
     ] ],
     [ "Crc8Layer", "classstored_1_1_crc8_layer.html", [
       [ "base", "classstored_1_1_crc8_layer.html#a13eec04e6a1de27ad4c418a8eb023b3c", null ],
-      [ "polynomial", "classstored_1_1_crc8_layer.html#a07b24f77f1d4e55b2b1573230b091974a14adee897c9ad5499de4c6608c8f78c7", null ],
-      [ "init", "classstored_1_1_crc8_layer.html#a07b24f77f1d4e55b2b1573230b091974a1631c674509e8d7d495cab564f1cd8eb", null ],
+      [ "polynomial", "classstored_1_1_crc8_layer.html#a3278e564ad9394b851dc727d9891bdaca14adee897c9ad5499de4c6608c8f78c7", null ],
+      [ "init", "classstored_1_1_crc8_layer.html#a3278e564ad9394b851dc727d9891bdaca1631c674509e8d7d495cab564f1cd8eb", null ],
       [ "Crc8Layer", "classstored_1_1_crc8_layer.html#a5f87d2e04db6efb8d91e72d89266ef73", null ],
       [ "Crc8Layer", "classstored_1_1_crc8_layer.html#a5dfb97825c37d82e1b4517b8a84b19b8", null ],
       [ "Crc8Layer", "classstored_1_1_crc8_layer.html#a7921554b093428c40cc19bb0c910afcc", null ],
@@ -166,7 +166,9 @@ var group__libstored__protocol =
     [ "DebugZmqLayer", "classstored_1_1_debug_zmq_layer.html", [
       [ "base", "classstored_1_1_debug_zmq_layer.html#a9197cae99539f25370afcb076ca410f0", null ],
       [ "socket_type", "classstored_1_1_debug_zmq_layer.html#af26be4cada09535cc494ac4b5ebe2cfd", null ],
-      [ "DefaultPort", "classstored_1_1_debug_zmq_layer.html#acd53747af957ae2f677b286d199f28bea6e3be45d44a117e2006d26f9adef4611", null ],
+      [ "DefaultPort", "classstored_1_1_debug_zmq_layer.html#abe0af6df9cc0eb49c599265ef2695445a6e3be45d44a117e2006d26f9adef4611", null ],
+      [ "DebugZmqLayer", "classstored_1_1_debug_zmq_layer.html#ae838d209e4f884b31b857c38ea693762", null ],
+      [ "DebugZmqLayer", "classstored_1_1_debug_zmq_layer.html#a6ea004f8ac1c2951e096004e5546a810", null ],
       [ "DebugZmqLayer", "classstored_1_1_debug_zmq_layer.html#a53d99c8a2bf36828686aec34b9175999", null ],
       [ "~DebugZmqLayer", "classstored_1_1_debug_zmq_layer.html#a794242ade3ab69336a5a4f55a2bb925c", null ],
       [ "context", "classstored_1_1_debug_zmq_layer.html#a39899cdc06f5403bc6e67d30908a05ff", null ],
@@ -178,7 +180,10 @@ var group__libstored__protocol =
       [ "flush", "classstored_1_1_debug_zmq_layer.html#a654466d2b7502efdbd5b1b1e95263194", null ],
       [ "lastError", "classstored_1_1_debug_zmq_layer.html#ab7bb8215f20cdafe5a4d16d0361621be", null ],
       [ "mtu", "classstored_1_1_debug_zmq_layer.html#a88195d7cdb7129ac7bc625ffeb24d449", null ],
+      [ "operator=", "classstored_1_1_debug_zmq_layer.html#aaf64cf1d12881e3741c1edf71a8fcdb8", null ],
+      [ "operator=", "classstored_1_1_debug_zmq_layer.html#a88252ed0ec1151afe30d7c6d03844309", null ],
       [ "recv", "classstored_1_1_debug_zmq_layer.html#a85dff6acf4316281ef3f0912981f9f1f", null ],
+      [ "recv1", "classstored_1_1_debug_zmq_layer.html#a8b8524234a09141504f9f998b993e5a2", null ],
       [ "reset", "classstored_1_1_debug_zmq_layer.html#a53fe78a7b405b981649112d9c84fe762", null ],
       [ "setDown", "classstored_1_1_debug_zmq_layer.html#a2b2523892617a43cf7421a654bfc3b6c", null ],
       [ "setLastError", "classstored_1_1_debug_zmq_layer.html#a3cce4dc0a455b30a2d4c6e2bc093af22", null ],
@@ -193,6 +198,7 @@ var group__libstored__protocol =
       [ "Loopback", "classstored_1_1_loopback.html#a26f5377becabea23ff50ff180c52a6d8", null ],
       [ "Loopback", "classstored_1_1_loopback.html#a912b6ee81d057b976376120c1778b13e", null ],
       [ "Loopback", "classstored_1_1_loopback.html#ae239087665db4aeee2b4ac4d88769688", null ],
+      [ "~Loopback", "classstored_1_1_loopback.html#aa9bfaf1e9a97b090ee03af253bb3a2c7", null ],
       [ "operator=", "classstored_1_1_loopback.html#a81b5bc523be4f9144e435bf1f83eb625", null ],
       [ "operator=", "classstored_1_1_loopback.html#a62469f5294a9aa4cdd4568f7dae3be9e", null ]
     ] ],
@@ -266,6 +272,8 @@ var group__libstored__protocol =
     [ "SyncZmqLayer", "classstored_1_1_sync_zmq_layer.html", [
       [ "base", "classstored_1_1_sync_zmq_layer.html#a3923724fa5ad232ce75734db9d44eabb", null ],
       [ "socket_type", "classstored_1_1_sync_zmq_layer.html#af26be4cada09535cc494ac4b5ebe2cfd", null ],
+      [ "SyncZmqLayer", "classstored_1_1_sync_zmq_layer.html#a5b23e68865745cfdd3b45a5e51a3b071", null ],
+      [ "SyncZmqLayer", "classstored_1_1_sync_zmq_layer.html#ab3ea130ae45e6a0c84ad7984bbf4e47e", null ],
       [ "SyncZmqLayer", "classstored_1_1_sync_zmq_layer.html#abf8d1c6a87614376aaa82230ba9e5a56", null ],
       [ "~SyncZmqLayer", "classstored_1_1_sync_zmq_layer.html#aaefafd43488c43485ee482d85fa2d6f4", null ],
       [ "context", "classstored_1_1_sync_zmq_layer.html#a39899cdc06f5403bc6e67d30908a05ff", null ],
@@ -277,7 +285,10 @@ var group__libstored__protocol =
       [ "flush", "classstored_1_1_sync_zmq_layer.html#a654466d2b7502efdbd5b1b1e95263194", null ],
       [ "lastError", "classstored_1_1_sync_zmq_layer.html#ab7bb8215f20cdafe5a4d16d0361621be", null ],
       [ "mtu", "classstored_1_1_sync_zmq_layer.html#a88195d7cdb7129ac7bc625ffeb24d449", null ],
+      [ "operator=", "classstored_1_1_sync_zmq_layer.html#a4cb82ad82b28b7b11ffb09ff8adee4a8", null ],
+      [ "operator=", "classstored_1_1_sync_zmq_layer.html#aadef7fff3940ae397a2ab5ab2726f821", null ],
       [ "recv", "classstored_1_1_sync_zmq_layer.html#a1a284926a6e41e19475e0a4e20c9a1cf", null ],
+      [ "recv1", "classstored_1_1_sync_zmq_layer.html#a8b8524234a09141504f9f998b993e5a2", null ],
       [ "reset", "classstored_1_1_sync_zmq_layer.html#a53fe78a7b405b981649112d9c84fe762", null ],
       [ "setDown", "classstored_1_1_sync_zmq_layer.html#a2b2523892617a43cf7421a654bfc3b6c", null ],
       [ "setLastError", "classstored_1_1_sync_zmq_layer.html#a3cce4dc0a455b30a2d4c6e2bc093af22", null ],
@@ -290,10 +301,12 @@ var group__libstored__protocol =
     ] ],
     [ "TerminalLayer", "classstored_1_1_terminal_layer.html", [
       [ "base", "classstored_1_1_terminal_layer.html#afd194e848a7d83c42e50a7254cf8a640", null ],
-      [ "MaxBuffer", "classstored_1_1_terminal_layer.html#a18e520b233aa224854f48695f9ce350dac2e5fe6228ece37b246ab755b987f59f", null ],
+      [ "NonDebugDecodeCallback", "classstored_1_1_terminal_layer.html#a4f3d34283f5b3790e6b2289a8ae6679b", null ],
+      [ "MaxBuffer", "classstored_1_1_terminal_layer.html#a81fce6cee860e19805355c8764b7647eac2e5fe6228ece37b246ab755b987f59f", null ],
       [ "TerminalLayer", "classstored_1_1_terminal_layer.html#ae159ad7d286f1f1f456f4fe42e9955b7", null ],
       [ "TerminalLayer", "classstored_1_1_terminal_layer.html#aca51711c2c62bc1ccaf6f3d5ba5baf1f", null ],
-      [ "TerminalLayer", "classstored_1_1_terminal_layer.html#a3aae8bd600dea82390da7d94a9be1b7f", null ],
+      [ "TerminalLayer", "classstored_1_1_terminal_layer.html#ac6c3e9caf382d8662e20d240e7293b83", null ],
+      [ "TerminalLayer", "classstored_1_1_terminal_layer.html#a9d49899bffb69f90ad0a25ba1b3b017c", null ],
       [ "~TerminalLayer", "classstored_1_1_terminal_layer.html#a9c91e6d99a16671d0e78c120288a1bda", null ],
       [ "decode", "classstored_1_1_terminal_layer.html#a189c272877b09b93aac1b1ddc96fe58c", null ],
       [ "down", "classstored_1_1_terminal_layer.html#ac9a6113262899388f922a6d466e9245a", null ],
@@ -304,6 +317,7 @@ var group__libstored__protocol =
       [ "flush", "classstored_1_1_terminal_layer.html#a654466d2b7502efdbd5b1b1e95263194", null ],
       [ "mtu", "classstored_1_1_terminal_layer.html#a0a19f65b341e78a98dca4f13747fb2a7", null ],
       [ "nonDebugDecode", "classstored_1_1_terminal_layer.html#a3708a9baaf0751fd543e8290f6b008c3", null ],
+      [ "nonDebugEncode", "classstored_1_1_terminal_layer.html#a2a0470a57c3c8065cb28b49d9101d533", null ],
       [ "operator=", "classstored_1_1_terminal_layer.html#a9d0ada0f0a79116bac64fb4662c537e6", null ],
       [ "operator=", "classstored_1_1_terminal_layer.html#a2969d7fd01f719e7afde4cd8e7632cc5", null ],
       [ "reset", "classstored_1_1_terminal_layer.html#aa520c45c348439dbf7a56f511bd5ac39", null ],
@@ -312,7 +326,6 @@ var group__libstored__protocol =
       [ "setUp", "classstored_1_1_terminal_layer.html#a43ca79c4b9503ce51f817ddc7fcd1cb5", null ],
       [ "stack", "classstored_1_1_terminal_layer.html#a3f34a83e488add9a3f459fb8ebed8e34", null ],
       [ "up", "classstored_1_1_terminal_layer.html#ac7cbd80b10e74166c661582027158b40", null ],
-      [ "wrap", "classstored_1_1_terminal_layer.html#a7d2f0987462196f77ca9067c050db09d", null ],
-      [ "writeToFd", "classstored_1_1_terminal_layer.html#ab147064c411754aa941dec30c8d44c5c", null ]
+      [ "wrap", "classstored_1_1_terminal_layer.html#a7d2f0987462196f77ca9067c050db09d", null ]
     ] ]
 ];

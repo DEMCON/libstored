@@ -91,6 +91,10 @@ $(document).ready(function(){initNavTree('protocol_8h.html','');});
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;deque&gt;</code><br />
+<code>#include &lt;cerrno&gt;</code><br />
+<code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;unistd.h&gt;</code><br />
+<code>#include &lt;cstdio&gt;</code><br />
 <code>#include &lt;<a class="el" href="zmq_8h_source.html">libstored/zmq.h</a>&gt;</code><br />
 </div>
 <p><a href="protocol_8h_source.html">Go to the source code of this file.</a></p>
@@ -115,10 +119,14 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_debug_arq_layer.html">stored::DebugArqLayer</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A layer that performs Automatic Repeat Request operations on messages for <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>.  <a href="classstored_1_1_debug_arq_layer.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_file_layer.html">stored::FileLayer</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1impl_1_1_loopback1.html">stored::impl::Loopback1</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_loopback.html">stored::Loopback</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classstored_1_1_loopback.html" title="Loopback between two protocol stacks. ">Loopback</a> between two protocol stacks.  <a href="classstored_1_1_loopback.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_polled_layer.html">stored::PolledLayer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_print_layer.html">stored::PrintLayer</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints all messages to a <code>FILE</code>.  <a href="classstored_1_1_print_layer.html#details">More...</a><br /></td></tr>
@@ -128,6 +136,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_segmentation_layer.html">stored::SegmentationLayer</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A layer that performs segmentation of the messages.  <a href="classstored_1_1_segmentation_layer.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_stdio_layer.html">stored::StdioLayer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_terminal_layer.html">stored::TerminalLayer</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts and injects Embedded <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">Debugger</a> messages in a stream of data, such as a terminal.  <a href="classstored_1_1_terminal_layer.html#details">More...</a><br /></td></tr>

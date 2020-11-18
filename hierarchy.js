@@ -56,7 +56,10 @@ var hierarchy =
     ] ],
     [ "stored::ExampleFpga2Objects< ExampleFpga2Base< ExampleFpga2 >, ExampleFpga2 >", "classstored_1_1_example_fpga2_objects.html", [
       [ "stored::ExampleFpga2Base< ExampleFpga2 >", "classstored_1_1_example_fpga2_base.html", [
-        [ "stored::ExampleFpga2", "classstored_1_1_example_fpga2.html", null ]
+        [ "stored::ExampleFpga2", "classstored_1_1_example_fpga2.html", null ],
+        [ "stored::Synchronizable< stored::ExampleFpga2Base< ExampleFpga2 > >", "classstored_1_1_synchronizable.html", [
+          [ "ExampleFpga2", "class_example_fpga2.html", null ]
+        ] ]
       ] ]
     ] ],
     [ "stored::ExampleFpga2Objects< ExampleFpga2Base< Implementation_ >, Implementation_ >", "classstored_1_1_example_fpga2_objects.html", [
@@ -64,7 +67,10 @@ var hierarchy =
     ] ],
     [ "stored::ExampleFpgaObjects< ExampleFpgaBase< ExampleFpga >, ExampleFpga >", "classstored_1_1_example_fpga_objects.html", [
       [ "stored::ExampleFpgaBase< ExampleFpga >", "classstored_1_1_example_fpga_base.html", [
-        [ "stored::ExampleFpga", "classstored_1_1_example_fpga.html", null ]
+        [ "stored::ExampleFpga", "classstored_1_1_example_fpga.html", null ],
+        [ "stored::Synchronizable< stored::ExampleFpgaBase< ExampleFpga > >", "classstored_1_1_synchronizable.html", [
+          [ "ExampleFpga", "class_example_fpga.html", null ]
+        ] ]
       ] ]
     ] ],
     [ "stored::ExampleFpgaObjects< ExampleFpgaBase< Implementation_ >, Implementation_ >", "classstored_1_1_example_fpga_objects.html", [
@@ -155,7 +161,9 @@ var hierarchy =
         [ "ed2.zmq_client.Tracing", "classed2_1_1zmq__client_1_1_tracing.html", null ],
         [ "ed2.zmq_client.Tracing", "classed2_1_1zmq__client_1_1_tracing.html", null ]
       ] ],
-      [ "ed2.zmq_client.Macro", "classed2_1_1zmq__client_1_1_macro.html", null ]
+      [ "ed2.zmq_client.Macro", "classed2_1_1zmq__client_1_1_macro.html", null ],
+      [ "ed2.zmq_client.Stream", "classed2_1_1zmq__client_1_1_stream.html", null ],
+      [ "ed2.zmq_client.Stream", "classed2_1_1zmq__client_1_1_stream.html", null ]
     ] ],
     [ "stored::Debugger::StorePrefixComparator", "structstored_1_1_debugger_1_1_store_prefix_comparator.html", null ],
     [ "stored::DebugStoreBase", "classstored_1_1_debug_store_base.html", [
@@ -222,6 +230,8 @@ var hierarchy =
     [ "stored::impl::toIntType< true, 8 >", "structstored_1_1impl_1_1to_int_type_3_01true_00_018_01_4.html", null ],
     [ "stored::ListCmdCallbackArg", "structstored_1_1_list_cmd_callback_arg.html", null ],
     [ "stored::Loopback", "classstored_1_1_loopback.html", null ],
+    [ "stored::Poller", "classstored_1_1_poller.html", null ],
+    [ "stored::Poller::Event", "classstored_1_1_poller_1_1_event.html", null ],
     [ "stored::ProtocolLayer", "classstored_1_1_protocol_layer.html", [
       [ "LossyChannel", "class_lossy_channel.html", null ],
       [ "PrintfPhysical", "class_printf_physical.html", null ],
@@ -236,9 +246,15 @@ var hierarchy =
       ] ],
       [ "stored::FrameMerger", "classstored_1_1_frame_merger.html", null ],
       [ "stored::impl::Loopback1", "classstored_1_1impl_1_1_loopback1.html", null ],
+      [ "stored::PolledLayer", "classstored_1_1_polled_layer.html", [
+        [ "stored::FileLayer", "classstored_1_1_file_layer.html", [
+          [ "stored::StdioLayer", "classstored_1_1_stdio_layer.html", null ]
+        ] ]
+      ] ],
       [ "stored::PrintLayer", "classstored_1_1_print_layer.html", null ],
       [ "stored::SegmentationLayer", "classstored_1_1_segmentation_layer.html", null ],
-      [ "stored::StringEncoder", "classstored_1_1_string_encoder.html", null ],
+      [ "stored::Stream< Compress >", "classstored_1_1_stream.html", null ],
+      [ "stored::Stream< true >", "classstored_1_1_stream_3_01true_01_4.html", null ],
       [ "stored::SyncConnection", "classstored_1_1_sync_connection.html", null ],
       [ "stored::TerminalLayer", "classstored_1_1_terminal_layer.html", [
         [ "CaseInverter", "class_case_inverter.html", null ]
@@ -246,7 +262,9 @@ var hierarchy =
       [ "stored::ZmqLayer", "classstored_1_1_zmq_layer.html", [
         [ "stored::DebugZmqLayer", "classstored_1_1_debug_zmq_layer.html", null ],
         [ "stored::SyncZmqLayer", "classstored_1_1_sync_zmq_layer.html", null ]
-      ] ]
+      ] ],
+      [ "stored::Stream< false >", "classstored_1_1_stream.html", null ],
+      [ "stored::Stream<>", "classstored_1_1_stream.html", null ]
     ] ],
     [ "stored::ScratchPad< MaxSize >", "classstored_1_1_scratch_pad.html", null ],
     [ "stored::ScratchPad< MaxSize >::Snapshot", "classstored_1_1_scratch_pad_1_1_snapshot.html", null ],
@@ -281,6 +299,7 @@ var hierarchy =
     [ "stored::impl::StoreFunction< Base, Implementation, int32_t, 1u >", "classstored_1_1impl_1_1_store_function.html", null ],
     [ "stored::impl::StoreFunction< Base, Implementation, int32_t, 2u >", "classstored_1_1impl_1_1_store_function.html", null ],
     [ "stored::impl::StoreFunction< Base, Implementation, int32_t, 3u >", "classstored_1_1impl_1_1_store_function.html", null ],
+    [ "stored::impl::StoreFunction< Base, Implementation, int32_t, 4u >", "classstored_1_1impl_1_1_store_function.html", null ],
     [ "stored::impl::StoreFunction< Base, Implementation, uint32_t, 3u >", "classstored_1_1impl_1_1_store_function.html", null ],
     [ "stored::impl::StoreFunction< Base, Implementation, uint32_t, 4u >", "classstored_1_1impl_1_1_store_function.html", null ],
     [ "stored::impl::StoreFunction< Base, Implementation, uint32_t, 5u >", "classstored_1_1impl_1_1_store_function.html", null ],
@@ -392,8 +411,12 @@ var hierarchy =
       [ "ed2.gui.__main__.ObjectListModel", "classed2_1_1gui_1_1____main_____1_1_object_list_model.html", null ]
     ] ],
     [ "QObject", null, [
+      [ "ed2.csv.CsvExport", "classed2_1_1csv_1_1_csv_export.html", null ],
+      [ "ed2.csv.CsvExport", "classed2_1_1csv_1_1_csv_export.html", null ],
       [ "ed2.zmq_client.Object", "classed2_1_1zmq__client_1_1_object.html", null ],
       [ "ed2.zmq_client.Object", "classed2_1_1zmq__client_1_1_object.html", null ],
+      [ "ed2.zmq_client.SignalRateLimiter", "classed2_1_1zmq__client_1_1_signal_rate_limiter.html", null ],
+      [ "ed2.zmq_client.SignalRateLimiter", "classed2_1_1zmq__client_1_1_signal_rate_limiter.html", null ],
       [ "ed2.zmq_client.ZmqClient", "classed2_1_1zmq__client_1_1_zmq_client.html", null ],
       [ "ed2.zmq_client.ZmqClient", "classed2_1_1zmq__client_1_1_zmq_client.html", null ]
     ] ],

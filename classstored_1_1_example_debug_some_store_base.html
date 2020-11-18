@@ -82,6 +82,7 @@ $(document).ready(function(){initNavTree('classstored_1_1_example_debug_some_sto
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pro-types">Protected Types</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
@@ -98,11 +99,12 @@ class stored::ExampleDebugSomeStoreBase&lt; Implementation_ &gt;</h3>
 <p>Base class with default interface of all <a class="el" href="classstored_1_1_example_debug_some_store.html" title="Default ExampleDebugSomeStoreBase implementation. ">ExampleDebugSomeStore</a> implementations. </p>
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code>Implementation_</code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="el" href="classstored_1_1_example_debug_some_store.html" title="Default ExampleDebugSomeStoreBase implementation. ">stored::ExampleDebugSomeStore</a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_debug_some_store.html" title="Default ExampleDebugSomeStoreBase implementation. ">stored::ExampleDebugSomeStore</a> </dd>
+<p>To inherit the base class, you can use the following template:</p>
+<div class="fragment"><div class="line"><span class="keyword">class </span>ExampleDebugSomeStore : <span class="keyword">public</span> <a class="code" href="util_8h.html#ad225f313e5aac4f408188c9bce413d5e">STORE_BASECLASS</a>(ExampleDebugSomeStoreBase, ExampleDebugSomeStore) {</div><div class="line">    <a class="code" href="util_8h.html#a37e56df26175f2fb676ae46c8c7f4560">STORE_CLASS_BODY</a>(<a class="code" href="classstored_1_1_example_debug_some_store_base.html#a5fadf73503eb5c24f8e3177021232bac">ExampleDebugSomeStoreBase</a>, ExampleDebugSomeStore)</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    <span class="comment">// Your class implementation, such as:</span></div><div class="line">    ExampleDebugSomeStore() <a class="code" href="util_8h.html#a5e97f6533b7a0a1e8b49c4cea10f75fc">is_default</a></div><div class="line">    <span class="comment">// ...</span></div><div class="line">};</div></div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_debug_some_store.html" title="Default ExampleDebugSomeStoreBase implementation. ">stored::ExampleDebugSomeStore</a> </dd>
 <dd>
 <a class="el" href="structstored_1_1_example_debug_some_store_data.html" title="Data storage of ExampleDebugSomeStoreBase. ">stored::ExampleDebugSomeStoreData</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00100">100</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00112">112</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -117,6 +119,12 @@ Inheritance diagram for stored::ExampleDebugSomeStoreBase&lt; Implementation_ &g
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
+<tr class="memitem:ae5b202eeaaf5abb290a30c8662c3bfd0"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="classstored_1_1_example_debug_some_store_base.html#ae5b202eeaaf5abb290a30c8662c3bfd0af619e09edfdbc9ad867aafc1c71e351a">ObjectCount</a> = 1, 
+<a class="el" href="classstored_1_1_example_debug_some_store_base.html#ae5b202eeaaf5abb290a30c8662c3bfd0a34731f45b9b9d688d9674d43f8579230">VariableCount</a> = 1, 
+<a class="el" href="classstored_1_1_example_debug_some_store_base.html#ae5b202eeaaf5abb290a30c8662c3bfd0a2befdb407f07a5c4a348c54ad38df124">FunctionCount</a> = 0, 
+<a class="el" href="classstored_1_1_example_debug_some_store_base.html#ae5b202eeaaf5abb290a30c8662c3bfd0aa54b90d2da65a87736b362a8666cd61c">BufferSize</a> = 8
+ }</td></tr>
+<tr class="separator:ae5b202eeaaf5abb290a30c8662c3bfd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa83ede46bd4293268c64b0ac1570c51c"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_debug_some_store_base.html">ExampleDebugSomeStoreBase</a>&lt; Implementation_ &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_debug_some_store_objects.html#aa83ede46bd4293268c64b0ac1570c51c">Base</a></td></tr>
 <tr class="separator:aa83ede46bd4293268c64b0ac1570c51c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a235e4f32e32ddf713650dc7b377166ff"><td class="memItemLeft" align="right" valign="top">typedef Implementation_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_debug_some_store_base.html#a235e4f32e32ddf713650dc7b377166ff">Implementation</a></td></tr>
@@ -145,9 +153,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aacee9037d7894e1a91a3d3460292449a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_debug_some_store_base.html#a235e4f32e32ddf713650dc7b377166ff">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_debug_some_store_base.html#aacee9037d7894e1a91a3d3460292449a">find</a> (char const *<a class="el" href="classstored_1_1_example_debug_some_store_base.html#a73de6d8f61bcafd46e0c42948cfe1683">name</a>, size_t len=std::numeric_limits&lt; size_t &gt;::max())</td></tr>
 <tr class="memdesc:aacee9037d7894e1a91a3d3460292449a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds an object with the given name.  <a href="#aacee9037d7894e1a91a3d3460292449a">More...</a><br /></td></tr>
 <tr class="separator:aacee9037d7894e1a91a3d3460292449a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c18ab236342000f27f1a23aec81bf60"><td class="memItemLeft" align="right" valign="top">char const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_debug_some_store_base.html#a0c18ab236342000f27f1a23aec81bf60">hash</a> () const</td></tr>
-<tr class="memdesc:a0c18ab236342000f27f1a23aec81bf60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique hash of the store.  <a href="#a0c18ab236342000f27f1a23aec81bf60">More...</a><br /></td></tr>
-<tr class="separator:a0c18ab236342000f27f1a23aec81bf60"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a86f6e873eef3a1fb9c766f2a470038"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_debug_some_store_base.html#a235e4f32e32ddf713650dc7b377166ff">Implementation</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_debug_some_store_base.html#a1a86f6e873eef3a1fb9c766f2a470038">implementation</a> () const</td></tr>
 <tr class="memdesc:a1a86f6e873eef3a1fb9c766f2a470038"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the reference to the implementation.  <a href="#a1a86f6e873eef3a1fb9c766f2a470038">More...</a><br /></td></tr>
 <tr class="separator:a1a86f6e873eef3a1fb9c766f2a470038"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -180,6 +185,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a48cd98fe5a12ea7d08e2ce5ad13895a4"><td class="memItemLeft" align="right" valign="top">uint8_t const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_debug_some_store_base.html#a48cd98fe5a12ea7d08e2ce5ad13895a4">shortDirectory</a> () const</td></tr>
 <tr class="memdesc:a48cd98fe5a12ea7d08e2ce5ad13895a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the short directory.  <a href="#a48cd98fe5a12ea7d08e2ce5ad13895a4">More...</a><br /></td></tr>
 <tr class="separator:a48cd98fe5a12ea7d08e2ce5ad13895a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a0019eefee0f3bfb287e4c16e5846011d"><td class="memItemLeft" align="right" valign="top">static char const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_debug_some_store_base.html#a0019eefee0f3bfb287e4c16e5846011d">hash</a> ()</td></tr>
+<tr class="memdesc:a0019eefee0f3bfb287e4c16e5846011d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique hash of the store.  <a href="#a0019eefee0f3bfb287e4c16e5846011d">More...</a><br /></td></tr>
+<tr class="separator:a0019eefee0f3bfb287e4c16e5846011d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -310,7 +321,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>The type of the data structure. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00122">122</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00145">145</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -330,7 +341,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of the actual implementation, which is the (lowest) subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00109">109</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00121">121</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -351,7 +362,7 @@ template&lt;typename Implementation_&gt; </div>
 <p><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of a key. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_debug_some_store_base.html#ae8544927b6a76ae05267aedaf0dcc5d4" title="Converts a variable&#39;s buffer to a key. ">bufferToKey()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00217">217</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00240">240</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -371,7 +382,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Map as generated by <a class="el" href="classstored_1_1_example_debug_some_store_base.html#adaa7639b1e1ab2621ff369ad517fc3b4" title="Create a name to Variant map for the store. ">map()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00339">339</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00363">363</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -389,7 +400,36 @@ template&lt;typename Implementation_&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00107">107</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00119">119</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="ae5b202eeaaf5abb290a30c8662c3bfd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5b202eeaaf5abb290a30c8662c3bfd0">&#9670;&nbsp;</a></span>anonymous enum</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Implementation_&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">anonymous enum</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ae5b202eeaaf5abb290a30c8662c3bfd0af619e09edfdbc9ad867aafc1c71e351a"></a>ObjectCount&#160;</td><td class="fielddoc"><p>Number of objects in the store. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ae5b202eeaaf5abb290a30c8662c3bfd0a34731f45b9b9d688d9674d43f8579230"></a>VariableCount&#160;</td><td class="fielddoc"><p>Number of variables in the store. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ae5b202eeaaf5abb290a30c8662c3bfd0a2befdb407f07a5c4a348c54ad38df124"></a>FunctionCount&#160;</td><td class="fielddoc"><p>Number of functions in the store. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ae5b202eeaaf5abb290a30c8662c3bfd0aa54b90d2da65a87736b362a8666cd61c"></a>BufferSize&#160;</td><td class="fielddoc"><p>Buffer size. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00127">127</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -530,7 +570,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_debug_some_store_base.html#ad838049eb42986d0769cddd37267527f" title="Hook when read-only access to a given variable is released. ">hookExitRO()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00294">294</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00318">318</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -580,7 +620,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_debug_some_store_base.html#af22131ba0d77ce20c6ad21a1ae84a666" title="Hook when exclusive access to a given variable is released. ">hookExitX()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00282">282</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00306">306</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -630,7 +670,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_debug_some_store_base.html#a43f42f7d6ef19b62f1acdddeecf922e9" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00300">300</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00324">324</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -686,7 +726,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_debug_some_store_base.html#a4f01bd23345246212d9fc0c9b3328f20" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00288">288</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00312">312</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -717,7 +757,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the buffer with all variable data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00128">128</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00151">151</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -748,7 +788,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the buffer with all variable data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00130">130</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00153">153</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -783,7 +823,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>For synchronization, when <a class="el" href="classstored_1_1_example_debug_some_store_base.html#a4f01bd23345246212d9fc0c9b3328f20" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a> or <a class="el" href="classstored_1_1_example_debug_some_store_base.html#a43f42f7d6ef19b62f1acdddeecf922e9" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a> is invoked, one can compute the key of the object that is accessed. The key can be used, for example, in a key-to-Variant map. When data arrives from another party, the key can be used to find the proper <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> in the map.</p>
 <p>This way, data exchange is type-safe, as the <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> can check if the data format matches the expected type. However, one cannot process data if the key is not set yet in the map. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00239">239</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00262">262</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -838,7 +878,7 @@ template&lt;typename Implementation_&gt; </div>
 <p><a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">Function</a> callback resolver. </p>
 <p>This is the callback for a <a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">Function</a> and a <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a>, which converts a call to the function identifier to an actual function call within the Implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00205">205</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00228">228</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -869,7 +909,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the container for all the store's data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00124">124</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00147">147</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -900,7 +940,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the container for all the store's data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00126">126</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00149">149</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -943,12 +983,12 @@ template&lt;typename Implementation_&gt; </div>
 <p>Finds an object with the given name. </p>
 <dl class="section return"><dt>Returns</dt><dd>the object, or an invalid <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">stored::Variant</a> if not found. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00318">318</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00342">342</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
-<a id="a0c18ab236342000f27f1a23aec81bf60"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0c18ab236342000f27f1a23aec81bf60">&#9670;&nbsp;</a></span>hash()</h2>
+<a id="a0019eefee0f3bfb287e4c16e5846011d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0019eefee0f3bfb287e4c16e5846011d">&#9670;&nbsp;</a></span>hash()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -959,22 +999,22 @@ template&lt;typename Implementation_&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">char const* <a class="el" href="classstored_1_1_example_debug_some_store_base.html">stored::ExampleDebugSomeStoreBase</a>&lt; Implementation_ &gt;::hash </td>
+          <td class="memname">static char const* <a class="el" href="classstored_1_1_example_debug_some_store_base.html">stored::ExampleDebugSomeStoreBase</a>&lt; Implementation_ &gt;::hash </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Returns a unique hash of the store. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00113">113</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00125">125</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1023,7 +1063,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Hook when read-only access to a given variable is to be acquired. </p>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_debug_some_store_base.html#ad838049eb42986d0769cddd37267527f" title="Hook when read-only access to a given variable is released. ">hookExitRO()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00268">268</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00292">292</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1072,7 +1112,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Hook when exclusive access to a given variable is to be acquired. </p>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_debug_some_store_base.html#af22131ba0d77ce20c6ad21a1ae84a666" title="Hook when exclusive access to a given variable is released. ">hookExitX()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00251">251</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00275">275</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1121,7 +1161,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Hook when read-only access to a given variable is released. </p>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_debug_some_store_base.html#a43f42f7d6ef19b62f1acdddeecf922e9" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00275">275</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00299">299</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1176,7 +1216,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Hook when exclusive access to a given variable is released. </p>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_debug_some_store_base.html#a4f01bd23345246212d9fc0c9b3328f20" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00261">261</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00285">285</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1207,7 +1247,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the reference to the implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00116">116</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00139">139</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1238,7 +1278,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the reference to the implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00118">118</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00141">141</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1289,7 +1329,7 @@ template&lt;typename F &gt; </div>
 <p>Calls a callback for every object in the <a class="el" href="classstored_1_1_example_debug_some_store_base.html#a844761700a0c407f9ef09085e6c9d4bf" title="Retuns the long directory. ">longDirectory()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758" title="Iterates over all objects in the directory and invoke a callback for every object. ">stored::list()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00327">327</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00351">351</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1324,7 +1364,7 @@ template&lt;typename F &gt; </div>
 <p>Calls a callback for every object in the <a class="el" href="classstored_1_1_example_debug_some_store_base.html#a844761700a0c407f9ef09085e6c9d4bf" title="Retuns the long directory. ">longDirectory()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758" title="Iterates over all objects in the directory and invoke a callback for every object. ">stored::list()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00335">335</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00359">359</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1356,7 +1396,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Retuns the long directory. </p>
 <p>When not available, the short directory is returned. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00312">312</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00336">336</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1389,7 +1429,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Create a name to <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> map for the store. </p>
 <p>Generating the map may be expensive and the result is not cached. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00346">346</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00370">370</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1420,7 +1460,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the name of store, which can be used as prefix for <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00111">111</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00123">123</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1511,7 +1551,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the short directory. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00308">308</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00332">332</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1540,7 +1580,7 @@ template&lt;typename T , typename I &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00194">194</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00217">217</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1568,7 +1608,7 @@ template&lt;typename Store , typename Implementation , typename T , unsigned int
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00165">165</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00188">188</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1596,7 +1636,7 @@ template&lt;typename Store_ , typename Implementation__ , typename T_ , size_t o
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00152">152</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00175">175</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1624,7 +1664,7 @@ template&lt;typename Store , typename Implementation , Type::type type_, unsigne
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00188">188</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00211">211</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1652,7 +1692,7 @@ template&lt;typename Store , typename Implementation , Type::type type_, size_t 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00177">177</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00200">200</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1680,7 +1720,7 @@ template&lt;typename T , typename I , bool H&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00193">193</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00216">216</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>
@@ -1706,7 +1746,7 @@ template&lt;typename Implementation_&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00195">195</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_debug_some_store_8h_source.html#l00218">218</a> of file <a class="el" href="_example_debug_some_store_8h_source.html">ExampleDebugSomeStore.h</a>.</p>
 
 </div>
 </div>

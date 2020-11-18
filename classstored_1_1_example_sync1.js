@@ -1,7 +1,7 @@
 var classstored_1_1_example_sync1 =
 [
     [ "Base", "classstored_1_1_example_sync1.html#a8ed4e2d69a560594a25a408db71b28b4", null ],
-    [ "base", "classstored_1_1_example_sync1.html#a6e29e911c21f8854834a228dfeb4edd6", null ],
+    [ "base", "classstored_1_1_example_sync1.html#aa01d68ce26bed4b37ae477555bf571e6", null ],
     [ "Data", "classstored_1_1_example_sync1.html#aa8b0dab9c4f9e6991bcc57bf948a06e1", null ],
     [ "Implementation", "classstored_1_1_example_sync1.html#aa0197e75bf079853c6c2f23fe62fa5be", null ],
     [ "Key", "classstored_1_1_example_sync1.html#a6df1a7940f251a502566a7bf6069da63", null ],
@@ -22,7 +22,6 @@ var classstored_1_1_example_sync1 =
     [ "data", "classstored_1_1_example_sync1.html#afc627bee35f9814941fa4b956d2f56aa", null ],
     [ "data", "classstored_1_1_example_sync1.html#a20cd6318c7ca26ff27bd97a64141a4ca", null ],
     [ "find", "classstored_1_1_example_sync1.html#a2f9ee158a13ceb4e5b2a4837ce5527be", null ],
-    [ "hash", "classstored_1_1_example_sync1.html#a4cd523aa941cdea55a838fea7f2df5db", null ],
     [ "hookEntryRO", "classstored_1_1_example_sync1.html#a122cb12bad151565fe82ba1d6d4d2a8a", null ],
     [ "hookEntryX", "classstored_1_1_example_sync1.html#a50a11717d4da1698e3a4c11f6f72a366", null ],
     [ "hookExitRO", "classstored_1_1_example_sync1.html#a741d9f7e2b7cfaca2a9d2fd175a0d7e5", null ],
@@ -37,7 +36,7 @@ var classstored_1_1_example_sync1 =
     [ "operator=", "classstored_1_1_example_sync1.html#a2cc14cd4f69a4bb0fa5b2227d630d56e", null ],
     [ "operator=", "classstored_1_1_example_sync1.html#a28c542bb8f4b95efc3638f11235ba79d", null ],
     [ "shortDirectory", "classstored_1_1_example_sync1.html#ad41640466c2828e1771ee993e302be92", null ],
-    [ "ExampleSync1Base< ExampleSync1 >", "classstored_1_1_example_sync1.html#a03053d302c7b55195e5c0af5cd8924a2", null ],
+    [ "stored::ExampleSync1Base< ExampleSync1 >", "classstored_1_1_example_sync1.html#a2b48f643b4c28bb72f93230ba8f7ce21", null ],
     [ "d", "classstored_1_1_example_sync1.html#aab6d6abec14903de193502104eef21cf", null ],
     [ "i", "classstored_1_1_example_sync1.html#a50d5a5093774f1be6e46b4ea8cfc3404", null ],
     [ "sync_ExampleSync2", "classstored_1_1_example_sync1.html#aac8b699b5ed8c45d6fd648266bf5dcf9", null ]

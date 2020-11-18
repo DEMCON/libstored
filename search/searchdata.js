@@ -5,12 +5,12 @@ var indexSectionsWithContent =
   2: "es",
   3: "_cdegmprstuz",
   4: "_abcdefghijklmnoprstuvwz~",
-  5: "_abcdefghijklmnoprstuvw",
-  6: "abdefiklmostuv",
+  5: "_abcdefghijklmnoprstuvwz",
+  6: "abcdefiklmnorstuv",
   7: "et",
-  8: "bcdefimprsuv",
-  9: "defisvz",
-  10: "_cgipsu",
+  8: "bcdefimoprstuv",
+  9: "dfisv",
+  10: "_cegimpsuz",
   11: "cdlpstu"
 };
 

@@ -82,6 +82,7 @@ $(document).ready(function(){initNavTree('classstored_1_1_example_hooks_base.htm
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pro-types">Protected Types</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
@@ -98,12 +99,12 @@ class stored::ExampleHooksBase&lt; Implementation_ &gt;</h3>
 <p>Base class with default interface of all <a class="el" href="classstored_1_1_example_hooks.html" title="Default ExampleHooksBase implementation. ">ExampleHooks</a> implementations. </p>
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code>Implementation_</code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="el" href="classstored_1_1_example_hooks.html" title="Default ExampleHooksBase implementation. ">stored::ExampleHooks</a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_hooks.html" title="Default ExampleHooksBase implementation. ">stored::ExampleHooks</a> </dd>
+<p>To inherit the base class, you can use the following template:</p>
+<div class="fragment"><div class="line"><span class="keyword">class </span>ExampleHooks : <span class="keyword">public</span> <a class="code" href="util_8h.html#ad225f313e5aac4f408188c9bce413d5e">STORE_BASECLASS</a>(ExampleHooksBase, ExampleHooks) {</div><div class="line">    <a class="code" href="util_8h.html#a37e56df26175f2fb676ae46c8c7f4560">STORE_CLASS_BODY</a>(<a class="code" href="classstored_1_1_example_hooks_base.html#a45e54b73369b1d1108f6d58d31b838f4">ExampleHooksBase</a>, ExampleHooks)</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    <span class="comment">// Your class implementation, such as:</span></div><div class="line">    ExampleHooks() <a class="code" href="util_8h.html#a5e97f6533b7a0a1e8b49c4cea10f75fc">is_default</a></div><div class="line">    <span class="comment">// ...</span></div><div class="line">};</div></div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_hooks.html" title="Default ExampleHooksBase implementation. ">stored::ExampleHooks</a> </dd>
 <dd>
 <a class="el" href="structstored_1_1_example_hooks_data.html" title="Data storage of ExampleHooksBase. ">stored::ExampleHooksData</a> </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="6_hooks_2main_8cpp-example.html#_a1">6_hooks/main.cpp</a>.</dd>
-</dl>
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00104">104</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00116">116</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -118,6 +119,12 @@ Inheritance diagram for stored::ExampleHooksBase&lt; Implementation_ &gt;:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
+<tr class="memitem:a866f9879fd6d9a3e44139bdffcb0a5a5"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="classstored_1_1_example_hooks_base.html#a866f9879fd6d9a3e44139bdffcb0a5a5a95837794db2eaf2d3a80daf43c4df351">ObjectCount</a> = 3, 
+<a class="el" href="classstored_1_1_example_hooks_base.html#a866f9879fd6d9a3e44139bdffcb0a5a5a5beb9e3ccc66302e3d4a1e4084724f30">VariableCount</a> = 2, 
+<a class="el" href="classstored_1_1_example_hooks_base.html#a866f9879fd6d9a3e44139bdffcb0a5a5aea9fcfa0f6f9881928f21257511a68c8">FunctionCount</a> = 1, 
+<a class="el" href="classstored_1_1_example_hooks_base.html#a866f9879fd6d9a3e44139bdffcb0a5a5adf4dc680e2672620c2c50f45950ee88d">BufferSize</a> = 12
+ }</td></tr>
+<tr class="separator:a866f9879fd6d9a3e44139bdffcb0a5a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaae070c8cca6ddc516ac84a89c11f099"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_hooks_base.html">ExampleHooksBase</a>&lt; Implementation_ &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_objects.html#aaae070c8cca6ddc516ac84a89c11f099">Base</a></td></tr>
 <tr class="separator:aaae070c8cca6ddc516ac84a89c11f099"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e0fe4df5ec6d039989a195dbc06e759"><td class="memItemLeft" align="right" valign="top">typedef Implementation_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a></td></tr>
@@ -146,9 +153,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7e474128547bad6be05e70d9e972d16f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_hooks_base.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#a7e474128547bad6be05e70d9e972d16f">find</a> (char const *<a class="el" href="classstored_1_1_example_hooks_base.html#ae250e59ef42389d24f1fde21e3cb972f">name</a>, size_t len=std::numeric_limits&lt; size_t &gt;::max())</td></tr>
 <tr class="memdesc:a7e474128547bad6be05e70d9e972d16f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds an object with the given name.  <a href="#a7e474128547bad6be05e70d9e972d16f">More...</a><br /></td></tr>
 <tr class="separator:a7e474128547bad6be05e70d9e972d16f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b5ed4ae373632c4765831f531388e73"><td class="memItemLeft" align="right" valign="top">char const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#a4b5ed4ae373632c4765831f531388e73">hash</a> () const</td></tr>
-<tr class="memdesc:a4b5ed4ae373632c4765831f531388e73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique hash of the store.  <a href="#a4b5ed4ae373632c4765831f531388e73">More...</a><br /></td></tr>
-<tr class="separator:a4b5ed4ae373632c4765831f531388e73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af87992befe97d4ef18455da0b4cc4dc2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_hooks_base.html#a7e0fe4df5ec6d039989a195dbc06e759">Implementation</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#af87992befe97d4ef18455da0b4cc4dc2">implementation</a> () const</td></tr>
 <tr class="memdesc:af87992befe97d4ef18455da0b4cc4dc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the reference to the implementation.  <a href="#af87992befe97d4ef18455da0b4cc4dc2">More...</a><br /></td></tr>
 <tr class="separator:af87992befe97d4ef18455da0b4cc4dc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -181,6 +185,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afe89177ef302a87f49cccdf78aa840b8"><td class="memItemLeft" align="right" valign="top">uint8_t const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#afe89177ef302a87f49cccdf78aa840b8">shortDirectory</a> () const</td></tr>
 <tr class="memdesc:afe89177ef302a87f49cccdf78aa840b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the short directory.  <a href="#afe89177ef302a87f49cccdf78aa840b8">More...</a><br /></td></tr>
 <tr class="separator:afe89177ef302a87f49cccdf78aa840b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:af47180b7c2b4fbe64d4f8123a3b27038"><td class="memItemLeft" align="right" valign="top">static char const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_hooks_base.html#af47180b7c2b4fbe64d4f8123a3b27038">hash</a> ()</td></tr>
+<tr class="memdesc:af47180b7c2b4fbe64d4f8123a3b27038"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique hash of the store.  <a href="#af47180b7c2b4fbe64d4f8123a3b27038">More...</a><br /></td></tr>
+<tr class="separator:af47180b7c2b4fbe64d4f8123a3b27038"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -320,7 +330,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>The type of the data structure. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00126">126</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00149">149</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -340,7 +350,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of the actual implementation, which is the (lowest) subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00113">113</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00125">125</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -361,7 +371,7 @@ template&lt;typename Implementation_&gt; </div>
 <p><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of a key. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_hooks_base.html#a88fbf24291de8e04c8ab488046f8af51" title="Converts a variable&#39;s buffer to a key. ">bufferToKey()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00231">231</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00254">254</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -381,7 +391,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Map as generated by <a class="el" href="classstored_1_1_example_hooks_base.html#a007ad57368f5d37d5ccc68d1c06edf33" title="Create a name to Variant map for the store. ">map()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00353">353</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00377">377</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -399,7 +409,36 @@ template&lt;typename Implementation_&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00111">111</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00123">123</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="a866f9879fd6d9a3e44139bdffcb0a5a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a866f9879fd6d9a3e44139bdffcb0a5a5">&#9670;&nbsp;</a></span>anonymous enum</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Implementation_&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">anonymous enum</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a866f9879fd6d9a3e44139bdffcb0a5a5a95837794db2eaf2d3a80daf43c4df351"></a>ObjectCount&#160;</td><td class="fielddoc"><p>Number of objects in the store. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a866f9879fd6d9a3e44139bdffcb0a5a5a5beb9e3ccc66302e3d4a1e4084724f30"></a>VariableCount&#160;</td><td class="fielddoc"><p>Number of variables in the store. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a866f9879fd6d9a3e44139bdffcb0a5a5aea9fcfa0f6f9881928f21257511a68c8"></a>FunctionCount&#160;</td><td class="fielddoc"><p>Number of functions in the store. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a866f9879fd6d9a3e44139bdffcb0a5a5adf4dc680e2672620c2c50f45950ee88d"></a>BufferSize&#160;</td><td class="fielddoc"><p>Buffer size. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00131">131</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -532,7 +571,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Callback for function. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00224">224</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00247">247</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -582,7 +621,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_hooks_base.html#a2a6200904318e780bb9d2c4a34dd9dd9" title="Hook when read-only access to a given variable is released. ">hookExitRO()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00308">308</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00332">332</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -632,7 +671,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_hooks_base.html#aa969ed2e35469305e4273b3ed818f823" title="Hook when exclusive access to a given variable is released. ">hookExitX()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00296">296</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00320">320</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -682,7 +721,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_hooks_base.html#a742b4b4aceeb66786c5c10a0c4d82535" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00314">314</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00338">338</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -738,7 +777,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_hooks_base.html#acb4f8f88ca21c4383e1c4d44233f7c32" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00302">302</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00326">326</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -768,9 +807,8 @@ template&lt;typename Implementation_&gt; </div>
 </div><div class="memdoc">
 
 <p>Returns the buffer with all variable data. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a1">7_protocol/main.cpp</a>.</dd>
-</dl>
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00132">132</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00155">155</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -801,7 +839,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the buffer with all variable data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00134">134</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00157">157</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -836,7 +874,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>For synchronization, when <a class="el" href="classstored_1_1_example_hooks_base.html#acb4f8f88ca21c4383e1c4d44233f7c32" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a> or <a class="el" href="classstored_1_1_example_hooks_base.html#a742b4b4aceeb66786c5c10a0c4d82535" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a> is invoked, one can compute the key of the object that is accessed. The key can be used, for example, in a key-to-Variant map. When data arrives from another party, the key can be used to find the proper <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> in the map.</p>
 <p>This way, data exchange is type-safe, as the <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> can check if the data format matches the expected type. However, one cannot process data if the key is not set yet in the map. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00253">253</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00276">276</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -891,7 +929,7 @@ template&lt;typename Implementation_&gt; </div>
 <p><a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">Function</a> callback resolver. </p>
 <p>This is the callback for a <a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">Function</a> and a <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a>, which converts a call to the function identifier to an actual function call within the Implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00209">209</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00232">232</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -922,7 +960,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the container for all the store's data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00128">128</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00151">151</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -953,7 +991,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the container for all the store's data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00130">130</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00153">153</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -996,12 +1034,12 @@ template&lt;typename Implementation_&gt; </div>
 <p>Finds an object with the given name. </p>
 <dl class="section return"><dt>Returns</dt><dd>the object, or an invalid <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">stored::Variant</a> if not found. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00332">332</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00356">356</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
-<a id="a4b5ed4ae373632c4765831f531388e73"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4b5ed4ae373632c4765831f531388e73">&#9670;&nbsp;</a></span>hash()</h2>
+<a id="af47180b7c2b4fbe64d4f8123a3b27038"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af47180b7c2b4fbe64d4f8123a3b27038">&#9670;&nbsp;</a></span>hash()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1012,22 +1050,22 @@ template&lt;typename Implementation_&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">char const* <a class="el" href="classstored_1_1_example_hooks_base.html">stored::ExampleHooksBase</a>&lt; Implementation_ &gt;::hash </td>
+          <td class="memname">static char const* <a class="el" href="classstored_1_1_example_hooks_base.html">stored::ExampleHooksBase</a>&lt; Implementation_ &gt;::hash </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Returns a unique hash of the store. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00117">117</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00129">129</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1076,7 +1114,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Hook when read-only access to a given variable is to be acquired. </p>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_hooks_base.html#a2a6200904318e780bb9d2c4a34dd9dd9" title="Hook when read-only access to a given variable is released. ">hookExitRO()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00282">282</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00306">306</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1125,7 +1163,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Hook when exclusive access to a given variable is to be acquired. </p>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_hooks_base.html#aa969ed2e35469305e4273b3ed818f823" title="Hook when exclusive access to a given variable is released. ">hookExitX()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00265">265</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00289">289</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1174,7 +1212,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Hook when read-only access to a given variable is released. </p>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_hooks_base.html#a742b4b4aceeb66786c5c10a0c4d82535" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00289">289</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00313">313</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1229,7 +1267,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Hook when exclusive access to a given variable is released. </p>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_hooks_base.html#acb4f8f88ca21c4383e1c4d44233f7c32" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00275">275</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00299">299</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1260,7 +1298,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the reference to the implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00120">120</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00143">143</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1291,7 +1329,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the reference to the implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00122">122</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00145">145</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1342,7 +1380,7 @@ template&lt;typename F &gt; </div>
 <p>Calls a callback for every object in the <a class="el" href="classstored_1_1_example_hooks_base.html#a0c6df7152fe76972c4b8e3ffab852d6c" title="Retuns the long directory. ">longDirectory()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758" title="Iterates over all objects in the directory and invoke a callback for every object. ">stored::list()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00341">341</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00365">365</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1377,7 +1415,7 @@ template&lt;typename F &gt; </div>
 <p>Calls a callback for every object in the <a class="el" href="classstored_1_1_example_hooks_base.html#a0c6df7152fe76972c4b8e3ffab852d6c" title="Retuns the long directory. ">longDirectory()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758" title="Iterates over all objects in the directory and invoke a callback for every object. ">stored::list()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00349">349</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00373">373</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1409,7 +1447,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Retuns the long directory. </p>
 <p>When not available, the short directory is returned. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00326">326</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00350">350</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1442,7 +1480,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Create a name to <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> map for the store. </p>
 <p>Generating the map may be expensive and the result is not cached. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00360">360</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00384">384</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1473,7 +1511,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the name of store, which can be used as prefix for <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00115">115</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00127">127</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1564,7 +1602,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the short directory. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00322">322</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00346">346</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1593,7 +1631,7 @@ template&lt;typename T , typename I &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00198">198</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00221">221</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1621,7 +1659,7 @@ template&lt;typename Store , typename Implementation , typename T , unsigned int
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00169">169</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00192">192</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1649,7 +1687,7 @@ template&lt;typename Store_ , typename Implementation__ , typename T_ , size_t o
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00156">156</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00179">179</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1677,7 +1715,7 @@ template&lt;typename Store , typename Implementation , Type::type type_, unsigne
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00192">192</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00215">215</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1705,7 +1743,7 @@ template&lt;typename Store , typename Implementation , Type::type type_, size_t 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00181">181</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00204">204</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1733,7 +1771,7 @@ template&lt;typename T , typename I , bool H&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00197">197</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00220">220</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>
@@ -1759,7 +1797,7 @@ template&lt;typename Implementation_&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00199">199</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_hooks_8h_source.html#l00222">222</a> of file <a class="el" href="_example_hooks_8h_source.html">ExampleHooks.h</a>.</p>
 
 </div>
 </div>

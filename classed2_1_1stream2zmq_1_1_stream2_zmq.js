@@ -22,6 +22,8 @@ var classed2_1_1stream2zmq_1_1_stream2_zmq =
     [ "mtu", "classed2_1_1stream2zmq_1_1_stream2_zmq.html#a1596ff865eb9c5c482dc73dfb6782b18", null ],
     [ "poll", "classed2_1_1stream2zmq_1_1_stream2_zmq.html#ae37665e9adfa0e8d8f46796ee976cada", null ],
     [ "poll", "classed2_1_1stream2zmq_1_1_stream2_zmq.html#ae37665e9adfa0e8d8f46796ee976cada", null ],
+    [ "recvAll", "classed2_1_1stream2zmq_1_1_stream2_zmq.html#ae7b01afd502a35e0c9d0af091bb87bb7", null ],
+    [ "recvAll", "classed2_1_1stream2zmq_1_1_stream2_zmq.html#ae7b01afd502a35e0c9d0af091bb87bb7", null ],
     [ "registerStream", "classed2_1_1stream2zmq_1_1_stream2_zmq.html#a96ec513b9a157a0de2a13e857ca4caa2", null ],
     [ "registerStream", "classed2_1_1stream2zmq_1_1_stream2_zmq.html#a96ec513b9a157a0de2a13e857ca4caa2", null ],
     [ "reset", "classed2_1_1stream2zmq_1_1_stream2_zmq.html#a8fb789c816c51ccbd53a4ff13bd785c0", null ],

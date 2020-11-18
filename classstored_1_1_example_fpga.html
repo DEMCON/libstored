@@ -82,6 +82,7 @@ $(document).ready(function(){initNavTree('classstored_1_1_example_fpga.html','')
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pro-types">Protected Types</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
@@ -94,7 +95,7 @@ $(document).ready(function(){initNavTree('classstored_1_1_example_fpga.html','')
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Default <a class="el" href="classstored_1_1_example_fpga_base.html" title="Base class with default interface of all ExampleFpga implementations. ">ExampleFpgaBase</a> implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00396">396</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00420">420</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -110,17 +111,19 @@ Inheritance diagram for stored::ExampleFpga:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
+<tr class="memitem:af06811f5593210610400ac8603506cc2"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="separator:af06811f5593210610400ac8603506cc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ffc4d6bbbd3027ab0c9421d3105c38b"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_fpga_base.html">ExampleFpgaBase</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a></td></tr>
 <tr class="separator:a3ffc4d6bbbd3027ab0c9421d3105c38b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a023e626723efa55664460d5532e8a8ad"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_fpga_base.html">ExampleFpgaBase</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga.html#a023e626723efa55664460d5532e8a8ad">base</a></td></tr>
-<tr class="separator:a023e626723efa55664460d5532e8a8ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d2b926e0e6669c0b0e51ded1bb06d8f"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a></td></tr>
-<tr class="memdesc:a3d2b926e0e6669c0b0e51ded1bb06d8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the actual implementation, which is the (lowest) subclass.  <a href="#a3d2b926e0e6669c0b0e51ded1bb06d8f">More...</a><br /></td></tr>
+<tr class="memitem:a9b05e8367b7e53564ef87cfbae8445ac"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_fpga_base.html">stored::ExampleFpgaBase</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga.html#a9b05e8367b7e53564ef87cfbae8445ac">base</a></td></tr>
+<tr class="separator:a9b05e8367b7e53564ef87cfbae8445ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d2b926e0e6669c0b0e51ded1bb06d8f"><td class="memItemLeft" align="right" valign="top">typedef Implementation_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a></td></tr>
+<tr class="memdesc:a3d2b926e0e6669c0b0e51ded1bb06d8f"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of the actual implementation, which is the (lowest) subclass.  <a href="#a3d2b926e0e6669c0b0e51ded1bb06d8f">More...</a><br /></td></tr>
 <tr class="separator:a3d2b926e0e6669c0b0e51ded1bb06d8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a678eba916ea4aba40ad74be21bef0e4f"><td class="memItemLeft" align="right" valign="top">typedef uintptr_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#a678eba916ea4aba40ad74be21bef0e4f">Key</a></td></tr>
 <tr class="memdesc:a678eba916ea4aba40ad74be21bef0e4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of a key.  <a href="#a678eba916ea4aba40ad74be21bef0e4f">More...</a><br /></td></tr>
 <tr class="separator:a678eba916ea4aba40ad74be21bef0e4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9bbd713e45fb6a5247f5283b5ab941e9"><td class="memItemLeft" align="right" valign="top">typedef std::map&lt; std::string, <a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#a9bbd713e45fb6a5247f5283b5ab941e9">ObjectMap</a></td></tr>
+<tr class="memitem:a9bbd713e45fb6a5247f5283b5ab941e9"><td class="memItemLeft" align="right" valign="top">typedef std::map&lt; std::string, <a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#a9bbd713e45fb6a5247f5283b5ab941e9">ObjectMap</a></td></tr>
 <tr class="memdesc:a9bbd713e45fb6a5247f5283b5ab941e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map as generated by <a class="el" href="classstored_1_1_example_fpga_base.html#a54e94f96123d2014f4e86beb33e0a85b" title="Create a name to Variant map for the store. ">map()</a>.  <a href="#a9bbd713e45fb6a5247f5283b5ab941e9">More...</a><br /></td></tr>
 <tr class="separator:a9bbd713e45fb6a5247f5283b5ab941e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71b2a07b920beb4beff6db61d7c6fcdf"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_fpga_objects.html">ExampleFpgaObjects</a>&lt; <a class="el" href="classstored_1_1_example_fpga_base.html">ExampleFpgaBase</a>, <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#a71b2a07b920beb4beff6db61d7c6fcdf">Objects</a></td></tr>
@@ -140,16 +143,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab4aa696e4ba29b0d972762869b8fad4a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_fpga_base.html#a678eba916ea4aba40ad74be21bef0e4f">Key</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#ab4aa696e4ba29b0d972762869b8fad4a">bufferToKey</a> (void const *<a class="el" href="classstored_1_1_example_fpga_base.html#add10613a806fba74bf9b0cf19fe62107">buffer</a>) const</td></tr>
 <tr class="memdesc:ab4aa696e4ba29b0d972762869b8fad4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a variable's buffer to a key.  <a href="#ab4aa696e4ba29b0d972762869b8fad4a">More...</a><br /></td></tr>
 <tr class="separator:ab4aa696e4ba29b0d972762869b8fad4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4a72cae527c793df70b14ddfaab75eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#ad4a72cae527c793df70b14ddfaab75eb">find</a> (char const *<a class="el" href="classstored_1_1_example_fpga_base.html#a082b68cb211080ce4e866ef177045c70">name</a>, size_t len=std::numeric_limits&lt; size_t &gt;::max())</td></tr>
+<tr class="memitem:ad4a72cae527c793df70b14ddfaab75eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#ad4a72cae527c793df70b14ddfaab75eb">find</a> (char const *<a class="el" href="classstored_1_1_example_fpga_base.html#a082b68cb211080ce4e866ef177045c70">name</a>, size_t len=std::numeric_limits&lt; size_t &gt;::max())</td></tr>
 <tr class="memdesc:ad4a72cae527c793df70b14ddfaab75eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds an object with the given name.  <a href="#ad4a72cae527c793df70b14ddfaab75eb">More...</a><br /></td></tr>
 <tr class="separator:ad4a72cae527c793df70b14ddfaab75eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade391f0d4dfb26f8d7c013b8d7a14007"><td class="memItemLeft" align="right" valign="top">char const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#ade391f0d4dfb26f8d7c013b8d7a14007">hash</a> () const</td></tr>
-<tr class="memdesc:ade391f0d4dfb26f8d7c013b8d7a14007"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique hash of the store.  <a href="#ade391f0d4dfb26f8d7c013b8d7a14007">More...</a><br /></td></tr>
-<tr class="separator:ade391f0d4dfb26f8d7c013b8d7a14007"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0845517ebfa6c08eef331f60cacafaee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a> const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#a0845517ebfa6c08eef331f60cacafaee">implementation</a> () const</td></tr>
+<tr class="memitem:a0845517ebfa6c08eef331f60cacafaee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a> const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#a0845517ebfa6c08eef331f60cacafaee">implementation</a> () const</td></tr>
 <tr class="memdesc:a0845517ebfa6c08eef331f60cacafaee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the reference to the implementation.  <a href="#a0845517ebfa6c08eef331f60cacafaee">More...</a><br /></td></tr>
 <tr class="separator:a0845517ebfa6c08eef331f60cacafaee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7518bb27ba9c84fa3b83c0b2e43800f5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#a7518bb27ba9c84fa3b83c0b2e43800f5">implementation</a> ()</td></tr>
+<tr class="memitem:a7518bb27ba9c84fa3b83c0b2e43800f5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#a7518bb27ba9c84fa3b83c0b2e43800f5">implementation</a> ()</td></tr>
 <tr class="memdesc:a7518bb27ba9c84fa3b83c0b2e43800f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the reference to the implementation.  <a href="#a7518bb27ba9c84fa3b83c0b2e43800f5">More...</a><br /></td></tr>
 <tr class="separator:a7518bb27ba9c84fa3b83c0b2e43800f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6111f800b85b34ab36eeb3e4aee9e35"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#ab6111f800b85b34ab36eeb3e4aee9e35">list</a> (F f, void *arg, char const *prefix=nullptr)</td></tr>
@@ -167,43 +167,49 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a082b68cb211080ce4e866ef177045c70"><td class="memItemLeft" align="right" valign="top">char const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#a082b68cb211080ce4e866ef177045c70">name</a> () const</td></tr>
 <tr class="memdesc:a082b68cb211080ce4e866ef177045c70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name of store, which can be used as prefix for <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>.  <a href="#a082b68cb211080ce4e866ef177045c70">More...</a><br /></td></tr>
 <tr class="separator:a082b68cb211080ce4e866ef177045c70"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28f7cd432f48c0cc71b042e32ba4664a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga.html#a28f7cd432f48c0cc71b042e32ba4664a">operator=</a> (<a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a> const &amp;)=delete</td></tr>
-<tr class="memdesc:a28f7cd432f48c0cc71b042e32ba4664a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted assignment operator.  <a href="#a28f7cd432f48c0cc71b042e32ba4664a">More...</a><br /></td></tr>
-<tr class="separator:a28f7cd432f48c0cc71b042e32ba4664a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31baceb4b346037422c54adfcee61b3c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga.html#a31baceb4b346037422c54adfcee61b3c">operator=</a> (<a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a> &amp;&amp;)=delete</td></tr>
 <tr class="memdesc:a31baceb4b346037422c54adfcee61b3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted move assignment operator.  <a href="#a31baceb4b346037422c54adfcee61b3c">More...</a><br /></td></tr>
 <tr class="separator:a31baceb4b346037422c54adfcee61b3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28f7cd432f48c0cc71b042e32ba4664a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga.html#a28f7cd432f48c0cc71b042e32ba4664a">operator=</a> (<a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a> const &amp;)=delete</td></tr>
+<tr class="memdesc:a28f7cd432f48c0cc71b042e32ba4664a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted assignment operator.  <a href="#a28f7cd432f48c0cc71b042e32ba4664a">More...</a><br /></td></tr>
+<tr class="separator:a28f7cd432f48c0cc71b042e32ba4664a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb2961dbc6f2cf42ba5fcbca00010a9c"><td class="memItemLeft" align="right" valign="top">uint8_t const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#acb2961dbc6f2cf42ba5fcbca00010a9c">shortDirectory</a> () const</td></tr>
 <tr class="memdesc:acb2961dbc6f2cf42ba5fcbca00010a9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the short directory.  <a href="#acb2961dbc6f2cf42ba5fcbca00010a9c">More...</a><br /></td></tr>
 <tr class="separator:acb2961dbc6f2cf42ba5fcbca00010a9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a78e332addf949ccb535b026ee2332f7a"><td class="memItemLeft" align="right" valign="top">static char const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#a78e332addf949ccb535b026ee2332f7a">hash</a> ()</td></tr>
+<tr class="memdesc:a78e332addf949ccb535b026ee2332f7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique hash of the store.  <a href="#a78e332addf949ccb535b026ee2332f7a">More...</a><br /></td></tr>
+<tr class="separator:a78e332addf949ccb535b026ee2332f7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a1dd07b3a6933d4f02081492ff33b4999"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>, <a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea51ac1ecb477fe077e2cef24f507cc127">Type::Blob</a>, 28u, 3u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#a1dd07b3a6933d4f02081492ff33b4999">blob</a></td></tr>
+<tr class="memitem:a1dd07b3a6933d4f02081492ff33b4999"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>, <a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea51ac1ecb477fe077e2cef24f507cc127">Type::Blob</a>, 28u, 3u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#a1dd07b3a6933d4f02081492ff33b4999">blob</a></td></tr>
 <tr class="memdesc:a1dd07b3a6933d4f02081492ff33b4999"><td class="mdescLeft">&#160;</td><td class="mdescRight">blob  <a href="#a1dd07b3a6933d4f02081492ff33b4999">More...</a><br /></td></tr>
 <tr class="separator:a1dd07b3a6933d4f02081492ff33b4999"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad067f1a5bedd117132b616d5afa38351"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>, bool, 34u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#ad067f1a5bedd117132b616d5afa38351">bool_obj</a></td></tr>
+<tr class="memitem:ad067f1a5bedd117132b616d5afa38351"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>, bool, 34u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#ad067f1a5bedd117132b616d5afa38351">bool_obj</a></td></tr>
 <tr class="memdesc:ad067f1a5bedd117132b616d5afa38351"><td class="mdescLeft">&#160;</td><td class="mdescRight">bool  <a href="#ad067f1a5bedd117132b616d5afa38351">More...</a><br /></td></tr>
 <tr class="separator:ad067f1a5bedd117132b616d5afa38351"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac75985dc0336a960cf9dfaf484053ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>, uint32_t, 20u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#aac75985dc0336a960cf9dfaf484053ce">default_register</a></td></tr>
+<tr class="memitem:aac75985dc0336a960cf9dfaf484053ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>, uint32_t, 20u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#aac75985dc0336a960cf9dfaf484053ce">default_register</a></td></tr>
 <tr class="memdesc:aac75985dc0336a960cf9dfaf484053ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">default register  <a href="#aac75985dc0336a960cf9dfaf484053ce">More...</a><br /></td></tr>
 <tr class="separator:aac75985dc0336a960cf9dfaf484053ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2337e86f2b6ae22253418b9e25b38940"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>, uint32_t, 24u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#a2337e86f2b6ae22253418b9e25b38940">default_register_write_count</a></td></tr>
+<tr class="memitem:a2337e86f2b6ae22253418b9e25b38940"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>, uint32_t, 24u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#a2337e86f2b6ae22253418b9e25b38940">default_register_write_count</a></td></tr>
 <tr class="memdesc:a2337e86f2b6ae22253418b9e25b38940"><td class="mdescLeft">&#160;</td><td class="mdescRight">default register write count  <a href="#a2337e86f2b6ae22253418b9e25b38940">More...</a><br /></td></tr>
 <tr class="separator:a2337e86f2b6ae22253418b9e25b38940"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a98a493fc6bf9afa3470c0711ae929b5f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_function.html">impl::StoreFunction</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>, int32_t, 1u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#a98a493fc6bf9afa3470c0711ae929b5f">ignored_function</a></td></tr>
+<tr class="memitem:a98a493fc6bf9afa3470c0711ae929b5f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_function.html">impl::StoreFunction</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>, int32_t, 1u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#a98a493fc6bf9afa3470c0711ae929b5f">ignored_function</a></td></tr>
 <tr class="memdesc:a98a493fc6bf9afa3470c0711ae929b5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">ignored function  <a href="#a98a493fc6bf9afa3470c0711ae929b5f">More...</a><br /></td></tr>
 <tr class="separator:a98a493fc6bf9afa3470c0711ae929b5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f2952ac92fb9d989bf8cb18dba54d40"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>, uint32_t, 0u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#a2f2952ac92fb9d989bf8cb18dba54d40">initialized_register</a></td></tr>
+<tr class="memitem:a2f2952ac92fb9d989bf8cb18dba54d40"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>, uint32_t, 0u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#a2f2952ac92fb9d989bf8cb18dba54d40">initialized_register</a></td></tr>
 <tr class="memdesc:a2f2952ac92fb9d989bf8cb18dba54d40"><td class="mdescLeft">&#160;</td><td class="mdescRight">initialized register  <a href="#a2f2952ac92fb9d989bf8cb18dba54d40">More...</a><br /></td></tr>
 <tr class="separator:a2f2952ac92fb9d989bf8cb18dba54d40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f89fad63d8c83e24efd0b3bbc975458"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>, uint16_t, 32u, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#a4f89fad63d8c83e24efd0b3bbc975458">read_only_register</a></td></tr>
+<tr class="memitem:a4f89fad63d8c83e24efd0b3bbc975458"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>, uint16_t, 32u, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#a4f89fad63d8c83e24efd0b3bbc975458">read_only_register</a></td></tr>
 <tr class="memdesc:a4f89fad63d8c83e24efd0b3bbc975458"><td class="mdescLeft">&#160;</td><td class="mdescRight">read-only register  <a href="#a4f89fad63d8c83e24efd0b3bbc975458">More...</a><br /></td></tr>
 <tr class="separator:a4f89fad63d8c83e24efd0b3bbc975458"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f6a6aa107f025c2d21bb15e9dee7462"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>, <a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>, 8u, 6u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#a4f6a6aa107f025c2d21bb15e9dee7462">string</a></td></tr>
+<tr class="memitem:a4f6a6aa107f025c2d21bb15e9dee7462"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>, <a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>, 8u, 6u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#a4f6a6aa107f025c2d21bb15e9dee7462">string</a></td></tr>
 <tr class="memdesc:a4f6a6aa107f025c2d21bb15e9dee7462"><td class="mdescLeft">&#160;</td><td class="mdescRight">string  <a href="#a4f6a6aa107f025c2d21bb15e9dee7462">More...</a><br /></td></tr>
 <tr class="separator:a4f6a6aa107f025c2d21bb15e9dee7462"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ec47b8a9e78bbf3efb208e177253bea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>, uint32_t, 16u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#a2ec47b8a9e78bbf3efb208e177253bea">t_clk</a></td></tr>
+<tr class="memitem:a2ec47b8a9e78bbf3efb208e177253bea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>, <a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>, uint32_t, 16u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#a2ec47b8a9e78bbf3efb208e177253bea">t_clk</a></td></tr>
 <tr class="memdesc:a2ec47b8a9e78bbf3efb208e177253bea"><td class="mdescLeft">&#160;</td><td class="mdescRight">t (clk)  <a href="#a2ec47b8a9e78bbf3efb208e177253bea">More...</a><br /></td></tr>
 <tr class="separator:a2ec47b8a9e78bbf3efb208e177253bea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -260,8 +266,8 @@ Protected Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
-<tr class="memitem:a71bf6e15f588fb60542ac223e4287162"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga.html#a71bf6e15f588fb60542ac223e4287162">ExampleFpgaBase&lt; ExampleFpga &gt;</a></td></tr>
-<tr class="separator:a71bf6e15f588fb60542ac223e4287162"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a298e19ed3f641d8d81d5f7a09fcb11dc"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga.html#a298e19ed3f641d8d81d5f7a09fcb11dc">stored::ExampleFpgaBase&lt; ExampleFpga &gt;</a></td></tr>
+<tr class="separator:a298e19ed3f641d8d81d5f7a09fcb11dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a3ffc4d6bbbd3027ab0c9421d3105c38b"></a>
@@ -288,19 +294,19 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a id="a023e626723efa55664460d5532e8a8ad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a023e626723efa55664460d5532e8a8ad">&#9670;&nbsp;</a></span>base</h2>
+<a id="a9b05e8367b7e53564ef87cfbae8445ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b05e8367b7e53564ef87cfbae8445ac">&#9670;&nbsp;</a></span>base</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="classstored_1_1_example_fpga_base.html">ExampleFpgaBase</a>&lt;<a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a>&gt; <a class="el" href="classstored_1_1_example_fpga.html#a023e626723efa55664460d5532e8a8ad">stored::ExampleFpga::base</a></td>
+          <td class="memname">typedef stored:: <a class="el" href="classstored_1_1_example_fpga_base.html">ExampleFpgaBase</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a> &gt; <a class="el" href="classstored_1_1_example_fpga.html#a9b05e8367b7e53564ef87cfbae8445ac">stored::ExampleFpga::base</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00399">399</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00421">421</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -326,7 +332,7 @@ Friends</h2></td></tr>
 
 <p>The type of the data structure. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00138">138</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00161">161</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -335,24 +341,16 @@ Friends</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a>  <a class="el" href="classstored_1_1_example_fpga_base.html">stored::ExampleFpgaBase</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a>  &gt;::<a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a></td>
+          <td class="memname">typedef Implementation_ <a class="el" href="classstored_1_1_example_fpga_base.html">stored::ExampleFpgaBase</a>&lt; Implementation_ &gt;::<a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of the actual implementation, which is the (lowest) subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00125">125</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00137">137</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -379,7 +377,7 @@ Friends</h2></td></tr>
 <p><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of a key. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_fpga_base.html#ab4aa696e4ba29b0d972762869b8fad4a" title="Converts a variable&#39;s buffer to a key. ">bufferToKey()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00243">243</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00266">266</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -393,7 +391,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">typedef std::map&lt;std::string, <a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>&gt; &gt; <a class="el" href="classstored_1_1_example_fpga_base.html">stored::ExampleFpgaBase</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a>  &gt;::<a class="el" href="classstored_1_1_example_fpga_base.html#a9bbd713e45fb6a5247f5283b5ab941e9">ObjectMap</a></td>
+          <td class="memname">typedef std::map&lt;std::string, <a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>&gt; &gt; <a class="el" href="classstored_1_1_example_fpga_base.html">stored::ExampleFpgaBase</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a>  &gt;::<a class="el" href="classstored_1_1_example_fpga_base.html#a9bbd713e45fb6a5247f5283b5ab941e9">ObjectMap</a></td>
         </tr>
       </table>
   </td>
@@ -405,7 +403,7 @@ Friends</h2></td></tr>
 
 <p>Map as generated by <a class="el" href="classstored_1_1_example_fpga_base.html#a54e94f96123d2014f4e86beb33e0a85b" title="Create a name to Variant map for the store. ">map()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00365">365</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00389">389</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -429,7 +427,32 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00123">123</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00135">135</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="af06811f5593210610400ac8603506cc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af06811f5593210610400ac8603506cc2">&#9670;&nbsp;</a></span>anonymous enum</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">anonymous enum</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00143">143</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -562,7 +585,7 @@ Friends</h2></td></tr>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_fpga_base.html#a8442cc2115f0f84f120a546845935b71" title="Hook when read-only access to a given variable is released. ">hookExitRO()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00320">320</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00344">344</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -610,7 +633,7 @@ Friends</h2></td></tr>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_fpga_base.html#ae6e5c28abd7ae8592ce427ca3545d461" title="Hook when exclusive access to a given variable is released. ">hookExitX()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00308">308</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00332">332</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -658,7 +681,7 @@ Friends</h2></td></tr>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_fpga_base.html#a1bba9ba404ec343afc510876b84036d0" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00326">326</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00350">350</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -712,7 +735,7 @@ Friends</h2></td></tr>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_fpga_base.html#afbfcdfe4b30cea19313642fb61dd93e0" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00314">314</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00338">338</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -752,7 +775,7 @@ Friends</h2></td></tr>
 
 <p>Callback for ignored function. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00236">236</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00259">259</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -781,7 +804,7 @@ Friends</h2></td></tr>
 
 <p>Returns the buffer with all variable data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00144">144</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00167">167</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -810,7 +833,7 @@ Friends</h2></td></tr>
 
 <p>Returns the buffer with all variable data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00146">146</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00169">169</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -843,7 +866,7 @@ Friends</h2></td></tr>
 <p>For synchronization, when <a class="el" href="classstored_1_1_example_fpga_base.html#afbfcdfe4b30cea19313642fb61dd93e0" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a> or <a class="el" href="classstored_1_1_example_fpga_base.html#a1bba9ba404ec343afc510876b84036d0" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a> is invoked, one can compute the key of the object that is accessed. The key can be used, for example, in a key-to-Variant map. When data arrives from another party, the key can be used to find the proper <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> in the map.</p>
 <p>This way, data exchange is type-safe, as the <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> can check if the data format matches the expected type. However, one cannot process data if the key is not set yet in the map. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00265">265</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00288">288</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -896,7 +919,7 @@ Friends</h2></td></tr>
 <p><a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">Function</a> callback resolver. </p>
 <p>This is the callback for a <a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">Function</a> and a <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a>, which converts a call to the function identifier to an actual function call within the Implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00221">221</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00244">244</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -925,7 +948,7 @@ Friends</h2></td></tr>
 
 <p>Returns the container for all the store's data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00140">140</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00163">163</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -954,7 +977,7 @@ Friends</h2></td></tr>
 
 <p>Returns the container for all the store's data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00142">142</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00165">165</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -968,7 +991,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>&gt; <a class="el" href="classstored_1_1_example_fpga_base.html">stored::ExampleFpgaBase</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a>  &gt;::find </td>
+          <td class="memname"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>&gt; <a class="el" href="classstored_1_1_example_fpga_base.html">stored::ExampleFpgaBase</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a>  &gt;::find </td>
           <td>(</td>
           <td class="paramtype">char const *&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -995,12 +1018,12 @@ Friends</h2></td></tr>
 <p>Finds an object with the given name. </p>
 <dl class="section return"><dt>Returns</dt><dd>the object, or an invalid <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">stored::Variant</a> if not found. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00344">344</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00368">368</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
-<a id="ade391f0d4dfb26f8d7c013b8d7a14007"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ade391f0d4dfb26f8d7c013b8d7a14007">&#9670;&nbsp;</a></span>hash()</h2>
+<a id="a78e332addf949ccb535b026ee2332f7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78e332addf949ccb535b026ee2332f7a">&#9670;&nbsp;</a></span>hash()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1009,22 +1032,22 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">char const* <a class="el" href="classstored_1_1_example_fpga_base.html">stored::ExampleFpgaBase</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a>  &gt;::hash </td>
+          <td class="memname">static char const* <a class="el" href="classstored_1_1_example_fpga_base.html">stored::ExampleFpgaBase</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a>  &gt;::hash </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">inherited</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Returns a unique hash of the store. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00129">129</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00141">141</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1071,7 +1094,7 @@ Friends</h2></td></tr>
 <p>Hook when read-only access to a given variable is to be acquired. </p>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_fpga_base.html#a8442cc2115f0f84f120a546845935b71" title="Hook when read-only access to a given variable is released. ">hookExitRO()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00294">294</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00318">318</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1118,7 +1141,7 @@ Friends</h2></td></tr>
 <p>Hook when exclusive access to a given variable is to be acquired. </p>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_fpga_base.html#ae6e5c28abd7ae8592ce427ca3545d461" title="Hook when exclusive access to a given variable is released. ">hookExitX()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00277">277</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00301">301</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1165,7 +1188,7 @@ Friends</h2></td></tr>
 <p>Hook when read-only access to a given variable is released. </p>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_fpga_base.html#a1bba9ba404ec343afc510876b84036d0" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00301">301</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00325">325</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1218,7 +1241,7 @@ Friends</h2></td></tr>
 <p>Hook when exclusive access to a given variable is released. </p>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_fpga_base.html#afbfcdfe4b30cea19313642fb61dd93e0" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00287">287</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00311">311</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1232,7 +1255,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a> const&amp; <a class="el" href="classstored_1_1_example_fpga_base.html">stored::ExampleFpgaBase</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a>  &gt;::implementation </td>
+          <td class="memname"><a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a> const&amp; <a class="el" href="classstored_1_1_example_fpga_base.html">stored::ExampleFpgaBase</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a>  &gt;::implementation </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1247,7 +1270,7 @@ Friends</h2></td></tr>
 
 <p>Returns the reference to the implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00132">132</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00155">155</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1261,7 +1284,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>&amp; <a class="el" href="classstored_1_1_example_fpga_base.html">stored::ExampleFpgaBase</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a>  &gt;::implementation </td>
+          <td class="memname"><a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>&amp; <a class="el" href="classstored_1_1_example_fpga_base.html">stored::ExampleFpgaBase</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a>  &gt;::implementation </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1276,7 +1299,7 @@ Friends</h2></td></tr>
 
 <p>Returns the reference to the implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00134">134</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00157">157</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1323,7 +1346,7 @@ Friends</h2></td></tr>
 <p>Calls a callback for every object in the <a class="el" href="classstored_1_1_example_fpga_base.html#a5a1fe52620bee3002525d655b2c0f4b9" title="Retuns the long directory. ">longDirectory()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758" title="Iterates over all objects in the directory and invoke a callback for every object. ">stored::list()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00353">353</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00377">377</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1354,7 +1377,7 @@ Friends</h2></td></tr>
 <p>Calls a callback for every object in the <a class="el" href="classstored_1_1_example_fpga_base.html#a5a1fe52620bee3002525d655b2c0f4b9" title="Retuns the long directory. ">longDirectory()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758" title="Iterates over all objects in the directory and invoke a callback for every object. ">stored::list()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00361">361</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00385">385</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1384,7 +1407,7 @@ Friends</h2></td></tr>
 <p>Retuns the long directory. </p>
 <p>When not available, the short directory is returned. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00338">338</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00362">362</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1415,7 +1438,7 @@ Friends</h2></td></tr>
 <p>Create a name to <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> map for the store. </p>
 <p>Generating the map may be expensive and the result is not cached. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00372">372</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00396">396</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1444,7 +1467,7 @@ Friends</h2></td></tr>
 
 <p>Returns the name of store, which can be used as prefix for <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00127">127</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00139">139</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1529,13 +1552,13 @@ Friends</h2></td></tr>
 
 <p>Returns the short directory. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00334">334</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00358">358</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Friends And Related Function Documentation</h2>
-<a id="a71bf6e15f588fb60542ac223e4287162"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a71bf6e15f588fb60542ac223e4287162">&#9670;&nbsp;</a></span>ExampleFpgaBase< ExampleFpga ></h2>
+<a id="a298e19ed3f641d8d81d5f7a09fcb11dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a298e19ed3f641d8d81d5f7a09fcb11dc">&#9670;&nbsp;</a></span>stored::ExampleFpgaBase< ExampleFpga ></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1544,7 +1567,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">friend class <a class="el" href="classstored_1_1_example_fpga_base.html">ExampleFpgaBase</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a> &gt;</td>
+          <td class="memname">friend class <a class="el" href="classstored_1_1_example_fpga_base.html">stored::ExampleFpgaBase</a>&lt; <a class="el" href="classstored_1_1_example_fpga.html">ExampleFpga</a> &gt;</td>
         </tr>
       </table>
   </td>
@@ -1554,7 +1577,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00400">400</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00421">421</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1569,7 +1592,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>,<a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea51ac1ecb477fe077e2cef24f507cc127">Type::Blob</a>,28u,3u&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::blob</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>,<a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea51ac1ecb477fe077e2cef24f507cc127">Type::Blob</a>,28u,3u&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::blob</td>
         </tr>
       </table>
   </td>
@@ -1595,7 +1618,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>,bool,34u,1&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::bool_obj</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>,bool,34u,1&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::bool_obj</td>
         </tr>
       </table>
   </td>
@@ -1621,7 +1644,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>,uint32_t,20u,4&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::default_register</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>,uint32_t,20u,4&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::default_register</td>
         </tr>
       </table>
   </td>
@@ -1647,7 +1670,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>,uint32_t,24u,4&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::default_register_write_count</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>,uint32_t,24u,4&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::default_register_write_count</td>
         </tr>
       </table>
   </td>
@@ -1673,7 +1696,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_function.html">impl::StoreFunction</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>,int32_t,1u&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::ignored_function</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_function.html">impl::StoreFunction</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>,int32_t,1u&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::ignored_function</td>
         </tr>
       </table>
   </td>
@@ -1699,7 +1722,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>,uint32_t,0u,4&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::initialized_register</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>,uint32_t,0u,4&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::initialized_register</td>
         </tr>
       </table>
   </td>
@@ -1725,7 +1748,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>,uint16_t,32u,2&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::read_only_register</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>,uint16_t,32u,2&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::read_only_register</td>
         </tr>
       </table>
   </td>
@@ -1751,7 +1774,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>,<a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>,8u,6u&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::string</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>,<a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>,8u,6u&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::string</td>
         </tr>
       </table>
   </td>
@@ -1777,7 +1800,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga_objects.html#a1e86db575782ac7ccbc5b1e525cfb8e8">Implementation</a>,uint32_t,16u,4&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::t_clk</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a>,<a class="el" href="classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a>,uint32_t,16u,4&gt; stored::ExampleFpgaObjects&lt; ExampleFpgaBase&lt; ExampleFpga &gt; , ExampleFpga  &gt;::t_clk</td>
         </tr>
       </table>
   </td>

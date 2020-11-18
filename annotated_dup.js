@@ -3,6 +3,8 @@ var annotated_dup =
     [ "ed2", "namespaceed2.html", "namespaceed2" ],
     [ "stored", "namespacestored.html", "namespacestored" ],
     [ "CaseInverter", "class_case_inverter.html", "class_case_inverter" ],
+    [ "ExampleFpga", "class_example_fpga.html", "class_example_fpga" ],
+    [ "ExampleFpga2", "class_example_fpga2.html", "class_example_fpga2" ],
     [ "ExampleSync1", "class_example_sync1.html", "class_example_sync1" ],
     [ "ExampleSync2", "class_example_sync2.html", "class_example_sync2" ],
     [ "ExtendedDebugger", "class_extended_debugger.html", "class_extended_debugger" ],

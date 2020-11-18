@@ -1,9 +1,11 @@
 var classed2_1_1zmq__client_1_1_zmq_client =
 [
-    [ "__init__", "classed2_1_1zmq__client_1_1_zmq_client.html#a548188460b78bf05d054610e5cf41dc9", null ],
+    [ "__init__", "classed2_1_1zmq__client_1_1_zmq_client.html#a7b75b675f475738f160144671a176163", null ],
     [ "__del__", "classed2_1_1zmq__client_1_1_zmq_client.html#a43a84f061a30b0ae4c6e7065262cf7e3", null ],
-    [ "__init__", "classed2_1_1zmq__client_1_1_zmq_client.html#a548188460b78bf05d054610e5cf41dc9", null ],
+    [ "__init__", "classed2_1_1zmq__client_1_1_zmq_client.html#a7b75b675f475738f160144671a176163", null ],
     [ "__del__", "classed2_1_1zmq__client_1_1_zmq_client.html#a43a84f061a30b0ae4c6e7065262cf7e3", null ],
+    [ "__getitem__", "classed2_1_1zmq__client_1_1_zmq_client.html#a3daa6298473d02e310660a967bc1bfda", null ],
+    [ "__getitem__", "classed2_1_1zmq__client_1_1_zmq_client.html#a3daa6298473d02e310660a967bc1bfda", null ],
     [ "acquireAlias", "classed2_1_1zmq__client_1_1_zmq_client.html#ae844ec7524021cc1e3c335003169d81e", null ],
     [ "acquireAlias", "classed2_1_1zmq__client_1_1_zmq_client.html#ae844ec7524021cc1e3c335003169d81e", null ],
     [ "acquireMacro", "classed2_1_1zmq__client_1_1_zmq_client.html#a33c5dac4f6d150dea188d609132e78df", null ],
@@ -50,8 +52,8 @@ var classed2_1_1zmq__client_1_1_zmq_client =
     [ "saveState", "classed2_1_1zmq__client_1_1_zmq_client.html#af5b18d3f5996c9288ae33b777052a987", null ],
     [ "socket", "classed2_1_1zmq__client_1_1_zmq_client.html#ae9b801419eab010532a7a20e6f7258cb", null ],
     [ "socket", "classed2_1_1zmq__client_1_1_zmq_client.html#ae9b801419eab010532a7a20e6f7258cb", null ],
-    [ "stream", "classed2_1_1zmq__client_1_1_zmq_client.html#a91b506db45a2b882d2d78e929aa92ee1", null ],
-    [ "stream", "classed2_1_1zmq__client_1_1_zmq_client.html#a91b506db45a2b882d2d78e929aa92ee1", null ],
+    [ "stream", "classed2_1_1zmq__client_1_1_zmq_client.html#abaf88be805dde5fc15a5601965c89086", null ],
+    [ "stream", "classed2_1_1zmq__client_1_1_zmq_client.html#abaf88be805dde5fc15a5601965c89086", null ],
     [ "streams", "classed2_1_1zmq__client_1_1_zmq_client.html#a9ece7218753adbd6c01dff9339e9bb37", null ],
     [ "streams", "classed2_1_1zmq__client_1_1_zmq_client.html#a9ece7218753adbd6c01dff9339e9bb37", null ],
     [ "time", "classed2_1_1zmq__client_1_1_zmq_client.html#a9f9f8b3419ceb98b46b3f6b09961a31c", null ],
@@ -66,5 +68,6 @@ var classed2_1_1zmq__client_1_1_zmq_client =
     [ "version", "classed2_1_1zmq__client_1_1_zmq_client.html#a62ba73412d19edd7b9d537280164fc30", null ],
     [ "writeMem", "classed2_1_1zmq__client_1_1_zmq_client.html#a6171a706d0a0cf7f14a46ed8fba4bfdc", null ],
     [ "writeMem", "classed2_1_1zmq__client_1_1_zmq_client.html#a6171a706d0a0cf7f14a46ed8fba4bfdc", null ],
+    [ "csv", "classed2_1_1zmq__client_1_1_zmq_client.html#a9c608ab5a81d637cf7de7a177e024ea8", null ],
     [ "logger", "classed2_1_1zmq__client_1_1_zmq_client.html#a5b27817c3f53b6ca21358de49723e137", null ]
 ];

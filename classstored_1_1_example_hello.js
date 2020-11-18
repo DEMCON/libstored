@@ -1,7 +1,7 @@
 var classstored_1_1_example_hello =
 [
     [ "Base", "classstored_1_1_example_hello.html#adbfdee62d10a740df1c6ca0d08182c4a", null ],
-    [ "base", "classstored_1_1_example_hello.html#a6c848187e3a4b99180bd769baf0637d8", null ],
+    [ "base", "classstored_1_1_example_hello.html#a996ea5ae44fe884062d66d4578a5f8fb", null ],
     [ "Data", "classstored_1_1_example_hello.html#ad2c055b1cfec5368522853fdba1138e4", null ],
     [ "Implementation", "classstored_1_1_example_hello.html#a8f50d1afe556633cf4b566eb5ec087eb", null ],
     [ "Key", "classstored_1_1_example_hello.html#a370c9853912760c94f4e0b9b4aff94ff", null ],
@@ -21,7 +21,6 @@ var classstored_1_1_example_hello =
     [ "data", "classstored_1_1_example_hello.html#a60af4833d9ea875717156707dc4c0480", null ],
     [ "data", "classstored_1_1_example_hello.html#a1f63538990df7a85fd359668736e54f2", null ],
     [ "find", "classstored_1_1_example_hello.html#ae94c654f83ecedc1235461f3cccccdb8", null ],
-    [ "hash", "classstored_1_1_example_hello.html#a4593b1b6892071392ba6778612233415", null ],
     [ "hookEntryRO", "classstored_1_1_example_hello.html#a2684d04142fab7b238d901c92a0e71dc", null ],
     [ "hookEntryX", "classstored_1_1_example_hello.html#ac43892ef0caa277990336f7893f31495", null ],
     [ "hookExitRO", "classstored_1_1_example_hello.html#a4d4e9d109bcd012ed5c68e0e20e6241a", null ],
@@ -36,7 +35,7 @@ var classstored_1_1_example_hello =
     [ "operator=", "classstored_1_1_example_hello.html#a7de8f635808dec3081eb860e435c1b78", null ],
     [ "operator=", "classstored_1_1_example_hello.html#ade2bdb040fc94424a74bd6a896efe785", null ],
     [ "shortDirectory", "classstored_1_1_example_hello.html#ae7f8e67b36ad7759d4e2a01be97eefa4", null ],
-    [ "ExampleHelloBase< ExampleHello >", "classstored_1_1_example_hello.html#aa8f101eb3838850c5bc175212d09e1dc", null ],
+    [ "stored::ExampleHelloBase< ExampleHello >", "classstored_1_1_example_hello.html#a0b124c12f7321303316c777e0ed71011", null ],
     [ "hello", "classstored_1_1_example_hello.html#a231c7f29480e740bf33dac5a2dfcceb0", null ],
     [ "world", "classstored_1_1_example_hello.html#a988ce01f2aa6253b40448f97d4ab5ffe", null ]
 ];

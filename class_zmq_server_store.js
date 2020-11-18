@@ -26,7 +26,6 @@ var class_zmq_server_store =
     [ "data", "class_zmq_server_store.html#af501cbabd6dd9ac6f3965a048637bcdb", null ],
     [ "data", "class_zmq_server_store.html#a318c156d70e52b9a9b905636658b29ce", null ],
     [ "find", "class_zmq_server_store.html#af7f6ccd9ca138388931dfd53078608fd", null ],
-    [ "hash", "class_zmq_server_store.html#a86b84f6a3ed55500c976259f210c8620", null ],
     [ "hookEntryRO", "class_zmq_server_store.html#ab343e49fed3da25bc7a90a19ab56cbfa", null ],
     [ "hookEntryX", "class_zmq_server_store.html#a8f9867cb9532ad91b32630fc64185263", null ],
     [ "hookExitRO", "class_zmq_server_store.html#a6d6c7223c0be5044f10ebe0fa1e09cfa", null ],

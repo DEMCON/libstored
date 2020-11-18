@@ -82,6 +82,7 @@ $(document).ready(function(){initNavTree('classstored_1_1_example_basic.html',''
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pro-types">Protected Types</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
@@ -95,7 +96,7 @@ $(document).ready(function(){initNavTree('classstored_1_1_example_basic.html',''
 <div class="textblock"><p>Default <a class="el" href="classstored_1_1_example_basic_base.html" title="Base class with default interface of all ExampleBasic implementations. ">ExampleBasicBase</a> implementation. </p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="2_basic_2main_8cpp-example.html#_a1">2_basic/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00468">468</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00492">492</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -111,17 +112,19 @@ Inheritance diagram for stored::ExampleBasic:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
+<tr class="memitem:a50586e1799dcec26754a42f72f3093a6"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="separator:a50586e1799dcec26754a42f72f3093a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32cb9898a6371ffd68f4d4a35f4c7470"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_basic_base.html">ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a></td></tr>
 <tr class="separator:a32cb9898a6371ffd68f4d4a35f4c7470"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa4ba4c7d731da05b4de8bf49ea120602"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_basic_base.html">ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic.html#aa4ba4c7d731da05b4de8bf49ea120602">base</a></td></tr>
-<tr class="separator:aa4ba4c7d731da05b4de8bf49ea120602"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab563b600fee1173c8be1567823ffd135"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#ab563b600fee1173c8be1567823ffd135">Implementation</a></td></tr>
-<tr class="memdesc:ab563b600fee1173c8be1567823ffd135"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the actual implementation, which is the (lowest) subclass.  <a href="#ab563b600fee1173c8be1567823ffd135">More...</a><br /></td></tr>
+<tr class="memitem:acd00dfbbf504b33d9c19074d50d9730f"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic.html#acd00dfbbf504b33d9c19074d50d9730f">base</a></td></tr>
+<tr class="separator:acd00dfbbf504b33d9c19074d50d9730f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab563b600fee1173c8be1567823ffd135"><td class="memItemLeft" align="right" valign="top">typedef Implementation_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a></td></tr>
+<tr class="memdesc:ab563b600fee1173c8be1567823ffd135"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of the actual implementation, which is the (lowest) subclass.  <a href="#ab563b600fee1173c8be1567823ffd135">More...</a><br /></td></tr>
 <tr class="separator:ab563b600fee1173c8be1567823ffd135"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ddb301dba53ed370e1cc322759cb497"><td class="memItemLeft" align="right" valign="top">typedef uintptr_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#a2ddb301dba53ed370e1cc322759cb497">Key</a></td></tr>
 <tr class="memdesc:a2ddb301dba53ed370e1cc322759cb497"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of a key.  <a href="#a2ddb301dba53ed370e1cc322759cb497">More...</a><br /></td></tr>
 <tr class="separator:a2ddb301dba53ed370e1cc322759cb497"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afefe333f494c45228bccfd4a790a2109"><td class="memItemLeft" align="right" valign="top">typedef std::map&lt; std::string, <a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#afefe333f494c45228bccfd4a790a2109">ObjectMap</a></td></tr>
+<tr class="memitem:afefe333f494c45228bccfd4a790a2109"><td class="memItemLeft" align="right" valign="top">typedef std::map&lt; std::string, <a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#afefe333f494c45228bccfd4a790a2109">ObjectMap</a></td></tr>
 <tr class="memdesc:afefe333f494c45228bccfd4a790a2109"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map as generated by <a class="el" href="classstored_1_1_example_basic_base.html#ad83bad80fb10fec2f746ddbc85b5e54f" title="Create a name to Variant map for the store. ">map()</a>.  <a href="#afefe333f494c45228bccfd4a790a2109">More...</a><br /></td></tr>
 <tr class="separator:afefe333f494c45228bccfd4a790a2109"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63d3111d4b9d06ec76d8a28f8734a82b"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_basic_objects.html">ExampleBasicObjects</a>&lt; <a class="el" href="classstored_1_1_example_basic_base.html">ExampleBasicBase</a>, <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#a63d3111d4b9d06ec76d8a28f8734a82b">Objects</a></td></tr>
@@ -141,19 +144,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:adbb07105fc836e4d35b1556f716c067f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_basic_base.html#a2ddb301dba53ed370e1cc322759cb497">Key</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#adbb07105fc836e4d35b1556f716c067f">bufferToKey</a> (void const *<a class="el" href="classstored_1_1_example_basic_base.html#a3a8844083af2ce6327a2aee1337d6e4e">buffer</a>) const</td></tr>
 <tr class="memdesc:adbb07105fc836e4d35b1556f716c067f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a variable's buffer to a key.  <a href="#adbb07105fc836e4d35b1556f716c067f">More...</a><br /></td></tr>
 <tr class="separator:adbb07105fc836e4d35b1556f716c067f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a50e187ec653524f1b746f6443f0a88"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#a4a50e187ec653524f1b746f6443f0a88">find</a> (char const *<a class="el" href="classstored_1_1_example_basic_base.html#a0299178cf9b1b8291c869b3aef21c9fe">name</a>, size_t len=std::numeric_limits&lt; size_t &gt;::max())</td></tr>
+<tr class="memitem:a4a50e187ec653524f1b746f6443f0a88"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#a4a50e187ec653524f1b746f6443f0a88">find</a> (char const *<a class="el" href="classstored_1_1_example_basic_base.html#a0299178cf9b1b8291c869b3aef21c9fe">name</a>, size_t len=std::numeric_limits&lt; size_t &gt;::max())</td></tr>
 <tr class="memdesc:a4a50e187ec653524f1b746f6443f0a88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds an object with the given name.  <a href="#a4a50e187ec653524f1b746f6443f0a88">More...</a><br /></td></tr>
 <tr class="separator:a4a50e187ec653524f1b746f6443f0a88"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2853c11ba02e24d1520e97b8954545de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#a2853c11ba02e24d1520e97b8954545de">four_ints_a</a> (int a)</td></tr>
+<tr class="memitem:a2853c11ba02e24d1520e97b8954545de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#a2853c11ba02e24d1520e97b8954545de">four_ints_a</a> (int a)</td></tr>
 <tr class="memdesc:a2853c11ba02e24d1520e97b8954545de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array-lookup accessor for four ints[a].  <a href="#a2853c11ba02e24d1520e97b8954545de">More...</a><br /></td></tr>
 <tr class="separator:a2853c11ba02e24d1520e97b8954545de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c11be6fefd54ebe7612a2ebc67636c8"><td class="memItemLeft" align="right" valign="top">char const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#a0c11be6fefd54ebe7612a2ebc67636c8">hash</a> () const</td></tr>
-<tr class="memdesc:a0c11be6fefd54ebe7612a2ebc67636c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique hash of the store.  <a href="#a0c11be6fefd54ebe7612a2ebc67636c8">More...</a><br /></td></tr>
-<tr class="separator:a0c11be6fefd54ebe7612a2ebc67636c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed1369ecf82582f884f6b6960e319a5a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a> const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#aed1369ecf82582f884f6b6960e319a5a">implementation</a> () const</td></tr>
+<tr class="memitem:aed1369ecf82582f884f6b6960e319a5a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a> const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#aed1369ecf82582f884f6b6960e319a5a">implementation</a> () const</td></tr>
 <tr class="memdesc:aed1369ecf82582f884f6b6960e319a5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the reference to the implementation.  <a href="#aed1369ecf82582f884f6b6960e319a5a">More...</a><br /></td></tr>
 <tr class="separator:aed1369ecf82582f884f6b6960e319a5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7b65de3ded7283a1ff1d8263710b82d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#ab7b65de3ded7283a1ff1d8263710b82d">implementation</a> ()</td></tr>
+<tr class="memitem:ab7b65de3ded7283a1ff1d8263710b82d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#ab7b65de3ded7283a1ff1d8263710b82d">implementation</a> ()</td></tr>
 <tr class="memdesc:ab7b65de3ded7283a1ff1d8263710b82d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the reference to the implementation.  <a href="#ab7b65de3ded7283a1ff1d8263710b82d">More...</a><br /></td></tr>
 <tr class="separator:ab7b65de3ded7283a1ff1d8263710b82d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb67542f8419293119300844180483e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#acb67542f8419293119300844180483e1">list</a> (F <a class="el" href="classstored_1_1_example_basic_objects.html#ad83d1cee358e237a7b5c574c4979e9a6">f</a>, void *arg, char const *prefix=nullptr)</td></tr>
@@ -180,91 +180,97 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7f9ec3ca93d409684def8f8e14893e82"><td class="memItemLeft" align="right" valign="top">uint8_t const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#a7f9ec3ca93d409684def8f8e14893e82">shortDirectory</a> () const</td></tr>
 <tr class="memdesc:a7f9ec3ca93d409684def8f8e14893e82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the short directory.  <a href="#a7f9ec3ca93d409684def8f8e14893e82">More...</a><br /></td></tr>
 <tr class="separator:a7f9ec3ca93d409684def8f8e14893e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af785945f6963daf71d76d450bdd23c60"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#af785945f6963daf71d76d450bdd23c60">three_ints_a</a> (int a)</td></tr>
+<tr class="memitem:af785945f6963daf71d76d450bdd23c60"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#af785945f6963daf71d76d450bdd23c60">three_ints_a</a> (int a)</td></tr>
 <tr class="memdesc:af785945f6963daf71d76d450bdd23c60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array-lookup accessor for three ints[a].  <a href="#af785945f6963daf71d76d450bdd23c60">More...</a><br /></td></tr>
 <tr class="separator:af785945f6963daf71d76d450bdd23c60"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc1ae4d43fb8492d170a369856f3d7df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#acc1ae4d43fb8492d170a369856f3d7df">two_strings_a</a> (int a)</td></tr>
+<tr class="memitem:acc1ae4d43fb8492d170a369856f3d7df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#acc1ae4d43fb8492d170a369856f3d7df">two_strings_a</a> (int a)</td></tr>
 <tr class="memdesc:acc1ae4d43fb8492d170a369856f3d7df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array-lookup accessor for two strings[a].  <a href="#acc1ae4d43fb8492d170a369856f3d7df">More...</a><br /></td></tr>
 <tr class="separator:acc1ae4d43fb8492d170a369856f3d7df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ae7f4ae697c52bf82f339a13d06b2e45e"><td class="memItemLeft" align="right" valign="top">static char const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_base.html#ae7f4ae697c52bf82f339a13d06b2e45e">hash</a> ()</td></tr>
+<tr class="memdesc:ae7f4ae697c52bf82f339a13d06b2e45e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique hash of the store.  <a href="#ae7f4ae697c52bf82f339a13d06b2e45e">More...</a><br /></td></tr>
+<tr class="separator:ae7f4ae697c52bf82f339a13d06b2e45e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ac70c95ad7a3363969c5f89c2e0b2b6f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, int8_t, 99u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#ac70c95ad7a3363969c5f89c2e0b2b6f1">_42_test42</a></td></tr>
+<tr class="memitem:ac70c95ad7a3363969c5f89c2e0b2b6f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, int8_t, 99u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#ac70c95ad7a3363969c5f89c2e0b2b6f1">_42_test42</a></td></tr>
 <tr class="memdesc:ac70c95ad7a3363969c5f89c2e0b2b6f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">= 42 test42  <a href="#ac70c95ad7a3363969c5f89c2e0b2b6f1">More...</a><br /></td></tr>
 <tr class="separator:ac70c95ad7a3363969c5f89c2e0b2b6f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc554e37c4f44d2ea64983638706b674"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, int8_t, 7u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#abc554e37c4f44d2ea64983638706b674">another_42</a></td></tr>
+<tr class="memitem:abc554e37c4f44d2ea64983638706b674"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, int8_t, 7u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#abc554e37c4f44d2ea64983638706b674">another_42</a></td></tr>
 <tr class="memdesc:abc554e37c4f44d2ea64983638706b674"><td class="mdescLeft">&#160;</td><td class="mdescRight">another 42  <a href="#abc554e37c4f44d2ea64983638706b674">More...</a><br /></td></tr>
 <tr class="separator:abc554e37c4f44d2ea64983638706b674"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a63724119739d071a9bf240aef975b82a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, bool, 96u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a63724119739d071a9bf240aef975b82a">b</a></td></tr>
+<tr class="memitem:a63724119739d071a9bf240aef975b82a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, bool, 96u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a63724119739d071a9bf240aef975b82a">b</a></td></tr>
 <tr class="memdesc:a63724119739d071a9bf240aef975b82a"><td class="mdescLeft">&#160;</td><td class="mdescRight">b  <a href="#a63724119739d071a9bf240aef975b82a">More...</a><br /></td></tr>
 <tr class="separator:a63724119739d071a9bf240aef975b82a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff512989f4d31cea2f990549171340d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, <a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea51ac1ecb477fe077e2cef24f507cc127">Type::Blob</a>, 16u, 16u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#aff512989f4d31cea2f990549171340d7">blob</a></td></tr>
+<tr class="memitem:aff512989f4d31cea2f990549171340d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, <a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea51ac1ecb477fe077e2cef24f507cc127">Type::Blob</a>, 16u, 16u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#aff512989f4d31cea2f990549171340d7">blob</a></td></tr>
 <tr class="memdesc:aff512989f4d31cea2f990549171340d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">blob  <a href="#aff512989f4d31cea2f990549171340d7">More...</a><br /></td></tr>
 <tr class="separator:aff512989f4d31cea2f990549171340d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ef08cc9d38c50b482d1a116b03cc98b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, double, 48u, 8 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a6ef08cc9d38c50b482d1a116b03cc98b">d</a></td></tr>
+<tr class="memitem:a6ef08cc9d38c50b482d1a116b03cc98b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, double, 48u, 8 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a6ef08cc9d38c50b482d1a116b03cc98b">d</a></td></tr>
 <tr class="memdesc:a6ef08cc9d38c50b482d1a116b03cc98b"><td class="mdescLeft">&#160;</td><td class="mdescRight">d  <a href="#a6ef08cc9d38c50b482d1a116b03cc98b">More...</a><br /></td></tr>
 <tr class="separator:a6ef08cc9d38c50b482d1a116b03cc98b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad83d1cee358e237a7b5c574c4979e9a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, float, 64u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#ad83d1cee358e237a7b5c574c4979e9a6">f</a></td></tr>
+<tr class="memitem:ad83d1cee358e237a7b5c574c4979e9a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, float, 64u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#ad83d1cee358e237a7b5c574c4979e9a6">f</a></td></tr>
 <tr class="memdesc:ad83d1cee358e237a7b5c574c4979e9a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">f  <a href="#ad83d1cee358e237a7b5c574c4979e9a6">More...</a><br /></td></tr>
 <tr class="separator:ad83d1cee358e237a7b5c574c4979e9a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a702e83c5f1d0d7f446268fcff605d935"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, int8_t, 100u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a702e83c5f1d0d7f446268fcff605d935">four_ints_0</a></td></tr>
+<tr class="memitem:a702e83c5f1d0d7f446268fcff605d935"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, int8_t, 100u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a702e83c5f1d0d7f446268fcff605d935">four_ints_0</a></td></tr>
 <tr class="memdesc:a702e83c5f1d0d7f446268fcff605d935"><td class="mdescLeft">&#160;</td><td class="mdescRight">four ints[0]  <a href="#a702e83c5f1d0d7f446268fcff605d935">More...</a><br /></td></tr>
 <tr class="separator:a702e83c5f1d0d7f446268fcff605d935"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad94211d7ea095a8e0112442ce9d6e43d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, int8_t, 101u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#ad94211d7ea095a8e0112442ce9d6e43d">four_ints_1</a></td></tr>
+<tr class="memitem:ad94211d7ea095a8e0112442ce9d6e43d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, int8_t, 101u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#ad94211d7ea095a8e0112442ce9d6e43d">four_ints_1</a></td></tr>
 <tr class="memdesc:ad94211d7ea095a8e0112442ce9d6e43d"><td class="mdescLeft">&#160;</td><td class="mdescRight">four ints[1]  <a href="#ad94211d7ea095a8e0112442ce9d6e43d">More...</a><br /></td></tr>
 <tr class="separator:ad94211d7ea095a8e0112442ce9d6e43d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afdb83cf49d1a404dea83325d4fc900fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, int8_t, 102u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#afdb83cf49d1a404dea83325d4fc900fd">four_ints_2</a></td></tr>
+<tr class="memitem:afdb83cf49d1a404dea83325d4fc900fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, int8_t, 102u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#afdb83cf49d1a404dea83325d4fc900fd">four_ints_2</a></td></tr>
 <tr class="memdesc:afdb83cf49d1a404dea83325d4fc900fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">four ints[2]  <a href="#afdb83cf49d1a404dea83325d4fc900fd">More...</a><br /></td></tr>
 <tr class="separator:afdb83cf49d1a404dea83325d4fc900fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28b7dad7b861d5e4b71d07915be6e97e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, int8_t, 103u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a28b7dad7b861d5e4b71d07915be6e97e">four_ints_3</a></td></tr>
+<tr class="memitem:a28b7dad7b861d5e4b71d07915be6e97e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, int8_t, 103u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a28b7dad7b861d5e4b71d07915be6e97e">four_ints_3</a></td></tr>
 <tr class="memdesc:a28b7dad7b861d5e4b71d07915be6e97e"><td class="mdescLeft">&#160;</td><td class="mdescRight">four ints[3]  <a href="#a28b7dad7b861d5e4b71d07915be6e97e">More...</a><br /></td></tr>
 <tr class="separator:a28b7dad7b861d5e4b71d07915be6e97e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab185870d6fc4334af5160f84098b416d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, int16_t, 92u, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#ab185870d6fc4334af5160f84098b416d">i16</a></td></tr>
+<tr class="memitem:ab185870d6fc4334af5160f84098b416d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, int16_t, 92u, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#ab185870d6fc4334af5160f84098b416d">i16</a></td></tr>
 <tr class="memdesc:ab185870d6fc4334af5160f84098b416d"><td class="mdescLeft">&#160;</td><td class="mdescRight">i16  <a href="#ab185870d6fc4334af5160f84098b416d">More...</a><br /></td></tr>
 <tr class="separator:ab185870d6fc4334af5160f84098b416d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc20c9df4167e708bd8f045a23127015"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, int32_t, 56u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#acc20c9df4167e708bd8f045a23127015">i32</a></td></tr>
+<tr class="memitem:acc20c9df4167e708bd8f045a23127015"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, int32_t, 56u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#acc20c9df4167e708bd8f045a23127015">i32</a></td></tr>
 <tr class="memdesc:acc20c9df4167e708bd8f045a23127015"><td class="mdescLeft">&#160;</td><td class="mdescRight">i32  <a href="#acc20c9df4167e708bd8f045a23127015">More...</a><br /></td></tr>
 <tr class="separator:acc20c9df4167e708bd8f045a23127015"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25a3f8c805ed9cf0be479c55c2b3aa35"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, int64_t, 32u, 8 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a25a3f8c805ed9cf0be479c55c2b3aa35">i64</a></td></tr>
+<tr class="memitem:a25a3f8c805ed9cf0be479c55c2b3aa35"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, int64_t, 32u, 8 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a25a3f8c805ed9cf0be479c55c2b3aa35">i64</a></td></tr>
 <tr class="memdesc:a25a3f8c805ed9cf0be479c55c2b3aa35"><td class="mdescLeft">&#160;</td><td class="mdescRight">i64  <a href="#a25a3f8c805ed9cf0be479c55c2b3aa35">More...</a><br /></td></tr>
 <tr class="separator:a25a3f8c805ed9cf0be479c55c2b3aa35"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ad29da2174e8016482c0ca64e9a0a07"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, int8_t, 97u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a7ad29da2174e8016482c0ca64e9a0a07">i8</a></td></tr>
+<tr class="memitem:a7ad29da2174e8016482c0ca64e9a0a07"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, int8_t, 97u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a7ad29da2174e8016482c0ca64e9a0a07">i8</a></td></tr>
 <tr class="memdesc:a7ad29da2174e8016482c0ca64e9a0a07"><td class="mdescLeft">&#160;</td><td class="mdescRight">i8  <a href="#a7ad29da2174e8016482c0ca64e9a0a07">More...</a><br /></td></tr>
 <tr class="separator:a7ad29da2174e8016482c0ca64e9a0a07"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9eaebb4547d6c8194d0b700c9d5d6cd0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, <a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>, 68u, 4u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a9eaebb4547d6c8194d0b700c9d5d6cd0">s</a></td></tr>
+<tr class="memitem:a9eaebb4547d6c8194d0b700c9d5d6cd0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, <a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>, 68u, 4u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a9eaebb4547d6c8194d0b700c9d5d6cd0">s</a></td></tr>
 <tr class="memdesc:a9eaebb4547d6c8194d0b700c9d5d6cd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">s  <a href="#a9eaebb4547d6c8194d0b700c9d5d6cd0">More...</a><br /></td></tr>
 <tr class="separator:a9eaebb4547d6c8194d0b700c9d5d6cd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6ae8e631be9b435050267b8f3e98b07"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, bool, 8u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#af6ae8e631be9b435050267b8f3e98b07">So_this_is_a_perfectly_fine_name_even_if_it_includes_characters_like_and_so_on</a></td></tr>
+<tr class="memitem:af6ae8e631be9b435050267b8f3e98b07"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, bool, 8u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#af6ae8e631be9b435050267b8f3e98b07">So_this_is_a_perfectly_fine_name_even_if_it_includes_characters_like_and_so_on</a></td></tr>
 <tr class="memdesc:af6ae8e631be9b435050267b8f3e98b07"><td class="mdescLeft">&#160;</td><td class="mdescRight">So, this is a perfectly fine name, even if it includes characters like ~!#$%; and so on.  <a href="#af6ae8e631be9b435050267b8f3e98b07">More...</a><br /></td></tr>
 <tr class="separator:af6ae8e631be9b435050267b8f3e98b07"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa7e0bf6f7f091b3cc497b3d208fcf4f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, int8_t, 6u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#aa7e0bf6f7f091b3cc497b3d208fcf4f8">test42</a></td></tr>
+<tr class="memitem:aa7e0bf6f7f091b3cc497b3d208fcf4f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, int8_t, 6u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#aa7e0bf6f7f091b3cc497b3d208fcf4f8">test42</a></td></tr>
 <tr class="memdesc:aa7e0bf6f7f091b3cc497b3d208fcf4f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">test42  <a href="#aa7e0bf6f7f091b3cc497b3d208fcf4f8">More...</a><br /></td></tr>
 <tr class="separator:aa7e0bf6f7f091b3cc497b3d208fcf4f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adef5c84da0cbf9655063ee5e29248a54"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, int16_t, 0u, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#adef5c84da0cbf9655063ee5e29248a54">three_ints_0</a></td></tr>
+<tr class="memitem:adef5c84da0cbf9655063ee5e29248a54"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, int16_t, 0u, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#adef5c84da0cbf9655063ee5e29248a54">three_ints_0</a></td></tr>
 <tr class="memdesc:adef5c84da0cbf9655063ee5e29248a54"><td class="mdescLeft">&#160;</td><td class="mdescRight">three ints[0]  <a href="#adef5c84da0cbf9655063ee5e29248a54">More...</a><br /></td></tr>
 <tr class="separator:adef5c84da0cbf9655063ee5e29248a54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58543d7a4e41af52439ad1c84b89bba8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, int16_t, 2u, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a58543d7a4e41af52439ad1c84b89bba8">three_ints_1</a></td></tr>
+<tr class="memitem:a58543d7a4e41af52439ad1c84b89bba8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, int16_t, 2u, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a58543d7a4e41af52439ad1c84b89bba8">three_ints_1</a></td></tr>
 <tr class="memdesc:a58543d7a4e41af52439ad1c84b89bba8"><td class="mdescLeft">&#160;</td><td class="mdescRight">three ints[1]  <a href="#a58543d7a4e41af52439ad1c84b89bba8">More...</a><br /></td></tr>
 <tr class="separator:a58543d7a4e41af52439ad1c84b89bba8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a926691d165ea6f7d6acc7b107c4afd6b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, int16_t, 4u, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a926691d165ea6f7d6acc7b107c4afd6b">three_ints_2</a></td></tr>
+<tr class="memitem:a926691d165ea6f7d6acc7b107c4afd6b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, int16_t, 4u, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a926691d165ea6f7d6acc7b107c4afd6b">three_ints_2</a></td></tr>
 <tr class="memdesc:a926691d165ea6f7d6acc7b107c4afd6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">three ints[2]  <a href="#a926691d165ea6f7d6acc7b107c4afd6b">More...</a><br /></td></tr>
 <tr class="separator:a926691d165ea6f7d6acc7b107c4afd6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25f57096ab07ebe05fd378159c62d43c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, <a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>, 76u, 4u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a25f57096ab07ebe05fd378159c62d43c">two_strings_0</a></td></tr>
+<tr class="memitem:a25f57096ab07ebe05fd378159c62d43c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, <a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>, 76u, 4u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a25f57096ab07ebe05fd378159c62d43c">two_strings_0</a></td></tr>
 <tr class="memdesc:a25f57096ab07ebe05fd378159c62d43c"><td class="mdescLeft">&#160;</td><td class="mdescRight">two strings[0]  <a href="#a25f57096ab07ebe05fd378159c62d43c">More...</a><br /></td></tr>
 <tr class="separator:a25f57096ab07ebe05fd378159c62d43c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc46794d34f12c09fbc01a1a35583f71"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, <a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>, 84u, 4u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#abc46794d34f12c09fbc01a1a35583f71">two_strings_1</a></td></tr>
+<tr class="memitem:abc46794d34f12c09fbc01a1a35583f71"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, <a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>, 84u, 4u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#abc46794d34f12c09fbc01a1a35583f71">two_strings_1</a></td></tr>
 <tr class="memdesc:abc46794d34f12c09fbc01a1a35583f71"><td class="mdescLeft">&#160;</td><td class="mdescRight">two strings[1]  <a href="#abc46794d34f12c09fbc01a1a35583f71">More...</a><br /></td></tr>
 <tr class="separator:abc46794d34f12c09fbc01a1a35583f71"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a751fe97d5e737ca856995a9e7d1078e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, uint16_t, 94u, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a751fe97d5e737ca856995a9e7d1078e9">u16</a></td></tr>
+<tr class="memitem:a751fe97d5e737ca856995a9e7d1078e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, uint16_t, 94u, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a751fe97d5e737ca856995a9e7d1078e9">u16</a></td></tr>
 <tr class="memdesc:a751fe97d5e737ca856995a9e7d1078e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">u16  <a href="#a751fe97d5e737ca856995a9e7d1078e9">More...</a><br /></td></tr>
 <tr class="separator:a751fe97d5e737ca856995a9e7d1078e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc4b54b1819ded23dc59ba14245365ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, uint32_t, 60u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#afc4b54b1819ded23dc59ba14245365ce">u32</a></td></tr>
+<tr class="memitem:afc4b54b1819ded23dc59ba14245365ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, uint32_t, 60u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#afc4b54b1819ded23dc59ba14245365ce">u32</a></td></tr>
 <tr class="memdesc:afc4b54b1819ded23dc59ba14245365ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">u32  <a href="#afc4b54b1819ded23dc59ba14245365ce">More...</a><br /></td></tr>
 <tr class="separator:afc4b54b1819ded23dc59ba14245365ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31e5f96ba94053b33edfa44d11d1b8bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, uint64_t, 40u, 8 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a31e5f96ba94053b33edfa44d11d1b8bd">u64</a></td></tr>
+<tr class="memitem:a31e5f96ba94053b33edfa44d11d1b8bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, uint64_t, 40u, 8 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a31e5f96ba94053b33edfa44d11d1b8bd">u64</a></td></tr>
 <tr class="memdesc:a31e5f96ba94053b33edfa44d11d1b8bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">u64  <a href="#a31e5f96ba94053b33edfa44d11d1b8bd">More...</a><br /></td></tr>
 <tr class="separator:a31e5f96ba94053b33edfa44d11d1b8bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a49bc1d32cc1c92a11d28714a56abe2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>, uint8_t, 98u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a0a49bc1d32cc1c92a11d28714a56abe2">u8</a></td></tr>
+<tr class="memitem:a0a49bc1d32cc1c92a11d28714a56abe2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>, <a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>, uint8_t, 98u, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic_objects.html#a0a49bc1d32cc1c92a11d28714a56abe2">u8</a></td></tr>
 <tr class="memdesc:a0a49bc1d32cc1c92a11d28714a56abe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">u8  <a href="#a0a49bc1d32cc1c92a11d28714a56abe2">More...</a><br /></td></tr>
 <tr class="separator:a0a49bc1d32cc1c92a11d28714a56abe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -318,8 +324,8 @@ Protected Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
-<tr class="memitem:ac72b40ea5c64cfe82757bc7ef42d9902"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic.html#ac72b40ea5c64cfe82757bc7ef42d9902">ExampleBasicBase&lt; ExampleBasic &gt;</a></td></tr>
-<tr class="separator:ac72b40ea5c64cfe82757bc7ef42d9902"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a005f5cfcd176112132a024f48490dc97"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_basic.html#a005f5cfcd176112132a024f48490dc97">stored::ExampleBasicBase&lt; ExampleBasic &gt;</a></td></tr>
+<tr class="separator:a005f5cfcd176112132a024f48490dc97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a32cb9898a6371ffd68f4d4a35f4c7470"></a>
@@ -346,19 +352,19 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a id="aa4ba4c7d731da05b4de8bf49ea120602"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa4ba4c7d731da05b4de8bf49ea120602">&#9670;&nbsp;</a></span>base</h2>
+<a id="acd00dfbbf504b33d9c19074d50d9730f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd00dfbbf504b33d9c19074d50d9730f">&#9670;&nbsp;</a></span>base</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="classstored_1_1_example_basic_base.html">ExampleBasicBase</a>&lt;<a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>&gt; <a class="el" href="classstored_1_1_example_basic.html#aa4ba4c7d731da05b4de8bf49ea120602">stored::ExampleBasic::base</a></td>
+          <td class="memname">typedef stored:: <a class="el" href="classstored_1_1_example_basic_base.html">ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a> &gt; <a class="el" href="classstored_1_1_example_basic.html#acd00dfbbf504b33d9c19074d50d9730f">stored::ExampleBasic::base</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00471">471</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00493">493</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -384,7 +390,7 @@ Friends</h2></td></tr>
 
 <p>The type of the data structure. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00172">172</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00195">195</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -393,24 +399,16 @@ Friends</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  &gt;::<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a></td>
+          <td class="memname">typedef Implementation_ <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; Implementation_ &gt;::<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of the actual implementation, which is the (lowest) subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00159">159</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00171">171</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -437,7 +435,7 @@ Friends</h2></td></tr>
 <p><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of a key. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_basic_base.html#adbb07105fc836e4d35b1556f716c067f" title="Converts a variable&#39;s buffer to a key. ">bufferToKey()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00267">267</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00290">290</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -451,7 +449,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">typedef std::map&lt;std::string, <a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>&gt; &gt; <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  &gt;::<a class="el" href="classstored_1_1_example_basic_base.html#afefe333f494c45228bccfd4a790a2109">ObjectMap</a></td>
+          <td class="memname">typedef std::map&lt;std::string, <a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>&gt; &gt; <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  &gt;::<a class="el" href="classstored_1_1_example_basic_base.html#afefe333f494c45228bccfd4a790a2109">ObjectMap</a></td>
         </tr>
       </table>
   </td>
@@ -463,7 +461,7 @@ Friends</h2></td></tr>
 
 <p>Map as generated by <a class="el" href="classstored_1_1_example_basic_base.html#ad83bad80fb10fec2f746ddbc85b5e54f" title="Create a name to Variant map for the store. ">map()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00437">437</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00461">461</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -487,7 +485,32 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00157">157</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00169">169</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="a50586e1799dcec26754a42f72f3093a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50586e1799dcec26754a42f72f3093a6">&#9670;&nbsp;</a></span>anonymous enum</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">anonymous enum</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00177">177</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -620,7 +643,7 @@ Friends</h2></td></tr>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_basic_base.html#a8ce44964922fa6c7b0ff804985bc7e5a" title="Hook when read-only access to a given variable is released. ">hookExitRO()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00344">344</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00368">368</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -668,7 +691,7 @@ Friends</h2></td></tr>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_basic_base.html#a6d272932c5cfeac594b6c5329d485ca4" title="Hook when exclusive access to a given variable is released. ">hookExitX()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00332">332</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00356">356</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -716,7 +739,7 @@ Friends</h2></td></tr>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_basic_base.html#a1512774b85fc39a4fff5dfe60d6241c3" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00350">350</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00374">374</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -770,7 +793,7 @@ Friends</h2></td></tr>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_basic_base.html#af7fa3d1e5930278e473d6a540a92681b" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00338">338</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00362">362</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -799,7 +822,7 @@ Friends</h2></td></tr>
 
 <p>Returns the buffer with all variable data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00178">178</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00201">201</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -828,7 +851,7 @@ Friends</h2></td></tr>
 
 <p>Returns the buffer with all variable data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00180">180</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00203">203</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -861,7 +884,7 @@ Friends</h2></td></tr>
 <p>For synchronization, when <a class="el" href="classstored_1_1_example_basic_base.html#af7fa3d1e5930278e473d6a540a92681b" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a> or <a class="el" href="classstored_1_1_example_basic_base.html#a1512774b85fc39a4fff5dfe60d6241c3" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a> is invoked, one can compute the key of the object that is accessed. The key can be used, for example, in a key-to-Variant map. When data arrives from another party, the key can be used to find the proper <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> in the map.</p>
 <p>This way, data exchange is type-safe, as the <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> can check if the data format matches the expected type. However, one cannot process data if the key is not set yet in the map. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00289">289</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00312">312</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -914,7 +937,7 @@ Friends</h2></td></tr>
 <p><a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">Function</a> callback resolver. </p>
 <p>This is the callback for a <a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">Function</a> and a <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a>, which converts a call to the function identifier to an actual function call within the Implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00255">255</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00278">278</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -943,7 +966,7 @@ Friends</h2></td></tr>
 
 <p>Returns the container for all the store's data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00174">174</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00197">197</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -972,7 +995,7 @@ Friends</h2></td></tr>
 
 <p>Returns the container for all the store's data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00176">176</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00199">199</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -986,7 +1009,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>&gt; <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  &gt;::find </td>
+          <td class="memname"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>&gt; <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  &gt;::find </td>
           <td>(</td>
           <td class="paramtype">char const *&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -1013,7 +1036,7 @@ Friends</h2></td></tr>
 <p>Finds an object with the given name. </p>
 <dl class="section return"><dt>Returns</dt><dd>the object, or an invalid <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">stored::Variant</a> if not found. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00416">416</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00440">440</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -1027,7 +1050,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>&gt; <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  &gt;::four_ints_a </td>
+          <td class="memname"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>&gt; <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  &gt;::four_ints_a </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>a</em></td><td>)</td>
@@ -1043,12 +1066,12 @@ Friends</h2></td></tr>
 
 <p>Array-lookup accessor for four ints[a]. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00356">356</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00380">380</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
-<a id="a0c11be6fefd54ebe7612a2ebc67636c8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0c11be6fefd54ebe7612a2ebc67636c8">&#9670;&nbsp;</a></span>hash()</h2>
+<a id="ae7f4ae697c52bf82f339a13d06b2e45e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7f4ae697c52bf82f339a13d06b2e45e">&#9670;&nbsp;</a></span>hash()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1057,22 +1080,22 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">char const* <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  &gt;::hash </td>
+          <td class="memname">static char const* <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  &gt;::hash </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">inherited</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Returns a unique hash of the store. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00163">163</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00175">175</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -1119,7 +1142,7 @@ Friends</h2></td></tr>
 <p>Hook when read-only access to a given variable is to be acquired. </p>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_basic_base.html#a8ce44964922fa6c7b0ff804985bc7e5a" title="Hook when read-only access to a given variable is released. ">hookExitRO()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00318">318</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00342">342</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -1166,7 +1189,7 @@ Friends</h2></td></tr>
 <p>Hook when exclusive access to a given variable is to be acquired. </p>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_basic_base.html#a6d272932c5cfeac594b6c5329d485ca4" title="Hook when exclusive access to a given variable is released. ">hookExitX()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00301">301</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00325">325</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -1213,7 +1236,7 @@ Friends</h2></td></tr>
 <p>Hook when read-only access to a given variable is released. </p>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_basic_base.html#a1512774b85fc39a4fff5dfe60d6241c3" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00325">325</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00349">349</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -1266,7 +1289,7 @@ Friends</h2></td></tr>
 <p>Hook when exclusive access to a given variable is released. </p>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_basic_base.html#af7fa3d1e5930278e473d6a540a92681b" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00311">311</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00335">335</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -1280,7 +1303,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a> const&amp; <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  &gt;::implementation </td>
+          <td class="memname"><a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a> const&amp; <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  &gt;::implementation </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1295,7 +1318,7 @@ Friends</h2></td></tr>
 
 <p>Returns the reference to the implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00166">166</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00189">189</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -1309,7 +1332,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>&amp; <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  &gt;::implementation </td>
+          <td class="memname"><a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>&amp; <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  &gt;::implementation </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1324,7 +1347,7 @@ Friends</h2></td></tr>
 
 <p>Returns the reference to the implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00168">168</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00191">191</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -1371,7 +1394,7 @@ Friends</h2></td></tr>
 <p>Calls a callback for every object in the <a class="el" href="classstored_1_1_example_basic_base.html#a6bc705ca4911a7f2b7124aa0b6e91f8f" title="Retuns the long directory. ">longDirectory()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758" title="Iterates over all objects in the directory and invoke a callback for every object. ">stored::list()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00425">425</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00449">449</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -1402,7 +1425,7 @@ Friends</h2></td></tr>
 <p>Calls a callback for every object in the <a class="el" href="classstored_1_1_example_basic_base.html#a6bc705ca4911a7f2b7124aa0b6e91f8f" title="Retuns the long directory. ">longDirectory()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758" title="Iterates over all objects in the directory and invoke a callback for every object. ">stored::list()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00433">433</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00457">457</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -1432,7 +1455,7 @@ Friends</h2></td></tr>
 <p>Retuns the long directory. </p>
 <p>When not available, the short directory is returned. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00410">410</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00434">434</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -1463,7 +1486,7 @@ Friends</h2></td></tr>
 <p>Create a name to <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> map for the store. </p>
 <p>Generating the map may be expensive and the result is not cached. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00444">444</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00468">468</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -1492,7 +1515,7 @@ Friends</h2></td></tr>
 
 <p>Returns the name of store, which can be used as prefix for <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00161">161</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00173">173</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -1577,7 +1600,7 @@ Friends</h2></td></tr>
 
 <p>Returns the short directory. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00406">406</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00430">430</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -1591,7 +1614,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>&gt; <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  &gt;::three_ints_a </td>
+          <td class="memname"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>&gt; <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  &gt;::three_ints_a </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>a</em></td><td>)</td>
@@ -1607,7 +1630,7 @@ Friends</h2></td></tr>
 
 <p>Array-lookup accessor for three ints[a]. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00374">374</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00398">398</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -1621,7 +1644,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>&gt; <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  &gt;::two_strings_a </td>
+          <td class="memname"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>&gt; <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a>  &gt;::two_strings_a </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>a</em></td><td>)</td>
@@ -1637,13 +1660,13 @@ Friends</h2></td></tr>
 
 <p>Array-lookup accessor for two strings[a]. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00390">390</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00414">414</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Friends And Related Function Documentation</h2>
-<a id="ac72b40ea5c64cfe82757bc7ef42d9902"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac72b40ea5c64cfe82757bc7ef42d9902">&#9670;&nbsp;</a></span>ExampleBasicBase< ExampleBasic ></h2>
+<a id="a005f5cfcd176112132a024f48490dc97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a005f5cfcd176112132a024f48490dc97">&#9670;&nbsp;</a></span>stored::ExampleBasicBase< ExampleBasic ></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1652,7 +1675,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">friend class <a class="el" href="classstored_1_1_example_basic_base.html">ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a> &gt;</td>
+          <td class="memname">friend class <a class="el" href="classstored_1_1_example_basic_base.html">stored::ExampleBasicBase</a>&lt; <a class="el" href="classstored_1_1_example_basic.html">ExampleBasic</a> &gt;</td>
         </tr>
       </table>
   </td>
@@ -1662,7 +1685,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00472">472</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_basic_8h_source.html#l00493">493</a> of file <a class="el" href="_example_basic_8h_source.html">ExampleBasic.h</a>.</p>
 
 </div>
 </div>
@@ -1677,7 +1700,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,int8_t,99u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::_42_test42</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,int8_t,99u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::_42_test42</td>
         </tr>
       </table>
   </td>
@@ -1704,7 +1727,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,int8_t,7u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::another_42</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,int8_t,7u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::another_42</td>
         </tr>
       </table>
   </td>
@@ -1730,7 +1753,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,bool,96u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::b</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,bool,96u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::b</td>
         </tr>
       </table>
   </td>
@@ -1756,7 +1779,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,<a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea51ac1ecb477fe077e2cef24f507cc127">Type::Blob</a>,16u,16u&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::blob</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,<a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea51ac1ecb477fe077e2cef24f507cc127">Type::Blob</a>,16u,16u&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::blob</td>
         </tr>
       </table>
   </td>
@@ -1782,7 +1805,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,double,48u,8&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::d</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,double,48u,8&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::d</td>
         </tr>
       </table>
   </td>
@@ -1808,7 +1831,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,float,64u,4&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::f</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,float,64u,4&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::f</td>
         </tr>
       </table>
   </td>
@@ -1834,7 +1857,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,int8_t,100u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::four_ints_0</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,int8_t,100u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::four_ints_0</td>
         </tr>
       </table>
   </td>
@@ -1860,7 +1883,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,int8_t,101u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::four_ints_1</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,int8_t,101u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::four_ints_1</td>
         </tr>
       </table>
   </td>
@@ -1886,7 +1909,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,int8_t,102u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::four_ints_2</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,int8_t,102u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::four_ints_2</td>
         </tr>
       </table>
   </td>
@@ -1912,7 +1935,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,int8_t,103u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::four_ints_3</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,int8_t,103u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::four_ints_3</td>
         </tr>
       </table>
   </td>
@@ -1938,7 +1961,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,int16_t,92u,2&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::i16</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,int16_t,92u,2&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::i16</td>
         </tr>
       </table>
   </td>
@@ -1964,7 +1987,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,int32_t,56u,4&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::i32</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,int32_t,56u,4&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::i32</td>
         </tr>
       </table>
   </td>
@@ -1990,7 +2013,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,int64_t,32u,8&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::i64</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,int64_t,32u,8&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::i64</td>
         </tr>
       </table>
   </td>
@@ -2016,7 +2039,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,int8_t,97u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::i8</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,int8_t,97u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::i8</td>
         </tr>
       </table>
   </td>
@@ -2042,7 +2065,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,<a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>,68u,4u&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::s</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,<a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>,68u,4u&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::s</td>
         </tr>
       </table>
   </td>
@@ -2068,7 +2091,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,bool,8u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::So_this_is_a_perfectly_fine_name_even_if_it_includes_characters_like_and_so_on</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,bool,8u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::So_this_is_a_perfectly_fine_name_even_if_it_includes_characters_like_and_so_on</td>
         </tr>
       </table>
   </td>
@@ -2094,7 +2117,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,int8_t,6u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::test42</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,int8_t,6u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::test42</td>
         </tr>
       </table>
   </td>
@@ -2121,7 +2144,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,int16_t,0u,2&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::three_ints_0</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,int16_t,0u,2&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::three_ints_0</td>
         </tr>
       </table>
   </td>
@@ -2147,7 +2170,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,int16_t,2u,2&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::three_ints_1</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,int16_t,2u,2&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::three_ints_1</td>
         </tr>
       </table>
   </td>
@@ -2174,7 +2197,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,int16_t,4u,2&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::three_ints_2</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,int16_t,4u,2&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::three_ints_2</td>
         </tr>
       </table>
   </td>
@@ -2200,7 +2223,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,<a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>,76u,4u&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::two_strings_0</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,<a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>,76u,4u&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::two_strings_0</td>
         </tr>
       </table>
   </td>
@@ -2226,7 +2249,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,<a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>,84u,4u&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::two_strings_1</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,<a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>,84u,4u&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::two_strings_1</td>
         </tr>
       </table>
   </td>
@@ -2252,7 +2275,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,uint16_t,94u,2&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::u16</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,uint16_t,94u,2&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::u16</td>
         </tr>
       </table>
   </td>
@@ -2278,7 +2301,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,uint32_t,60u,4&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::u32</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,uint32_t,60u,4&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::u32</td>
         </tr>
       </table>
   </td>
@@ -2304,7 +2327,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,uint64_t,40u,8&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::u64</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,uint64_t,40u,8&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::u64</td>
         </tr>
       </table>
   </td>
@@ -2330,7 +2353,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic_objects.html#a251682bbdbf0729bf0ba55ce2fe23a2c">Implementation</a>,uint8_t,98u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::u8</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_basic_objects.html#a32cb9898a6371ffd68f4d4a35f4c7470">Base</a>,<a class="el" href="classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135">Implementation</a>,uint8_t,98u,1&gt; stored::ExampleBasicObjects&lt; ExampleBasicBase&lt; ExampleBasic &gt; , ExampleBasic  &gt;::u8</td>
         </tr>
       </table>
   </td>

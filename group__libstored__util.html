@@ -110,6 +110,9 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ga71f6523e78ab1e12c33e895142a0e262"><td class="memItemLeft" align="right" valign="top">char const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__libstored__util.html#ga71f6523e78ab1e12c33e895142a0e262">stored::banner</a> ()</td></tr>
+<tr class="memdesc:ga71f6523e78ab1e12c33e895142a0e262"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a single-line string that contains relevant configuration information of libstored.  <a href="group__libstored__util.html#ga71f6523e78ab1e12c33e895142a0e262">More...</a><br /></td></tr>
+<tr class="separator:ga71f6523e78ab1e12c33e895142a0e262"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaaaa850b08b762f712e9dd4b57bf5a4f2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__libstored__util.html#gaaaa850b08b762f712e9dd4b57bf5a4f2">stored::memcmp_swap</a> (void const  *a, void const  *b, size_t len)</td></tr>
 <tr class="memdesc:gaaaa850b08b762f712e9dd4b57bf5a4f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">memcmp() with endianness swapping.  <a href="group__libstored__util.html#gaaaa850b08b762f712e9dd4b57bf5a4f2">More...</a><br /></td></tr>
 <tr class="separator:gaaaa850b08b762f712e9dd4b57bf5a4f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -174,7 +177,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Like <code>assert()</code>, but only emits code when <a class="el" href="structstored_1_1_default_config.html#a6d57db674741d0587772c3c496c2bb45" title="When true, enable stored_assert() checks. ">stored::Config::EnableAssert</a>. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="8_sync_2main_8cpp-example.html#a32">8_sync/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="8_sync_2main_8cpp-example.html#a27">8_sync/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00185">185</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
 
@@ -198,13 +201,34 @@ Functions</h2></td></tr>
 
 <p>Marks the given expression to likely be evaluated to true. </p>
 <p>This may help compiler optimization. </p><dl class="section return"><dt>Returns</dt><dd>the evaluated <code>expr</code> </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a15">5_debug/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="5_debug_2main_8cpp-example.html#a16">5_debug/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00071">71</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="ga71f6523e78ab1e12c33e895142a0e262"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga71f6523e78ab1e12c33e895142a0e262">&#9670;&nbsp;</a></span>banner()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char const  * stored::banner </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a single-line string that contains relevant configuration information of libstored. </p>
+
+<p class="definition">Definition at line <a class="el" href="util_8cpp_source.html#l00161">161</a> of file <a class="el" href="util_8cpp_source.html">util.cpp</a>.</p>
+
+</div>
+</div>
 <a id="gaaaa850b08b762f712e9dd4b57bf5a4f2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gaaaa850b08b762f712e9dd4b57bf5a4f2">&#9670;&nbsp;</a></span>memcmp_swap()</h2>
 
@@ -239,7 +263,7 @@ Functions</h2></td></tr>
 
 <p>memcmp() with endianness swapping. </p>
 
-<p class="definition">Definition at line <a class="el" href="util_8cpp_source.html#l00106">106</a> of file <a class="el" href="util_8cpp_source.html">util.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="util_8cpp_source.html#l00107">107</a> of file <a class="el" href="util_8cpp_source.html">util.cpp</a>.</p>
 
 </div>
 </div>
@@ -277,7 +301,7 @@ Functions</h2></td></tr>
 
 <p><code>memcpy()</code> with endianness swapping. </p>
 
-<p class="definition">Definition at line <a class="el" href="util_8cpp_source.html#l00094">94</a> of file <a class="el" href="util_8cpp_source.html">util.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="util_8cpp_source.html#l00095">95</a> of file <a class="el" href="util_8cpp_source.html">util.cpp</a>.</p>
 
 </div>
 </div>
@@ -301,7 +325,7 @@ template&lt;typename R , typename T &gt; </div>
 
 <p>Converts a number type to another one, with proper rounding and saturation. </p>
 
-<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00433">433</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="util_8h_source.html#l00434">434</a> of file <a class="el" href="util_8h_source.html">util.h</a>.</p>
 
 </div>
 </div>
@@ -340,7 +364,7 @@ template&lt;typename R , typename T &gt; </div>
 <p>Converts the given buffer to a string literal. </p>
 <p>This comes in handy for verbose output of binary data, like protocol messages. </p>
 
-<p class="definition">Definition at line <a class="el" href="util_8cpp_source.html#l00128">128</a> of file <a class="el" href="util_8cpp_source.html">util.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="util_8cpp_source.html#l00129">129</a> of file <a class="el" href="util_8cpp_source.html">util.cpp</a>.</p>
 
 </div>
 </div>
@@ -384,7 +408,7 @@ template&lt;typename R , typename T &gt; </div>
 
 <p>Like <code><a class="el" href="group__libstored__util.html#ga732691fa4769154b74f9b71d24a10ad8" title="Like strncmp(), but handles non zero-terminated strings. ">strncmp()</a></code>, but handles non zero-terminated strings. </p>
 
-<p class="definition">Definition at line <a class="el" href="util_8cpp_source.html#l00048">48</a> of file <a class="el" href="util_8cpp_source.html">util.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="util_8cpp_source.html#l00049">49</a> of file <a class="el" href="util_8cpp_source.html">util.cpp</a>.</p>
 
 </div>
 </div>
@@ -422,7 +446,7 @@ template&lt;typename R , typename T &gt; </div>
 
 <p>Like <code><a class="el" href="group__libstored__util.html#gab35f3536f6df038d221bf13ebab7a454" title="Like strncpy(), but without padding and returning the length of the string. ">strncpy()</a></code>, but without padding and returning the length of the string. </p>
 
-<p class="definition">Definition at line <a class="el" href="util_8cpp_source.html#l00030">30</a> of file <a class="el" href="util_8cpp_source.html">util.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="util_8cpp_source.html#l00031">31</a> of file <a class="el" href="util_8cpp_source.html">util.cpp</a>.</p>
 
 </div>
 </div>
@@ -454,7 +478,7 @@ template&lt;typename R , typename T &gt; </div>
 
 <p>Swap endianness of the given buffer. </p>
 
-<p class="definition">Definition at line <a class="el" href="util_8cpp_source.html#l00081">81</a> of file <a class="el" href="util_8cpp_source.html">util.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="util_8cpp_source.html#l00082">82</a> of file <a class="el" href="util_8cpp_source.html">util.cpp</a>.</p>
 
 </div>
 </div>

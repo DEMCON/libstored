@@ -1,6 +1,6 @@
 var class_example_sync1 =
 [
-    [ "base", "class_example_sync1.html#a02fa0b00585cd01115736a07a95b1e2b", null ],
+    [ "base", "class_example_sync1.html#a9021be05027a933c1f767f2bc4fe70d5", null ],
     [ "Base", "class_example_sync1.html#a8ed4e2d69a560594a25a408db71b28b4", null ],
     [ "Data", "class_example_sync1.html#aa8b0dab9c4f9e6991bcc57bf948a06e1", null ],
     [ "Implementation", "class_example_sync1.html#a3ebedce88b06ef81aee9f323bb82f579", null ],
@@ -22,7 +22,6 @@ var class_example_sync1 =
     [ "data", "class_example_sync1.html#afc627bee35f9814941fa4b956d2f56aa", null ],
     [ "data", "class_example_sync1.html#a20cd6318c7ca26ff27bd97a64141a4ca", null ],
     [ "find", "class_example_sync1.html#a2f9ee158a13ceb4e5b2a4837ce5527be", null ],
-    [ "hash", "class_example_sync1.html#a4cd523aa941cdea55a838fea7f2df5db", null ],
     [ "hookEntryRO", "class_example_sync1.html#a122cb12bad151565fe82ba1d6d4d2a8a", null ],
     [ "hookEntryX", "class_example_sync1.html#a50a11717d4da1698e3a4c11f6f72a366", null ],
     [ "hookExitRO", "class_example_sync1.html#a741d9f7e2b7cfaca2a9d2fd175a0d7e5", null ],
@@ -38,6 +37,7 @@ var class_example_sync1 =
     [ "name", "class_example_sync1.html#a8395ff1b39fd87a4b1584c15815440b1", null ],
     [ "operator=", "class_example_sync1.html#a161e6f12b08f83e48dbc0db29bbc2a06", null ],
     [ "operator=", "class_example_sync1.html#a075ce30e08ae9f6df91fa8a6ac166f58", null ],
+    [ "reserveHeap", "class_example_sync1.html#aa285cbea0809844a480f8b659614ba24", null ],
     [ "shortDirectory", "class_example_sync1.html#ad41640466c2828e1771ee993e302be92", null ],
     [ "stored::ExampleSync1Base< ExampleSync1 >", "class_example_sync1.html#a2b48f643b4c28bb72f93230ba8f7ce21", null ],
     [ "d", "class_example_sync1.html#aab6d6abec14903de193502104eef21cf", null ],

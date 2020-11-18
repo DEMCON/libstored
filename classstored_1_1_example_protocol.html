@@ -82,6 +82,7 @@ $(document).ready(function(){initNavTree('classstored_1_1_example_protocol.html'
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pro-types">Protected Types</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
@@ -95,7 +96,7 @@ $(document).ready(function(){initNavTree('classstored_1_1_example_protocol.html'
 <div class="textblock"><p>Default <a class="el" href="classstored_1_1_example_protocol_base.html" title="Base class with default interface of all ExampleProtocol implementations. ">ExampleProtocolBase</a> implementation. </p>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#_a0">7_protocol/main.cpp</a>.</dd>
 </dl>
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00378">378</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00402">402</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -111,17 +112,19 @@ Inheritance diagram for stored::ExampleProtocol:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
+<tr class="memitem:aa73521b62acb98ce5068ea34f2fa119b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="separator:aa73521b62acb98ce5068ea34f2fa119b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a828ffe2572882608606fdd590b5e7086"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_protocol_base.html">ExampleProtocolBase</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a></td></tr>
 <tr class="separator:a828ffe2572882608606fdd590b5e7086"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06dbc64f58c923315b769a3f1b7566b0"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_protocol_base.html">ExampleProtocolBase</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol.html#a06dbc64f58c923315b769a3f1b7566b0">base</a></td></tr>
-<tr class="separator:a06dbc64f58c923315b769a3f1b7566b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e6d97cd8a63007f8e02b6c60735133d"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_base.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a></td></tr>
-<tr class="memdesc:a5e6d97cd8a63007f8e02b6c60735133d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the actual implementation, which is the (lowest) subclass.  <a href="#a5e6d97cd8a63007f8e02b6c60735133d">More...</a><br /></td></tr>
+<tr class="memitem:a2dfaf65f4fe39c8c48d105f5313b93a8"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_protocol_base.html">stored::ExampleProtocolBase</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol.html#a2dfaf65f4fe39c8c48d105f5313b93a8">base</a></td></tr>
+<tr class="separator:a2dfaf65f4fe39c8c48d105f5313b93a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e6d97cd8a63007f8e02b6c60735133d"><td class="memItemLeft" align="right" valign="top">typedef Implementation_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a></td></tr>
+<tr class="memdesc:a5e6d97cd8a63007f8e02b6c60735133d"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of the actual implementation, which is the (lowest) subclass.  <a href="#a5e6d97cd8a63007f8e02b6c60735133d">More...</a><br /></td></tr>
 <tr class="separator:a5e6d97cd8a63007f8e02b6c60735133d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeed93a85697b0400ea5b1975a8873f8b"><td class="memItemLeft" align="right" valign="top">typedef uintptr_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_base.html#aeed93a85697b0400ea5b1975a8873f8b">Key</a></td></tr>
 <tr class="memdesc:aeed93a85697b0400ea5b1975a8873f8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of a key.  <a href="#aeed93a85697b0400ea5b1975a8873f8b">More...</a><br /></td></tr>
 <tr class="separator:aeed93a85697b0400ea5b1975a8873f8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4cbdd8deafd37c1ebf3913ead726507c"><td class="memItemLeft" align="right" valign="top">typedef std::map&lt; std::string, <a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_base.html#a4cbdd8deafd37c1ebf3913ead726507c">ObjectMap</a></td></tr>
+<tr class="memitem:a4cbdd8deafd37c1ebf3913ead726507c"><td class="memItemLeft" align="right" valign="top">typedef std::map&lt; std::string, <a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_base.html#a4cbdd8deafd37c1ebf3913ead726507c">ObjectMap</a></td></tr>
 <tr class="memdesc:a4cbdd8deafd37c1ebf3913ead726507c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map as generated by <a class="el" href="classstored_1_1_example_protocol_base.html#add6957f478e10a417d2894cc979eee56" title="Create a name to Variant map for the store. ">map()</a>.  <a href="#a4cbdd8deafd37c1ebf3913ead726507c">More...</a><br /></td></tr>
 <tr class="separator:a4cbdd8deafd37c1ebf3913ead726507c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a010c9d306707164e4867220b79881524"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_protocol_objects.html">ExampleProtocolObjects</a>&lt; <a class="el" href="classstored_1_1_example_protocol_base.html">ExampleProtocolBase</a>, <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_base.html#a010c9d306707164e4867220b79881524">Objects</a></td></tr>
@@ -141,16 +144,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a29ff935fdf4a9cdc73d42849f44f693f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_protocol_base.html#aeed93a85697b0400ea5b1975a8873f8b">Key</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_base.html#a29ff935fdf4a9cdc73d42849f44f693f">bufferToKey</a> (void const *<a class="el" href="classstored_1_1_example_protocol_base.html#a3aeddd6e32f9946a387904f947b4a053">buffer</a>) const</td></tr>
 <tr class="memdesc:a29ff935fdf4a9cdc73d42849f44f693f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a variable's buffer to a key.  <a href="#a29ff935fdf4a9cdc73d42849f44f693f">More...</a><br /></td></tr>
 <tr class="separator:a29ff935fdf4a9cdc73d42849f44f693f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd207cca7b8c750fe0c86b5d0180e98c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_base.html#abd207cca7b8c750fe0c86b5d0180e98c">find</a> (char const *<a class="el" href="classstored_1_1_example_protocol_base.html#a6a813b78ee738431b717cee82a5d4194">name</a>, size_t len=std::numeric_limits&lt; size_t &gt;::max())</td></tr>
+<tr class="memitem:abd207cca7b8c750fe0c86b5d0180e98c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_base.html#abd207cca7b8c750fe0c86b5d0180e98c">find</a> (char const *<a class="el" href="classstored_1_1_example_protocol_base.html#a6a813b78ee738431b717cee82a5d4194">name</a>, size_t len=std::numeric_limits&lt; size_t &gt;::max())</td></tr>
 <tr class="memdesc:abd207cca7b8c750fe0c86b5d0180e98c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds an object with the given name.  <a href="#abd207cca7b8c750fe0c86b5d0180e98c">More...</a><br /></td></tr>
 <tr class="separator:abd207cca7b8c750fe0c86b5d0180e98c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7790d01343b8896ad519bafab3b20f58"><td class="memItemLeft" align="right" valign="top">char const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_base.html#a7790d01343b8896ad519bafab3b20f58">hash</a> () const</td></tr>
-<tr class="memdesc:a7790d01343b8896ad519bafab3b20f58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique hash of the store.  <a href="#a7790d01343b8896ad519bafab3b20f58">More...</a><br /></td></tr>
-<tr class="separator:a7790d01343b8896ad519bafab3b20f58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeed9a8e9ab76304eb76a5578dfdb5d1e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a> const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_base.html#aeed9a8e9ab76304eb76a5578dfdb5d1e">implementation</a> () const</td></tr>
+<tr class="memitem:aeed9a8e9ab76304eb76a5578dfdb5d1e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a> const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_base.html#aeed9a8e9ab76304eb76a5578dfdb5d1e">implementation</a> () const</td></tr>
 <tr class="memdesc:aeed9a8e9ab76304eb76a5578dfdb5d1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the reference to the implementation.  <a href="#aeed9a8e9ab76304eb76a5578dfdb5d1e">More...</a><br /></td></tr>
 <tr class="separator:aeed9a8e9ab76304eb76a5578dfdb5d1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adfbbb2f6ce02abdf00b132b7f822c94b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_base.html#adfbbb2f6ce02abdf00b132b7f822c94b">implementation</a> ()</td></tr>
+<tr class="memitem:adfbbb2f6ce02abdf00b132b7f822c94b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_base.html#adfbbb2f6ce02abdf00b132b7f822c94b">implementation</a> ()</td></tr>
 <tr class="memdesc:adfbbb2f6ce02abdf00b132b7f822c94b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the reference to the implementation.  <a href="#adfbbb2f6ce02abdf00b132b7f822c94b">More...</a><br /></td></tr>
 <tr class="separator:adfbbb2f6ce02abdf00b132b7f822c94b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae000573ef5d0794415817563f94d94c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_base.html#ae000573ef5d0794415817563f94d94c4">list</a> (F f, void *arg, char const *prefix=nullptr)</td></tr>
@@ -168,31 +168,37 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6a813b78ee738431b717cee82a5d4194"><td class="memItemLeft" align="right" valign="top">char const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_base.html#a6a813b78ee738431b717cee82a5d4194">name</a> () const</td></tr>
 <tr class="memdesc:a6a813b78ee738431b717cee82a5d4194"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name of store, which can be used as prefix for <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>.  <a href="#a6a813b78ee738431b717cee82a5d4194">More...</a><br /></td></tr>
 <tr class="separator:a6a813b78ee738431b717cee82a5d4194"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a745a77d1218ec600fb62064663412055"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol.html#a745a77d1218ec600fb62064663412055">operator=</a> (<a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a> const &amp;)=delete</td></tr>
-<tr class="memdesc:a745a77d1218ec600fb62064663412055"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted assignment operator.  <a href="#a745a77d1218ec600fb62064663412055">More...</a><br /></td></tr>
-<tr class="separator:a745a77d1218ec600fb62064663412055"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0393de6ab8f06a0541bea4a5c02a2bc7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol.html#a0393de6ab8f06a0541bea4a5c02a2bc7">operator=</a> (<a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a> &amp;&amp;)=delete</td></tr>
 <tr class="memdesc:a0393de6ab8f06a0541bea4a5c02a2bc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted move assignment operator.  <a href="#a0393de6ab8f06a0541bea4a5c02a2bc7">More...</a><br /></td></tr>
 <tr class="separator:a0393de6ab8f06a0541bea4a5c02a2bc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a745a77d1218ec600fb62064663412055"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol.html#a745a77d1218ec600fb62064663412055">operator=</a> (<a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a> const &amp;)=delete</td></tr>
+<tr class="memdesc:a745a77d1218ec600fb62064663412055"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted assignment operator.  <a href="#a745a77d1218ec600fb62064663412055">More...</a><br /></td></tr>
+<tr class="separator:a745a77d1218ec600fb62064663412055"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5f093411161eea64a9d9bbf4ac21522"><td class="memItemLeft" align="right" valign="top">uint8_t const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_base.html#aa5f093411161eea64a9d9bbf4ac21522">shortDirectory</a> () const</td></tr>
 <tr class="memdesc:aa5f093411161eea64a9d9bbf4ac21522"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the short directory.  <a href="#aa5f093411161eea64a9d9bbf4ac21522">More...</a><br /></td></tr>
 <tr class="separator:aa5f093411161eea64a9d9bbf4ac21522"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:aecd5bf71c9c273a589741c171fde9bd3"><td class="memItemLeft" align="right" valign="top">static char const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_base.html#aecd5bf71c9c273a589741c171fde9bd3">hash</a> ()</td></tr>
+<tr class="memdesc:aecd5bf71c9c273a589741c171fde9bd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique hash of the store.  <a href="#aecd5bf71c9c273a589741c171fde9bd3">More...</a><br /></td></tr>
+<tr class="separator:aecd5bf71c9c273a589741c171fde9bd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:aac028e7b395ddbe9dddd59a8fa2c7784"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt; <a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>, <a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a>, <a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>, 16u, 32u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_objects.html#aac028e7b395ddbe9dddd59a8fa2c7784">a_long_string_that_does_not_fit_in_the_response_buffers</a></td></tr>
+<tr class="memitem:aac028e7b395ddbe9dddd59a8fa2c7784"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt; <a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>, <a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a>, <a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>, 16u, 32u &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_objects.html#aac028e7b395ddbe9dddd59a8fa2c7784">a_long_string_that_does_not_fit_in_the_response_buffers</a></td></tr>
 <tr class="memdesc:aac028e7b395ddbe9dddd59a8fa2c7784"><td class="mdescLeft">&#160;</td><td class="mdescRight">a long string that does not fit in the response buffers  <a href="#aac028e7b395ddbe9dddd59a8fa2c7784">More...</a><br /></td></tr>
 <tr class="separator:aac028e7b395ddbe9dddd59a8fa2c7784"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8452cfd8cf589bf7dd6c3b823cd8cdf8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>, <a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a>, int32_t, 56u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_objects.html#a8452cfd8cf589bf7dd6c3b823cd8cdf8">a_short_int_that_fits_in_the_response_buffers</a></td></tr>
+<tr class="memitem:a8452cfd8cf589bf7dd6c3b823cd8cdf8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>, <a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a>, int32_t, 56u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_objects.html#a8452cfd8cf589bf7dd6c3b823cd8cdf8">a_short_int_that_fits_in_the_response_buffers</a></td></tr>
 <tr class="memdesc:a8452cfd8cf589bf7dd6c3b823cd8cdf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">a short int that fits in the response buffers  <a href="#a8452cfd8cf589bf7dd6c3b823cd8cdf8">More...</a><br /></td></tr>
 <tr class="separator:a8452cfd8cf589bf7dd6c3b823cd8cdf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a700110f39b4a0c5c77851bc0fe96a1e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>, <a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a>, double, 0u, 8 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_objects.html#a700110f39b4a0c5c77851bc0fe96a1e8">ber</a></td></tr>
+<tr class="memitem:a700110f39b4a0c5c77851bc0fe96a1e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>, <a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a>, double, 0u, 8 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_objects.html#a700110f39b4a0c5c77851bc0fe96a1e8">ber</a></td></tr>
 <tr class="memdesc:a700110f39b4a0c5c77851bc0fe96a1e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">ber  <a href="#a700110f39b4a0c5c77851bc0fe96a1e8">More...</a><br /></td></tr>
 <tr class="separator:a700110f39b4a0c5c77851bc0fe96a1e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac28aa88a062326c6524447ee0eba6275"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>, <a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a>, uint32_t, 60u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_objects.html#ac28aa88a062326c6524447ee0eba6275">injected_errors</a></td></tr>
+<tr class="memitem:ac28aa88a062326c6524447ee0eba6275"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>, <a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a>, uint32_t, 60u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_objects.html#ac28aa88a062326c6524447ee0eba6275">injected_errors</a></td></tr>
 <tr class="memdesc:ac28aa88a062326c6524447ee0eba6275"><td class="mdescLeft">&#160;</td><td class="mdescRight">injected errors  <a href="#ac28aa88a062326c6524447ee0eba6275">More...</a><br /></td></tr>
 <tr class="separator:ac28aa88a062326c6524447ee0eba6275"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89d1ba0b428bbad18e46592ea3dbe58c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>, <a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a>, uint32_t, 8u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_objects.html#a89d1ba0b428bbad18e46592ea3dbe58c">MTU</a></td></tr>
+<tr class="memitem:a89d1ba0b428bbad18e46592ea3dbe58c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt; <a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>, <a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a>, uint32_t, 8u, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol_objects.html#a89d1ba0b428bbad18e46592ea3dbe58c">MTU</a></td></tr>
 <tr class="memdesc:a89d1ba0b428bbad18e46592ea3dbe58c"><td class="mdescLeft">&#160;</td><td class="mdescRight">MTU.  <a href="#a89d1ba0b428bbad18e46592ea3dbe58c">More...</a><br /></td></tr>
 <tr class="separator:a89d1ba0b428bbad18e46592ea3dbe58c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -246,8 +252,8 @@ Protected Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
-<tr class="memitem:a27af443d394cdca1577b71fd71b6b0ea"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol.html#a27af443d394cdca1577b71fd71b6b0ea">ExampleProtocolBase&lt; ExampleProtocol &gt;</a></td></tr>
-<tr class="separator:a27af443d394cdca1577b71fd71b6b0ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7466a0d00155af5a1376dc8e688fbe01"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_protocol.html#a7466a0d00155af5a1376dc8e688fbe01">stored::ExampleProtocolBase&lt; ExampleProtocol &gt;</a></td></tr>
+<tr class="separator:a7466a0d00155af5a1376dc8e688fbe01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a828ffe2572882608606fdd590b5e7086"></a>
@@ -274,19 +280,19 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a id="a06dbc64f58c923315b769a3f1b7566b0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a06dbc64f58c923315b769a3f1b7566b0">&#9670;&nbsp;</a></span>base</h2>
+<a id="a2dfaf65f4fe39c8c48d105f5313b93a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dfaf65f4fe39c8c48d105f5313b93a8">&#9670;&nbsp;</a></span>base</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="classstored_1_1_example_protocol_base.html">ExampleProtocolBase</a>&lt;<a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a>&gt; <a class="el" href="classstored_1_1_example_protocol.html#a06dbc64f58c923315b769a3f1b7566b0">stored::ExampleProtocol::base</a></td>
+          <td class="memname">typedef stored:: <a class="el" href="classstored_1_1_example_protocol_base.html">ExampleProtocolBase</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a> &gt; <a class="el" href="classstored_1_1_example_protocol.html#a2dfaf65f4fe39c8c48d105f5313b93a8">stored::ExampleProtocol::base</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00381">381</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00403">403</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -312,7 +318,7 @@ Friends</h2></td></tr>
 
 <p>The type of the data structure. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00130">130</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00153">153</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -321,24 +327,16 @@ Friends</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a>  <a class="el" href="classstored_1_1_example_protocol_base.html">stored::ExampleProtocolBase</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a>  &gt;::<a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a></td>
+          <td class="memname">typedef Implementation_ <a class="el" href="classstored_1_1_example_protocol_base.html">stored::ExampleProtocolBase</a>&lt; Implementation_ &gt;::<a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of the actual implementation, which is the (lowest) subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00117">117</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00129">129</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -365,7 +363,7 @@ Friends</h2></td></tr>
 <p><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of a key. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_protocol_base.html#a29ff935fdf4a9cdc73d42849f44f693f" title="Converts a variable&#39;s buffer to a key. ">bufferToKey()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00225">225</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00248">248</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -379,7 +377,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">typedef std::map&lt;std::string, <a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a>&gt; &gt; <a class="el" href="classstored_1_1_example_protocol_base.html">stored::ExampleProtocolBase</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a>  &gt;::<a class="el" href="classstored_1_1_example_protocol_base.html#a4cbdd8deafd37c1ebf3913ead726507c">ObjectMap</a></td>
+          <td class="memname">typedef std::map&lt;std::string, <a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a>&gt; &gt; <a class="el" href="classstored_1_1_example_protocol_base.html">stored::ExampleProtocolBase</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a>  &gt;::<a class="el" href="classstored_1_1_example_protocol_base.html#a4cbdd8deafd37c1ebf3913ead726507c">ObjectMap</a></td>
         </tr>
       </table>
   </td>
@@ -391,7 +389,7 @@ Friends</h2></td></tr>
 
 <p>Map as generated by <a class="el" href="classstored_1_1_example_protocol_base.html#add6957f478e10a417d2894cc979eee56" title="Create a name to Variant map for the store. ">map()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00347">347</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00371">371</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -415,7 +413,32 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00115">115</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00127">127</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="aa73521b62acb98ce5068ea34f2fa119b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa73521b62acb98ce5068ea34f2fa119b">&#9670;&nbsp;</a></span>anonymous enum</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">anonymous enum</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00135">135</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -548,7 +571,7 @@ Friends</h2></td></tr>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_protocol_base.html#a4934e38ebed0a138fb64f6319698f9e9" title="Hook when read-only access to a given variable is released. ">hookExitRO()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00302">302</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00326">326</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -596,7 +619,7 @@ Friends</h2></td></tr>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_protocol_base.html#aff6cfb2072fd18fc76368e4efb0a4a4b" title="Hook when exclusive access to a given variable is released. ">hookExitX()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00290">290</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00314">314</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -644,7 +667,7 @@ Friends</h2></td></tr>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_protocol_base.html#a46ac7caf3d4d32c56b91d01e0144df74" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00308">308</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00332">332</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -698,7 +721,7 @@ Friends</h2></td></tr>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_protocol_base.html#a8a674aed95fe0b379a53a6d074afe521" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00296">296</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00320">320</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -727,7 +750,7 @@ Friends</h2></td></tr>
 
 <p>Returns the buffer with all variable data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00136">136</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00159">159</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -756,7 +779,7 @@ Friends</h2></td></tr>
 
 <p>Returns the buffer with all variable data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00138">138</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00161">161</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -789,7 +812,7 @@ Friends</h2></td></tr>
 <p>For synchronization, when <a class="el" href="classstored_1_1_example_protocol_base.html#a8a674aed95fe0b379a53a6d074afe521" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a> or <a class="el" href="classstored_1_1_example_protocol_base.html#a46ac7caf3d4d32c56b91d01e0144df74" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a> is invoked, one can compute the key of the object that is accessed. The key can be used, for example, in a key-to-Variant map. When data arrives from another party, the key can be used to find the proper <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> in the map.</p>
 <p>This way, data exchange is type-safe, as the <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> can check if the data format matches the expected type. However, one cannot process data if the key is not set yet in the map. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00247">247</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00270">270</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -842,7 +865,7 @@ Friends</h2></td></tr>
 <p><a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">Function</a> callback resolver. </p>
 <p>This is the callback for a <a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">Function</a> and a <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a>, which converts a call to the function identifier to an actual function call within the Implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00213">213</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00236">236</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -871,7 +894,7 @@ Friends</h2></td></tr>
 
 <p>Returns the container for all the store's data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00132">132</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00155">155</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -900,7 +923,7 @@ Friends</h2></td></tr>
 
 <p>Returns the container for all the store's data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00134">134</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00157">157</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -914,7 +937,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a>&gt; <a class="el" href="classstored_1_1_example_protocol_base.html">stored::ExampleProtocolBase</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a>  &gt;::find </td>
+          <td class="memname"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt;<a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a>&gt; <a class="el" href="classstored_1_1_example_protocol_base.html">stored::ExampleProtocolBase</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a>  &gt;::find </td>
           <td>(</td>
           <td class="paramtype">char const *&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -941,12 +964,12 @@ Friends</h2></td></tr>
 <p>Finds an object with the given name. </p>
 <dl class="section return"><dt>Returns</dt><dd>the object, or an invalid <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">stored::Variant</a> if not found. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00326">326</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00350">350</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
-<a id="a7790d01343b8896ad519bafab3b20f58"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7790d01343b8896ad519bafab3b20f58">&#9670;&nbsp;</a></span>hash()</h2>
+<a id="aecd5bf71c9c273a589741c171fde9bd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecd5bf71c9c273a589741c171fde9bd3">&#9670;&nbsp;</a></span>hash()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -955,22 +978,22 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">char const* <a class="el" href="classstored_1_1_example_protocol_base.html">stored::ExampleProtocolBase</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a>  &gt;::hash </td>
+          <td class="memname">static char const* <a class="el" href="classstored_1_1_example_protocol_base.html">stored::ExampleProtocolBase</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a>  &gt;::hash </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">inherited</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Returns a unique hash of the store. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00121">121</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00133">133</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -1017,7 +1040,7 @@ Friends</h2></td></tr>
 <p>Hook when read-only access to a given variable is to be acquired. </p>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_protocol_base.html#a4934e38ebed0a138fb64f6319698f9e9" title="Hook when read-only access to a given variable is released. ">hookExitRO()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00276">276</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00300">300</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -1064,7 +1087,7 @@ Friends</h2></td></tr>
 <p>Hook when exclusive access to a given variable is to be acquired. </p>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_protocol_base.html#aff6cfb2072fd18fc76368e4efb0a4a4b" title="Hook when exclusive access to a given variable is released. ">hookExitX()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00259">259</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00283">283</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -1111,7 +1134,7 @@ Friends</h2></td></tr>
 <p>Hook when read-only access to a given variable is released. </p>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_protocol_base.html#a46ac7caf3d4d32c56b91d01e0144df74" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00283">283</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00307">307</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -1164,7 +1187,7 @@ Friends</h2></td></tr>
 <p>Hook when exclusive access to a given variable is released. </p>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_protocol_base.html#a8a674aed95fe0b379a53a6d074afe521" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00269">269</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00293">293</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -1178,7 +1201,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a> const&amp; <a class="el" href="classstored_1_1_example_protocol_base.html">stored::ExampleProtocolBase</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a>  &gt;::implementation </td>
+          <td class="memname"><a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a> const&amp; <a class="el" href="classstored_1_1_example_protocol_base.html">stored::ExampleProtocolBase</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a>  &gt;::implementation </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1193,7 +1216,7 @@ Friends</h2></td></tr>
 
 <p>Returns the reference to the implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00124">124</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00147">147</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -1207,7 +1230,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a>&amp; <a class="el" href="classstored_1_1_example_protocol_base.html">stored::ExampleProtocolBase</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a>  &gt;::implementation </td>
+          <td class="memname"><a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a>&amp; <a class="el" href="classstored_1_1_example_protocol_base.html">stored::ExampleProtocolBase</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a>  &gt;::implementation </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1222,7 +1245,7 @@ Friends</h2></td></tr>
 
 <p>Returns the reference to the implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00126">126</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00149">149</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -1269,7 +1292,7 @@ Friends</h2></td></tr>
 <p>Calls a callback for every object in the <a class="el" href="classstored_1_1_example_protocol_base.html#a23a0fd4ef0b73838a9268ecb2d6f519b" title="Retuns the long directory. ">longDirectory()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758" title="Iterates over all objects in the directory and invoke a callback for every object. ">stored::list()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00335">335</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00359">359</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -1300,7 +1323,7 @@ Friends</h2></td></tr>
 <p>Calls a callback for every object in the <a class="el" href="classstored_1_1_example_protocol_base.html#a23a0fd4ef0b73838a9268ecb2d6f519b" title="Retuns the long directory. ">longDirectory()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758" title="Iterates over all objects in the directory and invoke a callback for every object. ">stored::list()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00343">343</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00367">367</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -1330,7 +1353,7 @@ Friends</h2></td></tr>
 <p>Retuns the long directory. </p>
 <p>When not available, the short directory is returned. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00320">320</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00344">344</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -1361,7 +1384,7 @@ Friends</h2></td></tr>
 <p>Create a name to <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> map for the store. </p>
 <p>Generating the map may be expensive and the result is not cached. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00354">354</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00378">378</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -1390,7 +1413,7 @@ Friends</h2></td></tr>
 
 <p>Returns the name of store, which can be used as prefix for <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00119">119</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00131">131</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -1475,13 +1498,13 @@ Friends</h2></td></tr>
 
 <p>Returns the short directory. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00316">316</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00340">340</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Friends And Related Function Documentation</h2>
-<a id="a27af443d394cdca1577b71fd71b6b0ea"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a27af443d394cdca1577b71fd71b6b0ea">&#9670;&nbsp;</a></span>ExampleProtocolBase< ExampleProtocol ></h2>
+<a id="a7466a0d00155af5a1376dc8e688fbe01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7466a0d00155af5a1376dc8e688fbe01">&#9670;&nbsp;</a></span>stored::ExampleProtocolBase< ExampleProtocol ></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1490,7 +1513,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">friend class <a class="el" href="classstored_1_1_example_protocol_base.html">ExampleProtocolBase</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a> &gt;</td>
+          <td class="memname">friend class <a class="el" href="classstored_1_1_example_protocol_base.html">stored::ExampleProtocolBase</a>&lt; <a class="el" href="classstored_1_1_example_protocol.html">ExampleProtocol</a> &gt;</td>
         </tr>
       </table>
   </td>
@@ -1500,7 +1523,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00382">382</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00403">403</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
 </div>
 </div>
@@ -1515,7 +1538,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt;<a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>,<a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a>,<a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>,16u,32u&gt; stored::ExampleProtocolObjects&lt; ExampleProtocolBase&lt; ExampleProtocol &gt; , ExampleProtocol  &gt;::a_long_string_that_does_not_fit_in_the_response_buffers</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variant_v.html">impl::StoreVariantV</a>&lt;<a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>,<a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a>,<a class="el" href="structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada6435efd7732fc79a1e8738aa7bbbb9">Type::String</a>,16u,32u&gt; stored::ExampleProtocolObjects&lt; ExampleProtocolBase&lt; ExampleProtocol &gt; , ExampleProtocol  &gt;::a_long_string_that_does_not_fit_in_the_response_buffers</td>
         </tr>
       </table>
   </td>
@@ -1541,7 +1564,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>,<a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a>,int32_t,56u,4&gt; stored::ExampleProtocolObjects&lt; ExampleProtocolBase&lt; ExampleProtocol &gt; , ExampleProtocol  &gt;::a_short_int_that_fits_in_the_response_buffers</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>,<a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a>,int32_t,56u,4&gt; stored::ExampleProtocolObjects&lt; ExampleProtocolBase&lt; ExampleProtocol &gt; , ExampleProtocol  &gt;::a_short_int_that_fits_in_the_response_buffers</td>
         </tr>
       </table>
   </td>
@@ -1567,7 +1590,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>,<a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a>,double,0u,8&gt; stored::ExampleProtocolObjects&lt; ExampleProtocolBase&lt; ExampleProtocol &gt; , ExampleProtocol  &gt;::ber</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>,<a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a>,double,0u,8&gt; stored::ExampleProtocolObjects&lt; ExampleProtocolBase&lt; ExampleProtocol &gt; , ExampleProtocol  &gt;::ber</td>
         </tr>
       </table>
   </td>
@@ -1578,7 +1601,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>ber </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a20">7_protocol/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a18">7_protocol/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00080">80</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
@@ -1594,7 +1617,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>,<a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a>,uint32_t,60u,4&gt; stored::ExampleProtocolObjects&lt; ExampleProtocolBase&lt; ExampleProtocol &gt; , ExampleProtocol  &gt;::injected_errors</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>,<a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a>,uint32_t,60u,4&gt; stored::ExampleProtocolObjects&lt; ExampleProtocolBase&lt; ExampleProtocol &gt; , ExampleProtocol  &gt;::injected_errors</td>
         </tr>
       </table>
   </td>
@@ -1605,7 +1628,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>injected errors </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a21">7_protocol/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a19">7_protocol/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00082">82</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 
@@ -1621,7 +1644,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>,<a class="el" href="classstored_1_1_example_protocol_objects.html#ab1a8518f0c24f6e5c14c77c043b3af4f">Implementation</a>,uint32_t,8u,4&gt; stored::ExampleProtocolObjects&lt; ExampleProtocolBase&lt; ExampleProtocol &gt; , ExampleProtocol  &gt;::MTU</td>
+          <td class="memname"><a class="el" href="classstored_1_1impl_1_1_store_variable.html">impl::StoreVariable</a>&lt;<a class="el" href="classstored_1_1_example_protocol_objects.html#a828ffe2572882608606fdd590b5e7086">Base</a>,<a class="el" href="classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d">Implementation</a>,uint32_t,8u,4&gt; stored::ExampleProtocolObjects&lt; ExampleProtocolBase&lt; ExampleProtocol &gt; , ExampleProtocol  &gt;::MTU</td>
         </tr>
       </table>
   </td>
@@ -1632,7 +1655,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>MTU. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a23">7_protocol/main.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="7_protocol_2main_8cpp-example.html#a21">7_protocol/main.cpp</a>.</dd>
 </dl>
 <p class="definition">Definition at line <a class="el" href="_example_protocol_8h_source.html#l00078">78</a> of file <a class="el" href="_example_protocol_8h_source.html">ExampleProtocol.h</a>.</p>
 

@@ -1,7 +1,7 @@
 var searchData=
 [
   ['lastactivity',['lastActivity',['../classed2_1_1protocol_1_1_protocol_layer.html#a6b7035d39d94d75fdf9a84efcaf30bd1',1,'ed2.protocol.ProtocolLayer.lastActivity()'],['../classed2_1_1protocol_1_1_protocol_stack.html#a6071b2b557bd40f1edc48a67cc04405f',1,'ed2.protocol.ProtocolStack.lastActivity()'],['../classed2_1_1protocol_1_1_protocol_layer.html#a6b7035d39d94d75fdf9a84efcaf30bd1',1,'ed2.protocol.ProtocolLayer.lastActivity()'],['../classed2_1_1protocol_1_1_protocol_stack.html#a6071b2b557bd40f1edc48a67cc04405f',1,'ed2.protocol.ProtocolStack.lastActivity()']]],
-  ['lasterror',['lastError',['../classstored_1_1_zmq_layer.html#ab7bb8215f20cdafe5a4d16d0361621be',1,'stored::ZmqLayer']]],
+  ['lasterror',['lastError',['../classstored_1_1_polled_layer.html#a5f93b36636abab8f4cacb5f1b4fbcd82',1,'stored::PolledLayer::lastError()'],['../classstored_1_1_zmq_layer.html#ab7bb8215f20cdafe5a4d16d0361621be',1,'stored::ZmqLayer::lastError()']]],
   ['layer_5ftypes',['layer_types',['../namespaceed2_1_1protocol.html#ae4a8428361364eb7a7c1d6c995ed4a16',1,'ed2::protocol']]],
   ['len',['len',['../structstored_1_1_store_journal_1_1_object_info.html#a6cf9c4532e909eceb9c56ca2ee856f4d',1,'stored::StoreJournal::ObjectInfo']]],
   ['lessthan',['lessThan',['../classed2_1_1gui_1_1____main_____1_1_nat_sort.html#a2df2ec3f07d36b859b2cf4803052439d',1,'ed2.gui.__main__.NatSort.lessThan(self, left, right)'],['../classed2_1_1gui_1_1____main_____1_1_nat_sort.html#a2df2ec3f07d36b859b2cf4803052439d',1,'ed2.gui.__main__.NatSort.lessThan(self, left, right)']]],

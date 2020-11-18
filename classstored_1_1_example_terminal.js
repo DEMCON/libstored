@@ -1,7 +1,7 @@
 var classstored_1_1_example_terminal =
 [
     [ "Base", "classstored_1_1_example_terminal.html#aa9dff727a83eb1886c5b18baedaa08f7", null ],
-    [ "base", "classstored_1_1_example_terminal.html#af115d1605fe9bc7d2c1e545ab619f7f1", null ],
+    [ "base", "classstored_1_1_example_terminal.html#adb072ad69f6c95863356e80ad2b31dac", null ],
     [ "Data", "classstored_1_1_example_terminal.html#a16e3c41404a2be894e4fe8934f40605d", null ],
     [ "Implementation", "classstored_1_1_example_terminal.html#a46584576907e79c528625c514dfe3a7c", null ],
     [ "Key", "classstored_1_1_example_terminal.html#ab2a1f9bd2834b206c2eed1623a2e247d", null ],
@@ -21,7 +21,6 @@ var classstored_1_1_example_terminal =
     [ "data", "classstored_1_1_example_terminal.html#a6ce9b8d926c9a569a29d12665c59ad81", null ],
     [ "data", "classstored_1_1_example_terminal.html#a3f95f920de598ec6b0bf5a4f9ab18a4a", null ],
     [ "find", "classstored_1_1_example_terminal.html#acfe4da8e52963554682979c83b522257", null ],
-    [ "hash", "classstored_1_1_example_terminal.html#a89d99c24d4c9cfbb3169149ea6088128", null ],
     [ "hookEntryRO", "classstored_1_1_example_terminal.html#a56a96124e36df9f8e5ece1e0b8db67f3", null ],
     [ "hookEntryX", "classstored_1_1_example_terminal.html#ab7d46c50fc6d58148f4f65a65fff3aa5", null ],
     [ "hookExitRO", "classstored_1_1_example_terminal.html#ae66c1304433b785ee65ba358df8cfb35", null ],
@@ -36,7 +35,7 @@ var classstored_1_1_example_terminal =
     [ "operator=", "classstored_1_1_example_terminal.html#a9bc72fc371c93882df31cc29a09d146d", null ],
     [ "operator=", "classstored_1_1_example_terminal.html#a99746ab87eb8962cb7243c2a76d33209", null ],
     [ "shortDirectory", "classstored_1_1_example_terminal.html#ad9779d8c0954fdedb0aa29065224f681", null ],
-    [ "ExampleTerminalBase< ExampleTerminal >", "classstored_1_1_example_terminal.html#aed5adfcfcebae33e59d6a80fbcca87af", null ],
+    [ "stored::ExampleTerminalBase< ExampleTerminal >", "classstored_1_1_example_terminal.html#aafaea380143f4dab5dcf3fa26e15897f", null ],
     [ "oh_gosh", "classstored_1_1_example_terminal.html#a93c648d67749c0d82d491bb0727cd01b", null ],
     [ "small__world", "classstored_1_1_example_terminal.html#abb03d99231dbca8fda16db3550db58b0", null ],
     [ "supercalifragilisticexpialidocious", "classstored_1_1_example_terminal.html#aee5aeae8b2df25f220a186ca6c640823", null ]

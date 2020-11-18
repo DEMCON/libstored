@@ -1,7 +1,7 @@
 var classstored_1_1_example_sync2 =
 [
     [ "Base", "classstored_1_1_example_sync2.html#ab8cd5fdfd371db6f386e0462794946da", null ],
-    [ "base", "classstored_1_1_example_sync2.html#aebc642310e5f0d860d4ffa93eefd3a96", null ],
+    [ "base", "classstored_1_1_example_sync2.html#a6f9dd2066212fa3d5ddd2cc9b909d7fd", null ],
     [ "Data", "classstored_1_1_example_sync2.html#a2661f1dd04e4963c690647ee98e7e173", null ],
     [ "Implementation", "classstored_1_1_example_sync2.html#a4244fd29bb474629c9643fad1e8ca64c", null ],
     [ "Key", "classstored_1_1_example_sync2.html#a60bfcf74a2e1a6b68790eb89226fef0d", null ],
@@ -21,7 +21,6 @@ var classstored_1_1_example_sync2 =
     [ "data", "classstored_1_1_example_sync2.html#a83e14a43732f39aad112ba484e78cb9f", null ],
     [ "data", "classstored_1_1_example_sync2.html#a904222c99af7f3b97f3220fe933774ea", null ],
     [ "find", "classstored_1_1_example_sync2.html#afa5a73cd9c36df2d03b7afdbee092037", null ],
-    [ "hash", "classstored_1_1_example_sync2.html#ae1d2191a5e1012b97dd0606b7e7fd0b4", null ],
     [ "hookEntryRO", "classstored_1_1_example_sync2.html#a4ffaea226ce72879a566e0b259883328", null ],
     [ "hookEntryX", "classstored_1_1_example_sync2.html#a8752e221d76ff2ff4a5c7340e0026ff0", null ],
     [ "hookExitRO", "classstored_1_1_example_sync2.html#aab6a41ca43a9a6d9acd1754c0e47395e", null ],
@@ -36,7 +35,7 @@ var classstored_1_1_example_sync2 =
     [ "operator=", "classstored_1_1_example_sync2.html#afe5ff6bf03b7461e022ab77b4ca1b247", null ],
     [ "operator=", "classstored_1_1_example_sync2.html#aa894be85120d919540a6d16be240599f", null ],
     [ "shortDirectory", "classstored_1_1_example_sync2.html#aab95d8b90a322432ce3830121dfde6c8", null ],
-    [ "ExampleSync2Base< ExampleSync2 >", "classstored_1_1_example_sync2.html#a83fb2f026d81c1883e7373d4949a68cd", null ],
+    [ "stored::ExampleSync2Base< ExampleSync2 >", "classstored_1_1_example_sync2.html#aa4be5d86a319b413337d19f50a0e00b7", null ],
     [ "b", "classstored_1_1_example_sync2.html#aea5a66ea30e67b29264cba250add19af", null ],
     [ "u", "classstored_1_1_example_sync2.html#ab60bdc990f35f2221e96296c5b1af69e", null ]
 ];

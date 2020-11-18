@@ -1,7 +1,7 @@
 var classstored_1_1_example_scope =
 [
     [ "Base", "classstored_1_1_example_scope.html#a1c5adb132f3ade2ac23e5373efbea832", null ],
-    [ "base", "classstored_1_1_example_scope.html#a67044df766e06892cbf9a88f29904fef", null ],
+    [ "base", "classstored_1_1_example_scope.html#a46f39acc0e94f0f16bd8a611eaaf8a47", null ],
     [ "Data", "classstored_1_1_example_scope.html#ad214c66ca358af374a1687f860c1f5c5", null ],
     [ "Implementation", "classstored_1_1_example_scope.html#a8117443a869be441739ac810e43d0560", null ],
     [ "Key", "classstored_1_1_example_scope.html#aae7f5bd916eeb377049dfb8382c21289", null ],
@@ -21,7 +21,6 @@ var classstored_1_1_example_scope =
     [ "data", "classstored_1_1_example_scope.html#ac60015a9585303d5ea15e543d8a574ee", null ],
     [ "data", "classstored_1_1_example_scope.html#a14a8de640255af661c904c144c6eb22b", null ],
     [ "find", "classstored_1_1_example_scope.html#ab6ee20f90cb3aa3e4800c9162e0a9945", null ],
-    [ "hash", "classstored_1_1_example_scope.html#ade4573456f35df63f1dcb3b64b466fdb", null ],
     [ "hookEntryRO", "classstored_1_1_example_scope.html#a4c6605fb2ccb9e6f5347406ebfe078ec", null ],
     [ "hookEntryX", "classstored_1_1_example_scope.html#a54ee782faf671434a322fc3b206eef89", null ],
     [ "hookExitRO", "classstored_1_1_example_scope.html#a44217901d745206e4cdc168a98e474a2", null ],
@@ -37,7 +36,7 @@ var classstored_1_1_example_scope =
     [ "operator=", "classstored_1_1_example_scope.html#a25773fa172fd6467893366b995a6d361", null ],
     [ "shortDirectory", "classstored_1_1_example_scope.html#a0d8e90ad15aad83e258179d0cab4a955", null ],
     [ "two_scopes_a__i", "classstored_1_1_example_scope.html#af025b44469a901868d51f41636a07866", null ],
-    [ "ExampleScopeBase< ExampleScope >", "classstored_1_1_example_scope.html#ac05fb8c03acc72d98b6e513ffe131ee2", null ],
+    [ "stored::ExampleScopeBase< ExampleScope >", "classstored_1_1_example_scope.html#aecca470baa747f681647cc168a25b035", null ],
     [ "gravitational_constant_m__s_2", "classstored_1_1_example_scope.html#a427a0edc7cf2fc4dfea02f4285e88c5c", null ],
     [ "scope__an_int", "classstored_1_1_example_scope.html#a796b3a65bdd25ccadf03b001516ea35c", null ],
     [ "scope__some_bool", "classstored_1_1_example_scope.html#a535e6b35397a555b86bcc05f2779e271", null ],

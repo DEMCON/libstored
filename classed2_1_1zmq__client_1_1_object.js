@@ -34,6 +34,8 @@ var classed2_1_1zmq__client_1_1_object =
     [ "isValidType", "classed2_1_1zmq__client_1_1_object.html#ad36e0801d8e917725b44106816066479", null ],
     [ "name", "classed2_1_1zmq__client_1_1_object.html#ac4e9efe8c0171e94d41368bf6c6b2668", null ],
     [ "name", "classed2_1_1zmq__client_1_1_object.html#ac4e9efe8c0171e94d41368bf6c6b2668", null ],
+    [ "optimizeSignals", "classed2_1_1zmq__client_1_1_object.html#ad940012a11b8fc39f79ed461190d87a8", null ],
+    [ "optimizeSignals", "classed2_1_1zmq__client_1_1_object.html#ad940012a11b8fc39f79ed461190d87a8", null ],
     [ "poll", "classed2_1_1zmq__client_1_1_object.html#a2876c51117be7f975e88c5e8abb03447", null ],
     [ "poll", "classed2_1_1zmq__client_1_1_object.html#a2876c51117be7f975e88c5e8abb03447", null ],
     [ "polling", "classed2_1_1zmq__client_1_1_object.html#a933b2ce55e834fa5a535b2d24bb32bc6", null ],

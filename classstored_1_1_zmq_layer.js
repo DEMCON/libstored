@@ -18,6 +18,7 @@ var classstored_1_1_zmq_layer =
     [ "operator=", "classstored_1_1_zmq_layer.html#a15a50e22606255d0a960ebe1531cc2d0", null ],
     [ "operator=", "classstored_1_1_zmq_layer.html#af80a0c3ef82bc943db2775e632d5fc91", null ],
     [ "recv", "classstored_1_1_zmq_layer.html#a1a284926a6e41e19475e0a4e20c9a1cf", null ],
+    [ "recv1", "classstored_1_1_zmq_layer.html#a8b8524234a09141504f9f998b993e5a2", null ],
     [ "reset", "classstored_1_1_zmq_layer.html#a53fe78a7b405b981649112d9c84fe762", null ],
     [ "setDown", "classstored_1_1_zmq_layer.html#a2b2523892617a43cf7421a654bfc3b6c", null ],
     [ "setLastError", "classstored_1_1_zmq_layer.html#a3cce4dc0a455b30a2d4c6e2bc093af22", null ],

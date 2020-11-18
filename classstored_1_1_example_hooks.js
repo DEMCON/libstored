@@ -1,7 +1,7 @@
 var classstored_1_1_example_hooks =
 [
     [ "Base", "classstored_1_1_example_hooks.html#aaae070c8cca6ddc516ac84a89c11f099", null ],
-    [ "base", "classstored_1_1_example_hooks.html#aee762cfbebdca1c36a90b3e61e9a0cc9", null ],
+    [ "base", "classstored_1_1_example_hooks.html#a0dab28d7728cb7c8f853035c7461bed0", null ],
     [ "Data", "classstored_1_1_example_hooks.html#a88855d8f4c0f1392d06a7c04c6330af5", null ],
     [ "Implementation", "classstored_1_1_example_hooks.html#a7e0fe4df5ec6d039989a195dbc06e759", null ],
     [ "Key", "classstored_1_1_example_hooks.html#aab70bf2dadfacf78e0335a68b9859535", null ],
@@ -22,7 +22,6 @@ var classstored_1_1_example_hooks =
     [ "data", "classstored_1_1_example_hooks.html#a655b7866c0c3e603edc22c48802da3f7", null ],
     [ "data", "classstored_1_1_example_hooks.html#a32f05612189d9825004aab6f92aebd52", null ],
     [ "find", "classstored_1_1_example_hooks.html#a7e474128547bad6be05e70d9e972d16f", null ],
-    [ "hash", "classstored_1_1_example_hooks.html#a4b5ed4ae373632c4765831f531388e73", null ],
     [ "hookEntryRO", "classstored_1_1_example_hooks.html#a742b4b4aceeb66786c5c10a0c4d82535", null ],
     [ "hookEntryX", "classstored_1_1_example_hooks.html#acb4f8f88ca21c4383e1c4d44233f7c32", null ],
     [ "hookExitRO", "classstored_1_1_example_hooks.html#a2a6200904318e780bb9d2c4a34dd9dd9", null ],
@@ -37,7 +36,7 @@ var classstored_1_1_example_hooks =
     [ "operator=", "classstored_1_1_example_hooks.html#abcfe5a6a37d835a162a255d73c83babc", null ],
     [ "operator=", "classstored_1_1_example_hooks.html#acd40fc009cceafc2729d4a55b4e38af7", null ],
     [ "shortDirectory", "classstored_1_1_example_hooks.html#afe89177ef302a87f49cccdf78aa840b8", null ],
-    [ "ExampleHooksBase< ExampleHooks >", "classstored_1_1_example_hooks.html#a157aa3fada6f65afff2e1fadb47f0bf9", null ],
+    [ "stored::ExampleHooksBase< ExampleHooks >", "classstored_1_1_example_hooks.html#af0536bc25dce81cf1d1ee229cb85ac06", null ],
     [ "function", "classstored_1_1_example_hooks.html#a982fa8db0e4738c71a197f278f3faab6", null ],
     [ "variable_1", "classstored_1_1_example_hooks.html#a2cb68b8bf80aa16e4f907d27f44bd77f", null ],
     [ "variable_2", "classstored_1_1_example_hooks.html#a64023cf3cb76353cd5d3b797da4b2348", null ]

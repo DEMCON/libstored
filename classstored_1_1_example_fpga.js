@@ -1,7 +1,7 @@
 var classstored_1_1_example_fpga =
 [
     [ "Base", "classstored_1_1_example_fpga.html#a3ffc4d6bbbd3027ab0c9421d3105c38b", null ],
-    [ "base", "classstored_1_1_example_fpga.html#a023e626723efa55664460d5532e8a8ad", null ],
+    [ "base", "classstored_1_1_example_fpga.html#a9b05e8367b7e53564ef87cfbae8445ac", null ],
     [ "Data", "classstored_1_1_example_fpga.html#a1fd9bfcfdb3adcd11eec67ca8de35a5a", null ],
     [ "Implementation", "classstored_1_1_example_fpga.html#a3d2b926e0e6669c0b0e51ded1bb06d8f", null ],
     [ "Key", "classstored_1_1_example_fpga.html#a678eba916ea4aba40ad74be21bef0e4f", null ],
@@ -22,7 +22,6 @@ var classstored_1_1_example_fpga =
     [ "data", "classstored_1_1_example_fpga.html#a322dbbce24b10df5ff9c2c5fa7a0e1fb", null ],
     [ "data", "classstored_1_1_example_fpga.html#aba0ed893527128dcf2647f37875c1f38", null ],
     [ "find", "classstored_1_1_example_fpga.html#ad4a72cae527c793df70b14ddfaab75eb", null ],
-    [ "hash", "classstored_1_1_example_fpga.html#ade391f0d4dfb26f8d7c013b8d7a14007", null ],
     [ "hookEntryRO", "classstored_1_1_example_fpga.html#a1bba9ba404ec343afc510876b84036d0", null ],
     [ "hookEntryX", "classstored_1_1_example_fpga.html#afbfcdfe4b30cea19313642fb61dd93e0", null ],
     [ "hookExitRO", "classstored_1_1_example_fpga.html#a8442cc2115f0f84f120a546845935b71", null ],
@@ -37,7 +36,7 @@ var classstored_1_1_example_fpga =
     [ "operator=", "classstored_1_1_example_fpga.html#a28f7cd432f48c0cc71b042e32ba4664a", null ],
     [ "operator=", "classstored_1_1_example_fpga.html#a31baceb4b346037422c54adfcee61b3c", null ],
     [ "shortDirectory", "classstored_1_1_example_fpga.html#acb2961dbc6f2cf42ba5fcbca00010a9c", null ],
-    [ "ExampleFpgaBase< ExampleFpga >", "classstored_1_1_example_fpga.html#a71bf6e15f588fb60542ac223e4287162", null ],
+    [ "stored::ExampleFpgaBase< ExampleFpga >", "classstored_1_1_example_fpga.html#a298e19ed3f641d8d81d5f7a09fcb11dc", null ],
     [ "blob", "classstored_1_1_example_fpga.html#a1dd07b3a6933d4f02081492ff33b4999", null ],
     [ "bool_obj", "classstored_1_1_example_fpga.html#ad067f1a5bedd117132b616d5afa38351", null ],
     [ "default_register", "classstored_1_1_example_fpga.html#aac75985dc0336a960cf9dfaf484053ce", null ],

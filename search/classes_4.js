@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['event',['Event',['../classstored_1_1_poller_1_1_event.html',1,'stored::Poller']]],
   ['examplebasic',['ExampleBasic',['../classstored_1_1_example_basic.html',1,'stored']]],
   ['examplebasicbase',['ExampleBasicBase',['../classstored_1_1_example_basic_base.html',1,'stored']]],
   ['examplebasicbase_3c_20examplebasic_20_3e',['ExampleBasicBase&lt; ExampleBasic &gt;',['../classstored_1_1_example_basic_base.html',1,'stored']]],
@@ -21,8 +22,8 @@ var searchData=
   ['exampledebugsomestoreobjects',['ExampleDebugSomeStoreObjects',['../classstored_1_1_example_debug_some_store_objects.html',1,'stored']]],
   ['exampledebugsomestoreobjects_3c_20exampledebugsomestorebase_3c_20exampledebugsomestore_20_3e_2c_20exampledebugsomestore_20_3e',['ExampleDebugSomeStoreObjects&lt; ExampleDebugSomeStoreBase&lt; ExampleDebugSomeStore &gt;, ExampleDebugSomeStore &gt;',['../classstored_1_1_example_debug_some_store_objects.html',1,'stored']]],
   ['exampledebugsomestoreobjects_3c_20exampledebugsomestorebase_3c_20implementation_5f_20_3e_2c_20implementation_5f_20_3e',['ExampleDebugSomeStoreObjects&lt; ExampleDebugSomeStoreBase&lt; Implementation_ &gt;, Implementation_ &gt;',['../classstored_1_1_example_debug_some_store_objects.html',1,'stored']]],
-  ['examplefpga',['ExampleFpga',['../classstored_1_1_example_fpga.html',1,'stored']]],
-  ['examplefpga2',['ExampleFpga2',['../classstored_1_1_example_fpga2.html',1,'stored']]],
+  ['examplefpga',['ExampleFpga',['../class_example_fpga.html',1,'ExampleFpga'],['../classstored_1_1_example_fpga.html',1,'stored::ExampleFpga']]],
+  ['examplefpga2',['ExampleFpga2',['../class_example_fpga2.html',1,'ExampleFpga2'],['../classstored_1_1_example_fpga2.html',1,'stored::ExampleFpga2']]],
   ['examplefpga2base',['ExampleFpga2Base',['../classstored_1_1_example_fpga2_base.html',1,'stored']]],
   ['examplefpga2base_3c_20examplefpga2_20_3e',['ExampleFpga2Base&lt; ExampleFpga2 &gt;',['../classstored_1_1_example_fpga2_base.html',1,'stored']]],
   ['examplefpga2data',['ExampleFpga2Data',['../structstored_1_1_example_fpga2_data.html',1,'stored']]],

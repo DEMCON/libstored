@@ -17,6 +17,7 @@ var class_printf_physical =
     [ "setDown", "class_printf_physical.html#a2b2523892617a43cf7421a654bfc3b6c", null ],
     [ "setPurgeableResponse", "class_printf_physical.html#a8e8b913345f11bf3cf3999c305905681", null ],
     [ "setUp", "class_printf_physical.html#a43ca79c4b9503ce51f817ddc7fcd1cb5", null ],
+    [ "silence", "class_printf_physical.html#ab12af58b6364ef1985e9dfdcec71b060", null ],
     [ "stack", "class_printf_physical.html#a3f34a83e488add9a3f459fb8ebed8e34", null ],
     [ "up", "class_printf_physical.html#ac7cbd80b10e74166c661582027158b40", null ],
     [ "wrap", "class_printf_physical.html#a7d2f0987462196f77ca9067c050db09d", null ]

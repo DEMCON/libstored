@@ -3,7 +3,7 @@ var classstored_1_1_arq_layer =
     [ "base", "classstored_1_1_arq_layer.html#af614b4f50851434d0ffa0dc9f7388f20", null ],
     [ "EventCallback", "classstored_1_1_arq_layer.html#a035b726e630d83552d9587b3b37c3ec8", null ],
     [ "EventCallbackArg", "classstored_1_1_arq_layer.html#a0fa6e75d37245bfe70669aae2982d8e3", null ],
-    [ "RetransmitCallbackThreshold", "classstored_1_1_arq_layer.html#afd3c6c47dbbc8673fd0cfea97a00b233a39ab31057c8c5eea4f5e0afb1a8fcbc7", null ],
+    [ "RetransmitCallbackThreshold", "classstored_1_1_arq_layer.html#ad50ec60b848261f45640a39380f3ed74a39ab31057c8c5eea4f5e0afb1a8fcbc7", null ],
     [ "EncodeState", "classstored_1_1_arq_layer.html#a5afc54c8eec96b06ba9c0a99d4dca7c1", [
       [ "EncodeStateIdle", "classstored_1_1_arq_layer.html#a5afc54c8eec96b06ba9c0a99d4dca7c1adc66734e4631a5349dcaba9bcf8dd524", null ],
       [ "EncodeStateEncoding", "classstored_1_1_arq_layer.html#a5afc54c8eec96b06ba9c0a99d4dca7c1a6a87d422220f79f0357e0f9c8d2dce8b", null ]

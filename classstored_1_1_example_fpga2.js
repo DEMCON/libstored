@@ -1,7 +1,7 @@
 var classstored_1_1_example_fpga2 =
 [
     [ "Base", "classstored_1_1_example_fpga2.html#abbe2d5a8b9bc421609df2c882f1ada0f", null ],
-    [ "base", "classstored_1_1_example_fpga2.html#a662e369b4ffd6141d2d508e21962cd52", null ],
+    [ "base", "classstored_1_1_example_fpga2.html#a8199387c5d2dbb4789d43962617d95f2", null ],
     [ "Data", "classstored_1_1_example_fpga2.html#ab7c383770ed4679903bbb5142f079282", null ],
     [ "Implementation", "classstored_1_1_example_fpga2.html#a75de4b4061f58cfbc20015983c87603f", null ],
     [ "Key", "classstored_1_1_example_fpga2.html#a12eb7ea9c5cae46bb670fbed2477d2f1", null ],
@@ -21,7 +21,6 @@ var classstored_1_1_example_fpga2 =
     [ "data", "classstored_1_1_example_fpga2.html#a7c7439c07c628756f970c1687813f5c4", null ],
     [ "data", "classstored_1_1_example_fpga2.html#a68d976e37917742128786f7a2121d2cb", null ],
     [ "find", "classstored_1_1_example_fpga2.html#adeb230727d0af227f811135948b5a136", null ],
-    [ "hash", "classstored_1_1_example_fpga2.html#a7c22254d4c3c5148b09def707c22c1b1", null ],
     [ "hookEntryRO", "classstored_1_1_example_fpga2.html#af0e3872f0ac4c9831a40e98b8cb4b8da", null ],
     [ "hookEntryX", "classstored_1_1_example_fpga2.html#ae70fe1efbb720dd98b097e6178e1710b", null ],
     [ "hookExitRO", "classstored_1_1_example_fpga2.html#aade1a9a264b1a20525af42d948e50f6f", null ],
@@ -36,6 +35,6 @@ var classstored_1_1_example_fpga2 =
     [ "operator=", "classstored_1_1_example_fpga2.html#afaecc404e196ee1e1e806aa03983297d", null ],
     [ "operator=", "classstored_1_1_example_fpga2.html#a5564a16ab9855b66e9386df31f773721", null ],
     [ "shortDirectory", "classstored_1_1_example_fpga2.html#a3fa7f7231e39566a70290b54dfe6e38c", null ],
-    [ "ExampleFpga2Base< ExampleFpga2 >", "classstored_1_1_example_fpga2.html#a1fed114575733a16715e8b136cfc103e", null ],
+    [ "stored::ExampleFpga2Base< ExampleFpga2 >", "classstored_1_1_example_fpga2.html#a2d65c058af677d032cd5d988efda3c25", null ],
     [ "other_store_s_int8", "classstored_1_1_example_fpga2.html#a9718511a7d11a1d95220992c5b2bfd5f", null ]
 ];

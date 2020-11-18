@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['init',['init',['../classstored_1_1_crc8_layer.html#a07b24f77f1d4e55b2b1573230b091974a1631c674509e8d7d495cab564f1cd8eb',1,'stored::Crc8Layer::init()'],['../classstored_1_1_crc16_layer.html#a2fdc38bd0332dfd195fd43a6463534c9aeb8e182958fd03c1968f253e0bcb11c6',1,'stored::Crc16Layer::init()']]],
+  ['init',['init',['../classstored_1_1_crc8_layer.html#a3278e564ad9394b851dc727d9891bdaca1631c674509e8d7d495cab564f1cd8eb',1,'stored::Crc8Layer::init()'],['../classstored_1_1_crc16_layer.html#a58ea0fcf8981aa38941947c057f00ffaaeb8e182958fd03c1968f253e0bcb11c6',1,'stored::Crc16Layer::init()']]],
   ['int',['Int',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea63be2e87df1668e33600f74b25377135',1,'stored::Type']]],
   ['int16',['Int16',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9ea9ff50bbf1154550b120e6a9a34cfe4a3',1,'stored::Type']]],
   ['int32',['Int32',['../structstored_1_1_type.html#a2787f4c533f45dcdea5ed0cfaee3df9eada75833dee6f44310b76a392f59fa3ae',1,'stored::Type']]],

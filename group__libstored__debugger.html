@@ -150,6 +150,20 @@ $(document).ready(function(){initNavTree('group__libstored__debugger.html','');}
 </pre><p>Response: <code>?</code> | &lt;data&gt; &lt;suffix&gt; </p><pre class="fragment">Hello World!!1/
 </pre><p>Once data has been read from the stream, it is removed. The next call will return new data. If a stream was never used, <code>?</code> is returned. If it was used, but it is empty now, the stream char does not show up in the <code>s</code> call, but does respond with the suffix. If no suffix was provided, and there is no data, the response is empty.</p>
 <p>The number of streams and the maximum buffer size of a stream may be limited.</p>
+<p>Depending on <a class="el" href="structstored_1_1_default_config.html#a3fa428d9b1ddf6eb651902014336b939" title="When true, all streams (including) trace are compressed using stored::CompressLayer. ">stored::Config::CompressStreams</a>, the data returned by <code>s</code> is compressed using heatshrink (window=8, lookahead=4). Every chunk of data returned by <code>s</code> is part of a single stream, and must be decompressed as such. As (de)compression is stateful, all data from the start of the stream is required for decompression. Moreover, stream data may remain in the compressor before retrievable via <code>s</code>.</p>
+<p>To detect if the stream is compressed, and to forcibly flush out and reset the compressed stream, use the Flush (<code>f</code>) command. A flush will terminate the current stream, push out the last bit of data from the compressor's buffers and restart the compressor's state. So, a normal startup sequence of a debug client would be:</p>
+<ul>
+<li>Check if <code>f</code> capability exists. If not, done; no compression is used on streams.</li>
+<li>Flush out all streams: execute <code>f</code>.</li>
+<li>Drop all streams, as the start of the stream is possibly missing: execute <code>sx</code> for every stream returned by <code>s</code>.</li>
+</ul>
+<p>Afterwards, pass all data received from <code>s</code> through the heatshrink decoder.</p>
+<h3>Flush</h3>
+<p>Flush out and reset a stream (see also Streams). When this capability does not exist, streams are not compressed. If it does exist, all streams are compressed. Use this function to initialize the stream if the (de)compressing state is unknown, or to force out the last data (for example, the last trace data).</p>
+<p>Request: <code>f</code> &lt;char&gt; ?</p>
+<p>Response: <code>!</code></p>
+<p>The optional char is the stream name. If omitted, all streams are flushed and reset. The response is always <code>!</code>, regardless of whether the stream existed or had data.</p>
+<p>The stream is blocked until it is read out by <code>s</code>. This way, the last data is not lost, but new data could be dropped if this takes too long. If you want an atomic flush-retrieve, use a macro.</p>
 <h3>Tracing</h3>
 <p>Executes a macro every time the application invokes <a class="el" href="classstored_1_1_debugger.html#a65e235d57bae057514396431c97db437" title="Executes the trace macro and appends the output to the trace buffer. ">stored::Debugger::trace()</a>. A stream is filled with the macro output.</p>
 <p>Request: <code>t</code> ( &lt;macro&gt; &lt;stream&gt; ( &lt;decimate in hex&gt; ) ? ) ? </p><pre class="fragment">tms64
@@ -179,7 +193,7 @@ sT
 sT
 sT
 ...
-</pre><p>Now, the returned stream buffer contains triplets of time, /some variable, /some other variable, like this: </p><pre class="fragment">101,1,2;102,1,2;103,1,2;
+</pre><p>Now, the returned stream buffer (after decompressing) contains triplets of time, /some variable, /some other variable, like this: </p><pre class="fragment">101,1,2;102,1,2;103,1,2;
 </pre><p>Depending on the buffer size, reading the buffer may be orders of magnitude slower than the actual tracing speed. </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>

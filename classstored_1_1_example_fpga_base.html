@@ -82,6 +82,7 @@ $(document).ready(function(){initNavTree('classstored_1_1_example_fpga_base.html
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pro-types">Protected Types</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
@@ -98,11 +99,12 @@ class stored::ExampleFpgaBase&lt; Implementation_ &gt;</h3>
 <p>Base class with default interface of all <a class="el" href="classstored_1_1_example_fpga.html" title="Default ExampleFpgaBase implementation. ">ExampleFpga</a> implementations. </p>
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code>Implementation_</code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="el" href="classstored_1_1_example_fpga.html" title="Default ExampleFpgaBase implementation. ">stored::ExampleFpga</a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_fpga.html" title="Default ExampleFpgaBase implementation. ">stored::ExampleFpga</a> </dd>
+<p>To inherit the base class, you can use the following template:</p>
+<div class="fragment"><div class="line"><span class="keyword">class </span><a class="code" href="class_example_fpga.html">ExampleFpga</a> : <span class="keyword">public</span> <a class="code" href="util_8h.html#ad225f313e5aac4f408188c9bce413d5e">STORE_BASECLASS</a>(ExampleFpgaBase, ExampleFpga) {</div><div class="line">    <a class="code" href="util_8h.html#a37e56df26175f2fb676ae46c8c7f4560">STORE_CLASS_BODY</a>(<a class="code" href="classstored_1_1_example_fpga_base.html#aea0e1dd707de174e1fc1ef838a27172c">ExampleFpgaBase</a>, <a class="code" href="class_example_fpga.html">ExampleFpga</a>)</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    <span class="comment">// Your class implementation, such as:</span></div><div class="line">    <a class="code" href="class_example_fpga.html">ExampleFpga</a>() <a class="code" href="util_8h.html#a5e97f6533b7a0a1e8b49c4cea10f75fc">is_default</a></div><div class="line">    <span class="comment">// ...</span></div><div class="line">};</div></div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_fpga.html" title="Default ExampleFpgaBase implementation. ">stored::ExampleFpga</a> </dd>
 <dd>
 <a class="el" href="structstored_1_1_example_fpga_data.html" title="Data storage of ExampleFpgaBase. ">stored::ExampleFpgaData</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00116">116</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00128">128</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -117,6 +119,12 @@ Inheritance diagram for stored::ExampleFpgaBase&lt; Implementation_ &gt;:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
+<tr class="memitem:af06811f5593210610400ac8603506cc2"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="classstored_1_1_example_fpga_base.html#af06811f5593210610400ac8603506cc2a294ebfc4deaabf139efc2cd0eba27b8c">ObjectCount</a> = 9, 
+<a class="el" href="classstored_1_1_example_fpga_base.html#af06811f5593210610400ac8603506cc2ac33ae3a153c806dac402dd96b350c2c5">VariableCount</a> = 8, 
+<a class="el" href="classstored_1_1_example_fpga_base.html#af06811f5593210610400ac8603506cc2a0f126f67291796157a105a09bce833d3">FunctionCount</a> = 1, 
+<a class="el" href="classstored_1_1_example_fpga_base.html#af06811f5593210610400ac8603506cc2a1204ae3738f26e9a5a0fe9f7a2faf269">BufferSize</a> = 35
+ }</td></tr>
+<tr class="separator:af06811f5593210610400ac8603506cc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ffc4d6bbbd3027ab0c9421d3105c38b"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classstored_1_1_example_fpga_base.html">ExampleFpgaBase</a>&lt; Implementation_ &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_objects.html#a3ffc4d6bbbd3027ab0c9421d3105c38b">Base</a></td></tr>
 <tr class="separator:a3ffc4d6bbbd3027ab0c9421d3105c38b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d2b926e0e6669c0b0e51ded1bb06d8f"><td class="memItemLeft" align="right" valign="top">typedef Implementation_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a></td></tr>
@@ -145,9 +153,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad4a72cae527c793df70b14ddfaab75eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_variant.html">Variant</a>&lt; <a class="el" href="classstored_1_1_example_fpga_base.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#ad4a72cae527c793df70b14ddfaab75eb">find</a> (char const *<a class="el" href="classstored_1_1_example_fpga_base.html#a082b68cb211080ce4e866ef177045c70">name</a>, size_t len=std::numeric_limits&lt; size_t &gt;::max())</td></tr>
 <tr class="memdesc:ad4a72cae527c793df70b14ddfaab75eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds an object with the given name.  <a href="#ad4a72cae527c793df70b14ddfaab75eb">More...</a><br /></td></tr>
 <tr class="separator:ad4a72cae527c793df70b14ddfaab75eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade391f0d4dfb26f8d7c013b8d7a14007"><td class="memItemLeft" align="right" valign="top">char const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#ade391f0d4dfb26f8d7c013b8d7a14007">hash</a> () const</td></tr>
-<tr class="memdesc:ade391f0d4dfb26f8d7c013b8d7a14007"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique hash of the store.  <a href="#ade391f0d4dfb26f8d7c013b8d7a14007">More...</a><br /></td></tr>
-<tr class="separator:ade391f0d4dfb26f8d7c013b8d7a14007"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0845517ebfa6c08eef331f60cacafaee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_example_fpga_base.html#a3d2b926e0e6669c0b0e51ded1bb06d8f">Implementation</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#a0845517ebfa6c08eef331f60cacafaee">implementation</a> () const</td></tr>
 <tr class="memdesc:a0845517ebfa6c08eef331f60cacafaee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the reference to the implementation.  <a href="#a0845517ebfa6c08eef331f60cacafaee">More...</a><br /></td></tr>
 <tr class="separator:a0845517ebfa6c08eef331f60cacafaee"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -180,6 +185,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:acb2961dbc6f2cf42ba5fcbca00010a9c"><td class="memItemLeft" align="right" valign="top">uint8_t const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#acb2961dbc6f2cf42ba5fcbca00010a9c">shortDirectory</a> () const</td></tr>
 <tr class="memdesc:acb2961dbc6f2cf42ba5fcbca00010a9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the short directory.  <a href="#acb2961dbc6f2cf42ba5fcbca00010a9c">More...</a><br /></td></tr>
 <tr class="separator:acb2961dbc6f2cf42ba5fcbca00010a9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a78e332addf949ccb535b026ee2332f7a"><td class="memItemLeft" align="right" valign="top">static char const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_example_fpga_base.html#a78e332addf949ccb535b026ee2332f7a">hash</a> ()</td></tr>
+<tr class="memdesc:a78e332addf949ccb535b026ee2332f7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique hash of the store.  <a href="#a78e332addf949ccb535b026ee2332f7a">More...</a><br /></td></tr>
+<tr class="separator:a78e332addf949ccb535b026ee2332f7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -337,7 +348,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>The type of the data structure. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00138">138</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00161">161</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -357,7 +368,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of the actual implementation, which is the (lowest) subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00125">125</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00137">137</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -378,7 +389,7 @@ template&lt;typename Implementation_&gt; </div>
 <p><a class="el" href="structstored_1_1_type.html" title="Type traits of objects in a store. ">Type</a> of a key. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classstored_1_1_example_fpga_base.html#ab4aa696e4ba29b0d972762869b8fad4a" title="Converts a variable&#39;s buffer to a key. ">bufferToKey()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00243">243</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00266">266</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -398,7 +409,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Map as generated by <a class="el" href="classstored_1_1_example_fpga_base.html#a54e94f96123d2014f4e86beb33e0a85b" title="Create a name to Variant map for the store. ">map()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00365">365</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00389">389</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -416,7 +427,36 @@ template&lt;typename Implementation_&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00123">123</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00135">135</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="af06811f5593210610400ac8603506cc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af06811f5593210610400ac8603506cc2">&#9670;&nbsp;</a></span>anonymous enum</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Implementation_&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">anonymous enum</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="af06811f5593210610400ac8603506cc2a294ebfc4deaabf139efc2cd0eba27b8c"></a>ObjectCount&#160;</td><td class="fielddoc"><p>Number of objects in the store. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="af06811f5593210610400ac8603506cc2ac33ae3a153c806dac402dd96b350c2c5"></a>VariableCount&#160;</td><td class="fielddoc"><p>Number of variables in the store. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="af06811f5593210610400ac8603506cc2a0f126f67291796157a105a09bce833d3"></a>FunctionCount&#160;</td><td class="fielddoc"><p>Number of functions in the store. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="af06811f5593210610400ac8603506cc2a1204ae3738f26e9a5a0fe9f7a2faf269"></a>BufferSize&#160;</td><td class="fielddoc"><p>Buffer size. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00143">143</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -557,7 +597,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_fpga_base.html#a8442cc2115f0f84f120a546845935b71" title="Hook when read-only access to a given variable is released. ">hookExitRO()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00320">320</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00344">344</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -607,7 +647,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_fpga_base.html#ae6e5c28abd7ae8592ce427ca3545d461" title="Hook when exclusive access to a given variable is released. ">hookExitX()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00308">308</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00332">332</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -657,7 +697,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_fpga_base.html#a1bba9ba404ec343afc510876b84036d0" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00326">326</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00350">350</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -713,7 +753,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_fpga_base.html#afbfcdfe4b30cea19313642fb61dd93e0" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a>.</p>
 <p>Default implementation does nothing. Override subclass. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00314">314</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00338">338</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -755,7 +795,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Callback for ignored function. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00236">236</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00259">259</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -786,7 +826,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the buffer with all variable data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00144">144</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00167">167</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -817,7 +857,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the buffer with all variable data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00146">146</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00169">169</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -852,7 +892,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>For synchronization, when <a class="el" href="classstored_1_1_example_fpga_base.html#afbfcdfe4b30cea19313642fb61dd93e0" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a> or <a class="el" href="classstored_1_1_example_fpga_base.html#a1bba9ba404ec343afc510876b84036d0" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a> is invoked, one can compute the key of the object that is accessed. The key can be used, for example, in a key-to-Variant map. When data arrives from another party, the key can be used to find the proper <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> in the map.</p>
 <p>This way, data exchange is type-safe, as the <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> can check if the data format matches the expected type. However, one cannot process data if the key is not set yet in the map. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00265">265</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00288">288</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -907,7 +947,7 @@ template&lt;typename Implementation_&gt; </div>
 <p><a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">Function</a> callback resolver. </p>
 <p>This is the callback for a <a class="el" href="classstored_1_1_function.html" title="A typed function in a store. ">Function</a> and a <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a>, which converts a call to the function identifier to an actual function call within the Implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00221">221</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00244">244</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -938,7 +978,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the container for all the store's data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00140">140</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00163">163</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -969,7 +1009,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the container for all the store's data. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00142">142</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00165">165</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1012,12 +1052,12 @@ template&lt;typename Implementation_&gt; </div>
 <p>Finds an object with the given name. </p>
 <dl class="section return"><dt>Returns</dt><dd>the object, or an invalid <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">stored::Variant</a> if not found. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00344">344</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00368">368</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
-<a id="ade391f0d4dfb26f8d7c013b8d7a14007"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ade391f0d4dfb26f8d7c013b8d7a14007">&#9670;&nbsp;</a></span>hash()</h2>
+<a id="a78e332addf949ccb535b026ee2332f7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78e332addf949ccb535b026ee2332f7a">&#9670;&nbsp;</a></span>hash()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1028,22 +1068,22 @@ template&lt;typename Implementation_&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">char const* <a class="el" href="classstored_1_1_example_fpga_base.html">stored::ExampleFpgaBase</a>&lt; Implementation_ &gt;::hash </td>
+          <td class="memname">static char const* <a class="el" href="classstored_1_1_example_fpga_base.html">stored::ExampleFpgaBase</a>&lt; Implementation_ &gt;::hash </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Returns a unique hash of the store. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00129">129</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00141">141</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1092,7 +1132,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Hook when read-only access to a given variable is to be acquired. </p>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_fpga_base.html#a8442cc2115f0f84f120a546845935b71" title="Hook when read-only access to a given variable is released. ">hookExitRO()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00294">294</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00318">318</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1141,7 +1181,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Hook when exclusive access to a given variable is to be acquired. </p>
 <p>Must be followed by <a class="el" href="classstored_1_1_example_fpga_base.html#ae6e5c28abd7ae8592ce427ca3545d461" title="Hook when exclusive access to a given variable is released. ">hookExitX()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00277">277</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00301">301</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1190,7 +1230,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Hook when read-only access to a given variable is released. </p>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_fpga_base.html#a1bba9ba404ec343afc510876b84036d0" title="Hook when read-only access to a given variable is to be acquired. ">hookEntryRO()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00301">301</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00325">325</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1245,7 +1285,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Hook when exclusive access to a given variable is released. </p>
 <p>Must be preceded by <a class="el" href="classstored_1_1_example_fpga_base.html#afbfcdfe4b30cea19313642fb61dd93e0" title="Hook when exclusive access to a given variable is to be acquired. ">hookEntryX()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00287">287</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00311">311</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1276,7 +1316,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the reference to the implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00132">132</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00155">155</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1307,7 +1347,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the reference to the implementation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00134">134</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00157">157</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1358,7 +1398,7 @@ template&lt;typename F &gt; </div>
 <p>Calls a callback for every object in the <a class="el" href="classstored_1_1_example_fpga_base.html#a5a1fe52620bee3002525d655b2c0f4b9" title="Retuns the long directory. ">longDirectory()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758" title="Iterates over all objects in the directory and invoke a callback for every object. ">stored::list()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00353">353</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00377">377</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1393,7 +1433,7 @@ template&lt;typename F &gt; </div>
 <p>Calls a callback for every object in the <a class="el" href="classstored_1_1_example_fpga_base.html#a5a1fe52620bee3002525d655b2c0f4b9" title="Retuns the long directory. ">longDirectory()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__libstored__directory.html#ga12a9855cf4121da642f3d961192c1758" title="Iterates over all objects in the directory and invoke a callback for every object. ">stored::list()</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00361">361</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00385">385</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1425,7 +1465,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Retuns the long directory. </p>
 <p>When not available, the short directory is returned. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00338">338</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00362">362</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1458,7 +1498,7 @@ template&lt;typename Implementation_&gt; </div>
 <p>Create a name to <a class="el" href="classstored_1_1_variant.html" title="A untyped interface to an object in a store. ">Variant</a> map for the store. </p>
 <p>Generating the map may be expensive and the result is not cached. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00372">372</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00396">396</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1489,7 +1529,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the name of store, which can be used as prefix for <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00127">127</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00139">139</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1580,7 +1620,7 @@ template&lt;typename Implementation_&gt; </div>
 
 <p>Returns the short directory. </p>
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00334">334</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00358">358</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1609,7 +1649,7 @@ template&lt;typename T , typename I &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00210">210</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00233">233</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1637,7 +1677,7 @@ template&lt;typename Store , typename Implementation , typename T , unsigned int
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00181">181</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00204">204</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1665,7 +1705,7 @@ template&lt;typename Store_ , typename Implementation__ , typename T_ , size_t o
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00168">168</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00191">191</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1693,7 +1733,7 @@ template&lt;typename Store , typename Implementation , Type::type type_, unsigne
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00204">204</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00227">227</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1721,7 +1761,7 @@ template&lt;typename Store , typename Implementation , Type::type type_, size_t 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00193">193</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00216">216</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1749,7 +1789,7 @@ template&lt;typename T , typename I , bool H&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00209">209</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00232">232</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>
@@ -1775,7 +1815,7 @@ template&lt;typename Implementation_&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00211">211</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_example_fpga_8h_source.html#l00234">234</a> of file <a class="el" href="_example_fpga_8h_source.html">ExampleFpga.h</a>.</p>
 
 </div>
 </div>

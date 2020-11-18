@@ -95,10 +95,10 @@ class stored::Synchronizable&lt; Base &gt;</h3>
 <p>An extension of a store to be used by the <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">stored::Synchronizer</a>. </p>
 <p>Assume you have <code>MyStoreBase</code> (which takes a template parameter <code>Implementation</code>), and the actual store implementation <code>ActualStore</code>. If it does not have to be synchronizable, you would inherit <code>ActualStore</code> from <code>MyStoreBase&lt;ActualStore&gt;</code>.</p>
 <p>If it should be synchronizable, use <a class="el" href="classstored_1_1_synchronizable.html#a3bc1ad747d4e160895d47012482f007c" title="Deleted copy constructor. ">Synchronizable</a> like this:</p>
-<div class="fragment"><div class="line"><span class="keyword">class </span>ActualStore : <span class="keyword">public</span> <a class="code" href="classstored_1_1_synchronizable.html#a3bc1ad747d4e160895d47012482f007c">Synchronizable</a>&lt;MyStoreBase&lt;ActualStore&gt; &gt; {</div><div class="line">...</div><div class="line">};</div></div><!-- fragment --><p>Now, <code>ActualStore</code> inherits from <code><a class="el" href="classstored_1_1_synchronizable.html" title="An extension of a store to be used by the stored::Synchronizer. ">Synchronizable</a></code>, which inherits from <code>MyStoreBase</code>. However, <code>ActualStore</code> is still used as the final implementation. </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="8_sync_2main_8cpp-example.html#_a2">8_sync/main.cpp</a>.</dd>
-</dl>
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00363">363</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+<div class="fragment"><div class="line"><span class="keyword">class </span>ActualStore : <span class="keyword">public</span> <a class="code" href="classstored_1_1_synchronizable.html">stored::Synchronizable</a>&lt;stored::MyStoreBase&lt;ActualStore&gt; &gt; {</div><div class="line">    <a class="code" href="util_8h.html#a51b700a941b8d8d0f4c446dc2af5ce79">CLASS_NOCOPY</a>(ActualStore)</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    <span class="keyword">typedef</span> <a class="code" href="classstored_1_1_synchronizable.html">stored::Synchronizable&lt;stored::MyStoreBase&lt;ActualStore&gt;</a> &gt; <a class="code" href="classstored_1_1_synchronizable.html#a4e7c1bda607d10c32470355a438132e4">base</a>;</div><div class="line">    <span class="keyword">using</span> <span class="keyword">typename</span> base::Implementation;</div><div class="line">    <span class="keyword">friend</span> <span class="keyword">class </span>stored::MyStoreBase&lt;ActualStore&gt;;</div><div class="line">    ActualStore() <a class="code" href="util_8h.html#a5e97f6533b7a0a1e8b49c4cea10f75fc">is_default</a></div><div class="line">    ...</div><div class="line">};</div></div><!-- fragment --><p>Or with a few macros:</p>
+<div class="fragment"><div class="line"><span class="keyword">class </span>ActualStore: <span class="keyword">public</span> <a class="code" href="synchronizer_8h.html#a858bfc658882aacbe507d29e53064b83">STORE_SYNC_BASECLASS</a>(MyStoreBase, ActualStore) {</div><div class="line">    <a class="code" href="synchronizer_8h.html#abcfc818ef2b04fa3ac3507f3804dfcfc">STORE_SYNC_CLASS_BODY</a>(MyStoreBase, ActualStore)</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    ActualStore() <a class="code" href="util_8h.html#a5e97f6533b7a0a1e8b49c4cea10f75fc">is_default</a></div><div class="line">};</div></div><!-- fragment --><p>Now, <code>ActualStore</code> inherits from <code><a class="el" href="classstored_1_1_synchronizable.html" title="An extension of a store to be used by the stored::Synchronizer. ">Synchronizable</a></code>, which inherits from <code>MyStoreBase</code>. However, <code>ActualStore</code> is still used as the final implementation. </p>
+
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00382">382</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -112,6 +112,9 @@ Inheritance diagram for stored::Synchronizable&lt; Base &gt;:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
+<tr class="memitem:a640f0e27f0ef3463ae7dcf528695884b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="classstored_1_1_synchronizable.html#a640f0e27f0ef3463ae7dcf528695884ba99303b78e58017c2aa962fb625dc0459">MaxMessageSize</a>
+ }</td></tr>
+<tr class="separator:a640f0e27f0ef3463ae7dcf528695884b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e7c1bda607d10c32470355a438132e4"><td class="memItemLeft" align="right" valign="top">typedef Base&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizable.html#a4e7c1bda607d10c32470355a438132e4">base</a></td></tr>
 <tr class="separator:a4e7c1bda607d10c32470355a438132e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ebedce88b06ef81aee9f323bb82f579"><td class="memItemLeft" align="right" valign="top">typedef base::Implementation&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizable.html#a3ebedce88b06ef81aee9f323bb82f579">Implementation</a></td></tr>
@@ -130,16 +133,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a83faa28fa20314195ebf74d740bf5524"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
 <tr class="memitem:a83faa28fa20314195ebf74d740bf5524"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizable.html#a83faa28fa20314195ebf74d740bf5524">Synchronizable</a> (Args &amp;&amp;... args)</td></tr>
 <tr class="separator:a83faa28fa20314195ebf74d740bf5524"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d99a8a965a505af0ae3f861de18dde3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizable.html#a3d99a8a965a505af0ae3f861de18dde3">~Synchronizable</a> ()=default</td></tr>
+<tr class="separator:a3d99a8a965a505af0ae3f861de18dde3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87fc4ad5d50a98633178056c809f218d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_store_journal.html">StoreJournal</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizable.html#a87fc4ad5d50a98633178056c809f218d">journal</a> () const</td></tr>
 <tr class="separator:a87fc4ad5d50a98633178056c809f218d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaea4f34590c85e08d759d88676190651"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_store_journal.html">StoreJournal</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizable.html#aaea4f34590c85e08d759d88676190651">journal</a> ()</td></tr>
 <tr class="separator:aaea4f34590c85e08d759d88676190651"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abeb440bc64f8144e8c9c8114c7743c0e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizable.html#abeb440bc64f8144e8c9c8114c7743c0e">operator=</a> (<a class="el" href="classstored_1_1_synchronizable.html">Synchronizable</a>&lt; Base &gt; const &amp;)=delete</td></tr>
-<tr class="memdesc:abeb440bc64f8144e8c9c8114c7743c0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted assignment operator.  <a href="#abeb440bc64f8144e8c9c8114c7743c0e">More...</a><br /></td></tr>
-<tr class="separator:abeb440bc64f8144e8c9c8114c7743c0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee974db694832c9766912fb6d9412bd1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizable.html#aee974db694832c9766912fb6d9412bd1">operator=</a> (<a class="el" href="classstored_1_1_synchronizable.html">Synchronizable</a>&lt; Base &gt; &amp;&amp;)=delete</td></tr>
 <tr class="memdesc:aee974db694832c9766912fb6d9412bd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted move assignment operator.  <a href="#aee974db694832c9766912fb6d9412bd1">More...</a><br /></td></tr>
 <tr class="separator:aee974db694832c9766912fb6d9412bd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abeb440bc64f8144e8c9c8114c7743c0e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizable.html#abeb440bc64f8144e8c9c8114c7743c0e">operator=</a> (<a class="el" href="classstored_1_1_synchronizable.html">Synchronizable</a>&lt; Base &gt; const &amp;)=delete</td></tr>
+<tr class="memdesc:abeb440bc64f8144e8c9c8114c7743c0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted assignment operator.  <a href="#abeb440bc64f8144e8c9c8114c7743c0e">More...</a><br /></td></tr>
+<tr class="separator:abeb440bc64f8144e8c9c8114c7743c0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa285cbea0809844a480f8b659614ba24"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_synchronizable.html#aa285cbea0809844a480f8b659614ba24">reserveHeap</a> ()</td></tr>
+<tr class="memdesc:aa285cbea0809844a480f8b659614ba24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reserve worst-case heap usage.  <a href="#aa285cbea0809844a480f8b659614ba24">More...</a><br /></td></tr>
+<tr class="separator:aa285cbea0809844a480f8b659614ba24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -161,7 +169,7 @@ template&lt;typename Base&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00366">366</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00385">385</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
 
 </div>
 </div>
@@ -179,7 +187,7 @@ template&lt;typename Base&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00368">368</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00387">387</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
 
 </div>
 </div>
@@ -197,7 +205,30 @@ template&lt;typename Base&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00367">367</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00386">386</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="a640f0e27f0ef3463ae7dcf528695884b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a640f0e27f0ef3463ae7dcf528695884b">&#9670;&nbsp;</a></span>anonymous enum</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Base&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">anonymous enum</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a640f0e27f0ef3463ae7dcf528695884ba99303b78e58017c2aa962fb625dc0459"></a>MaxMessageSize&#160;</td><td class="fielddoc"><p>Maximum size of any <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a> message for this store. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00422">422</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
 
 </div>
 </div>
@@ -285,12 +316,39 @@ template&lt;typename... Args&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00372">372</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00391">391</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+
+</div>
+</div>
+<a id="a3d99a8a965a505af0ae3f861de18dde3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d99a8a965a505af0ae3f861de18dde3">&#9670;&nbsp;</a></span>~Synchronizable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Base&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classstored_1_1_synchronizable.html">stored::Synchronizable</a>&lt; Base &gt;::~<a class="el" href="classstored_1_1_synchronizable.html">Synchronizable</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -343,7 +401,7 @@ template&lt;typename Base&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00388">388</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00441">441</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
 
 </div>
 </div>
@@ -372,7 +430,7 @@ template&lt;typename Base&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00384">384</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00405">405</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
 
 </div>
 </div>
@@ -401,12 +459,42 @@ template&lt;typename Base&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00385">385</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00406">406</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+
+</div>
+</div>
+<a id="aee974db694832c9766912fb6d9412bd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee974db694832c9766912fb6d9412bd1">&#9670;&nbsp;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Base&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classstored_1_1_synchronizable.html">stored::Synchronizable</a>&lt; Base &gt;::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classstored_1_1_synchronizable.html">Synchronizable</a>&lt; Base &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Deleted move assignment operator. </p>
 
 </div>
 </div>
 <a id="abeb440bc64f8144e8c9c8114c7743c0e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abeb440bc64f8144e8c9c8114c7743c0e">&#9670;&nbsp;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#abeb440bc64f8144e8c9c8114c7743c0e">&#9670;&nbsp;</a></span>operator=() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -435,8 +523,8 @@ template&lt;typename Base&gt; </div>
 
 </div>
 </div>
-<a id="aee974db694832c9766912fb6d9412bd1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aee974db694832c9766912fb6d9412bd1">&#9670;&nbsp;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+<a id="aa285cbea0809844a480f8b659614ba24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa285cbea0809844a480f8b659614ba24">&#9670;&nbsp;</a></span>reserveHeap()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -447,21 +535,23 @@ template&lt;typename Base&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classstored_1_1_synchronizable.html">stored::Synchronizable</a>&lt; Base &gt;::operator= </td>
+          <td class="memname">void <a class="el" href="classstored_1_1_synchronizable.html">stored::Synchronizable</a>&lt; Base &gt;::reserveHeap </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classstored_1_1_synchronizable.html">Synchronizable</a>&lt; Base &gt; &amp;&amp;&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Deleted move assignment operator. </p>
+<p>Reserve worst-case heap usage. </p>
+<p>Afterwards, the store and synchronizer will not use any additional heap, which makes it possible to use it in a not-async-signal-safe context, like an interrupt handler. </p>
+
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00415">415</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
 
 </div>
 </div>

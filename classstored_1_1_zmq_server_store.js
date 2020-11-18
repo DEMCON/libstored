@@ -1,7 +1,7 @@
 var classstored_1_1_zmq_server_store =
 [
     [ "Base", "classstored_1_1_zmq_server_store.html#aa35d17e837c34e20db1f4054d5ce98c1", null ],
-    [ "base", "classstored_1_1_zmq_server_store.html#ae7a15d5dd755a50a0a3ed83df92b9ea2", null ],
+    [ "base", "classstored_1_1_zmq_server_store.html#a45415064a9719e5bf10d87de291b4ca9", null ],
     [ "Data", "classstored_1_1_zmq_server_store.html#ab2bfd93950802d1f847a91960baee43d", null ],
     [ "Implementation", "classstored_1_1_zmq_server_store.html#ae9e04a7c3fd9d981555f0cd1d5a84e8e", null ],
     [ "Key", "classstored_1_1_zmq_server_store.html#ad3b001d71b22b015737590095fe6115f", null ],
@@ -28,7 +28,6 @@ var classstored_1_1_zmq_server_store =
     [ "data", "classstored_1_1_zmq_server_store.html#af501cbabd6dd9ac6f3965a048637bcdb", null ],
     [ "data", "classstored_1_1_zmq_server_store.html#a318c156d70e52b9a9b905636658b29ce", null ],
     [ "find", "classstored_1_1_zmq_server_store.html#af7f6ccd9ca138388931dfd53078608fd", null ],
-    [ "hash", "classstored_1_1_zmq_server_store.html#a86b84f6a3ed55500c976259f210c8620", null ],
     [ "hookEntryRO", "classstored_1_1_zmq_server_store.html#ab343e49fed3da25bc7a90a19ab56cbfa", null ],
     [ "hookEntryX", "classstored_1_1_zmq_server_store.html#a8f9867cb9532ad91b32630fc64185263", null ],
     [ "hookExitRO", "classstored_1_1_zmq_server_store.html#a6d6c7223c0be5044f10ebe0fa1e09cfa", null ],
@@ -43,7 +42,7 @@ var classstored_1_1_zmq_server_store =
     [ "operator=", "classstored_1_1_zmq_server_store.html#a38a5734941138e77c4c0ab2564be0c0f", null ],
     [ "operator=", "classstored_1_1_zmq_server_store.html#a17c316137d48ead476418ce96e352df4", null ],
     [ "shortDirectory", "classstored_1_1_zmq_server_store.html#ae52059bd862c3dfbab6bc192b1719bde", null ],
-    [ "ZmqServerStoreBase< ZmqServerStore >", "classstored_1_1_zmq_server_store.html#a8a781410cbe4808b52d9a19b9bca39fa", null ],
+    [ "stored::ZmqServerStoreBase< ZmqServerStore >", "classstored_1_1_zmq_server_store.html#a58bf643a0e95daa07a1683f799b0cbe5", null ],
     [ "a_blob", "classstored_1_1_zmq_server_store.html#af2550c9e6ec50753d6117110968e5f55", null ],
     [ "a_bool", "classstored_1_1_zmq_server_store.html#a091fee96885c58b22b69091baa4d48ee", null ],
     [ "a_double", "classstored_1_1_zmq_server_store.html#abfc6cf7d1573a329807cd68ee30fe9d7", null ],

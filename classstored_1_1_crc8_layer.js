@@ -1,8 +1,8 @@
 var classstored_1_1_crc8_layer =
 [
     [ "base", "classstored_1_1_crc8_layer.html#a13eec04e6a1de27ad4c418a8eb023b3c", null ],
-    [ "polynomial", "classstored_1_1_crc8_layer.html#a07b24f77f1d4e55b2b1573230b091974a14adee897c9ad5499de4c6608c8f78c7", null ],
-    [ "init", "classstored_1_1_crc8_layer.html#a07b24f77f1d4e55b2b1573230b091974a1631c674509e8d7d495cab564f1cd8eb", null ],
+    [ "polynomial", "classstored_1_1_crc8_layer.html#a3278e564ad9394b851dc727d9891bdaca14adee897c9ad5499de4c6608c8f78c7", null ],
+    [ "init", "classstored_1_1_crc8_layer.html#a3278e564ad9394b851dc727d9891bdaca1631c674509e8d7d495cab564f1cd8eb", null ],
     [ "Crc8Layer", "classstored_1_1_crc8_layer.html#a5f87d2e04db6efb8d91e72d89266ef73", null ],
     [ "Crc8Layer", "classstored_1_1_crc8_layer.html#a5dfb97825c37d82e1b4517b8a84b19b8", null ],
     [ "Crc8Layer", "classstored_1_1_crc8_layer.html#a7921554b093428c40cc19bb0c910afcc", null ],

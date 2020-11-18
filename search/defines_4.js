@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['print_5fto_5fstderr',['PRINT_TO_STDERR',['../terminal_2main_8cpp.html#a30a5e2be3979e50f5008597e46546e84',1,'main.cpp']]]
+  ['is_5fdefault',['is_default',['../util_8h.html#a5e97f6533b7a0a1e8b49c4cea10f75fc',1,'util.h']]]
 ];

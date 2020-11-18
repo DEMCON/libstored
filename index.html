@@ -155,20 +155,20 @@ mystore.scope__s.set("hello");
 <li>Writes to a variable in a store should only be done by one process. If multiple processes write to the same variable, the outcome of the synchronization is undefined. However, you would have a data race in your application anyway, so this is in practice probably not really a limitation.</li>
 </ul>
 <p>See <a href="https://demcon.github.io/libstored/group__libstored__synchronizer.html">the doxygen documentation</a> for more details.</p>
-<p>The topology is arbitrary, as long as every store instance has one root, where it gets its initial copy from. You could, for example, construct the following topology: </p><pre class="fragment">B   C
- \ /
-  A
-  |
-  D--E--F
- / \
-G   H
+<p>The topology is arbitrary, as long as every store instance has one root, where it gets its initial copy from. You could, for example, construct the following topology: </p><pre class="fragment"> B   C
+  \ /
+   A
+   |
+G--D--E--F
+   |
+   H
 </pre><p>Assume that A is the first node, of all other nodes gets the initial copy from. So, D registers at A, then E gets it from D, F from E, etc. After setup, any node can write to the same store (but not to the same variable in that store). So, updates from H are first pushed to D. The D pushes them to A, E and G, and so on.</p>
 <p>Different stores can have different topologies for synchronization, and synchronization may happen at different speed or interval. Everything is possible, and you can define it based on your application's needs.</p>
 <p>The example <a href="examples/8_sync"><code>8_sync</code></a> implements an application with two stores, which can be connected arbitrarily using command line arguments. You can play with it to see the synchronization.</p>
 <p>The store implementation in VHDL integrates a Synchronizer instance. However, it cannot be used as in intermediate node in the topology as described above; the FPGA has to be a leaf.</p>
 <h3><a class="anchor" id="debug"></a>libstored - Store for Embedded Debugger</h3>
 <p>If you have an embedded system, you probably want to debug it on-target. One of the questions you often have, is what is the value of internal variables of the program, and how can I change them? Debugging using <code>gdb</code> is great, but it pauses the application, which also stops control loops, for example.</p>
-<p>Using libstored, you can access and manipulate a running system. The (OSI-stack) Application layer of this debugging interface is provided by libstored. Additionally, other layers are available to support lossless and lossy channels, which fit to common UART and CAN interfaces. You have to combine, and possibly add, and configure other (usually hardware-specific) layers of the OSI stack to get the debugging protocol in and out of your system. Although the protocol fits nicely to ZeroMQ, a TCP stream, or <code>stdio</code> via terminal, the complexity of integrating this depends on your embedded device. However, once you implemented this data transport, you can access the store, and observe and manipulate it using an Embedded Debugger (PC) client, where libstored provides Python classes, a CLI and GUI interface.</p>
+<p>Using libstored, you can access and manipulate a running system. The (OSI-stack) Application layer of this debugging interface is provided by libstored. Additionally, other layers are available to support lossless and lossy channels, which fit to common UART and CAN interfaces. You have to combine, and possibly add, and configure other (usually hardware-specific) layers of the OSI stack to get the debugging protocol in and out of your system. Although the protocol fits nicely to ZeroMQ, a TCP stream, or <code>stdio</code> via terminal, the complexity of integrating this depends on your embedded device. However, once you implemented this data transport, you can access the store, and observe and manipulate it using an Embedded Debugger (PC) client. Moreover, the protocol supports arbitrary streams (like stdout) from the application to the client, and has high-speed tracing of store variables. These streams are optionally <a href="https://github.com/atomicobject/heatshrink">heatshrink</a> compressed. libstored provides Python classes for your custom scripts, a CLI and GUI interface.</p>
 <p>Your application can have one store with one debugging interface, but also multiple stores with one debugging interface, or one store with multiple debugging interfaces &ndash; any combination is possible.</p>
 <p>It seems to be a duplicate to have two synchronization protocols, but both have a different purpose. For synchronization, a binary protocol is used, which only synchronizes data, using memory offsets, and some endianness. This is tightly coupled to the exact version and layout of the store. This is all known at compile time, and great for performance, but harder to manage when you start debugging. The debugging protocol is ASCII based, writable by hand, easy to use dynamic lookup of variable names, and has support to easily add custom commands by adding another capability in a subclass of <a class="el" href="classstored_1_1_debugger.html" title="The application-layer implementation of the Embedded Debugger protocol. ">stored::Debugger</a>.</p>
 <p>The FPGA does not support the debugging protocol. If you want to debug the FPGA, instantiate the store, which includes a Synchronizer, and use a bridge in C++ that has the same store, a Synchronizer connected to the FPGA, and a Debugger instance. The connect to this C++ bridge.</p>
@@ -200,16 +200,16 @@ make ed2-install
 <p>The Embedded Debugger client connects via ZeroMQ. If you application does not have it, you must implement is somehow. The <code>examples/terminal/terminal</code> application could be debugged as follows:</p>
 <ul>
 <li>Run <code>python3 -m <a class="el" href="namespaceed2_1_1wrapper_1_1stdio.html">ed2.wrapper.stdio</a> ../build/examples/terminal/terminal</code> from the <code>client</code> directory. This starts the <code>terminal</code> example, and extracts escaped debugger frames from <code>stdout</code>, which are forwarded to a ZeroMQ interface.</li>
-<li>Connect a client, such as <code>python3 -m <a class="el" href="namespaceed2_1_1gui.html">ed2.gui</a></code>.</li>
+<li>Connect a client, such as <code>python3 -m <a class="el" href="namespaceed2_1_1gui.html">ed2.gui</a></code>. Instead of using <code>lognplot</code>, the GUI can also write all auto-refreshed data to a CSV file when the <code>-f log.csv</code> is passed on the command line. Then, <a href="https://kst-plot.kde.org/">Kst</a> can be used for live viewing the file.</li>
 </ul>
-<p>The structure of this setup is: </p><pre class="fragment">+---------+
-| ed2.gui |                    terminal interface
-+---------+                            |
-      |                                |
-      | ZeroMQ REQ/REP channel         |
-      |                                |
-+-------------------+                  |
-| ed2.wrapper.stdio | -----------------+
+<p>The structure of this setup is: </p><pre class="fragment">+---------+        +---------+           +-----+
+| ed2.gui | -----&gt; | log.csv | --------&gt; | Kst |
++---------+        +---------+           +-----+
+      |
+      | ZeroMQ REQ/REP channel
+      |
++-------------------+
+| ed2.wrapper.stdio | ---------- terminal interface
 +-------------------+
       |
       | stdin/stdout (mixed terminal interface

@@ -1,7 +1,7 @@
 var classstored_1_1_example_debug_some_store =
 [
     [ "Base", "classstored_1_1_example_debug_some_store.html#aa83ede46bd4293268c64b0ac1570c51c", null ],
-    [ "base", "classstored_1_1_example_debug_some_store.html#a006857675bac310e8d47f2e5b327d831", null ],
+    [ "base", "classstored_1_1_example_debug_some_store.html#ad0f5e8340ea45d75f29603699dbeab0b", null ],
     [ "Data", "classstored_1_1_example_debug_some_store.html#a42531681811cf4afe49beaaec4620c09", null ],
     [ "Implementation", "classstored_1_1_example_debug_some_store.html#a235e4f32e32ddf713650dc7b377166ff", null ],
     [ "Key", "classstored_1_1_example_debug_some_store.html#ac097ddb73d0efca1a3d3aae51c0796ef", null ],
@@ -21,7 +21,6 @@ var classstored_1_1_example_debug_some_store =
     [ "data", "classstored_1_1_example_debug_some_store.html#a186b7777ae79dbe17500f867ddb97444", null ],
     [ "data", "classstored_1_1_example_debug_some_store.html#a97af76aeb46bd1198571094e440c64d6", null ],
     [ "find", "classstored_1_1_example_debug_some_store.html#aacee9037d7894e1a91a3d3460292449a", null ],
-    [ "hash", "classstored_1_1_example_debug_some_store.html#a0c18ab236342000f27f1a23aec81bf60", null ],
     [ "hookEntryRO", "classstored_1_1_example_debug_some_store.html#a43f42f7d6ef19b62f1acdddeecf922e9", null ],
     [ "hookEntryX", "classstored_1_1_example_debug_some_store.html#a4f01bd23345246212d9fc0c9b3328f20", null ],
     [ "hookExitRO", "classstored_1_1_example_debug_some_store.html#ad838049eb42986d0769cddd37267527f", null ],
@@ -36,6 +35,6 @@ var classstored_1_1_example_debug_some_store =
     [ "operator=", "classstored_1_1_example_debug_some_store.html#a0767b6afd0834bdfe2a420e71195a2f0", null ],
     [ "operator=", "classstored_1_1_example_debug_some_store.html#a10c8320b0c253dc5f87385ff75eecdc9", null ],
     [ "shortDirectory", "classstored_1_1_example_debug_some_store.html#a48cd98fe5a12ea7d08e2ce5ad13895a4", null ],
-    [ "ExampleDebugSomeStoreBase< ExampleDebugSomeStore >", "classstored_1_1_example_debug_some_store.html#a656bb94f590d624f14bc45b11c5eef4b", null ],
+    [ "stored::ExampleDebugSomeStoreBase< ExampleDebugSomeStore >", "classstored_1_1_example_debug_some_store.html#a037b577df9b185cbe10e77a02058a522", null ],
     [ "i", "classstored_1_1_example_debug_some_store.html#af5bfa089148d7ed3f25dfb59a92cec18", null ]
 ];

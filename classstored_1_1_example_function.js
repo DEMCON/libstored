@@ -1,7 +1,7 @@
 var classstored_1_1_example_function =
 [
     [ "Base", "classstored_1_1_example_function.html#a91674a28c9e55d65fb6731a776584fa6", null ],
-    [ "base", "classstored_1_1_example_function.html#aa252a50760c7eb2cd50aa41eb1fd6a53", null ],
+    [ "base", "classstored_1_1_example_function.html#a65f373720b0fc1297ba6038cf34786fa", null ],
     [ "Data", "classstored_1_1_example_function.html#aa97cd43cad277d45f9a6aba432cfbcdc", null ],
     [ "Implementation", "classstored_1_1_example_function.html#a3ac4839af8081bbbdbb225966a700b85", null ],
     [ "Key", "classstored_1_1_example_function.html#a6f4d23dcf90497f2aabf9246a4fae200", null ],
@@ -16,6 +16,7 @@ var classstored_1_1_example_function =
     [ "__hookEntryX", "classstored_1_1_example_function.html#afb0bbfe60079ec0aa4361cc273d81b50", null ],
     [ "__hookExitRO", "classstored_1_1_example_function.html#af1adbe9a9765902d0b06197b635aea70", null ],
     [ "__hookExitX", "classstored_1_1_example_function.html#a60aad426d460c6915d7c58aaffc80bbc", null ],
+    [ "__rand", "classstored_1_1_example_function.html#a1cdadf5ec483e2defa95cf9a31d5e102", null ],
     [ "__time_s", "classstored_1_1_example_function.html#a8f717fd78e1d67496a9d3245e7e0fa28", null ],
     [ "buffer", "classstored_1_1_example_function.html#ac04cd00fc244e4a140a6656f97dab83c", null ],
     [ "buffer", "classstored_1_1_example_function.html#aefd3a59b7f4ef3afe6ceef231af13047", null ],
@@ -25,7 +26,6 @@ var classstored_1_1_example_function =
     [ "data", "classstored_1_1_example_function.html#aa26c4890c9fbc6f8ed7f1c95b13ded63", null ],
     [ "echo_a", "classstored_1_1_example_function.html#a1d22555eb9f5c1cf519743e96b754d23", null ],
     [ "find", "classstored_1_1_example_function.html#a8eddfce928885715e71844169517b227", null ],
-    [ "hash", "classstored_1_1_example_function.html#a70047e1df95d20ebc2cacb84fe9fbd00", null ],
     [ "hookEntryRO", "classstored_1_1_example_function.html#a918f042893f4685bcf34f4d855ad5969", null ],
     [ "hookEntryX", "classstored_1_1_example_function.html#a9eeafad327ed8b7160805a7452a41396", null ],
     [ "hookExitRO", "classstored_1_1_example_function.html#a59644f72fb86cfb2329cdcdfeffb72cd", null ],
@@ -40,8 +40,9 @@ var classstored_1_1_example_function =
     [ "operator=", "classstored_1_1_example_function.html#a5b5b185a0f67a83f6c701c99a530f373", null ],
     [ "operator=", "classstored_1_1_example_function.html#a815a09f709cfad9fed108a063735de48", null ],
     [ "shortDirectory", "classstored_1_1_example_function.html#a7d1d91b6ec4d178e795deeb27bbbe93b", null ],
-    [ "ExampleFunctionBase< ExampleFunction >", "classstored_1_1_example_function.html#a4f93e30f2e5d4a02c8edbbcf9e10d8c3", null ],
-    [ "echo_0", "classstored_1_1_example_function.html#ac104a302c229394f928e01e589510334", null ],
-    [ "echo_1", "classstored_1_1_example_function.html#abc85d7a2e2bb8d7dc9d0d74b5542c417", null ],
+    [ "stored::ExampleFunctionBase< ExampleFunction >", "classstored_1_1_example_function.html#ad6c500d92a8abd1aa69c65ea46374761", null ],
+    [ "echo_0", "classstored_1_1_example_function.html#ace7f4b3642d55a4c6dad350321a085ef", null ],
+    [ "echo_1", "classstored_1_1_example_function.html#a49e7ba7cce80b1dcf1c1e4d7c9fe14a3", null ],
+    [ "rand", "classstored_1_1_example_function.html#a4f15254aa861b08e438f913647bb4cea", null ],
     [ "time_s", "classstored_1_1_example_function.html#a498ba2a000734240cbc28347793dbb58", null ]
 ];

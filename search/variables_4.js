@@ -22,5 +22,6 @@ var searchData=
   ['defaultpollintervalchanged',['defaultPollIntervalChanged',['../classed2_1_1zmq__client_1_1_zmq_client.html#a896f99ece15b22d1affd26eb3ebf0899',1,'ed2::zmq_client::ZmqClient']]],
   ['description',['description',['../namespacesetup.html#aedf461ec52a946bda975938ba0b93ec0',1,'setup']]],
   ['dest',['dest',['../namespaceed2_1_1cli_1_1____main____.html#a1567277da96aa7e069b271a43fd63388',1,'ed2.cli.__main__.dest()'],['../namespaceed2_1_1gui_1_1____main____.html#ad2b555ccb42b778015983ab7eb806ed5',1,'ed2.gui.__main__.dest()'],['../namespaceed2_1_1wrapper_1_1serial_1_1____main____.html#a0a94dff2adfda5711b51ec055e4d7984',1,'ed2.wrapper.serial.__main__.dest()'],['../namespaceed2_1_1wrapper_1_1stdio_1_1____main____.html#a558bcb7aa246ddebc6af368feedb19bb',1,'ed2.wrapper.stdio.__main__.dest()']]],
-  ['double',['Double',['../classed2_1_1zmq__client_1_1_object.html#ae95c0de36c9c8f8d5d2438b78d9a71d2',1,'ed2::zmq_client::Object']]]
+  ['double',['Double',['../classed2_1_1zmq__client_1_1_object.html#ae95c0de36c9c8f8d5d2438b78d9a71d2',1,'ed2::zmq_client::Object']]],
+  ['dummy_5fchar_5fto_5fmake_5fcompress_5fcpp_5fnon_5fempty',['dummy_char_to_make_compress_cpp_non_empty',['../compress_8cpp.html#ab1e5744b2b1695f761b132769262f431',1,'compress.cpp']]]
 ];

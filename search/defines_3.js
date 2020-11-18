@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['is_5fdefault',['is_default',['../util_8h.html#a5e97f6533b7a0a1e8b49c4cea10f75fc',1,'util.h']]]
+  ['gcc_5fversion',['GCC_VERSION',['../macros_8h.html#adbba0f726fc66d7100916c683b7568ae',1,'macros.h']]]
 ];

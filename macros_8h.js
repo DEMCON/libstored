@@ -8,5 +8,6 @@ var macros_8h =
     [ "STORED_FALLTHROUGH", "macros_8h.html#a0e76e6ecc7ecbc3d8d14b92c8c7f1b34", null ],
     [ "STORED_OS_LINUX", "macros_8h.html#a8ff17800de5afd1a6b14fb6e46dbb61f", null ],
     [ "STORED_OS_POSIX", "macros_8h.html#af13c59f062f4546450fde594329c347f", null ],
-    [ "UNUSED_PAR", "macros_8h.html#af17ee1aea7e7e70c19dc325e02552ed0", null ]
+    [ "UNUSED_PAR", "macros_8h.html#af17ee1aea7e7e70c19dc325e02552ed0", null ],
+    [ "ZMQ_BUILD_DRAFT_API", "macros_8h.html#ac551639f6e0d91679dd0b5fae26164e6", null ]
 ];

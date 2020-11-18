@@ -114,11 +114,11 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:aa386eb54426f248fde1128f5113577d1"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="classstored_1_1_store_journal.html#aa386eb54426f248fde1128f5113577d1ae1c5149eba2a5b6a26723d279d3d6df1">ShortSeqWindow</a> = 1u &lt;&lt; (sizeof(ShortSeq) * 8u), 
-<a class="el" href="classstored_1_1_store_journal.html#aa386eb54426f248fde1128f5113577d1ae53560694a25751a905ed7bdcbc06398">SeqLowerMargin</a> = ShortSeqWindow / 4u, 
-<a class="el" href="classstored_1_1_store_journal.html#aa386eb54426f248fde1128f5113577d1a03e52a7ab713953f3cb06c01c482d83a">SeqCleanThreshold</a> = SeqLowerMargin * 2u
+<tr class="memitem:a44428d12ef610db2a9d038a1c2d9a189"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="classstored_1_1_store_journal.html#a44428d12ef610db2a9d038a1c2d9a189ae1c5149eba2a5b6a26723d279d3d6df1">ShortSeqWindow</a> = 1u &lt;&lt; (sizeof(ShortSeq) * 8u), 
+<a class="el" href="classstored_1_1_store_journal.html#a44428d12ef610db2a9d038a1c2d9a189ae53560694a25751a905ed7bdcbc06398">SeqLowerMargin</a> = ShortSeqWindow / 4u, 
+<a class="el" href="classstored_1_1_store_journal.html#a44428d12ef610db2a9d038a1c2d9a189a03e52a7ab713953f3cb06c01c482d83a">SeqCleanThreshold</a> = SeqLowerMargin * 2u
  }</td></tr>
-<tr class="separator:aa386eb54426f248fde1128f5113577d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a44428d12ef610db2a9d038a1c2d9a189"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0937d139c06dd4e5de06a9560efc6faa"><td class="memItemLeft" align="right" valign="top">typedef void()&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_store_journal.html#a0937d139c06dd4e5de06a9560efc6faa">IterateChangedCallback</a>(<a class="el" href="classstored_1_1_store_journal.html#a274d35c3a886d0844400978c3eb48045">Key</a>, void *)</td></tr>
 <tr class="separator:a0937d139c06dd4e5de06a9560efc6faa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a274d35c3a886d0844400978c3eb48045"><td class="memItemLeft" align="right" valign="top">typedef uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_store_journal.html#a274d35c3a886d0844400978c3eb48045">Key</a></td></tr>
@@ -145,6 +145,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a28ba1cdad841041dbbe44b6b0b9dbc32"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_store_journal.html#a28ba1cdad841041dbbe44b6b0b9dbc32">StoreJournal</a> (char const *<a class="el" href="classstored_1_1_store_journal.html#af09dcedcdeaa89ae79dab27bb48dd359">hash</a>, void *<a class="el" href="classstored_1_1_store_journal.html#abc19c5c6fa9d306fadfa43806016313a">buffer</a>, size_t size)</td></tr>
 <tr class="memdesc:a28ba1cdad841041dbbe44b6b0b9dbc32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ctor.  <a href="#a28ba1cdad841041dbbe44b6b0b9dbc32">More...</a><br /></td></tr>
 <tr class="separator:a28ba1cdad841041dbbe44b6b0b9dbc32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5321ccaa7777ffce67362e0697e8f526"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_store_journal.html#a5321ccaa7777ffce67362e0697e8f526">~StoreJournal</a> ()=default</td></tr>
+<tr class="separator:a5321ccaa7777ffce67362e0697e8f526"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad24cb9be19ac06eda6881f0889f92b3b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_store_journal.html#a38fbc85934a5c8c10da81826890481bf">Seq</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_store_journal.html#ad24cb9be19ac06eda6881f0889f92b3b">bumpSeq</a> ()</td></tr>
 <tr class="memdesc:ad24cb9be19ac06eda6881f0889f92b3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bump <a class="el" href="classstored_1_1_store_journal.html#adc2ea8f4e6cd15876d0eaaff5617c99a" title="Returns the current update sequence number. ">seq()</a>, when required.  <a href="#ad24cb9be19ac06eda6881f0889f92b3b">More...</a><br /></td></tr>
 <tr class="separator:ad24cb9be19ac06eda6881f0889f92b3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -163,9 +165,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aca272a2e64cde16b6b2368bb812a510d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_store_journal.html#a38fbc85934a5c8c10da81826890481bf">Seq</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_store_journal.html#aca272a2e64cde16b6b2368bb812a510d">encodeBuffer</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> &amp;p, bool last=false)</td></tr>
 <tr class="memdesc:aca272a2e64cde16b6b2368bb812a510d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode full store's buffer as a <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">stored::Synchronizer</a> message.  <a href="#aca272a2e64cde16b6b2368bb812a510d">More...</a><br /></td></tr>
 <tr class="separator:aca272a2e64cde16b6b2368bb812a510d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab11bd97531925543d78886ac7d6e4069"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_store_journal.html#ab11bd97531925543d78886ac7d6e4069">encodeHash</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> &amp;p, bool last=false)</td></tr>
-<tr class="memdesc:ab11bd97531925543d78886ac7d6e4069"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode the store's hash into a <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a> message.  <a href="#ab11bd97531925543d78886ac7d6e4069">More...</a><br /></td></tr>
-<tr class="separator:ab11bd97531925543d78886ac7d6e4069"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a667296e61da16f91ccbd509de66cb000"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_store_journal.html#a667296e61da16f91ccbd509de66cb000">encodeHash</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> &amp;p, bool last=false) const</td></tr>
+<tr class="memdesc:a667296e61da16f91ccbd509de66cb000"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode the store's hash into a <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a> message.  <a href="#a667296e61da16f91ccbd509de66cb000">More...</a><br /></td></tr>
+<tr class="separator:a667296e61da16f91ccbd509de66cb000"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a07eb53a4f8287ff5620a61e074fbb8d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_store_journal.html#a38fbc85934a5c8c10da81826890481bf">Seq</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_store_journal.html#a07eb53a4f8287ff5620a61e074fbb8d6">encodeUpdates</a> (<a class="el" href="classstored_1_1_protocol_layer.html">ProtocolLayer</a> &amp;p, <a class="el" href="classstored_1_1_store_journal.html#a38fbc85934a5c8c10da81826890481bf">Seq</a> sinceSeq, bool last=false)</td></tr>
 <tr class="memdesc:a07eb53a4f8287ff5620a61e074fbb8d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode all updates of changed objects since the given update sequence number (inclusive).  <a href="#a07eb53a4f8287ff5620a61e074fbb8d6">More...</a><br /></td></tr>
 <tr class="separator:a07eb53a4f8287ff5620a61e074fbb8d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -188,12 +190,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a95cc27294f713b39e0e5481249379136"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_store_journal.html#a95cc27294f713b39e0e5481249379136">keyToBuffer</a> (<a class="el" href="classstored_1_1_store_journal.html#a274d35c3a886d0844400978c3eb48045">Key</a> key, <a class="el" href="classstored_1_1_store_journal.html#a9cf16bb0e25dc8e2c3d5499747aa0fd5">Size</a> len=0, bool *ok=nullptr) const</td></tr>
 <tr class="memdesc:a95cc27294f713b39e0e5481249379136"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the buffer of an object corresponding to the given key.  <a href="#a95cc27294f713b39e0e5481249379136">More...</a><br /></td></tr>
 <tr class="separator:a95cc27294f713b39e0e5481249379136"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a48e699a4b32d44dc9f0ad7f14f2ebcb8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_store_journal.html#a48e699a4b32d44dc9f0ad7f14f2ebcb8">operator=</a> (<a class="el" href="classstored_1_1_store_journal.html">StoreJournal</a> &amp;&amp;)=delete</td></tr>
-<tr class="memdesc:a48e699a4b32d44dc9f0ad7f14f2ebcb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted move assignment operator.  <a href="#a48e699a4b32d44dc9f0ad7f14f2ebcb8">More...</a><br /></td></tr>
-<tr class="separator:a48e699a4b32d44dc9f0ad7f14f2ebcb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a454a9014abdd862bf5ed01dc495b407c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_store_journal.html#a454a9014abdd862bf5ed01dc495b407c">operator=</a> (<a class="el" href="classstored_1_1_store_journal.html">StoreJournal</a> const &amp;)=delete</td></tr>
 <tr class="memdesc:a454a9014abdd862bf5ed01dc495b407c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted assignment operator.  <a href="#a454a9014abdd862bf5ed01dc495b407c">More...</a><br /></td></tr>
 <tr class="separator:a454a9014abdd862bf5ed01dc495b407c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48e699a4b32d44dc9f0ad7f14f2ebcb8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_store_journal.html#a48e699a4b32d44dc9f0ad7f14f2ebcb8">operator=</a> (<a class="el" href="classstored_1_1_store_journal.html">StoreJournal</a> &amp;&amp;)=delete</td></tr>
+<tr class="memdesc:a48e699a4b32d44dc9f0ad7f14f2ebcb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deleted move assignment operator.  <a href="#a48e699a4b32d44dc9f0ad7f14f2ebcb8">More...</a><br /></td></tr>
+<tr class="separator:a48e699a4b32d44dc9f0ad7f14f2ebcb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70c13cd96c475c2bacf91075a36a454a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_store_journal.html#a70c13cd96c475c2bacf91075a36a454a">reserveHeap</a> (size_t storeVariableCount)</td></tr>
+<tr class="memdesc:a70c13cd96c475c2bacf91075a36a454a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pre-allocate memory for the given number of variables.  <a href="#a70c13cd96c475c2bacf91075a36a454a">More...</a><br /></td></tr>
+<tr class="separator:a70c13cd96c475c2bacf91075a36a454a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc2ea8f4e6cd15876d0eaaff5617c99a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstored_1_1_store_journal.html#a38fbc85934a5c8c10da81826890481bf">Seq</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstored_1_1_store_journal.html#adc2ea8f4e6cd15876d0eaaff5617c99a">seq</a> () const</td></tr>
 <tr class="memdesc:adc2ea8f4e6cd15876d0eaaff5617c99a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current update sequence number.  <a href="#adc2ea8f4e6cd15876d0eaaff5617c99a">More...</a><br /></td></tr>
 <tr class="separator:adc2ea8f4e6cd15876d0eaaff5617c99a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -268,7 +273,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00246">246</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00247">247</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
 
 </div>
 </div>
@@ -349,8 +354,8 @@ Protected Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Enumeration Documentation</h2>
-<a id="aa386eb54426f248fde1128f5113577d1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa386eb54426f248fde1128f5113577d1">&#9670;&nbsp;</a></span>anonymous enum</h2>
+<a id="a44428d12ef610db2a9d038a1c2d9a189"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44428d12ef610db2a9d038a1c2d9a189">&#9670;&nbsp;</a></span>anonymous enum</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -361,11 +366,11 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aa386eb54426f248fde1128f5113577d1ae1c5149eba2a5b6a26723d279d3d6df1"></a>ShortSeqWindow&#160;</td><td class="fielddoc"><p>Maximum offset of <a class="el" href="classstored_1_1_store_journal.html#adc2ea8f4e6cd15876d0eaaff5617c99a" title="Returns the current update sequence number. ">seq()</a> that is a valid short seq. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a44428d12ef610db2a9d038a1c2d9a189ae1c5149eba2a5b6a26723d279d3d6df1"></a>ShortSeqWindow&#160;</td><td class="fielddoc"><p>Maximum offset of <a class="el" href="classstored_1_1_store_journal.html#adc2ea8f4e6cd15876d0eaaff5617c99a" title="Returns the current update sequence number. ">seq()</a> that is a valid short seq. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="aa386eb54426f248fde1128f5113577d1ae53560694a25751a905ed7bdcbc06398"></a>SeqLowerMargin&#160;</td><td class="fielddoc"><p>Oldest margin where the short seq of changes should be moved. </p>
+<tr><td class="fieldname"><a id="a44428d12ef610db2a9d038a1c2d9a189ae53560694a25751a905ed7bdcbc06398"></a>SeqLowerMargin&#160;</td><td class="fielddoc"><p>Oldest margin where the short seq of changes should be moved. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="aa386eb54426f248fde1128f5113577d1a03e52a7ab713953f3cb06c01c482d83a"></a>SeqCleanThreshold&#160;</td><td class="fielddoc"><p>Threshold for <a class="el" href="classstored_1_1_store_journal.html#a5a54164f5c9b8c9003fe0da3526638c3" title="Remove all elements from the administration older than the given threshold. ">clean()</a>. </p>
+<tr><td class="fieldname"><a id="a44428d12ef610db2a9d038a1c2d9a189a03e52a7ab713953f3cb06c01c482d83a"></a>SeqCleanThreshold&#160;</td><td class="fielddoc"><p>Threshold for <a class="el" href="classstored_1_1_store_journal.html#a5a54164f5c9b8c9003fe0da3526638c3" title="Remove all elements from the administration older than the given threshold. ">clean()</a>. </p>
 </td></tr>
 </table>
 
@@ -476,6 +481,31 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a5321ccaa7777ffce67362e0697e8f526"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5321ccaa7777ffce67362e0697e8f526">&#9670;&nbsp;</a></span>~StoreJournal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">stored::StoreJournal::~StoreJournal </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="abc19c5c6fa9d306fadfa43806016313a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abc19c5c6fa9d306fadfa43806016313a">&#9670;&nbsp;</a></span>buffer()</h2>
@@ -502,7 +532,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Return the buffer of the store. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00468">468</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00469">469</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -531,7 +561,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Return the size of <a class="el" href="classstored_1_1_store_journal.html#abc19c5c6fa9d306fadfa43806016313a" title="Return the buffer of the store. ">buffer()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00472">472</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00473">473</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -628,7 +658,7 @@ Protected Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00152">152</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00153">153</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -651,12 +681,12 @@ Protected Member Functions</h2></td></tr>
 <p>Remove all elements from the administration older than the given threshold. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">oldest</td><td>seq of oldest element to remain. If 0, use older than <a class="el" href="classstored_1_1_store_journal.html#aa386eb54426f248fde1128f5113577d1a03e52a7ab713953f3cb06c01c482d83a" title="Threshold for clean(). ">SeqCleanThreshold</a> before <a class="el" href="classstored_1_1_store_journal.html#adc2ea8f4e6cd15876d0eaaff5617c99a" title="Returns the current update sequence number. ">seq()</a>. </td></tr>
+    <tr><td class="paramname">oldest</td><td>seq of oldest element to remain. If 0, use older than <a class="el" href="classstored_1_1_store_journal.html#a44428d12ef610db2a9d038a1c2d9a189a03e52a7ab713953f3cb06c01c482d83a" title="Threshold for clean(). ">SeqCleanThreshold</a> before <a class="el" href="classstored_1_1_store_journal.html#adc2ea8f4e6cd15876d0eaaff5617c99a" title="Returns the current update sequence number. ">seq()</a>. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00294">294</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00295">295</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -689,7 +719,7 @@ Protected Member Functions</h2></td></tr>
 <p>Decode and process a full store's buffer from <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">stored::Synchronizer</a> message. </p>
 <dl class="section return"><dt>Returns</dt><dd>the seq number of the applied changes </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00360">360</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00361">361</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -730,7 +760,7 @@ Protected Member Functions</h2></td></tr>
 <p>Decode hash from a <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a> message. </p>
 <dl class="section return"><dt>Returns</dt><dd>the hash, or an empty string upon decode error </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00330">330</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00331">331</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -776,7 +806,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Decode a key from a <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">stored::Synchronizer</a> message. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00449">449</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00450">450</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -814,7 +844,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Decode and apply updates from a <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">stored::Synchronizer</a> message. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00414">414</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00415">415</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -847,12 +877,12 @@ Protected Member Functions</h2></td></tr>
 <p>Encode full store's buffer as a <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">stored::Synchronizer</a> message. </p>
 <dl class="section return"><dt>Returns</dt><dd>the seq number of the change set </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00351">351</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00352">352</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
-<a id="ab11bd97531925543d78886ac7d6e4069"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab11bd97531925543d78886ac7d6e4069">&#9670;&nbsp;</a></span>encodeHash() <span class="overload">[1/2]</span></h2>
+<a id="a667296e61da16f91ccbd509de66cb000"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a667296e61da16f91ccbd509de66cb000">&#9670;&nbsp;</a></span>encodeHash() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -872,14 +902,14 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Encode the store's hash into a <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a> message. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00313">313</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00314">314</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -925,7 +955,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Encode a hash into a <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">Synchronizer</a> message. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00320">320</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00321">321</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -965,7 +995,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Encode a key for a <a class="el" href="classstored_1_1_synchronizer.html" title="The service that manages synchronization of stores over SyncConnections. ">stored::Synchronizer</a> message. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00439">439</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00440">440</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1005,7 +1035,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Encode one change. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00405">405</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00406">406</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1044,7 +1074,7 @@ Protected Member Functions</h2></td></tr>
 <p>Encode all updates of changed objects since the given update sequence number (inclusive). </p>
 <dl class="section return"><dt>Returns</dt><dd>The sequence number of the most recent update, to be passed to the next invocation of <code><a class="el" href="classstored_1_1_store_journal.html#a07eb53a4f8287ff5620a61e074fbb8d6" title="Encode all updates of changed objects since the given update sequence number (inclusive). ">encodeUpdates()</a></code>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00377">377</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00378">378</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1096,7 +1126,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Implementation of <a class="el" href="classstored_1_1_store_journal.html#a07eb53a4f8287ff5620a61e074fbb8d6" title="Encode all updates of changed objects since the given update sequence number (inclusive). ">encodeUpdates()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00387">387</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00388">388</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1129,7 +1159,7 @@ Protected Member Functions</h2></td></tr>
 <p>Checks if the given object has changed since the given sequence number. </p>
 <p>The sequence number is the value returned by <a class="el" href="classstored_1_1_store_journal.html#a07eb53a4f8287ff5620a61e074fbb8d6" title="Encode all updates of changed objects since the given update sequence number (inclusive). ">encodeUpdates()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00223">223</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00224">224</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1152,7 +1182,7 @@ Protected Member Functions</h2></td></tr>
 <p>Checks if any object has changed since the given sequence number. </p>
 <p>The sequence number is the value returned by <a class="el" href="classstored_1_1_store_journal.html#a07eb53a4f8287ff5620a61e074fbb8d6" title="Encode all updates of changed objects since the given update sequence number (inclusive). ">encodeUpdates()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00251">251</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00252">252</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1212,7 +1242,7 @@ Protected Member Functions</h2></td></tr>
 <p>Iterate all changes since the given seq. </p>
 <p>The callback <code>will</code> receive the Key of the object that has changed since the given seq, and the supplied <code>arg</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00265">265</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00266">266</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1255,7 +1285,7 @@ template&lt;typename F &gt; </div>
 <p>Iterate all changes since the given seq. </p>
 <p>The callback <code>will</code> receive the Key of the object that has changed since the given seq. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00258">258</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8h_source.html#l00259">259</a> of file <a class="el" href="synchronizer_8h_source.html">synchronizer.h</a>.</p>
 
 </div>
 </div>
@@ -1313,7 +1343,7 @@ template&lt;typename F &gt; </div>
 
 <p>Implementation of <a class="el" href="classstored_1_1_store_journal.html#a0a1e8a94f96a88459eb6b694c46d1ff8" title="Iterate all changes since the given seq. ">iterateChanged()</a> </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00275">275</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00276">276</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1372,7 +1402,7 @@ template&lt;typename F &gt; </div>
 
 <p>Return the key size applicable to this store. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00476">476</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00477">477</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1410,7 +1440,7 @@ template&lt;typename F &gt; </div>
 
 <p>Return the buffer of an object corresponding to the given key. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00481">481</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00482">482</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1496,7 +1526,7 @@ template&lt;typename F &gt; </div>
 <p>Regenerate the adminstration. </p>
 <p>This must be done if elements are added or removed from <code>m_changes</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00195">195</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00196">196</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1536,7 +1566,30 @@ template&lt;typename F &gt; </div>
 
 <p>Implementation of <a class="el" href="classstored_1_1_store_journal.html#aeaf5f9adddcde78b3ce6902bcb7086b6" title="Regenerate the adminstration. ">regenerate()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00203">203</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00204">204</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a70c13cd96c475c2bacf91075a36a454a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70c13cd96c475c2bacf91075a36a454a">&#9670;&nbsp;</a></span>reserveHeap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void stored::StoreJournal::reserveHeap </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>storeVariableCount</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pre-allocate memory for the given number of variables. </p>
+<p>As long as the number of changed variables remains below this number, no heap operations are performed during synchronization. </p>
+
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00494">494</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1588,7 +1641,7 @@ template&lt;typename F &gt; </div>
 
 <p>Convert from short seq. </p>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00132">132</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00133">133</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1624,7 +1677,7 @@ template&lt;typename F &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00123">123</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00124">124</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1683,7 +1736,7 @@ template&lt;typename F &gt; </div>
 <p>Update the meta data of the given key. </p>
 <p>This function does a binary search through <code>m_changes</code>, limited by [lower,upper[. </p><dl class="section return"><dt>Returns</dt><dd><code>true</code> of successful, <code>false</code> if key is unknown </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00172">172</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="synchronizer_8cpp_source.html#l00173">173</a> of file <a class="el" href="synchronizer_8cpp_source.html">synchronizer.cpp</a>.</p>
 
 </div>
 </div>

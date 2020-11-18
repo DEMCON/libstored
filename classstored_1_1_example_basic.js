@@ -1,7 +1,7 @@
 var classstored_1_1_example_basic =
 [
     [ "Base", "classstored_1_1_example_basic.html#a32cb9898a6371ffd68f4d4a35f4c7470", null ],
-    [ "base", "classstored_1_1_example_basic.html#aa4ba4c7d731da05b4de8bf49ea120602", null ],
+    [ "base", "classstored_1_1_example_basic.html#acd00dfbbf504b33d9c19074d50d9730f", null ],
     [ "Data", "classstored_1_1_example_basic.html#a2637c224bcbe92c17964b6c2ceb6a15d", null ],
     [ "Implementation", "classstored_1_1_example_basic.html#ab563b600fee1173c8be1567823ffd135", null ],
     [ "Key", "classstored_1_1_example_basic.html#a2ddb301dba53ed370e1cc322759cb497", null ],
@@ -22,7 +22,6 @@ var classstored_1_1_example_basic =
     [ "data", "classstored_1_1_example_basic.html#a8170dd1b74d00604b9eaedaa8c7f6f14", null ],
     [ "find", "classstored_1_1_example_basic.html#a4a50e187ec653524f1b746f6443f0a88", null ],
     [ "four_ints_a", "classstored_1_1_example_basic.html#a2853c11ba02e24d1520e97b8954545de", null ],
-    [ "hash", "classstored_1_1_example_basic.html#a0c11be6fefd54ebe7612a2ebc67636c8", null ],
     [ "hookEntryRO", "classstored_1_1_example_basic.html#a1512774b85fc39a4fff5dfe60d6241c3", null ],
     [ "hookEntryX", "classstored_1_1_example_basic.html#af7fa3d1e5930278e473d6a540a92681b", null ],
     [ "hookExitRO", "classstored_1_1_example_basic.html#a8ce44964922fa6c7b0ff804985bc7e5a", null ],
@@ -39,7 +38,7 @@ var classstored_1_1_example_basic =
     [ "shortDirectory", "classstored_1_1_example_basic.html#a7f9ec3ca93d409684def8f8e14893e82", null ],
     [ "three_ints_a", "classstored_1_1_example_basic.html#af785945f6963daf71d76d450bdd23c60", null ],
     [ "two_strings_a", "classstored_1_1_example_basic.html#acc1ae4d43fb8492d170a369856f3d7df", null ],
-    [ "ExampleBasicBase< ExampleBasic >", "classstored_1_1_example_basic.html#ac72b40ea5c64cfe82757bc7ef42d9902", null ],
+    [ "stored::ExampleBasicBase< ExampleBasic >", "classstored_1_1_example_basic.html#a005f5cfcd176112132a024f48490dc97", null ],
     [ "_42_test42", "classstored_1_1_example_basic.html#ac70c95ad7a3363969c5f89c2e0b2b6f1", null ],
     [ "another_42", "classstored_1_1_example_basic.html#abc554e37c4f44d2ea64983638706b674", null ],
     [ "b", "classstored_1_1_example_basic.html#a63724119739d071a9bf240aef975b82a", null ],

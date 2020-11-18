@@ -1,10 +1,12 @@
 var classstored_1_1_terminal_layer =
 [
     [ "base", "classstored_1_1_terminal_layer.html#afd194e848a7d83c42e50a7254cf8a640", null ],
-    [ "MaxBuffer", "classstored_1_1_terminal_layer.html#a18e520b233aa224854f48695f9ce350dac2e5fe6228ece37b246ab755b987f59f", null ],
+    [ "NonDebugDecodeCallback", "classstored_1_1_terminal_layer.html#a4f3d34283f5b3790e6b2289a8ae6679b", null ],
+    [ "MaxBuffer", "classstored_1_1_terminal_layer.html#a81fce6cee860e19805355c8764b7647eac2e5fe6228ece37b246ab755b987f59f", null ],
     [ "TerminalLayer", "classstored_1_1_terminal_layer.html#ae159ad7d286f1f1f456f4fe42e9955b7", null ],
     [ "TerminalLayer", "classstored_1_1_terminal_layer.html#aca51711c2c62bc1ccaf6f3d5ba5baf1f", null ],
-    [ "TerminalLayer", "classstored_1_1_terminal_layer.html#a3aae8bd600dea82390da7d94a9be1b7f", null ],
+    [ "TerminalLayer", "classstored_1_1_terminal_layer.html#ac6c3e9caf382d8662e20d240e7293b83", null ],
+    [ "TerminalLayer", "classstored_1_1_terminal_layer.html#a9d49899bffb69f90ad0a25ba1b3b017c", null ],
     [ "~TerminalLayer", "classstored_1_1_terminal_layer.html#a9c91e6d99a16671d0e78c120288a1bda", null ],
     [ "decode", "classstored_1_1_terminal_layer.html#a189c272877b09b93aac1b1ddc96fe58c", null ],
     [ "down", "classstored_1_1_terminal_layer.html#ac9a6113262899388f922a6d466e9245a", null ],
@@ -15,6 +17,7 @@ var classstored_1_1_terminal_layer =
     [ "flush", "classstored_1_1_terminal_layer.html#a654466d2b7502efdbd5b1b1e95263194", null ],
     [ "mtu", "classstored_1_1_terminal_layer.html#a0a19f65b341e78a98dca4f13747fb2a7", null ],
     [ "nonDebugDecode", "classstored_1_1_terminal_layer.html#a3708a9baaf0751fd543e8290f6b008c3", null ],
+    [ "nonDebugEncode", "classstored_1_1_terminal_layer.html#a2a0470a57c3c8065cb28b49d9101d533", null ],
     [ "operator=", "classstored_1_1_terminal_layer.html#a9d0ada0f0a79116bac64fb4662c537e6", null ],
     [ "operator=", "classstored_1_1_terminal_layer.html#a2969d7fd01f719e7afde4cd8e7632cc5", null ],
     [ "reset", "classstored_1_1_terminal_layer.html#aa520c45c348439dbf7a56f511bd5ac39", null ],
@@ -23,6 +26,5 @@ var classstored_1_1_terminal_layer =
     [ "setUp", "classstored_1_1_terminal_layer.html#a43ca79c4b9503ce51f817ddc7fcd1cb5", null ],
     [ "stack", "classstored_1_1_terminal_layer.html#a3f34a83e488add9a3f459fb8ebed8e34", null ],
     [ "up", "classstored_1_1_terminal_layer.html#ac7cbd80b10e74166c661582027158b40", null ],
-    [ "wrap", "classstored_1_1_terminal_layer.html#a7d2f0987462196f77ca9067c050db09d", null ],
-    [ "writeToFd", "classstored_1_1_terminal_layer.html#ab147064c411754aa941dec30c8d44c5c", null ]
+    [ "wrap", "classstored_1_1_terminal_layer.html#a7d2f0987462196f77ca9067c050db09d", null ]
 ];

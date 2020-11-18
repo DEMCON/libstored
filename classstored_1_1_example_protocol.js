@@ -1,7 +1,7 @@
 var classstored_1_1_example_protocol =
 [
     [ "Base", "classstored_1_1_example_protocol.html#a828ffe2572882608606fdd590b5e7086", null ],
-    [ "base", "classstored_1_1_example_protocol.html#a06dbc64f58c923315b769a3f1b7566b0", null ],
+    [ "base", "classstored_1_1_example_protocol.html#a2dfaf65f4fe39c8c48d105f5313b93a8", null ],
     [ "Data", "classstored_1_1_example_protocol.html#aca9c2f5687c162f4b914d4b5c6fa3d4a", null ],
     [ "Implementation", "classstored_1_1_example_protocol.html#a5e6d97cd8a63007f8e02b6c60735133d", null ],
     [ "Key", "classstored_1_1_example_protocol.html#aeed93a85697b0400ea5b1975a8873f8b", null ],
@@ -21,7 +21,6 @@ var classstored_1_1_example_protocol =
     [ "data", "classstored_1_1_example_protocol.html#a609cd123c7065bb1246ceace15e5e3f9", null ],
     [ "data", "classstored_1_1_example_protocol.html#adef4e112792cf53a6a85f3a2d615fe8d", null ],
     [ "find", "classstored_1_1_example_protocol.html#abd207cca7b8c750fe0c86b5d0180e98c", null ],
-    [ "hash", "classstored_1_1_example_protocol.html#a7790d01343b8896ad519bafab3b20f58", null ],
     [ "hookEntryRO", "classstored_1_1_example_protocol.html#a46ac7caf3d4d32c56b91d01e0144df74", null ],
     [ "hookEntryX", "classstored_1_1_example_protocol.html#a8a674aed95fe0b379a53a6d074afe521", null ],
     [ "hookExitRO", "classstored_1_1_example_protocol.html#a4934e38ebed0a138fb64f6319698f9e9", null ],
@@ -36,7 +35,7 @@ var classstored_1_1_example_protocol =
     [ "operator=", "classstored_1_1_example_protocol.html#a0393de6ab8f06a0541bea4a5c02a2bc7", null ],
     [ "operator=", "classstored_1_1_example_protocol.html#a745a77d1218ec600fb62064663412055", null ],
     [ "shortDirectory", "classstored_1_1_example_protocol.html#aa5f093411161eea64a9d9bbf4ac21522", null ],
-    [ "ExampleProtocolBase< ExampleProtocol >", "classstored_1_1_example_protocol.html#a27af443d394cdca1577b71fd71b6b0ea", null ],
+    [ "stored::ExampleProtocolBase< ExampleProtocol >", "classstored_1_1_example_protocol.html#a7466a0d00155af5a1376dc8e688fbe01", null ],
     [ "a_long_string_that_does_not_fit_in_the_response_buffers", "classstored_1_1_example_protocol.html#aac028e7b395ddbe9dddd59a8fa2c7784", null ],
     [ "a_short_int_that_fits_in_the_response_buffers", "classstored_1_1_example_protocol.html#a8452cfd8cf589bf7dd6c3b823cd8cdf8", null ],
     [ "ber", "classstored_1_1_example_protocol.html#a700110f39b4a0c5c77851bc0fe96a1e8", null ],
