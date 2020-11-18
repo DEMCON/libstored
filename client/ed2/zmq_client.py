@@ -869,7 +869,7 @@ class Tracing(Macro):
     def __del__(self):
         try:
             self._enabled = False
-            self.client.req(b't')
+            self.client.reqAsync(b't')
         except:
             pass
 
@@ -1056,7 +1056,12 @@ class ZmqClient(QObject):
 
     def reqAsync(self, message, callback=None):
         if isinstance(message,str):
-            self.reqAsync(message.encode()).decode()
+            message = message.encode()
+            if callback == None:
+                self.reqAsync(message)
+            else:
+                self.reqAsync(message, lambda rep: callback(rep.decode()))
+            return
 
         if not self.useEventLoop:
             # Without event loop, async does not work.

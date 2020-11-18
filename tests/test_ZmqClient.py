@@ -36,6 +36,7 @@ class ZmqClientTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        cls.c.close()
         cls.logger.info(f'Stopping {cls.binary}...')
         cls.process.terminate()
 
