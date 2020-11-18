@@ -90,7 +90,7 @@ int main() {
 	stored::Poller poller;
 
 	if((errno = poller.add(zmqLayer, nullptr, stored::Poller::PollIn))) {
-		printf("Cannot add to poller; %s\n", strerror(errno));
+		perror("Cannot add to poller");
 		exit(1);
 	}
 
@@ -99,11 +99,11 @@ int main() {
 	while(true) {
 		if(poller.poll(100000).empty()) { // 100 ms
 			if(errno != EAGAIN) {
-				printf("Cannot poll; %s\n", strerror(errno));
+				perror("Cannot poll");
 				exit(1);
 			} // else timeout
 		} else if(zmqLayer.recv()) {
-			printf("Cannot recv; %s\n", strerror(errno));
+			perror("Cannot recv");
 			exit(1);
 		} else {
 			store.incMessages();
