@@ -36,8 +36,12 @@ protected:
 	}
 
 	void __rand(bool set, int32_t& value) {
-		if(!set)
-			value = ::rand();
+		if(!set) {
+			int32_t a = 48271;
+			int32_t m = 2147483647;
+			static int32_t seed = 42;
+			value = seed = (a * seed) % m;
+		}
 	}
 
 	void __echo_0(bool set, int32_t& value) { __echo(0, set, value); }

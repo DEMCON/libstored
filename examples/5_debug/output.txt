@@ -7,8 +7,6 @@ i2 = 5
 <<   ?rwelamivRWstf
 >>   i
 <<   5_debug
->>   v
-<<   2 123 debug
 >>   r/ExampleDebugAnotherStore/j
 <<   65
 >>   wf00f/SomeStore/i
