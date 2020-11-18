@@ -10,6 +10,7 @@ if "%1." == "." goto run_all
 rem Run the given configuration
 call scripts\build.cmd %*
 if errorlevel 1 goto error
+set CTEST_OUTPUT_ON_FAILURE=1
 make -C build test
 if errorlevel 1 goto error
 goto done

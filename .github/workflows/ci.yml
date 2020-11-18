@@ -23,11 +23,15 @@ jobs:
         run: scripts/build.sh Debug
       - name: test
         run: cmake --build . -- test
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
         working-directory: build
       - name: build Release
         run: scripts/build.sh Release
       - name: test
         run: cmake --build . -- test
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
         working-directory: build
       - name: cppcheck
         run: make cppcheck
@@ -52,11 +56,15 @@ jobs:
         run: scripts\build.cmd Debug
       - name: test
         run: cmake --build . -- test
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
         working-directory: build
       - name: build Release
         run: scripts\build.cmd Release
       - name: test
         run: cmake --build . -- test
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
         working-directory: build
 
   build-windows-msvc:
@@ -78,6 +86,8 @@ jobs:
         shell: cmd
       - name: test
         run: cmake --build . --target RUN_TESTS --config Debug
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
         working-directory: build-msvc
       - name: build Release
         run: |
@@ -88,6 +98,8 @@ jobs:
         working-directory: build-msvc
       - name: test
         run: cmake --build . --target RUN_TESTS --config Release
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
         working-directory: build-msvc
 
   build-mac:
@@ -101,10 +113,14 @@ jobs:
         run: scripts/build.sh Debug
       - name: test
         run: cmake --build . -- test
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
         working-directory: build
       - name: build Release
         run: scripts/build.sh Release
       - name: test
         run: cmake --build . -- test
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
         working-directory: build
 

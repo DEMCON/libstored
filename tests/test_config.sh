@@ -13,7 +13,7 @@ trap gotErr ERR
 pushd "$( cd "$(dirname "$0")"/..; pwd -P )" > /dev/null
 
 function config {
-	scripts/build.sh "$@" && make -C build test
+	scripts/build.sh "$@" && CTEST_OUTPUT_ON_FAILURE=1 make -C build test
 }
 
 config Debug -DLIBSTORED_HAVE_LIBZMQ=ON -DLIBSTORED_HAVE_HEATSHRINK=ON -DLIBSTORED_POLL=AUTO -DCMAKE_CXX_STANDARD=14
