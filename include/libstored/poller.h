@@ -225,10 +225,10 @@ namespace stored {
 
 #ifdef STORED_POLL_ZMQ
 		typedef std::vector<zmq_poller_event_t> Result;
-		Result const* poll(long timeout_us = -1, bool suspend = false);
+		Result const& poll(long timeout_us = -1, bool suspend = false);
 #else
 		typedef std::vector<Event> Result;
-		Result const* poll(long timeout_us = -1, bool suspend = false);
+		Result const& poll(long timeout_us = -1, bool suspend = false);
 #endif
 
 		int add(int fd, void* user_data, events_t events);

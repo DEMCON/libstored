@@ -401,15 +401,21 @@ Poller::Event* Poller::find(Poller::Event const& e) {
 #endif // !STORED_POLL_ZMQ
 
 #ifdef STORED_POLL_ZTH_WFMO
-Poller::Result const* Poller::poll(long timeout_us, bool suspend) {
+Poller::Result const& Poller::poll(long timeout_us, bool suspend) {
 	// TODO
+	errno = EAGAIN;
 	return m_lastEvents;
 }
 #endif
 
 #ifdef STORED_POLL_WFMO
-Poller::Result const* Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
+Poller::Result const& Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
 	m_lastEvents.clear();
+	if(m_events.empty()) {
+		errno = EFAULT;
+		return m_lastEvents;
+	}
+
 	m_lastEventsH.clear();
 
 	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it)
@@ -427,7 +433,7 @@ Poller::Result const* Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
 
 	while(true) {
 		if(res == WAIT_TIMEOUT) {
-			errno = 0;
+			errno = EAGAIN;
 			break;
 		} else if(res == WAIT_IO_COMPLETION) {
 			// Completion routine is executed.
@@ -489,29 +495,39 @@ Poller::Result const* Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
 		res = WaitForMultipleObjects((DWORD)m_lastEventsH.size(), &m_lastEventsH[0], FALSE, 0);
 	}
 
-	return m_lastEvents.empty() ? nullptr : &m_lastEvents;
+	return m_lastEvents;
 }
 #endif
 
 #ifdef STORED_POLL_ZMQ
-Poller::Result const* Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
+Poller::Result const& Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
 	m_lastEvents.resize(16); // Some arbitrary number. re-poll() to get the rest.
 
 	int res = zmq_poller_wait_all(m_poller, &m_lastEvents[0], (int)m_lastEvents.size(), timeout_us >= 0 ? (timeout_us + 999L) / 1000L : -1L);
 
 	if(res < 0) {
 		errno = zmq_errno();
-		return nullptr;
+		m_lastEvents.clear();
+	} else if(res == 0) {
+		errno = EAGAIN;
+		m_lastEvents.clear();
+	} else {
+		stored_assert((size_t)res <= m_lastEvents.size());
+		m_lastEvents.resize((size_t)res);
 	}
 
-	stored_assert((size_t)res <= m_lastEvents.size());
-	m_lastEvents.resize((size_t)res);
-	return &m_lastEvents;
+	return m_lastEvents;
 }
 #endif
 
 #if defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH)
-Poller::Result const* Poller::poll(long timeout_us, bool suspend) {
+Poller::Result const& Poller::poll(long timeout_us, bool suspend) {
+	m_lastEvents.clear();
+	if(m_events.empty()) {
+		errno = EFAULT;
+		return m_lastEvents;
+	}
+
 	m_lastEventsFd.resize(m_events.size());
 	size_t i = 0;
 	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it, ++i) {
@@ -543,7 +559,7 @@ Poller::Result const* Poller::poll(long timeout_us, bool suspend) {
 			break;
 		default:
 			errno = EINVAL;
-			return nullptr;
+			return m_lastEvents;
 		}
 	}
 
@@ -574,15 +590,14 @@ retry:
 		case EAGAIN:
 			goto retry;
 		default:
-			return nullptr;
+			return m_lastEvents;
 		}
 	case 0:
 		errno = EAGAIN;
-		return nullptr;
+		return m_lastEvents;
 	default:;
 	}
 
-	m_lastEvents.clear();
 	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it) {
 		if(it->pollfd && it->pollfd->revents) {
 			m_lastEvents.push_back(*it);
@@ -590,7 +605,7 @@ retry:
 		}
 	}
 
-	return &m_lastEvents;
+	return m_lastEvents;
 }
 #endif
 
@@ -616,18 +631,24 @@ bool Poller::poll_once() {
 #endif
 
 #ifdef STORED_POLL_LOOP
-Poller::Result const* Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
+Poller::Result const& Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
 	m_lastEvents.clear();
+
+	if(m_events.empty()) {
+		errno = EFAULT;
+		return m_lastEvents;
+	}
 
 	do {
 		if(poll_once())
-			return &m_lastEvents;
+			return m_lastEvents;
 
 		// We don't have a proper platform-independent way to get the current time.
 		// So, only keep polling if infinite time was requested.
 	} while(timeout_us < 0);
 
-	return nullptr;
+	errno = EAGAIN;
+	return m_lastEvents;
 }
 #endif
 
@@ -636,8 +657,13 @@ bool Poller::zth_poll_once() {
 	return poll_once() || zth::Timestamp::now() > m_timeout;
 }
 
-Poller::Result const* Poller::poll(long timeout_us, bool suspend) {
+Poller::Result const& Poller::poll(long timeout_us, bool suspend) {
 	m_lastEvents.clear();
+
+	if(m_events.empty()) {
+		errno = EFAULT;
+		return m_lastEvents;
+	}
 
 	if(timeout_us == 0) {
 		poll_once();
@@ -647,6 +673,8 @@ Poller::Result const* Poller::poll(long timeout_us, bool suspend) {
 			while(!poll_once());
 		else
 			zth::waitUntil(*this, &Poller::poll_once);
+
+		stored_assert(!m_lastEvents.empty());
 	} else {
 		m_timeout = zth::Timestamp::now();
 		m_timeout += zth::TimeInterval(
@@ -658,9 +686,12 @@ Poller::Result const* Poller::poll(long timeout_us, bool suspend) {
 			while(!zth_poll_once());
 		else
 			zth::waitUntil(*this, &Poller::zth_poll_once);
+
+		if(m_lastEvents.empty())
+			errno = EAGAIN;
 	}
 
-	return m_lastEvents.empty() ? nullptr : &m_lastEvents;
+	return m_lastEvents;
 }
 #endif
 

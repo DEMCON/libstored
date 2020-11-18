@@ -47,13 +47,13 @@ TEST(Poller, Pipe) {
 	stored::Poller poller;
 	EXPECT_EQ(poller.add(fd[0], (void*)1, stored::Poller::PollIn), 0);
 
-	auto res = poller.poll(0);
-	EXPECT_EQ(res, nullptr);
+	auto const* res = &poller.poll(0);
+	EXPECT_NE(errno, 0);
+	EXPECT_TRUE(res->empty());
 
 	// Put something in the pipe.
 	EXPECT_EQ(write(fd[1], "2", 1), 1);
-	res = poller.poll(0);
-	ASSERT_NE(res, nullptr);
+	res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
 	EXPECT_EQ(res->at(0).fd, fd[0]);
 	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollIn);
@@ -62,21 +62,20 @@ TEST(Poller, Pipe) {
 	// Drain pipe.
 	EXPECT_EQ(read(fd[0], &buf, 1), 1);
 	EXPECT_EQ(buf, '2');
-	res = poller.poll(0);
-	EXPECT_EQ(res, nullptr);
+	res = &poller.poll(0);
+	EXPECT_NE(errno, 0);
+	EXPECT_TRUE(res->empty());
 
 	// Add a second fd.
 	EXPECT_EQ(poller.add(fd[1], (void*)2, stored::Poller::PollOut), 0);
-	res = poller.poll(0);
-	ASSERT_NE(res, nullptr);
+	res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
 	EXPECT_EQ(res->at(0).fd, fd[1]);
 	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollOut);
 	EXPECT_EQ(res->at(0).user_data, (void*)2);
 
 	EXPECT_EQ(write(fd[1], "3", 1), 1);
-	res = poller.poll(0);
-	ASSERT_NE(res, nullptr);
+	res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 2);
 	// The order is undefined.
 	if(res->at(0).fd == fd[0]) {
@@ -98,8 +97,7 @@ TEST(Poller, Pipe) {
 	// Drain pipe again.
 	EXPECT_EQ(read(fd[0], &buf, 1), 1);
 	EXPECT_EQ(buf, '3');
-	res = poller.poll(0);
-	ASSERT_NE(res, nullptr);
+	res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
 	EXPECT_EQ(res->at(0).fd, fd[1]);
 	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollOut);
@@ -108,8 +106,7 @@ TEST(Poller, Pipe) {
 	// Close read end.
 	EXPECT_EQ(poller.remove(fd[0]), 0);
 	close(fd[0]);
-	res = poller.poll(0);
-	ASSERT_NE(res, nullptr);
+	res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
 	EXPECT_EQ(res->at(0).fd, fd[1]);
 	EXPECT_NE(res->at(0).events, 0);
@@ -129,16 +126,14 @@ TEST(Poller, Zmq) {
 	EXPECT_EQ(poller.add(rep, (void*)1, stored::Poller::PollOut | stored::Poller::PollIn), 0);
 	EXPECT_EQ(poller.add(req, (void*)2, stored::Poller::PollOut | stored::Poller::PollIn), 0);
 
-	auto res = poller.poll(0);
-	ASSERT_NE(res, nullptr);
+	auto const* res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
 	EXPECT_EQ(res->at(0).user_data, (void*)2);
 	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollOut);
 
 	zmq_send(req, "Hi", 2, 0);
 
-	res = poller.poll(0);
-	ASSERT_NE(res, nullptr);
+	res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
 	EXPECT_EQ(res->at(0).user_data, (void*)1);
 
@@ -146,8 +141,7 @@ TEST(Poller, Zmq) {
 	zmq_recv(rep, buffer, sizeof(buffer), 0);
 	zmq_send(rep, buffer, 2, 0);
 
-	res = poller.poll(0);
-	ASSERT_NE(res, nullptr);
+	res = &poller.poll(0);
 	EXPECT_EQ(res->size(), 1);
 
 	zmq_close(req);
