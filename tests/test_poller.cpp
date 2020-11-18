@@ -105,11 +105,6 @@ TEST(Poller, Pipe) {
 	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollOut);
 	EXPECT_EQ(res->at(0).user_data, (void*)2);
 
-	// Only check for errors now.
-	EXPECT_EQ(poller.modify(fd[1], (stored::Poller::events_t)stored::Poller::PollErr), 0);
-	res = poller.poll(0);
-	EXPECT_EQ(res, nullptr); // not writable anymore
-
 	// Close read end.
 	EXPECT_EQ(poller.remove(fd[0]), 0);
 	close(fd[0]);
@@ -117,7 +112,7 @@ TEST(Poller, Pipe) {
 	ASSERT_NE(res, nullptr);
 	ASSERT_EQ(res->size(), 1);
 	EXPECT_EQ(res->at(0).fd, fd[1]);
-	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollErr);
+	EXPECT_NE(res->at(0).events, 0);
 	EXPECT_EQ(res->at(0).user_data, (void*)2);
 }
 

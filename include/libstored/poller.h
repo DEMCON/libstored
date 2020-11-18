@@ -81,7 +81,7 @@
 #  endif
 #endif // auto-detect
 
-#if defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH) || defined(STORED_POLL_ZTH_WFMO)
+#if defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH) || defined(STORED_POLL_ZTH_WFMO) || defined(STORED_POLL_ZMQ)
 #  include <poll.h>
 #endif
 #ifdef STORED_POLL_ZMQ
@@ -102,14 +102,17 @@ namespace stored {
 		static events_t const PollIn = (events_t)ZMQ_POLLIN;
 		static events_t const PollOut = (events_t)ZMQ_POLLOUT;
 		static events_t const PollErr = (events_t)ZMQ_POLLERR;
+		static events_t const PollHup = (events_t)POLLHUP;
 #elif defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH) || defined(STORED_POLL_ZTH_WFMO)
 		static events_t const PollIn = (events_t)POLLIN;
 		static events_t const PollOut = (events_t)POLLOUT;
 		static events_t const PollErr = (events_t)POLLERR;
+		static events_t const PollHup = (events_t)POLLHUP;
 #else
 		static events_t const PollIn = 1u;
 		static events_t const PollOut = 2u;
 		static events_t const PollErr = 4u;
+		static events_t const PollHup = 8u;
 #endif
 
 		class Event {

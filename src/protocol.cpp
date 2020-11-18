@@ -1472,6 +1472,10 @@ int PolledLayer::block(PolledLayer::fd_type fd, bool forReading, bool suspend) {
 			// Should not happen.
 			err = EINVAL;
 			break;
+		} else if((Poller::events_t)(*pres)[0].events & (Poller::PollErr | Poller::PollHup)) {
+			// Something is wrong with the pipe/socket.
+			err = EIO;
+			break;
 		} else if((Poller::events_t)(*pres)[0].events & events) {
 			// Got it.
 			break;

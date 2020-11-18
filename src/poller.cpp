@@ -558,13 +558,13 @@ retry:
 #else
 			::poll
 #endif
-				(&m_lastEventsFd[0], m_lastEventsFd.size(), (int)(timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us));
+				(&m_lastEventsFd[0], (nfds_t)m_lastEventsFd.size(), (int)(timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us));
 	} else {
 		res =
 #ifdef STORED_POLL_ZTH
 			zth::io
 #endif
-			::poll(&m_lastEventsFd[0], m_lastEventsFd.size(), (int)(timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us));
+			::poll(&m_lastEventsFd[0], (nfds_t)m_lastEventsFd.size(), (int)(timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us));
 	}
 
 	switch(res) {
