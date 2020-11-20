@@ -138,7 +138,7 @@ class TerminalLayer(ProtocolLayer):
     start = b'\x1b_' # APC
     end = b'\x1b\\'  # ST
 
-    def __init__(self, fdout=1, **kwargs):
+    def __init__(self, fdout=1, ignoreEscapesTillFirstEncode=True, **kwargs):
         super().__init__(**kwargs)
 
         if isinstance(fdout, str):
@@ -153,6 +153,7 @@ class TerminalLayer(ProtocolLayer):
 
         self._data = bytearray()
         self._inMsg = False
+        self._ignoreEscape = ignoreEscapesTillFirstEncode
 
     def nonDebugData(self, data):
         if len(data) > 0:
@@ -162,11 +163,23 @@ class TerminalLayer(ProtocolLayer):
         if isinstance(data, str):
             data = data.encode()
 
+        self._ignoreEscape = False
         super().encode(self.start + data + self.end)
         self.activity()
 
+    # Encode non-debug message
+    def inject(self, data):
+        if isinstance(data, str):
+            data = data.encode()
+
+        super().encode(data)
+        self.activity()
+
     def decode(self, data):
-        if len(data) == 0:
+        if data == b'':
+            return
+        if self._ignoreEscape and not self._inMsg:
+            self.nonDebugData(data)
             return
 
         self._data += data
@@ -178,7 +191,8 @@ class TerminalLayer(ProtocolLayer):
         while True:
             if not self._inMsg:
                 c = self._data.split(self.start, 1)
-                self.nonDebugData(c[0])
+                if c[0] != b'':
+                    self.nonDebugData(c[0])
 
                 if len(c) == 1:
                     # No start of message in here.
