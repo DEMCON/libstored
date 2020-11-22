@@ -20,8 +20,6 @@ var classed2_1_1zmq__client_1_1_zmq_client =
     [ "close", "classed2_1_1zmq__client_1_1_zmq_client.html#a8b24e07e079194c426a36c3d581650d0", null ],
     [ "context", "classed2_1_1zmq__client_1_1_zmq_client.html#a3a727a5b6f255ea27d98b41d35e9e986", null ],
     [ "context", "classed2_1_1zmq__client_1_1_zmq_client.html#a3a727a5b6f255ea27d98b41d35e9e986", null ],
-    [ "defaultPollInterval", "classed2_1_1zmq__client_1_1_zmq_client.html#a8fde0cdd69a67cdfeeceb5d8411e7bda", null ],
-    [ "defaultPollInterval", "classed2_1_1zmq__client_1_1_zmq_client.html#a8fde0cdd69a67cdfeeceb5d8411e7bda", null ],
     [ "defaultStateFile", "classed2_1_1zmq__client_1_1_zmq_client.html#adc6c89d646e8627d7553f1fe8e32c404", null ],
     [ "defaultStateFile", "classed2_1_1zmq__client_1_1_zmq_client.html#adc6c89d646e8627d7553f1fe8e32c404", null ],
     [ "echo", "classed2_1_1zmq__client_1_1_zmq_client.html#a53175cd6999725c178977576727454a0", null ],

@@ -15,7 +15,7 @@ var searchData=
   ['pollerr',['PollErr',['../classstored_1_1_poller.html#a540da5e0b855335235527e751eb704c4',1,'stored::Poller']]],
   ['pollhup',['PollHup',['../classstored_1_1_poller.html#aaae1953951626d294a17b65164794d92',1,'stored::Poller']]],
   ['pollin',['PollIn',['../classstored_1_1_poller.html#a64dc1f4e5440d90ddaa1c971ed636fac',1,'stored::Poller']]],
-  ['polling',['polling',['../classed2_1_1zmq__client_1_1_object.html#a933b2ce55e834fa5a535b2d24bb32bc6',1,'ed2.zmq_client.Object.polling(self)'],['../classed2_1_1zmq__client_1_1_object.html#a933b2ce55e834fa5a535b2d24bb32bc6',1,'ed2.zmq_client.Object.polling(self)']]],
+  ['polling',['polling',['../classed2_1_1zmq__client_1_1_object.html#a1367139bcb46aa48cb81273fe1e7d048',1,'ed2::zmq_client::Object']]],
   ['pollingchanged',['pollingChanged',['../classed2_1_1zmq__client_1_1_object.html#a474a5215c6916c5f1384564f912d28ac',1,'ed2::zmq_client::Object']]],
   ['pollingrole',['PollingRole',['../classed2_1_1gui_1_1____main_____1_1_object_list_model.html#aa850bd4afc31a95c779a807bc4d977da',1,'ed2::gui::__main__::ObjectListModel']]],
   ['pollout',['PollOut',['../classstored_1_1_poller.html#a563ec33f78322f6d39047dae05df0a4c',1,'stored::Poller']]],

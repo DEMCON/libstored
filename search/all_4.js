@@ -43,7 +43,7 @@ var searchData=
   ['default_5fregister',['default_register',['../classstored_1_1_example_fpga_objects.html#aac75985dc0336a960cf9dfaf484053ce',1,'stored::ExampleFpgaObjects']]],
   ['default_5fregister_5fwrite_5fcount',['default_register_write_count',['../classstored_1_1_example_fpga_objects.html#a2337e86f2b6ae22253418b9e25b38940',1,'stored::ExampleFpgaObjects']]],
   ['defaultconfig',['DefaultConfig',['../structstored_1_1_default_config.html',1,'stored']]],
-  ['defaultpollinterval',['defaultPollInterval',['../classed2_1_1zmq__client_1_1_zmq_client.html#a8fde0cdd69a67cdfeeceb5d8411e7bda',1,'ed2.zmq_client.ZmqClient.defaultPollInterval(self)'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a8fde0cdd69a67cdfeeceb5d8411e7bda',1,'ed2.zmq_client.ZmqClient.defaultPollInterval(self)']]],
+  ['defaultpollinterval',['defaultPollInterval',['../classed2_1_1zmq__client_1_1_zmq_client.html#ad3832dc42bb7e1dba354666a631f22e1',1,'ed2::zmq_client::ZmqClient']]],
   ['defaultpollintervalchanged',['defaultPollIntervalChanged',['../classed2_1_1zmq__client_1_1_zmq_client.html#a896f99ece15b22d1affd26eb3ebf0899',1,'ed2::zmq_client::ZmqClient']]],
   ['defaultport',['DefaultPort',['../classstored_1_1_debug_zmq_layer.html#abe0af6df9cc0eb49c599265ef2695445a6e3be45d44a117e2006d26f9adef4611',1,'stored::DebugZmqLayer']]],
   ['defaultstatefile',['defaultStateFile',['../classed2_1_1zmq__client_1_1_zmq_client.html#adc6c89d646e8627d7553f1fe8e32c404',1,'ed2.zmq_client.ZmqClient.defaultStateFile(self)'],['../classed2_1_1zmq__client_1_1_zmq_client.html#adc6c89d646e8627d7553f1fe8e32c404',1,'ed2.zmq_client.ZmqClient.defaultStateFile(self)']]],

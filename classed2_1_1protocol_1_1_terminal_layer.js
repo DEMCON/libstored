@@ -1,7 +1,7 @@
 var classed2_1_1protocol_1_1_terminal_layer =
 [
-    [ "__init__", "classed2_1_1protocol_1_1_terminal_layer.html#a33dd3602c9581661b190dc51d267fa67", null ],
-    [ "__init__", "classed2_1_1protocol_1_1_terminal_layer.html#a33dd3602c9581661b190dc51d267fa67", null ],
+    [ "__init__", "classed2_1_1protocol_1_1_terminal_layer.html#aedac22e1fc2a9133740e426c2227149b", null ],
+    [ "__init__", "classed2_1_1protocol_1_1_terminal_layer.html#aedac22e1fc2a9133740e426c2227149b", null ],
     [ "activity", "classed2_1_1protocol_1_1_terminal_layer.html#a1eed4ac48a3eb2be251a9ab5a38cc07d", null ],
     [ "activity", "classed2_1_1protocol_1_1_terminal_layer.html#a1eed4ac48a3eb2be251a9ab5a38cc07d", null ],
     [ "decode", "classed2_1_1protocol_1_1_terminal_layer.html#a6b3454ee22674a717f88f7f59b629b6a", null ],
@@ -12,6 +12,8 @@ var classed2_1_1protocol_1_1_terminal_layer =
     [ "down", "classed2_1_1protocol_1_1_terminal_layer.html#a49473a982719dfc99c6e3dcb4c183cd4", null ],
     [ "encode", "classed2_1_1protocol_1_1_terminal_layer.html#a4cded194142a28bfbd15dd59ad4c6fe0", null ],
     [ "encode", "classed2_1_1protocol_1_1_terminal_layer.html#a4cded194142a28bfbd15dd59ad4c6fe0", null ],
+    [ "inject", "classed2_1_1protocol_1_1_terminal_layer.html#aa9686c1ada2d1489da0b3b79129c46d0", null ],
+    [ "inject", "classed2_1_1protocol_1_1_terminal_layer.html#aa9686c1ada2d1489da0b3b79129c46d0", null ],
     [ "lastActivity", "classed2_1_1protocol_1_1_terminal_layer.html#a6b7035d39d94d75fdf9a84efcaf30bd1", null ],
     [ "lastActivity", "classed2_1_1protocol_1_1_terminal_layer.html#a6b7035d39d94d75fdf9a84efcaf30bd1", null ],
     [ "mtu", "classed2_1_1protocol_1_1_terminal_layer.html#ad477da8f642dc8f8157f9efebe3313e7", null ],

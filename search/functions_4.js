@@ -20,7 +20,6 @@ var searchData=
   ['decodereadrep',['decodeReadRep',['../classed2_1_1zmq__client_1_1_object.html#af63ad6dc07299a031fefc65a9fad1d26',1,'ed2.zmq_client.Object.decodeReadRep(self, rep, t=None)'],['../classed2_1_1zmq__client_1_1_object.html#af63ad6dc07299a031fefc65a9fad1d26',1,'ed2.zmq_client.Object.decodeReadRep(self, rep, t=None)']]],
   ['decodeseq',['decodeSeq',['../classstored_1_1_debug_arq_layer.html#a0a71050aa34e149b3fd0a326c16d5c6a',1,'stored::DebugArqLayer']]],
   ['decodeupdates',['decodeUpdates',['../classstored_1_1_store_journal.html#aa9b388dd5f934c00d151fd24d1bce97a',1,'stored::StoreJournal']]],
-  ['defaultpollinterval',['defaultPollInterval',['../classed2_1_1zmq__client_1_1_zmq_client.html#a8fde0cdd69a67cdfeeceb5d8411e7bda',1,'ed2.zmq_client.ZmqClient.defaultPollInterval(self)'],['../classed2_1_1zmq__client_1_1_zmq_client.html#a8fde0cdd69a67cdfeeceb5d8411e7bda',1,'ed2.zmq_client.ZmqClient.defaultPollInterval(self)']]],
   ['defaultstatefile',['defaultStateFile',['../classed2_1_1zmq__client_1_1_zmq_client.html#adc6c89d646e8627d7553f1fe8e32c404',1,'ed2.zmq_client.ZmqClient.defaultStateFile(self)'],['../classed2_1_1zmq__client_1_1_zmq_client.html#adc6c89d646e8627d7553f1fe8e32c404',1,'ed2.zmq_client.ZmqClient.defaultStateFile(self)']]],
   ['didtransmit',['didTransmit',['../classstored_1_1_arq_layer.html#a72a34dd87ec3fcee83db2a44f7e8a8e5',1,'stored::ArqLayer']]],
   ['disconnect',['disconnect',['../classstored_1_1_synchronizer.html#a5c8a59faccb30c08910551500d08ad75',1,'stored::Synchronizer']]],
