@@ -119,9 +119,10 @@ class Object(QObject):
     def client(self):
         return self._client
 
-    @Property(str, constant=True)
-    def name(self):
+    def _name_get(self):
         return self._name
+
+    name = Property(str, _name_get, constant=True)
 
     @staticmethod
     def listResponseDecode(s, client):
@@ -179,8 +180,7 @@ class Object(QObject):
     def isSpecial(self):
         return self._type & 0x78 == 0
 
-    @Property(str, constant=True)
-    def typeName(self):
+    def _typeName_get(self):
         dtype = self._type & ~self.FlagFunction
         t = {
                 self.Int8: 'int8',
@@ -204,8 +204,9 @@ class Object(QObject):
             t = f'{t}:{self.size}'
         return f'({t})' if self.isFunction() else t
 
-    @Property(str, notify=aliasChanged)
-    def alias(self):
+    typeName = Property(str, _typeName_get, constant=True)
+
+    def _alias_get(self):
         return self._alias
 
     def _alias_set(self, a):
@@ -214,6 +215,8 @@ class Object(QObject):
 
         self._alias = a
         self.aliasChanged.emit()
+
+    alias = Property(str, _alias_get, _alias_set, notify=aliasChanged)
 
     # Return the alias or the normal name, if no alias was set.
     def shortName(self, tryToGetAlias = True):
@@ -442,16 +445,18 @@ class Object(QObject):
         if updated and not self._suppressSetSignals:
             self.valueUpdated.emit()
 
-    @Property(float, notify=tUpdated)
-    def t(self):
+    def _t_get(self):
         return self._t
 
-    @Property(str, notify=tStringChanged)
-    def tString(self):
+    t = Property(float, _t_get, notify=tUpdated)
+
+    def _tString_get(self):
         if self._t == None:
             return None
         else:
             return datetime.datetime.fromtimestamp(self._t).strftime('%Y-%m-%d %H:%M:%S.%f')
+
+    tString = Property(str, _tString_get, notify=tStringChanged)
 
     def interpret(self, value):
         if isinstance(value,str):
@@ -476,12 +481,10 @@ class Object(QObject):
         return value
 
     # Returns the currently known value (without an actual read())
-    @Property('QVariant', notify=valueChanged)
-    def value(self):
+    def _value_get(self):
         return self._value
 
     # Writes the value to the server.
-    @value.setter
     def _value_set(self, v):
         try:
             v = self.interpret(v)
@@ -493,8 +496,9 @@ class Object(QObject):
         except ValueError:
             return False
 
-    @Property(str, notify=valueStringChanged)
-    def valueString(self):
+    value = Property('QVariant', _value_get, _value_set, notify=valueChanged)
+
+    def _valueString_get(self):
         v = self._value
         if v == None:
             return ""
@@ -504,15 +508,14 @@ class Object(QObject):
             except:
                 return "?"
 
-    @valueString.setter
     def _valueString_set(self, v):
         return self._value_set(v)
 
-    @Property(str, notify=formatChanged)
-    def format(self):
+    valueString = Property(str, _valueString_get, _valueString_set, notify=valueStringChanged)
+
+    def _format_get(self):
         return self._format
 
-    @format.setter
     def _format_set(self, f):
         if self._format == f:
             return
@@ -535,6 +538,8 @@ class Object(QObject):
         if self._client != None:
             self._client._autoSaveStateNow()
 
+    format = Property(str, _format_get, _format_set, notify=formatChanged)
+
     def _formatBytes(self, value):
         value = self._encode(value).decode()
         value = '0' * (self._size * 2 - len(value)) + value
@@ -545,8 +550,7 @@ class Object(QObject):
             res += value[i:i+2]
         return res
 
-    @Property('QVariant', constant=True)
-    def formats(self):
+    def _formats_get(self):
         if self._type == self.Blob:
             return ['bytes']
 
@@ -555,17 +559,19 @@ class Object(QObject):
             f += ['hex', 'bin']
         return f
 
-    @Property(bool, notify=pollingChanged)
-    def polling(self):
+    formats = Property('QVariant', _formats_get, constant=True)
+
+    def _polling_get(self):
         return self._polling
 
-    @polling.setter
     def _polling_set(self, enable):
         if self._polling != enable:
             if enable:
                 self.poll()
             else:
                 self.poll(None)
+
+    polling = Property(bool, _polling_get, _polling_set, notify=pollingChanged)
 
     def poll(self, interval_s=0):
         if self._client != None:
@@ -1356,16 +1362,16 @@ class ZmqClient(QObject):
     def stream(self, s, raw=False):
         return Stream(self, s, raw)
 
-    @Property(float, notify=defaultPollIntervalChanged)
-    def defaultPollInterval(self):
+    def _defaultPollInterval_get(self):
         return self._defaultPollInterval
 
-    @defaultPollInterval.setter
     def _defaultPollInterval_set(self, interval):
         interval = max(0.0001, float(interval))
         if interval != self._defaultPollInterval:
             self._defaultPollInterval = interval
             self.defaultPollIntervalChanged.emit()
+
+    defaultPollInterval = Property(float, _defaultPollInterval_get, _defaultPollInterval_set, notify=defaultPollIntervalChanged)
 
     def acquireAlias(self, obj, prefer=None, temporary=True):
         if prefer == None and obj.alias != None:

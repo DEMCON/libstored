@@ -700,5 +700,22 @@ Poller::Result const& Poller::poll(long timeout_us, bool suspend) {
 }
 #endif
 
+#if (defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_ARMCC)) && (defined(STORED_POLL_LOOP) || defined(STORED_POLL_ZTH_LOOP))
+	/*
+	 * Provide a default (weak) implementation that generates an error, but
+	 * lets you compile libstored, and you can use it if you don't need the
+	 * Poller. However, you have to supply it anyway if you want to use a
+	 * Poller.
+	 *
+	 * Only for gcc/armcc. MSVC does not have weak symbol, and clang (for OS X)
+	 * handles weak symbols also differently.  However, you probably do not use
+	 * poll_once() on Windows/OS X. So, this probably covers the most cases.
+	 */
+	__attribute__((weak)) int poll_once(Poller::Event const& UNUSED_PAR(e), Poller::events_t& UNUSED_PAR(revents)) {
+		stored_assert(false);
+		return ENOSYS;
+	}
+#endif
+
 } // namespace
 

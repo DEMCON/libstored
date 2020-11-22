@@ -29,6 +29,7 @@ setuptools.setup(
         'pyzmq',
         'lognplot',
         'crcmod',
+        'natsort',
         'heatshrink2',
     ],
     python_requires='>=3.6',
