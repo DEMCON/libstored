@@ -223,16 +223,16 @@ int Poller::remove(ZmqLayer& layer) {
 #  endif // STORED_HAVE_ZMQ
 #endif // !STORED_OS_WINDOWS
 
-int Poller::add(PolledLayer& layer, void* user_data, events_t events) {
-	return add(Event(Event::TypePolledLayer, &layer), user_data, events);
+int Poller::add(PolledFileLayer& layer, void* user_data, events_t events) {
+	return add(Event(Event::TypePolledFileLayer, &layer), user_data, events);
 }
 
-int Poller::modify(PolledLayer& layer, events_t events) {
-	return modify(Event(Event::TypePolledLayer, &layer), events);
+int Poller::modify(PolledFileLayer& layer, events_t events) {
+	return modify(Event(Event::TypePolledFileLayer, &layer), events);
 }
 
-int Poller::remove(PolledLayer& layer) {
-	return remove(Event(Event::TypePolledLayer, &layer));
+int Poller::remove(PolledFileLayer& layer) {
+	return remove(Event(Event::TypePolledFileLayer, &layer));
 }
 
 #ifdef STORED_POLL_ZMQ
@@ -240,8 +240,8 @@ int Poller::add(Poller::Event const& e, void* user_data, events_t events) {
 	switch(e.type) {
 	case Event::TypeFd:
 		return zmq_poller_add_fd(m_poller, e.fd, user_data, (short)events) == -1 ? zmq_errno() : 0;
-	case Event::TypePolledLayer:
-		return zmq_poller_add_fd(m_poller, e.polledLayer->fd(), user_data, (short)events) == -1 ? zmq_errno() : 0;
+	case Event::TypePolledFileLayer:
+		return zmq_poller_add_fd(m_poller, e.polledFileLayer->fd(), user_data, (short)events) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmqSock:
 		return zmq_poller_add(m_poller, e.zmqsock, user_data, (short)events) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmq:
@@ -255,8 +255,8 @@ int Poller::modify(Poller::Event const& e, events_t events) {
 	switch(e.type) {
 	case Event::TypeFd:
 		return zmq_poller_modify_fd(m_poller, e.fd, (short)events) == -1 ? zmq_errno() : 0;
-	case Event::TypePolledLayer:
-		return zmq_poller_modify_fd(m_poller, e.polledLayer->fd(), (short)events) == -1 ? zmq_errno() : 0;
+	case Event::TypePolledFileLayer:
+		return zmq_poller_modify_fd(m_poller, e.polledFileLayer->fd(), (short)events) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmqSock:
 		return zmq_poller_modify(m_poller, e.zmqsock, (short)events) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmq:
@@ -270,8 +270,8 @@ int Poller::remove(Poller::Event const& e) {
 	switch(e.type) {
 	case Event::TypeFd:
 		return zmq_poller_remove_fd(m_poller, e.fd) == -1 ? zmq_errno() : 0;
-	case Event::TypePolledLayer:
-		return zmq_poller_remove_fd(m_poller, e.polledLayer->fd()) == -1 ? zmq_errno() : 0;
+	case Event::TypePolledFileLayer:
+		return zmq_poller_remove_fd(m_poller, e.polledFileLayer->fd()) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmqSock:
 		return zmq_poller_remove(m_poller, e.zmqsock) == -1 ? zmq_errno() : 0;
 	case Event::TypeZmq:
@@ -301,8 +301,8 @@ int Poller::add(Poller::Event const& e, void* user_data, events_t events) {
 #ifdef STORED_OS_WINDOWS
 	int res = 0;
 	switch(b.type) {
-	case Event::TypePolledLayer:
-		b.h = b.polledLayer->fd();
+	case Event::TypePolledFileLayer:
+		b.h = b.polledFileLayer->fd();
 		break;
 	case Event::TypeWinSock:
 		if((res = SOCKET_to_HANDLE(b.winsock, b.h)))
@@ -548,8 +548,8 @@ Poller::Result const& Poller::poll(long timeout_us, bool suspend) {
 			e.socket = nullptr;
 #endif
 			break;
-		case Event::TypePolledLayer:
-			e.fd = it->polledLayer->fd();
+		case Event::TypePolledFileLayer:
+			e.fd = it->polledFileLayer->fd();
 #if defined(STORED_POLL_ZTH) && defined(ZTH_HAVE_ZMQ)
 			e.socket = nullptr;
 			break;

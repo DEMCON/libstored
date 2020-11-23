@@ -38,33 +38,27 @@ namespace stored {
 	 * This is a generic ZeroMQ class, for practical usages, instantiate
 	 * #stored::DebugZmqLayer or #stored::SyncZmqLayer instead.
 	 */
-	class ZmqLayer : public ProtocolLayer {
+	class ZmqLayer : public PolledSocketLayer {
 		CLASS_NOCOPY(ZmqLayer)
 	public:
-		typedef ProtocolLayer base;
+		typedef PolledSocketLayer base;
+		using base::fd_type;
 
 		ZmqLayer(void* context, int type, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~ZmqLayer() override;
 
 		void* context() const;
 		void* socket() const;
-		virtual int recv(bool block = false);
+		virtual int recv(bool block = false) override;
 
-		/*! \brief The socket type. */
-#ifdef STORED_OS_WINDOWS
-		typedef SOCKET socket_type;
-#else
-		typedef int socket_type;
-#endif
-		socket_type fd();
+		virtual fd_type fd() const override;
 
 		void encode(void const* buffer, size_t len, bool last = true) final;
 		using base::encode;
 
-		int lastError() const;
-
 	protected:
-		void setLastError(int error);
+		int block(fd_type fd, bool forReading, bool suspend = false) final;
+		int block(bool forReading, bool suspend = false);
 		int recv1(bool block = false);
 
 	private:
@@ -80,8 +74,6 @@ namespace stored {
 		size_t m_bufferCapacity;
 		/*! \brief Allocated size of #m_buffer. */
 		size_t m_bufferSize;
-		/*! \brief Error result of last function. */
-		int m_error;
 	};
 
 	/*!

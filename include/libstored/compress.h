@@ -33,17 +33,40 @@ namespace stored {
 
 namespace stored {
 
+	/*!
+	 * \brief Compress/decompress streams.
+	 *
+	 * The compress layer uses heatshrink for compression.  It is a
+	 * general-purpose algorithm, which is not the best compression, and not
+	 * also not the fastest, but has a limited memory usage and allows streams,
+	 * which makes is appropriate for embedded systems.
+	 *
+	 * Compression works best on longer streams, but this layer works per
+	 * message. So, although it may be stacked in any protocol stack, the
+	 * compression ratio may be limited. It is nicely used in stored::Stream,
+	 * where it compresses a full stream (not separate messages), which are
+	 * sent in chunks to the other side.
+	 *
+	 * When heatshrink is not available, this layer is just a pass-through.
+	 *
+	 * \ingroup libstored_protocol
+	 */
 	class CompressLayer : public ProtocolLayer {
 		CLASS_NOCOPY(CompressLayer)
 	public:
 		typedef ProtocolLayer base;
 
 		enum {
+			/*! \brief Window size. See heatshrink documentation. */
 			Window = 8,
+			/*! \brief Lookahead. See heatshrink documentation. */
 			Lookahead = 4,
+			/*! \brief Include buffer size in bytes. See heatshrink documentation. */
 			DecodeInputBuffer = 32,
 
+			/*! \brief Flag for \c m_state to indicate an active encoder. */
 			FlagEncoding = 1,
+			/*! \brief Flag for \c m_state to indicate an active decoder. */
 			FlagDecoding = 2,
 		};
 
@@ -64,10 +87,29 @@ namespace stored {
 		void decoderPoll();
 
 	private:
+		/*!
+		 * \brief The encoder.
+		 * \details This a \c heatshrink_encoder*. Allocated when required.
+		 * */
 		void* m_encoder;
+		/*!
+		 * \brief The decoder.
+		 * \details This a \c heatshrink_decoder*. Allocated when required.
+		 * */
 		void* m_decoder;
+		/*!
+		 * \brief Fully decoded message.
+		 * \details This is used to pass a buffer upstream.
+		 *          The buffer is only allocated, not released.
+		 */
 		std::vector<uint8_t> m_decodeBuffer;
+		/*!
+		 * \brief Actual data in #m_decodeBuffer.
+		 */
 		size_t m_decodeBufferSize;
+		/*!
+		 * \brief Current state of the encoder and decoder.
+		 */
 		uint8_t m_state;
 	};
 

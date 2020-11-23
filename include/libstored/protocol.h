@@ -35,9 +35,9 @@
  *   application, such that the application binds to a REP socket.  A client can
  *   connect to the application directly.
  * - Terminal application with only stdin/stdout: use escape sequences in the
- *   stdin/stdout stream. `client/stdio_wrapper.py` is provided to inject/extract
+ *   stdin/stdout stream. `client/ed2.wrapper.stdio` is provided to inject/extract
  *   these messages from those streams and prove a ZeroMQ interface.
- * - Application over CAN: like a `client/stdio_wrapper.py`, a CAN extractor to
+ * - Application over CAN: like a `client/ed2.wrapper.stdio`, a CAN extractor to
  *   ZeroMQ bridge is required.
  *
  * Then, the client can be connected to the ZeroMQ interface. The following
@@ -45,68 +45,22 @@
  *
  * - `client/ed2.ZmqClient`: a python class that allows easy access to all objects
  *   of the connected store. This is the basis of the clients below.
- * - `client/cli_client.py`: a command line tool that lets you directly enter the
+ * - `client/ed2.cli`: a command line tool that lets you directly enter the
  *   protocol messages as defined above.
- * - `client/gui_client.py`: a simple GUI that shows the list of objects and lets
- *   you manipulate the values. The GUI has support to send samples to `lognplot`.
+ * - `client/ed2.gui`: a simple GUI that shows the list of objects and lets
+ *   you manipulate the values. The GUI has support to send samples to `lognplot`
+ *   and to write samples to a CSV file for KST, for example.
  *
  * Test it using the `terminal` example, started using the
- * `client/stdio_wrapper.py`. Then connect one of the clients above to it.
+ * `client/ed2.wrapper.stdio`. Then connect one of the clients above to it.
  *
  * libstored suggests to use the protocol layers below, where applicable.
  * Standard layer implementations can be used to construct the following stacks (top-down):
  *
- * - Lossless UART: stored::Debugger, stored::AsciiEscapeLayer, stored::TerminalLayer
- * - Lossy UART: stored::Debugger, stored::DebugArqLayer, stored::Crc16Layer, stored::AsciiEscapeLayer, stored::TerminalLayer
+ * - Lossless UART: stored::Debugger, stored::AsciiEscapeLayer, stored::TerminalLayer, stored::StdioLayer
+ * - Lossy UART: stored::Debugger, stored::DebugArqLayer, stored::Crc16Layer, stored::AsciiEscapeLayer, stored::TerminalLayer, stored::StdioLayer
  * - CAN: stored::Debugger, stored::SegmentationLayer, stored::DebugArqLayer, stored::BufferLayer, CAN driver
  * - ZMQ: stored::Debugger, stored::ZmqLayer
- *
- * ## Application layer
- *
- * See \ref libstored_debugger.
- *
- * ## Presentation layer
- *
- * For CAN/ZeroMQ: nothing required.
- *
- * ## Session layer:
- *
- * For terminal/UART/CAN: no session support, there is only one (implicit) session.
- *
- * For ZeroMQ: use REQ/REP sockets, where the application-layer request and
- * response are exactly one ZeroMQ message. All layers below are managed by ZeroMQ.
- *
- * ## Transport layer
- *
- * If the MTU is limited of the hardware, like for CAN, packet segmentation
- * should be used (see stored::SegmentationLayer).
- *
- * In case of lossy channels (UART/CAN), message sequence number, and
- * retransmits (see stored::DebugArqLayer) should be implemented, and CRC (see
- * stored::Crc8Layer). Default implementations are provided, but may be
- * dependent on the specific transport hardware and embedded device.
- *
- * ## Network layer
- *
- * For terminal/UART/ZeroMQ, nothing has to be done.
- *
- * For CAN: packet routing is done here.
- *
- * ## Datalink layer
- *
- * For terminal or UART: In case of binary data, escape bytes < 0x20 that
- * conflict with other procotols, as follows: the sequence `DEL` (0x7f) removes
- * the 3 MSb of the successive byte.  For example, the sequence `DEL ;` (0x7f
- * 0x3b) decodes as `ESC` (0x1b).  To encode `DEL` itself, repeat it.  See
- * stored::AsciiEscapeLayer.
- *
- * For terminal or UART: out-of-band message are captured using `ESC _` (APC) and
- * `ESC \` (ST).  A message consists of the bytes in between these sequences.
- * See stored::TerminalLayer.
- *
- * ## Physical layer
- *
- * Depends on the device.
  *
  * \ingroup libstored
  */
@@ -931,16 +885,16 @@ namespace stored {
 
 	class Poller;
 
+	/*!
+	 * \brief A generalized layer that needs a call to \c recv() to get decodable data from somewhere else.
+	 *
+	 * This includes files, sockets, etc.
+	 * \c recv() reads data, and passes the data upstream.
+	 */
 	class PolledLayer : public ProtocolLayer {
 		CLASS_NOCOPY(PolledLayer)
 	public:
 		typedef ProtocolLayer base;
-
-#ifdef STORED_OS_WINDOWS
-		typedef HANDLE fd_type;
-#else
-		typedef int fd_type;
-#endif
 
 	protected:
 		explicit PolledLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
@@ -956,14 +910,10 @@ namespace stored {
 
 		virtual bool isOpen() const { return true; }
 
-		virtual fd_type fd() const = 0;
-
 		virtual int recv(bool block = false) = 0;
 
 	protected:
 		Poller& poller();
-
-		virtual int block(fd_type fd, bool forReading, bool suspend = false);
 
 		virtual void close() {}
 
@@ -976,10 +926,71 @@ namespace stored {
 		Poller* m_poller;
 	};
 
-	class FileLayer : public PolledLayer {
-		CLASS_NOCOPY(FileLayer)
+	/*!
+	 * \brief A generalized layer that reads from and writes to a file descriptor.
+	 */
+	class PolledFileLayer : public PolledLayer {
+		CLASS_NOCOPY(PolledFileLayer)
 	public:
 		typedef PolledLayer base;
+
+#ifdef STORED_OS_WINDOWS
+		typedef HANDLE fd_type;
+#else
+		typedef int fd_type;
+#endif
+
+	protected:
+		explicit PolledFileLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
+			: base(up, down)
+		{}
+
+	public:
+		virtual ~PolledFileLayer() override;
+		virtual fd_type fd() const = 0;
+
+	protected:
+		virtual int block(fd_type fd, bool forReading, bool suspend = false);
+	};
+
+#ifdef STORED_OS_WINDOWS
+	/*!
+	 * \brief A generalized layer that reads from and writes to a SOCKET.
+	 */
+	class PolledSocketLayer : public PolledLayer {
+		CLASS_NOCOPY(PolledFileLayer)
+	public:
+		typedef PolledLayer base;
+		typedef SOCKET fd_type;
+
+	protected:
+		explicit PolledSocketLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
+			: base(up, down)
+		{}
+
+	public:
+		virtual ~PolledSocketLayer() override;
+		virtual fd_type fd() const = 0;
+
+	protected:
+		virtual int block(fd_type fd, bool forReading, bool suspend = false) = 0;
+	};
+#else // !STORED_OS_WINDOWS
+	typedef PolledFileLayer PolledSocketLayer;
+#endif // !STORED_OS_WINDOWS
+
+	/*!
+	 * \brief A layer that reads from and writes to file descriptors.
+	 *
+	 * For POSIX, this applies to everything that is a file descriptor.
+	 * For Windows, this can only be used for files. See stored::NamedPipeLayer.
+	 *
+	 * \ingroup libstored_protocol
+	 */
+	class FileLayer : public PolledFileLayer {
+		CLASS_NOCOPY(FileLayer)
+	public:
+		typedef PolledFileLayer base;
 		using base::fd_type;
 
 		enum { BufferSize = 128 };
@@ -1041,11 +1052,13 @@ public:
 #endif
 	};
 
-#ifdef STORED_OS_WINDOWS
+#if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
 	/*!
 	 * \brief Server end of a named pipe.
 	 *
 	 * The client end is easier; it is just a file-like create/open/write/close API.
+	 *
+	 * \ingroup libstored_protocol
 	 */
 	class NamedPipeLayer : public FileLayer {
 		CLASS_NOCOPY(NamedPipeLayer)
@@ -1076,10 +1089,15 @@ public:
 		std::string m_name;
 	};
 
-	class StdioLayer : public PolledLayer {
+	/*!
+	 * \brief A stdin/stdout layer.
+	 *
+	 * \ingroup libstored_protocol
+	 */
+	class StdioLayer : public PolledFileLayer {
 		CLASS_NOCOPY(StdioLayer)
 	public:
-		typedef PolledLayer base;
+		typedef PolledFileLayer base;
 		using base::fd_type;
 
 		enum { BufferSize = 128 };
@@ -1112,6 +1130,13 @@ public:
 
 #else // !STORED_OS_WINDOWS
 
+	/*!
+	 * \brief A stdin/stdout layer.
+	 *
+	 * This is just a FileLayer, with predefined stdin/stdout as file descriptors.
+	 *
+	 * \ingroup libstored_protocol
+	 */
 	class StdioLayer : public FileLayer {
 		CLASS_NOCOPY(StdioLayer)
 	public:

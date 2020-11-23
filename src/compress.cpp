@@ -25,12 +25,18 @@ extern "C" {
 #  include <heatshrink_decoder.h>
 }
 
+/*!
+ * \brief Helper to get a \c heatshrink_encoder reference from \c CompressLayer::m_encoder.
+ */
 static heatshrink_encoder& encoder_(void* e) {
 	stored_assert(e);
 	return *static_cast<heatshrink_encoder*>(e);
 }
 #define encoder() (encoder_(m_encoder)) // NOLINT(cppcoreguidelines-macro-usage)
 
+/*!
+ * \brief Helper to get a \c heatshrink_decoder reference from \c CompressLayer::m_decoder.
+ */
 static heatshrink_decoder& decoder_(void* d) {
 	stored_assert(d);
 	return *static_cast<heatshrink_decoder*>(d);
@@ -39,6 +45,9 @@ static heatshrink_decoder& decoder_(void* d) {
 
 namespace stored {
 
+/*!
+ * \brief Ctor.
+ */
 CompressLayer::CompressLayer(ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_encoder()
@@ -48,6 +57,9 @@ CompressLayer::CompressLayer(ProtocolLayer* up, ProtocolLayer* down)
 {
 }
 
+/*!
+ * \brief Dtor.
+ */
 CompressLayer::~CompressLayer() {
 	if(m_encoder)
 		heatshrink_encoder_free(&encoder());
@@ -90,6 +102,9 @@ void CompressLayer::decode(void* buffer, size_t len) {
 	m_state &= (uint8_t)~(uint8_t)FlagDecoding;
 }
 
+/*!
+ * \brief Check if there is data to be extracted from the decoder.
+ */
 void CompressLayer::decoderPoll() {
 	while(true) {
 		m_decodeBuffer.resize(m_decodeBufferSize + 128);
@@ -143,6 +158,9 @@ void CompressLayer::encode(void const* buffer, size_t len, bool last) {
 	}
 }
 
+/*!
+ * \brief Check if there is data to be extracted from the encoder.
+ */
 void CompressLayer::encoderPoll() {
 	uint8_t out_buf[128];
 
@@ -171,6 +189,10 @@ size_t CompressLayer::mtu() const {
 	return 0;
 }
 
+/*!
+ * \brief Check if the encoder and decoder are both in idle state.
+ * \return \c true if there is no data stuck in any internal buffer.
+ */
 bool CompressLayer::idle() const {
 	return m_state == 0;
 }

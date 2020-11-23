@@ -1451,7 +1451,22 @@ PolledLayer::~PolledLayer() {
 	delete m_poller;
 }
 
-int PolledLayer::block(PolledLayer::fd_type fd, bool forReading, bool suspend) {
+Poller& PolledLayer::poller() {
+	if(!m_poller)
+		m_poller = new Poller(); // NOLINT(cppcoreguidelines-owning-memory)
+
+	return *m_poller;
+}
+
+
+
+//////////////////////////////
+// PolledFileLayer
+//
+
+PolledFileLayer::~PolledFileLayer() is_default
+
+int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, bool suspend) {
 	setLastError(0);
 
 	Poller& poller = this->poller();
@@ -1493,12 +1508,17 @@ done:
 	return setLastError(err);
 }
 
-Poller& PolledLayer::poller() {
-	if(!m_poller)
-		m_poller = new Poller(); // NOLINT(cppcoreguidelines-owning-memory)
 
-	return *m_poller;
-}
+
+#ifdef STORED_OS_WINDOWS
+//////////////////////////////
+// PolledSocketLayer
+//
+
+PolledSocketLayer::~PolledSocketLayer() is_default
+#endif
+
+
 
 
 //////////////////////////////

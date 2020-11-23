@@ -120,7 +120,7 @@ namespace stored {
 			enum Type {
 				TypeNone,
 				TypeFd,
-				TypePolledLayer,
+				TypePolledFileLayer,
 #ifdef STORED_OS_WINDOWS
 				TypeWinSock,
 				TypeHandle,
@@ -157,7 +157,7 @@ namespace stored {
 
 				switch(type) {
 				case TypeFd: fd = va_arg(args, int); break;
-				case TypePolledLayer: polledLayer = va_arg(args, PolledLayer*); break;
+				case TypePolledFileLayer: polledFileLayer = va_arg(args, PolledFileLayer*); break;
 #ifdef STORED_OS_WINDOWS
 				case TypeWinSock: winsock = va_arg(args, SOCKET); break;
 				case TypeHandle: h = handle = va_arg(args, HANDLE); break;
@@ -175,7 +175,7 @@ namespace stored {
 			Type type;
 			union {
 				int fd;
-				PolledLayer* polledLayer;
+				PolledFileLayer* polledFileLayer;
 #ifdef STORED_OS_WINDOWS
 				SOCKET winsock;
 				HANDLE handle;
@@ -205,7 +205,7 @@ namespace stored {
 				switch(type) {
 				case TypeNone: return true;
 				case TypeFd: return fd == e.fd;
-				case TypePolledLayer: return polledLayer == e.polledLayer;
+				case TypePolledFileLayer: return polledFileLayer == e.polledFileLayer;
 #ifdef STORED_OS_WINDOWS
 				case TypeWinSock: return winsock == e.winsock;
 				case TypeHandle: return handle == e.handle;
@@ -235,9 +235,9 @@ namespace stored {
 		int modify(int fd, events_t events);
 		int remove(int fd);
 
-		int add(PolledLayer& layer, void* user_data, events_t events);
-		int modify(PolledLayer& layer, events_t events);
-		int remove(PolledLayer& layer);
+		int add(PolledFileLayer& layer, void* user_data, events_t events);
+		int modify(PolledFileLayer& layer, events_t events);
+		int remove(PolledFileLayer& layer);
 
 #ifdef STORED_OS_WINDOWS
 		int add(SOCKET socket, void* user_data, events_t events);

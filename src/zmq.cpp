@@ -17,6 +17,7 @@
  */
 
 #include <libstored/protocol.h>
+#include <libstored/poller.h>
 
 #ifdef STORED_HAVE_ZMQ
 #  include <zmq.h>
@@ -50,7 +51,6 @@ ZmqLayer::ZmqLayer(void* context, int type, ProtocolLayer* up, ProtocolLayer* do
 	, m_buffer()
 	, m_bufferCapacity()
 	, m_bufferSize()
-	, m_error()
 {
 	if(!(m_socket = zmq_socket(this->context(), type)))
 		setLastError(errno);
@@ -93,21 +93,63 @@ void* ZmqLayer::socket() const {
  *
  * Use this socket to determine if recv() would block.
  */
-ZmqLayer::socket_type ZmqLayer::fd() {
-	socket_type socket; // NOLINT(cppcoreguidelines-init-variables)
+ZmqLayer::fd_type ZmqLayer::fd() const {
+	fd_type socket; // NOLINT(cppcoreguidelines-init-variables)
 	size_t size = sizeof(socket);
 
 	if(zmq_getsockopt(m_socket, ZMQ_FD, &socket, &size) == -1) {
-		setLastError(errno);
 #ifdef STORED_OS_WINDOWS
 		return INVALID_SOCKET; // NOLINT(hicpp-signed-bitwise)
 #else
 		return -1;
 #endif
-	} else
-		setLastError(0);
+	}
 
 	return socket;
+}
+
+int ZmqLayer::block(fd_type UNUSED_PAR(fd), bool forReading, bool suspend) {
+	// Just use our socket.
+	return block(forReading, suspend);
+}
+
+int ZmqLayer::block(bool forReading, bool suspend) {
+	setLastError(0);
+
+	Poller& poller = this->poller();
+
+	Poller::events_t events = forReading ? Poller::PollIn : Poller::PollOut;
+
+	int err = 0;
+	int res = 0;
+	if((res = poller.add(*this, nullptr, events))) {
+		err = res;
+		goto done;
+	}
+
+	while(true) {
+		Poller::Result const& pres = poller.poll(-1, suspend);
+
+		if(pres.empty()) {
+			// Should not happen.
+			err = EINVAL;
+			break;
+		} else if(((Poller::events_t)pres[0].events) & (Poller::events_t)(Poller::PollErr | Poller::PollHup)) {
+			// Something is wrong with the socket.
+			err = EIO;
+			break;
+		} else if(((Poller::events_t)pres[0].events) & events) {
+			// Got it.
+			break;
+		}
+	}
+
+	if((res = poller.remove(*this)))
+		if(!err)
+			err = res;
+
+done:
+	return setLastError(err);
 }
 
 /*!
@@ -125,9 +167,23 @@ int ZmqLayer::recv1(bool block) {
 		goto error_msg;
 	}
 
-	if(unlikely(zmq_msg_recv(&msg, m_socket, block ? 0 : ZMQ_DONTWAIT) == -1)) {
+	if(unlikely(zmq_msg_recv(&msg, m_socket, ZMQ_DONTWAIT) == -1)) {
 		res = errno;
-		goto error_recv;
+		if(!block || errno != EAGAIN) {
+			goto error_recv;
+		} else {
+			// Go block first, then retry.
+			if((res = this->block(true)))
+				goto error_recv;
+
+			if(zmq_msg_recv(&msg, m_socket, 0) == -1) {
+				// Still an error. Giveup.
+				res = errno;
+				goto error_recv;
+			}
+
+			// Success.
+		}
 	}
 
 	more = zmq_msg_more(&msg);
@@ -165,8 +221,7 @@ int ZmqLayer::recv1(bool block) {
 	}
 
 	zmq_msg_close(&msg);
-	setLastError(0);
-	return 0;
+	return setLastError(0);
 
 error_buffer:
 error_recv:
@@ -174,8 +229,7 @@ error_recv:
 error_msg:
 	if(!res)
 		res = EAGAIN;
-	setLastError(res);
-	return res;
+	return setLastError(res);
 }
 
 /*!
@@ -196,8 +250,7 @@ int ZmqLayer::recv(bool block) {
 			// That's it.
 			if(!first) {
 				// We already got something, so don't make this an error.
-				setLastError(0);
-				return 0;
+				return setLastError(0);
 			}
 			// fall-through
 		default:
@@ -213,25 +266,27 @@ int ZmqLayer::recv(bool block) {
  * \details Encoded data is send as REP over the ZeroMQ socket.
  */
 void ZmqLayer::encode(void const* buffer, size_t len, bool last) {
-	if(zmq_send(m_socket, buffer, len, last ? 0 : ZMQ_SNDMORE) == -1)
-		setLastError(errno);
-}
+	// First try, assume we are writable.
+	// NOLINTNEXTLINE(hicpp-signed-bitwise)
+	if(likely(zmq_send(m_socket, buffer, len, ZMQ_DONTWAIT | (last ? 0 : ZMQ_SNDMORE)) != -1)) {
+		// Success.
+		setLastError(0);
+	} else if(setLastError(errno) != EAGAIN) {
+		// Some other error occured.
+	} else if(block(false)) {
+		// Socket is not writable, and blocking failed.
+	} else {
+		// Socket should be writable now. This is a blocking call,
+		// but it should not block anymore.
+		if(zmq_send(m_socket, buffer, len, last ? 0 : ZMQ_SNDMORE) != -1)
+			// Some error.
+			setLastError(errno);
+		else
+			// Success.
+			setLastError(0);
+	}
 
-/*!
- * \brief Returns the last reported error of any operation on the ZmqLayer.
- *
- * Errors are not reset when the next operation is successful. So, check this
- * function if a previous call returned an error.
- */
-int ZmqLayer::lastError() const {
-	return m_error;
-}
-
-/*!
- * \brief Saves the given error for #lastError().
- */
-void ZmqLayer::setLastError(int error) {
-	errno = m_error = error;
+	base::encode(buffer, len, last);
 }
 
 
