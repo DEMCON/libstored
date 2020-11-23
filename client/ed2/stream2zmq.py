@@ -30,10 +30,10 @@ from . import protocol
 class Stream2Zmq(protocol.ProtocolLayer):
     default_port = ZmqServer.default_port
 
-    def __init__(self, stack='ascii,term', port=default_port, timeout_s=1, **kwargs):
+    def __init__(self, stack='ascii,term', listen='*', port=default_port, timeout_s=1):
         super().__init__()
         self.logger = logging.getLogger(__name__)
-        self._stack_def = f'zmq={port},' + stack
+        self._stack_def = f'zmq={listen}:{port},' + stack
         self._timeout_s = timeout_s
         self._zmq = None
         self.reset()

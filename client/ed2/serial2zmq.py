@@ -27,8 +27,8 @@ from .stream2zmq import Stream2Zmq
 # \brief Serial port frame grabber to ZmqServer bridge.
 # \ingroup libstored_client
 class Serial2Zmq(Stream2Zmq):
-    def __init__(self, stack='ascii,term', zmqport=Stream2Zmq.default_port, **kwargs):
-        super().__init__(stack, zmqport)
+    def __init__(self, stack='ascii,term', zmqlisten='*', zmqport=Stream2Zmq.default_port, **kwargs):
+        super().__init__(stack, listen=zmqlisten, port=zmqport)
         self.serial = serial.Serial(**kwargs)
         self.serial_socket = self.registerStream(self.serial)
         self.stdin_socket = self.registerStream(sys.stdin)

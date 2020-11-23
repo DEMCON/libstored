@@ -37,7 +37,7 @@ class ZmqServer(protocol.ProtocolLayer):
     default_port = 19026
     name = 'zmq'
 
-    def __init__(self, port=default_port):
+    def __init__(self, bind=None, listen='*', port=default_port):
         super().__init__()
         self.logger = logging.getLogger(__name__)
         self.sockets = set()
@@ -45,7 +45,22 @@ class ZmqServer(protocol.ProtocolLayer):
         self.poller = zmq.Poller()
         self.streams = 0
         self.socket = self.context.socket(zmq.REP)
-        self.socket.bind(f'tcp://*:{port}')
+
+        if bind != None:
+            s = bind.split(':', 1)
+            if len(s) == 2:
+                if s[0] != '':
+                    listen = s[0]
+                if s[1] != '':
+                    port = s[1]
+            else:
+                try:
+                    port = int(s[0])
+                except:
+                    listen = s[0]
+
+        self.socket.bind(f'tcp://{listen}:{port}')
+
         self.register(self.socket, zmq.POLLIN)
         self.closing = False
         self._rep_queue = []

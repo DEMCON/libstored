@@ -27,8 +27,8 @@ from .stream2zmq import Stream2Zmq
 # \brief A stdin/stdout frame grabber to ZmqServer bridge.
 # \ingroup libstored_client
 class Stdio2Zmq(Stream2Zmq):
-    def __init__(self, args, stack='ascii,term', port=Stream2Zmq.default_port, **kwargs):
-        super().__init__(stack=stack, port=port)
+    def __init__(self, args, stack='ascii,term', listen='*', port=Stream2Zmq.default_port, **kwargs):
+        super().__init__(stack=stack, listen=listen, port=port)
         self.process = subprocess.Popen(args=args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, **kwargs)
         self.stdout_socket = self.registerStream(self.process.stdout)
         self.stdin_socket = self.registerStream(sys.stdin)
