@@ -97,6 +97,7 @@ class Object(QObject):
         self._valueChangedRateLimiter = SignalRateLimiter(self.valueChanged, self.valueStringChanged, parent=self)
         self._tUpdatedChangedRateLimiter = SignalRateLimiter(self.tUpdated, self.tStringChanged, parent=self)
         self._suppressSetSignals = False
+        self._asyncReadPending = False
 
     def optimizeSignals(self):
         self._suppressSetSignals = True
@@ -253,8 +254,15 @@ class Object(QObject):
         QCoreApplication.postEvent(self, event, Qt.LowEventPriority - 1)
 
     def _asyncRead(self):
-        if self._client != None:
-            self._client.reqAsync(b'r' + self.shortName(False).encode(), self.decodeReadRep)
+        if self._asyncReadPending:
+            pass
+        elif self._client != None:
+            self._asyncReadPending = True
+            self._client.reqAsync(b'r' + self.shortName(False).encode(), self._asyncReadRep)
+
+    def _asyncReadRep(self, rep):
+        self._asyncReadPending = False
+        self.decodeReadRep(rep)
 
     def event(self, event):
         if event.type() == self.AsyncReadEvent:
@@ -1056,7 +1064,17 @@ class ZmqClient(QObject):
 
         self.logger.debug('req %s', message)
         self._socket.send(message)
-        rep = b''.join(self._socket.recv_multipart())
+
+        # Block till we have some message.
+        while True:
+            try:
+                rep = b''.join(self._socket.recv_multipart(zmq.NOBLOCK))
+                break
+            except zmq.ZMQError as e:
+                if e.errno != zmq.EAGAIN:
+                    raise
+            self._socket.poll(1000)
+
         self.logger.debug('rep %s', rep)
         return rep
 
@@ -1102,7 +1120,7 @@ class ZmqClient(QObject):
                 resp = b''.join(self._socket.recv_multipart(zmq.NOBLOCK))
                 self._reqAsyncHandleResponse(resp)
                 res = True
-        except zmq.ZMQError:
+        except zmq.ZMQError as e:
             pass
         return res
 
@@ -1117,15 +1135,29 @@ class ZmqClient(QObject):
             # We got an error back, but no callback was specified. Report it anyway.
             self.logger.warning('Req %s returned an error, which was not handled', req)
 
-    def _reqAsyncFlush(self):
+    def _reqAsyncFlush(self, timeout=None):
+        start = time.time()
+        pollInterval = 1000
+        if timeout != None:
+            pollInterval = min(timeout, pollInterval)
+
         while self._reqQueue != []:
-            self._reqAsyncHandleResponse(b''.join(self._socket.recv_multipart()))
+            if timeout != None and time.time() - start > timeout:
+                raise TimeoutError()
+
+            try:
+                self._reqAsyncHandleResponse(b''.join(self._socket.recv_multipart(zmq.NOBLOCK)))
+            except zmq.ZMQError as e:
+                if e.errno != zmq.EAGAIN:
+                    raise
+                else:
+                    self._socket.poll(pollInterval)
 
     @Slot()
     def _aboutToQuit(self):
         self.logger.debug('aboutToQuit')
         self._useEventLoop = False
-        self._reqAsyncFlush()
+        self._reqAsyncFlush(10)
 
     def time(self):
         if self._t == False:
