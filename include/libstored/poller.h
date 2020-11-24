@@ -92,6 +92,41 @@ namespace stored {
 
 	/*!
 	 * \brief A generic way of \c poll() for any blockable resource.
+	 *
+	 * Depending on the platform, different poll strategies are automatically chosen:
+	 *
+	 * - STORED_POLL_WFMO (Windows without Zth): Block using \c WaitForMultipleObjectEx() in alertable state.
+	 * - STORED_POLL_ZTH_WFMO (Windows with Zth): Non-blocking call to \c WaitForMultipleObjectEx() by the zth::Waiter.
+	 * - STORED_POLL_ZTH (Non-Windows with Zth, without ZMQ): rely on zth::poll(), which uses the OS's \c %poll()
+	 * - STORED_POLL_ZTH_LOOP (Bare metal with Zth): call stored::poll_once() by zth::Waiter
+	 * - STORED_POLL_ZMQ (Non-Windows without Zth, with ZMQ): rely on \c zmq_poll()
+	 * - STORED_POLL_LOOP (Bare metal without Zth): busy-wait calling stored::poll_once()
+	 * - STORED_POLL_POLL (Non-Windows without Zth and ZMQ): rely on OS's %poll()
+	 *
+	 * Auto-detect is bypassed when one of the macros above is defined.
+	 *
+	 * To use the poller, basically do this:
+	 *
+	 * \code
+	 * Poller poller;
+	 *
+	 * // Pick some user_data you can recognize.
+	 * poller.add(fd1, &fd1, Poller::PollIn);
+	 * poller.add(fd2, &fd2, Poller::PollOut);
+	 *
+	 * while(true) {
+	 *     auto const& res = poller.poll();
+	 *
+	 *     for(auto it : res) {
+	 *         if(it->user_data == &fd1)
+	 *             read(fd1, ...);
+	 *         if(it->user_data == &fd2)
+	 *             write(fd2, ...)
+	 *     }
+	 * }
+	 * \endcode
+	 *
+	 * \ingroup libstored_protocol
 	 */
 	class Poller {
 		CLASS_NOCOPY(Poller)
@@ -239,7 +274,7 @@ namespace stored {
 		int modify(PolledFileLayer& layer, events_t events);
 		int remove(PolledFileLayer& layer);
 
-#ifdef STORED_OS_WINDOWS
+#if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
 		int add(SOCKET socket, void* user_data, events_t events);
 		int modify(SOCKET socket, events_t events);
 		int remove(SOCKET socket);
@@ -248,7 +283,7 @@ namespace stored {
 		int modifyh(HANDLE handle, events_t events);
 		int removeh(HANDLE handle);
 #endif
-#ifdef STORED_HAVE_ZMQ
+#if defined(STORED_HAVE_ZMQ) || defined(DOXYGEN)
 		int add(void* socket, void* user_data, events_t events);
 		int modify(void* socket, events_t events);
 		int remove(void* socket);
@@ -290,7 +325,7 @@ namespace stored {
 #endif
 	};
 
-#if defined(STORED_POLL_LOOP) || defined(STORED_POLL_ZTH_LOOP)
+#if defined(STORED_POLL_LOOP) || defined(STORED_POLL_ZTH_LOOP) || defined(DOXYGEN)
 	/*!
 	 * \brief Supply a custom \c poll() implementation.
 	 *

@@ -113,6 +113,9 @@ int ZmqLayer::block(fd_type UNUSED_PAR(fd), bool forReading, bool suspend) {
 	return block(forReading, suspend);
 }
 
+/*!
+ * \brief Like #block(fd_type,bool,bool), but using the #socket() by default.
+ */
 int ZmqLayer::block(bool forReading, bool suspend) {
 	setLastError(0);
 

@@ -61,6 +61,7 @@
  * - Lossy UART: stored::Debugger, stored::DebugArqLayer, stored::Crc16Layer, stored::AsciiEscapeLayer, stored::TerminalLayer, stored::StdioLayer
  * - CAN: stored::Debugger, stored::SegmentationLayer, stored::DebugArqLayer, stored::BufferLayer, CAN driver
  * - ZMQ: stored::Debugger, stored::ZmqLayer
+ * - VHDL simulation: stored::Synchronizer, stored::AsciiEscapeLayer, stored::TerminalLayer, stored::NamedPipeLayer
  *
  * \ingroup libstored
  */
@@ -897,6 +898,9 @@ namespace stored {
 		typedef ProtocolLayer base;
 
 	protected:
+		/*!
+		 * \brief Ctor.
+		 */
 		explicit PolledLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
 			: base(up, down)
 			, m_lastError()
@@ -904,19 +908,44 @@ namespace stored {
 		{}
 
 	public:
+		/*!
+		 * \brief Dtor.
+		 *
+		 * Make sure to #close() the related file descriptor prior to destruction.
+		 */
 		virtual ~PolledLayer() override;
 
+		/*!
+		 * \brief Returns the last error of an invoked method of this class.
+		 *
+		 * This is required after construction or \c encode(), for example,
+		 * where no error return value is possible.
+		 */
 		int lastError() const { return m_lastError; }
 
+		/*!
+		 * \brief Checks if the file descriptor is open.
+		 */
 		virtual bool isOpen() const { return true; }
 
+		/*!
+		 * \brief Try to receive and decode data.
+		 * \return 0 on success, otherwise an \c errno
+		 */
 		virtual int recv(bool block = false) = 0;
 
 	protected:
 		Poller& poller();
 
+		/*!
+		 * \brief Close the file descriptor.
+		 */
 		virtual void close() {}
 
+		/*!
+		 * \brief Registers an error code for later retrieval by #lastError().
+		 * \return \p e
+		 */
 		int setLastError(int e) {
 			return errno = m_lastError = e;
 		}
@@ -941,12 +970,22 @@ namespace stored {
 #endif
 
 	protected:
+		/*!
+		 * \brief Ctor.
+		 */
 		explicit PolledFileLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
 			: base(up, down)
 		{}
 
 	public:
+		/*!
+		 * \brief Dtor.
+		 */
 		virtual ~PolledFileLayer() override;
+
+		/*!
+		 * \brief The file descriptor you may poll before calling #recv().
+		 */
 		virtual fd_type fd() const = 0;
 
 	protected:
@@ -958,7 +997,7 @@ namespace stored {
 	 * \brief A generalized layer that reads from and writes to a SOCKET.
 	 */
 	class PolledSocketLayer : public PolledLayer {
-		CLASS_NOCOPY(PolledFileLayer)
+		CLASS_NOCOPY(PolledSocketLayer)
 	public:
 		typedef PolledLayer base;
 		typedef SOCKET fd_type;
@@ -976,14 +1015,26 @@ namespace stored {
 		virtual int block(fd_type fd, bool forReading, bool suspend = false) = 0;
 	};
 #else // !STORED_OS_WINDOWS
+
+	// Sockets are just files.
 	typedef PolledFileLayer PolledSocketLayer;
+
 #endif // !STORED_OS_WINDOWS
 
 	/*!
 	 * \brief A layer that reads from and writes to file descriptors.
 	 *
-	 * For POSIX, this applies to everything that is a file descriptor.
-	 * For Windows, this can only be used for files. See stored::NamedPipeLayer.
+	 * For POSIX, this applies to everything that is a file descriptor.  \c
+	 * read() and \c write() is done non-blocking, by using a #stored::Poller.
+	 *
+	 * For Windows, this can only be used for files. See
+	 * stored::NamedPipeLayer.  All files reads and writes use overlapped IO,
+	 * in combination with a #stored::Poller. The file handle must be opened
+	 * that way. The implementation always has an overlapped read pending, and
+	 * checks the corresponding event for completion. Every \c decode()
+	 * triggers an overlapped write. It uses a completion routine, so the
+	 * thread must be put in an alertable state once in a while (which the
+	 * #stored::Poller does when blocking).
 	 *
 	 * \ingroup libstored_protocol
 	 */
@@ -1056,6 +1107,8 @@ public:
 	/*!
 	 * \brief Server end of a named pipe.
 	 *
+	 * This is only for Windows. Just use a #FileLayer with \c pipe() for POSIX.
+	 *
 	 * The client end is easier; it is just a file-like create/open/write/close API.
 	 *
 	 * \ingroup libstored_protocol
@@ -1091,6 +1144,14 @@ public:
 
 	/*!
 	 * \brief A stdin/stdout layer.
+	 *
+	 * Although a Console HANDLE can be read/written as a normal file in
+	 * Windows, it does not support polling or overlapped IO. Moreover, if
+	 * stdin/stdout are redirected, the Console becomes a Named Pipe HANDLE.
+	 * This class handles both.
+	 *
+	 * For POSIX, the StdioLayer is just a FileLayer with preset stdin/stdout
+	 * file descriptors.
 	 *
 	 * \ingroup libstored_protocol
 	 */
@@ -1129,6 +1190,9 @@ public:
 	};
 
 #else // !STORED_OS_WINDOWS
+
+	// Pipes are just files.
+	typedef FileLayer NamedPipeLayer;
 
 	/*!
 	 * \brief A stdin/stdout layer.

@@ -1442,6 +1442,9 @@ Loopback::Loopback(ProtocolLayer& a, ProtocolLayer& b)
 // PolledLayer
 //
 
+/*!
+ * \brief Dtor.
+ */
 PolledLayer::~PolledLayer() {
 	// We would like to close(), but at this point, the subclass was
 	// already destructed. So, make sure to close the handles
@@ -1451,6 +1454,11 @@ PolledLayer::~PolledLayer() {
 	delete m_poller;
 }
 
+/*!
+ * \brief Return a poller.
+ *
+ * Pollers are reused between calls, but only allocated the first time is is needed.
+ */
 Poller& PolledLayer::poller() {
 	if(!m_poller)
 		m_poller = new Poller(); // NOLINT(cppcoreguidelines-owning-memory)
@@ -1464,8 +1472,21 @@ Poller& PolledLayer::poller() {
 // PolledFileLayer
 //
 
+/*!
+ * \brief Dtor.
+ */
 PolledFileLayer::~PolledFileLayer() is_default
 
+/*!
+ * \brief Block on a file descriptor.
+ *
+ * Blocking is done using a #stored::Poller.
+ *
+ * \param fd the file descriptor to block on
+ * \param forReading when \c true, it blocks till stored::Poller::PollIn, otherwise PollOut
+ * \param suspend if \c true, do a suspend of the thread while blocking, otherwise allow fiber switching (when using Zth)
+ * \return 0 on success, otherwise an \c errno
+ */
 int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, bool suspend) {
 	setLastError(0);
 
@@ -1515,6 +1536,9 @@ done:
 // PolledSocketLayer
 //
 
+/*!
+ * \brief Dtor.
+ */
 PolledSocketLayer::~PolledSocketLayer() is_default
 #endif
 
@@ -1527,6 +1551,14 @@ PolledSocketLayer::~PolledSocketLayer() is_default
 
 #ifndef STORED_OS_WINDOWS
 
+/*!
+ * \brief Generic ctor for subclasses.
+ *
+ * Use this ctor if and only if inheriting this class, otherwise use another one.
+ * Call #init() afterwards to register the actual file descriptors.
+ *
+ * It sets #lastError() appropriately.
+ */
 FileLayer::FileLayer(ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_fd_r(-1)
@@ -1535,6 +1567,15 @@ FileLayer::FileLayer(ProtocolLayer* up, ProtocolLayer* down)
 	setLastError(EBADF);
 }
 
+/*!
+ * \brief Ctor for two already opened file descriptors.
+ *
+ * If \p fd_w is -1, \p fd_r is used to write to as well.
+ *
+ * Do not use this ctor when inheriting this class.
+ *
+ * It sets #lastError() appropriately.
+ */
 FileLayer::FileLayer(int fd_r, int fd_w, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_fd_r(-1)
@@ -1550,6 +1591,17 @@ FileLayer::FileLayer(int fd_r, int fd_w, ProtocolLayer* up, ProtocolLayer* down)
 	init(fd_r, fd_w == -1 ? fd_r : fd_w);
 }
 
+/*!
+ * \brief Ctor for two files to be opened.
+ *
+ * If \p name_w is \c nullptr, \p name_r is used to write to as well.  Files
+ * are created when required. If the file exists, writing will append data to
+ * the file (it is not truncated).
+ *
+ * Do not use this ctor when inheriting this class.
+ *
+ * It sets #lastError() appropriately.
+ */
 FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_fd_r(-1)
@@ -1583,6 +1635,11 @@ error:
 	setLastError(errno ? errno : EBADF);
 }
 
+/*!
+ * \brief Initialize the given file descriptors for use in this layer.
+ *
+ * Does not return, but sets #lastError() appropriately.
+ */
 // cppcheck-suppress passedByValue
 void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w) {
 	stored_assert(m_fd_r == -1);
@@ -1599,14 +1656,25 @@ void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w) {
 	}
 }
 
+/*!
+ * \brief Dtor.
+ *
+ * It calls #close_(), not #close() as the latter is virtual.
+ */
 FileLayer::~FileLayer() {
 	close_();
 }
 
+/*!
+ * \brief Virtual wrapper around #close_().
+ */
 void FileLayer::close() {
 	close_();
 }
 
+/*!
+ * \brief Close the file descriptors.
+ */
 void FileLayer::close_() {
 	if(m_fd_r != -1)
 		::close(m_fd_r);
@@ -1620,10 +1688,17 @@ void FileLayer::close_() {
 	base::close();
 }
 
+/*!
+ * \brief Check if the file descriptors are open.
+ */
 bool FileLayer::isOpen() const {
 	return m_fd_r != -1;
 }
 
+/*!
+ * \copydoc stored::PolledFileLayer::encode(void const*, size_t, bool)
+ * \details Sets #lastError() appropriately.
+ */
 void FileLayer::encode(void const* buffer, size_t len, bool last) {
 	if(m_fd_w == -1) {
 		setLastError(EBADF);
@@ -1678,18 +1753,32 @@ error:
 	goto done;
 }
 
+/*!
+ * \brief Returns the file descriptor to be used by a #stored::Poller in order to call #recv().
+ */
 FileLayer::fd_type FileLayer::fd() const {
 	return m_fd_r;
 }
 
+/*!
+ * \brief Returns the read file descriptor.
+ */
 FileLayer::fd_type FileLayer::fd_r() const {
 	return m_fd_r;
 }
 
+/*!
+ * \brief Returns the write file descriptor.
+ */
 FileLayer::fd_type FileLayer::fd_w() const {
 	return m_fd_w;
 }
 
+/*!
+ * \brief Try to receive data from the file descriptor and forward it for decoding.
+ * \param block if \c true, it blocks until something has read
+ * \return 0 on success, otherwise an errno
+ */
 int FileLayer::recv(bool block) {
 	if(fd_r() == -1)
 		return setLastError(EBADF);
@@ -1726,12 +1815,23 @@ again:
 
 #else // STORED_OS_WINDOWS
 
+/*!
+ * \brief Checks if the given handle is valid.
+ */
 static bool isValidHandle(HANDLE h) {
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 	return h != INVALID_HANDLE_VALUE;
 }
 
-// Convenience ctor for use. Do not use in subclass.
+/*!
+ * \brief Ctor for two already opened files.
+ *
+ * If \p fd_w is -1, \p fd_r is used to write to as well.
+ *
+ * Do not use this ctor when inheriting this class.
+ *
+ * It sets #lastError() appropriately.
+ */
 FileLayer::FileLayer(int fd_r, int fd_w, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_fd_r(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
@@ -1748,7 +1848,17 @@ FileLayer::FileLayer(int fd_r, int fd_w, ProtocolLayer* up, ProtocolLayer* down)
 	init(h_r, h_w);
 }
 
-// Convenience ctor for use. Do not use in subclass.
+/*!
+ * \brief Ctor for two files to be opened.
+ *
+ * If \p name_w is \c nullptr, \p name_r is used to write to as well.  Files
+ * are created when required. If the file exists, writing will append data to
+ * the file (it is not truncated).
+ *
+ * Do not use this ctor when inheriting this class.
+ *
+ * It sets #lastError() appropriately.
+ */
 FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_fd_r(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
@@ -1803,7 +1913,15 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 	}
 }
 
-// Convenience ctor for use. Do not use in subclass.
+/*!
+ * \brief Ctor for to existing HANDLEs.
+ *
+ * The HANDLEs must be opened with FILE_FLAG_OVERLAPPED.
+ *
+ * Do not use this ctor when inheriting this class.
+ *
+ * It sets #lastError() appropriately.
+ */
 FileLayer::FileLayer(HANDLE h_r, HANDLE h_w, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_fd_r(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
@@ -1816,6 +1934,14 @@ FileLayer::FileLayer(HANDLE h_r, HANDLE h_w, ProtocolLayer* up, ProtocolLayer* d
 	init(h_r, !isValidHandle(h_w) ? h_r : h_w);
 }
 
+/*!
+ * \brief Generic ctor for subclasses.
+ *
+ * Use this ctor if and only if inheriting this class, otherwise use another one.
+ * Call #init() afterwards to register the actual file descriptors.
+ *
+ * It sets #lastError() appropriately.
+ */
 FileLayer::FileLayer(ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_fd_r(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
@@ -1828,6 +1954,11 @@ FileLayer::FileLayer(ProtocolLayer* up, ProtocolLayer* down)
 	setLastError(EBADF);
 }
 
+/*!
+ * \brief Initialize the given file descriptors for use in this layer.
+ *
+ * Does not return, but sets #lastError() appropriately.
+ */
 void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w) {
 	stored_assert(!isValidHandle(m_fd_r));
 	stored_assert(!isValidHandle(m_fd_w));
@@ -1881,14 +2012,25 @@ error:
 		setLastError(EIO);
 }
 
+/*!
+ * \brier Dtor.
+ *
+ * It calls #close_(), instead of #close(), as the latter is virtual.
+ */
 FileLayer::~FileLayer() {
 	close_();
 }
 
+/*!
+ * \brief Virtual wrapper for #close_().
+ */
 void FileLayer::close() {
 	close_();
 }
 
+/*!
+ * \brief Close the file handles.
+ */
 void FileLayer::close_() {
 	if(m_fd_r != m_fd_w && isValidHandle(m_fd_w)) {
 		FlushFileBuffers(m_fd_w);
@@ -1919,10 +2061,17 @@ void FileLayer::close_() {
 	base::close();
 }
 
+/*!
+ * \brief Checks if the files are still open.
+ */
 bool FileLayer::isOpen() const {
 	return isValidHandle(m_fd_r);
 }
 
+/*!
+ * \brief Try to finish a previously started overlapped write.
+ * \return 0 on success, otherwise an \c errno
+ */
 int FileLayer::finishWrite(bool block) {
 	size_t offset = 0;
 
@@ -1983,6 +2132,12 @@ error:
 	return setLastError(EIO);
 }
 
+/*!
+ * \brief Completion routine when an overlapped write has finished.
+ *
+ * If the write was incomplete (which is unlikely, but not guaranteed),
+ * it will issue a new overlapped write to continue with the rest of the write buffer.
+ */
 void FileLayer::writeCompletionRoutine(DWORD dwErrorCode, DWORD UNUSED_PAR(dwNumberOfBytesTransfered), LPOVERLAPPED lpOverlapped) {
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 	FileLayer* that = (FileLayer*)((uintptr_t)lpOverlapped + sizeof(*lpOverlapped));
@@ -1997,6 +2152,10 @@ void FileLayer::writeCompletionRoutine(DWORD dwErrorCode, DWORD UNUSED_PAR(dwNum
 	}
 }
 
+/*!
+ * \copydoc stored::PolledFileLayer::encode(void const*, size_t, bool)
+ * \details Sets #lastError() appropriately.
+ */
 void FileLayer::encode(void const* buffer, size_t len, bool last) {
 	if(!isValidHandle(fd_w())) {
 done:
@@ -2037,18 +2196,30 @@ error:
 	goto done;
 }
 
+/*!
+ * \brief Returns the file descriptor to be used by a #stored::Poller in order to call #recv().
+ */
 FileLayer::fd_type FileLayer::fd() const {
 	return m_overlappedRead.hEvent;
 }
 
+/*!
+ * \brief The read handle.
+ */
 FileLayer::fd_type FileLayer::fd_r() const {
 	return m_fd_r;
 }
 
+/*!
+ * \brief The write handle.
+ */
 FileLayer::fd_type FileLayer::fd_w() const {
 	return m_fd_w;
 }
 
+/*!
+ * \brief Initiate an overlapped read.
+ */
 int FileLayer::startRead() {
 	bool didDecode = false;
 
@@ -2094,6 +2265,11 @@ again:
 	}
 }
 
+/*!
+ * \brief Returns the number of bytes available to read.
+ *
+ * This value is used for the next overlapped read.
+ */
 size_t FileLayer::available() {
 	if(!isValidHandle(m_fd_r))
 		return 0;
@@ -2136,6 +2312,11 @@ size_t FileLayer::available() {
 	}
 }
 
+/*!
+ * \brief Try to receive data from the file descriptor and forward it for decoding.
+ * \param block if \c true, it blocks until something has read
+ * \return 0 on success, otherwise an errno
+ */
 int FileLayer::recv(bool block) {
 	bool didDecode = false;
 
@@ -2178,14 +2359,25 @@ again:
 	}
 }
 
+/*!
+ * \brief Returns the OVERLAPPED struct for read operations.
+ */
 OVERLAPPED& FileLayer::overlappedRead() {
 	return m_overlappedRead;
 }
 
+/*!
+ * \brief Returns the OVERLAPPED struct for read operations.
+ */
 OVERLAPPED& FileLayer::overlappedWrite() {
 	return m_overlappedWrite;
 }
 
+/*!
+ * \brief Reset the OVERLAPPED struct for a new read operation.
+ *
+ * Make sure the previous read has completed before.
+ */
 void FileLayer::resetOverlappedRead() {
 	HANDLE hEvent = m_overlappedRead.hEvent;
 	memset(&m_overlappedRead, 0, sizeof(m_overlappedRead));
@@ -2193,6 +2385,11 @@ void FileLayer::resetOverlappedRead() {
 	ResetEvent(hEvent);
 }
 
+/*!
+ * \brief Reset the OVERLAPPED struct for a new write operation.
+ *
+ * Make sure the previous write has completed before.
+ */
 void FileLayer::resetOverlappedWrite() {
 	HANDLE hEvent = m_overlappedWrite.hEvent;
 	memset(&m_overlappedWrite, 0, sizeof(m_overlappedWrite));
@@ -2200,12 +2397,20 @@ void FileLayer::resetOverlappedWrite() {
 	ResetEvent(hEvent);
 }
 
+#endif // STORED_OS_WINDOWS
 
 
+
+#if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
 //////////////////////////////
 // NamedPipeLayer
 //
 
+/*!
+ * \brief Ctor for the server part of a named pipe.
+ *
+ * The given name is prefixed with \c \\\\.\\pipe\\.
+ */
 NamedPipeLayer::NamedPipeLayer(char const* name, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_state(StateInit)
@@ -2230,10 +2435,16 @@ NamedPipeLayer::NamedPipeLayer(char const* name, ProtocolLayer* up, ProtocolLaye
 	init(h, h);
 }
 
+/*!
+ * \brief Dtor.
+ */
 NamedPipeLayer::~NamedPipeLayer() {
 	close_();
 }
 
+/*!
+ * \brief Close the pipe.
+ */
 void NamedPipeLayer::close_() {
 	if(isValidHandle(handle())) {
 		FlushFileBuffers(handle());
@@ -2244,6 +2455,9 @@ void NamedPipeLayer::close_() {
 	base::close();
 }
 
+/*!
+ * \brief Resets the connection to accept a new incoming one.
+ */
 void NamedPipeLayer::close() {
 	if(isValidHandle(handle())) {
 		// Don't really close, just reconnect.
@@ -2336,10 +2550,18 @@ int NamedPipeLayer::startRead() {
 	}
 }
 
+/*!
+ * \brief Returns the full name of the pipe.
+ *
+ * This name can be used to open it elsewhere as a normal file.
+ */
 std::string const& NamedPipeLayer::name() const {
 	return m_name;
 }
 
+/*!
+ * \brief Returns the pipe handle.
+ */
 HANDLE NamedPipeLayer::handle() const {
 	return fd_r();
 }
@@ -2353,6 +2575,9 @@ HANDLE NamedPipeLayer::handle() const {
 //
 
 #ifdef STORED_OS_WINDOWS
+/*!
+ * \brief Ctor.
+ */
 StdioLayer::StdioLayer(ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_fd_r(GetStdHandle(STD_INPUT_HANDLE))
@@ -2381,14 +2606,23 @@ StdioLayer::StdioLayer(ProtocolLayer* up, ProtocolLayer* down)
 	m_bufferRead.resize(BufferSize);
 }
 
+/*!
+ * \brief Dtor.
+ */
 StdioLayer::~StdioLayer() {
 	close_();
 }
 
+/*!
+ * \brief Checks if the stdin is actually a pipe instead of an interactive console.
+ */
 bool StdioLayer::isPipeIn() const {
 	return m_pipe_r;
 }
 
+/*!
+ * \brief Checks if the stdout is actually a pipe instead of an interactive console.
+ */
 bool StdioLayer::isPipeOut() const {
 	return m_pipe_w;
 }
@@ -2493,6 +2727,9 @@ StdioLayer::fd_type StdioLayer::fd() const {
 
 #else // !STORED_OS_WINDOWS
 
+/*!
+ * \brief Ctor.
+ */
 StdioLayer::StdioLayer(ProtocolLayer* up, ProtocolLayer* down)
 	: base(STDIN_FILENO, STDOUT_FILENO, up, down)
 {}
