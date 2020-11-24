@@ -1,0 +1,6 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+	<file>Components/StoreObject.qml</file>
+	<file>Components/Measurement.qml</file>
+</qresource>
+</RCC>

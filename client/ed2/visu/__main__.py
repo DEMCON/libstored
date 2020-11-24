@@ -50,19 +50,20 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.DEBUG)
 
     app = QGuiApplication(sys.argv)
-    engine = QQmlApplicationEngine(parent=app)
 
     client = ZmqClient(args.server, args.port, csv=args.csv, multi=args.multi)
+
+    engine = QQmlApplicationEngine(parent=app)
     engine.rootContext().setContextProperty("client", client)
 
     spec = importlib.util.spec_from_file_location("visu_rcc", args.rcc[0])
     visu_rcc = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(visu_rcc)
 
-    engine.load(':/main.qml')
+    engine.addImportPath("qrc:/");
+    engine.load('qrc:/main.qml')
     if not engine.rootObjects():
         sys.exit(-1)
 
     sys.exit(app.exec_())
-
 

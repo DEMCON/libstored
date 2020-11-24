@@ -26,6 +26,7 @@ import os
 import math
 import logging
 import heatshrink2
+import keyword
 
 from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, \
     QEvent, QCoreApplication, QStandardPaths, QSocketNotifier, QEventLoop, SIGNAL
@@ -581,6 +582,7 @@ class Object(QObject):
 
     polling = Property(bool, _polling_get, _polling_set, notify=pollingChanged)
 
+    @Slot(float)
     def poll(self, interval_s=0):
         if self._client != None:
             self._client.poll(self, interval_s)
@@ -1262,6 +1264,27 @@ class ZmqClient(QObject):
         self._list_init()
         return self.objects
 
+    def pyname(self, name):
+        n = re.sub(r'[^A-Za-z0-9/]+', '_', name)
+        n = re.sub(r'_*/+', '__', n)
+        n = re.sub(r'^__', '', n)
+        n = re.sub(r'^[^A-Za-z]_*', '_', n)
+        n = re.sub(r'_+$', '', n)
+
+        if n == '':
+            n = 'obj'
+
+        if keyword.iskeyword(n):
+            n += '_obj'
+
+        if hasattr(self, n):
+            i = 1
+            while hasattr(self, f'n_{i}'):
+                i += 1
+            n = f'n_{i}'
+
+        return n
+
     def _list_init(self):
         if self._objects != None:
             return
@@ -1271,6 +1294,8 @@ class ZmqClient(QObject):
             obj = Object.listResponseDecode(o, self)
             if obj != None:
                 res.append(obj)
+                pyname = self.pyname(obj.name)
+                setattr(ZmqClient, pyname, Property(Object, lambda s, obj=obj: obj, constant=True))
 
         self._objects = res
 
@@ -1341,7 +1366,13 @@ class ZmqClient(QObject):
         else:
             return obj
 
-    def __getitem__(self, x):
+    @Slot(str, result=Object)
+    def obj(self, x):
+        try:
+            return getattr(self, x)
+        except:
+            pass
+
         obj = self.find(x)
         if isinstance(obj, Object):
             return obj
@@ -1349,6 +1380,9 @@ class ZmqClient(QObject):
             raise ValueError(f'Cannot find object with name "{x}"')
         else:
             raise ValueError(f'Object name "{x}" is ambiguous')
+
+    def __getitem__(self, x):
+        return self.obj(x)
 
     @Slot(result=str)
     def identification(self):
