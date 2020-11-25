@@ -26,7 +26,7 @@ from ...serial2zmq import Serial2Zmq
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='serial wrapper to ZMQ server',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-l', dest='listen', type=str, default='*', help='ZMQ listen address')
+    parser.add_argument('-l', dest='zmqlisten', type=str, default='*', help='ZMQ listen address')
     parser.add_argument('-p', dest='zmqport', type=int, default=ZmqServer.default_port, help='ZMQ port')
     parser.add_argument('port', help='serial port')
     parser.add_argument('baud', nargs='?', type=int, default=115200, help='baud rate')
