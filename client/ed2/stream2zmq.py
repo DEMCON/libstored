@@ -20,9 +20,68 @@ import sys
 import zmq
 import logging
 import time
+import queue
+import threading
 
 from .zmq_server import ZmqServer
 from . import protocol
+
+class InfiniteStdoutBuffer:
+    def __init__(self, stdout=sys.__stdout__, cleanup=None):
+        self.stdout = stdout
+        self._queue = queue.Queue()
+        self._closed = False
+        self._cleanup = cleanup
+        self._thread = threading.Thread(target=self._worker)
+        self._thread.daemon = True
+        self._thread.start()
+
+    def write(self, data):
+        if self._closed:
+            self._write(data)
+        else:
+            self._queue.put(data)
+
+    def _write(self, data):
+        # This may block.
+        self.stdout.write(data)
+
+    def flush(self):
+        self._queue.join()
+
+    def close(self):
+        if self._closed:
+            return
+
+        self.flush()
+        self._closed = True
+        # Force wakeup
+        self._queue.put('')
+        self._thread.join()
+        self._queue = None
+
+        self.stdout.flush()
+
+        if self._cleanup != None:
+            self._cleanup()
+
+    def __del__(self):
+        self.close()
+
+    def _worker(self):
+        while not self._closed:
+            self._write(self._queue.get())
+            self._queue.task_done()
+
+def resetStdout(old_stdout):
+    sys.stdout = old_stdout
+
+def setInfiniteStdout():
+    if isinstance(sys.stdout, InfiniteStdoutBuffer):
+        return
+    sys.stdout.flush()
+    old_stdout = sys.stdout
+    sys.stdout = InfiniteStdoutBuffer(old_stdout, lambda: resetStdout(old_stdout))
 
 ##
 # \brief A generic out-of-band frame grabber for ASCII streams.
@@ -36,6 +95,7 @@ class Stream2Zmq(protocol.ProtocolLayer):
         self._stack_def = f'zmq={listen}:{port},' + stack
         self._timeout_s = timeout_s
         self._zmq = None
+        setInfiniteStdout()
         self.reset()
 
     def reset(self):
