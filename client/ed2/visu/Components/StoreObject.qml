@@ -26,8 +26,12 @@ Item {
     property real pollInterval: 1
 
     onObjChanged: {
-            if(obj && !obj.polling)
-                    obj.poll(pollInterval)
+        if(obj) {
+            value = obj.value
+
+            if(!obj.polling)
+                obj.poll(pollInterval)
+        }
     }
 
     property string valueString: obj ? obj.valueString : ''
@@ -41,13 +45,11 @@ Item {
         onTriggered: comp.refreshed = false
     }
 
-    Connections {
-        target: obj
-        function onValueStringChanged() {
-            if(obj)
-                value = obj.value
-            comp.refreshed = true
-            updatedTimer.restart()
-        }
+    onValueStringChanged: {
+        if(obj)
+            value = obj.value
+
+        comp.refreshed = true
+        updatedTimer.restart()
     }
 }
