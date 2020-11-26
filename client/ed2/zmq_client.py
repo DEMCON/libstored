@@ -1060,6 +1060,9 @@ class ZmqClient(QObject):
         if isinstance(message,str):
             return self.req(message.encode()).decode()
 
+        if message == b'':
+            return b''
+
         while self._reqQueue != []:
             # Wait for all outstanding requests first.
             QCoreApplication.processEvents(QEventLoop.AllEvents, 100)
@@ -1087,6 +1090,11 @@ class ZmqClient(QObject):
                 self.reqAsync(message)
             else:
                 self.reqAsync(message, lambda rep: callback(rep.decode()))
+            return
+
+        if message == b'':
+            if callback != None:
+                callback(b'')
             return
 
         if not self.useEventLoop:
