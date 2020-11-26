@@ -447,7 +447,7 @@ class Object(QObject):
                 self.valueChanged.emit()
             else:
                 self._valueChangedRateLimiter.receive()
-            if self._autoCsv and self._polling and self._client.csv != None and not self._client._tracing.enabled:
+            if self._autoCsv and self._polling and self._client.csv != None and (self._client._tracing == None or not self._client._tracing.enabled):
                 self._client.csv.write(t)
             updated = True
 
