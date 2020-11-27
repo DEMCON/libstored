@@ -16,44 +16,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import QtQuick.Controls 2.12
 import QtQuick 2.12
 
-Item {
-    id: comp
+Measurement {
+    readOnly: false
+    pollInterval: 0
 
-    required property string name
-    property var obj: client && name ? client.obj(name) : null
-    property real pollInterval: 1
+    property bool editing: activeFocus && displayText != o.valueString
+    color: editing ? "red" : refreshed ? "blue" : "black"
+    text: ""
 
-    onObjChanged: {
-        if(obj) {
-            value = obj.value
-
-            if(!obj.polling) {
-                if(pollInterval > 0)
-                    obj.poll(pollInterval)
-                else
-                    obj.asyncRead()
-            }
-        }
+    onAccepted: {
+        if(o.obj)
+            o.obj.valueString = displayText
+        Qt.callLater(function() { text = o.valueString })
     }
 
-    property string valueString: obj ? obj.valueString : ''
-    property var value: null
-
-    property bool refreshed: false
-
-    Timer {
-        id: updatedTimer
-        interval: 1100
-        onTriggered: comp.refreshed = false
+    onActiveFocusChanged: {
+        if(activeFocus)
+            text = o.valueString
+        else
+            text = _text
     }
 
-    onValueStringChanged: {
-        if(obj)
-            value = obj.value
-
-        comp.refreshed = true
-        updatedTimer.restart()
+    on_TextChanged: {
+        if(!editing)
+            text = _text
     }
 }
+

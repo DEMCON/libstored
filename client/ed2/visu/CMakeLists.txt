@@ -38,8 +38,9 @@ function(libstored_visu target rcc)
 		OUTPUT ${rcc}
 		DEPENDS
 			${LIBSTORED_SOURCE_DIR}/client/ed2/visu/visu.qrc
-			${LIBSTORED_SOURCE_DIR}/client/ed2/visu/Components/StoreObject.qml
+			${LIBSTORED_SOURCE_DIR}/client/ed2/visu/Components/Input.qml
 			${LIBSTORED_SOURCE_DIR}/client/ed2/visu/Components/Measurement.qml
+			${LIBSTORED_SOURCE_DIR}/client/ed2/visu/Components/StoreObject.qml
 			${ARGN}
 			${rcc}.qrc
 		COMMAND ${RCC_EXE} $<SHELL_PATH:${LIBSTORED_SOURCE_DIR}/client/ed2/visu/visu.qrc> $<SHELL_PATH:${rcc}.qrc> -o $<SHELL_PATH:${rcc}>

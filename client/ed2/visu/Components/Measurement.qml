@@ -25,6 +25,7 @@ TextField {
     background.antialiasing: true
     topPadding: 0
     bottomPadding: 0
+    leftPadding: 0
     horizontalAlignment: TextInput.AlignRight
     readOnly: true
 
@@ -32,13 +33,15 @@ TextField {
 
     property alias obj: o.name
     property alias pollInterval: o.pollInterval
+    property alias refreshed: o.refreshed
 
-    StoreObject {
+    property var o: StoreObject {
         id: o
     }
 
-    text: unit === '' ? o.valueString : o.valueString + ' ' + unit
+    property string _text: unit === '' ? o.valueString : o.valueString + ' ' + unit
+    text: _text
 
-    color: o.refreshed ? "blue" : "black"
+    color: refreshed ? "blue" : "black"
 }
 

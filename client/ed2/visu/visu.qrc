@@ -1,6 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-	<file>Components/StoreObject.qml</file>
+	<file>Components/Input.qml</file>
 	<file>Components/Measurement.qml</file>
+	<file>Components/StoreObject.qml</file>
 </qresource>
 </RCC>

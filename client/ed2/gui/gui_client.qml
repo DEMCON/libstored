@@ -151,6 +151,7 @@ Window {
                     background.antialiasing: true
                     topPadding: 0
                     bottomPadding: 0
+                    leftPadding: 0
 
                     onAccepted: {
                         obj.valueString = displayText
@@ -286,6 +287,7 @@ Window {
                 background.antialiasing: true
                 topPadding: 0
                 bottomPadding: 0
+                leftPadding: 0
                 font.pixelSize: root.fontSize
 
                 ToolTip {
