@@ -24,12 +24,20 @@ Measurement {
     pollInterval: 0
 
     property bool editing: activeFocus && displayText != o.valueString
-    color: editing ? "red" : refreshed ? "blue" : "black"
+
+    property bool _edited: false
+    onEditingChanged : {
+        if(!editing) {
+            _edited = true
+            Qt.callLater(function() { _edited: false })
+        }
+    }
+
+    color: editing ? "red" : refreshed && !_edited ? "blue" : "black"
     text: ""
 
     onAccepted: {
-        if(o.obj)
-            o.obj.valueString = displayText
+        o.set(displayText)
         Qt.callLater(function() { text = o.valueString })
     }
 

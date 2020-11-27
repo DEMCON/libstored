@@ -56,4 +56,9 @@ Item {
         comp.refreshed = true
         updatedTimer.restart()
     }
+
+    function set(x) {
+        if(obj)
+            obj.valueString = x
+    }
 }
