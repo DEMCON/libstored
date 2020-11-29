@@ -38,7 +38,7 @@ if __name__ == '__main__':
     parser.add_argument('-v', dest='verbose', default=False, help='Enable verbose output', action='store_true')
     parser.add_argument('-f', dest='csv', default=None, nargs='?',
         help='Log auto-refreshed data to csv file. ' +
-            'The file is truncated upon startup and when the set of auto-refreshed objects change.', const='log.csv')
+            'The file is truncated upon startup and when the set of auto-refreshed objects change.', const='')
     parser.add_argument('-m', dest='multi', default=False,
         help='Enable multi-mode; allow multiple simultaneous connections to the same target, ' +
             'but it is less efficient.', action='store_true')
@@ -51,7 +51,17 @@ if __name__ == '__main__':
 
     app = QGuiApplication(sys.argv)
 
-    client = ZmqClient(args.server, args.port, csv=args.csv, multi=args.multi)
+    csv = args.csv
+    if csv != None:
+        if csv == '':
+            try:
+                csv = os.path.splitext(os.path.basename(args.rcc[0]))[0] + '.csv'
+            except:
+                pass
+        if csv == '':
+            csv = 'visu.csv'
+
+    client = ZmqClient(args.server, args.port, csv=csv, multi=args.multi)
 
     engine = QQmlApplicationEngine(parent=app)
     engine.rootContext().setContextProperty("client", client)
