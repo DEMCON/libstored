@@ -150,6 +150,10 @@ begin
 	file_g : if SIMULATION generate
 	begin
 		FileLayer_inst : entity work.FileLayer
+			generic map (
+				FILENAME_IN => "../../../../../stack_in.txt",
+				FILENAME_OUT => "../../../../../stack_out.txt"
+			)
 			port map (
 				clk => clk,
 				rstn => rstn,

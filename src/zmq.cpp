@@ -274,8 +274,8 @@ void ZmqLayer::encode(void const* buffer, size_t len, bool last) {
 	if(likely(zmq_send(m_socket, buffer, len, ZMQ_DONTWAIT | (last ? 0 : ZMQ_SNDMORE)) != -1)) {
 		// Success.
 		setLastError(0);
-	} else if(setLastError(errno) != EAGAIN) {
-		// Some other error occured.
+	} else if(setLastError(errno) != EAGAIN) { // NOLINT(bugprone-branch-clone)
+		// Some other error occurred.
 	} else if(block(false)) {
 		// Socket is not writable, and blocking failed.
 	} else {

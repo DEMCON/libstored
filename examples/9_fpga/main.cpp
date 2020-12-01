@@ -38,7 +38,7 @@ int main() {
 	synchronizer.connect(ascii);
 	stored::TerminalLayer term;
 	term.wrap(ascii);
-	stored::StdioLayer file; // TODO: redirect to xsim
+	stored::FileLayer file("stack_out.txt", "stack_in.txt"); // TODO: redirect to xsim
 	file.wrap(term);
 
 	stored::Poller poller;

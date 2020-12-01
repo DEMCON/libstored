@@ -2173,6 +2173,7 @@ done:
 	memcpy(&m_bufferWrite[0], buffer, len);
 	setLastError(0);
 	resetOverlappedWrite();
+	m_overlappedWrite.Offset = m_overlappedWrite.OffsetHigh = 0xffffffff;
 	if(WriteFileEx(fd_w(), &m_bufferWrite[0], (DWORD)len, &m_overlappedWrite,
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 		(LPOVERLAPPED_COMPLETION_ROUTINE)(void*)&writeCompletionRoutine))
