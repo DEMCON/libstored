@@ -19,8 +19,67 @@ import time
 import threading
 import queue
 import logging
+import os
 
 from PySide2.QtCore import QObject, Signal, Slot, Property
+
+def generateFilename(filename=None, base=None, addTimestamp=False, ext='.csv', now=None):
+    if filename == None and base == None:
+        raise ValueError('Specify filename and/or base')
+
+    returnList = False
+
+    if not isinstance(filename, list):
+        if filename is None:
+            filename = []
+        else:
+            filename = [filename]
+    else:
+        returnList = True
+
+    if not isinstance(base, list):
+        if base is None:
+            base = []
+        else:
+            base = [base]
+    else:
+        returnList = True
+
+    if not isinstance(ext, list):
+        if ext is None:
+            ext = []
+        else:
+            ext = [ext]
+    else:
+        returnList = True
+
+    names = []
+
+    for f in filename:
+        names.append(os.path.splitext(f))
+
+    for e in ext:
+        for b in base:
+            names.append((b, e))
+
+    if now == None:
+        now = time.localtime()
+
+    if addTimestamp:
+        for i in range(0, len(names)):
+            names[i] = (names[i][0] + '_%Y%m%d-%H%M%S%z', names[i][1])
+
+    for i in range(0, len(names)):
+        names[i] = time.strftime(names[i][0] + names[i][1], now)
+
+    if returnList:
+        return names
+    elif len(names) == 0:
+        return None
+    elif len(names) == 1:
+        return names[0]
+    else:
+        return names
 
 class CsvExport(QObject):
     def __init__(self, filename="log.csv", threaded=True, autoFlush=1, parent=None, **fmtparams):

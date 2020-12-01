@@ -1,5 +1,3 @@
-# vim:et
-
 # libstored, a Store for Embedded Debugger.
 # Copyright (C) 2020  Jochem Rutgers
 #
@@ -25,7 +23,7 @@ from .zmq_server import ZmqServer
 from .zmq_client import ZmqClient
 from .stdio2zmq import Stdio2Zmq
 from .serial2zmq import Serial2Zmq
-from .csv import CsvExport
+from .csv import CsvExport, generateFilename
 from . import protocol
 
 protocol.registerLayerType(ZmqServer)

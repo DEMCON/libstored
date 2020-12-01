@@ -26,6 +26,7 @@ from PySide2.QtCore import QUrl, QAbstractListModel, QModelIndex, Qt, Slot, QSor
 
 from ..zmq_client import ZmqClient
 from ..zmq_server import ZmqServer
+from ..csv import generateFilename
 
 if __name__ == '__main__':
     QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -38,7 +39,9 @@ if __name__ == '__main__':
     parser.add_argument('-v', dest='verbose', default=False, help='Enable verbose output', action='store_true')
     parser.add_argument('-f', dest='csv', default=None, nargs='?',
         help='Log auto-refreshed data to csv file. ' +
-            'The file is truncated upon startup and when the set of auto-refreshed objects change.', const='')
+            'The file is truncated upon startup and when the set of auto-refreshed objects change. ' +
+            'The file name may include strftime() format codes.', const='')
+    parser.add_argument('-t', dest='timestamp', default=False, help='Append time stamp in csv file name', action='store_true')
     parser.add_argument('-m', dest='multi', default=False,
         help='Enable multi-mode; allow multiple simultaneous connections to the same target, ' +
             'but it is less efficient.', action='store_true')
@@ -60,6 +63,8 @@ if __name__ == '__main__':
                 pass
         if csv == '':
             csv = 'visu.csv'
+
+        csv = generateFilename(csv, addTimestamp=args.timestamp)
 
     client = ZmqClient(args.server, args.port, csv=csv, multi=args.multi)
 
