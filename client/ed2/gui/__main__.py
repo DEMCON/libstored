@@ -141,7 +141,10 @@ if __name__ == '__main__':
     app.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "twotone_bug_report_black_48dp.png")))
     engine = QQmlApplicationEngine(parent=app)
 
-    csv = generateFilename(args.csv, addTimestamp=args.timestamp)
+    csv = None
+    if not args.csv is None:
+        csv = generateFilename(args.csv, addTimestamp=args.timestamp)
+
     client = ZmqClient(args.server, args.port, csv=csv, multi=args.multi)
     engine.rootContext().setContextProperty("client", client)
 
