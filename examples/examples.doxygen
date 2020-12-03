@@ -59,6 +59,17 @@ ExampleDebugAnotherStore.st:
 */
 
 /*!
+\example 9_fpga/main.cpp
+\copydoc examples/9_fpga/main.cpp
+
+<p>ExampleFpga.st:</p>
+\verbinclude 9_fpga/ExampleFpga.st
+
+<p>ExampleFpga2.st:</p>
+\verbinclude 9_fpga/ExampleFpga2.st
+*/
+
+/*!
 \example terminal/main.cpp
 \copydoc examples/terminal/main.cpp
 \verbinclude terminal/ExampleTerminal.st

@@ -1,4 +1,5 @@
-if(LIBSTORED_HAVE_LIBZMQ)
+# Not tested with unix pipes.
+if(WIN32 AND LIBSTORED_HAVE_LIBZMQ)
 	add_executable(9_fpga main.cpp)
 	libstored_generate(9_fpga ExampleFpga.st ExampleFpga2.st)
 
