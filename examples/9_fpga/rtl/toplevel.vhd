@@ -147,14 +147,11 @@ begin
 	end generate;
 
 --pragma translate_off
-	file_g : if SIMULATION generate
+	xsim_g : if SIMULATION generate
 	begin
-		FileLayer_inst : entity work.FileLayer
+		XsimLayer_inst : entity work.XsimLayer
 			generic map (
---				FILENAME_IN => "../../../../../stack_in.txt",
---				FILENAME_OUT => "../../../../../stack_out.txt"
-				FILENAME_IN => "\\.\pipe\9_fpga_to_xsim",
-				FILENAME_OUT => "\\.\pipe\9_fpga_from_xsim"
+				PIPE_PREFIX => "\\.\pipe\9_fpga"
 			)
 			port map (
 				clk => clk,

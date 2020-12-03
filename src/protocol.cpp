@@ -2158,6 +2158,7 @@ void FileLayer::writeCompletionRoutine(DWORD dwErrorCode, DWORD UNUSED_PAR(dwNum
  */
 void FileLayer::encode(void const* buffer, size_t len, bool last) {
 	if(!isValidHandle(fd_w())) {
+		setLastError(EBADF);
 done:
 		// Done. It might be the case that the write already finished, but
 		// not all data has been written. Let the next invocation of encode() handle that.
@@ -2467,6 +2468,7 @@ void NamedPipeLayer::close() {
 		FlushFileBuffers(handle());
 		CancelIo(handle());
 		DisconnectNamedPipe(handle());
+		reset();
 		m_state = StateInit;
 		setLastError(EIO);
 		// Reconnect.
@@ -2569,6 +2571,7 @@ void NamedPipeLayer::encode(void const* buffer, size_t len, bool last) {
 		// However, do pass downstream.
 		// NOLINTNEXTLINE(bugprone-parent-virtual-call)
 		base::base::encode(buffer, len, last);
+		setLastError(EAGAIN);
 	}
 }
 
@@ -2609,6 +2612,7 @@ DoublePipeLayer::~DoublePipeLayer() is_default
 
 void DoublePipeLayer::encode(void const* buffer, size_t len, bool last) {
 	m_w.encode(buffer, len, last);
+	setLastError(m_w.lastError());
 	base::encode(buffer, len, last);
 }
 
@@ -2624,6 +2628,78 @@ int DoublePipeLayer::recv(bool block) {
 DoublePipeLayer::fd_type DoublePipeLayer::fd() const {
 	return m_r.fd();
 }
+
+
+
+
+//////////////////////////////
+// XsimLayer
+//
+
+XsimLayer::XsimLayer(char const* pipe_prefix, ProtocolLayer* up, ProtocolLayer* down)
+	: base(	(std::string(pipe_prefix) += "_from_xsim").c_str(),
+			(std::string(pipe_prefix) += "_to_xsim").c_str(),
+			up, down)
+	, m_callback(*this)
+	, m_req((std::string(pipe_prefix) += "_req_xsim").c_str(), PIPE_ACCESS_INBOUND)
+	, m_inFlight()
+{
+	m_req.wrap(m_callback);
+
+	if(!lastError() && m_req.lastError())
+		setLastError(m_req.lastError());
+}
+
+XsimLayer::~XsimLayer() is_default
+
+void XsimLayer::encode(void const* buffer, size_t len, bool last) {
+	m_inFlight += len;
+	base::encode(buffer, len, last);
+
+	if(lastError()) {
+		// Reset, such that we send a keepAlive afterwards.
+		m_inFlight = 0;
+	}
+}
+
+NamedPipeLayer& XsimLayer::req() {
+	return m_req;
+}
+
+void XsimLayer::reset() {
+	m_inFlight = 0;
+	base::reset();
+	keepAlive();
+}
+
+void XsimLayer::keepAlive() {
+	// Make sure that there is always one byte to read, otherwise xsim may
+	// hang.  You would expect a < 1 in the line below, but that still makes
+	// xsim hang.  Unsure why.
+	if(m_inFlight <= 1) {
+		char buf = KeepAlive;
+		encode(&buf, 1, true);
+	}
+}
+
+void XsimLayer::decoded(size_t len) {
+	if(len > m_inFlight)
+		m_inFlight = 0;
+	else
+		m_inFlight -= len;
+
+	keepAlive();
+}
+
+int XsimLayer::recv(bool block) {
+	int res = m_req.recv(false);
+
+	if(base::recv(block))
+		return lastError();
+	else
+		return setLastError(res);
+}
+
 
 #endif // STORED_OS_WINDOWS
 

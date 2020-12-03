@@ -1146,6 +1146,14 @@ public:
 		DWORD m_openMode;
 	};
 
+	/*!
+	 * \brief Server end of a pair of named pipes.
+	 *
+	 * This is like NamedPipeLayer, but it uses to unidirectional pipes
+	 * instead of one bidirectional.
+	 *
+	 * \ingroup libstored_protocol
+	 */
 	class DoublePipeLayer : public PolledFileLayer {
 		CLASS_NOCOPY(DoublePipeLayer)
 	public:
@@ -1164,6 +1172,64 @@ public:
 	private:
 		NamedPipeLayer m_r;
 		NamedPipeLayer m_w;
+	};
+
+	/*!
+	 * \brief XSIM interaction.
+	 *
+	 * It is based on a DoublePipeLayer, having two named pipes.  In VHDL,
+	 * normal file read/write can be used to pass data.  This class also adds
+	 * keep alive messages, such that a read from the pipe never blocks (which
+	 * lets XSIM hang), but gets dummy data.
+	 *
+	 * This keep alive uses a third pipe. XSIM is supposed to forward all data
+	 * it receives to this third pipe. This way, the C++ side knows how many
+	 * bytes are in flight, and if XSIM would block on the next one.  Based on
+	 * this counter, keep alive bytes may be injected.
+	 *
+	 * \ingroup libstored_protocol
+	 */
+	class XsimLayer : public DoublePipeLayer {
+		CLASS_NOCOPY(XsimLayer)
+	public:
+		typedef DoublePipeLayer base;
+
+		static char const KeepAlive = '\x16'; // SYN
+
+		explicit XsimLayer(char const* pipe_prefix, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~XsimLayer() override;
+
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+
+		virtual int recv(bool block = false) override;
+		virtual void reset() override;
+		void keepAlive();
+
+		NamedPipeLayer& req();
+	protected:
+		void decoded(size_t len);
+
+		/*!
+		 * \brief Helper to call XsimLayer::decoded() when data arrives on the req channel.
+		 */
+		class DecodeCallback : public ProtocolLayer {
+			CLASS_NOCOPY(DecodeCallback)
+		public:
+			DecodeCallback(XsimLayer& xsim) : m_xsim(xsim) {}
+			~DecodeCallback() final is_default
+			void decode(void* UNUSED_PAR(buffer), size_t len) final {
+				m_xsim.decoded(len);
+			}
+		private:
+			XsimLayer& m_xsim;
+		};
+
+		friend class DecodeCallback;
+	private:
+		DecodeCallback m_callback;
+		NamedPipeLayer m_req;
+		size_t m_inFlight;
 	};
 
 	/*!
@@ -1217,6 +1283,7 @@ public:
 
 	// Pipes are just files.
 	typedef FileLayer NamedPipeLayer;
+	typedef FileLayer DoublePipeLayer;
 
 	/*!
 	 * \brief A stdin/stdout layer.

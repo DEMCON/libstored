@@ -35,22 +35,28 @@ int main() {
 	synchronizer.connect(ascii);
 	stored::TerminalLayer term;
 	term.wrap(ascii);
+	stored::XsimLayer xsim("9_fpga");
+
+#if 0 // Enable to dump all data to the terminal for debugging.
 	stored::PrintLayer print(stdout);
 	print.wrap(term);
-	stored::DoublePipeLayer file("9_fpga_from_xsim", "9_fpga_to_xsim");
-	file.wrap(print);
+	xsim.wrap(print);
+#else
+	xsim.wrap(term);
+#endif
 
 	stored::Poller poller;
-	poller.add(file, nullptr, stored::Poller::PollIn);
+	poller.add(xsim, nullptr, stored::Poller::PollIn);
+	poller.add(xsim.req(), nullptr, stored::Poller::PollIn);
 	poller.add(zmq, nullptr, stored::Poller::PollIn);
 
 	while(true) {
 		poller.poll(1000000); // 1 s
 		zmq.recv();
-		file.recv();
+		xsim.recv();
 
 		// Inject a dummy byte to keep xsim alive, as it blocks on a read from file.
-		file.encode("*", 1);
+		xsim.keepAlive();
 	}
 }
 
