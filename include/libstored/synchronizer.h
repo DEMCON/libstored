@@ -95,7 +95,7 @@
  *
  * The updates are a sequence of the triplet: \<key\> \<length\> \<data\>.
  * The key and length have the most significant bytes stripped, which would
- * always be 0.  All values is in the store's endianness (`u` is little, `U` is
+ * always be 0.  All values are in the store's endianness (`u` is little, `U` is
  * big endian).
  *
  * Proposal: The updates are a sequence defined as follows:

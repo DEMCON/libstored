@@ -468,20 +468,20 @@ begin
 			when STATE_IDLE | STATE_WAIT | STATE_PASSTHROUGH =>
 				sync_out_data_i <= sync_out_data_prev;
 			when STATE_KEY =>
-				if not LITTLE_ENDIAN then
-					sync_out_data_i <= KEY(KEY'high - r.cnt * 8 - 8 downto KEY'high - r.cnt * 8 + 1);
+				if LITTLE_ENDIAN then
+					sync_out_data_i <= KEY(KEY'high - r.cnt * 8 + 8 downto KEY'high - r.cnt * 8 + 1);
 				else
 					sync_out_data_i <= KEY(r.cnt * 8 - 1 downto r.cnt * 8 - 8);
 				end if;
 			when STATE_LEN =>
 				len := std_logic_vector(to_unsigned(DATA_BYTES, KEY'length));
-				if not LITTLE_ENDIAN then
-					sync_out_data_i <= len(KEY'high - r.cnt * 8 - 8 downto KEY'high - r.cnt * 8 + 1);
+				if LITTLE_ENDIAN then
+					sync_out_data_i <= len(KEY'high - r.cnt * 8 + 8 downto KEY'high - r.cnt * 8 + 1);
 				else
 					sync_out_data_i <= len(r.cnt * 8 - 1 downto r.cnt * 8 - 8);
 				end if;
 			when STATE_DATA =>
-				if not LITTLE_ENDIAN or BLOB then
+				if LITTLE_ENDIAN and not BLOB then
 					sync_out_data_i <= data_snapshot(data_snapshot'high - r.cnt * 8 + 8 downto data_snapshot'high - r.cnt * 8 + 1);
 				else
 					sync_out_data_i <= data_snapshot(r.cnt * 8 - 1 downto r.cnt * 8 - 8);

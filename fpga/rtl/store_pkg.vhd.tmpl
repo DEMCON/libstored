@@ -33,7 +33,7 @@ package {{store.name}}_pkg is
 {% else %}
 	constant LITTLE_ENDIAN : boolean := false;
 {% endif %}
-	constant KEY_LENGTH : natural := {{(store.objects|first|vhdlkey(store=store, littleEndian=store.littleEndian)|len - 3) * 4}};
+	constant KEY_LENGTH : natural := {{(store.objects|first|vhdlkey(store=store, littleEndian=False)|len - 3) * 4}};
 
 {% for o in store.objects|select('variable') %}
 	-- {{o}}
@@ -48,7 +48,7 @@ package {{store.name}}_pkg is
 {%   if o.axi != None %}
 	constant \{{o.cname|upper}}__ADDR\ : natural := 16#{{'%x'|format(o.axi)}}#;
 {%   endif %}
-	constant \{{o.cname|upper}}__KEY\ : std_logic_vector(KEY_LENGTH - 1 downto 0) := {{o|vhdlkey(store=store, littleEndian=store.littleEndian)}};
+	constant \{{o.cname|upper}}__KEY\ : std_logic_vector(KEY_LENGTH - 1 downto 0) := {{o|vhdlkey(store=store, littleEndian=False)}};
 
 	type \{{o.cname}}__out_t\ is record
 		value : \{{o.cname}}__type\;

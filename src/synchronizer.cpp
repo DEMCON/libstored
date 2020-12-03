@@ -439,27 +439,45 @@ StoreJournal::Seq StoreJournal::decodeUpdates(void*& buffer, size_t& len, bool r
  */
 void StoreJournal::encodeKey(ProtocolLayer& p, StoreJournal::Key key) {
 	size_t keysize = keySize();
-	key = endian_h2n(key);
-	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-	p.encode(reinterpret_cast<char*>(&key) + sizeof(key) - keysize, keysize, false);
+
+	uint8_t buf[4] = {};
+
+	switch(keysize) {
+	case 1: buf[0] = (uint8_t)key; break;
+	case 2: *reinterpret_cast<uint16_t*>(buf) = endian_h2s((uint16_t)key); break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+	case 4: *reinterpret_cast<uint32_t*>(buf) = endian_h2s(key); break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+	default:
+			stored_assert(false);
+			return;
+	}
+
+	p.encode(buf, keysize, false);
 }
 
 /*!
  * \brief Decode a key from a #stored::Synchronizer message.
  */
 StoreJournal::Key StoreJournal::decodeKey(uint8_t*& buffer, size_t& len, bool& ok) {
-	Key key = 0;
 	size_t i = keySize();
 	if(i > len) {
 		ok = false;
 		return 0;
 	}
-	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-	memcpy(reinterpret_cast<char*>(&key) + sizeof(key) - i, buffer, i);
+
+	Key key = 0;
+
+	switch(i) {
+	case 1: key = (Key)*buffer; break;
+	case 2: key = (Key)endian_s2h(*reinterpret_cast<uint16_t*>(buffer)); break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+	case 4: key = (Key)endian_s2h(*reinterpret_cast<uint32_t*>(buffer)); break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+	default:
+			stored_assert(false);
+			ok = false;
+			return 0;
+	}
+
 	len -= i;
 	buffer += i;
-
-	key = endian_n2h(key);
 	return key;
 }
 
