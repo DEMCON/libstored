@@ -2140,10 +2140,10 @@ error:
  */
 void FileLayer::writeCompletionRoutine(DWORD dwErrorCode, DWORD UNUSED_PAR(dwNumberOfBytesTransfered), LPOVERLAPPED lpOverlapped) {
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
-	FileLayer* that = (FileLayer*)((uintptr_t)lpOverlapped + sizeof(*lpOverlapped));
+	FileLayer* that = *(FileLayer**)((uintptr_t)lpOverlapped + sizeof(*lpOverlapped));
 	stored_assert(that);
 
-	if(dwErrorCode == 0) {
+	if(dwErrorCode != 0) {
 		that->close();
 		that->setLastError(EIO);
 	} else {
@@ -2412,17 +2412,19 @@ void FileLayer::resetOverlappedWrite() {
  *
  * The given name is prefixed with \c \\\\.\\pipe\\.
  */
-NamedPipeLayer::NamedPipeLayer(char const* name, ProtocolLayer* up, ProtocolLayer* down)
+NamedPipeLayer::NamedPipeLayer(char const* name, DWORD openMode, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_state(StateInit)
+	, m_openMode(openMode)
 {
 	stored_assert(name);
+	stored_assert(openMode == PIPE_ACCESS_DUPLEX || openMode == PIPE_ACCESS_INBOUND || openMode == PIPE_ACCESS_OUTBOUND);
 
 	m_name = "\\\\.\\pipe\\";
 	m_name += name;
 
 	HANDLE h = CreateNamedPipe(m_name.c_str(),
-		PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED, // NOLINT(hicpp-signed-bitwise)
+		openMode | FILE_FLAG_OVERLAPPED, // NOLINT(hicpp-signed-bitwise)
 		PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT, // NOLINT(hicpp-signed-bitwise)
 		1, BufferSize, BufferSize,
 		0, NULL);
@@ -2460,7 +2462,7 @@ void NamedPipeLayer::close_() {
  * \brief Resets the connection to accept a new incoming one.
  */
 void NamedPipeLayer::close() {
-	if(isValidHandle(handle())) {
+	if(isValidHandle(handle()) && m_state > StateConnecting) {
 		// Don't really close, just reconnect.
 		FlushFileBuffers(handle());
 		CancelIo(handle());
@@ -2477,6 +2479,7 @@ int NamedPipeLayer::recv(bool block) {
 again:
 	switch(m_state) {
 	case StateInit:
+		resetOverlappedRead();
 		if(ConnectNamedPipe(handle(), &overlappedRead())) {
 			// Connected immediately.
 			m_state = StateConnected;
@@ -2508,7 +2511,7 @@ again:
 
 		if(GetOverlappedResult(fd_r(), &overlappedRead(), &dummy, FALSE)) {
 			m_state = StateConnected;
-			if(startRead())
+			if(m_openMode != PIPE_ACCESS_OUTBOUND && startRead())
 				return lastError();
 			didDecode = true;
 			goto again;
@@ -2524,7 +2527,9 @@ again:
 		}
 	}
 	case StateConnected:
-		if(base::recv(block) == EAGAIN && didDecode)
+		if(m_openMode == PIPE_ACCESS_OUTBOUND)
+			return setLastError(0); // NOLINT(bugprone-branch-clone)
+		else if(base::recv(block) == EAGAIN && didDecode)
 			return setLastError(0);
 		else
 			return lastError();
@@ -2543,11 +2548,27 @@ int NamedPipeLayer::startRead() {
 	case StateInit:
 		return recv(false);
 	case StateConnected:
-		return base::startRead();
+		if(m_openMode == PIPE_ACCESS_OUTBOUND)
+			return setLastError(0);
+		else
+			return base::startRead();
 	case StateError:
 		return setLastError(EINVAL);
 	default:
 		return setLastError(EAGAIN);
+	}
+}
+
+void NamedPipeLayer::encode(void const* buffer, size_t len, bool last) {
+	switch(m_state) {
+	case StateConnected:
+		base::encode(buffer, len, last);
+		break;
+	default:
+		// Don't actually write, as we are not connected.
+		// However, do pass downstream.
+		// NOLINTNEXTLINE(bugprone-parent-virtual-call)
+		base::base::encode(buffer, len, last);
 	}
 }
 
@@ -2565,6 +2586,43 @@ std::string const& NamedPipeLayer::name() const {
  */
 HANDLE NamedPipeLayer::handle() const {
 	return fd_r();
+}
+
+
+
+//////////////////////////////
+// DoublePipeLayer
+//
+
+DoublePipeLayer::DoublePipeLayer(char const* name_r, char const* name_w, ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_r(name_r, PIPE_ACCESS_INBOUND, this, nullptr)
+	, m_w(name_w, PIPE_ACCESS_OUTBOUND)
+{
+	if(m_r.lastError())
+		setLastError(m_r.lastError());
+	else
+		setLastError(m_w.lastError());
+}
+
+DoublePipeLayer::~DoublePipeLayer() is_default
+
+void DoublePipeLayer::encode(void const* buffer, size_t len, bool last) {
+	m_w.encode(buffer, len, last);
+	base::encode(buffer, len, last);
+}
+
+bool DoublePipeLayer::isOpen() const {
+	return m_r.isOpen() || m_w.isOpen();
+}
+
+int DoublePipeLayer::recv(bool block) {
+	m_w.recv(false);
+	return setLastError(m_r.recv(block));
+}
+
+DoublePipeLayer::fd_type DoublePipeLayer::fd() const {
+	return m_r.fd();
 }
 
 #endif // STORED_OS_WINDOWS

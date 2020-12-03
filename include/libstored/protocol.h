@@ -1120,11 +1120,14 @@ public:
 
 		enum { BufferSize = 1024 };
 
-		NamedPipeLayer(char const* name, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		NamedPipeLayer(char const* name, DWORD openMode = PIPE_ACCESS_DUPLEX, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~NamedPipeLayer() override;
 		std::string const& name() const;
 		int recv(bool block = false) final;
 		HANDLE handle() const;
+
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
 
 	protected:
 		void close() final;
@@ -1140,6 +1143,27 @@ public:
 	private:
 		State m_state;
 		std::string m_name;
+		DWORD m_openMode;
+	};
+
+	class DoublePipeLayer : public PolledFileLayer {
+		CLASS_NOCOPY(DoublePipeLayer)
+	public:
+		typedef PolledFileLayer base;
+
+		explicit DoublePipeLayer(char const* name_r, char const* name_w, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~DoublePipeLayer() override;
+
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		using base::encode;
+
+		virtual bool isOpen() const override;
+		virtual int recv(bool block = false) override;
+		virtual fd_type fd() const override;
+
+	private:
+		NamedPipeLayer m_r;
+		NamedPipeLayer m_w;
 	};
 
 	/*!
