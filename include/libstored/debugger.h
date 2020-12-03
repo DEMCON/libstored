@@ -1011,7 +1011,7 @@ namespace stored {
 		virtual void decode(void* buffer, size_t len) override;
 
 	protected:
-		ScratchPad<>& spm();
+		ScratchPad<>& spm() const;
 
 		/*! \brief Type of alias map. */
 		typedef std::map<char, DebugVariant> AliasMap;
@@ -1041,7 +1041,7 @@ namespace stored {
 
 	private:
 		/*! \brief A scratch pad memory for any Debugger operation. */
-		ScratchPad<> m_scratchpad;
+		mutable ScratchPad<> m_scratchpad;
 
 		/*! \brief The identification. */
 		char const* m_identification;
