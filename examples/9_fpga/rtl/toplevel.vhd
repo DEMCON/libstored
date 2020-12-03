@@ -83,9 +83,9 @@ begin
 			var_in => var_in,
 			sync_in => sync_in,
 			sync_out => sync_out,
-			sync_id => sync_chained_id,
-			sync_chained_in => sync_chained_out,
-			sync_chained_out => sync_chained_in
+			sync_id => sync_chained_id --,
+--			sync_chained_in => sync_chained_out,
+--			sync_chained_out => sync_chained_in
 		);
 
 	store2_inst : entity work.ExampleFpga2_hdl
@@ -98,8 +98,8 @@ begin
 			rstn => rstn,
 			var_out => var2_out,
 			var_in => var2_in,
-			sync_in => sync_chained_in,
-			sync_out => sync_chained_out,
+--			sync_in => sync_chained_in,
+--			sync_out => sync_chained_out,
 			sync_chained_id => sync_chained_id
 		);
 
@@ -151,8 +151,10 @@ begin
 	begin
 		FileLayer_inst : entity work.FileLayer
 			generic map (
-				FILENAME_IN => "../../../../../stack_in.txt",
-				FILENAME_OUT => "../../../../../stack_out.txt"
+--				FILENAME_IN => "../../../../../stack_in.txt",
+--				FILENAME_OUT => "../../../../../stack_out.txt"
+				FILENAME_IN => "\\.\pipe\9_fpga_to_xsim",
+				FILENAME_OUT => "\\.\pipe\9_fpga_from_xsim"
 			)
 			port map (
 				clk => clk,

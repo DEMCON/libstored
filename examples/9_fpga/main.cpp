@@ -2,9 +2,6 @@
 #include "ExampleFpga.h"
 #include "ExampleFpga2.h"
 
-
-
-
 class ExampleFpga : public STORE_SYNC_BASECLASS(ExampleFpgaBase, ExampleFpga) {
 	STORE_SYNC_CLASS_BODY(ExampleFpgaBase, ExampleFpga)
 public:
@@ -24,8 +21,8 @@ int main() {
 	ExampleFpga2 exampleFpga2;
 
 	stored::Debugger debugger("9_fpga");
-	debugger.map(exampleFpga, "ExampleFpga");
-	debugger.map(exampleFpga2, "ExampleFpga2");
+	debugger.map(exampleFpga, "/ExampleFpga");
+	debugger.map(exampleFpga2, "/ExampleFpga2");
 
 	stored::DebugZmqLayer zmq;
 	zmq.wrap(debugger);
@@ -38,17 +35,22 @@ int main() {
 	synchronizer.connect(ascii);
 	stored::TerminalLayer term;
 	term.wrap(ascii);
-	stored::FileLayer file("stack_out.txt", "stack_in.txt"); // TODO: redirect to xsim
-	file.wrap(term);
+	stored::PrintLayer print(stdout);
+	print.wrap(term);
+	stored::DoublePipeLayer file("9_fpga_from_xsim", "9_fpga_to_xsim");
+	file.wrap(print);
 
 	stored::Poller poller;
 	poller.add(file, nullptr, stored::Poller::PollIn);
 	poller.add(zmq, nullptr, stored::Poller::PollIn);
 
 	while(true) {
-		poller.poll();
+		poller.poll(1000000); // 1 s
 		zmq.recv();
 		file.recv();
+
+		// Inject a dummy byte to keep xsim alive, as it blocks on a read from file.
+		file.encode("*", 1);
 	}
 }
 
