@@ -447,7 +447,7 @@ void StoreJournal::encodeKey(ProtocolLayer& p, StoreJournal::Key key) {
 	case 2: *reinterpret_cast<uint16_t*>(buf) = endian_h2s((uint16_t)key); break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 	case 4: *reinterpret_cast<uint32_t*>(buf) = endian_h2s(key); break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 	default:
-			stored_assert(false);
+			stored_assert(false); // NOLINT(hicpp-static-assert,misc-static-assert)
 			return;
 	}
 
@@ -471,7 +471,7 @@ StoreJournal::Key StoreJournal::decodeKey(uint8_t*& buffer, size_t& len, bool& o
 	case 2: key = (Key)endian_s2h(*reinterpret_cast<uint16_t*>(buffer)); break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 	case 4: key = (Key)endian_s2h(*reinterpret_cast<uint32_t*>(buffer)); break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 	default:
-			stored_assert(false);
+			stored_assert(false); // NOLINT(hicpp-static-assert,misc-static-assert)
 			ok = false;
 			return 0;
 	}

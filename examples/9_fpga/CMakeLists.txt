@@ -1,7 +1,11 @@
-# Not tested with unix pipes.
-if(WIN32 AND LIBSTORED_HAVE_LIBZMQ)
+if(LIBSTORED_HAVE_LIBZMQ)
 	add_executable(9_fpga main.cpp)
 	libstored_generate(9_fpga ExampleFpga.st ExampleFpga2.st)
+
+	# Not tested with unix pipes.
+	if(NOT WIN32)
+		set_target_properties(9_fpga PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+	endif()
 
 	if(VIVADO_CMD)
 		if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/vivado/9_fpga/9_fpga.xpr)
