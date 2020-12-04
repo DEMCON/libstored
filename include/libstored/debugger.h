@@ -770,6 +770,7 @@ namespace stored {
 		virtual DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) = 0;
 
 		/*!
+		 * \typedef ListCallbackArg
 		 * \brief Callback function prototype as supplied to \c list().
 		 *
 		 * It receives the name of the object, the corresponding
@@ -936,7 +937,10 @@ namespace stored {
 
 		DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) const;
 
-		/*! \copydoc stored::DebugStoreBase::ListCallbackArg */
+		/*!
+		 * \typedef ListCallbackArg
+		 * \copydoc stored::DebugStoreBase::ListCallbackArg
+		 */
 		typedef DebugStoreBase::ListCallbackArg ListCallbackArg;
 		void list(ListCallbackArg* f, void* arg = nullptr) const;
 
@@ -949,7 +953,7 @@ namespace stored {
 		 *
 		 * \see #list<F>(F&&) const
 		 */
-		typedef void(ListCallback)(char const*, DebugVariant&);
+		using ListCallback = void(char const*, DebugVariant&);
 
 		/*!
 		 * \brief Iterates over the directory and invoke a callback for every object.
