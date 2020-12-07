@@ -1,5 +1,9 @@
-Doxygen breathe
-===============
+Debugger
+========
+
+
+stored::Debugger
+----------------
 
 .. doxygenclass:: stored::Debugger
    :project: doxygen

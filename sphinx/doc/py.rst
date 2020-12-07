@@ -1,6 +1,11 @@
-py client
-=========
+Python
+======
 
-.. automodule:: ed2.ZmqClient
-   :members:
+.. toctree::
+
+   py_py
+   py_gui
+   py_cmd
+   py_visu
+   py_wrapper
 

@@ -9,10 +9,9 @@ debug it remotely.
    :caption: Content
 
    doc/intro
-   doc/manual
-   doc/doxy
-   doc/fpga
+   doc/cpp
    doc/py
+   doc/fpga
 
 
 Indices and tables
