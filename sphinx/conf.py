@@ -19,7 +19,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '../client'))
 
 import sphinx_rtd_theme
 
@@ -32,7 +32,7 @@ import sphinx_rtd_theme
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['breathe', 'sphinxcontrib.plantuml', 'sphinx_rtd_theme', 'sphinx.ext.autodoc', 'sphinxcontrib.wavedrom']
+extensions = ['breathe', 'sphinxcontrib.plantuml', 'sphinx_rtd_theme', 'sphinx.ext.autodoc', 'sphinxcontrib.wavedrom', 'm2r2']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -40,16 +40,15 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
 
 # The master toctree document.
 master_doc = 'index'
 
 # General information about the project.
 project = 'libstored'
-copyright = '2020, jrt'
-author = 'jrt'
+copyright = '2020, Jochem Rutgers'
+author = 'Jochem Rutgers'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -78,6 +77,7 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
+#m2r_parse_relative_links = True
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -107,6 +107,10 @@ html_sidebars = {
         'relations.html',  # needs 'show_related': True theme option to display
         'searchbox.html',
     ]
+}
+
+breathe_projects = {
+    "doxygen":"../doxygen/xml/",
 }
 
 
@@ -141,7 +145,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'libstored.tex', 'libstored Documentation',
-     'jrt', 'manual'),
+     'Jochem Rutgers', 'manual'),
 ]
 
 
@@ -166,7 +170,3 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-breathe_projects = {
-    "nutshell":"../doxygen/xml/",
-    "vhdl":"../doxygen_vhdl/xml/",
-}

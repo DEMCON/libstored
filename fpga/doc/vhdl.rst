@@ -1,6 +1,8 @@
 VHDL
 ====
 
+fpga/doc/vhdl
+
 aasdf
 
 .. rubric:: rub

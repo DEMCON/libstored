@@ -36,7 +36,9 @@ Have a look at the [examples](examples).
 	- [How to integrate in your build](#integrate)
 - [License](#license)
 
-## <a name="intro"></a>Introduction
+
+<a name="intro"></a>
+## Introduction
 
 Data is at the core of any application. And data is tricky, especially when it
 changes.  This library helps you managing data in three ways:
@@ -69,13 +71,15 @@ See next sections for details, but the following is worth to mention here:
   Using threads is troubling anyway, use [fibers](https://github.com/jhrutgers/zth) instead.
 
 Have a look in the [`examples`](examples) directory for further in-depth reading.
-Refer to the [Doxygen documentation](https://demcon.github.io/libstored) for the C++ API.
+Refer to the [documentation](https://demcon.github.io/libstored) for the C++ API.
 See also the [presentation](https://demcon.github.io/libstored/libstored.sozi.html).
 
-### <a name="store"></a>libstored - Store by description
+
+<a name="store"></a>
+### libstored - Store by description
 
 The store is described in a simple grammar.
-See the [examples](https://demcon.github.io/libstored/examples.html) directory
+See the [examples directory](https://demcon.github.io/libstored/examples.html)
 for more explanation. This is just an impression of the syntax.
 
 	// Comment
@@ -113,7 +117,9 @@ The store has a few other interesting properties:
 - A store is not thread-safe. This seems a limitation, but really, applications
   without threads are way easier to build and debug.
 
-### <a name="sync"></a>libstored - Store on a distributed system
+
+<a name="sync"></a>
+### libstored - Store on a distributed system
 
 Synchronization is tricky to manage. libstored helps you by providing a
 stored::Synchronizer class that manages connections to other Synchronizers.
@@ -141,9 +147,7 @@ The topology is arbitrary, as long as every store instance has one root, where
 it gets its initial copy from. You could, for example, construct the following
 topology:
 
-	 B   C
-	  \ /
-	   A
+	B--A--C
 	   |
 	G--D--E--F
 	   |
@@ -167,7 +171,9 @@ The store implementation in VHDL integrates a Synchronizer instance.  However,
 it cannot be used as in intermediate node in the topology as described above;
 the FPGA has to be a leaf.
 
-### <a name="debug"></a>libstored - Store for Embedded Debugger
+
+<a name="debug"></a>
+### libstored - Store for Embedded Debugger
 
 If you have an embedded system, you probably want to debug it on-target.  One
 of the questions you often have, is what is the value of internal variables of
@@ -208,7 +214,9 @@ FPGA, instantiate the store, which includes a Synchronizer, and use a bridge in
 C++ that has the same store, a Synchronizer connected to the FPGA, and a
 Debugger instance. The connect to this C++ bridge.
 
-### <a name="debug_ex"></a>Example
+
+<a name="debug_ex"></a>
+### Example
 
 The host tools to debug your application are written in python, as the `ed2`
 package, and are located the `client` directory. You can run the example below
@@ -286,7 +294,9 @@ The structure of this setup is:
 There are some more ready-to-use clients, and a Python module in the
 [client](https://github.com/DEMCON/libstored/tree/master/client) directory.
 
-### <a name="protocol"></a>Embedded Debugger protocol
+
+<a name="protocol"></a>
+### Embedded Debugger protocol
 
 Communication with the debugger implementation in the application follows a
 request-response pattern.  A full description of the commands can be found in
@@ -375,7 +385,9 @@ Refer to the documentation for the details about these and other commands.
 	>  rr
 	<  3fb7617168255e00
 
-## <a name="build"></a>How to build
+
+<a name="build"></a>
+## How to build
 
 Run `scripts/bootstrap` (as Administrator under Windows) once to install all
 build dependencies.  Then run `scripts/build` to build the project. This does
@@ -399,7 +411,9 @@ To run all tests, use one of:
 	cmake --build . --target test
 	cmake --build . --target RUN_TESTS
 
-### <a name="integrate"></a>How to integrate in your build
+
+<a name="integrate"></a>
+### How to integrate in your build
 
 Building libstored on itself is not too interesting, it is about how it can
 generate stuff for you.  This is how to integrate it in your project:
@@ -435,7 +449,9 @@ generate stuff for you.  This is how to integrate it in your project:
 Check out the examples of libstored, which are all independent applications
 with their own generated store.
 
-## <a name="license"></a>License
+
+<a name="license"></a>
+## License
 
 The project license is specified in COPYING and COPYING.LESSER.
 

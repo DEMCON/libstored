@@ -17,21 +17,10 @@ if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
       cmake ..")
 endif()
 
-find_package(Doxygen)
 option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
 
 if(LIBSTORED_DOCUMENTATION)
-	if(NOT DOXYGEN_FOUND)
-		message(FATAL_ERROR "Doxygen is needed to build the documentation.")
-	endif()
-
-	add_custom_target(
-		doc ALL
-		COMMAND $<TARGET_FILE:Doxygen::doxygen>
-		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/presentation/libstored.sozi.html ${CMAKE_CURRENT_SOURCE_DIR}/doxygen/html
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		COMMENT "Generating API documentation with Doxygen (see doxygen/html/index.html)"
-	)
+	add_subdirectory(sphinx)
 endif()
 
 if(WIN32)

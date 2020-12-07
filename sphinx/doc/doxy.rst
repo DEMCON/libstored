@@ -2,6 +2,6 @@ Doxygen breathe
 ===============
 
 .. doxygenclass:: stored::Debugger
-   :project: nutshell
+   :project: doxygen
    :members:
 

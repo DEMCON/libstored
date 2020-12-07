@@ -1,6 +1,6 @@
 py client
 =========
 
-.. automodule:: test.Test
+.. automodule:: ed2.ZmqClient
    :members:
 
