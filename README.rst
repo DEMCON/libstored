@@ -8,41 +8,49 @@ libstored
 TL;DR
 -----
 
-| **What is it?**
-| A generator for a C++ class (store) with your application's variables, and a
-  tool set to synchronize updates between processes (including FPGA), and debug
-  it remotely.  See also the
-  presentation_.
+What is it?
+```````````````
+A generator for a C++ class (store) with your application's variables, and a
+tool set to synchronize updates between processes (including FPGA), and debug
+it remotely.  See also the
+presentation_.
 
-| **When do I need it?**
-| When you have a distributed application in need of synchronization, and/or you
-  want to be able to inspect and modify internal data of a running application.
+When do I need it?
+``````````````````
 
-| **Does it work on my platform?**
-| Yes.
+When you have a distributed application in need of synchronization, and/or you
+want to be able to inspect and modify internal data of a running application.
 
-| **Huh? But how you do know my hardware architecture?**
-| I don't. You have to supply the drivers for your (hardware) communication
-  interfaces, but everything else is ready to use.
+Does it work on my platform?
+````````````````````````````
 
-| **Great! How do I use it?**
-| Have a look at the examples_.
+Yes.
+
+Huh? But how you do know my hardware architecture?
+``````````````````````````````````````````````````
+
+I don't. You have to supply the drivers for your (hardware) communication
+interfaces, but everything else is ready to use.
+
+Great! How do I use it?
+```````````````````````
+Have a look at the examples_.
+
 
 Table of contents
 -----------------
 
-- [Introduction](#intro)
-- [libstored - Store by description](#store)
-- [libstored - Store on a distributed system](#sync)
-- [libstored - Store for Embedded Debugger](#debug)
-	- [Example](#debug_ex)
-	- [Embedded Debugger protocol](#protocol)
-- [How to build](#build)
-	- [How to integrate in your build](#integrate)
-- [License](#license)
+- `Introduction`_
+- `libstored - Store by description`_
+- `libstored - Store on a distributed system`_
+- `libstored - Store for Embedded Debugger`_
+   - `Example`_
+   - `Embedded Debugger protocol`_
+- `How to build`_
+	- `How to integrate in your build`_
+- `License`_
 
 
-<a name="intro"></a>
 Introduction
 ------------
 
@@ -52,7 +60,7 @@ changes.  This library helps you managing data in three ways:
 1. Using a simple language, you can define which variables, types, etc., you
    need. Next, a C++ class is generated, with these variables, but also with
    iterators, run-time name lookup, synchronization hooks, and more. This is
-   your _store_. Additionally, a VHDL implementation is generated too, such
+   your *store*. Additionally, a VHDL implementation is generated too, such
    that the store can also be used on an FPGA.
 2. These stores can be synchronized between different instances via arbitrary
    communication channels.  So, you can build a distributed system over multiple
@@ -81,9 +89,8 @@ Refer to the documentation_ for the C++ API.
 See also the presentation_.
 
 
-<a name="store"></a>
 libstored - Store by description
-````````````````````````````````
+--------------------------------
 
 The store is described in a simple grammar.  See the examples_ directory for
 more explanation. This is just an impression of the syntax::
@@ -124,16 +131,15 @@ The store has a few other interesting properties:
   without threads are way easier to build and debug.
 
 
-<a name="sync"></a>
 libstored - Store on a distributed system
-`````````````````````````````````````````
+-----------------------------------------
 
 Synchronization is tricky to manage. libstored helps you by providing a
 stored::Synchronizer class that manages connections to other Synchronizers.
 Between these Synchronizers, one or more stores can be synchronized.  The (OSI)
 Application layer is implemented, and several other (OSI) protocol layers are
 provided to configure the channels as required. These protocols are generic and
-also used by the debugger interface. See [next section](#debug) for details.
+also used by the debugger interface. See next section for details.
 
 The store provides you with enough hooks to implement any distributed memory
 architecture, but that is often way to complicated. The default Synchronizer is
@@ -170,7 +176,7 @@ Different stores can have different topologies for synchronization, and
 synchronization may happen at different speed or interval. Everything is
 possible, and you can define it based on your application's needs.
 
-The example `8_sync <examples/8_sync>` implements an application with two
+The example `8_sync`_ implements an application with two
 stores, which can be connected arbitrarily using command line arguments. You
 can play with it to see the synchronization.
 
@@ -179,9 +185,8 @@ it cannot be used as in intermediate node in the topology as described above;
 the FPGA has to be a leaf.
 
 
-<a name="debug"></a>
 libstored - Store for Embedded Debugger
-```````````````````````````````````````
+---------------------------------------
 
 If you have an embedded system, you probably want to debug it on-target.  One
 of the questions you often have, is what is the value of internal variables of
@@ -200,9 +205,8 @@ device.  However, once you implemented this data transport, you can access the
 store, and observe and manipulate it using an Embedded Debugger (PC) client.
 Moreover, the protocol supports arbitrary streams (like stdout) from the
 application to the client, and has high-speed tracing of store variables. These
-streams are optionally [heatshrink](https://github.com/atomicobject/heatshrink)
-compressed.  libstored provides Python classes for your custom scripts, a CLI
-and GUI interface.
+streams are optionally heatshrink_ compressed.  libstored provides Python
+classes for your custom scripts, a CLI and GUI interface.
 
 Your application can have one store with one debugging interface, but also
 multiple stores with one debugging interface, or one store with multiple
@@ -223,7 +227,6 @@ C++ that has the same store, a Synchronizer connected to the FPGA, and a
 Debugger instance. The connect to this C++ bridge.
 
 
-<a name="debug_ex"></a>
 Example
 ```````
 
@@ -280,7 +283,7 @@ The ``examples/terminal/terminal`` application could be debugged as follows:
 - Connect a client, such as ``python3 -m ed2.gui``.
   Instead of using ``lognplot``, the GUI can also write all auto-refreshed data
   to a CSV file when the ``-f log.csv`` is passed on the command line. Then,
-  [Kst](https://kst-plot.kde.org/) can be used for live viewing the file.
+  Kst_ can be used for live viewing the file.
 
 The structure of this setup is::
 
@@ -302,22 +305,19 @@ The structure of this setup is::
 	+----------+
 
 There are some more ready-to-use clients, and a Python module in the
-[client](https://github.com/DEMCON/libstored/tree/master/client) directory.
+client_ directory.
 
 
-<a name="protocol"></a>
 Embedded Debugger protocol
 ``````````````````````````
 
 Communication with the debugger implementation in the application follows a
 request-response pattern.  A full description of the commands can be found in
-the [doxygen documentation](https://demcon.github.io/libstored/group__libstored__debugger.html).
-These commands are implemented in the stored::Debugger class and ready to be
-used in your application.
+the documentation_.  These commands are implemented in the stored::Debugger
+class and ready to be used in your application.
 
 However, the request/response messages should be wrapped in a OSI-like protocol
-stack, which is described in more detail in the
-[documentation too](https://demcon.github.io/libstored/group__libstored__protocol.html)).
+stack, which is described in more detail in the documentation_ too.
 This stack depends on your application. A few standard protocol layers are
 available, which allow to build a stack for lossless channels (stdio/TCP/some
 UART) and lossy channels (some UART/CAN). These stacks are configurable in
@@ -399,7 +399,6 @@ Refer to the documentation for the details about these and other commands.
 	<  3fb7617168255e00
 
 
-<a name="build"></a>
 How to build
 ------------
 
@@ -418,7 +417,7 @@ effectively::
 By default, all examples are built.  For example, notice that sources are
 generated under ``examples/1_hello``, while the example itself is built in the
 ``build`` directory. The documentation can be viewed at
-``doxygen/html/index.html``.
+``sphinx/html/index.html``.
 
 To run all tests, use one of::
 
@@ -426,7 +425,6 @@ To run all tests, use one of::
 	cmake --build . --target RUN_TESTS
 
 
-<a name="integrate"></a>
 How to integrate in your build
 ``````````````````````````````
 
@@ -436,7 +434,7 @@ generate stuff for you.  This is how to integrate it in your project:
 - Add libstored to your source repository, for example as a submodule.
 - Run ``scripts/bootstrap`` in the libstored directory once to install all
   dependencies.
-- Include libstored to your cmake project. For example:
+- Include libstored to your cmake project. For example::
 
 		set(LIBSTORED_EXAMPLES OFF CACHE BOOL "Disable libstored examples" FORCE)
 		set(LIBSTORED_TESTS OFF CACHE BOOL "Disable libstored tests" FORCE)
@@ -465,7 +463,6 @@ Check out the examples of libstored, which are all independent applications
 with their own generated store.
 
 
-<a name="license"></a>
 License
 -------
 
@@ -482,11 +479,15 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with this program.  If not, see `https://www.gnu.org/licenses/`.
+along with this program.  If not, see https://www.gnu.org/licenses/.
 
 
 .. _presentation: https://demcon.github.io/libstored/libstored.sozi.html
-.. _examples: examples
+.. _examples: https://github.com/DEMCON/libstored/tree/master/examples
 .. _fibers: https://github.com/jhrutgers/zth
 .. _documentation: https://demcon.github.io/libstored
+.. _8_sync: https://github.com/DEMCON/libstored/tree/master/examples/8_sync
+.. _heatshrink: https://github.com/atomicobject/heatshrink
+.. _Kst: https://kst-plot.kde.org/
+.. _client: https://github.com/DEMCON/libstored/tree/master/client
 
