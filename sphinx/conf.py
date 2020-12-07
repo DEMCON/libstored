@@ -77,7 +77,7 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
-#m2r_parse_relative_links = True
+highlight_language = 'none'
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -110,7 +110,7 @@ html_sidebars = {
 }
 
 breathe_projects = {
-    "doxygen":"../doxygen/xml/",
+    "doxygen":"doxygen/xml/",
 }
 
 
