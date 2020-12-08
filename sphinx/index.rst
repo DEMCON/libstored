@@ -12,6 +12,7 @@ debug it remotely.
    doc/cpp
    doc/py
    doc/fpga
+   doc/examples
 
 
 Indices and tables

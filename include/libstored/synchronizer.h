@@ -244,7 +244,12 @@ namespace stored {
 		bool hasChanged(Key key, Seq since) const;
 		bool hasChanged(Seq since) const;
 
+#if STORED_cplusplus >= 201103L
+		// breathe does not like function typedefs
+		using IterateChangedCallback = void(Key, void*);
+#else
 		typedef void(IterateChangedCallback)(Key, void*);
+#endif
 		void iterateChanged(Seq since, IterateChangedCallback* cb, void* arg = nullptr) const;
 
 #if STORED_cplusplus >= 201103L
@@ -501,10 +506,18 @@ private:
 		typedef ProtocolLayer base;
 		typedef uint16_t Id;
 
+#ifdef DOXYGEN
+		// breathe does not like complex expressions.
+		static char const Hello		= 'h';
+		static char const Welcome	= 'w';
+		static char const Update	= 'u';
+		static char const Bye		= 'b';
+#else
 		static char const Hello		= Config::StoreInLittleEndian ? 'h' : 'H';
 		static char const Welcome	= Config::StoreInLittleEndian ? 'w' : 'W';
 		static char const Update	= Config::StoreInLittleEndian ? 'u' : 'U';
 		static char const Bye		= Config::StoreInLittleEndian ? 'b' : 'B';
+#endif
 
 		SyncConnection(Synchronizer& synchronizer, ProtocolLayer& connection);
 		virtual ~SyncConnection() override;
