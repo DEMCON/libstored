@@ -1,11 +1,18 @@
 Debugger
 ========
 
-
 stored::Debugger
 ----------------
 
 .. doxygenclass:: stored::Debugger
-   :project: doxygen
-   :members:
+
+stored::DebugStoreBase
+----------------------
+
+.. doxygenclass:: stored::DebugStoreBase
+
+stored::DebugVariant
+--------------------
+
+.. doxygenclass:: stored::DebugVariant
 

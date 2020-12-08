@@ -770,7 +770,6 @@ namespace stored {
 		virtual DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) = 0;
 
 		/*!
-		 * \typedef ListCallbackArg
 		 * \brief Callback function prototype as supplied to \c list().
 		 *
 		 * It receives the name of the object, the corresponding
@@ -779,7 +778,12 @@ namespace stored {
 		 *
 		 * \see #stored::DebugStoreBase::list(ListCallbackArg*, void*, char const*) const
 		 */
+#ifdef DOXYGEN
+		// breathe breaks on the function typedef.
+		using ListCallbackArg = void(char const*, DebugVariant&, void*);
+#else
 		typedef void(ListCallbackArg)(char const*, DebugVariant&, void*);
+#endif
 
 		/*!
 		 * \brief Iterates over the directory and invoke a callback for every object.

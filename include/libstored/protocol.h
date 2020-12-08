@@ -325,9 +325,9 @@ namespace stored {
 		static char const EscEnd   = '\\';   // ST
 		enum { MaxBuffer = 1024 };
 
-		typedef void(NonDebugDecodeCallback)(void* buf, size_t len);
-
 #if STORED_cplusplus >= 201103L
+		using NonDebugDecodeCallback = void(void* buf, size_t len);
+
 		template <typename F,
 			SFINAE_IS_FUNCTION(F, NonDebugDecodeCallback, int) = 0>
 		explicit TerminalLayer(F&& cb, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
@@ -336,6 +336,8 @@ namespace stored {
 			m_nonDebugDecodeCallback = std::forward<F>(cb);
 		}
 #else
+		typedef void(NonDebugDecodeCallback)(void* buf, size_t len);
+
 		explicit TerminalLayer(NonDebugDecodeCallback* cb, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 #endif
 		explicit TerminalLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
@@ -514,12 +516,12 @@ namespace stored {
 			EventRetransmit,
 		};
 
+#if STORED_cplusplus < 201103L
 		/*!
 		 * \brief Callback type for #setEventCallback(EventCallbackArg*,void*).
 		 */
 		typedef void(EventCallbackArg)(ArqLayer&, Event, void*);
 
-#if STORED_cplusplus < 201103L
 		/*!
 		 * \brief Set event callback.
 		 */
@@ -528,6 +530,11 @@ namespace stored {
 			m_cbArg = arg;
 		}
 #else
+		/*!
+		 * \brief Callback type for #setEventCallback(EventCallbackArg*,void*).
+		 */
+		using EventCallbackArg = void(ArqLayer&, Event, void*);
+
 		/*!
 		 * \brief Set event callback.
 		 */
@@ -541,7 +548,7 @@ namespace stored {
 		/*!
 		 * \brief Callback type for #setEventCallback(F&&).
 		 */
-		typedef void(EventCallback)(ArqLayer&, Event);
+		using EventCallback = void(ArqLayer&, Event);
 
 		/*!
 		 * \brief Set event callback.

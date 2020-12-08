@@ -114,6 +114,9 @@ breathe_projects = {
     "doxygen":"doxygen/xml/",
 }
 
+breathe_default_project = 'doxygen'
+breathe_default_members = ('members', 'undoc-members')
+
 
 # -- Options for HTMLHelp output ------------------------------------------
 
