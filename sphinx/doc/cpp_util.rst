@@ -1,6 +1,8 @@
 Utilities
 =========
 
+Misc helper functionality.
+
 .. doxygenclass:: stored::ScratchPad
 
 .. doxygendefine:: likely

@@ -1,6 +1,8 @@
 Config
 ======
 
+Static configuration of the libstored library.
+
 stored::DefaultConfig
 ---------------------
 

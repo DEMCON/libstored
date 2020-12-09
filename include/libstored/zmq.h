@@ -26,9 +26,9 @@
 #    include <zmq.h>
 #    include <libstored/protocol.h>
 
-#  if defined(STORED_OS_WINDOWS) && !defined(STORED_COMPILER_MSVC)
-#    include <winsock2.h>
-#  endif
+#    if defined(STORED_OS_WINDOWS) && !defined(STORED_COMPILER_MSVC)
+#      include <winsock2.h>
+#    endif
 
 namespace stored {
 
@@ -78,7 +78,6 @@ namespace stored {
 
 	/*!
 	 * \brief Constructs a protocol stack on top of a REQ/REP ZeroMQ socket, specifically for the #stored::Debugger.
-	 * \ingroup libstored_protocol
 	 */
 	class DebugZmqLayer : public ZmqLayer {
 		CLASS_NOCOPY(DebugZmqLayer)
@@ -98,7 +97,6 @@ namespace stored {
 
 	/*!
 	 * \brief Constructs a protocol stack on top of a PAIR ZeroMQ socket, specifically for the #stored::Synchronizer.
-	 * \ingroup libstored_protocol
 	 */
 	class SyncZmqLayer : public ZmqLayer {
 		CLASS_NOCOPY(SyncZmqLayer)

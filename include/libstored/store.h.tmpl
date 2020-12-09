@@ -145,7 +145,6 @@ namespace stored {
 	 *
 	 * \see #stored::{{store.name}}
 	 * \see #stored::{{store.name}}Data
-	 * \ingroup libstored_stores
 	 */
 	template <typename Implementation_>
 	class {{store.name}}Base : public {{store.name}}Objects<{{store.name}}Base<Implementation_> , Implementation_> {
@@ -467,7 +466,6 @@ namespace stored {
 
 	/*!
 	 * \brief Default {{store.name}}Base implementation.
-	 * \ingroup libstored_stores
 	 */
 	class {{store.name}} : public STORE_BASECLASS({{store.name}}Base, {{store.name}}) {
 		STORE_CLASS_BODY({{store.name}}Base, {{store.name}})

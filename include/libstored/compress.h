@@ -48,8 +48,6 @@ namespace stored {
 	 * sent in chunks to the other side.
 	 *
 	 * When heatshrink is not available, this layer is just a pass-through.
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class CompressLayer : public ProtocolLayer {
 		CLASS_NOCOPY(CompressLayer)

@@ -56,7 +56,7 @@ static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len
 /*!
  * \brief Directory listing with full names in binary directory format.
  * \details This is typically used for listing the directory.
- * \see \ref libstored_directory for the format
+ * \see include/libstored/directory.h for the format
  */
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
 static uint8_t const {{store.name}}Data_directory_full[{{store.directory.longdata|len}}] = {
@@ -66,7 +66,7 @@ static uint8_t const {{store.name}}Data_directory_full[{{store.directory.longdat
 /*!
  * \brief Directory listing with short (but unambiguous) names in binary directory format.
  * \details This is typically used for searching the directory.
- * \see \ref libstored_directory for the format
+ * \see include/libstored/directory.h for the format
  */
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
 static uint8_t const {{store.name}}Data_directory[{{store.directory.data|len}}] = {

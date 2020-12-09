@@ -23,12 +23,6 @@
 #ifdef __cplusplus
 #include <cstddef>
 
-/*!
- * \defgroup libstored_config config
- * \brief Static configuration of the libstored library.
- * \ingroup libstored
- */
-
 namespace stored {
 	/*!
 	 * \brief Default configuration.
@@ -38,8 +32,6 @@ namespace stored {
 	 * To override defaults, copy the file stored_config.h to your own project,
 	 * set the configuration values properly, and make sure that that file is
 	 * in the include path before the libstored one.
-	 *
-	 * \ingroup libstored_config
 	 */
 	struct DefaultConfig {
 		/*!

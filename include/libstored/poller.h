@@ -125,8 +125,6 @@ namespace stored {
 	 *     }
 	 * }
 	 * \endcode
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class Poller {
 		CLASS_NOCOPY(Poller)

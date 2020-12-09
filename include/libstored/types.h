@@ -18,12 +18,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/*!
- * \defgroup libstored_types types
- * \brief Type utilities and generic and typed interfaces to objects in a store.
- * \ingroup libstored
- */
-
 #ifdef __cplusplus
 
 #include <libstored/macros.h>
@@ -48,8 +42,6 @@ namespace stored {
 	 *
 	 * The type is a set of flags masked into a byte.
 	 * It always fits in a signed char.
-	 *
-	 * \ingroup libstored_types
 	 */
 	struct Type {
 		enum type {
@@ -128,7 +120,6 @@ namespace stored {
 
 	/*!
 	 * \brief Returns the #stored::Type::type that corresponds to the given type \p T.
-	 * \ingroup libstored_types
 	 */
 	template <typename T> struct toType { static Type::type const type = Type::Blob; };
 	template <> struct toType<void> { static Type::type const type = Type::Void; };
@@ -162,8 +153,6 @@ namespace stored {
 	 *
 	 * A Variable is very small (it contains only a pointer).
 	 * It is copyable and assignable, so it is fine to pass it by value.
-	 *
-	 * \ingroup libstored_types
 	 */
 	template <typename T, typename Container, bool Hooks = Config::EnableHooks>
 	class Variable {
@@ -312,8 +301,6 @@ namespace stored {
 	 *
 	 * This Variable is very small (it contains two pointers).
 	 * It is copyable and assignable, so it is fine to pass it by value.
-	 *
-	 * \ingroup libstored_types
 	 */
 	template <typename T, typename Container>
 	class Variable<T,Container,true> : public Variable<T,Container,false> {
@@ -507,8 +494,6 @@ namespace stored {
 	 *
 	 * A Function is very small (it contains two words).
 	 * It is default copyable and assignable, so it is fine to pass it by value.
-	 *
-	 * \ingroup libstored_types
 	 */
 	template <typename T, typename Container>
 	class Function {
@@ -670,8 +655,6 @@ namespace stored {
 	 *
 	 * A Variant is quite small (only about four words).
 	 * It is default copyable and assignable, so it is fine to pass it by value.
-	 *
-	 * \ingroup libstored_types
 	 */
 	template <typename Container>
 	class Variant {
@@ -1062,7 +1045,6 @@ namespace stored {
 	 * but are non-functional, as there is no container.
 	 *
 	 * \see #apply()
-	 * \ingroup libstored_types
 	 */
 	template <>
 	// cppcheck-suppress noConstructor

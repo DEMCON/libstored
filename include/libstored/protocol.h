@@ -18,54 +18,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/*!
- * \defgroup libstored_protocol protocol
- * \brief Protocol layers, to be wrapped around a #stored::Debugger or #stored::Synchronizer instance.
- *
- * Every embedded device is different, so the required protocol layers are too.
- * What is common, is the Application layer, but as the Transport and Physical
- * layer are often different, the layers in between are often different too.
- * To provide a common Embedded Debugger interface, the client (e.g., GUI, CLI,
- * python scripts), we standardize on ZeroMQ REQ/REP over TCP.
- *
- * Not every device supports ZeroMQ, or even TCP. For this, several bridges are
- * required. Different configurations may be possible:
- *
- * - In case of a Linux/Windows application: embed ZeroMQ server into the
- *   application, such that the application binds to a REP socket.  A client can
- *   connect to the application directly.
- * - Terminal application with only stdin/stdout: use escape sequences in the
- *   stdin/stdout stream. `client/ed2.wrapper.stdio` is provided to inject/extract
- *   these messages from those streams and prove a ZeroMQ interface.
- * - Application over CAN: like a `client/ed2.wrapper.stdio`, a CAN extractor to
- *   ZeroMQ bridge is required.
- *
- * Then, the client can be connected to the ZeroMQ interface. The following
- * clients are provided:
- *
- * - `client/ed2.ZmqClient`: a python class that allows easy access to all objects
- *   of the connected store. This is the basis of the clients below.
- * - `client/ed2.cli`: a command line tool that lets you directly enter the
- *   protocol messages as defined above.
- * - `client/ed2.gui`: a simple GUI that shows the list of objects and lets
- *   you manipulate the values. The GUI has support to send samples to `lognplot`
- *   and to write samples to a CSV file for KST, for example.
- *
- * Test it using the `terminal` example, started using the
- * `client/ed2.wrapper.stdio`. Then connect one of the clients above to it.
- *
- * libstored suggests to use the protocol layers below, where applicable.
- * Standard layer implementations can be used to construct the following stacks (top-down):
- *
- * - Lossless UART: stored::Debugger, stored::AsciiEscapeLayer, stored::TerminalLayer, stored::StdioLayer
- * - Lossy UART: stored::Debugger, stored::DebugArqLayer, stored::Crc16Layer, stored::AsciiEscapeLayer, stored::TerminalLayer, stored::StdioLayer
- * - CAN: stored::Debugger, stored::SegmentationLayer, stored::DebugArqLayer, stored::BufferLayer, CAN driver
- * - ZMQ: stored::Debugger, stored::ZmqLayer
- * - VHDL simulation: stored::Synchronizer, stored::AsciiEscapeLayer, stored::TerminalLayer, stored::NamedPipeLayer
- *
- * \ingroup libstored
- */
-
 #ifdef __cplusplus
 
 #include <libstored/macros.h>
@@ -111,8 +63,6 @@ namespace stored {
 	 *
 	 * The implementation of this class does nothing except forwarding bytes.
 	 * Override encode() and decode() in a subclass.
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class ProtocolLayer {
 		CLASS_NOCOPY(ProtocolLayer)
@@ -279,7 +229,6 @@ namespace stored {
 
 	/*!
 	 * \brief Escape non-ASCII bytes.
-	 * \ingroup libstored_protocol
 	 */
 	class AsciiEscapeLayer : public ProtocolLayer {
 		CLASS_NOCOPY(AsciiEscapeLayer)
@@ -312,8 +261,6 @@ namespace stored {
 	 * \brief Extracts and injects Embedded Debugger messages in a stream of data, such as a terminal.
 	 *
 	 * The frame's boundaries are marked with APC and ST C1 control characters.
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class TerminalLayer : public ProtocolLayer {
 		CLASS_NOCOPY(TerminalLayer)
@@ -387,8 +334,6 @@ namespace stored {
 	 * This layer assumes a lossless channel; all messages are received in
 	 * order. If that is not the case for your transport, wrap this layer in
 	 * the #stored::DebugArqLayer or #stored::ArqLayer.
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class SegmentationLayer : public ProtocolLayer {
 		CLASS_NOCOPY(SegmentationLayer)
@@ -456,8 +401,6 @@ namespace stored {
 	 * respond. If called not often enough, retransmits may take long and
 	 * communication may be slowed down. Either way, it is functionally
 	 * correct. Determine for you application what is wise to do.
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class ArqLayer : public ProtocolLayer {
 		CLASS_NOCOPY(ArqLayer)
@@ -680,8 +623,6 @@ namespace stored {
 	 * of any size, this should not be a real limitation in practice.
 	 *
 	 * This protocol is verified by the Promela model in tests/DebugArqLayer.pml.
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class DebugArqLayer : public ProtocolLayer {
 		CLASS_NOCOPY(DebugArqLayer)
@@ -737,8 +678,6 @@ namespace stored {
 	 * bits, messages should only be up to 30 bytes.  Use an appropriate
 	 * stored::SegmentationLayer somewhere higher in the stack to accomplish
 	 * this. Consider using stored::Crc16Layer instead.
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class Crc8Layer : public ProtocolLayer {
 		CLASS_NOCOPY(Crc8Layer)
@@ -769,8 +708,6 @@ namespace stored {
 	 * \brief A layer that adds a CRC-16 to messages.
 	 *
 	 * Like #stored::Crc8Layer, but using a 0xbaad as polynomial.
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class Crc16Layer : public ProtocolLayer {
 		CLASS_NOCOPY(Crc16Layer)
@@ -804,8 +741,6 @@ namespace stored {
 	 * However, one might collect as much data as possible to reduce overhead
 	 * of the actual transport.  This layer buffers partial messages until the
 	 * maximum buffer capacity is reached, or the \c last flag is encountered.
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class BufferLayer : public ProtocolLayer {
 		CLASS_NOCOPY(BufferLayer)
@@ -833,8 +768,6 @@ namespace stored {
 	 * Decoded message start with &lt;, encoded messages with &gt;, partial encoded messages with *.
 	 *
 	 * Mainly for debugging purposes.
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class PrintLayer : public ProtocolLayer {
 		CLASS_NOCOPY(PrintLayer)
@@ -878,8 +811,6 @@ namespace stored {
 
 	/*!
 	 * \brief Loopback between two protocol stacks.
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class Loopback {
 		CLASS_NOCOPY(Loopback)
@@ -1042,8 +973,6 @@ namespace stored {
 	 * triggers an overlapped write. It uses a completion routine, so the
 	 * thread must be put in an alertable state once in a while (which the
 	 * #stored::Poller does when blocking).
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class FileLayer : public PolledFileLayer {
 		CLASS_NOCOPY(FileLayer)
@@ -1117,8 +1046,6 @@ public:
 	 * This is only for Windows. Just use a #FileLayer with \c pipe() for POSIX.
 	 *
 	 * The client end is easier; it is just a file-like create/open/write/close API.
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class NamedPipeLayer : public FileLayer {
 		CLASS_NOCOPY(NamedPipeLayer)
@@ -1158,8 +1085,6 @@ public:
 	 *
 	 * This is like NamedPipeLayer, but it uses to unidirectional pipes
 	 * instead of one bidirectional.
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class DoublePipeLayer : public PolledFileLayer {
 		CLASS_NOCOPY(DoublePipeLayer)
@@ -1193,8 +1118,6 @@ public:
 	 * it receives to this third pipe. This way, the C++ side knows how many
 	 * bytes are in flight, and if XSIM would block on the next one.  Based on
 	 * this counter, keep alive bytes may be injected.
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class XsimLayer : public DoublePipeLayer {
 		CLASS_NOCOPY(XsimLayer)
@@ -1249,8 +1172,6 @@ public:
 	 *
 	 * For POSIX, the StdioLayer is just a FileLayer with preset stdin/stdout
 	 * file descriptors.
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class StdioLayer : public PolledFileLayer {
 		CLASS_NOCOPY(StdioLayer)
@@ -1296,8 +1217,6 @@ public:
 	 * \brief A stdin/stdout layer.
 	 *
 	 * This is just a FileLayer, with predefined stdin/stdout as file descriptors.
-	 *
-	 * \ingroup libstored_protocol
 	 */
 	class StdioLayer : public FileLayer {
 		CLASS_NOCOPY(StdioLayer)
