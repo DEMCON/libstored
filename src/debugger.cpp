@@ -157,9 +157,10 @@ notfound:
 		goto notfound; // NOLINT(bugprone-branch-clone)
 	else if(strcmp(prefix, it->first) == 0) // Rule 1.
 		goto gotit; // NOLINT(bugprone-branch-clone)
-	else if(::strncmp(prefix, it->first, prefix_len) == 0 && (++it == m_map.end() || ::strncmp(prefix, it->first, prefix_len) != 0)) // Rule 2.
+	else if(::strncmp(prefix, it->first, prefix_len) == 0 && (++it == m_map.end() || ::strncmp(prefix, it->first, prefix_len) != 0)) { // Rule 2.
+		--it;
 		goto gotit;
-	else
+	} else
 		goto notfound;
 
 gotit:
