@@ -5,6 +5,8 @@ protocol (version 2), and a few helper classes and modules to debug your
 application. See [libstored](https://github.com/DEMCON/libstored) how to create
 an application that is to be debugged using these clients.
 
+See the [documentation](https://demcon.github.io/libstored/doc/py.html).
+
 ## Interesting modules
 
 Execute these modules like `python3 -m ed2.gui`, optionally with `-?` argument

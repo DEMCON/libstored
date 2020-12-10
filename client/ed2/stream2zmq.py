@@ -1,5 +1,3 @@
-# vim:et
-
 # libstored, a Store for Embedded Debugger.
 # Copyright (C) 2020  Jochem Rutgers
 #
@@ -83,10 +81,9 @@ def setInfiniteStdout():
     old_stdout = sys.stdout
     sys.stdout = InfiniteStdoutBuffer(old_stdout, lambda: resetStdout(old_stdout))
 
-##
-# \brief A generic out-of-band frame grabber for ASCII streams.
-# \ingroup libstored_client
 class Stream2Zmq(protocol.ProtocolLayer):
+    """A generic out-of-band frame grabber for ASCII streams."""
+
     default_port = ZmqServer.default_port
 
     def __init__(self, stack='ascii,term', listen='*', port=default_port, timeout_s=1):

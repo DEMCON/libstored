@@ -1,5 +1,3 @@
-# vim:et
-
 # libstored, a Store for Embedded Debugger.
 # Copyright (C) 2020  Jochem Rutgers
 #
@@ -24,16 +22,15 @@ import serial
 
 from . import protocol
 
-##
-# \brief A ZMQ Server
-#
-# This can be used to create a bridge from an arbitrary interface to ZMQ, which
-# in turn can be used to connect a ed2.zmq_client.ZmqClient to.
-#
-# Instantiate as ed2.ZmqServer().
-#
-# \ingroup libstored_client
 class ZmqServer(protocol.ProtocolLayer):
+    """A ZMQ Server
+
+    This can be used to create a bridge from an arbitrary interface to ZMQ, which
+    in turn can be used to connect a ed2.zmq_client.ZmqClient to.
+
+    Instantiate as ed2.ZmqServer().
+    """
+
     default_port = 19026
     name = 'zmq'
 

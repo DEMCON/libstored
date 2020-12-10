@@ -40,6 +40,10 @@ ZmqServer
 ed2.wrapper.stdio
 -----------------
 
+A stdin/stdout frame grabber to ZmqServer wrapper for a to-be-started process.
+
 ed2.wrapper.serial
 ------------------
+
+A frame grabber to ZmqServer wrapper for a serial port.
 

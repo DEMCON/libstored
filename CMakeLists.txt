@@ -17,7 +17,7 @@ if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
       cmake ..")
 endif()
 
-option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
+option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" ON)
 
 if(LIBSTORED_DOCUMENTATION)
 	add_subdirectory(sphinx)

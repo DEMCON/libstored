@@ -1,5 +1,3 @@
-# vim:et
-
 # libstored, a Store for Embedded Debugger.
 # Copyright (C) 2020  Jochem Rutgers
 #

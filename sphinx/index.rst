@@ -9,6 +9,7 @@ debug it remotely.
    :caption: Content
 
    doc/intro
+   Presentation <libstored.sozi.html#http://>
    doc/cpp
    doc/py
    doc/fpga

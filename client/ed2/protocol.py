@@ -571,16 +571,15 @@ layer_types = [
 def registerLayerType(layer_type):
     layer_types.append(layer_type)
 
-##
-# \brief Construct the protocol stack from a description.
-#
-# The description is a comma-separated string with layer ids.  If the layer has
-# a parameter, it can be specified.  The stack is constructed top-down in order
-# of the specified layers.
-#
-# Grammar: ( name ( '=' value ) ? ) (',' name ( '=' value ) ? ) *
-#
 def buildStack(description):
+    """Construct the protocol stack from a description.
+
+    The description is a comma-separated string with layer ids.  If the layer has
+    a parameter, it can be specified.  The stack is constructed top-down in order
+    of the specified layers.
+
+    Grammar: ( <name> ( ``=`` <value> ) ? ) (``,`` <name> ( ``=`` <value> ) ? ) *
+    """
     layers = description.split(',')
 
     if layers == []:

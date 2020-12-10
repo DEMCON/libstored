@@ -1,5 +1,3 @@
-# vim:et
-
 # libstored, a Store for Embedded Debugger.
 # Copyright (C) 2020  Jochem Rutgers
 #
@@ -64,13 +62,11 @@ class SignalRateLimiter(QObject):
             self._idle = True;
 
 
-##
-# \brief A variable or function as handled by a ZmqClient
-#
-# Do not instantiate directly, but as a ZmqClient for its objects.
-#
-# \ingroup libstored_client
 class Object(QObject):
+    """A variable or function as handled by a ZmqClient
+
+    Do not instantiate directly, but as a ZmqClient for its objects.
+    """
     valueChanged = Signal()
     valueStringChanged = Signal()
     valueUpdated = Signal()
@@ -733,13 +729,11 @@ class Stream(object):
             self._flushing = False
 
 
-##
-# \brief Macro object as returned by ZmqClient.acquireMacro()
-#
-# Do not instantiate directly, but let ZmqClient acquire one for you.
-#
-# \ingroup libstored_client
 class Macro(object):
+    """Macro object as returned by ZmqClient.acquireMacro()
+
+    Do not instantiate directly, but let ZmqClient acquire one for you.
+    """
     def __init__(self, client, reqsep=b'\n', repsep=b' '):
         self._client = client
 
@@ -843,9 +837,8 @@ class Macro(object):
     def __len__(self):
         return len(self._cmds)
 
-##
-# \brief Tracing command handling
 class Tracing(Macro):
+    """Tracing command handling"""
     def __init__(self, client, t=None, stream='t'):
         super().__init__(client=client, reqsep=b'\r', repsep=';')
 
@@ -971,15 +964,13 @@ class Tracing(Macro):
         # Don't count sample separator and time stamp.
         return max(0, super().__len__() - 2)
 
-##
-# \brief A ZMQ client.
-#
-# This client can connect to either the ed2.zmq_server.ZmqServer and stored::ZmqLayer.
-#
-# Instantiate as ed2.ZmqClient().
-#
-# \ingroup libstored_client
 class ZmqClient(QObject):
+    """A ZMQ client.
+
+    This client can connect to either the ed2.zmq_server.ZmqServer and stored::DebugZmqLayer.
+
+    Instantiate as ed2.ZmqClient().
+    """
 
     traceThreshold_s = 0.1
     fastPollThreshold_s = 0.9
