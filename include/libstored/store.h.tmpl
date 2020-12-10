@@ -201,7 +201,7 @@ namespace stored {
 		 * \brief Returns a typed Variable object, given the offset in the buffer.
 		 *
 		 * This only works for fixed-length types.
-		 * For other types, use #variantv(Type::type, size_t, size_t).
+		 * For other types, use #_variantv(Type::type, size_t, size_t).
 		 */
 		template <typename T> Variable<T,Implementation> _variable(size_t offset) {
 			stored_assert(offset + sizeof(T) <= sizeof(m_data.buffer));
@@ -216,7 +216,7 @@ namespace stored {
 		 * \brief Returns a typed Function object, given the function identifier.
 		 *
 		 * This only works for fixed-length types.
-		 * For other types, use #variantf(Type::type, unsigned int).
+		 * For other types, use #_variantf(Type::type, unsigned int, size_t).
 		 */
 		template <typename T> Function<T,Implementation> _function(unsigned int f) {
 			return Function<T,Implementation>(implementation(), f);
