@@ -32,6 +32,11 @@ from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, \
 from .zmq_server import ZmqServer
 from .csv import CsvExport
 
+# Wrapper to keep sphinx happy...
+class _Property(Property):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
 class SignalRateLimiter(QObject):
     def __init__(self, src, dst, window_s=0.2, parent=None):
         super().__init__(parent=parent)
@@ -120,7 +125,7 @@ class Object(QObject):
     def _name_get(self):
         return self._name
 
-    name = Property(str, _name_get, constant=True)
+    name = _Property(str, _name_get, constant=True)
 
     @staticmethod
     def listResponseDecode(s, client):
@@ -202,7 +207,7 @@ class Object(QObject):
             t = f'{t}:{self.size}'
         return f'({t})' if self.isFunction() else t
 
-    typeName = Property(str, _typeName_get, constant=True)
+    typeName = _Property(str, _typeName_get, constant=True)
 
     def _alias_get(self):
         return self._alias
@@ -214,7 +219,7 @@ class Object(QObject):
         self._alias = a
         self.aliasChanged.emit()
 
-    alias = Property(str, _alias_get, _alias_set, notify=aliasChanged)
+    alias = _Property(str, _alias_get, _alias_set, notify=aliasChanged)
 
     # Return the alias or the normal name, if no alias was set.
     def shortName(self, tryToGetAlias = True):
@@ -453,7 +458,7 @@ class Object(QObject):
     def _t_get(self):
         return self._t
 
-    t = Property(float, _t_get, notify=tUpdated)
+    t = _Property(float, _t_get, notify=tUpdated)
 
     def _tString_get(self):
         if self._t == None:
@@ -461,7 +466,7 @@ class Object(QObject):
         else:
             return datetime.datetime.fromtimestamp(self._t).strftime('%Y-%m-%d %H:%M:%S.%f')
 
-    tString = Property(str, _tString_get, notify=tStringChanged)
+    tString = _Property(str, _tString_get, notify=tStringChanged)
 
     def interpret(self, value):
         if isinstance(value,str):
@@ -501,7 +506,7 @@ class Object(QObject):
         except ValueError:
             return False
 
-    value = Property('QVariant', _value_get, _value_set, notify=valueChanged)
+    value = _Property('QVariant', _value_get, _value_set, notify=valueChanged)
 
     def _valueString_get(self):
         v = self._value
@@ -516,7 +521,7 @@ class Object(QObject):
     def _valueString_set(self, v):
         return self._value_set(v)
 
-    valueString = Property(str, _valueString_get, _valueString_set, notify=valueStringChanged)
+    valueString = _Property(str, _valueString_get, _valueString_set, notify=valueStringChanged)
 
     def _format_get(self):
         return self._format
@@ -543,7 +548,7 @@ class Object(QObject):
         if self._client != None:
             self._client._autoSaveStateNow()
 
-    format = Property(str, _format_get, _format_set, notify=formatChanged)
+    format = _Property(str, _format_get, _format_set, notify=formatChanged)
 
     def _formatBytes(self, value):
         value = self._encode(value).decode()
@@ -564,7 +569,7 @@ class Object(QObject):
             f += ['hex', 'bin']
         return f
 
-    formats = Property('QVariant', _formats_get, constant=True)
+    formats = _Property('QVariant', _formats_get, constant=True)
 
     def _polling_get(self):
         return self._polling
@@ -576,7 +581,7 @@ class Object(QObject):
             else:
                 self.poll(None)
 
-    polling = Property(bool, _polling_get, _polling_set, notify=pollingChanged)
+    polling = _Property(bool, _polling_get, _polling_set, notify=pollingChanged)
 
     @Slot(float)
     def poll(self, interval_s=0):
@@ -1294,7 +1299,7 @@ class ZmqClient(QObject):
             if obj != None:
                 res.append(obj)
                 pyname = self.pyname(obj.name)
-                setattr(ZmqClient, pyname, Property(Object, lambda s, obj=obj: obj, constant=True))
+                setattr(ZmqClient, pyname, _Property(Object, lambda s, obj=obj: obj, constant=True))
 
         self._objects = res
 
@@ -1436,7 +1441,7 @@ class ZmqClient(QObject):
             self._defaultPollInterval = interval
             self.defaultPollIntervalChanged.emit()
 
-    defaultPollInterval = Property(float, _defaultPollInterval_get, _defaultPollInterval_set, notify=defaultPollIntervalChanged)
+    defaultPollInterval = _Property(float, _defaultPollInterval_get, _defaultPollInterval_set, notify=defaultPollIntervalChanged)
 
     def acquireAlias(self, obj, prefer=None, temporary=True):
         if prefer == None and obj.alias != None:
@@ -1762,3 +1767,4 @@ class ZmqClient(QObject):
 
     def defaultStateFile(self):
         return os.path.join(QStandardPaths.standardLocations(QStandardPaths.AppDataLocation)[0], "state.conf")
+
