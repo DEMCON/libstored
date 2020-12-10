@@ -1495,8 +1495,13 @@ int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, bool su
 	Poller::events_t events = forReading ? Poller::PollIn : Poller::PollOut;
 
 	int err = 0;
-	int res = 0;
-	if((res = poller.add(fd, nullptr, events))) {
+#ifdef STORED_OS_WINDOWS
+	int res = poller.addh(fd, nullptr, events);
+#else
+	int res = poller.add(fd, nullptr, events);
+#endif
+
+	if(res) {
 		err = res;
 		goto done;
 	}
@@ -1505,6 +1510,10 @@ int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, bool su
 		Poller::Result const& pres = poller.poll(-1, suspend);
 
 		if(pres.empty()) {
+			if(errno == EINTR)
+				// Interrupted. Retry.
+				continue;
+
 			// Should not happen.
 			err = EINVAL;
 			break;
@@ -1518,9 +1527,13 @@ int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, bool su
 		}
 	}
 
-	if((res = poller.remove(fd)))
-		if(!err)
-			err = res;
+#ifdef STORED_OS_WINDOWS
+	res = poller.removeh(fd);
+#else
+	res = poller.remove(fd);
+#endif
+	if(res && !err)
+		err = res;
 
 done:
 	if(err)
@@ -2078,7 +2091,7 @@ int FileLayer::finishWrite(bool block) {
 wait_prev_write:
 	if(!HasOverlappedIoCompleted(&m_overlappedWrite)) {
 		if(block)
-			if(this->block(fd_w(), false))
+			if(this->block(overlappedWrite().hEvent, false))
 				return lastError();
 
 		DWORD written = 0;
@@ -2325,7 +2338,7 @@ int FileLayer::recv(bool block) {
 	setLastError(0);
 
 	if(block)
-		if(this->block(fd_r(), true))
+		if(this->block(overlappedRead().hEvent, true))
 			return lastError();
 
 again:
@@ -2346,7 +2359,7 @@ again:
 
 			if(block) {
 				// Go block till we are readable.
-				if(this->block(fd_r(), true))
+				if(this->block(overlappedRead().hEvent, true))
 					return lastError();
 
 				goto again;
@@ -2509,12 +2522,18 @@ again:
 	case StateConnecting: {
 		DWORD dummy = 0;
 		if(block)
-			this->block(fd_r(), true);
+			this->block(overlappedRead().hEvent, true);
 
 		if(GetOverlappedResult(fd_r(), &overlappedRead(), &dummy, FALSE)) {
 			m_state = StateConnected;
-			if(m_openMode != PIPE_ACCESS_OUTBOUND && startRead())
-				return lastError();
+			if(m_openMode != PIPE_ACCESS_OUTBOUND && startRead()) {
+				if(block && lastError() == EAGAIN) {
+					// Wait for more data.
+					goto again;
+				} else
+					// Some other error. Done.
+					return lastError();
+			}
 			didDecode = true;
 			goto again;
 		} else {

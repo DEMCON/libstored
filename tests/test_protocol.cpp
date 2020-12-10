@@ -833,11 +833,12 @@ TEST(FileLayer, Pipe) {
 	int fd = open("\\\\.\\pipe\\test", O_RDWR);
 	ASSERT_NE(fd, -1);
 	write(fd, "hello", 5);
-	EXPECT_EQ(l.recv(), 0);
+	EXPECT_EQ(l.recv(true), 0);
 	EXPECT_EQ(top.decoded().at(0), "hello");
 
 	write(fd, " world", 6);
-	EXPECT_EQ(l.recv(), 0);
+	EXPECT_EQ(l.recv(true), 0);
+	EXPECT_EQ(l.recv(true), 0);
 	EXPECT_EQ(top.decoded().at(1), " "); // It blocked on one char.
 	EXPECT_EQ(top.decoded().at(2), "world"); // The rest will follow.
 
@@ -856,11 +857,12 @@ TEST(FileLayer, Pipe) {
 	stored::FileLayer f("\\\\.\\pipe\\test");
 	f.wrap(ftop);
 	f.encode("When You Wish", 13);
-	l.recv();
+	EXPECT_EQ(l.recv(true), 0);
 	EXPECT_EQ(top.decoded().at(3), "When You Wish");
 
 	l.encode(" Upon a Star", 12);
-	f.recv();
+	EXPECT_EQ(f.recv(true), 0);
+	EXPECT_EQ(f.recv(true), 0);
 	EXPECT_EQ(ftop.decoded().at(0), " ");
 	EXPECT_EQ(ftop.decoded().at(1), "Upon a Star");
 }
