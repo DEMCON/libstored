@@ -1,5 +1,3 @@
-# vim:et
-
 # libstored, a Store for Embedded Debugger.
 # Copyright (C) 2020  Jochem Rutgers
 #
@@ -16,16 +14,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-##
-# \defgroup libstored_client client
-# \brief Python client interfaces to the embedded application.
-# \ingroup libstored
-
 from .zmq_server import ZmqServer
 from .zmq_client import ZmqClient
 from .stdio2zmq import Stdio2Zmq
 from .serial2zmq import Serial2Zmq
-from .csv import CsvExport
+from .stream2zmq import Stream2Zmq
+from .csv import CsvExport, generateFilename
 from . import protocol
 
 protocol.registerLayerType(ZmqServer)

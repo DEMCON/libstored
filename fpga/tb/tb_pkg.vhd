@@ -1267,7 +1267,8 @@ entity FileLayer is
 	generic (
 		SLEEP_s : real := 100.0e-6;
 		FILENAME_IN : string := "stack_in.txt";
-		FILENAME_OUT : string := "stack_out.txt"
+		FILENAME_OUT : string := "stack_out.txt";
+		VERBOSE : boolean := false
 	);
 	port (
 		clk : in std_logic;
@@ -1306,7 +1307,13 @@ begin
 			report "Reading from " & libstored_tb_pkg.to_string(fn_in) severity note;
 
 			while not endfile(f) loop
+				-- Let TeeLayer finish first, for correct XsimLayer behavior.
+				wait for 0 ns;
 				read(f, v);
+				if VERBOSE then
+					report "Read '" & v & "' (" & integer'image(character'pos(v)) & ")" severity note;
+				end if;
+
 				if v = nul then
 					wait for SLEEP_s * 1 sec;
 					wait until rising_edge(clk);
@@ -1381,12 +1388,207 @@ begin
 			v := character'val(to_integer(unsigned(encode_in.data)));
 			decode_out.accept <= '0';
 
+			if VERBOSE then
+				report "Write '" & v & "' (" & integer'image(character'pos(v)) & ")" severity note;
+			end if;
 			write(f, v);
 		end loop;
 
 		file_close(f);
 		wait;
 	end process;
+
+end behav;
+
+
+
+
+
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use ieee.std_logic_textio.all;
+use work.libstored_pkg;
+use work.libstored_tb_pkg;
+
+entity TeeLayer is
+	generic (
+		FILENAME_ENCODE : string := "";
+		FILENAME_DECODE : string := ""
+	);
+	port (
+		clk : in std_logic;
+		rstn : in std_logic;
+
+		encode_in : in libstored_pkg.msg_t;
+		encode_out : out libstored_pkg.msg_t;
+
+		decode_in : in libstored_pkg.msg_t;
+		decode_out : out libstored_pkg.msg_t;
+
+		idle : out std_logic
+	);
+end TeeLayer;
+
+architecture behav of TeeLayer is
+	type file_t is file of character;
+
+	signal fn_enc : libstored_tb_pkg.str_t(0 to 255) := libstored_tb_pkg.to_str(FILENAME_ENCODE, 256);
+	signal fn_dec : libstored_tb_pkg.str_t(0 to 255) := libstored_tb_pkg.to_str(FILENAME_DECODE, 256);
+begin
+
+	idle <= '1';
+
+	encode_out <= encode_in;
+	decode_out <= decode_in;
+
+	enc_p : process
+		variable status : file_open_status;
+		file f : file_t;
+		variable v : character;
+	begin
+		wait until rising_edge(clk) and rstn = '1' and encode_in.valid = '1' and decode_in.accept = '1';
+		if fn_enc(0) = libstored_tb_pkg.STR_NULL then
+			wait;
+		end if;
+
+		report "Open " & libstored_tb_pkg.to_string(fn_enc) & " for encode..." severity note;
+
+		file_open(status, f, libstored_tb_pkg.to_string(fn_enc), WRITE_MODE);
+
+		case status is
+		when OPEN_OK =>
+			report "Write encode to " & libstored_tb_pkg.to_string(fn_enc) severity note;
+		when STATUS_ERROR =>
+			report "Cannot open " & libstored_tb_pkg.to_string(fn_enc) & "; STATUS_ERROR" severity failure;
+			wait;
+		when NAME_ERROR =>
+			report "Cannot open " & libstored_tb_pkg.to_string(fn_enc) & "; NAME_ERROR" severity failure;
+			wait;
+		when MODE_ERROR =>
+			report "Cannot open " & libstored_tb_pkg.to_string(fn_enc) & "; MODE_ERROR" severity failure;
+			wait;
+		when others =>
+			report "Cannot open " & libstored_tb_pkg.to_string(fn_enc) severity failure;
+			wait;
+		end case;
+
+		while true loop
+			v := character'val(to_integer(unsigned(encode_in.data)));
+			write(f, v);
+			wait until rising_edge(clk) and encode_in.valid = '1' and decode_in.accept = '1';
+		end loop;
+
+		file_close(f);
+		wait;
+	end process;
+
+	dec_p : process
+		variable status : file_open_status;
+		file f : file_t;
+		variable v : character;
+	begin
+		wait until rising_edge(clk) and rstn = '1' and decode_in.valid = '1' and encode_in.accept = '1';
+		if fn_dec(0) = libstored_tb_pkg.STR_NULL then
+			wait;
+		end if;
+
+		report "Open " & libstored_tb_pkg.to_string(fn_dec) & " for decode..." severity note;
+
+		file_open(status, f, libstored_tb_pkg.to_string(fn_dec), WRITE_MODE);
+
+		case status is
+		when OPEN_OK =>
+			report "Write decode to " & libstored_tb_pkg.to_string(fn_dec) severity note;
+		when STATUS_ERROR =>
+			report "Cannot open " & libstored_tb_pkg.to_string(fn_dec) & "; STATUS_ERROR" severity failure;
+			wait;
+		when NAME_ERROR =>
+			report "Cannot open " & libstored_tb_pkg.to_string(fn_dec) & "; NAME_ERROR" severity failure;
+			wait;
+		when MODE_ERROR =>
+			report "Cannot open " & libstored_tb_pkg.to_string(fn_dec) & "; MODE_ERROR" severity failure;
+			wait;
+		when others =>
+			report "Cannot open " & libstored_tb_pkg.to_string(fn_dec) severity failure;
+			wait;
+		end case;
+
+		while true loop
+			v := character'val(to_integer(unsigned(decode_in.data)));
+			write(f, v);
+			wait until rising_edge(clk) and decode_in.valid = '1' and encode_in.accept = '1';
+		end loop;
+
+		file_close(f);
+		wait;
+	end process;
+
+end behav;
+
+
+
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use ieee.std_logic_textio.all;
+use work.libstored_pkg;
+use work.libstored_tb_pkg;
+
+entity XsimLayer is
+	generic (
+		PIPE_PREFIX : string := "";
+		VERBOSE : boolean := false
+	);
+	port (
+		clk : in std_logic;
+		rstn : in std_logic;
+
+		encode_in : in libstored_pkg.msg_t;
+		decode_out : out libstored_pkg.msg_t;
+
+		idle : out std_logic
+	);
+end XsimLayer;
+
+architecture behav of XsimLayer is
+	signal idle_pipe, idle_tee : std_logic;
+	signal file_encode_in, file_decode_out : libstored_pkg.msg_t;
+begin
+	pipe_inst : entity work.FileLayer
+		generic map (
+			SLEEP_s => 0.0,
+			FILENAME_IN => PIPE_PREFIX & "_to_xsim",
+			FILENAME_OUT => PIPE_PREFIX & "_from_xsim",
+			VERBOSE => VERBOSE
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			encode_in => file_encode_in,
+			decode_out => file_decode_out,
+			idle => idle_pipe
+		);
+
+	tee_inst : entity work.TeeLayer
+		generic map (
+			FILENAME_DECODE => PIPE_PREFIX & "_req_xsim"
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			encode_in => encode_in,
+			encode_out => file_encode_in,
+			decode_in => file_decode_out,
+			decode_out => decode_out,
+			idle => idle_tee
+		);
+
+	idle <= idle_pipe and idle_tee;
 
 end behav;
 --pragma translate_on

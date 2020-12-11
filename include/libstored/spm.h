@@ -49,7 +49,6 @@ namespace stored {
 	 *
 	 * \tparam MaxSize the maximum total size to be allocated, which is used to
 	 *         determine the type of the internal counters.
-	 * \ingroup libstored_util
 	 */
 	template <size_t MaxSize=0xffff>
 	class ScratchPad {

@@ -18,12 +18,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/*!
- * \defgroup libstored_util util
- * \brief Misc helper functionality.
- * \ingroup libstored
- */
-
 #include <libstored/macros.h>
 #include <libstored/config.h>
 
@@ -49,7 +43,6 @@
  * \brief Marks the given expression to likely be evaluated to true.
  * \details This may help compiler optimization.
  * \returns the evaluated \c expr
- * \ingroup libstored_util
  */
 #ifndef likely
 #  ifdef __GNUC__
@@ -64,7 +57,6 @@
  * \brief Marks the given expression to likely be evaluated to true.
  * \details This may help compiler optimization.
  * \returns the evaluated \c expr
- * \ingroup libstored_util
  */
 #ifndef unlikely
 #  ifdef __GNUC__
@@ -177,7 +169,6 @@ namespace stored {
 
 	/*!
 	 * \brief Like \c assert(), but only emits code when #stored::Config::EnableAssert.
-	 * \ingroup libstored_util
 	 */
 #ifdef STORED_HAVE_ZTH
 #  define stored_assert(expr)	do { if(::stored::Config::EnableAssert) { zth_assert(expr); } } while(false)
@@ -236,7 +227,6 @@ namespace stored {
 
 	/*!
 	 * \brief Swap endianness of the given value.
-	 * \ingroup libstored_util
 	 */
 	template <typename T>
 	static inline T swap_endian(T value) {
@@ -276,7 +266,6 @@ namespace stored {
 
 	/*!
 	 * \brief Swap host to store endianness.
-	 * \ingroup libstored_util
 	 */
 	template <typename T>
 	static inline T endian_h2s(T value) {
@@ -318,7 +307,6 @@ namespace stored {
 
 	/*!
 	 * \brief Swap store to host endianness.
-	 * \ingroup libstored_util
 	 */
 	template <typename T>
 	static inline T endian_s2h(T value) {
@@ -428,7 +416,6 @@ namespace stored {
 
 /*!
  * \brief Converts a number type to another one, with proper rounding and saturation.
- * \ingroup libstored_util
  */
 template <typename R, typename T>
 __attribute__((pure)) R saturated_cast(T value) { return stored::impl::saturated_cast_helper<R>::cast(value); }

@@ -1,5 +1,3 @@
-# vim:et
-
 # libstored, a Store for Embedded Debugger.
 # Copyright (C) 2020  Jochem Rutgers
 #
@@ -16,11 +14,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-##
-# \file
-# \brief A Pyside2/QtQuick GUI client.
-# \ingroup libstored_client
-
 import sys
 import argparse
 import os
@@ -35,6 +28,7 @@ from lognplot.client import LognplotTcpClient
 
 from ..zmq_client import ZmqClient
 from ..zmq_server import ZmqServer
+from ..csv import generateFilename
 
 class NatSort(QSortFilterProxyModel):
     def __init__(self, *args, **kwargs):
@@ -126,7 +120,9 @@ if __name__ == '__main__':
     parser.add_argument('-v', dest='verbose', default=False, help='Enable verbose output', action='store_true')
     parser.add_argument('-f', dest='csv', default=None, nargs='?',
         help='Log auto-refreshed data to csv file. ' +
-            'The file is truncated upon startup and when the set of auto-refreshed objects change.', const='log.csv')
+            'The file is truncated upon startup and when the set of auto-refreshed objects change. ' +
+            'The file name may include strftime() format codes.', const='log.csv')
+    parser.add_argument('-t', dest='timestamp', default=False, help='Append time stamp in csv file name', action='store_true')
     parser.add_argument('-m', dest='multi', default=False,
         help='Enable multi-mode; allow multiple simultaneous connections to the same target, ' +
             'but it is less efficient.', action='store_true')
@@ -140,7 +136,11 @@ if __name__ == '__main__':
     app.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "twotone_bug_report_black_48dp.png")))
     engine = QQmlApplicationEngine(parent=app)
 
-    client = ZmqClient(args.server, args.port, csv=args.csv, multi=args.multi)
+    csv = None
+    if not args.csv is None:
+        csv = generateFilename(args.csv, addTimestamp=args.timestamp)
+
+    client = ZmqClient(args.server, args.port, csv=csv, multi=args.multi)
     engine.rootContext().setContextProperty("client", client)
 
     model = ObjectListModel(client.list(), parent=app)

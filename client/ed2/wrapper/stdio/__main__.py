@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# vim:et
 
 # libstored, a Store for Embedded Debugger.
 # Copyright (C) 2020  Jochem Rutgers
@@ -17,11 +16,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-##
-# \file
-# \brief A stdin/stdout frame grabber to ZmqServer wrapper for a to-be-started process.
-# \ingroup libstored_client
-
 import argparse
 import logging
 
@@ -30,6 +24,7 @@ from ...stdio2zmq import Stdio2Zmq
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='stdin/stdout wrapper to ZMQ server')
+    parser.add_argument('-l', dest='listen', type=str, default='*', help='listen address')
     parser.add_argument('-p', dest='port', type=int, default=ZmqServer.default_port, help='port')
     parser.add_argument('-S', dest='stack', type=str, default='ascii,term', help='protocol stack')
     parser.add_argument('-v', dest='verbose', default=False, help='Enable verbose output', action='store_true')
@@ -41,7 +36,7 @@ if __name__ == '__main__':
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
 
-    bridge = Stdio2Zmq(args=[args.command] + args.args, stack=args.stack, port=args.port)
+    bridge = Stdio2Zmq(args=[args.command] + args.args, stack=args.stack, listen=args.listen, port=args.port)
 
     try:
         while True:

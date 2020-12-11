@@ -21,6 +21,10 @@ list(APPEND ed2_src
 	ed2/wrapper/stdio/__main__.py
 	ed2/zmq_client.py
 	ed2/zmq_server.py
+	ed2/visu/__init__.py
+	ed2/visu/__main__.py
+	ed2/visu/example/example.qrc
+	ed2/visu/example/main.qml
 	setup.py
 )
 
@@ -31,12 +35,14 @@ execute_process(
 	OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
+add_subdirectory(ed2/visu)
+
 set(ed2_wheel_file "ed2-${ed2_version}-py3-none-any.whl" CACHE INTERNAL "")
 set(ed2_wheel "${CMAKE_CURRENT_SOURCE_DIR}/dist/${ed2_wheel_file}" CACHE INTERNAL "")
 
 add_custom_command(
 	OUTPUT ${ed2_wheel}
-	DEPENDS ${ed2_src}
+	DEPENDS visu-example ${ed2_src}
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/setup.py -q sdist bdist_wheel
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	COMMENT "Generate ed2 distributables"

@@ -83,9 +83,9 @@ begin
 			var_in => var_in,
 			sync_in => sync_in,
 			sync_out => sync_out,
-			sync_id => sync_chained_id,
-			sync_chained_in => sync_chained_out,
-			sync_chained_out => sync_chained_in
+			sync_id => sync_chained_id --,
+--			sync_chained_in => sync_chained_out,
+--			sync_chained_out => sync_chained_in
 		);
 
 	store2_inst : entity work.ExampleFpga2_hdl
@@ -98,8 +98,8 @@ begin
 			rstn => rstn,
 			var_out => var2_out,
 			var_in => var2_in,
-			sync_in => sync_chained_in,
-			sync_out => sync_chained_out,
+--			sync_in => sync_chained_in,
+--			sync_out => sync_chained_out,
 			sync_chained_id => sync_chained_id
 		);
 
@@ -147,9 +147,12 @@ begin
 	end generate;
 
 --pragma translate_off
-	file_g : if SIMULATION generate
+	xsim_g : if SIMULATION generate
 	begin
-		FileLayer_inst : entity work.FileLayer
+		XsimLayer_inst : entity work.XsimLayer
+			generic map (
+				PIPE_PREFIX => "\\.\pipe\9_fpga"
+			)
 			port map (
 				clk => clk,
 				rstn => rstn,

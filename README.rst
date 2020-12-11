@@ -1,42 +1,58 @@
-[![CI](https://github.com/DEMCON/libstored/workflows/CI/badge.svg)](https://github.com/DEMCON/libstored/actions?query=workflow%3ACI)
+.. image:: https://github.com/DEMCON/libstored/workflows/CI/badge.svg
+   :alt: CI
+   :target: https://github.com/DEMCON/libstored/actions?query=workflow%3ACI
 
-# libstored
+libstored
+=========
 
-## TL;DR
+TL;DR
+-----
 
-**What is it?**  
+What is it?
+```````````````
 A generator for a C++ class (store) with your application's variables, and a
 tool set to synchronize updates between processes (including FPGA), and debug
 it remotely.  See also the
-[presentation](https://demcon.github.io/libstored/libstored.sozi.html).
+presentation_.
 
-**When do I need it?**  
+When do I need it?
+``````````````````
+
 When you have a distributed application in need of synchronization, and/or you
 want to be able to inspect and modify internal data of a running application.
 
-**Does it work on my platform?**  
+Does it work on my platform?
+````````````````````````````
+
 Yes.
 
-**Huh? But how you do know my hardware architecture?**  
+Huh? But how you do know my hardware architecture?
+``````````````````````````````````````````````````
+
 I don't. You have to supply the drivers for your (hardware) communication
 interfaces, but everything else is ready to use.
 
-**Great! How do I use it?**  
-Have a look at the [examples](examples).
+Great! How do I use it?
+```````````````````````
+Have a look at the examples_.
 
-## Table of contents
 
-- [Introduction](#intro)
-- [libstored - Store by description](#store)
-- [libstored - Store on a distributed system](#sync)
-- [libstored - Store for Embedded Debugger](#debug)
-	- [Example](#debug_ex)
-	- [Embedded Debugger protocol](#protocol)
-- [How to build](#build)
-	- [How to integrate in your build](#integrate)
-- [License](#license)
+Table of contents
+-----------------
 
-## <a name="intro"></a>Introduction
+- `Introduction`_
+- `libstored - Store by description`_
+- `libstored - Store on a distributed system`_
+- `libstored - Store for Embedded Debugger`_
+   - `Example`_
+   - `Embedded Debugger protocol`_
+- `How to build`_
+	- `How to integrate in your build`_
+- `License`_
+
+
+Introduction
+------------
 
 Data is at the core of any application. And data is tricky, especially when it
 changes.  This library helps you managing data in three ways:
@@ -44,7 +60,7 @@ changes.  This library helps you managing data in three ways:
 1. Using a simple language, you can define which variables, types, etc., you
    need. Next, a C++ class is generated, with these variables, but also with
    iterators, run-time name lookup, synchronization hooks, and more. This is
-   your _store_. Additionally, a VHDL implementation is generated too, such
+   your *store*. Additionally, a VHDL implementation is generated too, such
    that the store can also be used on an FPGA.
 2. These stores can be synchronized between different instances via arbitrary
    communication channels.  So, you can build a distributed system over multiple
@@ -66,17 +82,18 @@ See next sections for details, but the following is worth to mention here:
 - The VHDL implementation is also generic, but only developed for Xilinx (using
   Vivado).
 - The store and all other libstored classes are not thread-safe.
-  Using threads is troubling anyway, use [fibers](https://github.com/jhrutgers/zth) instead.
+  Using threads is troubling anyway, use fibers_ instead.
 
-Have a look in the [`examples`](examples) directory for further in-depth reading.
-Refer to the [Doxygen documentation](https://demcon.github.io/libstored) for the C++ API.
-See also the [presentation](https://demcon.github.io/libstored/libstored.sozi.html).
+Have a look in the examples_ directory for further in-depth reading.
+Refer to the documentation_ for the C++ API.
+See also the presentation_.
 
-### <a name="store"></a>libstored - Store by description
 
-The store is described in a simple grammar.
-See the [examples](https://demcon.github.io/libstored/examples.html) directory
-for more explanation. This is just an impression of the syntax.
+libstored - Store by description
+--------------------------------
+
+The store is described in a simple grammar.  See the examples_ directory for
+more explanation. This is just an impression of the syntax::
 
 	// Comment
 	// Grammar: type:size[array]=initializer long name with any character
@@ -91,7 +108,7 @@ for more explanation. This is just an impression of the syntax.
 		string:16 s
 	} scope
 
-The generated store (C++ class) has variables that can be accessed like this:
+The generated store (C++ class) has variables that can be accessed like this::
 
 	mystore.some_int = 10;
 	int i = mystore.another_int_which_is_initialized;
@@ -104,7 +121,7 @@ The generated store (C++ class) has variables that can be accessed like this:
 The store has a few other interesting properties:
 
 - Objects can have a piece of memory as backing (just like a normal variable in
-  a `struct`), but can also have custom callbacks on every get and set. This
+  a ``struct``), but can also have custom callbacks on every get and set. This
   allows all kinds of side effects, even though the interface of the object is
   the same.
 - Objects are accessible using a C++ interface, but also via name lookup by
@@ -113,14 +130,16 @@ The store has a few other interesting properties:
 - A store is not thread-safe. This seems a limitation, but really, applications
   without threads are way easier to build and debug.
 
-### <a name="sync"></a>libstored - Store on a distributed system
+
+libstored - Store on a distributed system
+-----------------------------------------
 
 Synchronization is tricky to manage. libstored helps you by providing a
 stored::Synchronizer class that manages connections to other Synchronizers.
 Between these Synchronizers, one or more stores can be synchronized.  The (OSI)
 Application layer is implemented, and several other (OSI) protocol layers are
 provided to configure the channels as required. These protocols are generic and
-also used by the debugger interface. See [next section](#debug) for details.
+also used by the debugger interface. See next section for details.
 
 The store provides you with enough hooks to implement any distributed memory
 architecture, but that is often way to complicated. The default Synchronizer is
@@ -135,15 +154,13 @@ simple and efficient, but has the following limitations:
   synchronization is undefined. However, you would have a data race in your
   application anyway, so this is in practice probably not really a limitation.
 
-See [the doxygen documentation](https://demcon.github.io/libstored/group__libstored__synchronizer.html) for more details.
+See the documentation_ for more details.
 
 The topology is arbitrary, as long as every store instance has one root, where
 it gets its initial copy from. You could, for example, construct the following
-topology:
+topology::
 
-	 B   C
-	  \ /
-	   A
+	B--A--C
 	   |
 	G--D--E--F
 	   |
@@ -159,7 +176,7 @@ Different stores can have different topologies for synchronization, and
 synchronization may happen at different speed or interval. Everything is
 possible, and you can define it based on your application's needs.
 
-The example [`8_sync`](examples/8_sync) implements an application with two
+The example `8_sync`_ implements an application with two
 stores, which can be connected arbitrarily using command line arguments. You
 can play with it to see the synchronization.
 
@@ -167,11 +184,13 @@ The store implementation in VHDL integrates a Synchronizer instance.  However,
 it cannot be used as in intermediate node in the topology as described above;
 the FPGA has to be a leaf.
 
-### <a name="debug"></a>libstored - Store for Embedded Debugger
+
+libstored - Store for Embedded Debugger
+---------------------------------------
 
 If you have an embedded system, you probably want to debug it on-target.  One
 of the questions you often have, is what is the value of internal variables of
-the program, and how can I change them?  Debugging using `gdb` is great, but it
+the program, and how can I change them?  Debugging using ``gdb`` is great, but it
 pauses the application, which also stops control loops, for example.
 
 Using libstored, you can access and manipulate a running system.
@@ -180,15 +199,14 @@ libstored. Additionally, other layers are available to support lossless and
 lossy channels, which fit to common UART and CAN interfaces.  You have to
 combine, and possibly add, and configure other (usually hardware-specific)
 layers of the OSI stack to get the debugging protocol in and out of your
-system.  Although the protocol fits nicely to ZeroMQ, a TCP stream, or `stdio`
+system.  Although the protocol fits nicely to ZeroMQ, a TCP stream, or ``stdio``
 via terminal, the complexity of integrating this depends on your embedded
 device.  However, once you implemented this data transport, you can access the
 store, and observe and manipulate it using an Embedded Debugger (PC) client.
 Moreover, the protocol supports arbitrary streams (like stdout) from the
 application to the client, and has high-speed tracing of store variables. These
-streams are optionally [heatshrink](https://github.com/atomicobject/heatshrink)
-compressed.  libstored provides Python classes for your custom scripts, a CLI
-and GUI interface.
+streams are optionally heatshrink_ compressed.  libstored provides Python
+classes for your custom scripts, a CLI and GUI interface.
 
 Your application can have one store with one debugging interface, but also
 multiple stores with one debugging interface, or one store with multiple
@@ -208,36 +226,38 @@ FPGA, instantiate the store, which includes a Synchronizer, and use a bridge in
 C++ that has the same store, a Synchronizer connected to the FPGA, and a
 Debugger instance. The connect to this C++ bridge.
 
-### <a name="debug_ex"></a>Example
 
-The host tools to debug your application are written in python, as the `ed2`
-package, and are located the `client` directory. You can run the example below
-by running python from the `client` directory, but you can also install the
-`ed2` package on your system. To do this, execute the `ed2-install` cmake
-target, such as:
+Example
+```````
+
+The host tools to debug your application are written in python, as the ``ed2``
+package, and are located the ``client`` directory. You can run the example below
+by running python from the ``client`` directory, but you can also install the
+``ed2`` package on your system. To do this, execute the ``ed2-install`` cmake
+target, such as::
 
 	cd build
 	make ed2-install
 
-This builds a wheel from the `client` directory and installs it locally using
-`pip`.  Now you can just fire up python and do `import ed2`.
+This builds a wheel from the ``client`` directory and installs it locally using
+``pip``.  Now you can just fire up python and do ``import ed2``.
 
 To get a grasp how debugging feels like, try the following.
 
 - Build the examples, as discussed above.
-- If you use Windows, execute `scripts/env.cmd` to set your environment
-  properly.  In the instructions below, use `python` instead of `python3`.
-- Run your favorite `lognplot` instance, e.g., by running `python3 -m lognplot`.
-- Run `examples/zmqserver/zmqserver`. This starts an application with a store
+- If you use Windows, execute ``scripts/env.cmd`` to set your environment
+  properly.  In the instructions below, use ``python`` instead of ``python3``.
+- Run your favorite ``lognplot`` instance, e.g., by running ``python3 -m lognplot``.
+- Run ``examples/zmqserver/zmqserver``. This starts an application with a store
   with all kinds of object types, and provides a ZeroMQ server interface for
   debugging.
-- Run `python3 -m ed2.gui -l` within the `client` directory. This GUI connects
-  to both the `zmqserver` application via ZeroMQ, and to the `lognplot` instance.
-- The GUI window will pop up and show the objects of the `zmqserver` example.
+- Run ``python3 -m ed2.gui -l`` within the ``client`` directory. This GUI connects
+  to both the ``zmqserver`` application via ZeroMQ, and to the ``lognplot`` instance.
+- The GUI window will pop up and show the objects of the ``zmqserver`` example.
   If polling is enabled of one of the objects, the values are forwarded to
-  `lognplot`.
+  ``lognplot``.
 
-The structure of this setup is:
+The structure of this setup is::
 
 	+---------+        +----------+
 	| ed2.gui | -----> | lognplot |
@@ -249,22 +269,23 @@ The structure of this setup is:
 	| zmqserver |
 	+-----------+
 
-![zmqserver debugging screenshot](examples/zmqserver/zmqserver_screenshot.png)
+.. image:: examples/zmqserver/zmqserver_screenshot.png
+   :alt: zmqserver debugging screenshot
 
 The Embedded Debugger client connects via ZeroMQ.
 If you application does not have it, you must implement is somehow.
-The `examples/terminal/terminal` application could be debugged as follows:
+The ``examples/terminal/terminal`` application could be debugged as follows:
 
-- Run `python3 -m ed2.wrapper.stdio ../build/examples/terminal/terminal` from
-  the `client` directory.  This starts the `terminal` example, and extracts
-  escaped debugger frames from `stdout`, which are forwarded to a ZeroMQ
+- Run ``python3 -m ed2.wrapper.stdio ../build/examples/terminal/terminal`` from
+  the ``client`` directory.  This starts the ``terminal`` example, and extracts
+  escaped debugger frames from ``stdout``, which are forwarded to a ZeroMQ
   interface.
-- Connect a client, such as `python3 -m ed2.gui`.
-  Instead of using `lognplot`, the GUI can also write all auto-refreshed data
-  to a CSV file when the `-f log.csv` is passed on the command line. Then,
-  [Kst](https://kst-plot.kde.org/) can be used for live viewing the file.
+- Connect a client, such as ``python3 -m ed2.gui``.
+  Instead of using ``lognplot``, the GUI can also write all auto-refreshed data
+  to a CSV file when the ``-f log.csv`` is passed on the command line. Then,
+  Kst_ can be used for live viewing the file.
 
-The structure of this setup is:
+The structure of this setup is::
 
 	+---------+        +---------+           +-----+
 	| ed2.gui | -----> | log.csv | --------> | Kst |
@@ -284,41 +305,43 @@ The structure of this setup is:
 	+----------+
 
 There are some more ready-to-use clients, and a Python module in the
-[client](https://github.com/DEMCON/libstored/tree/master/client) directory.
+client_ directory.
 
-### <a name="protocol"></a>Embedded Debugger protocol
+
+Embedded Debugger protocol
+``````````````````````````
 
 Communication with the debugger implementation in the application follows a
 request-response pattern.  A full description of the commands can be found in
-the [doxygen documentation](https://demcon.github.io/libstored/group__libstored__debugger.html).
-These commands are implemented in the stored::Debugger class and ready to be
-used in your application.
+the documentation_.  These commands are implemented in the stored::Debugger
+class and ready to be used in your application.
 
 However, the request/response messages should be wrapped in a OSI-like protocol
-stack, which is described in more detail in the
-[documentation too](https://demcon.github.io/libstored/group__libstored__protocol.html)).
+stack, which is described in more detail in the documentation_ too.
 This stack depends on your application. A few standard protocol layers are
 available, which allow to build a stack for lossless channels (stdio/TCP/some
 UART) and lossy channels (some UART/CAN). These stacks are configurable in
 having auto retransmit on packet loss, CRC-8/16, segmentation, buffering, MTU
-size, ASCII escaping and encapsulation. See also `examples/7_protocol`.
+size, ASCII escaping and encapsulation. See also ``examples/7_protocol``.
 
-To get a grasp about the protocol, I had a short chat with the `zmqserver`
-example using the `ed2.cli`.  See the transcript below. Lines starting
-with `>` are requests, entered by me, lines starting with `<` are responses
+To get a grasp about the protocol, I had a short chat with the ``zmqserver``
+example using the ``ed2.cli``.  See the transcript below. Lines starting
+with ``>`` are requests, entered by me, lines starting with ``<`` are responses
 from the application.
 
 In the example below, I used the following commands:
 
-- `?`: request capabilities of the target
-- `l`: list object in the store
-- `i`: return the identification of the target
-- `r`: read an object
-- `w`: write an object
-- `v`: request versions
-- `a`: define an alias
+- ``?``: request capabilities of the target
+- ``l``: list object in the store
+- ``i``: return the identification of the target
+- ``r``: read an object
+- ``w``: write an object
+- ``v``: request versions
+- ``a``: define an alias
 
 Refer to the documentation for the details about these and other commands.
+
+::
 
 	>  ?
 	<  ?rwelamivRWst
@@ -345,7 +368,7 @@ Refer to the documentation for the details about these and other commands.
 	734/stats/object writes
 	778/t (us)
 	6f8/rand
-	 
+
 	>  i
 	<  zmqserver
 	>  r/a bool
@@ -375,67 +398,73 @@ Refer to the documentation for the details about these and other commands.
 	>  rr
 	<  3fb7617168255e00
 
-## <a name="build"></a>How to build
 
-Run `scripts/bootstrap` (as Administrator under Windows) once to install all
-build dependencies.  Then run `scripts/build` to build the project. This does
-effectively:
+How to build
+------------
+
+Run ``scripts/bootstrap`` (as Administrator under Windows) once to install all
+build dependencies.  Then run ``scripts/build`` to build the project. This does
+effectively::
 
 	mkdir build
 	cd build
 	cmake ..
 	cmake --build .
 
-`scripts/build` takes an optional argument, which allows you to specify the
-`CMAKE_BUILD_TYPE`.  If not specified, Debug is assumed.
+``scripts/build`` takes an optional argument, which allows you to specify the
+``CMAKE_BUILD_TYPE``.  If not specified, Debug is assumed.
 
 By default, all examples are built.  For example, notice that sources are
-generated under `examples/1_hello`, while the example itself is built in the
-`build` directory. The documentation can be viewed at
-`doxygen/html/index.html`.
+generated under ``examples/1_hello``, while the example itself is built in the
+``build`` directory. The documentation can be viewed at
+``sphinx/html/index.html``.
 
-To run all tests, use one of:
+To run all tests, use one of::
 
 	cmake --build . --target test
 	cmake --build . --target RUN_TESTS
 
-### <a name="integrate"></a>How to integrate in your build
+
+How to integrate in your build
+``````````````````````````````
 
 Building libstored on itself is not too interesting, it is about how it can
 generate stuff for you.  This is how to integrate it in your project:
 
 - Add libstored to your source repository, for example as a submodule.
-- Run `scripts/bootstrap` in the libstored directory once to install all
+- Run ``scripts/bootstrap`` in the libstored directory once to install all
   dependencies.
-- Include libstored to your cmake project. For example:
+- Include libstored to your cmake project. For example::
 
 		set(LIBSTORED_EXAMPLES OFF CACHE BOOL "Disable libstored examples" FORCE)
 		set(LIBSTORED_TESTS OFF CACHE BOOL "Disable libstored tests" FORCE)
 		set(LIBSTORED_DOCUMENTATION OFF CACHE BOOL "Disable libstored documentation" FORCE)
 		add_subdirectory(libstored)
 
-- Optional: install `scripts/st.vim` in `$HOME/.vim/syntax` to have proper
+- Optional: install ``scripts/st.vim`` in ``$HOME/.vim/syntax`` to have proper
   syntax highlighting in vim.
-- Add some store definition file to your project, let's say `MyStore.st`.
-  Assume you have a target `app` (which can be any type of cmake target), which
-  is going to use `MyStore.st`, generate all required files. This will generate
-  the sources in the `libstored` subdirectory of the current source directory,
-  a library named `app-libstored`, and set all the dependencies right.
+- Add some store definition file to your project, let's say ``MyStore.st``.
+  Assume you have a target ``app`` (which can be any type of cmake target), which
+  is going to use ``MyStore.st``, generate all required files. This will generate
+  the sources in the ``libstored`` subdirectory of the current source directory,
+  a library named ``app-libstored``, and set all the dependencies right::
 
-		add_application(app main.cpp)
+		add_executable(app main.cpp)
 		libstored_generate(app MyStore.st)
 
-- Now, build your `app`. The generated libstored library is automatically
+- Now, build your ``app``. The generated libstored library is automatically
   built.
 - If you want to use the VHDL store in your Vivado project, create a project
-  for your FPGA, and source the generated file `rtl/vivado.tcl`. This will add
+  for your FPGA, and source the generated file ``rtl/vivado.tcl``. This will add
   all relevant files to your project. Afterwards, just save the project as
-  usually; the `rtl/vivado.tcl` file is not needed anymore.
+  usually; the ``rtl/vivado.tcl`` file is not needed anymore.
 
 Check out the examples of libstored, which are all independent applications
 with their own generated store.
 
-## <a name="license"></a>License
+
+License
+-------
 
 The project license is specified in COPYING and COPYING.LESSER.
 
@@ -450,5 +479,15 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+along with this program.  If not, see https://www.gnu.org/licenses/.
+
+
+.. _presentation: https://demcon.github.io/libstored/libstored.sozi.html
+.. _examples: https://github.com/DEMCON/libstored/tree/master/examples
+.. _fibers: https://github.com/jhrutgers/zth
+.. _documentation: https://demcon.github.io/libstored
+.. _8_sync: https://github.com/DEMCON/libstored/tree/master/examples/8_sync
+.. _heatshrink: https://github.com/atomicobject/heatshrink
+.. _Kst: https://kst-plot.kde.org/
+.. _client: https://github.com/DEMCON/libstored/tree/master/client
 

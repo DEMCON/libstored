@@ -22,6 +22,8 @@
 #include "LoggingLayer.h"
 
 #include <fcntl.h>
+#include <chrono>
+#include <thread>
 
 #define DECODE(stack, str)	do { char msg_[] = "" str; (stack).decode(msg_, sizeof(msg_) - 1); } while(0)
 
@@ -823,6 +825,32 @@ TEST(CompressLayer, Compress) {
 }
 
 #ifdef STORED_OS_WINDOWS
+
+template <typename L>
+static int recvAll(L& l) {
+	using namespace std::chrono_literals;
+
+	bool first = false;//true;
+	int res = 0;
+	int idle = 0;
+	while(true) {
+		switch((res = l.recv(first))) {
+		case 0:
+			first = false;
+			// fall-through
+		case EINTR:
+			break;
+		case EAGAIN:
+			if(!first && ++idle > 5)
+				return 0;
+			std::this_thread::sleep_for(100ms);
+			break;
+		default:
+			return res;
+		}
+	}
+}
+
 TEST(FileLayer, Pipe) {
 	LoggingLayer top;
 	stored::NamedPipeLayer l("test");
@@ -833,13 +861,13 @@ TEST(FileLayer, Pipe) {
 	int fd = open("\\\\.\\pipe\\test", O_RDWR);
 	ASSERT_NE(fd, -1);
 	write(fd, "hello", 5);
-	EXPECT_EQ(l.recv(), 0);
-	EXPECT_EQ(top.decoded().at(0), "hello");
+	EXPECT_EQ(recvAll(l), 0);
+	EXPECT_EQ(top.allDecoded(), "hello");
 
 	write(fd, " world", 6);
-	EXPECT_EQ(l.recv(), 0);
-	EXPECT_EQ(top.decoded().at(1), " "); // It blocked on one char.
-	EXPECT_EQ(top.decoded().at(2), "world"); // The rest will follow.
+
+	EXPECT_EQ(recvAll(l), 0);
+	EXPECT_EQ(top.allDecoded(), "hello world");
 
 	// Nothing to receive.
 	EXPECT_EQ(l.recv(), EAGAIN);
@@ -851,18 +879,18 @@ TEST(FileLayer, Pipe) {
 
 	close(fd);
 	EXPECT_EQ(l.recv(), EIO);
+	top.clear();
 
 	LoggingLayer ftop;
 	stored::FileLayer f("\\\\.\\pipe\\test");
 	f.wrap(ftop);
 	f.encode("When You Wish", 13);
-	l.recv();
-	EXPECT_EQ(top.decoded().at(3), "When You Wish");
+	EXPECT_EQ(recvAll(l), 0);
+	EXPECT_EQ(top.allDecoded(), "When You Wish");
 
 	l.encode(" Upon a Star", 12);
-	f.recv();
-	EXPECT_EQ(ftop.decoded().at(0), " ");
-	EXPECT_EQ(ftop.decoded().at(1), "Upon a Star");
+	EXPECT_EQ(recvAll(f), 0);
+	EXPECT_EQ(ftop.allDecoded(), " Upon a Star");
 }
 #endif
 

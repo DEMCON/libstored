@@ -1,5 +1,3 @@
-# vim:et
-
 # libstored, a Store for Embedded Debugger.
 # Copyright (C) 2020  Jochem Rutgers
 #
@@ -24,8 +22,9 @@ from ...zmq_server import ZmqServer
 from ...serial2zmq import Serial2Zmq
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='stdin/stdout wrapper to ZMQ server',
+    parser = argparse.ArgumentParser(description='serial wrapper to ZMQ server',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-l', dest='zmqlisten', type=str, default='*', help='ZMQ listen address')
     parser.add_argument('-p', dest='zmqport', type=int, default=ZmqServer.default_port, help='ZMQ port')
     parser.add_argument('port', help='serial port')
     parser.add_argument('baud', nargs='?', type=int, default=115200, help='baud rate')
@@ -38,7 +37,7 @@ if __name__ == '__main__':
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
 
-    bridge = Serial2Zmq(stack=args.stack, zmqport=args.zmqport, port=args.port, baudrate=args.baud, rtscts=args.rtscts)
+    bridge = Serial2Zmq(stack=args.stack, zmqlisten=args.zmqlisten, zmqport=args.zmqport, port=args.port, baudrate=args.baud, rtscts=args.rtscts)
 
     try:
         while True:

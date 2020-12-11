@@ -18,7 +18,6 @@ namespace stored {
 	/*!
 	 * \brief Example of a configuration that override the stored::DefaultConfig.
 	 * \see stored_config.h
-	 * \ingroup libstored_config
 	 */
 	struct Config : public DefaultConfig {
 		// Override defaults from DefaultConfig here for your local setup.

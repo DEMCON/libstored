@@ -95,45 +95,9 @@ Debugger::~Debugger()
 	= default;
 #endif
 
-/*!
- * \brief Check if the given name has the given prefix.
- */
-static bool checkPrefix(char const* name, char const* prefix, size_t len) {
-	stored_assert(name && prefix);
-
-	if(len == 0 || *name != '/' || *prefix != '/')
-		return false;
-
-	name++;
-	prefix++;
-	len--;
-
-	// Consider a match if name (e.g., /prefix/name) contains the full prefix (/prefix),
-	// or when the given name has an abbreviated prefix (/pr/name). If this is
-	// ambiguous, it is undefined which store is to be returned, but that is up to the user.
-	while(len > 0) {
-		if(!*prefix)
-			// End of prefix, so it should also be the end of the prefix in name.
-			return *name == '/';
-		if(!*name)
-			// Name is too short.
-			return false;
-		if(*name == '/')
-			// Name has a shorter prefix than prefix. Accept abbreviated names.
-			return true;
-		if(*name != *prefix)
-			return false;
-		name++;
-		prefix++;
-		len--;
-	}
-
-	return true;
-}
-
 /*! \copydoc stored::DebugStoreBase::find() */
 DebugVariant Debugger::find(char const* name, size_t len) const {
-	if(unlikely(!name)) {
+	if(unlikely(!name || !len)) {
 notfound:
 		return DebugVariant();
 	}
@@ -157,7 +121,7 @@ notfound:
 			return v;
 
 		// Again, but strip / to drop the prefix and forward it.
-		return m_map.begin()->second->find(&name[1], len);
+		return m_map.begin()->second->find(&name[1], len - 1);
 	}
 	default:;
 	}
@@ -165,20 +129,38 @@ notfound:
 	// name contains '/prefix/object', where '/prefix' equals the mapped name of
 	// a store.
 
-	StoreMap::const_iterator it = m_map.upper_bound(name);
-	// If found, it->first:
-	// - is alphabetically after name, such as /prefix, while name was /pref/object (match)
-	// - is alphabetically after name, such as /zz, while name was /pref/object (no match)
-	// If not found, it equals end(), but (--it)->first:
-	// - is alphabetically before name, such as /prefix, while name was /prefix/object (match)
-	// - is alphabetically before name, such as /aa, while name was /prefix/object (no match)
-	// So, check both it and --it.
+	size_t prefix_len = 1;
+	for(; prefix_len <= len && name[prefix_len] && name[prefix_len] != '/'; prefix_len++);
+	if(prefix_len == len)
+		goto notfound;
 
-	if(                              it != m_map.end() && checkPrefix(name, it->first, len))
+	ScratchPad<>::Snapshot snapshot = spm().snapshot();
+	char* prefix = spm().alloc<char>(prefix_len + 1);
+	memcpy(prefix, name, prefix_len);
+	prefix[prefix_len] = '\0';
+
+	// Assume mapped stores [/aa, /ab, /b, /b2, /caa, /cb, /dd]
+	// /0  : LB=/aa  LB++=/ab  UB=/aa  no match
+	// /a  : LB=/aa  LB++=/ab  UB=/aa  no match
+	// /aa : LB=/aa  LB++=/ab  UB=/ab  match (Rule 2)
+	// /b  : LB=/b   LB++=/b2  UB=/b2  match (Rule 1)
+	// /b2 : LB=/b2  LB++=/caa UB=/caa match (Rule 2)
+	// /ca : LB=/caa LB++=/cb  UB=/cb  match (Rule 2)
+	// /d  : LB=/dd  LB++=end  UB=/dd  match (Rule 2)
+	// /e  : LB=end  LB++=end  UB=end  no match
+	//
+	// Rule 1: If LB equals the prefix, it's a match.
+	// Rule 2: If LB starts with the prefix, it's a match when LB++ does not start with it.
+
+	StoreMap::const_iterator it = m_map.lower_bound(prefix);
+	if(it == m_map.end())
+		goto notfound; // NOLINT(bugprone-branch-clone)
+	else if(strcmp(prefix, it->first) == 0) // Rule 1.
 		goto gotit; // NOLINT(bugprone-branch-clone)
-	else if(it != m_map.begin() && --it != m_map.end() && checkPrefix(name, it->first, len))
-		goto gotit; // NOLINT(bugprone-branch-clone)
-	else
+	else if(::strncmp(prefix, it->first, prefix_len) == 0 && (++it == m_map.end() || ::strncmp(prefix, it->first, prefix_len) != 0)) { // Rule 2.
+		--it;
+		goto gotit;
+	} else
 		goto notfound;
 
 gotit:
@@ -1071,7 +1053,7 @@ bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len) {
 /*!
  * \brief Returns a scratch pad memory.
  */
-ScratchPad<>& Debugger::spm() {
+ScratchPad<>& Debugger::spm() const {
 	return m_scratchpad;
 }
 

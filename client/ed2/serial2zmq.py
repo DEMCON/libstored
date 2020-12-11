@@ -1,5 +1,3 @@
-# vim:et
-
 # libstored, a Store for Embedded Debugger.
 # Copyright (C) 2020  Jochem Rutgers
 #
@@ -20,33 +18,53 @@ import sys
 import serial
 import zmq
 import logging
+import time
 
 from .stream2zmq import Stream2Zmq
 
-##
-# \brief Serial port frame grabber to ZmqServer bridge.
-# \ingroup libstored_client
 class Serial2Zmq(Stream2Zmq):
-    def __init__(self, stack='ascii,term', zmqport=Stream2Zmq.default_port, **kwargs):
-        super().__init__(stack, zmqport)
+    """Serial port frame grabber to ZmqServer bridge."""
+
+    def __init__(self, stack='ascii,term', zmqlisten='*', zmqport=Stream2Zmq.default_port, drop_s=1, **kwargs):
+        super().__init__(stack, listen=zmqlisten, port=zmqport)
         self.serial = serial.Serial(**kwargs)
         self.serial_socket = self.registerStream(self.serial)
         self.stdin_socket = self.registerStream(sys.stdin)
         self.rep_queue = []
         self.logger = logging.getLogger(__name__)
 
+        self._drop = None
+        self._bufferStdin = b''
+        if not drop_s is None:
+            self._drop = time.time() + drop_s
+
     def poll(self, timeout_s = None):
+        dropping = not self._drop is None
+
         events = super().poll(timeout_s)
+
         if events.get(self.stdin_socket, 0) & zmq.POLLIN:
             self.recvAll(self.stdin_socket, self.sendToApp)
         if events.get(self.serial_socket, 0) & zmq.POLLIN:
-            self.recvAll(self.serial_socket, self.decode)
+            self.recvAll(self.serial_socket, self.decode if not dropping else self.drop)
+
+        if dropping and time.time() > self._drop:
+            self._drop = None
+            self._sendToApp(self._bufferStdin)
+            self._bufferStdin = None
 
     def sendToApp(self, data):
+        if self._drop is None:
+            self._sendToApp(data)
+        else:
+            self.logger.debug('queue %s', data)
+            self._bufferStdin += data
+
+    def _sendToApp(self, data):
         if len(data) > 0:
             self.serial.write(data)
             self.serial.flush()
-            self.logger.info('sent ' + str(data))
+            self.logger.info('sent %s', data)
 
     def encode(self, data):
         if len(data) > 0:
@@ -56,4 +74,9 @@ class Serial2Zmq(Stream2Zmq):
     def close(self):
         super().close()
         self.serial.close()
+
+    def drop(self, data):
+        # First drop_s seconds of data is dropped to get rid of
+        # garbage while reset/boot/connecting the UART.
+        self.logger.debug('dropped %s', data)
 

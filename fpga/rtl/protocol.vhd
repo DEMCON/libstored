@@ -62,7 +62,7 @@ begin
 	data_fifo_inst : entity work.libstored_fifo
 		generic map (
 			WIDTH => 8,
-			DEPTH => FIFO_DEPTH
+			DEPTH => libstored_pkg.maximum(FIFO_DEPTH, TAIL_LENGTH + 1)
 		)
 		port map (
 			clk => clk,
@@ -78,7 +78,7 @@ begin
 	last_fifo_inst : entity work.libstored_fifo
 		generic map (
 			WIDTH => 2,
-			DEPTH => FIFO_DEPTH
+			DEPTH => libstored_pkg.maximum(FIFO_DEPTH, TAIL_LENGTH + 1)
 		)
 		port map (
 			clk => clk,

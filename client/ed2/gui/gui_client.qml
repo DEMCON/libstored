@@ -62,6 +62,7 @@ Window {
                 Text {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
+                    Layout.minimumWidth: root.fontSize * 5
                     text: obj.name
                     elide: Text.ElideMiddle
                     verticalAlignment: Text.AlignVCenter
@@ -100,6 +101,7 @@ Window {
                     font.pixelSize: root.fontSize
                     Layout.fillHeight: true
                     Layout.preferredWidth: root.fontSize * 8
+                    Layout.maximumWidth: parent.width / 5
                     currentIndex: strToIndex(obj.format)
                     topPadding: 0
                     bottomPadding: 0
@@ -126,6 +128,7 @@ Window {
                 Text {
                     Layout.fillHeight: true
                     Layout.preferredWidth: root.fontSize * 5.5
+                    Layout.maximumWidth: parent.width / 5
                     text: obj.typeName
                     elide: Text.ElideRight
                     horizontalAlignment: Text.AlignRight
@@ -139,6 +142,7 @@ Window {
 
                     Layout.fillHeight: true
                     Layout.preferredWidth: root.fontSize * 15
+                    Layout.maximumWidth: parent.width / 5
                     font.pixelSize: root.fontSize
                     horizontalAlignment: TextInput.AlignRight
                     text: obj.valueString
@@ -147,6 +151,7 @@ Window {
                     background.antialiasing: true
                     topPadding: 0
                     bottomPadding: 0
+                    leftPadding: 0
 
                     onAccepted: {
                         obj.valueString = displayText
@@ -235,6 +240,7 @@ Window {
                     id: refreshButton
                     Layout.fillHeight: true
                     Layout.preferredWidth: implicitWidth
+                    Layout.maximumWidth: parent.width / 5
                     text: "Refresh"
                     font.pixelSize: root.fontSize
                     onClicked: {
@@ -281,6 +287,7 @@ Window {
                 background.antialiasing: true
                 topPadding: 0
                 bottomPadding: 0
+                leftPadding: 0
                 font.pixelSize: root.fontSize
 
                 ToolTip {
@@ -333,17 +340,28 @@ Window {
             ScrollBar.vertical: ScrollBar {}
         }
 
+        Rectangle {
+            antialiasing:  true
+            color: "#c0c0c0"
+            radius: 3
+            Layout.fillWidth: true
+            Layout.preferredHeight: 3
+            Layout.leftMargin: 10
+            Layout.rightMargin: 10
+            visible: polledObjectList.visible
+        }
+
         ListView {
             clip: true
             Layout.preferredHeight: contentHeight
             Layout.maximumHeight: parent.height / 3
-            Layout.topMargin: 5
             Layout.fillWidth: true
             id: polledObjectList
             model: polledObjects
             delegate: objectRow
             spacing: 3
             ScrollBar.vertical: ScrollBar {}
+            visible: count > 0
         }
 
         TextField {
@@ -377,6 +395,8 @@ Window {
                 antialiasing: true
                 border.color: "#c0c0c0"
             }
+
+            visible: req.activeFocus || rep.activeFocus
         }
     }
 }

@@ -11,14 +11,11 @@ if(MSVC)
 	else()
 		add_compile_options(/MT)
 	endif()
-
-	# MSVC does not have C++11.
-	set(CMAKE_CXX_STANDARD 14)
 else()
 	add_compile_options(-Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wconversion -ffunction-sections -fdata-sections)
-	set(CMAKE_CXX_STANDARD 11)
 endif()
 
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory("${PROJECT_SOURCE_DIR}/extern/googletest" "extern/googletest")
@@ -30,7 +27,8 @@ target_compile_definitions(teststore-libstored PUBLIC STORED_POLL_${LIBSTORED_PO
 macro(libstored_add_test TESTNAME)
 	add_executable(${TESTNAME} ${ARGN})
 	target_link_libraries(${TESTNAME} gtest gmock gtest_main teststore-libstored)
-	gtest_discover_tests(${TESTNAME})
+	gtest_discover_tests(${TESTNAME} TEST_LIST tests)
+	set_tests_properties(${tests} PROPERTIES TIMEOUT 60)
 	set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
 	if(CMAKE_GENERATOR MATCHES "Visual Studio.*")
 		# Every binary has its own output directory.
@@ -50,12 +48,13 @@ libstored_add_test(test_synchronizer test_synchronizer.cpp)
 if(WIN32)
 	libstored_add_test(test_poller test_poller_win.cpp)
 	if(LIBSTORED_HAVE_LIBZMQ)
-		add_custom_command(TARGET test_poller PRE_LINK
-			COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> ${CMAKE_CURRENT_BINARY_DIR}
-			VERBATIM)
-		add_custom_command(TARGET test_protocol PRE_LINK
-			COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> ${CMAKE_CURRENT_BINARY_DIR}
-			VERBATIM)
+		add_custom_target(libzmq-test-copy
+			DEPENDS libzmq
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:libzmq> ${CMAKE_CURRENT_BINARY_DIR}
+			VERBATIM
+		)
+		add_dependencies(test_poller libzmq-test-copy)
+		add_dependencies(test_protocol libzmq-test-copy)
 	endif()
 else()
 	libstored_add_test(test_poller test_poller.cpp)

@@ -18,17 +18,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/*!
- * \defgroup libstored libstored
- * \brief Store for Embedded Debugger
- */
-
-/*!
- * \defgroup libstored_stores stores
- * \brief Generated stores.
- * \ingroup libstored
- */
-
 #include <libstored/macros.h>
 #include <libstored/config.h>
 #include <libstored/util.h>

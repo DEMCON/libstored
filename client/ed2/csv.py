@@ -1,5 +1,3 @@
-# vim:et
-
 # libstored, a Store for Embedded Debugger.
 # Copyright (C) 2020  Jochem Rutgers
 #
@@ -20,12 +18,73 @@ import csv
 import time
 import threading
 import queue
+import logging
+import os
 
 from PySide2.QtCore import QObject, Signal, Slot, Property
+
+def generateFilename(filename=None, base=None, addTimestamp=False, ext='.csv', now=None):
+    if filename == None and base == None:
+        raise ValueError('Specify filename and/or base')
+
+    returnList = False
+
+    if not isinstance(filename, list):
+        if filename is None:
+            filename = []
+        else:
+            filename = [filename]
+    else:
+        returnList = True
+
+    if not isinstance(base, list):
+        if base is None:
+            base = []
+        else:
+            base = [base]
+    else:
+        returnList = True
+
+    if not isinstance(ext, list):
+        if ext is None:
+            ext = []
+        else:
+            ext = [ext]
+    else:
+        returnList = True
+
+    names = []
+
+    for f in filename:
+        names.append(os.path.splitext(f))
+
+    for e in ext:
+        for b in base:
+            names.append((b, e))
+
+    if now == None:
+        now = time.localtime()
+
+    if addTimestamp:
+        for i in range(0, len(names)):
+            names[i] = (names[i][0] + '_%Y%m%d-%H%M%S%z', names[i][1])
+
+    for i in range(0, len(names)):
+        names[i] = time.strftime(names[i][0] + names[i][1], now)
+
+    if returnList:
+        return names
+    elif len(names) == 0:
+        return None
+    elif len(names) == 1:
+        return names[0]
+    else:
+        return names
 
 class CsvExport(QObject):
     def __init__(self, filename="log.csv", threaded=True, autoFlush=1, parent=None, **fmtparams):
         super().__init__(parent=parent)
+        self.logger = logging.getLogger(__name__)
         self._fmtparams = fmtparams
         self._filename = filename
         self._objects = set()
@@ -35,12 +94,27 @@ class CsvExport(QObject):
         self._autoFlushed = time.time()
         self._thread = None
         self._queue = None
+        self._dropNext = False
+
+        self.logger.info('Writing samples to %s...', self._filename)
+        self._lock = threading.RLock()
+        self.restart()
         if threaded:
             self._queue = queue.Queue()
             self._thread = threading.Thread(target=self._worker)
             self._thread.daemon = True
             self._thread.start()
-        self.restart()
+
+    def _clear(self):
+        if self._queue == None:
+            return
+
+        try:
+            self._queue.get(False)
+        except queue.Empty:
+            pass
+
+        self._dropNext = True
 
     def add(self, o):
         if o in self._objects:
@@ -57,6 +131,7 @@ class CsvExport(QObject):
         self.restart()
 
     def restart(self):
+        self._lock.acquire()
         objList = sorted(self._objects, key=lambda x: x.name)
         if self._file != None:
             self._file.close()
@@ -64,6 +139,8 @@ class CsvExport(QObject):
         self._csv = csv.writer(self._file, **self._fmtparams)
         self._objValues = [lambda x=x: x._value for x in objList]
         self._csv.writerow(['t'] + [x.name for x in objList])
+        self._clear()
+        self._lock.release()
 
     def write(self, t=None):
         now = time.time()
@@ -79,6 +156,9 @@ class CsvExport(QObject):
             self._queue.put(data)
 
     def _write(self, data):
+        if self._file == None:
+            return
+
         self._csv.writerow(data)
 
         if self._autoFlushInterval != None:
@@ -89,5 +169,11 @@ class CsvExport(QObject):
 
     def _worker(self):
         while True:
-            self._write(self._queue.get())
+            d = self._queue.get()
+            self._lock.acquire()
+            if self._dropNext:
+                self._dropNext = False
+            else:
+                self._write(d)
+            self._lock.release()
 

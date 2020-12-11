@@ -26,9 +26,9 @@
 #    include <zmq.h>
 #    include <libstored/protocol.h>
 
-#  if defined(STORED_OS_WINDOWS) && !defined(STORED_COMPILER_MSVC)
-#    include <winsock2.h>
-#  endif
+#    if defined(STORED_OS_WINDOWS) && !defined(STORED_COMPILER_MSVC)
+#      include <winsock2.h>
+#    endif
 
 namespace stored {
 
@@ -38,33 +38,29 @@ namespace stored {
 	 * This is a generic ZeroMQ class, for practical usages, instantiate
 	 * #stored::DebugZmqLayer or #stored::SyncZmqLayer instead.
 	 */
-	class ZmqLayer : public ProtocolLayer {
+	class ZmqLayer : public PolledSocketLayer {
 		CLASS_NOCOPY(ZmqLayer)
 	public:
-		typedef ProtocolLayer base;
+		typedef PolledSocketLayer base;
+		using base::fd_type;
 
 		ZmqLayer(void* context, int type, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~ZmqLayer() override;
 
 		void* context() const;
 		void* socket() const;
-		virtual int recv(bool block = false);
+		virtual int recv(bool block = false) override;
 
-		/*! \brief The socket type. */
-#ifdef STORED_OS_WINDOWS
-		typedef SOCKET socket_type;
-#else
-		typedef int socket_type;
-#endif
-		socket_type fd();
+		virtual fd_type fd() const override;
 
 		void encode(void const* buffer, size_t len, bool last = true) final;
+#ifndef DOXYGEN
 		using base::encode;
-
-		int lastError() const;
+#endif
 
 	protected:
-		void setLastError(int error);
+		int block(fd_type fd, bool forReading, bool suspend = false) final;
+		int block(bool forReading, bool suspend = false);
 		int recv1(bool block = false);
 
 	private:
@@ -80,13 +76,10 @@ namespace stored {
 		size_t m_bufferCapacity;
 		/*! \brief Allocated size of #m_buffer. */
 		size_t m_bufferSize;
-		/*! \brief Error result of last function. */
-		int m_error;
 	};
 
 	/*!
 	 * \brief Constructs a protocol stack on top of a REQ/REP ZeroMQ socket, specifically for the #stored::Debugger.
-	 * \ingroup libstored_protocol
 	 */
 	class DebugZmqLayer : public ZmqLayer {
 		CLASS_NOCOPY(DebugZmqLayer)
@@ -106,7 +99,6 @@ namespace stored {
 
 	/*!
 	 * \brief Constructs a protocol stack on top of a PAIR ZeroMQ socket, specifically for the #stored::Synchronizer.
-	 * \ingroup libstored_protocol
 	 */
 	class SyncZmqLayer : public ZmqLayer {
 		CLASS_NOCOPY(SyncZmqLayer)
