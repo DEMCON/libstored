@@ -830,13 +830,14 @@ template <typename L>
 static int recvAll(L& l) {
 	using namespace std::chrono_literals;
 
-	bool first = false;//true;
+	bool first = true;
 	int res = 0;
 	int idle = 0;
 	while(true) {
 		switch((res = l.recv(first))) {
 		case 0:
 			first = false;
+			idle = 0;
 			// fall-through
 		case EINTR:
 			break;

@@ -2505,6 +2505,8 @@ again:
 			case ERROR_IO_INCOMPLETE:
 			case ERROR_IO_PENDING:
 				m_state = StateConnecting;
+				if(block)
+					goto again;
 				return setLastError(EAGAIN);
 			case ERROR_PIPE_CONNECTED:
 				// The client arrived early.
@@ -2521,15 +2523,18 @@ again:
 		break;
 	case StateConnecting: {
 		DWORD dummy = 0;
-		if(block)
+		if(!didDecode && block)
 			this->block(overlappedRead().hEvent, true);
 
 		if(GetOverlappedResult(fd_r(), &overlappedRead(), &dummy, FALSE)) {
 			m_state = StateConnected;
 			if(m_openMode != PIPE_ACCESS_OUTBOUND && startRead()) {
-				if(block && lastError() == EAGAIN) {
-					// Wait for more data.
-					goto again;
+				if(lastError() == EAGAIN) {
+					if(!didDecode && block)
+						// Wait for more data.
+						goto again;
+					else
+						return setLastError(didDecode ? 0 : EAGAIN);
 				} else
 					// Some other error. Done.
 					return lastError();
@@ -2540,7 +2545,7 @@ again:
 			switch(GetLastError()) {
 			case ERROR_IO_INCOMPLETE:
 			case ERROR_IO_PENDING:
-				return setLastError(EAGAIN);
+				return setLastError(didDecode ? 0 : EAGAIN);
 			default:
 				m_state = StateError;
 				return setLastError(EIO);
