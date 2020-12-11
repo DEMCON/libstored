@@ -1,4 +1,4 @@
-find_program(RCC_EXE pyside2-rcc REQUIRED)
+find_program(RCC_EXE pyside2-rcc PATHS $ENV{HOME}/.local/bin REQUIRED)
 
 function(libstored_visu target rcc)
 	foreach(f IN LISTS ARGN)
