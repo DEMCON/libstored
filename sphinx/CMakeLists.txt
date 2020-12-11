@@ -5,7 +5,7 @@ if(NOT DOXYGEN_FOUND)
 endif()
 
 find_program(MAKE_EXECUTABLE make REQUIRED)
-find_program(SPHINX_EXECUTABLE sphinx-build REQUIRED)
+find_program(SPHINX_EXECUTABLE sphinx-build PATHS $ENV{HOME}/.local/bin REQUIRED)
 
 # For README.rst, link the examples directory for screenshots
 if(WIN32)
