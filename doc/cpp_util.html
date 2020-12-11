@@ -1,0 +1,566 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Utilities &mdash; libstored  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="http://wavedrom.com/skins/default.js"></script>
+        <script src="http://wavedrom.com/wavedrom.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Python" href="py.html" />
+    <link rel="prev" title="Types" href="cpp_types.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libstored
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Content</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="cpp.html">C++</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cpp_config.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html">Debugger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_directory.html">Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html">Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_synchronizer.html">Synchronizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_types.html">Types</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fpga.html">VHDL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libstored</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="cpp.html">C++</a> &raquo;</li>
+        
+      <li>Utilities</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/doc/cpp_util.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="utilities">
+<h1>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h1>
+<p>Misc helper functionality.</p>
+<dl class="cpp class">
+<dt id="_CPPv4I_6size_tEN6stored10ScratchPadE">
+<span id="_CPPv3I_6size_tEN6stored10ScratchPadE"></span><span id="_CPPv2I_6size_tEN6stored10ScratchPadE"></span>template&lt;size_t <code class="sig-name descname">MaxSize</code> = 0xffff&gt;<br /><span class="target" id="classstored_1_1_scratch_pad"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ScratchPad</code><a class="headerlink" href="#_CPPv4I_6size_tEN6stored10ScratchPadE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Memory that uses bump-alloc for a very fast short-lived heap. </p>
+<p>The <a class="reference internal" href="#classstored_1_1_scratch_pad"><span class="std std-ref">ScratchPad</span></a> grows automatically, but it is more efficient to manage the <a class="reference internal" href="#classstored_1_1_scratch_pad_1a70723e281a5105e4605b7d4360901f57"><span class="std std-ref">capacity()</span></a> on beforehand. The capacity is determined while using the <a class="reference internal" href="#classstored_1_1_scratch_pad"><span class="std std-ref">ScratchPad</span></a>, which may cause some more overhead at the start of the application.</p>
+<p>There is no overhead per <a class="reference internal" href="#classstored_1_1_scratch_pad_1a0d2ebf84b297dfaf3b74bf8e2f15a750"><span class="std std-ref">alloc()</span></a>, but padding bytes may be inserted to word-align allocs. Heap fragmentation is not possible.</p>
+<p>Alloc is very fast, but dealloc or free is not possible. Bump-alloc is like a stack; you can <a class="reference internal" href="#classstored_1_1_scratch_pad_1aad566f5ccddfbf90dd6357bb4084ea57"><span class="std std-ref">reset()</span></a> it, or make a <a class="reference internal" href="#classstored_1_1_scratch_pad_1abd37e875ac15d3d0aa05d5e56a585a56"><span class="std std-ref">snapshot()</span></a>, which you can rollback to.</p>
+<p><dl class="simple">
+<dt><strong>Template Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MaxSize</span></code>: the maximum total size to be allocated, which is used to determine the type of the internal counters. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp enum">
+<dt id="_CPPv4N6stored10ScratchPadUt2_13E">
+<span id="_CPPv3N6stored10ScratchPadUt2_13E"></span><span class="target" id="classstored_1_1_scratch_pad_1a5dac3df84772022a404818df1dc31a89"></span><em class="property">enum </em><strong>[anonymous]</strong><a class="headerlink" href="#_CPPv4N6stored10ScratchPadUt2_13E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored10ScratchPadUt2_137maxSizeE">
+<span id="_CPPv3N6stored10ScratchPadUt2_137maxSizeE"></span><span class="target" id="classstored_1_1_scratch_pad_1a5dac3df84772022a404818df1dc31a89a62424ce21ef05ba377086fb28696171c"></span><em class="property">enumerator </em><code class="sig-name descname">maxSize</code><a class="headerlink" href="#_CPPv4N6stored10ScratchPadUt2_137maxSizeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Maximum total size of allocated memory. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored10ScratchPadUt2_1311chunkHeaderE">
+<span id="_CPPv3N6stored10ScratchPadUt2_1311chunkHeaderE"></span><span class="target" id="classstored_1_1_scratch_pad_1a5dac3df84772022a404818df1dc31a89a93c50596b9a5c2f5e24bfbbfc8c04581"></span><em class="property">enumerator </em><code class="sig-name descname">chunkHeader</code><a class="headerlink" href="#_CPPv4N6stored10ScratchPadUt2_1311chunkHeaderE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Size of the header of a chunk. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored10ScratchPadUt2_135spareE">
+<span id="_CPPv3N6stored10ScratchPadUt2_135spareE"></span><span class="target" id="classstored_1_1_scratch_pad_1a5dac3df84772022a404818df1dc31a89a6696822a44e9973945331edcd65a963b"></span><em class="property">enumerator </em><code class="sig-name descname">spare</code><a class="headerlink" href="#_CPPv4N6stored10ScratchPadUt2_135spareE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Extra amount to reserve when the chunk is allocated. </p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored10ScratchPad9size_typeE">
+<span id="_CPPv3N6stored10ScratchPad9size_typeE"></span><span id="_CPPv2N6stored10ScratchPad9size_typeE"></span><span id="stored::ScratchPad::size_type"></span><span class="target" id="classstored_1_1_scratch_pad_1a99d00bbc9e2ed2b394d38d5a4e20554e"></span><em class="property">typedef </em>value_type&lt;<a class="reference internal" href="#_CPPv4I_6size_tEN6stored10ScratchPadE" title="stored::ScratchPad::MaxSize">MaxSize</a>&gt;::type <code class="sig-name descname">size_type</code><a class="headerlink" href="#_CPPv4N6stored10ScratchPad9size_typeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of all internally used size counters. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored10ScratchPad10ScratchPadERK10ScratchPad">
+<span id="_CPPv3N6stored10ScratchPad10ScratchPadERK10ScratchPad"></span><span id="_CPPv2N6stored10ScratchPad10ScratchPadERK10ScratchPad"></span><span id="stored::ScratchPad::ScratchPad__ScratchPadCR"></span><span class="target" id="classstored_1_1_scratch_pad_1a50e87954737a92ab1a2782cde931759e"></span><code class="sig-name descname">ScratchPad</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored10ScratchPad10ScratchPadERK10ScratchPad" title="stored::ScratchPad::ScratchPad">ScratchPad</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored10ScratchPad10ScratchPadERK10ScratchPad" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored10ScratchPad10ScratchPadERR10ScratchPad">
+<span id="_CPPv3N6stored10ScratchPad10ScratchPadERR10ScratchPad"></span><span id="_CPPv2N6stored10ScratchPad10ScratchPadERR10ScratchPad"></span><span id="stored::ScratchPad::ScratchPad__ScratchPadRR"></span><span class="target" id="classstored_1_1_scratch_pad_1a85cf660076b466fb96b55dd7a716fa35"></span><code class="sig-name descname">ScratchPad</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored10ScratchPad10ScratchPadERR10ScratchPad" title="stored::ScratchPad::ScratchPad">ScratchPad</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored10ScratchPad10ScratchPadERR10ScratchPad" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored10ScratchPad10ScratchPadE6size_t">
+<span id="_CPPv3N6stored10ScratchPad10ScratchPadE6size_t"></span><span id="_CPPv2N6stored10ScratchPad10ScratchPadE6size_t"></span><span id="stored::ScratchPad::ScratchPad__s"></span><span class="target" id="classstored_1_1_scratch_pad_1a909eddb57c5c6d8ca63c05d5675e475f"></span><code class="sig-name descname">ScratchPad</code><span class="sig-paren">(</span>size_t <em>reserve</em> = 0<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored10ScratchPad10ScratchPadE6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Ctor. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">reserve</span></code>: number of bytes to reserve during construction </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored10ScratchPadD0Ev">
+<span id="_CPPv3N6stored10ScratchPadD0Ev"></span><span id="_CPPv2N6stored10ScratchPadD0Ev"></span><span id="stored::ScratchPad::~ScratchPad"></span><span class="target" id="classstored_1_1_scratch_pad_1a4467bd9f69f9ae404a3352bdffd42ee7"></span><code class="sig-name descname">~ScratchPad</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored10ScratchPadD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Dtor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored10ScratchPad5allocEP1T6size_t6size_t">
+<span id="_CPPv3I0EN6stored10ScratchPad5allocE6size_t6size_t"></span><span id="_CPPv2I0EN6stored10ScratchPad5allocE6size_t6size_t"></span>template&lt;typename <code class="sig-name descname">T</code>&gt;<br /><span class="target" id="classstored_1_1_scratch_pad_1a0d2ebf84b297dfaf3b74bf8e2f15a750"></span><a class="reference internal" href="#_CPPv4I0EN6stored10ScratchPad5allocEP1T6size_t6size_t" title="stored::ScratchPad::alloc::T">T</a> *<code class="sig-name descname">alloc</code><span class="sig-paren">(</span>size_t <em>count</em> = 1, size_t <em>align</em> = sizeof(<a class="reference internal" href="#_CPPv4I0EN6stored10ScratchPad5allocEP1T6size_t6size_t" title="stored::ScratchPad::alloc::T">T</a>)<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored10ScratchPad5allocEP1T6size_t6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Allocate memory. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>a pointer to the allocated memory, which remains uninitialized and cannot be <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> </p>
+</dd>
+<dt><strong>Template Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">T</span></code>: the type of object to allocate </p></li>
+</ul>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">count</span></code>: number of objects, which is allocated as an array of <code class="docutils literal notranslate"><span class="pre">T</span></code> </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">align</span></code>: alignment requirement (maximized to word size) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored10ScratchPad8capacityEv">
+<span id="_CPPv3NK6stored10ScratchPad8capacityEv"></span><span id="_CPPv2NK6stored10ScratchPad8capacityEv"></span><span id="stored::ScratchPad::capacityC"></span><span class="target" id="classstored_1_1_scratch_pad_1a70723e281a5105e4605b7d4360901f57"></span>size_t <code class="sig-name descname">capacity</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored10ScratchPad8capacityEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the total capacity currently available within the <a class="reference internal" href="#classstored_1_1_scratch_pad"><span class="std std-ref">ScratchPad</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored10ScratchPad6chunksEv">
+<span id="_CPPv3NK6stored10ScratchPad6chunksEv"></span><span id="_CPPv2NK6stored10ScratchPad6chunksEv"></span><span id="stored::ScratchPad::chunksC"></span><span class="target" id="classstored_1_1_scratch_pad_1aae5a0236f7ec82efe56f864004c2b48e"></span>size_t <code class="sig-name descname">chunks</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored10ScratchPad6chunksEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the number of chunks of the <a class="reference internal" href="#classstored_1_1_scratch_pad"><span class="std std-ref">ScratchPad</span></a>. </p>
+<p>You would want to have only one chunk, but during the first moments of running, the <a class="reference internal" href="#classstored_1_1_scratch_pad"><span class="std std-ref">ScratchPad</span></a> has to determine how much memory the application uses. During this time, there may exist multiple chunks. Call <a class="reference internal" href="#classstored_1_1_scratch_pad_1aad566f5ccddfbf90dd6357bb4084ea57"><span class="std std-ref">reset()</span></a> to optimize memory usage. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored10ScratchPad5emptyEv">
+<span id="_CPPv3NK6stored10ScratchPad5emptyEv"></span><span id="_CPPv2NK6stored10ScratchPad5emptyEv"></span><span id="stored::ScratchPad::emptyC"></span><span class="target" id="classstored_1_1_scratch_pad_1a7f8189d71dd857bf9b60e94878bcbe01"></span>bool <code class="sig-name descname">empty</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored10ScratchPad5emptyEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Checks if the <a class="reference internal" href="#classstored_1_1_scratch_pad"><span class="std std-ref">ScratchPad</span></a> is empty. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored10ScratchPad3maxEv">
+<span id="_CPPv3NK6stored10ScratchPad3maxEv"></span><span id="_CPPv2NK6stored10ScratchPad3maxEv"></span><span id="stored::ScratchPad::maxC"></span><span class="target" id="classstored_1_1_scratch_pad_1a20062937c98d739633df8e5347bf21ad"></span>size_t <code class="sig-name descname">max</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored10ScratchPad3maxEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the maximum size. </p>
+<p>To reset this value, use <a class="reference internal" href="#classstored_1_1_scratch_pad_1a15b8eda12b74a8dd64181c49061c6829"><span class="std std-ref">shrink_to_fit()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored10ScratchPadaSERR10ScratchPad">
+<span id="_CPPv3N6stored10ScratchPadaSERR10ScratchPad"></span><span id="_CPPv2N6stored10ScratchPadaSERR10ScratchPad"></span><span id="stored::ScratchPad::assign-operator__ScratchPadRR"></span><span class="target" id="classstored_1_1_scratch_pad_1ac5db9c529d301ac30c10e3417bc20d81"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_6size_tEN6stored10ScratchPadE" title="stored::ScratchPad">ScratchPad</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored10ScratchPadaSERR10ScratchPad" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored10ScratchPadaSERK10ScratchPad">
+<span id="_CPPv3N6stored10ScratchPadaSERK10ScratchPad"></span><span id="_CPPv2N6stored10ScratchPadaSERK10ScratchPad"></span><span id="stored::ScratchPad::assign-operator__ScratchPadCR"></span><span class="target" id="classstored_1_1_scratch_pad_1aa13a1856fbff256e15b0001f066bf81e"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_6size_tEN6stored10ScratchPadE" title="stored::ScratchPad">ScratchPad</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored10ScratchPadaSERK10ScratchPad" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored10ScratchPad7reserveE6size_t">
+<span id="_CPPv3N6stored10ScratchPad7reserveE6size_t"></span><span id="_CPPv2N6stored10ScratchPad7reserveE6size_t"></span><span id="stored::ScratchPad::reserve__s"></span><span class="target" id="classstored_1_1_scratch_pad_1a8a41c6838e3c51e52f1abb4e5f2bb176"></span>void <code class="sig-name descname">reserve</code><span class="sig-paren">(</span>size_t <em>more</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored10ScratchPad7reserveE6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Reserves memory to save the additional given amount of bytes. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored10ScratchPad5resetEv">
+<span id="_CPPv3N6stored10ScratchPad5resetEv"></span><span id="_CPPv2N6stored10ScratchPad5resetEv"></span><span id="stored::ScratchPad::reset"></span><span class="target" id="classstored_1_1_scratch_pad_1aad566f5ccddfbf90dd6357bb4084ea57"></span>void <code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored10ScratchPad5resetEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Resets the content of the <a class="reference internal" href="#classstored_1_1_scratch_pad"><span class="std std-ref">ScratchPad</span></a>. </p>
+<p>Coalesce chunks when required. It leaves <a class="reference internal" href="#classstored_1_1_scratch_pad_1a20062937c98d739633df8e5347bf21ad"><span class="std std-ref">max()</span></a> untouched. To actually free all used memory, call <a class="reference internal" href="#classstored_1_1_scratch_pad_1a15b8eda12b74a8dd64181c49061c6829"><span class="std std-ref">shrink_to_fit()</span></a> afterwards. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored10ScratchPad13shrink_to_fitEv">
+<span id="_CPPv3N6stored10ScratchPad13shrink_to_fitEv"></span><span id="_CPPv2N6stored10ScratchPad13shrink_to_fitEv"></span><span id="stored::ScratchPad::shrink_to_fit"></span><span class="target" id="classstored_1_1_scratch_pad_1a15b8eda12b74a8dd64181c49061c6829"></span>void <code class="sig-name descname">shrink_to_fit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored10ScratchPad13shrink_to_fitEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Releases all unused memory back to the OS, if possible. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored10ScratchPad4sizeEv">
+<span id="_CPPv3NK6stored10ScratchPad4sizeEv"></span><span id="_CPPv2NK6stored10ScratchPad4sizeEv"></span><span id="stored::ScratchPad::sizeC"></span><span class="target" id="classstored_1_1_scratch_pad_1a493804d9898a37c631c1999f14c28c67"></span>size_t <code class="sig-name descname">size</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored10ScratchPad4sizeEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the total amount of allocated memory. </p>
+<p>This includes padding because of alignment requirements of <a class="reference internal" href="#classstored_1_1_scratch_pad_1a0d2ebf84b297dfaf3b74bf8e2f15a750"><span class="std std-ref">alloc()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored10ScratchPad8snapshotEv">
+<span id="_CPPv3N6stored10ScratchPad8snapshotEv"></span><span id="_CPPv2N6stored10ScratchPad8snapshotEv"></span><span id="stored::ScratchPad::snapshot"></span><span class="target" id="classstored_1_1_scratch_pad_1abd37e875ac15d3d0aa05d5e56a585a56"></span><a class="reference internal" href="#_CPPv4N6stored10ScratchPad8SnapshotE" title="stored::ScratchPad::Snapshot">Snapshot</a> <code class="sig-name descname">snapshot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored10ScratchPad8snapshotEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get a snapshot of the <a class="reference internal" href="#classstored_1_1_scratch_pad"><span class="std std-ref">ScratchPad</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_scratch_pad_1_1_snapshot"><span class="std std-ref">stored::ScratchPad::Snapshot</span></a>. </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Friends</p>
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> Snapshot</dt>
+</dl>
+
+</div>
+<dl class="cpp class">
+<dt id="_CPPv4N6stored10ScratchPad8SnapshotE">
+<span id="_CPPv3N6stored10ScratchPad8SnapshotE"></span><span id="_CPPv2N6stored10ScratchPad8SnapshotE"></span><span id="stored::ScratchPad::Snapshot"></span><span class="target" id="classstored_1_1_scratch_pad_1_1_snapshot"></span><em class="property">class </em><code class="sig-name descname">Snapshot</code><a class="headerlink" href="#_CPPv4N6stored10ScratchPad8SnapshotE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>A snapshot of the <a class="reference internal" href="#classstored_1_1_scratch_pad"><span class="std std-ref">ScratchPad</span></a>, which can be rolled back to. </p>
+<p>A <a class="reference internal" href="#classstored_1_1_scratch_pad_1_1_snapshot"><span class="std std-ref">Snapshot</span></a> remains valid, until the <a class="reference internal" href="#classstored_1_1_scratch_pad"><span class="std std-ref">ScratchPad</span></a> is reset, or an earlier snapshot is rolled back. An invalid snapshot cannot be rolled back, and cannot be destructed, as that implies a rollback. Make sure to reset the snapshot before destruction, if it may have become invalid.</p>
+<p>Normally, you would let a snapshot go out of scope before doing anything with older snapshots.</p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_scratch_pad_1abd37e875ac15d3d0aa05d5e56a585a56"><span class="std std-ref">stored::ScratchPad::snapshot()</span></a> </p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored10ScratchPad8Snapshot8SnapshotERR8Snapshot">
+<span id="_CPPv3N6stored10ScratchPad8Snapshot8SnapshotERR8Snapshot"></span><span id="_CPPv2N6stored10ScratchPad8Snapshot8SnapshotERR8Snapshot"></span><span id="stored::ScratchPad::Snapshot::Snapshot__SnapshotRR"></span><span class="target" id="classstored_1_1_scratch_pad_1_1_snapshot_1affb8ca40964ce8b94838b6ce2518ef71"></span><code class="sig-name descname">Snapshot</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored10ScratchPad8Snapshot8SnapshotERR8Snapshot" title="stored::ScratchPad::Snapshot::Snapshot">Snapshot</a> &amp;&amp;<em>s</em><span class="sig-paren">)</span> <em class="property">noexcept</em><a class="headerlink" href="#_CPPv4N6stored10ScratchPad8Snapshot8SnapshotERR8Snapshot" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Move ctor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored10ScratchPad8Snapshot8SnapshotERK8Snapshot">
+<span id="_CPPv3N6stored10ScratchPad8Snapshot8SnapshotERK8Snapshot"></span><span id="_CPPv2N6stored10ScratchPad8Snapshot8SnapshotERK8Snapshot"></span><span id="stored::ScratchPad::Snapshot::Snapshot__SnapshotCR"></span><span class="target" id="classstored_1_1_scratch_pad_1_1_snapshot_1a0860c0e49dc490a06128c73e80e0d288"></span><code class="sig-name descname">Snapshot</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored10ScratchPad8Snapshot8SnapshotERK8Snapshot" title="stored::ScratchPad::Snapshot::Snapshot">Snapshot</a> <em class="property">const</em> &amp;<em>s</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored10ScratchPad8Snapshot8SnapshotERK8Snapshot" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Move ctor. </p>
+<p>Even though <code class="docutils literal notranslate"><span class="pre">s</span></code> is <code class="docutils literal notranslate"><span class="pre">const</span></code>, it will be reset anyway by this ctor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored10ScratchPad8SnapshotD0Ev">
+<span id="_CPPv3N6stored10ScratchPad8SnapshotD0Ev"></span><span id="_CPPv2N6stored10ScratchPad8SnapshotD0Ev"></span><span id="stored::ScratchPad::Snapshot::~Snapshot"></span><span class="target" id="classstored_1_1_scratch_pad_1_1_snapshot_1a6a9464b518434e236d8cabefd5df7a90"></span><code class="sig-name descname">~Snapshot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored10ScratchPad8SnapshotD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Dtor, which implies a rollback. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored10ScratchPad8SnapshotaSERR8Snapshot">
+<span id="_CPPv3N6stored10ScratchPad8SnapshotaSERR8Snapshot"></span><span id="_CPPv2N6stored10ScratchPad8SnapshotaSERR8Snapshot"></span><span id="stored::ScratchPad::Snapshot::assign-operator__SnapshotRR"></span><span class="target" id="classstored_1_1_scratch_pad_1_1_snapshot_1a08dbf02e3042e2b60676a7cea644c0e0"></span><a class="reference internal" href="#_CPPv4N6stored10ScratchPad8SnapshotE" title="stored::ScratchPad::Snapshot">Snapshot</a> &amp;<code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored10ScratchPad8SnapshotE" title="stored::ScratchPad::Snapshot">Snapshot</a> &amp;&amp;<em>s</em><span class="sig-paren">)</span> <em class="property">noexcept</em><a class="headerlink" href="#_CPPv4N6stored10ScratchPad8SnapshotaSERR8Snapshot" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Move-assign. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored10ScratchPad8SnapshotaSERK8Snapshot">
+<span id="_CPPv3N6stored10ScratchPad8SnapshotaSERK8Snapshot"></span><span id="_CPPv2N6stored10ScratchPad8SnapshotaSERK8Snapshot"></span><span id="stored::ScratchPad::Snapshot::assign-operator__SnapshotCR"></span><span class="target" id="classstored_1_1_scratch_pad_1_1_snapshot_1a3fec70e20daa3e888c50c9c82ad3ebdf"></span><a class="reference internal" href="#_CPPv4N6stored10ScratchPad8SnapshotE" title="stored::ScratchPad::Snapshot">Snapshot</a> &amp;<code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored10ScratchPad8SnapshotE" title="stored::ScratchPad::Snapshot">Snapshot</a> <em class="property">const</em> &amp;<em>s</em><span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored10ScratchPad8SnapshotaSERK8Snapshot" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored10ScratchPad8Snapshot5resetEv">
+<span id="_CPPv3N6stored10ScratchPad8Snapshot5resetEv"></span><span id="_CPPv2N6stored10ScratchPad8Snapshot5resetEv"></span><span id="stored::ScratchPad::Snapshot::reset"></span><span class="target" id="classstored_1_1_scratch_pad_1_1_snapshot_1ad9b8e55051f45fce2d2db50657d792e7"></span>void <code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored10ScratchPad8Snapshot5resetEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Detach from the <a class="reference internal" href="#classstored_1_1_scratch_pad"><span class="std std-ref">ScratchPad</span></a>. </p>
+<p>Cannot rollback afterwards. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored10ScratchPad8Snapshot8rollbackEv">
+<span id="_CPPv3N6stored10ScratchPad8Snapshot8rollbackEv"></span><span id="_CPPv2N6stored10ScratchPad8Snapshot8rollbackEv"></span><span id="stored::ScratchPad::Snapshot::rollback"></span><span class="target" id="classstored_1_1_scratch_pad_1_1_snapshot_1a3e56f35f1a3a94b182058b81c8c120d9"></span>void <code class="sig-name descname">rollback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored10ScratchPad8Snapshot8rollbackEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Perform a rollback of the corresponding <a class="reference internal" href="#classstored_1_1_scratch_pad"><span class="std std-ref">ScratchPad</span></a>. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp macro">
+<dt id="c.likely">
+<span class="target" id="util_8h_1aa0672ea7123854cc5f51902a06c473fb"></span><code class="sig-name descname">likely</code><span class="sig-paren">(</span><em>expr</em><span class="sig-paren">)</span><a class="headerlink" href="#c.likely" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Marks the given expression to likely be evaluated to true. </p>
+<p>This may help compiler optimization. <dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>the evaluated <code class="docutils literal notranslate"><span class="pre">expr</span></code> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt id="c.unlikely">
+<span class="target" id="util_8h_1ad8700448546b3b5111404cc021061fd5"></span><code class="sig-name descname">unlikely</code><span class="sig-paren">(</span><em>expr</em><span class="sig-paren">)</span><a class="headerlink" href="#c.unlikely" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Marks the given expression to likely be evaluated to true. </p>
+<p>This may help compiler optimization. <dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>the evaluated <code class="docutils literal notranslate"><span class="pre">expr</span></code> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt id="c.stored_assert">
+<span class="target" id="util_8h_1ab750e51b876450a0a4ad419588a82a4d"></span><code class="sig-name descname">stored_assert</code><span class="sig-paren">(</span><em>expr</em><span class="sig-paren">)</span><a class="headerlink" href="#c.stored_assert" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Like <code class="docutils literal notranslate"><span class="pre">assert()</span></code>, but only emits code when <a class="reference internal" href="cpp_config.html#structstored_1_1_default_config_1a6d57db674741d0587772c3c496c2bb45"><span class="std std-ref">stored::Config::EnableAssert</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored6bannerEv">
+<span id="_CPPv3N6stored6bannerEv"></span><span id="_CPPv2N6stored6bannerEv"></span><span id="stored::banner"></span><span class="target" id="namespacestored_1a71f6523e78ab1e12c33e895142a0e262"></span>char <em class="property">const</em> *<code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">banner</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored6bannerEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a single-line string that contains relevant configuration information of libstored. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored11memcmp_swapEPKvPKv6size_t">
+<span id="_CPPv3N6stored11memcmp_swapEPKvPKv6size_t"></span><span id="_CPPv2N6stored11memcmp_swapEPKvPKv6size_t"></span><span id="stored::memcmp_swap__voidCP.voidCP.s"></span><span class="target" id="namespacestored_1aaaa850b08b762f712e9dd4b57bf5a4f2"></span>int <code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">memcmp_swap</code><span class="sig-paren">(</span>void <em class="property">const</em> *<em>a</em>, void <em class="property">const</em> *<em>b</em>, size_t <em>len</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11memcmp_swapEPKvPKv6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>memcmp() with endianness swapping. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored11memcpy_swapEPvPKv6size_t">
+<span id="_CPPv3N6stored11memcpy_swapEPvPKv6size_t"></span><span id="_CPPv2N6stored11memcpy_swapEPvPKv6size_t"></span><span id="stored::memcpy_swap__voidP.voidCP.s"></span><span class="target" id="namespacestored_1a07cd1d97d70d0801ea520afd6e76271a"></span>void <code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">memcpy_swap</code><span class="sig-paren">(</span>void *<em>dst</em>, void <em class="property">const</em> *<em>src</em>, size_t <em>len</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11memcpy_swapEPvPKv6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">memcpy()</span></code> with endianness swapping. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I00E14saturated_cast1R1T">
+<span id="_CPPv3I00E14saturated_cast1T"></span><span id="_CPPv2I00E14saturated_cast1T"></span>template&lt;typename <code class="sig-name descname">R</code>, typename <code class="sig-name descname">T</code>&gt;<br /><span class="target" id="util_8h_1acf36670c6952f79aef87c1ed7b610074"></span><a class="reference internal" href="#_CPPv4I00E14saturated_cast1R1T" title="saturated_cast::R">R</a> <code class="sig-name descname">saturated_cast</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00E14saturated_cast1R1T" title="saturated_cast::T">T</a> <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00E14saturated_cast1R1T" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Converts a number type to another one, with proper rounding and saturation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14string_literalEPKv6size_tPKc">
+<span id="_CPPv3N6stored14string_literalEPKv6size_tPKc"></span><span id="_CPPv2N6stored14string_literalEPKv6size_tPKc"></span><span id="stored::string_literal__voidCP.s.cCP"></span><span class="target" id="namespacestored_1a6953f0800ee0798ebed8c960e3412d17"></span>std::string <code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">string_literal</code><span class="sig-paren">(</span>void <em class="property">const</em> *<em>buffer</em>, size_t <em>len</em>, char <em class="property">const</em> *<em>prefix</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14string_literalEPKv6size_tPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Converts the given buffer to a string literal. </p>
+<p>This comes in handy for verbose output of binary data, like protocol messages. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored7strncmpEPKc6size_tPKc6size_t">
+<span id="_CPPv3N6stored7strncmpEPKc6size_tPKc6size_t"></span><span id="_CPPv2N6stored7strncmpEPKc6size_tPKc6size_t"></span><span id="stored::strncmp__cCP.s.cCP.s"></span><span class="target" id="namespacestored_1aab2e66c25dbd6dd960e4c477b0f8dc49"></span>int <code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">strncmp</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>str1</em>, size_t <em>len1</em>, char <em class="property">const</em> *<em>str2</em>, size_t <em>len2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored7strncmpEPKc6size_tPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Like <code class="docutils literal notranslate"><a class="reference internal" href="#namespacestored_1aab2e66c25dbd6dd960e4c477b0f8dc49"><span class="std std-ref"><span class="pre">strncmp()</span></span></a></code>, but handles non zero-terminated strings. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored7strncpyEPcPKc6size_t">
+<span id="_CPPv3N6stored7strncpyEPcPKc6size_t"></span><span id="_CPPv2N6stored7strncpyEPcPKc6size_t"></span><span id="stored::strncpy__cP.cCP.s"></span><span class="target" id="namespacestored_1a0d7b18353e90bd68af2e3bdf6bb1ef30"></span>size_t <code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">strncpy</code><span class="sig-paren">(</span>char *<em>dst</em>, char <em class="property">const</em> *<em>src</em>, size_t <em>len</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored7strncpyEPcPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Like <code class="docutils literal notranslate"><a class="reference internal" href="#namespacestored_1a0d7b18353e90bd68af2e3bdf6bb1ef30"><span class="std std-ref"><span class="pre">strncpy()</span></span></a></code>, but without padding and returning the length of the string. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored11swap_endianE1T1T">
+<span id="_CPPv3I0EN6stored11swap_endianE1T"></span><span id="_CPPv2I0EN6stored11swap_endianE1T"></span>template&lt;typename <code class="sig-name descname">T</code>&gt;<br /><span class="target" id="namespacestored_1afbe030cd3cd83074ea6fd698323cb8aa"></span><a class="reference internal" href="#_CPPv4I0EN6stored11swap_endianE1T1T" title="stored::swap_endian::T">T</a> <code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">swap_endian</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored11swap_endianE1T1T" title="stored::swap_endian::T">T</a> <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored11swap_endianE1T1T" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Swap endianness of the given value. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored11swap_endianEPv6size_t">
+<span id="_CPPv3N6stored11swap_endianEPv6size_t"></span><span id="_CPPv2N6stored11swap_endianEPv6size_t"></span><span id="stored::swap_endian__voidP.s"></span><span class="target" id="namespacestored_1a398f638b198400f954eb222d1c73e9ab"></span>void <code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">swap_endian</code><span class="sig-paren">(</span>void *<em>buffer</em>, size_t <em>len</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11swap_endianEPv6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Swap endianness of the given buffer. </p>
+</dd></dl>
+
+</div>
+
+    <script type="text/javascript">
+        function init() {
+            WaveDrom.ProcessAll();
+        }
+        window.onload = init;
+    </script>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="py.html" class="btn btn-neutral float-right" title="Python" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="cpp_types.html" class="btn btn-neutral float-left" title="Types" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Jochem Rutgers
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

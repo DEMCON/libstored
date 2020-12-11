@@ -1,0 +1,812 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>7_protocol &mdash; libstored  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="http://wavedrom.com/skins/default.js"></script>
+        <script src="http://wavedrom.com/wavedrom.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="8_sync" href="example_8_sync.html" />
+    <link rel="prev" title="6_hooks" href="example_6_hooks.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libstored
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Content</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cpp.html">C++</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fpga.html">VHDL</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="example_1_hello.html">1_hello</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_2_basic.html">2_basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_3_scope.html">3_scope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_4_function.html">4_function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_5_debug.html">5_debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_6_hooks.html">6_hooks</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">7_protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#store-definition">Store definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#application">Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#store-reference">Store reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="example_8_sync.html">8_sync</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_9_fpga.html">9_fpga</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_zmqserver.html">zmqserver</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libstored</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="examples.html">Examples</a> &raquo;</li>
+        
+      <li>7_protocol</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/doc/example_7_protocol.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="protocol">
+<h1>7_protocol<a class="headerlink" href="#protocol" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="store-definition">
+<h2>Store definition<a class="headerlink" href="#store-definition" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int32 a short int that fits in the response buffers
+string:32 a long string that does not fit in the response buffers
+
+uint32=32 MTU
+double=1e-5 ber
+uint32 injected errors
+
+</pre></div>
+</div>
+</div>
+<div class="section" id="application">
+<h2>Application<a class="headerlink" href="#application" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
+<span class="cm"> * \file</span>
+<span class="cm"> * \brief Example with a stack of all default supplied protocol layers.</span>
+<span class="cm"> *</span>
+<span class="cm"> * This example simulates a lossy channel by generating random bit errors.  The</span>
+<span class="cm"> * bit error rate can be configured using the \c ber store variable.  Moreover,</span>
+<span class="cm"> * the MTU can also dynamically changed.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Start this example using the \c stdio wrapper and connect the GUI to it.</span>
+<span class="cm"> */</span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;ExampleProtocol.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
+
+<span class="cp">#ifdef STORED_COMPILER_MSVC</span>
+<span class="cp">#  include &lt;io.h&gt;</span>
+<span class="cp">#  define read(fd, buffer, len) _read(fd, buffer, (unsigned int)(len))</span>
+<span class="cp">#  define STDERR_FILENO		_fileno(stderr)</span>
+<span class="cp">#  define STDOUT_FILENO		_fileno(stdout)</span>
+<span class="cp">#  define STDIN_FILENO		_fileno(stdin)</span>
+<span class="cp">#else</span>
+<span class="cp">#  include &lt;unistd.h&gt;</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#ifdef STORED_OS_WINDOWS</span>
+<span class="cp">#  include &lt;malloc.h&gt;</span>
+<span class="cp">#  ifndef alloca</span>
+<span class="cp">#    define alloca(x) _alloca(x)</span>
+<span class="cp">#  endif</span>
+<span class="cp">#else</span>
+<span class="cp">#  include &lt;alloca.h&gt;</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;cinttypes&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;ctime&gt;</span><span class="cp"></span>
+
+<span class="k">static</span> <span class="n">stored</span><span class="o">::</span><span class="n">ExampleProtocol</span> <span class="n">store</span><span class="p">;</span>
+
+<span class="cm">/*!</span>
+<span class="cm"> * \brief Print a buffer, for demonstration purposes.</span>
+<span class="cm"> */</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="n">printBuffer</span><span class="p">(</span><span class="kt">void</span> <span class="k">const</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">char</span> <span class="k">const</span><span class="o">*</span> <span class="n">prefix</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">,</span> <span class="kt">FILE</span><span class="o">*</span> <span class="n">f</span> <span class="o">=</span> <span class="n">stdout</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">s</span><span class="p">;</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+		<span class="n">s</span> <span class="o">+=</span> <span class="n">prefix</span><span class="p">;</span>
+
+	<span class="kt">uint8_t</span> <span class="k">const</span><span class="o">*</span> <span class="n">b</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint8_t</span> <span class="k">const</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span>
+	<span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">switch</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">{</span>
+		<span class="k">case</span> <span class="sc">&#39;\0&#39;</span><span class="o">:</span> <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\\</span><span class="s">0&quot;</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+		<span class="k">case</span> <span class="sc">&#39;\r&#39;</span><span class="o">:</span> <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\\</span><span class="s">r&quot;</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+		<span class="k">case</span> <span class="sc">&#39;\n&#39;</span><span class="o">:</span> <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\\</span><span class="s">n&quot;</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+		<span class="k">case</span> <span class="sc">&#39;\t&#39;</span><span class="o">:</span> <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\\</span><span class="s">t&quot;</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+		<span class="k">case</span> <span class="sc">&#39;\\&#39;</span><span class="o">:</span> <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\\\\</span><span class="s">&quot;</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+		<span class="k">default</span><span class="o">:</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mh">0x20</span> <span class="o">||</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mh">0x7f</span><span class="p">)</span> <span class="p">{</span>
+				<span class="n">snprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">),</span> <span class="s">&quot;</span><span class="se">\\</span><span class="s">x%02&quot;</span> <span class="n">PRIx8</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+				<span class="n">s</span> <span class="o">+=</span> <span class="n">buf</span><span class="p">;</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="n">s</span> <span class="o">+=</span> <span class="p">(</span><span class="kt">char</span><span class="p">)</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+	<span class="n">fputs</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">f</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/*!</span>
+<span class="cm"> * \brief Simulate a lossy channel.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Depending on the bit error rate (ber) set in the store, bits are flipped.</span>
+<span class="cm"> * Moreover, it allows to set an MTU via the store.</span>
+<span class="cm"> */</span>
+<span class="k">class</span> <span class="nc">LossyChannel</span> <span class="o">:</span> <span class="k">public</span> <span class="n">stored</span><span class="o">::</span><span class="n">ProtocolLayer</span> <span class="p">{</span>
+	<span class="n">CLASS_NOCOPY</span><span class="p">(</span><span class="n">LossyChannel</span><span class="p">)</span>
+<span class="k">public</span><span class="o">:</span>
+	<span class="k">typedef</span> <span class="n">stored</span><span class="o">::</span><span class="n">ProtocolLayer</span> <span class="n">base</span><span class="p">;</span>
+
+	<span class="n">LossyChannel</span><span class="p">(</span><span class="n">ProtocolLayer</span><span class="o">*</span> <span class="n">up</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">,</span> <span class="n">ProtocolLayer</span><span class="o">*</span> <span class="n">down</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">)</span>
+		<span class="o">:</span> <span class="n">base</span><span class="p">(</span><span class="n">up</span><span class="p">,</span> <span class="n">down</span><span class="p">)</span>
+	<span class="p">{</span>
+	<span class="p">}</span>
+
+	<span class="k">virtual</span> <span class="o">~</span><span class="n">LossyChannel</span><span class="p">()</span> <span class="k">override</span> <span class="n">is_default</span>
+
+	<span class="k">virtual</span> <span class="kt">void</span> <span class="n">decode</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span>
+		<span class="kt">char</span><span class="o">*</span> <span class="n">buffer_</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+			<span class="n">buffer_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">lossyByte</span><span class="p">(</span><span class="n">buffer_</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+
+		<span class="n">printBuffer</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="s">&quot;&gt; &quot;</span><span class="p">);</span>
+		<span class="n">base</span><span class="o">::</span><span class="n">decode</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">virtual</span> <span class="kt">void</span> <span class="n">encode</span><span class="p">(</span><span class="kt">void</span> <span class="k">const</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">last</span> <span class="o">=</span> <span class="nb">true</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span>
+		<span class="c1">// cppcheck-suppress allocaCalled</span>
+		<span class="kt">char</span><span class="o">*</span> <span class="n">buffer_</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">alloca</span><span class="p">(</span><span class="n">len</span><span class="p">);</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+			<span class="n">buffer_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">lossyByte</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">buffer</span><span class="p">)[</span><span class="n">i</span><span class="p">]);</span>
+
+		<span class="n">printBuffer</span><span class="p">(</span><span class="n">buffer_</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="s">&quot;&lt; &quot;</span><span class="p">);</span>
+		<span class="n">base</span><span class="o">::</span><span class="n">encode</span><span class="p">(</span><span class="n">buffer_</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">last</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">using</span> <span class="n">base</span><span class="o">::</span><span class="n">encode</span><span class="p">;</span>
+
+	<span class="c1">// Bit error rate</span>
+	<span class="kt">double</span> <span class="nf">ber</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">store</span><span class="p">.</span><span class="n">ber</span><span class="p">;</span> <span class="p">}</span>
+
+	<span class="kt">char</span> <span class="nf">lossyByte</span><span class="p">(</span><span class="kt">char</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kt">double</span> <span class="n">p</span> <span class="o">=</span>
+<span class="cp">#ifdef STORED_OS_WINDOWS</span>
+				<span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="o">::</span><span class="n">rand</span><span class="p">()</span> <span class="o">/</span> <span class="n">RAND_MAX</span><span class="p">;</span>
+<span class="cp">#else</span>
+				<span class="n">drand48</span><span class="p">();</span>
+<span class="cp">#endif</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">p</span> <span class="o">&lt;</span> <span class="n">ber</span><span class="p">())</span> <span class="p">{</span>
+				<span class="c1">// Inject an error.</span>
+				<span class="n">b</span> <span class="o">=</span> <span class="n">b</span> <span class="o">^</span> <span class="p">(</span><span class="kt">char</span><span class="p">)(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">rand</span><span class="p">()</span> <span class="o">%</span> <span class="mi">8</span><span class="p">));</span>
+				<span class="n">store</span><span class="p">.</span><span class="n">injected_errors</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">injected_errors</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="n">b</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">virtual</span> <span class="kt">size_t</span> <span class="n">mtu</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span> <span class="p">{</span> <span class="k">return</span> <span class="n">store</span><span class="p">.</span><span class="n">MTU</span><span class="p">.</span><span class="n">as</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">();</span> <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// Demonstrate a full stack assuming a lossy channel.</span>
+	<span class="c1">// In this example, the lossy channel is simulated by LossyChannel,</span>
+	<span class="c1">// which just flips bits, depending on the set bit error rate (BER).</span>
+
+	<span class="cm">/*</span>
+<span class="cm">	Consider the received string:</span>
+<span class="cm">		\x1b_@Y?Ez\x7fI\x1b\\</span>
+
+<span class="cm">	This is:</span>
+<span class="cm">		\x1b_       TerminalLayer: start of message</span>
+<span class="cm">		  @Y        DebugArqLayer: seq=89</span>
+<span class="cm">		    ?       Debugger: capabilities</span>
+<span class="cm">		  E         SegmentationLayer: last chunk</span>
+<span class="cm">		  z\x7fI    AsciiEscapeLayer: z&lt;tab&gt;</span>
+<span class="cm">                      Crc16Layer: CRC=0x7a09</span>
+<span class="cm">		\x1b\\      TerminalLayer: end of message</span>
+
+
+<span class="cm">	To test, run in a shell:</span>
+<span class="cm">	  echo -e -n &#39;\x1b_\xc0X\xe4\x1c\x1b\\\x1b_@Y?Ez\x7fI\x1b\\&#39; | 7_protocol</span>
+
+<span class="cm">	*/</span>
+
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Demo of a lossy channel.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Run this example using ed2.wrapper.stdio with the flag</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;  -S segment,arq,crc16,ascii,term</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+	<span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span> <span class="n">debugger</span><span class="p">(</span><span class="s">&quot;7_protocol&quot;</span><span class="p">);</span>
+	<span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store</span><span class="p">);</span>
+
+	<span class="n">stored</span><span class="o">::</span><span class="n">SegmentationLayer</span> <span class="n">segmentation</span><span class="p">;</span>
+	<span class="n">segmentation</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">debugger</span><span class="p">);</span>
+
+	<span class="n">stored</span><span class="o">::</span><span class="n">DebugArqLayer</span> <span class="n">arq</span><span class="p">;</span>
+	<span class="n">arq</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">segmentation</span><span class="p">);</span>
+
+	<span class="n">stored</span><span class="o">::</span><span class="n">Crc16Layer</span> <span class="n">crc</span><span class="p">;</span>
+	<span class="n">crc</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">arq</span><span class="p">);</span>
+
+	<span class="n">stored</span><span class="o">::</span><span class="n">AsciiEscapeLayer</span> <span class="n">escape</span><span class="p">;</span>
+	<span class="n">escape</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">crc</span><span class="p">);</span>
+
+	<span class="n">stored</span><span class="o">::</span><span class="n">TerminalLayer</span> <span class="n">terminal</span><span class="p">;</span>
+	<span class="n">terminal</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">escape</span><span class="p">);</span>
+
+	<span class="n">stored</span><span class="o">::</span><span class="n">BufferLayer</span> <span class="n">buffer</span><span class="p">;</span>
+	<span class="n">buffer</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">terminal</span><span class="p">);</span>
+
+	<span class="n">LossyChannel</span> <span class="n">lossy</span><span class="p">;</span>
+	<span class="n">lossy</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span>
+
+	<span class="n">stored</span><span class="o">::</span><span class="n">StdioLayer</span> <span class="n">stdio</span><span class="p">;</span>
+	<span class="n">stdio</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">lossy</span><span class="p">);</span>
+
+	<span class="n">setvbuf</span><span class="p">(</span><span class="n">stdin</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">_IONBF</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+	<span class="n">setvbuf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">_IONBF</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+<span class="cp">#ifdef STORED_OS_WINDOWS</span>
+	<span class="n">srand</span><span class="p">((</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">)</span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">));</span>
+<span class="cp">#else</span>
+	<span class="n">srand48</span><span class="p">((</span><span class="kt">long</span><span class="p">)</span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">));</span>
+<span class="cp">#endif</span>
+
+	<span class="n">stored</span><span class="o">::</span><span class="n">Poller</span> <span class="n">poller</span><span class="p">;</span>
+	<span class="n">poller</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">stdio</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">,</span> <span class="n">stored</span><span class="o">::</span><span class="n">Poller</span><span class="o">::</span><span class="n">PollIn</span><span class="p">);</span>
+
+	<span class="k">while</span><span class="p">(</span><span class="n">stdio</span><span class="p">.</span><span class="n">isOpen</span><span class="p">())</span> <span class="p">{</span>
+		<span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">();</span>
+		<span class="n">stdio</span><span class="p">.</span><span class="n">recv</span><span class="p">();</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="store-reference">
+<h2>Store reference<a class="headerlink" href="#store-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt id="_CPPv4I00EN6stored22ExampleProtocolObjectsE">
+<span id="_CPPv3I00EN6stored22ExampleProtocolObjectsE"></span><span id="_CPPv2I00EN6stored22ExampleProtocolObjectsE"></span>template&lt;typename <code class="sig-name descname">Base_</code>, typename <code class="sig-name descname">Implementation_</code>&gt;<br /><span class="target" id="classstored_1_1_example_protocol_objects"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleProtocolObjects</code><a class="headerlink" href="#_CPPv4I00EN6stored22ExampleProtocolObjectsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>All <a class="reference internal" href="#classstored_1_1_example_protocol_base"><span class="std std-ref">ExampleProtocolBase</span></a>’s objects. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N6stored22ExampleProtocolObjects4BaseE">
+<span id="_CPPv3N6stored22ExampleProtocolObjects4BaseE"></span><span id="_CPPv2N6stored22ExampleProtocolObjects4BaseE"></span><span id="stored::ExampleProtocolObjects::Base"></span><span class="target" id="classstored_1_1_example_protocol_objects_1a828ffe2572882608606fdd590b5e7086"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored22ExampleProtocolObjectsE" title="stored::ExampleProtocolObjects::Base_">Base_</a> <code class="sig-name descname">Base</code><a class="headerlink" href="#_CPPv4N6stored22ExampleProtocolObjects4BaseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored22ExampleProtocolObjects14ImplementationE">
+<span id="_CPPv3N6stored22ExampleProtocolObjects14ImplementationE"></span><span id="_CPPv2N6stored22ExampleProtocolObjects14ImplementationE"></span><span id="stored::ExampleProtocolObjects::Implementation"></span><span class="target" id="classstored_1_1_example_protocol_objects_1ab1a8518f0c24f6e5c14c77c043b3af4f"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored22ExampleProtocolObjectsE" title="stored::ExampleProtocolObjects::Implementation_">Implementation_</a> <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored22ExampleProtocolObjects14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N6stored22ExampleProtocolObjects55a_long_string_that_does_not_fit_in_the_response_buffersE">
+<span id="_CPPv3N6stored22ExampleProtocolObjects55a_long_string_that_does_not_fit_in_the_response_buffersE"></span><span id="_CPPv2N6stored22ExampleProtocolObjects55a_long_string_that_does_not_fit_in_the_response_buffersE"></span><span id="stored::ExampleProtocolObjects::a_long_string_that_does_not_fit_in_the_response_buffers__impl::StoreVariantV:Base.Implementation.Type::String.16u.32u:"></span><span class="target" id="classstored_1_1_example_protocol_objects_1aac028e7b395ddbe9dddd59a8fa2c7784"></span>impl::StoreVariantV&lt;<a class="reference internal" href="#_CPPv4N6stored22ExampleProtocolObjects4BaseE" title="stored::ExampleProtocolObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored22ExampleProtocolObjects14ImplementationE" title="stored::ExampleProtocolObjects::Implementation">Implementation</a>, Type::String, 16u, 32u&gt; <code class="sig-name descname">a_long_string_that_does_not_fit_in_the_response_buffers</code><a class="headerlink" href="#_CPPv4N6stored22ExampleProtocolObjects55a_long_string_that_does_not_fit_in_the_response_buffersE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>a long string that does not fit in the response buffers </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored22ExampleProtocolObjects45a_short_int_that_fits_in_the_response_buffersE">
+<span id="_CPPv3N6stored22ExampleProtocolObjects45a_short_int_that_fits_in_the_response_buffersE"></span><span id="_CPPv2N6stored22ExampleProtocolObjects45a_short_int_that_fits_in_the_response_buffersE"></span><span id="stored::ExampleProtocolObjects::a_short_int_that_fits_in_the_response_buffers__impl::StoreVariable:Base.Implementation.int32_t.56u.4:"></span><span class="target" id="classstored_1_1_example_protocol_objects_1a8452cfd8cf589bf7dd6c3b823cd8cdf8"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored22ExampleProtocolObjects4BaseE" title="stored::ExampleProtocolObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored22ExampleProtocolObjects14ImplementationE" title="stored::ExampleProtocolObjects::Implementation">Implementation</a>, int32_t, 56u, 4&gt; <code class="sig-name descname">a_short_int_that_fits_in_the_response_buffers</code><a class="headerlink" href="#_CPPv4N6stored22ExampleProtocolObjects45a_short_int_that_fits_in_the_response_buffersE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>a short int that fits in the response buffers </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored22ExampleProtocolObjects3berE">
+<span id="_CPPv3N6stored22ExampleProtocolObjects3berE"></span><span id="_CPPv2N6stored22ExampleProtocolObjects3berE"></span><span id="stored::ExampleProtocolObjects::ber__impl::StoreVariable:Base.Implementation.double.0u.8:"></span><span class="target" id="classstored_1_1_example_protocol_objects_1a700110f39b4a0c5c77851bc0fe96a1e8"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored22ExampleProtocolObjects4BaseE" title="stored::ExampleProtocolObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored22ExampleProtocolObjects14ImplementationE" title="stored::ExampleProtocolObjects::Implementation">Implementation</a>, double, 0u, 8&gt; <code class="sig-name descname">ber</code><a class="headerlink" href="#_CPPv4N6stored22ExampleProtocolObjects3berE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>ber </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored22ExampleProtocolObjects15injected_errorsE">
+<span id="_CPPv3N6stored22ExampleProtocolObjects15injected_errorsE"></span><span id="_CPPv2N6stored22ExampleProtocolObjects15injected_errorsE"></span><span id="stored::ExampleProtocolObjects::injected_errors__impl::StoreVariable:Base.Implementation.uint32_t.60u.4:"></span><span class="target" id="classstored_1_1_example_protocol_objects_1ac28aa88a062326c6524447ee0eba6275"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored22ExampleProtocolObjects4BaseE" title="stored::ExampleProtocolObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored22ExampleProtocolObjects14ImplementationE" title="stored::ExampleProtocolObjects::Implementation">Implementation</a>, uint32_t, 60u, 4&gt; <code class="sig-name descname">injected_errors</code><a class="headerlink" href="#_CPPv4N6stored22ExampleProtocolObjects15injected_errorsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>injected errors </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored22ExampleProtocolObjects3MTUE">
+<span id="_CPPv3N6stored22ExampleProtocolObjects3MTUE"></span><span id="_CPPv2N6stored22ExampleProtocolObjects3MTUE"></span><span id="stored::ExampleProtocolObjects::MTU__impl::StoreVariable:Base.Implementation.uint32_t.8u.4:"></span><span class="target" id="classstored_1_1_example_protocol_objects_1a89d1ba0b428bbad18e46592ea3dbe58c"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored22ExampleProtocolObjects4BaseE" title="stored::ExampleProtocolObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored22ExampleProtocolObjects14ImplementationE" title="stored::ExampleProtocolObjects::Implementation">Implementation</a>, uint32_t, 8u, 4&gt; <code class="sig-name descname">MTU</code><a class="headerlink" href="#_CPPv4N6stored22ExampleProtocolObjects3MTUE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>MTU. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4I0EN6stored19ExampleProtocolBaseE">
+<span id="_CPPv3I0EN6stored19ExampleProtocolBaseE"></span><span id="_CPPv2I0EN6stored19ExampleProtocolBaseE"></span>template&lt;typename <code class="sig-name descname">Implementation_</code>&gt;<br /><span class="target" id="classstored_1_1_example_protocol_base"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleProtocolBase</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4I00EN6stored22ExampleProtocolObjectsE" title="stored::ExampleProtocolObjects">ExampleProtocolObjects</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored19ExampleProtocolBaseE" title="stored::ExampleProtocolBase">ExampleProtocolBase</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored19ExampleProtocolBaseE" title="stored::ExampleProtocolBase::Implementation_">Implementation_</a>&gt;, <a class="reference internal" href="#_CPPv4I0EN6stored19ExampleProtocolBaseE" title="stored::ExampleProtocolBase::Implementation_">Implementation_</a>&gt;<a class="headerlink" href="#_CPPv4I0EN6stored19ExampleProtocolBaseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Base class with default interface of all <a class="reference internal" href="#classstored_1_1_example_protocol"><span class="std std-ref">ExampleProtocol</span></a> implementations. </p>
+<p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
+<p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_protocol"><span class="std std-ref">stored::ExampleProtocol</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
+<p>To inherit the base class, you can use the following template:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleProtocol : public STORE_BASECLASS(ExampleProtocolBase, ExampleProtocol) {
+    STORE_CLASS_BODY(ExampleProtocolBase, ExampleProtocol)
+public:
+    // Your class implementation, such as:
+    ExampleProtocol() is_default
+    // ...
+};
+</pre></div>
+</div>
+</p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_protocol"><span class="std std-ref">stored::ExampleProtocol</span></a> </p>
+</dd>
+<dt><strong>See</strong></dt><dd><p>stored::ExampleProtocolData </p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp enum">
+<dt id="_CPPv4N6stored19ExampleProtocolBaseUt2_32E">
+<span id="_CPPv3N6stored19ExampleProtocolBaseUt2_32E"></span><span class="target" id="classstored_1_1_example_protocol_base_1a4e79eb1f818c03906eb8dea71787b786"></span><em class="property">enum </em><strong>[anonymous]</strong><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseUt2_32E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored19ExampleProtocolBaseUt2_3211ObjectCountE">
+<span id="_CPPv3N6stored19ExampleProtocolBaseUt2_3211ObjectCountE"></span><span class="target" id="classstored_1_1_example_protocol_base_1a4e79eb1f818c03906eb8dea71787b786a4f36f37a8865b91ca86ae378cd226063"></span><em class="property">enumerator </em><code class="sig-name descname">ObjectCount</code><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseUt2_3211ObjectCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of objects in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored19ExampleProtocolBaseUt2_3213VariableCountE">
+<span id="_CPPv3N6stored19ExampleProtocolBaseUt2_3213VariableCountE"></span><span class="target" id="classstored_1_1_example_protocol_base_1a4e79eb1f818c03906eb8dea71787b786a381cdf9686df65eadb1222658e8e4ce9"></span><em class="property">enumerator </em><code class="sig-name descname">VariableCount</code><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseUt2_3213VariableCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of variables in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored19ExampleProtocolBaseUt2_3213FunctionCountE">
+<span id="_CPPv3N6stored19ExampleProtocolBaseUt2_3213FunctionCountE"></span><span class="target" id="classstored_1_1_example_protocol_base_1a4e79eb1f818c03906eb8dea71787b786acdbf2b0f9080b3c312cf039504fe9887"></span><em class="property">enumerator </em><code class="sig-name descname">FunctionCount</code><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseUt2_3213FunctionCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of functions in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored19ExampleProtocolBaseUt2_3210BufferSizeE">
+<span id="_CPPv3N6stored19ExampleProtocolBaseUt2_3210BufferSizeE"></span><span class="target" id="classstored_1_1_example_protocol_base_1a4e79eb1f818c03906eb8dea71787b786a3419082fbece3bdc31928b542edda32d"></span><em class="property">enumerator </em><code class="sig-name descname">BufferSize</code><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseUt2_3210BufferSizeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Buffer size. </p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored19ExampleProtocolBase14ImplementationE">
+<span id="_CPPv3N6stored19ExampleProtocolBase14ImplementationE"></span><span id="_CPPv2N6stored19ExampleProtocolBase14ImplementationE"></span><span id="stored::ExampleProtocolBase::Implementation"></span><span class="target" id="classstored_1_1_example_protocol_base_1a5e6d97cd8a63007f8e02b6c60735133d"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleProtocolBaseE" title="stored::ExampleProtocolBase::Implementation_">Implementation_</a> <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBase14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of the actual implementation, which is the (lowest) subclass. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored19ExampleProtocolBase3KeyE">
+<span id="_CPPv3N6stored19ExampleProtocolBase3KeyE"></span><span id="_CPPv2N6stored19ExampleProtocolBase3KeyE"></span><span id="stored::ExampleProtocolBase::Key"></span><span class="target" id="classstored_1_1_example_protocol_base_1aeed93a85697b0400ea5b1975a8873f8b"></span><em class="property">typedef </em>uintptr_t <code class="sig-name descname">Key</code><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBase3KeyE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of a key. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_protocol_base_1a29ff935fdf4a9cdc73d42849f44f693f"><span class="std std-ref">bufferToKey()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored19ExampleProtocolBase9ObjectMapE">
+<span id="_CPPv3N6stored19ExampleProtocolBase9ObjectMapE"></span><span id="_CPPv2N6stored19ExampleProtocolBase9ObjectMapE"></span><span id="stored::ExampleProtocolBase::ObjectMap"></span><span class="target" id="classstored_1_1_example_protocol_base_1a4cbdd8deafd37c1ebf3913ead726507c"></span><em class="property">typedef </em>std::map&lt;std::string, <a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleProtocolBase14ImplementationE" title="stored::ExampleProtocolBase::Implementation">Implementation</a>&gt;&gt; <code class="sig-name descname">ObjectMap</code><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBase9ObjectMapE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Map as generated by <a class="reference internal" href="#classstored_1_1_example_protocol_base_1add6957f478e10a417d2894cc979eee56"><span class="std std-ref">map()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored19ExampleProtocolBase7ObjectsE">
+<span id="_CPPv3N6stored19ExampleProtocolBase7ObjectsE"></span><span id="_CPPv2N6stored19ExampleProtocolBase7ObjectsE"></span><span id="stored::ExampleProtocolBase::Objects"></span><span class="target" id="classstored_1_1_example_protocol_base_1a010c9d306707164e4867220b79881524"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored22ExampleProtocolObjectsE" title="stored::ExampleProtocolObjects">ExampleProtocolObjects</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored19ExampleProtocolBaseE" title="stored::ExampleProtocolBase">ExampleProtocolBase</a>, <a class="reference internal" href="#_CPPv4I0EN6stored19ExampleProtocolBaseE" title="stored::ExampleProtocolBase::Implementation_">Implementation_</a>&gt; <code class="sig-name descname">Objects</code><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBase7ObjectsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleProtocolBase19ExampleProtocolBaseERK19ExampleProtocolBase">
+<span id="_CPPv3N6stored19ExampleProtocolBase19ExampleProtocolBaseERK19ExampleProtocolBase"></span><span id="_CPPv2N6stored19ExampleProtocolBase19ExampleProtocolBaseERK19ExampleProtocolBase"></span><span id="stored::ExampleProtocolBase::ExampleProtocolBase__ExampleProtocolBaseCR"></span><span class="target" id="classstored_1_1_example_protocol_base_1afa91d5735658c4bfb42e67f34d653da9"></span><code class="sig-name descname">ExampleProtocolBase</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored19ExampleProtocolBase19ExampleProtocolBaseERK19ExampleProtocolBase" title="stored::ExampleProtocolBase::ExampleProtocolBase">ExampleProtocolBase</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBase19ExampleProtocolBaseERK19ExampleProtocolBase" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleProtocolBase19ExampleProtocolBaseERR19ExampleProtocolBase">
+<span id="_CPPv3N6stored19ExampleProtocolBase19ExampleProtocolBaseERR19ExampleProtocolBase"></span><span id="_CPPv2N6stored19ExampleProtocolBase19ExampleProtocolBaseERR19ExampleProtocolBase"></span><span id="stored::ExampleProtocolBase::ExampleProtocolBase__ExampleProtocolBaseRR"></span><span class="target" id="classstored_1_1_example_protocol_base_1a4027d46c1d58b63603c7f0588395a78e"></span><code class="sig-name descname">ExampleProtocolBase</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored19ExampleProtocolBase19ExampleProtocolBaseERR19ExampleProtocolBase" title="stored::ExampleProtocolBase::ExampleProtocolBase">ExampleProtocolBase</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBase19ExampleProtocolBaseERR19ExampleProtocolBase" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored19ExampleProtocolBase11bufferToKeyEPKv">
+<span id="_CPPv3NK6stored19ExampleProtocolBase11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored19ExampleProtocolBase11bufferToKeyEPKv"></span><span id="stored::ExampleProtocolBase::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_protocol_base_1a29ff935fdf4a9cdc73d42849f44f693f"></span><a class="reference internal" href="#_CPPv4N6stored19ExampleProtocolBase3KeyE" title="stored::ExampleProtocolBase::Key">Key</a> <code class="sig-name descname">bufferToKey</code><span class="sig-paren">(</span>void <em class="property">const</em> *<em>buffer</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored19ExampleProtocolBase11bufferToKeyEPKv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Converts a variable’s buffer to a key. </p>
+<p>A key is unique for all variables of the same store, but identical for the same variables across different instances of the same store class. Therefore, the key can be used to synchronize between instances of the same store. A key does not contain meta data, such as type or length. It is up to the synchronization library to make sure that these properties are handled well.</p>
+<p>For synchronization, when hookEntryX() or hookEntryRO() is invoked, one can compute the key of the object that is accessed. The key can be used, for example, in a key-to-Variant map. When data arrives from another party, the key can be used to find the proper <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> in the map.</p>
+<p>This way, data exchange is type-safe, as the <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> can check if the data format matches the expected type. However, one cannot process data if the key is not set yet in the map. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleProtocolBase4findEPKc6size_t">
+<span id="_CPPv3N6stored19ExampleProtocolBase4findEPKc6size_t"></span><span id="_CPPv2N6stored19ExampleProtocolBase4findEPKc6size_t"></span><span id="stored::ExampleProtocolBase::find__cCP.s"></span><span class="target" id="classstored_1_1_example_protocol_base_1abd207cca7b8c750fe0c86b5d0180e98c"></span><a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleProtocolBase14ImplementationE" title="stored::ExampleProtocolBase::Implementation">Implementation</a>&gt; <code class="sig-name descname">find</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>name</em>, size_t <em>len</em> = std::numeric_limits&lt;size_t&gt;::max()<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBase4findEPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Finds an object with the given name. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>the object, or an invalid <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">stored::Variant</span></a> if not found. </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored19ExampleProtocolBase14implementationEv">
+<span id="_CPPv3NK6stored19ExampleProtocolBase14implementationEv"></span><span id="_CPPv2NK6stored19ExampleProtocolBase14implementationEv"></span><span id="stored::ExampleProtocolBase::implementationC"></span><span class="target" id="classstored_1_1_example_protocol_base_1aeed9a8e9ab76304eb76a5578dfdb5d1e"></span><a class="reference internal" href="#_CPPv4N6stored19ExampleProtocolBase14ImplementationE" title="stored::ExampleProtocolBase::Implementation">Implementation</a> <em class="property">const</em> &amp;<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored19ExampleProtocolBase14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the reference to the implementation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleProtocolBase14implementationEv">
+<span id="_CPPv3N6stored19ExampleProtocolBase14implementationEv"></span><span id="_CPPv2N6stored19ExampleProtocolBase14implementationEv"></span><span id="stored::ExampleProtocolBase::implementation"></span><span class="target" id="classstored_1_1_example_protocol_base_1adfbbb2f6ce02abdf00b132b7f822c94b"></span><a class="reference internal" href="#_CPPv4N6stored19ExampleProtocolBase14ImplementationE" title="stored::ExampleProtocolBase::Implementation">Implementation</a> &amp;<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBase14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the reference to the implementation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored19ExampleProtocolBase4listEv1FPvPKc">
+<span id="_CPPv3I0EN6stored19ExampleProtocolBase4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored19ExampleProtocolBase4listE1FPvPKc"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_example_protocol_base_1ae000573ef5d0794415817563f94d94c4"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleProtocolBase4listEv1FPvPKc" title="stored::ExampleProtocolBase::list::F">F</a> <em>f</em>, void *<em>arg</em>, char <em class="property">const</em> *<em>prefix</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored19ExampleProtocolBase4listEv1FPvPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_protocol_base_1a23a0fd4ef0b73838a9268ecb2d6f519b"><span class="std std-ref">longDirectory()</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored19ExampleProtocolBase4listEvRR1F">
+<span id="_CPPv3I0EN6stored19ExampleProtocolBase4listERR1F"></span><span id="_CPPv2I0EN6stored19ExampleProtocolBase4listERR1F"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_example_protocol_base_1ab85f7f77e50b5d5cc09df11bfbe97445"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleProtocolBase4listEvRR1F" title="stored::ExampleProtocolBase::list::F">F</a> &amp;&amp;<em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored19ExampleProtocolBase4listEvRR1F" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_protocol_base_1a23a0fd4ef0b73838a9268ecb2d6f519b"><span class="std std-ref">longDirectory()</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored19ExampleProtocolBase13longDirectoryEv">
+<span id="_CPPv3NK6stored19ExampleProtocolBase13longDirectoryEv"></span><span id="_CPPv2NK6stored19ExampleProtocolBase13longDirectoryEv"></span><span id="stored::ExampleProtocolBase::longDirectoryC"></span><span class="target" id="classstored_1_1_example_protocol_base_1a23a0fd4ef0b73838a9268ecb2d6f519b"></span>uint8_t <em class="property">const</em> *<code class="sig-name descname">longDirectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored19ExampleProtocolBase13longDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retuns the long directory. </p>
+<p>When not available, the short directory is returned. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleProtocolBase3mapEPKc">
+<span id="_CPPv3N6stored19ExampleProtocolBase3mapEPKc"></span><span id="_CPPv2N6stored19ExampleProtocolBase3mapEPKc"></span><span id="stored::ExampleProtocolBase::map__cCP"></span><span class="target" id="classstored_1_1_example_protocol_base_1add6957f478e10a417d2894cc979eee56"></span><a class="reference internal" href="#_CPPv4N6stored19ExampleProtocolBase9ObjectMapE" title="stored::ExampleProtocolBase::ObjectMap">ObjectMap</a> <code class="sig-name descname">map</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>prefix</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBase3mapEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a name to <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> map for the store. </p>
+<p>Generating the map may be expensive and the result is not cached. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored19ExampleProtocolBase4nameEv">
+<span id="_CPPv3NK6stored19ExampleProtocolBase4nameEv"></span><span id="_CPPv2NK6stored19ExampleProtocolBase4nameEv"></span><span id="stored::ExampleProtocolBase::nameC"></span><span class="target" id="classstored_1_1_example_protocol_base_1a6a813b78ee738431b717cee82a5d4194"></span>char <em class="property">const</em> *<code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored19ExampleProtocolBase4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleProtocolBaseaSERK19ExampleProtocolBase">
+<span id="_CPPv3N6stored19ExampleProtocolBaseaSERK19ExampleProtocolBase"></span><span id="_CPPv2N6stored19ExampleProtocolBaseaSERK19ExampleProtocolBase"></span><span id="stored::ExampleProtocolBase::assign-operator__ExampleProtocolBaseCR"></span><span class="target" id="classstored_1_1_example_protocol_base_1a83445f821ace3d23937a30be6d1b8f1c"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleProtocolBaseE" title="stored::ExampleProtocolBase">ExampleProtocolBase</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseaSERK19ExampleProtocolBase" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleProtocolBaseaSERR19ExampleProtocolBase">
+<span id="_CPPv3N6stored19ExampleProtocolBaseaSERR19ExampleProtocolBase"></span><span id="_CPPv2N6stored19ExampleProtocolBaseaSERR19ExampleProtocolBase"></span><span id="stored::ExampleProtocolBase::assign-operator__ExampleProtocolBaseRR"></span><span class="target" id="classstored_1_1_example_protocol_base_1a3ffb5f39bcf671d97e3076a79c7b0a67"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleProtocolBaseE" title="stored::ExampleProtocolBase">ExampleProtocolBase</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseaSERR19ExampleProtocolBase" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored19ExampleProtocolBase14shortDirectoryEv">
+<span id="_CPPv3NK6stored19ExampleProtocolBase14shortDirectoryEv"></span><span id="_CPPv2NK6stored19ExampleProtocolBase14shortDirectoryEv"></span><span id="stored::ExampleProtocolBase::shortDirectoryC"></span><span class="target" id="classstored_1_1_example_protocol_base_1aa5f093411161eea64a9d9bbf4ac21522"></span>uint8_t <em class="property">const</em> *<code class="sig-name descname">shortDirectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored19ExampleProtocolBase14shortDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the short directory. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Static Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleProtocolBase4hashEv">
+<span id="_CPPv3N6stored19ExampleProtocolBase4hashEv"></span><span id="_CPPv2N6stored19ExampleProtocolBase4hashEv"></span><span id="stored::ExampleProtocolBase::hash"></span><span class="target" id="classstored_1_1_example_protocol_base_1aecd5bf71c9c273a589741c171fde9bd3"></span>char <em class="property">const</em> *<code class="sig-name descname">hash</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBase4hashEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a unique hash of the store. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Friends</p>
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreFunction</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariable</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariantF</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariantV</dt>
+</dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4N6stored15ExampleProtocolE">
+<span id="_CPPv3N6stored15ExampleProtocolE"></span><span id="_CPPv2N6stored15ExampleProtocolE"></span><span id="stored::ExampleProtocol"></span><span class="target" id="classstored_1_1_example_protocol"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleProtocol</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4I0EN6stored19ExampleProtocolBaseE" title="stored::ExampleProtocolBase">ExampleProtocolBase</a>&lt;<a class="reference internal" href="#_CPPv4N6stored15ExampleProtocolE" title="stored::ExampleProtocol">ExampleProtocol</a>&gt;<a class="headerlink" href="#_CPPv4N6stored15ExampleProtocolE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default <a class="reference internal" href="#classstored_1_1_example_protocol_base"><span class="std std-ref">ExampleProtocolBase</span></a> implementation. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N6stored15ExampleProtocol4baseE">
+<span id="_CPPv3N6stored15ExampleProtocol4baseE"></span><span id="_CPPv2N6stored15ExampleProtocol4baseE"></span><span id="stored::ExampleProtocol::base"></span><span class="target" id="classstored_1_1_example_protocol_1a2dfaf65f4fe39c8c48d105f5313b93a8"></span><em class="property">typedef </em>stored::<a class="reference internal" href="#_CPPv4I0EN6stored19ExampleProtocolBaseE" title="stored::ExampleProtocolBase">ExampleProtocolBase</a>&lt;<a class="reference internal" href="#_CPPv4N6stored15ExampleProtocolE" title="stored::ExampleProtocol">ExampleProtocol</a>&gt; <code class="sig-name descname">base</code><a class="headerlink" href="#_CPPv4N6stored15ExampleProtocol4baseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored15ExampleProtocol14ImplementationE">
+<span id="_CPPv3N6stored15ExampleProtocol14ImplementationE"></span><span id="_CPPv2N6stored15ExampleProtocol14ImplementationE"></span><span id="stored::ExampleProtocol::Implementation"></span><span class="target" id="classstored_1_1_example_protocol_1a5e6d97cd8a63007f8e02b6c60735133d"></span><em class="property">typedef </em>Implementation_ <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored15ExampleProtocol14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of the actual implementation, which is the (lowest) subclass. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored15ExampleProtocol15ExampleProtocolERK15ExampleProtocol">
+<span id="_CPPv3N6stored15ExampleProtocol15ExampleProtocolERK15ExampleProtocol"></span><span id="_CPPv2N6stored15ExampleProtocol15ExampleProtocolERK15ExampleProtocol"></span><span id="stored::ExampleProtocol::ExampleProtocol__ExampleProtocolCR"></span><span class="target" id="classstored_1_1_example_protocol_1a1fda09106b41fab5599261b549d6c238"></span><code class="sig-name descname">ExampleProtocol</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleProtocol15ExampleProtocolERK15ExampleProtocol" title="stored::ExampleProtocol::ExampleProtocol">ExampleProtocol</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored15ExampleProtocol15ExampleProtocolERK15ExampleProtocol" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored15ExampleProtocol15ExampleProtocolERR15ExampleProtocol">
+<span id="_CPPv3N6stored15ExampleProtocol15ExampleProtocolERR15ExampleProtocol"></span><span id="_CPPv2N6stored15ExampleProtocol15ExampleProtocolERR15ExampleProtocol"></span><span id="stored::ExampleProtocol::ExampleProtocol__ExampleProtocolRR"></span><span class="target" id="classstored_1_1_example_protocol_1aaeafcf12001439e2499a59d597ca9659"></span><code class="sig-name descname">ExampleProtocol</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleProtocol15ExampleProtocolERR15ExampleProtocol" title="stored::ExampleProtocol::ExampleProtocol">ExampleProtocol</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored15ExampleProtocol15ExampleProtocolERR15ExampleProtocol" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored15ExampleProtocol15ExampleProtocolEv">
+<span id="_CPPv3N6stored15ExampleProtocol15ExampleProtocolEv"></span><span id="_CPPv2N6stored15ExampleProtocol15ExampleProtocolEv"></span><span id="stored::ExampleProtocol::ExampleProtocol"></span><span class="target" id="classstored_1_1_example_protocol_1a88425f42680f3f100b56f48662128f5a"></span><code class="sig-name descname">ExampleProtocol</code><span class="sig-paren">(</span><span class="sig-paren">)</span> = default<a class="headerlink" href="#_CPPv4N6stored15ExampleProtocol15ExampleProtocolEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored15ExampleProtocolaSERK15ExampleProtocol">
+<span id="_CPPv3N6stored15ExampleProtocolaSERK15ExampleProtocol"></span><span id="_CPPv2N6stored15ExampleProtocolaSERK15ExampleProtocol"></span><span id="stored::ExampleProtocol::assign-operator__ExampleProtocolCR"></span><span class="target" id="classstored_1_1_example_protocol_1a745a77d1218ec600fb62064663412055"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleProtocolE" title="stored::ExampleProtocol">ExampleProtocol</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored15ExampleProtocolaSERK15ExampleProtocol" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored15ExampleProtocolaSERR15ExampleProtocol">
+<span id="_CPPv3N6stored15ExampleProtocolaSERR15ExampleProtocol"></span><span id="_CPPv2N6stored15ExampleProtocolaSERR15ExampleProtocol"></span><span id="stored::ExampleProtocol::assign-operator__ExampleProtocolRR"></span><span class="target" id="classstored_1_1_example_protocol_1a0393de6ab8f06a0541bea4a5c02a2bc7"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleProtocolE" title="stored::ExampleProtocol">ExampleProtocol</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored15ExampleProtocolaSERR15ExampleProtocol" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Friends</p>
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> stored::ExampleProtocolBase&lt; ExampleProtocol &gt;</dt>
+</dl>
+
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+    <script type="text/javascript">
+        function init() {
+            WaveDrom.ProcessAll();
+        }
+        window.onload = init;
+    </script>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="example_8_sync.html" class="btn btn-neutral float-right" title="8_sync" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="example_6_hooks.html" class="btn btn-neutral float-left" title="6_hooks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Jochem Rutgers
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

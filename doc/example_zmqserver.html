@@ -1,0 +1,855 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>zmqserver &mdash; libstored  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="http://wavedrom.com/skins/default.js"></script>
+        <script src="http://wavedrom.com/wavedrom.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="terminal" href="example_terminal.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libstored
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Content</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cpp.html">C++</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fpga.html">VHDL</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="example_1_hello.html">1_hello</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_2_basic.html">2_basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_3_scope.html">3_scope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_4_function.html">4_function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_5_debug.html">5_debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_6_hooks.html">6_hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_7_protocol.html">7_protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_8_sync.html">8_sync</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_9_fpga.html">9_fpga</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">zmqserver</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#store-definition">Store definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#application">Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#screenshot">Screenshot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#store-reference">Store reference</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libstored</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="examples.html">Examples</a> &raquo;</li>
+        
+      <li>zmqserver</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/doc/example_zmqserver.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="zmqserver">
+<h1>zmqserver<a class="headerlink" href="#zmqserver" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="store-definition">
+<h2>Store definition<a class="headerlink" href="#store-definition" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int8      an int8
+int16     an int16
+int32     an int32
+int64     an int64
+uint8     a uint8
+uint16    a uint16
+uint32    a uint32
+uint64    a uint64
+float     a float
+double    a double
+bool      a bool
+ptr32     a ptr32
+ptr64     a ptr64
+blob:16   a blob
+string:15 a string
+
+{
+	(int32)		an int8 + an int16
+	(double)	circle area (r = /a double)
+	(uint32)	length of /a string
+} compute
+
+{
+	(uint32) ZMQ messages
+	(uint32) object writes
+} stats
+
+(double) rand
+(uint64) t (us)
+
+</pre></div>
+</div>
+</div>
+<div class="section" id="application">
+<h2>Application<a class="headerlink" href="#application" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
+<span class="cm"> * \file</span>
+<span class="cm"> * \brief A stored::ZmqServer interface for a lot of different types of objects.</span>
+<span class="cm"> */</span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;ZmqServerStore.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;cmath&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;time.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#if __cplusplus &gt;= 201103L</span>
+<span class="cp">#  include &lt;chrono&gt;</span>
+<span class="cp">#endif</span>
+
+<span class="k">class</span> <span class="nc">ZmqServerStore</span> <span class="o">:</span> <span class="k">public</span> <span class="n">stored</span><span class="o">::</span><span class="n">ZmqServerStoreBase</span><span class="o">&lt;</span><span class="n">ZmqServerStore</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="k">friend</span> <span class="k">class</span> <span class="nc">stored</span><span class="o">::</span><span class="n">ZmqServerStoreBase</span><span class="o">&lt;</span><span class="n">ZmqServerStore</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+	<span class="n">ZmqServerStore</span><span class="p">()</span> <span class="o">:</span> <span class="n">m_messages</span><span class="p">(),</span> <span class="n">m_writes</span><span class="p">()</span> <span class="p">{}</span>
+
+<span class="k">protected</span><span class="o">:</span>
+	<span class="kt">void</span> <span class="n">__compute__an_int8_an_int16</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">int32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
+			<span class="n">value</span> <span class="o">=</span> <span class="n">an_int8</span><span class="p">.</span><span class="n">get</span><span class="p">()</span> <span class="o">+</span> <span class="n">an_int16</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
+	<span class="p">}</span>
+	<span class="kt">void</span> <span class="n">__compute__circle_area_r__a_double</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">double</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
+			<span class="n">value</span> <span class="o">=</span> <span class="n">M_PI</span> <span class="o">*</span> <span class="n">a_double</span><span class="p">.</span><span class="n">get</span><span class="p">()</span> <span class="o">*</span> <span class="n">a_double</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
+	<span class="p">}</span>
+	<span class="kt">void</span> <span class="n">__compute__length_of__a_string</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
+			<span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">strlen</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">a_string</span><span class="p">.</span><span class="n">buffer</span><span class="p">()));</span>
+
+	<span class="p">}</span>
+	<span class="kt">void</span> <span class="n">__stats__ZMQ_messages</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
+			<span class="n">value</span> <span class="o">=</span> <span class="n">m_messages</span><span class="p">;</span>
+		<span class="k">else</span>
+			<span class="n">m_messages</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="kt">void</span> <span class="n">__stats__object_writes</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
+			<span class="n">value</span> <span class="o">=</span> <span class="n">m_writes</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="kt">void</span> <span class="n">__rand</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">double</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span> <span class="p">{</span>
+<span class="cp">#ifdef STORED_OS_WINDOWS</span>
+			<span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="o">::</span><span class="n">rand</span><span class="p">()</span> <span class="o">/</span> <span class="n">RAND_MAX</span><span class="p">;</span>
+<span class="cp">#else</span>
+			<span class="n">value</span> <span class="o">=</span> <span class="n">drand48</span><span class="p">();</span>
+<span class="cp">#endif</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="kt">void</span> <span class="n">__t_us</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint64_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span> <span class="p">{</span>
+<span class="cp">#if __cplusplus &gt;= 201103L</span>
+			<span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)(</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">duration_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">microseconds</span><span class="o">&gt;</span><span class="p">(</span>
+				<span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">().</span><span class="n">time_since_epoch</span><span class="p">()).</span><span class="n">count</span><span class="p">());</span>
+<span class="cp">#else</span>
+			<span class="c1">// There is no portable implementation here...</span>
+			<span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000000ULL</span><span class="p">;</span>
+<span class="cp">#endif</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="kt">void</span> <span class="n">__hookSet</span><span class="p">(</span><span class="n">stored</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">type</span> <span class="n">UNUSED_PAR</span><span class="p">(</span><span class="n">type</span><span class="p">),</span> <span class="kt">void</span><span class="o">*</span> <span class="n">UNUSED_PAR</span><span class="p">(</span><span class="n">buffer</span><span class="p">),</span> <span class="kt">size_t</span> <span class="n">UNUSED_PAR</span><span class="p">(</span><span class="n">len</span><span class="p">))</span> <span class="p">{</span> <span class="n">m_writes</span><span class="o">++</span><span class="p">;</span> <span class="p">}</span>
+
+<span class="k">public</span><span class="o">:</span>
+	<span class="kt">void</span> <span class="n">incMessages</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">m_messages</span><span class="o">++</span><span class="p">;</span>
+	<span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+	<span class="kt">uint32_t</span> <span class="n">m_messages</span><span class="p">;</span>
+	<span class="kt">uint32_t</span> <span class="n">m_writes</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">ZmqServerStore</span> <span class="n">store</span><span class="p">;</span>
+	<span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span> <span class="n">debugger</span><span class="p">(</span><span class="s">&quot;zmqserver&quot;</span><span class="p">);</span>
+	<span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store</span><span class="p">);</span>
+
+	<span class="n">stored</span><span class="o">::</span><span class="n">DebugZmqLayer</span> <span class="n">zmqLayer</span><span class="p">;</span>
+	<span class="n">zmqLayer</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">debugger</span><span class="p">);</span>
+
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Connect via ZMQ to debug this application.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+	<span class="n">stored</span><span class="o">::</span><span class="n">Poller</span> <span class="n">poller</span><span class="p">;</span>
+
+	<span class="k">if</span><span class="p">((</span><span class="n">errno</span> <span class="o">=</span> <span class="n">poller</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">zmqLayer</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">,</span> <span class="n">stored</span><span class="o">::</span><span class="n">Poller</span><span class="o">::</span><span class="n">PollIn</span><span class="p">)))</span> <span class="p">{</span>
+		<span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot add to poller&quot;</span><span class="p">);</span>
+		<span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="kt">time_t</span> <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+
+	<span class="k">while</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">(</span><span class="mi">100000</span><span class="p">).</span><span class="n">empty</span><span class="p">())</span> <span class="p">{</span> <span class="c1">// 100 ms</span>
+			<span class="k">switch</span><span class="p">(</span><span class="n">errno</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">case</span> <span class="nl">EINTR</span><span class="p">:</span>
+			<span class="k">case</span> <span class="nl">EAGAIN</span><span class="p">:</span>
+				<span class="k">break</span><span class="p">;</span>
+			<span class="k">default</span><span class="o">:</span>
+				<span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot poll&quot;</span><span class="p">);</span>
+				<span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+			<span class="p">}</span> <span class="c1">// else timeout</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">((</span><span class="n">errno</span> <span class="o">=</span> <span class="n">zmqLayer</span><span class="p">.</span><span class="n">recv</span><span class="p">()))</span> <span class="p">{</span>
+			<span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot recv&quot;</span><span class="p">);</span>
+			<span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="n">store</span><span class="p">.</span><span class="n">incMessages</span><span class="p">();</span>
+		<span class="p">}</span>
+
+		<span class="c1">// As an example, call debugger.trace() roughly once per second.</span>
+		<span class="kt">time_t</span> <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">t</span> <span class="o">!=</span> <span class="n">now</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">t</span> <span class="o">=</span> <span class="n">now</span><span class="p">;</span>
+			<span class="n">debugger</span><span class="p">.</span><span class="n">trace</span><span class="p">();</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="screenshot">
+<h2>Screenshot<a class="headerlink" href="#screenshot" title="Permalink to this headline">¶</a></h2>
+<img alt="../_images/zmqserver_screenshot.png" src="../_images/zmqserver_screenshot.png" />
+</div>
+<div class="section" id="store-reference">
+<h2>Store reference<a class="headerlink" href="#store-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt id="_CPPv4I00EN6stored21ZmqServerStoreObjectsE">
+<span id="_CPPv3I00EN6stored21ZmqServerStoreObjectsE"></span><span id="_CPPv2I00EN6stored21ZmqServerStoreObjectsE"></span>template&lt;typename <code class="sig-name descname">Base_</code>, typename <code class="sig-name descname">Implementation_</code>&gt;<br /><span class="target" id="classstored_1_1_zmq_server_store_objects"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ZmqServerStoreObjects</code><a class="headerlink" href="#_CPPv4I00EN6stored21ZmqServerStoreObjectsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>All <a class="reference internal" href="#classstored_1_1_zmq_server_store_base"><span class="std std-ref">ZmqServerStoreBase</span></a>’s objects. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects4BaseE">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects4BaseE"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects4BaseE"></span><span id="stored::ZmqServerStoreObjects::Base"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1aa35d17e837c34e20db1f4054d5ce98c1"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored21ZmqServerStoreObjectsE" title="stored::ZmqServerStoreObjects::Base_">Base_</a> <code class="sig-name descname">Base</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects14ImplementationE"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects14ImplementationE"></span><span id="stored::ZmqServerStoreObjects::Implementation"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1ab82b306fb745d3efee8d787de462ec30"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored21ZmqServerStoreObjectsE" title="stored::ZmqServerStoreObjects::Implementation_">Implementation_</a> <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects6a_blobE">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects6a_blobE"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects6a_blobE"></span><span id="stored::ZmqServerStoreObjects::a_blob__impl::StoreVariantV:Base.Implementation.Type::Blob.0u.16u:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1af2550c9e6ec50753d6117110968e5f55"></span>impl::StoreVariantV&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, Type::Blob, 0u, 16u&gt; <code class="sig-name descname">a_blob</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects6a_blobE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>a blob </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects6a_boolE">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects6a_boolE"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects6a_boolE"></span><span id="stored::ZmqServerStoreObjects::a_bool__impl::StoreVariable:Base.Implementation.b.86u.1:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1a091fee96885c58b22b69091baa4d48ee"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, bool, 86u, 1&gt; <code class="sig-name descname">a_bool</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects6a_boolE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>a bool </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects8a_doubleE">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects8a_doubleE"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects8a_doubleE"></span><span id="stored::ZmqServerStoreObjects::a_double__impl::StoreVariable:Base.Implementation.double.48u.8:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1abfc6cf7d1573a329807cd68ee30fe9d7"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, double, 48u, 8&gt; <code class="sig-name descname">a_double</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects8a_doubleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>a double </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects7a_floatE">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects7a_floatE"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects7a_floatE"></span><span id="stored::ZmqServerStoreObjects::a_float__impl::StoreVariable:Base.Implementation.float.72u.4:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1a0ca4304dc8f948b13ed04b58b42ac3bd"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, float, 72u, 4&gt; <code class="sig-name descname">a_float</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects7a_floatE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>a float </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects7a_ptr32E">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects7a_ptr32E"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects7a_ptr32E"></span><span id="stored::ZmqServerStoreObjects::a_ptr32__impl::StoreVariable:Base.Implementation.voidP.76u.4:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1a5d0fc2ec2ae467074e00eb29b51ada46"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, void*, 76u, 4&gt; <code class="sig-name descname">a_ptr32</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects7a_ptr32E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>a ptr32 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects7a_ptr64E">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects7a_ptr64E"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects7a_ptr64E"></span><span id="stored::ZmqServerStoreObjects::a_ptr64__impl::StoreVariable:Base.Implementation.voidP.56u.8:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1a993467ebfa86ee44b7d1c05a4727f89c"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, void*, 56u, 8&gt; <code class="sig-name descname">a_ptr64</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects7a_ptr64E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>a ptr64 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects8a_stringE">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects8a_stringE"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects8a_stringE"></span><span id="stored::ZmqServerStoreObjects::a_string__impl::StoreVariantV:Base.Implementation.Type::String.16u.15u:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1a2fde06526bdaa90338837a2aeedf6f75"></span>impl::StoreVariantV&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, Type::String, 16u, 15u&gt; <code class="sig-name descname">a_string</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects8a_stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>a string </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects8a_uint16E">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects8a_uint16E"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects8a_uint16E"></span><span id="stored::ZmqServerStoreObjects::a_uint16__impl::StoreVariable:Base.Implementation.uint16_t.82u.2:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1aa9778b7ea88bb8ec8a120f24d86885e9"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, uint16_t, 82u, 2&gt; <code class="sig-name descname">a_uint16</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects8a_uint16E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>a uint16 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects8a_uint32E">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects8a_uint32E"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects8a_uint32E"></span><span id="stored::ZmqServerStoreObjects::a_uint32__impl::StoreVariable:Base.Implementation.uint32_t.68u.4:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1afc31bae77bf21afa98cbe46fac38addb"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, uint32_t, 68u, 4&gt; <code class="sig-name descname">a_uint32</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects8a_uint32E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>a uint32 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects8a_uint64E">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects8a_uint64E"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects8a_uint64E"></span><span id="stored::ZmqServerStoreObjects::a_uint64__impl::StoreVariable:Base.Implementation.uint64_t.40u.8:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1a0d4a990f67c1dbb97ca921b25cb36e20"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, uint64_t, 40u, 8&gt; <code class="sig-name descname">a_uint64</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects8a_uint64E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>a uint64 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects7a_uint8E">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects7a_uint8E"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects7a_uint8E"></span><span id="stored::ZmqServerStoreObjects::a_uint8__impl::StoreVariable:Base.Implementation.uint8_t.85u.1:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1ab507cd5b73333e1baa1d3dbe9ea132e3"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, uint8_t, 85u, 1&gt; <code class="sig-name descname">a_uint8</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects7a_uint8E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>a uint8 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects8an_int16E">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects8an_int16E"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects8an_int16E"></span><span id="stored::ZmqServerStoreObjects::an_int16__impl::StoreVariable:Base.Implementation.int16_t.80u.2:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1a31df02863659abad95d50684b6a507b4"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, int16_t, 80u, 2&gt; <code class="sig-name descname">an_int16</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects8an_int16E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>an int16 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects8an_int32E">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects8an_int32E"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects8an_int32E"></span><span id="stored::ZmqServerStoreObjects::an_int32__impl::StoreVariable:Base.Implementation.int32_t.64u.4:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1a7f679e15c3688ae1b5c41e1b64e92547"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, int32_t, 64u, 4&gt; <code class="sig-name descname">an_int32</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects8an_int32E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>an int32 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects8an_int64E">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects8an_int64E"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects8an_int64E"></span><span id="stored::ZmqServerStoreObjects::an_int64__impl::StoreVariable:Base.Implementation.int64_t.32u.8:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1a5a4c484a359b1baeb00ea57210ef5c76"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, int64_t, 32u, 8&gt; <code class="sig-name descname">an_int64</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects8an_int64E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>an int64 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects7an_int8E">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects7an_int8E"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects7an_int8E"></span><span id="stored::ZmqServerStoreObjects::an_int8__impl::StoreVariable:Base.Implementation.int8_t.84u.1:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1a50ffedbe1b2ec0d3ebc1f3b00b2ad73e"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, int8_t, 84u, 1&gt; <code class="sig-name descname">an_int8</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects7an_int8E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>an int8 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects25compute__an_int8_an_int16E">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects25compute__an_int8_an_int16E"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects25compute__an_int8_an_int16E"></span><span id="stored::ZmqServerStoreObjects::compute__an_int8_an_int16__impl::StoreFunction:Base.Implementation.int32_t.1u:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1a3a78653b653bab4b268450e98f1bab67"></span>impl::StoreFunction&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, int32_t, 1u&gt; <code class="sig-name descname">compute__an_int8_an_int16</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects25compute__an_int8_an_int16E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>compute/an int8 + an int16 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects32compute__circle_area_r__a_doubleE">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects32compute__circle_area_r__a_doubleE"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects32compute__circle_area_r__a_doubleE"></span><span id="stored::ZmqServerStoreObjects::compute__circle_area_r__a_double__impl::StoreFunction:Base.Implementation.double.2u:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1ab9e9bb4e73a56b3587479efc041307c2"></span>impl::StoreFunction&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, double, 2u&gt; <code class="sig-name descname">compute__circle_area_r__a_double</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects32compute__circle_area_r__a_doubleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>compute/circle area (r = /a double) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects28compute__length_of__a_stringE">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects28compute__length_of__a_stringE"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects28compute__length_of__a_stringE"></span><span id="stored::ZmqServerStoreObjects::compute__length_of__a_string__impl::StoreFunction:Base.Implementation.uint32_t.3u:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1a5b0601645131f7b0c2f85248aebc567a"></span>impl::StoreFunction&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, uint32_t, 3u&gt; <code class="sig-name descname">compute__length_of__a_string</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects28compute__length_of__a_stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>compute/length of /a string </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects4randE">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects4randE"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects4randE"></span><span id="stored::ZmqServerStoreObjects::rand__impl::StoreFunction:Base.Implementation.double.6u:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1afd0dca6acba4e7bde2c9122b498f34b6"></span>impl::StoreFunction&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, double, 6u&gt; <code class="sig-name descname">rand</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects4randE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>rand </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects20stats__object_writesE">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects20stats__object_writesE"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects20stats__object_writesE"></span><span id="stored::ZmqServerStoreObjects::stats__object_writes__impl::StoreFunction:Base.Implementation.uint32_t.5u:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1a011ecccd65898668cd7b496a32fb7459"></span>impl::StoreFunction&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, uint32_t, 5u&gt; <code class="sig-name descname">stats__object_writes</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects20stats__object_writesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>stats/object writes </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects19stats__ZMQ_messagesE">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects19stats__ZMQ_messagesE"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects19stats__ZMQ_messagesE"></span><span id="stored::ZmqServerStoreObjects::stats__ZMQ_messages__impl::StoreFunction:Base.Implementation.uint32_t.4u:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1a3679c31731680c9c86116dc5cab60a71"></span>impl::StoreFunction&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, uint32_t, 4u&gt; <code class="sig-name descname">stats__ZMQ_messages</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects19stats__ZMQ_messagesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>stats/ZMQ messages </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored21ZmqServerStoreObjects4t_usE">
+<span id="_CPPv3N6stored21ZmqServerStoreObjects4t_usE"></span><span id="_CPPv2N6stored21ZmqServerStoreObjects4t_usE"></span><span id="stored::ZmqServerStoreObjects::t_us__impl::StoreFunction:Base.Implementation.uint64_t.7u:"></span><span class="target" id="classstored_1_1_zmq_server_store_objects_1acf0663ca658e0ff759487ddc35ce0dcb"></span>impl::StoreFunction&lt;<a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects4BaseE" title="stored::ZmqServerStoreObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored21ZmqServerStoreObjects14ImplementationE" title="stored::ZmqServerStoreObjects::Implementation">Implementation</a>, uint64_t, 7u&gt; <code class="sig-name descname">t_us</code><a class="headerlink" href="#_CPPv4N6stored21ZmqServerStoreObjects4t_usE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>t (us) </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4I0EN6stored18ZmqServerStoreBaseE">
+<span id="_CPPv3I0EN6stored18ZmqServerStoreBaseE"></span><span id="_CPPv2I0EN6stored18ZmqServerStoreBaseE"></span>template&lt;typename <code class="sig-name descname">Implementation_</code>&gt;<br /><span class="target" id="classstored_1_1_zmq_server_store_base"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ZmqServerStoreBase</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4I00EN6stored21ZmqServerStoreObjectsE" title="stored::ZmqServerStoreObjects">ZmqServerStoreObjects</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored18ZmqServerStoreBaseE" title="stored::ZmqServerStoreBase">ZmqServerStoreBase</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored18ZmqServerStoreBaseE" title="stored::ZmqServerStoreBase::Implementation_">Implementation_</a>&gt;, <a class="reference internal" href="#_CPPv4I0EN6stored18ZmqServerStoreBaseE" title="stored::ZmqServerStoreBase::Implementation_">Implementation_</a>&gt;<a class="headerlink" href="#_CPPv4I0EN6stored18ZmqServerStoreBaseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Base class with default interface of all <a class="reference internal" href="#classstored_1_1_zmq_server_store"><span class="std std-ref">ZmqServerStore</span></a> implementations. </p>
+<p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
+<p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_zmq_server_store"><span class="std std-ref">stored::ZmqServerStore</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
+<p>To inherit the base class, you can use the following template:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ZmqServerStore : public STORE_BASECLASS(ZmqServerStoreBase, ZmqServerStore) {
+    STORE_CLASS_BODY(ZmqServerStoreBase, ZmqServerStore)
+public:
+    // Your class implementation, such as:
+    ZmqServerStore() is_default
+    // ...
+};
+</pre></div>
+</div>
+</p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_zmq_server_store"><span class="std std-ref">stored::ZmqServerStore</span></a> </p>
+</dd>
+<dt><strong>See</strong></dt><dd><p>stored::ZmqServerStoreData </p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp enum">
+<dt id="_CPPv4N6stored18ZmqServerStoreBaseUt2_38E">
+<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_38E"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a858f62657625f0135801d087fcea2932"></span><em class="property">enum </em><strong>[anonymous]</strong><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_38E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored18ZmqServerStoreBaseUt2_3811ObjectCountE">
+<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_3811ObjectCountE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a858f62657625f0135801d087fcea2932ab49110696541bcf3f1adfc1b7835390e"></span><em class="property">enumerator </em><code class="sig-name descname">ObjectCount</code><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_3811ObjectCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of objects in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored18ZmqServerStoreBaseUt2_3813VariableCountE">
+<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_3813VariableCountE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a858f62657625f0135801d087fcea2932a32d81b9c8efef34f9e05b257ea273661"></span><em class="property">enumerator </em><code class="sig-name descname">VariableCount</code><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_3813VariableCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of variables in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored18ZmqServerStoreBaseUt2_3813FunctionCountE">
+<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_3813FunctionCountE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a858f62657625f0135801d087fcea2932a5d97eec6df2600f53f4eefffa0ec92dc"></span><em class="property">enumerator </em><code class="sig-name descname">FunctionCount</code><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_3813FunctionCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of functions in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored18ZmqServerStoreBaseUt2_3810BufferSizeE">
+<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_3810BufferSizeE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a858f62657625f0135801d087fcea2932a293d1203a1fbc9ff54f9f2e82bdfd875"></span><em class="property">enumerator </em><code class="sig-name descname">BufferSize</code><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_3810BufferSizeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Buffer size. </p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored18ZmqServerStoreBase14ImplementationE">
+<span id="_CPPv3N6stored18ZmqServerStoreBase14ImplementationE"></span><span id="_CPPv2N6stored18ZmqServerStoreBase14ImplementationE"></span><span id="stored::ZmqServerStoreBase::Implementation"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1ae9e04a7c3fd9d981555f0cd1d5a84e8e"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I0EN6stored18ZmqServerStoreBaseE" title="stored::ZmqServerStoreBase::Implementation_">Implementation_</a> <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBase14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of the actual implementation, which is the (lowest) subclass. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored18ZmqServerStoreBase3KeyE">
+<span id="_CPPv3N6stored18ZmqServerStoreBase3KeyE"></span><span id="_CPPv2N6stored18ZmqServerStoreBase3KeyE"></span><span id="stored::ZmqServerStoreBase::Key"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1ad3b001d71b22b015737590095fe6115f"></span><em class="property">typedef </em>uintptr_t <code class="sig-name descname">Key</code><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBase3KeyE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of a key. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_zmq_server_store_base_1a9361f48a8ef7ad5737bce10b68cc29f1"><span class="std std-ref">bufferToKey()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored18ZmqServerStoreBase9ObjectMapE">
+<span id="_CPPv3N6stored18ZmqServerStoreBase9ObjectMapE"></span><span id="_CPPv2N6stored18ZmqServerStoreBase9ObjectMapE"></span><span id="stored::ZmqServerStoreBase::ObjectMap"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a142bca5b34996a50dd141f395cd8d4e9"></span><em class="property">typedef </em>std::map&lt;std::string, <a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored18ZmqServerStoreBase14ImplementationE" title="stored::ZmqServerStoreBase::Implementation">Implementation</a>&gt;&gt; <code class="sig-name descname">ObjectMap</code><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBase9ObjectMapE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Map as generated by <a class="reference internal" href="#classstored_1_1_zmq_server_store_base_1a2f37f7860e4eb6e04f7951df15879529"><span class="std std-ref">map()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored18ZmqServerStoreBase7ObjectsE">
+<span id="_CPPv3N6stored18ZmqServerStoreBase7ObjectsE"></span><span id="_CPPv2N6stored18ZmqServerStoreBase7ObjectsE"></span><span id="stored::ZmqServerStoreBase::Objects"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1acc1d9435014e10d7de23aee3e1a19472"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored21ZmqServerStoreObjectsE" title="stored::ZmqServerStoreObjects">ZmqServerStoreObjects</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored18ZmqServerStoreBaseE" title="stored::ZmqServerStoreBase">ZmqServerStoreBase</a>, <a class="reference internal" href="#_CPPv4I0EN6stored18ZmqServerStoreBaseE" title="stored::ZmqServerStoreBase::Implementation_">Implementation_</a>&gt; <code class="sig-name descname">Objects</code><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBase7ObjectsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERK18ZmqServerStoreBase">
+<span id="_CPPv3N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERK18ZmqServerStoreBase"></span><span id="_CPPv2N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERK18ZmqServerStoreBase"></span><span id="stored::ZmqServerStoreBase::ZmqServerStoreBase__ZmqServerStoreBaseCR"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1ab5c032e1dd883c8208af41238d0db1b6"></span><code class="sig-name descname">ZmqServerStoreBase</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERK18ZmqServerStoreBase" title="stored::ZmqServerStoreBase::ZmqServerStoreBase">ZmqServerStoreBase</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERK18ZmqServerStoreBase" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERR18ZmqServerStoreBase">
+<span id="_CPPv3N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERR18ZmqServerStoreBase"></span><span id="_CPPv2N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERR18ZmqServerStoreBase"></span><span id="stored::ZmqServerStoreBase::ZmqServerStoreBase__ZmqServerStoreBaseRR"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1ab8b6432a6756e7c55afb93cc8764bdcd"></span><code class="sig-name descname">ZmqServerStoreBase</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERR18ZmqServerStoreBase" title="stored::ZmqServerStoreBase::ZmqServerStoreBase">ZmqServerStoreBase</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERR18ZmqServerStoreBase" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored18ZmqServerStoreBase11bufferToKeyEPKv">
+<span id="_CPPv3NK6stored18ZmqServerStoreBase11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored18ZmqServerStoreBase11bufferToKeyEPKv"></span><span id="stored::ZmqServerStoreBase::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a9361f48a8ef7ad5737bce10b68cc29f1"></span><a class="reference internal" href="#_CPPv4N6stored18ZmqServerStoreBase3KeyE" title="stored::ZmqServerStoreBase::Key">Key</a> <code class="sig-name descname">bufferToKey</code><span class="sig-paren">(</span>void <em class="property">const</em> *<em>buffer</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored18ZmqServerStoreBase11bufferToKeyEPKv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Converts a variable’s buffer to a key. </p>
+<p>A key is unique for all variables of the same store, but identical for the same variables across different instances of the same store class. Therefore, the key can be used to synchronize between instances of the same store. A key does not contain meta data, such as type or length. It is up to the synchronization library to make sure that these properties are handled well.</p>
+<p>For synchronization, when hookEntryX() or hookEntryRO() is invoked, one can compute the key of the object that is accessed. The key can be used, for example, in a key-to-Variant map. When data arrives from another party, the key can be used to find the proper <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> in the map.</p>
+<p>This way, data exchange is type-safe, as the <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> can check if the data format matches the expected type. However, one cannot process data if the key is not set yet in the map. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored18ZmqServerStoreBase4findEPKc6size_t">
+<span id="_CPPv3N6stored18ZmqServerStoreBase4findEPKc6size_t"></span><span id="_CPPv2N6stored18ZmqServerStoreBase4findEPKc6size_t"></span><span id="stored::ZmqServerStoreBase::find__cCP.s"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1af7f6ccd9ca138388931dfd53078608fd"></span><a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored18ZmqServerStoreBase14ImplementationE" title="stored::ZmqServerStoreBase::Implementation">Implementation</a>&gt; <code class="sig-name descname">find</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>name</em>, size_t <em>len</em> = std::numeric_limits&lt;size_t&gt;::max()<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBase4findEPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Finds an object with the given name. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>the object, or an invalid <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">stored::Variant</span></a> if not found. </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored18ZmqServerStoreBase14implementationEv">
+<span id="_CPPv3NK6stored18ZmqServerStoreBase14implementationEv"></span><span id="_CPPv2NK6stored18ZmqServerStoreBase14implementationEv"></span><span id="stored::ZmqServerStoreBase::implementationC"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1aaa05fdfc3475375f58f1ad413a8b7812"></span><a class="reference internal" href="#_CPPv4N6stored18ZmqServerStoreBase14ImplementationE" title="stored::ZmqServerStoreBase::Implementation">Implementation</a> <em class="property">const</em> &amp;<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored18ZmqServerStoreBase14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the reference to the implementation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored18ZmqServerStoreBase14implementationEv">
+<span id="_CPPv3N6stored18ZmqServerStoreBase14implementationEv"></span><span id="_CPPv2N6stored18ZmqServerStoreBase14implementationEv"></span><span id="stored::ZmqServerStoreBase::implementation"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1ac9afc57a106a8f8cda5c37aeb8a9f225"></span><a class="reference internal" href="#_CPPv4N6stored18ZmqServerStoreBase14ImplementationE" title="stored::ZmqServerStoreBase::Implementation">Implementation</a> &amp;<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBase14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the reference to the implementation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored18ZmqServerStoreBase4listEv1FPvPKc">
+<span id="_CPPv3I0EN6stored18ZmqServerStoreBase4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored18ZmqServerStoreBase4listE1FPvPKc"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_zmq_server_store_base_1a4f61faf08e7ebb8d8c57fafd13965317"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored18ZmqServerStoreBase4listEv1FPvPKc" title="stored::ZmqServerStoreBase::list::F">F</a> <em>f</em>, void *<em>arg</em>, char <em class="property">const</em> *<em>prefix</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored18ZmqServerStoreBase4listEv1FPvPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_zmq_server_store_base_1a094475f93c606fdf323723e2fb8cc8f4"><span class="std std-ref">longDirectory()</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored18ZmqServerStoreBase4listEvRR1F">
+<span id="_CPPv3I0EN6stored18ZmqServerStoreBase4listERR1F"></span><span id="_CPPv2I0EN6stored18ZmqServerStoreBase4listERR1F"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_zmq_server_store_base_1a4e5e71128fc6525a7aff9516334a419e"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored18ZmqServerStoreBase4listEvRR1F" title="stored::ZmqServerStoreBase::list::F">F</a> &amp;&amp;<em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored18ZmqServerStoreBase4listEvRR1F" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_zmq_server_store_base_1a094475f93c606fdf323723e2fb8cc8f4"><span class="std std-ref">longDirectory()</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored18ZmqServerStoreBase13longDirectoryEv">
+<span id="_CPPv3NK6stored18ZmqServerStoreBase13longDirectoryEv"></span><span id="_CPPv2NK6stored18ZmqServerStoreBase13longDirectoryEv"></span><span id="stored::ZmqServerStoreBase::longDirectoryC"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a094475f93c606fdf323723e2fb8cc8f4"></span>uint8_t <em class="property">const</em> *<code class="sig-name descname">longDirectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored18ZmqServerStoreBase13longDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retuns the long directory. </p>
+<p>When not available, the short directory is returned. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored18ZmqServerStoreBase3mapEPKc">
+<span id="_CPPv3N6stored18ZmqServerStoreBase3mapEPKc"></span><span id="_CPPv2N6stored18ZmqServerStoreBase3mapEPKc"></span><span id="stored::ZmqServerStoreBase::map__cCP"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a2f37f7860e4eb6e04f7951df15879529"></span><a class="reference internal" href="#_CPPv4N6stored18ZmqServerStoreBase9ObjectMapE" title="stored::ZmqServerStoreBase::ObjectMap">ObjectMap</a> <code class="sig-name descname">map</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>prefix</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBase3mapEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a name to <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> map for the store. </p>
+<p>Generating the map may be expensive and the result is not cached. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored18ZmqServerStoreBase4nameEv">
+<span id="_CPPv3NK6stored18ZmqServerStoreBase4nameEv"></span><span id="_CPPv2NK6stored18ZmqServerStoreBase4nameEv"></span><span id="stored::ZmqServerStoreBase::nameC"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a82613442ae42fb1dd54727b002318ab1"></span>char <em class="property">const</em> *<code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored18ZmqServerStoreBase4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored18ZmqServerStoreBaseaSERK18ZmqServerStoreBase">
+<span id="_CPPv3N6stored18ZmqServerStoreBaseaSERK18ZmqServerStoreBase"></span><span id="_CPPv2N6stored18ZmqServerStoreBaseaSERK18ZmqServerStoreBase"></span><span id="stored::ZmqServerStoreBase::assign-operator__ZmqServerStoreBaseCR"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a0be5ab02a7036529bfcb9b907af2085f"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored18ZmqServerStoreBaseE" title="stored::ZmqServerStoreBase">ZmqServerStoreBase</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseaSERK18ZmqServerStoreBase" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored18ZmqServerStoreBaseaSERR18ZmqServerStoreBase">
+<span id="_CPPv3N6stored18ZmqServerStoreBaseaSERR18ZmqServerStoreBase"></span><span id="_CPPv2N6stored18ZmqServerStoreBaseaSERR18ZmqServerStoreBase"></span><span id="stored::ZmqServerStoreBase::assign-operator__ZmqServerStoreBaseRR"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a89f46c1df13abeb6e32854830600bb15"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored18ZmqServerStoreBaseE" title="stored::ZmqServerStoreBase">ZmqServerStoreBase</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseaSERR18ZmqServerStoreBase" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored18ZmqServerStoreBase14shortDirectoryEv">
+<span id="_CPPv3NK6stored18ZmqServerStoreBase14shortDirectoryEv"></span><span id="_CPPv2NK6stored18ZmqServerStoreBase14shortDirectoryEv"></span><span id="stored::ZmqServerStoreBase::shortDirectoryC"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1ae52059bd862c3dfbab6bc192b1719bde"></span>uint8_t <em class="property">const</em> *<code class="sig-name descname">shortDirectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored18ZmqServerStoreBase14shortDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the short directory. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Static Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored18ZmqServerStoreBase4hashEv">
+<span id="_CPPv3N6stored18ZmqServerStoreBase4hashEv"></span><span id="_CPPv2N6stored18ZmqServerStoreBase4hashEv"></span><span id="stored::ZmqServerStoreBase::hash"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a9f297ff6e775c1de34c07617b7b119a6"></span>char <em class="property">const</em> *<code class="sig-name descname">hash</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBase4hashEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a unique hash of the store. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Friends</p>
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreFunction</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariable</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariantF</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariantV</dt>
+</dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4N6stored14ZmqServerStoreE">
+<span id="_CPPv3N6stored14ZmqServerStoreE"></span><span id="_CPPv2N6stored14ZmqServerStoreE"></span><span id="stored::ZmqServerStore"></span><span class="target" id="classstored_1_1_zmq_server_store"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ZmqServerStore</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4I0EN6stored18ZmqServerStoreBaseE" title="stored::ZmqServerStoreBase">ZmqServerStoreBase</a>&lt;<a class="reference internal" href="#_CPPv4N6stored14ZmqServerStoreE" title="stored::ZmqServerStore">ZmqServerStore</a>&gt;<a class="headerlink" href="#_CPPv4N6stored14ZmqServerStoreE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default <a class="reference internal" href="#classstored_1_1_zmq_server_store_base"><span class="std std-ref">ZmqServerStoreBase</span></a> implementation. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N6stored14ZmqServerStore4baseE">
+<span id="_CPPv3N6stored14ZmqServerStore4baseE"></span><span id="_CPPv2N6stored14ZmqServerStore4baseE"></span><span id="stored::ZmqServerStore::base"></span><span class="target" id="classstored_1_1_zmq_server_store_1a45415064a9719e5bf10d87de291b4ca9"></span><em class="property">typedef </em>stored::<a class="reference internal" href="#_CPPv4I0EN6stored18ZmqServerStoreBaseE" title="stored::ZmqServerStoreBase">ZmqServerStoreBase</a>&lt;<a class="reference internal" href="#_CPPv4N6stored14ZmqServerStoreE" title="stored::ZmqServerStore">ZmqServerStore</a>&gt; <code class="sig-name descname">base</code><a class="headerlink" href="#_CPPv4N6stored14ZmqServerStore4baseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored14ZmqServerStore14ImplementationE">
+<span id="_CPPv3N6stored14ZmqServerStore14ImplementationE"></span><span id="_CPPv2N6stored14ZmqServerStore14ImplementationE"></span><span id="stored::ZmqServerStore::Implementation"></span><span class="target" id="classstored_1_1_zmq_server_store_1ae9e04a7c3fd9d981555f0cd1d5a84e8e"></span><em class="property">typedef </em>Implementation_ <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored14ZmqServerStore14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of the actual implementation, which is the (lowest) subclass. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14ZmqServerStore14ZmqServerStoreERK14ZmqServerStore">
+<span id="_CPPv3N6stored14ZmqServerStore14ZmqServerStoreERK14ZmqServerStore"></span><span id="_CPPv2N6stored14ZmqServerStore14ZmqServerStoreERK14ZmqServerStore"></span><span id="stored::ZmqServerStore::ZmqServerStore__ZmqServerStoreCR"></span><span class="target" id="classstored_1_1_zmq_server_store_1a25be80610ad85f4477eedd09db4f1f1b"></span><code class="sig-name descname">ZmqServerStore</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14ZmqServerStore14ZmqServerStoreERK14ZmqServerStore" title="stored::ZmqServerStore::ZmqServerStore">ZmqServerStore</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored14ZmqServerStore14ZmqServerStoreERK14ZmqServerStore" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14ZmqServerStore14ZmqServerStoreERR14ZmqServerStore">
+<span id="_CPPv3N6stored14ZmqServerStore14ZmqServerStoreERR14ZmqServerStore"></span><span id="_CPPv2N6stored14ZmqServerStore14ZmqServerStoreERR14ZmqServerStore"></span><span id="stored::ZmqServerStore::ZmqServerStore__ZmqServerStoreRR"></span><span class="target" id="classstored_1_1_zmq_server_store_1a63c0fd7693483050d46e7b451b6128e7"></span><code class="sig-name descname">ZmqServerStore</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14ZmqServerStore14ZmqServerStoreERR14ZmqServerStore" title="stored::ZmqServerStore::ZmqServerStore">ZmqServerStore</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored14ZmqServerStore14ZmqServerStoreERR14ZmqServerStore" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14ZmqServerStore14ZmqServerStoreEv">
+<span id="_CPPv3N6stored14ZmqServerStore14ZmqServerStoreEv"></span><span id="_CPPv2N6stored14ZmqServerStore14ZmqServerStoreEv"></span><span id="stored::ZmqServerStore::ZmqServerStore"></span><span class="target" id="classstored_1_1_zmq_server_store_1a916693339766273b87700669a4e7be91"></span><code class="sig-name descname">ZmqServerStore</code><span class="sig-paren">(</span><span class="sig-paren">)</span> = default<a class="headerlink" href="#_CPPv4N6stored14ZmqServerStore14ZmqServerStoreEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14ZmqServerStoreaSERK14ZmqServerStore">
+<span id="_CPPv3N6stored14ZmqServerStoreaSERK14ZmqServerStore"></span><span id="_CPPv2N6stored14ZmqServerStoreaSERK14ZmqServerStore"></span><span id="stored::ZmqServerStore::assign-operator__ZmqServerStoreCR"></span><span class="target" id="classstored_1_1_zmq_server_store_1a17c316137d48ead476418ce96e352df4"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14ZmqServerStoreE" title="stored::ZmqServerStore">ZmqServerStore</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored14ZmqServerStoreaSERK14ZmqServerStore" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14ZmqServerStoreaSERR14ZmqServerStore">
+<span id="_CPPv3N6stored14ZmqServerStoreaSERR14ZmqServerStore"></span><span id="_CPPv2N6stored14ZmqServerStoreaSERR14ZmqServerStore"></span><span id="stored::ZmqServerStore::assign-operator__ZmqServerStoreRR"></span><span class="target" id="classstored_1_1_zmq_server_store_1a38a5734941138e77c4c0ab2564be0c0f"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14ZmqServerStoreE" title="stored::ZmqServerStore">ZmqServerStore</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored14ZmqServerStoreaSERR14ZmqServerStore" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Friends</p>
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> stored::ZmqServerStoreBase&lt; ZmqServerStore &gt;</dt>
+</dl>
+
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+    <script type="text/javascript">
+        function init() {
+            WaveDrom.ProcessAll();
+        }
+        window.onload = init;
+    </script>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="example_terminal.html" class="btn btn-neutral float-left" title="terminal" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Jochem Rutgers
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

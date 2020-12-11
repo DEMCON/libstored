@@ -1,0 +1,677 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>terminal &mdash; libstored  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="http://wavedrom.com/skins/default.js"></script>
+        <script src="http://wavedrom.com/wavedrom.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="zmqserver" href="example_zmqserver.html" />
+    <link rel="prev" title="9_fpga" href="example_9_fpga.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libstored
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Content</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cpp.html">C++</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fpga.html">VHDL</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="example_1_hello.html">1_hello</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_2_basic.html">2_basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_3_scope.html">3_scope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_4_function.html">4_function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_5_debug.html">5_debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_6_hooks.html">6_hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_7_protocol.html">7_protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_8_sync.html">8_sync</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_9_fpga.html">9_fpga</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#store-definition">Store definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#application">Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#store-reference">Store reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="example_zmqserver.html">zmqserver</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libstored</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="examples.html">Examples</a> &raquo;</li>
+        
+      <li>terminal</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/doc/example_terminal.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="terminal">
+<h1>terminal<a class="headerlink" href="#terminal" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="store-definition">
+<h2>Store definition<a class="headerlink" href="#store-definition" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int64 supercalifragilisticexpialidocious
+int32 oh gosh
+
+{
+	bool world
+} small
+
+</pre></div>
+</div>
+</div>
+<div class="section" id="application">
+<h2>Application<a class="headerlink" href="#application" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
+<span class="cm"> * \file</span>
+<span class="cm"> * \brief A stdin/stdout terminal application to test hand-injected Embedded Debugger messages.</span>
+<span class="cm"> */</span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;ExampleTerminal.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
+
+<span class="cp">#ifndef STORED_OS_WINDOWS</span>
+<span class="c1">// The default implementation emits the response to stdout, with APC / ST</span>
+<span class="c1">// around it. However, your normal terminal strips this out.  If you pipe the</span>
+<span class="c1">// stdout to a file, you will see these sequences.</span>
+<span class="c1">//</span>
+<span class="c1">// If you enable the following line, this example dumps the response to stderr too.</span>
+<span class="cp">#  define PRINT_TO_STDERR</span>
+<span class="cp">#endif</span>
+
+<span class="c1">// If defined, do not print escaped messages to the console, but silently drop them.</span>
+<span class="c1">//#define SUPPRESS_ESCAPE</span>
+
+<span class="k">class</span> <span class="nc">CaseInverter</span> <span class="o">:</span> <span class="k">public</span> <span class="n">stored</span><span class="o">::</span><span class="n">TerminalLayer</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+	<span class="k">typedef</span> <span class="n">stored</span><span class="o">::</span><span class="n">TerminalLayer</span> <span class="n">base</span><span class="p">;</span>
+	<span class="n">CaseInverter</span><span class="p">()</span> <span class="n">is_default</span>
+	<span class="k">virtual</span> <span class="o">~</span><span class="n">CaseInverter</span><span class="p">()</span> <span class="k">override</span> <span class="n">is_default</span>
+
+<span class="k">protected</span><span class="o">:</span>
+	<span class="kt">void</span> <span class="n">nonDebugDecode</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">)</span> <span class="k">final</span> <span class="p">{</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">buffer</span><span class="p">;</span> <span class="n">len</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="n">len</span><span class="o">--</span><span class="p">,</span> <span class="n">p</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">c</span> <span class="o">&gt;=</span> <span class="sc">&#39;a&#39;</span> <span class="o">&amp;&amp;</span> <span class="n">c</span> <span class="o">&lt;=</span> <span class="sc">&#39;z&#39;</span><span class="p">)</span>
+				<span class="n">putchar</span><span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="sc">&#39;a&#39;</span> <span class="o">+</span> <span class="sc">&#39;A&#39;</span><span class="p">);</span>
+			<span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">c</span> <span class="o">&gt;=</span> <span class="sc">&#39;A&#39;</span> <span class="o">&amp;&amp;</span> <span class="n">c</span> <span class="o">&lt;=</span> <span class="sc">&#39;Z&#39;</span><span class="p">)</span>
+				<span class="n">putchar</span><span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="sc">&#39;A&#39;</span> <span class="o">+</span> <span class="sc">&#39;a&#39;</span><span class="p">);</span>
+			<span class="k">else</span>
+				<span class="nf">putchar</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+<span class="cp">#ifdef PRINT_TO_STDERR</span>
+	<span class="kt">void</span> <span class="n">encode</span><span class="p">(</span><span class="kt">void</span> <span class="k">const</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">last</span><span class="p">)</span> <span class="k">final</span> <span class="p">{</span>
+		<span class="n">base</span><span class="o">::</span><span class="n">encode</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">last</span><span class="p">);</span>
+		<span class="n">fwrite</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">stderr</span><span class="p">);</span>
+	<span class="p">}</span>
+<span class="cp">#endif</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">stored</span><span class="o">::</span><span class="n">ExampleTerminal</span> <span class="n">store</span><span class="p">;</span>
+
+	<span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span> <span class="n">debugger</span><span class="p">;</span>
+	<span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store</span><span class="p">);</span>
+
+	<span class="n">stored</span><span class="o">::</span><span class="n">AsciiEscapeLayer</span> <span class="n">escape</span><span class="p">;</span>
+	<span class="n">escape</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">debugger</span><span class="p">);</span>
+
+	<span class="n">CaseInverter</span> <span class="n">ci</span><span class="p">;</span>
+	<span class="n">ci</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">escape</span><span class="p">);</span>
+
+	<span class="n">stored</span><span class="o">::</span><span class="n">StdioLayer</span> <span class="n">stdio</span><span class="p">;</span>
+	<span class="n">stdio</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">ci</span><span class="p">);</span>
+
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Terminal with out-of-band debug messages test</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;To inject a command, enter `ESC %c &lt;your command&gt; ESC %c`.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+		<span class="n">stored</span><span class="o">::</span><span class="n">TerminalLayer</span><span class="o">::</span><span class="n">EscStart</span><span class="p">,</span>
+		<span class="n">stored</span><span class="o">::</span><span class="n">TerminalLayer</span><span class="o">::</span><span class="n">EscEnd</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;If pressing ESC does not work, try pressing Ctrl+[ instead.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;All other input is considered part of the normal application stream,</span><span class="se">\n</span><span class="s">&quot;</span>
+		<span class="s">&quot;which is case-inverted in this example.</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+	<span class="n">setvbuf</span><span class="p">(</span><span class="n">stdin</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">_IONBF</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+	<span class="n">setvbuf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">_IONBF</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+	<span class="n">stored</span><span class="o">::</span><span class="n">Poller</span> <span class="n">poller</span><span class="p">;</span>
+	<span class="n">poller</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">stdio</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">,</span> <span class="n">stored</span><span class="o">::</span><span class="n">Poller</span><span class="o">::</span><span class="n">PollIn</span><span class="p">);</span>
+
+	<span class="k">while</span><span class="p">(</span><span class="n">stdio</span><span class="p">.</span><span class="n">isOpen</span><span class="p">())</span> <span class="p">{</span>
+		<span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">();</span>
+		<span class="n">stdio</span><span class="p">.</span><span class="n">recv</span><span class="p">();</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="store-reference">
+<h2>Store reference<a class="headerlink" href="#store-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt id="_CPPv4I00EN6stored22ExampleTerminalObjectsE">
+<span id="_CPPv3I00EN6stored22ExampleTerminalObjectsE"></span><span id="_CPPv2I00EN6stored22ExampleTerminalObjectsE"></span>template&lt;typename <code class="sig-name descname">Base_</code>, typename <code class="sig-name descname">Implementation_</code>&gt;<br /><span class="target" id="classstored_1_1_example_terminal_objects"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleTerminalObjects</code><a class="headerlink" href="#_CPPv4I00EN6stored22ExampleTerminalObjectsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>All <a class="reference internal" href="#classstored_1_1_example_terminal_base"><span class="std std-ref">ExampleTerminalBase</span></a>’s objects. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N6stored22ExampleTerminalObjects4BaseE">
+<span id="_CPPv3N6stored22ExampleTerminalObjects4BaseE"></span><span id="_CPPv2N6stored22ExampleTerminalObjects4BaseE"></span><span id="stored::ExampleTerminalObjects::Base"></span><span class="target" id="classstored_1_1_example_terminal_objects_1aa9dff727a83eb1886c5b18baedaa08f7"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored22ExampleTerminalObjectsE" title="stored::ExampleTerminalObjects::Base_">Base_</a> <code class="sig-name descname">Base</code><a class="headerlink" href="#_CPPv4N6stored22ExampleTerminalObjects4BaseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored22ExampleTerminalObjects14ImplementationE">
+<span id="_CPPv3N6stored22ExampleTerminalObjects14ImplementationE"></span><span id="_CPPv2N6stored22ExampleTerminalObjects14ImplementationE"></span><span id="stored::ExampleTerminalObjects::Implementation"></span><span class="target" id="classstored_1_1_example_terminal_objects_1a3ae3d2046c93ecd70367e52f7cfdde4b"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored22ExampleTerminalObjectsE" title="stored::ExampleTerminalObjects::Implementation_">Implementation_</a> <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored22ExampleTerminalObjects14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N6stored22ExampleTerminalObjects7oh_goshE">
+<span id="_CPPv3N6stored22ExampleTerminalObjects7oh_goshE"></span><span id="_CPPv2N6stored22ExampleTerminalObjects7oh_goshE"></span><span id="stored::ExampleTerminalObjects::oh_gosh__impl::StoreVariable:Base.Implementation.int32_t.8u.4:"></span><span class="target" id="classstored_1_1_example_terminal_objects_1a93c648d67749c0d82d491bb0727cd01b"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored22ExampleTerminalObjects4BaseE" title="stored::ExampleTerminalObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored22ExampleTerminalObjects14ImplementationE" title="stored::ExampleTerminalObjects::Implementation">Implementation</a>, int32_t, 8u, 4&gt; <code class="sig-name descname">oh_gosh</code><a class="headerlink" href="#_CPPv4N6stored22ExampleTerminalObjects7oh_goshE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>oh gosh </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored22ExampleTerminalObjects12small__worldE">
+<span id="_CPPv3N6stored22ExampleTerminalObjects12small__worldE"></span><span id="_CPPv2N6stored22ExampleTerminalObjects12small__worldE"></span><span id="stored::ExampleTerminalObjects::small__world__impl::StoreVariable:Base.Implementation.b.12u.1:"></span><span class="target" id="classstored_1_1_example_terminal_objects_1abb03d99231dbca8fda16db3550db58b0"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored22ExampleTerminalObjects4BaseE" title="stored::ExampleTerminalObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored22ExampleTerminalObjects14ImplementationE" title="stored::ExampleTerminalObjects::Implementation">Implementation</a>, bool, 12u, 1&gt; <code class="sig-name descname">small__world</code><a class="headerlink" href="#_CPPv4N6stored22ExampleTerminalObjects12small__worldE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>small/world </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored22ExampleTerminalObjects34supercalifragilisticexpialidociousE">
+<span id="_CPPv3N6stored22ExampleTerminalObjects34supercalifragilisticexpialidociousE"></span><span id="_CPPv2N6stored22ExampleTerminalObjects34supercalifragilisticexpialidociousE"></span><span id="stored::ExampleTerminalObjects::supercalifragilisticexpialidocious__impl::StoreVariable:Base.Implementation.int64_t.0u.8:"></span><span class="target" id="classstored_1_1_example_terminal_objects_1aee5aeae8b2df25f220a186ca6c640823"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored22ExampleTerminalObjects4BaseE" title="stored::ExampleTerminalObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored22ExampleTerminalObjects14ImplementationE" title="stored::ExampleTerminalObjects::Implementation">Implementation</a>, int64_t, 0u, 8&gt; <code class="sig-name descname">supercalifragilisticexpialidocious</code><a class="headerlink" href="#_CPPv4N6stored22ExampleTerminalObjects34supercalifragilisticexpialidociousE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>supercalifragilisticexpialidocious </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4I0EN6stored19ExampleTerminalBaseE">
+<span id="_CPPv3I0EN6stored19ExampleTerminalBaseE"></span><span id="_CPPv2I0EN6stored19ExampleTerminalBaseE"></span>template&lt;typename <code class="sig-name descname">Implementation_</code>&gt;<br /><span class="target" id="classstored_1_1_example_terminal_base"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleTerminalBase</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4I00EN6stored22ExampleTerminalObjectsE" title="stored::ExampleTerminalObjects">ExampleTerminalObjects</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored19ExampleTerminalBaseE" title="stored::ExampleTerminalBase">ExampleTerminalBase</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored19ExampleTerminalBaseE" title="stored::ExampleTerminalBase::Implementation_">Implementation_</a>&gt;, <a class="reference internal" href="#_CPPv4I0EN6stored19ExampleTerminalBaseE" title="stored::ExampleTerminalBase::Implementation_">Implementation_</a>&gt;<a class="headerlink" href="#_CPPv4I0EN6stored19ExampleTerminalBaseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Base class with default interface of all <a class="reference internal" href="#classstored_1_1_example_terminal"><span class="std std-ref">ExampleTerminal</span></a> implementations. </p>
+<p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
+<p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_terminal"><span class="std std-ref">stored::ExampleTerminal</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
+<p>To inherit the base class, you can use the following template:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleTerminal : public STORE_BASECLASS(ExampleTerminalBase, ExampleTerminal) {
+    STORE_CLASS_BODY(ExampleTerminalBase, ExampleTerminal)
+public:
+    // Your class implementation, such as:
+    ExampleTerminal() is_default
+    // ...
+};
+</pre></div>
+</div>
+</p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_terminal"><span class="std std-ref">stored::ExampleTerminal</span></a> </p>
+</dd>
+<dt><strong>See</strong></dt><dd><p>stored::ExampleTerminalData </p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp enum">
+<dt id="_CPPv4N6stored19ExampleTerminalBaseUt2_37E">
+<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_37E"></span><span class="target" id="classstored_1_1_example_terminal_base_1ab330738d6af23eb792055841ac73a520"></span><em class="property">enum </em><strong>[anonymous]</strong><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_37E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored19ExampleTerminalBaseUt2_3711ObjectCountE">
+<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_3711ObjectCountE"></span><span class="target" id="classstored_1_1_example_terminal_base_1ab330738d6af23eb792055841ac73a520a83a159bb19340eb0eb1dd3c2fe31581b"></span><em class="property">enumerator </em><code class="sig-name descname">ObjectCount</code><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_3711ObjectCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of objects in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored19ExampleTerminalBaseUt2_3713VariableCountE">
+<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_3713VariableCountE"></span><span class="target" id="classstored_1_1_example_terminal_base_1ab330738d6af23eb792055841ac73a520af4f7e9ae4a24de02d53c248c236177a2"></span><em class="property">enumerator </em><code class="sig-name descname">VariableCount</code><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_3713VariableCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of variables in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored19ExampleTerminalBaseUt2_3713FunctionCountE">
+<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_3713FunctionCountE"></span><span class="target" id="classstored_1_1_example_terminal_base_1ab330738d6af23eb792055841ac73a520a50e8f2f260e387ca51dbdeba4732bddb"></span><em class="property">enumerator </em><code class="sig-name descname">FunctionCount</code><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_3713FunctionCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of functions in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored19ExampleTerminalBaseUt2_3710BufferSizeE">
+<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_3710BufferSizeE"></span><span class="target" id="classstored_1_1_example_terminal_base_1ab330738d6af23eb792055841ac73a520a386f0ae12df9785872e3811af5c6dab2"></span><em class="property">enumerator </em><code class="sig-name descname">BufferSize</code><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_3710BufferSizeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Buffer size. </p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored19ExampleTerminalBase14ImplementationE">
+<span id="_CPPv3N6stored19ExampleTerminalBase14ImplementationE"></span><span id="_CPPv2N6stored19ExampleTerminalBase14ImplementationE"></span><span id="stored::ExampleTerminalBase::Implementation"></span><span class="target" id="classstored_1_1_example_terminal_base_1a46584576907e79c528625c514dfe3a7c"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleTerminalBaseE" title="stored::ExampleTerminalBase::Implementation_">Implementation_</a> <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBase14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of the actual implementation, which is the (lowest) subclass. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored19ExampleTerminalBase3KeyE">
+<span id="_CPPv3N6stored19ExampleTerminalBase3KeyE"></span><span id="_CPPv2N6stored19ExampleTerminalBase3KeyE"></span><span id="stored::ExampleTerminalBase::Key"></span><span class="target" id="classstored_1_1_example_terminal_base_1ab2a1f9bd2834b206c2eed1623a2e247d"></span><em class="property">typedef </em>uintptr_t <code class="sig-name descname">Key</code><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBase3KeyE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of a key. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_terminal_base_1a9c5d0ab61e60402849f19f868057b805"><span class="std std-ref">bufferToKey()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored19ExampleTerminalBase9ObjectMapE">
+<span id="_CPPv3N6stored19ExampleTerminalBase9ObjectMapE"></span><span id="_CPPv2N6stored19ExampleTerminalBase9ObjectMapE"></span><span id="stored::ExampleTerminalBase::ObjectMap"></span><span class="target" id="classstored_1_1_example_terminal_base_1ac63254a29154fbe914a85e15d0e34cd2"></span><em class="property">typedef </em>std::map&lt;std::string, <a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleTerminalBase14ImplementationE" title="stored::ExampleTerminalBase::Implementation">Implementation</a>&gt;&gt; <code class="sig-name descname">ObjectMap</code><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBase9ObjectMapE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Map as generated by <a class="reference internal" href="#classstored_1_1_example_terminal_base_1a7e2eaa5a67874867dbdfcb51b6b86fac"><span class="std std-ref">map()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored19ExampleTerminalBase7ObjectsE">
+<span id="_CPPv3N6stored19ExampleTerminalBase7ObjectsE"></span><span id="_CPPv2N6stored19ExampleTerminalBase7ObjectsE"></span><span id="stored::ExampleTerminalBase::Objects"></span><span class="target" id="classstored_1_1_example_terminal_base_1ae43819d9b08280d8f6116c9f8acac8e8"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored22ExampleTerminalObjectsE" title="stored::ExampleTerminalObjects">ExampleTerminalObjects</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored19ExampleTerminalBaseE" title="stored::ExampleTerminalBase">ExampleTerminalBase</a>, <a class="reference internal" href="#_CPPv4I0EN6stored19ExampleTerminalBaseE" title="stored::ExampleTerminalBase::Implementation_">Implementation_</a>&gt; <code class="sig-name descname">Objects</code><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBase7ObjectsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleTerminalBase19ExampleTerminalBaseERK19ExampleTerminalBase">
+<span id="_CPPv3N6stored19ExampleTerminalBase19ExampleTerminalBaseERK19ExampleTerminalBase"></span><span id="_CPPv2N6stored19ExampleTerminalBase19ExampleTerminalBaseERK19ExampleTerminalBase"></span><span id="stored::ExampleTerminalBase::ExampleTerminalBase__ExampleTerminalBaseCR"></span><span class="target" id="classstored_1_1_example_terminal_base_1a0d9c91ec4b8d18344ce709d75ccd4f67"></span><code class="sig-name descname">ExampleTerminalBase</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored19ExampleTerminalBase19ExampleTerminalBaseERK19ExampleTerminalBase" title="stored::ExampleTerminalBase::ExampleTerminalBase">ExampleTerminalBase</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBase19ExampleTerminalBaseERK19ExampleTerminalBase" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleTerminalBase19ExampleTerminalBaseERR19ExampleTerminalBase">
+<span id="_CPPv3N6stored19ExampleTerminalBase19ExampleTerminalBaseERR19ExampleTerminalBase"></span><span id="_CPPv2N6stored19ExampleTerminalBase19ExampleTerminalBaseERR19ExampleTerminalBase"></span><span id="stored::ExampleTerminalBase::ExampleTerminalBase__ExampleTerminalBaseRR"></span><span class="target" id="classstored_1_1_example_terminal_base_1adb1ae380d7f703dc27ad9ed904d697a1"></span><code class="sig-name descname">ExampleTerminalBase</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored19ExampleTerminalBase19ExampleTerminalBaseERR19ExampleTerminalBase" title="stored::ExampleTerminalBase::ExampleTerminalBase">ExampleTerminalBase</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBase19ExampleTerminalBaseERR19ExampleTerminalBase" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored19ExampleTerminalBase11bufferToKeyEPKv">
+<span id="_CPPv3NK6stored19ExampleTerminalBase11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored19ExampleTerminalBase11bufferToKeyEPKv"></span><span id="stored::ExampleTerminalBase::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_terminal_base_1a9c5d0ab61e60402849f19f868057b805"></span><a class="reference internal" href="#_CPPv4N6stored19ExampleTerminalBase3KeyE" title="stored::ExampleTerminalBase::Key">Key</a> <code class="sig-name descname">bufferToKey</code><span class="sig-paren">(</span>void <em class="property">const</em> *<em>buffer</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored19ExampleTerminalBase11bufferToKeyEPKv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Converts a variable’s buffer to a key. </p>
+<p>A key is unique for all variables of the same store, but identical for the same variables across different instances of the same store class. Therefore, the key can be used to synchronize between instances of the same store. A key does not contain meta data, such as type or length. It is up to the synchronization library to make sure that these properties are handled well.</p>
+<p>For synchronization, when hookEntryX() or hookEntryRO() is invoked, one can compute the key of the object that is accessed. The key can be used, for example, in a key-to-Variant map. When data arrives from another party, the key can be used to find the proper <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> in the map.</p>
+<p>This way, data exchange is type-safe, as the <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> can check if the data format matches the expected type. However, one cannot process data if the key is not set yet in the map. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleTerminalBase4findEPKc6size_t">
+<span id="_CPPv3N6stored19ExampleTerminalBase4findEPKc6size_t"></span><span id="_CPPv2N6stored19ExampleTerminalBase4findEPKc6size_t"></span><span id="stored::ExampleTerminalBase::find__cCP.s"></span><span class="target" id="classstored_1_1_example_terminal_base_1acfe4da8e52963554682979c83b522257"></span><a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleTerminalBase14ImplementationE" title="stored::ExampleTerminalBase::Implementation">Implementation</a>&gt; <code class="sig-name descname">find</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>name</em>, size_t <em>len</em> = std::numeric_limits&lt;size_t&gt;::max()<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBase4findEPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Finds an object with the given name. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>the object, or an invalid <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">stored::Variant</span></a> if not found. </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored19ExampleTerminalBase14implementationEv">
+<span id="_CPPv3NK6stored19ExampleTerminalBase14implementationEv"></span><span id="_CPPv2NK6stored19ExampleTerminalBase14implementationEv"></span><span id="stored::ExampleTerminalBase::implementationC"></span><span class="target" id="classstored_1_1_example_terminal_base_1a1f83140fd3efee5d985ff9de1d25b01b"></span><a class="reference internal" href="#_CPPv4N6stored19ExampleTerminalBase14ImplementationE" title="stored::ExampleTerminalBase::Implementation">Implementation</a> <em class="property">const</em> &amp;<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored19ExampleTerminalBase14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the reference to the implementation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleTerminalBase14implementationEv">
+<span id="_CPPv3N6stored19ExampleTerminalBase14implementationEv"></span><span id="_CPPv2N6stored19ExampleTerminalBase14implementationEv"></span><span id="stored::ExampleTerminalBase::implementation"></span><span class="target" id="classstored_1_1_example_terminal_base_1a8812f0db4d4208975dcd4f72bd334bb8"></span><a class="reference internal" href="#_CPPv4N6stored19ExampleTerminalBase14ImplementationE" title="stored::ExampleTerminalBase::Implementation">Implementation</a> &amp;<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBase14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the reference to the implementation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored19ExampleTerminalBase4listEv1FPvPKc">
+<span id="_CPPv3I0EN6stored19ExampleTerminalBase4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored19ExampleTerminalBase4listE1FPvPKc"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_example_terminal_base_1ac5d2e684c7c5412e8dd26df7ec9eb011"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleTerminalBase4listEv1FPvPKc" title="stored::ExampleTerminalBase::list::F">F</a> <em>f</em>, void *<em>arg</em>, char <em class="property">const</em> *<em>prefix</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored19ExampleTerminalBase4listEv1FPvPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_terminal_base_1a37c0427d252f27509b64ef0577ccd82c"><span class="std std-ref">longDirectory()</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored19ExampleTerminalBase4listEvRR1F">
+<span id="_CPPv3I0EN6stored19ExampleTerminalBase4listERR1F"></span><span id="_CPPv2I0EN6stored19ExampleTerminalBase4listERR1F"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_example_terminal_base_1aafb54cfc9d31d8d4abf51da9eb11170c"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleTerminalBase4listEvRR1F" title="stored::ExampleTerminalBase::list::F">F</a> &amp;&amp;<em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored19ExampleTerminalBase4listEvRR1F" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_terminal_base_1a37c0427d252f27509b64ef0577ccd82c"><span class="std std-ref">longDirectory()</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored19ExampleTerminalBase13longDirectoryEv">
+<span id="_CPPv3NK6stored19ExampleTerminalBase13longDirectoryEv"></span><span id="_CPPv2NK6stored19ExampleTerminalBase13longDirectoryEv"></span><span id="stored::ExampleTerminalBase::longDirectoryC"></span><span class="target" id="classstored_1_1_example_terminal_base_1a37c0427d252f27509b64ef0577ccd82c"></span>uint8_t <em class="property">const</em> *<code class="sig-name descname">longDirectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored19ExampleTerminalBase13longDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retuns the long directory. </p>
+<p>When not available, the short directory is returned. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleTerminalBase3mapEPKc">
+<span id="_CPPv3N6stored19ExampleTerminalBase3mapEPKc"></span><span id="_CPPv2N6stored19ExampleTerminalBase3mapEPKc"></span><span id="stored::ExampleTerminalBase::map__cCP"></span><span class="target" id="classstored_1_1_example_terminal_base_1a7e2eaa5a67874867dbdfcb51b6b86fac"></span><a class="reference internal" href="#_CPPv4N6stored19ExampleTerminalBase9ObjectMapE" title="stored::ExampleTerminalBase::ObjectMap">ObjectMap</a> <code class="sig-name descname">map</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>prefix</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBase3mapEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a name to <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> map for the store. </p>
+<p>Generating the map may be expensive and the result is not cached. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored19ExampleTerminalBase4nameEv">
+<span id="_CPPv3NK6stored19ExampleTerminalBase4nameEv"></span><span id="_CPPv2NK6stored19ExampleTerminalBase4nameEv"></span><span id="stored::ExampleTerminalBase::nameC"></span><span class="target" id="classstored_1_1_example_terminal_base_1a21963aa4970099e36a066583119a2c13"></span>char <em class="property">const</em> *<code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored19ExampleTerminalBase4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleTerminalBaseaSERK19ExampleTerminalBase">
+<span id="_CPPv3N6stored19ExampleTerminalBaseaSERK19ExampleTerminalBase"></span><span id="_CPPv2N6stored19ExampleTerminalBaseaSERK19ExampleTerminalBase"></span><span id="stored::ExampleTerminalBase::assign-operator__ExampleTerminalBaseCR"></span><span class="target" id="classstored_1_1_example_terminal_base_1ad8bfbc667e18142f2c0d6775ec3ee12c"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleTerminalBaseE" title="stored::ExampleTerminalBase">ExampleTerminalBase</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseaSERK19ExampleTerminalBase" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleTerminalBaseaSERR19ExampleTerminalBase">
+<span id="_CPPv3N6stored19ExampleTerminalBaseaSERR19ExampleTerminalBase"></span><span id="_CPPv2N6stored19ExampleTerminalBaseaSERR19ExampleTerminalBase"></span><span id="stored::ExampleTerminalBase::assign-operator__ExampleTerminalBaseRR"></span><span class="target" id="classstored_1_1_example_terminal_base_1a68810b7c0247343607051fa6715d78d9"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleTerminalBaseE" title="stored::ExampleTerminalBase">ExampleTerminalBase</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseaSERR19ExampleTerminalBase" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored19ExampleTerminalBase14shortDirectoryEv">
+<span id="_CPPv3NK6stored19ExampleTerminalBase14shortDirectoryEv"></span><span id="_CPPv2NK6stored19ExampleTerminalBase14shortDirectoryEv"></span><span id="stored::ExampleTerminalBase::shortDirectoryC"></span><span class="target" id="classstored_1_1_example_terminal_base_1ad9779d8c0954fdedb0aa29065224f681"></span>uint8_t <em class="property">const</em> *<code class="sig-name descname">shortDirectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored19ExampleTerminalBase14shortDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the short directory. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Static Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleTerminalBase4hashEv">
+<span id="_CPPv3N6stored19ExampleTerminalBase4hashEv"></span><span id="_CPPv2N6stored19ExampleTerminalBase4hashEv"></span><span id="stored::ExampleTerminalBase::hash"></span><span class="target" id="classstored_1_1_example_terminal_base_1addae01d7755f704413829bd93ad5c149"></span>char <em class="property">const</em> *<code class="sig-name descname">hash</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBase4hashEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a unique hash of the store. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Friends</p>
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreFunction</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariable</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariantF</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariantV</dt>
+</dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4N6stored15ExampleTerminalE">
+<span id="_CPPv3N6stored15ExampleTerminalE"></span><span id="_CPPv2N6stored15ExampleTerminalE"></span><span id="stored::ExampleTerminal"></span><span class="target" id="classstored_1_1_example_terminal"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleTerminal</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4I0EN6stored19ExampleTerminalBaseE" title="stored::ExampleTerminalBase">ExampleTerminalBase</a>&lt;<a class="reference internal" href="#_CPPv4N6stored15ExampleTerminalE" title="stored::ExampleTerminal">ExampleTerminal</a>&gt;<a class="headerlink" href="#_CPPv4N6stored15ExampleTerminalE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default <a class="reference internal" href="#classstored_1_1_example_terminal_base"><span class="std std-ref">ExampleTerminalBase</span></a> implementation. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N6stored15ExampleTerminal4baseE">
+<span id="_CPPv3N6stored15ExampleTerminal4baseE"></span><span id="_CPPv2N6stored15ExampleTerminal4baseE"></span><span id="stored::ExampleTerminal::base"></span><span class="target" id="classstored_1_1_example_terminal_1adb072ad69f6c95863356e80ad2b31dac"></span><em class="property">typedef </em>stored::<a class="reference internal" href="#_CPPv4I0EN6stored19ExampleTerminalBaseE" title="stored::ExampleTerminalBase">ExampleTerminalBase</a>&lt;<a class="reference internal" href="#_CPPv4N6stored15ExampleTerminalE" title="stored::ExampleTerminal">ExampleTerminal</a>&gt; <code class="sig-name descname">base</code><a class="headerlink" href="#_CPPv4N6stored15ExampleTerminal4baseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored15ExampleTerminal14ImplementationE">
+<span id="_CPPv3N6stored15ExampleTerminal14ImplementationE"></span><span id="_CPPv2N6stored15ExampleTerminal14ImplementationE"></span><span id="stored::ExampleTerminal::Implementation"></span><span class="target" id="classstored_1_1_example_terminal_1a46584576907e79c528625c514dfe3a7c"></span><em class="property">typedef </em>Implementation_ <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored15ExampleTerminal14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of the actual implementation, which is the (lowest) subclass. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored15ExampleTerminal15ExampleTerminalERK15ExampleTerminal">
+<span id="_CPPv3N6stored15ExampleTerminal15ExampleTerminalERK15ExampleTerminal"></span><span id="_CPPv2N6stored15ExampleTerminal15ExampleTerminalERK15ExampleTerminal"></span><span id="stored::ExampleTerminal::ExampleTerminal__ExampleTerminalCR"></span><span class="target" id="classstored_1_1_example_terminal_1ac066957ddeca8ae9de8a556af5a7ef19"></span><code class="sig-name descname">ExampleTerminal</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleTerminal15ExampleTerminalERK15ExampleTerminal" title="stored::ExampleTerminal::ExampleTerminal">ExampleTerminal</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored15ExampleTerminal15ExampleTerminalERK15ExampleTerminal" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored15ExampleTerminal15ExampleTerminalERR15ExampleTerminal">
+<span id="_CPPv3N6stored15ExampleTerminal15ExampleTerminalERR15ExampleTerminal"></span><span id="_CPPv2N6stored15ExampleTerminal15ExampleTerminalERR15ExampleTerminal"></span><span id="stored::ExampleTerminal::ExampleTerminal__ExampleTerminalRR"></span><span class="target" id="classstored_1_1_example_terminal_1a6815ef118c1bea86537c88ab599a7b33"></span><code class="sig-name descname">ExampleTerminal</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleTerminal15ExampleTerminalERR15ExampleTerminal" title="stored::ExampleTerminal::ExampleTerminal">ExampleTerminal</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored15ExampleTerminal15ExampleTerminalERR15ExampleTerminal" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored15ExampleTerminal15ExampleTerminalEv">
+<span id="_CPPv3N6stored15ExampleTerminal15ExampleTerminalEv"></span><span id="_CPPv2N6stored15ExampleTerminal15ExampleTerminalEv"></span><span id="stored::ExampleTerminal::ExampleTerminal"></span><span class="target" id="classstored_1_1_example_terminal_1a7370f6ad02791f69152ba9a9948327e3"></span><code class="sig-name descname">ExampleTerminal</code><span class="sig-paren">(</span><span class="sig-paren">)</span> = default<a class="headerlink" href="#_CPPv4N6stored15ExampleTerminal15ExampleTerminalEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored15ExampleTerminalaSERK15ExampleTerminal">
+<span id="_CPPv3N6stored15ExampleTerminalaSERK15ExampleTerminal"></span><span id="_CPPv2N6stored15ExampleTerminalaSERK15ExampleTerminal"></span><span id="stored::ExampleTerminal::assign-operator__ExampleTerminalCR"></span><span class="target" id="classstored_1_1_example_terminal_1a99746ab87eb8962cb7243c2a76d33209"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleTerminalE" title="stored::ExampleTerminal">ExampleTerminal</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored15ExampleTerminalaSERK15ExampleTerminal" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored15ExampleTerminalaSERR15ExampleTerminal">
+<span id="_CPPv3N6stored15ExampleTerminalaSERR15ExampleTerminal"></span><span id="_CPPv2N6stored15ExampleTerminalaSERR15ExampleTerminal"></span><span id="stored::ExampleTerminal::assign-operator__ExampleTerminalRR"></span><span class="target" id="classstored_1_1_example_terminal_1a9bc72fc371c93882df31cc29a09d146d"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleTerminalE" title="stored::ExampleTerminal">ExampleTerminal</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored15ExampleTerminalaSERR15ExampleTerminal" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Friends</p>
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> stored::ExampleTerminalBase&lt; ExampleTerminal &gt;</dt>
+</dl>
+
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+    <script type="text/javascript">
+        function init() {
+            WaveDrom.ProcessAll();
+        }
+        window.onload = init;
+    </script>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="example_zmqserver.html" class="btn btn-neutral float-right" title="zmqserver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="example_9_fpga.html" class="btn btn-neutral float-left" title="9_fpga" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Jochem Rutgers
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

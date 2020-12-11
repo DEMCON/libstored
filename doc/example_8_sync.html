@@ -1,0 +1,1122 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>8_sync &mdash; libstored  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="http://wavedrom.com/skins/default.js"></script>
+        <script src="http://wavedrom.com/wavedrom.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="9_fpga" href="example_9_fpga.html" />
+    <link rel="prev" title="7_protocol" href="example_7_protocol.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libstored
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Content</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cpp.html">C++</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fpga.html">VHDL</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="example_1_hello.html">1_hello</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_2_basic.html">2_basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_3_scope.html">3_scope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_4_function.html">4_function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_5_debug.html">5_debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_6_hooks.html">6_hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_7_protocol.html">7_protocol</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">8_sync</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#store-definition">Store definition</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#examplesync1">ExampleSync1</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#examplesync2">ExampleSync2</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#application">Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#store-reference">Store reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="example_9_fpga.html">9_fpga</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_zmqserver.html">zmqserver</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libstored</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="examples.html">Examples</a> &raquo;</li>
+        
+      <li>8_sync</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/doc/example_8_sync.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="sync">
+<h1>8_sync<a class="headerlink" href="#sync" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="store-definition">
+<h2>Store definition<a class="headerlink" href="#store-definition" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="examplesync1">
+<h3>ExampleSync1<a class="headerlink" href="#examplesync1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int32 i
+double d
+(bool) sync ExampleSync2
+
+</pre></div>
+</div>
+</div>
+<div class="section" id="examplesync2">
+<h3>ExampleSync2<a class="headerlink" href="#examplesync2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>uint8 u
+bool b
+
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="application">
+<h2>Application<a class="headerlink" href="#application" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
+<span class="cm"> * \file</span>
+<span class="cm"> * \brief Example with multiple stores to be synced between multiple nodes.</span>
+<span class="cm"> *</span>
+<span class="cm"> * You can build any topology you want, but as an example with two parties:</span>
+<span class="cm"> *</span>
+<span class="cm"> * - Run first instance: `8_sync -i inst1 -d ipc://libstored/example -p 2222`</span>
+<span class="cm"> * - Run second instance: `8_sync -i inst2 -u ipc://libstored/example -p 2223`</span>
+<span class="cm"> * - Run a debugger for first instance: `python3 -m ed2.gui -p 2222`</span>
+<span class="cm"> * - Run a debugger for second instance: `python3 -m ed2.gui -p 2223`</span>
+<span class="cm"> * - Enable tracing on all variables. You will notice that when you change a</span>
+<span class="cm"> *   value within /ExampleSync1, it will be synchronized immediately.</span>
+<span class="cm"> *   Changes within /ExampleSync2 are only synchronized once you write to</span>
+<span class="cm"> *   /ExampleSync1/sync ExampleSync2.</span>
+<span class="cm"> */</span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;ExampleSync1.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;ExampleSync2.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;getopt_mini.h&quot;</span><span class="cp"></span>
+
+<span class="k">static</span> <span class="n">stored</span><span class="o">::</span><span class="n">Synchronizer</span> <span class="n">synchronizer</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">ExampleSync2</span> <span class="o">:</span> <span class="k">public</span> <span class="n">STORE_SYNC_BASECLASS</span><span class="p">(</span><span class="n">ExampleSync2Base</span><span class="p">,</span> <span class="n">ExampleSync2</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">STORE_SYNC_CLASS_BODY</span><span class="p">(</span><span class="n">ExampleSync2Base</span><span class="p">,</span> <span class="n">ExampleSync2</span><span class="p">)</span>
+<span class="k">public</span><span class="o">:</span>
+	<span class="n">ExampleSync2</span><span class="p">()</span> <span class="n">is_default</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="n">ExampleSync2</span> <span class="n">store2</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">ExampleSync1</span> <span class="o">:</span> <span class="k">public</span> <span class="n">STORE_SYNC_BASECLASS</span><span class="p">(</span><span class="n">ExampleSync1Base</span><span class="p">,</span> <span class="n">ExampleSync1</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">STORE_SYNC_CLASS_BODY</span><span class="p">(</span><span class="n">ExampleSync1Base</span><span class="p">,</span> <span class="n">ExampleSync1</span><span class="p">)</span>
+<span class="k">public</span><span class="o">:</span>
+	<span class="n">ExampleSync1</span><span class="p">()</span> <span class="n">is_default</span>
+
+<span class="k">protected</span><span class="o">:</span>
+	<span class="kt">void</span> <span class="n">__sync_ExampleSync2</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">bool</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">set</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Triggered synchronization of store2</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+			<span class="n">synchronizer</span><span class="p">.</span><span class="n">process</span><span class="p">(</span><span class="n">store2</span><span class="p">);</span>
+		<span class="p">}</span> <span class="k">else</span>
+			<span class="n">value</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="n">ExampleSync1</span> <span class="n">store1</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span> <span class="n">debugger</span><span class="p">(</span><span class="s">&quot;8_sync&quot;</span><span class="p">);</span>
+	<span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store1</span><span class="p">);</span>
+	<span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store2</span><span class="p">);</span>
+
+	<span class="n">synchronizer</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store1</span><span class="p">);</span>
+	<span class="n">synchronizer</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store2</span><span class="p">);</span>
+
+	<span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="n">stored</span><span class="o">::</span><span class="n">ProtocolLayer</span><span class="o">*&gt;</span> <span class="n">otherLayers</span><span class="p">;</span>
+	<span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="n">stored</span><span class="o">::</span><span class="n">SyncZmqLayer</span><span class="o">*&gt;</span> <span class="n">connections</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">debug_port</span> <span class="o">=</span> <span class="n">stored</span><span class="o">::</span><span class="n">DebugZmqLayer</span><span class="o">::</span><span class="n">DefaultPort</span><span class="p">;</span>
+	<span class="kt">bool</span> <span class="n">verbose</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+
+	<span class="kt">int</span> <span class="n">c</span><span class="p">;</span>
+	<span class="k">while</span><span class="p">((</span><span class="n">c</span> <span class="o">=</span> <span class="n">getopt</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="s">&quot;i:d:u:p:v&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">-1</span><span class="p">)</span>
+		<span class="k">switch</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">case</span> <span class="sc">&#39;i&#39;</span><span class="o">:</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;This is %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">optarg</span><span class="p">);</span>
+			<span class="n">debugger</span><span class="p">.</span><span class="n">setIdentification</span><span class="p">(</span><span class="n">optarg</span><span class="p">);</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="k">case</span> <span class="sc">&#39;p&#39;</span><span class="o">:</span>
+			<span class="n">debug_port</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">optarg</span><span class="p">);</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="k">case</span> <span class="sc">&#39;v&#39;</span><span class="o">:</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Enable verbose output</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+			<span class="n">verbose</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="k">case</span> <span class="sc">&#39;d&#39;</span><span class="o">:</span> <span class="p">{</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Listen at %s for downstream sync</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">optarg</span><span class="p">);</span>
+			<span class="n">stored</span><span class="o">::</span><span class="n">SyncZmqLayer</span><span class="o">*</span> <span class="n">z</span> <span class="o">=</span> <span class="k">new</span> <span class="n">stored</span><span class="o">::</span><span class="n">SyncZmqLayer</span><span class="p">(</span><span class="k">nullptr</span><span class="p">,</span> <span class="n">optarg</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+			<span class="n">connections</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+			<span class="n">stored</span><span class="o">::</span><span class="n">ProtocolLayer</span><span class="o">*</span> <span class="n">l</span> <span class="o">=</span> <span class="n">z</span><span class="p">;</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">verbose</span><span class="p">)</span> <span class="p">{</span>
+				<span class="n">l</span> <span class="o">=</span> <span class="k">new</span> <span class="n">stored</span><span class="o">::</span><span class="n">BufferLayer</span><span class="p">();</span>
+				<span class="n">stored</span><span class="o">::</span><span class="n">PrintLayer</span><span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="k">new</span> <span class="n">stored</span><span class="o">::</span><span class="n">PrintLayer</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="n">optarg</span><span class="p">);</span>
+				<span class="n">otherLayers</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+				<span class="n">otherLayers</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+				<span class="n">p</span><span class="o">-&gt;</span><span class="n">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">l</span><span class="p">);</span>
+				<span class="n">z</span><span class="o">-&gt;</span><span class="n">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="n">synchronizer</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="o">*</span><span class="n">l</span><span class="p">);</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">case</span> <span class="sc">&#39;u&#39;</span><span class="o">:</span> <span class="p">{</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Connect to %s for upstream sync</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">optarg</span><span class="p">);</span>
+			<span class="n">stored</span><span class="o">::</span><span class="n">SyncZmqLayer</span><span class="o">*</span> <span class="n">z</span> <span class="o">=</span> <span class="k">new</span> <span class="n">stored</span><span class="o">::</span><span class="n">SyncZmqLayer</span><span class="p">(</span><span class="k">nullptr</span><span class="p">,</span> <span class="n">optarg</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+			<span class="n">connections</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+			<span class="n">stored</span><span class="o">::</span><span class="n">ProtocolLayer</span><span class="o">*</span> <span class="n">l</span> <span class="o">=</span> <span class="n">z</span><span class="p">;</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">verbose</span><span class="p">)</span> <span class="p">{</span>
+				<span class="n">l</span> <span class="o">=</span> <span class="k">new</span> <span class="n">stored</span><span class="o">::</span><span class="n">BufferLayer</span><span class="p">();</span>
+				<span class="n">stored</span><span class="o">::</span><span class="n">PrintLayer</span><span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="k">new</span> <span class="n">stored</span><span class="o">::</span><span class="n">PrintLayer</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="n">optarg</span><span class="p">);</span>
+				<span class="n">otherLayers</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+				<span class="n">otherLayers</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+				<span class="n">p</span><span class="o">-&gt;</span><span class="n">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">l</span><span class="p">);</span>
+				<span class="n">z</span><span class="o">-&gt;</span><span class="n">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="n">synchronizer</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="o">*</span><span class="n">l</span><span class="p">);</span>
+			<span class="n">synchronizer</span><span class="p">.</span><span class="n">syncFrom</span><span class="p">(</span><span class="n">store1</span><span class="p">,</span> <span class="o">*</span><span class="n">l</span><span class="p">);</span>
+			<span class="n">synchronizer</span><span class="p">.</span><span class="n">syncFrom</span><span class="p">(</span><span class="n">store2</span><span class="p">,</span> <span class="o">*</span><span class="n">l</span><span class="p">);</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">default</span><span class="o">:</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Usage: %s [-v] [-i &lt;name&gt;] [-p &lt;port&gt;] [-d &lt;endpoint&gt;|-u &lt;endpoint&gt;]*</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;where</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;  -d   Listen for incoming 0MQ endpoint for downstream sync.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;  -i   Set debugger&#39;s identification name.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;  -p   Set debugger&#39;s port</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;  -u   Connect to 0MQ endpoint for upstream sync.</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">);</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;  -v   Verbose output of sync connections. Applies only to</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;       -u and -d options after -v.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Specify -i and -u as often as required.</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">);</span>
+			<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+		<span class="p">}</span>
+
+	<span class="n">stored</span><span class="o">::</span><span class="n">DebugZmqLayer</span> <span class="n">debugLayer</span><span class="p">(</span><span class="k">nullptr</span><span class="p">,</span> <span class="n">debug_port</span><span class="p">);</span>
+	<span class="n">debugLayer</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">debugger</span><span class="p">);</span>
+
+	<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">zmq_pollitem_t</span><span class="o">&gt;</span> <span class="n">fds</span><span class="p">;</span>
+	<span class="n">fds</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="n">connections</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span> <span class="cm">/* debugger */</span><span class="p">);</span>
+
+	<span class="k">for</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="n">stored</span><span class="o">::</span><span class="n">SyncZmqLayer</span><span class="o">*&gt;::</span><span class="n">iterator</span> <span class="n">it</span> <span class="o">=</span> <span class="n">connections</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">connections</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">zmq_pollitem_t</span> <span class="n">fd</span> <span class="o">=</span> <span class="p">{};</span>
+		<span class="n">fd</span><span class="p">.</span><span class="n">socket</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">socket</span><span class="p">();</span>
+		<span class="n">fd</span><span class="p">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">ZMQ_POLLIN</span><span class="p">;</span>
+		<span class="n">fds</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="p">{</span>
+		<span class="n">zmq_pollitem_t</span> <span class="n">fd</span> <span class="o">=</span> <span class="p">{};</span>
+		<span class="n">fd</span><span class="p">.</span><span class="n">socket</span> <span class="o">=</span> <span class="n">debugLayer</span><span class="p">.</span><span class="n">socket</span><span class="p">();</span>
+		<span class="n">fd</span><span class="p">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">ZMQ_POLLIN</span><span class="p">;</span>
+		<span class="n">fds</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">while</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
+		<span class="c1">// Go sync store1 on all connections.</span>
+		<span class="n">synchronizer</span><span class="p">.</span><span class="n">process</span><span class="p">(</span><span class="n">store1</span><span class="p">);</span>
+
+		<span class="c1">// Wait for input...</span>
+		<span class="kt">int</span> <span class="n">cnt</span> <span class="o">=</span> <span class="n">zmq_poll</span><span class="p">(</span><span class="o">&amp;</span><span class="n">fds</span><span class="p">.</span><span class="n">front</span><span class="p">(),</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">fds</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="mi">-1</span><span class="p">);</span>
+		<span class="k">switch</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">case</span> <span class="mi">-1</span><span class="o">:</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Poll returned error %d; %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">errno</span><span class="p">,</span> <span class="n">zmq_strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+			<span class="k">goto</span> <span class="n">done</span><span class="p">;</span>
+		<span class="k">case</span> <span class="mi">0</span><span class="o">:</span>
+			<span class="c1">// Nothing to be done.</span>
+			<span class="k">continue</span><span class="p">;</span>
+		<span class="k">default</span><span class="o">:</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="c1">// Look for connection that has activity.</span>
+		<span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="kt">int</span> <span class="n">res</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="k">for</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="n">stored</span><span class="o">::</span><span class="n">SyncZmqLayer</span><span class="o">*&gt;::</span><span class="n">iterator</span> <span class="n">it</span> <span class="o">=</span> <span class="n">connections</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">connections</span><span class="p">.</span><span class="n">end</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="n">cnt</span><span class="p">;</span> <span class="o">++</span><span class="n">it</span><span class="p">,</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">fds</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">revents</span> <span class="o">&amp;</span> <span class="n">ZMQ_POLLIN</span><span class="p">)</span> <span class="p">{</span>
+				<span class="n">cnt</span><span class="o">--</span><span class="p">;</span>
+				<span class="k">if</span><span class="p">((</span><span class="n">res</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">recv</span><span class="p">()))</span> <span class="p">{</span>
+					<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Sync socket recv error %d; %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">zmq_strerror</span><span class="p">(</span><span class="n">res</span><span class="p">));</span>
+					<span class="k">goto</span> <span class="n">done</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+
+		<span class="k">if</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span> <span class="p">{</span>
+			<span class="c1">// Must be the debugger socket, which was last in line.</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">fds</span><span class="p">[</span><span class="n">fds</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">].</span><span class="n">revents</span> <span class="o">&amp;</span> <span class="n">ZMQ_POLLIN</span><span class="p">)</span> <span class="p">{</span>
+				<span class="n">cnt</span><span class="o">--</span><span class="p">;</span>
+				<span class="k">if</span><span class="p">((</span><span class="n">res</span> <span class="o">=</span> <span class="n">debugLayer</span><span class="p">.</span><span class="n">recv</span><span class="p">()))</span> <span class="p">{</span>
+					<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Debugger socket recv error %d; %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">zmq_strerror</span><span class="p">(</span><span class="n">res</span><span class="p">));</span>
+					<span class="k">goto</span> <span class="n">done</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+
+		<span class="n">stored_assert</span><span class="p">(</span><span class="n">cnt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+	<span class="p">}</span>
+
+<span class="nl">done</span><span class="p">:</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="n">stored</span><span class="o">::</span><span class="n">SyncZmqLayer</span><span class="o">*&gt;::</span><span class="n">iterator</span> <span class="n">it</span> <span class="o">=</span> <span class="n">connections</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">connections</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span>
+		<span class="k">delete</span> <span class="o">*</span><span class="n">it</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="n">stored</span><span class="o">::</span><span class="n">ProtocolLayer</span><span class="o">*&gt;::</span><span class="n">iterator</span> <span class="n">it</span> <span class="o">=</span> <span class="n">otherLayers</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">otherLayers</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span>
+		<span class="k">delete</span> <span class="o">*</span><span class="n">it</span><span class="p">;</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="store-reference">
+<h2>Store reference<a class="headerlink" href="#store-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt id="_CPPv4I00EN6stored19ExampleSync1ObjectsE">
+<span id="_CPPv3I00EN6stored19ExampleSync1ObjectsE"></span><span id="_CPPv2I00EN6stored19ExampleSync1ObjectsE"></span>template&lt;typename <code class="sig-name descname">Base_</code>, typename <code class="sig-name descname">Implementation_</code>&gt;<br /><span class="target" id="classstored_1_1_example_sync1_objects"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleSync1Objects</code><a class="headerlink" href="#_CPPv4I00EN6stored19ExampleSync1ObjectsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>All <a class="reference internal" href="#classstored_1_1_example_sync1_base"><span class="std std-ref">ExampleSync1Base</span></a>’s objects. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N6stored19ExampleSync1Objects4BaseE">
+<span id="_CPPv3N6stored19ExampleSync1Objects4BaseE"></span><span id="_CPPv2N6stored19ExampleSync1Objects4BaseE"></span><span id="stored::ExampleSync1Objects::Base"></span><span class="target" id="classstored_1_1_example_sync1_objects_1a8ed4e2d69a560594a25a408db71b28b4"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleSync1ObjectsE" title="stored::ExampleSync1Objects::Base_">Base_</a> <code class="sig-name descname">Base</code><a class="headerlink" href="#_CPPv4N6stored19ExampleSync1Objects4BaseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored19ExampleSync1Objects14ImplementationE">
+<span id="_CPPv3N6stored19ExampleSync1Objects14ImplementationE"></span><span id="_CPPv2N6stored19ExampleSync1Objects14ImplementationE"></span><span id="stored::ExampleSync1Objects::Implementation"></span><span class="target" id="classstored_1_1_example_sync1_objects_1a97041958016e7654d661c3466039d154"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleSync1ObjectsE" title="stored::ExampleSync1Objects::Implementation_">Implementation_</a> <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored19ExampleSync1Objects14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleSync1Objects1dE">
+<span id="_CPPv3N6stored19ExampleSync1Objects1dE"></span><span id="_CPPv2N6stored19ExampleSync1Objects1dE"></span><span id="stored::ExampleSync1Objects::d__impl::StoreVariable:Base.Implementation.double.0u.8:"></span><span class="target" id="classstored_1_1_example_sync1_objects_1aab6d6abec14903de193502104eef21cf"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleSync1Objects4BaseE" title="stored::ExampleSync1Objects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleSync1Objects14ImplementationE" title="stored::ExampleSync1Objects::Implementation">Implementation</a>, double, 0u, 8&gt; <code class="sig-name descname">d</code><a class="headerlink" href="#_CPPv4N6stored19ExampleSync1Objects1dE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>d </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleSync1Objects1iE">
+<span id="_CPPv3N6stored19ExampleSync1Objects1iE"></span><span id="_CPPv2N6stored19ExampleSync1Objects1iE"></span><span id="stored::ExampleSync1Objects::i__impl::StoreVariable:Base.Implementation.int32_t.8u.4:"></span><span class="target" id="classstored_1_1_example_sync1_objects_1a50d5a5093774f1be6e46b4ea8cfc3404"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleSync1Objects4BaseE" title="stored::ExampleSync1Objects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleSync1Objects14ImplementationE" title="stored::ExampleSync1Objects::Implementation">Implementation</a>, int32_t, 8u, 4&gt; <code class="sig-name descname">i</code><a class="headerlink" href="#_CPPv4N6stored19ExampleSync1Objects1iE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>i </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleSync1Objects17sync_ExampleSync2E">
+<span id="_CPPv3N6stored19ExampleSync1Objects17sync_ExampleSync2E"></span><span id="_CPPv2N6stored19ExampleSync1Objects17sync_ExampleSync2E"></span><span id="stored::ExampleSync1Objects::sync_ExampleSync2__impl::StoreFunction:Base.Implementation.b.1u:"></span><span class="target" id="classstored_1_1_example_sync1_objects_1aac8b699b5ed8c45d6fd648266bf5dcf9"></span>impl::StoreFunction&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleSync1Objects4BaseE" title="stored::ExampleSync1Objects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleSync1Objects14ImplementationE" title="stored::ExampleSync1Objects::Implementation">Implementation</a>, bool, 1u&gt; <code class="sig-name descname">sync_ExampleSync2</code><a class="headerlink" href="#_CPPv4N6stored19ExampleSync1Objects17sync_ExampleSync2E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>sync <a class="reference internal" href="#classstored_1_1_example_sync2"><span class="std std-ref">ExampleSync2</span></a> </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4I0EN6stored16ExampleSync1BaseE">
+<span id="_CPPv3I0EN6stored16ExampleSync1BaseE"></span><span id="_CPPv2I0EN6stored16ExampleSync1BaseE"></span>template&lt;typename <code class="sig-name descname">Implementation_</code>&gt;<br /><span class="target" id="classstored_1_1_example_sync1_base"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleSync1Base</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4I00EN6stored19ExampleSync1ObjectsE" title="stored::ExampleSync1Objects">ExampleSync1Objects</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1BaseE" title="stored::ExampleSync1Base">ExampleSync1Base</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1BaseE" title="stored::ExampleSync1Base::Implementation_">Implementation_</a>&gt;, <a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1BaseE" title="stored::ExampleSync1Base::Implementation_">Implementation_</a>&gt;<a class="headerlink" href="#_CPPv4I0EN6stored16ExampleSync1BaseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Base class with default interface of all <a class="reference internal" href="#classstored_1_1_example_sync1"><span class="std std-ref">ExampleSync1</span></a> implementations. </p>
+<p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
+<p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_sync1"><span class="std std-ref">stored::ExampleSync1</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
+<p>To inherit the base class, you can use the following template:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleSync1 : public STORE_BASECLASS(ExampleSync1Base, ExampleSync1) {
+    STORE_CLASS_BODY(ExampleSync1Base, ExampleSync1)
+public:
+    // Your class implementation, such as:
+    ExampleSync1() is_default
+    // ...
+};
+</pre></div>
+</div>
+</p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_sync1"><span class="std std-ref">stored::ExampleSync1</span></a> </p>
+</dd>
+<dt><strong>See</strong></dt><dd><p>stored::ExampleSync1Data </p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp enum">
+<dt id="_CPPv4N6stored16ExampleSync1BaseUt2_33E">
+<span id="_CPPv3N6stored16ExampleSync1BaseUt2_33E"></span><span class="target" id="classstored_1_1_example_sync1_base_1a610024f6342e67f29ad5cac051527d04"></span><em class="property">enum </em><strong>[anonymous]</strong><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1BaseUt2_33E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored16ExampleSync1BaseUt2_3311ObjectCountE">
+<span id="_CPPv3N6stored16ExampleSync1BaseUt2_3311ObjectCountE"></span><span class="target" id="classstored_1_1_example_sync1_base_1a610024f6342e67f29ad5cac051527d04a2150d0445df8f0c9bc19483b7b8f075e"></span><em class="property">enumerator </em><code class="sig-name descname">ObjectCount</code><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1BaseUt2_3311ObjectCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of objects in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored16ExampleSync1BaseUt2_3313VariableCountE">
+<span id="_CPPv3N6stored16ExampleSync1BaseUt2_3313VariableCountE"></span><span class="target" id="classstored_1_1_example_sync1_base_1a610024f6342e67f29ad5cac051527d04a1ba80f66e3d0b1a1f64802fc12cb0cf3"></span><em class="property">enumerator </em><code class="sig-name descname">VariableCount</code><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1BaseUt2_3313VariableCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of variables in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored16ExampleSync1BaseUt2_3313FunctionCountE">
+<span id="_CPPv3N6stored16ExampleSync1BaseUt2_3313FunctionCountE"></span><span class="target" id="classstored_1_1_example_sync1_base_1a610024f6342e67f29ad5cac051527d04aa0dc1c7f45b2bd2c9e0501caf53bd5f2"></span><em class="property">enumerator </em><code class="sig-name descname">FunctionCount</code><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1BaseUt2_3313FunctionCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of functions in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored16ExampleSync1BaseUt2_3310BufferSizeE">
+<span id="_CPPv3N6stored16ExampleSync1BaseUt2_3310BufferSizeE"></span><span class="target" id="classstored_1_1_example_sync1_base_1a610024f6342e67f29ad5cac051527d04ab37ea209d76b1d1223de21891029d278"></span><em class="property">enumerator </em><code class="sig-name descname">BufferSize</code><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1BaseUt2_3310BufferSizeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Buffer size. </p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored16ExampleSync1Base14ImplementationE">
+<span id="_CPPv3N6stored16ExampleSync1Base14ImplementationE"></span><span id="_CPPv2N6stored16ExampleSync1Base14ImplementationE"></span><span id="stored::ExampleSync1Base::Implementation"></span><span class="target" id="classstored_1_1_example_sync1_base_1aa0197e75bf079853c6c2f23fe62fa5be"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1BaseE" title="stored::ExampleSync1Base::Implementation_">Implementation_</a> <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of the actual implementation, which is the (lowest) subclass. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored16ExampleSync1Base3KeyE">
+<span id="_CPPv3N6stored16ExampleSync1Base3KeyE"></span><span id="_CPPv2N6stored16ExampleSync1Base3KeyE"></span><span id="stored::ExampleSync1Base::Key"></span><span class="target" id="classstored_1_1_example_sync1_base_1a6df1a7940f251a502566a7bf6069da63"></span><em class="property">typedef </em>uintptr_t <code class="sig-name descname">Key</code><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base3KeyE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of a key. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_sync1_base_1a31fd83df9dbbde19148f8368e648c7ce"><span class="std std-ref">bufferToKey()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored16ExampleSync1Base9ObjectMapE">
+<span id="_CPPv3N6stored16ExampleSync1Base9ObjectMapE"></span><span id="_CPPv2N6stored16ExampleSync1Base9ObjectMapE"></span><span id="stored::ExampleSync1Base::ObjectMap"></span><span class="target" id="classstored_1_1_example_sync1_base_1ade4c2a3e54cf20a791a8b00e0ec9b89b"></span><em class="property">typedef </em>std::map&lt;std::string, <a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored16ExampleSync1Base14ImplementationE" title="stored::ExampleSync1Base::Implementation">Implementation</a>&gt;&gt; <code class="sig-name descname">ObjectMap</code><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base9ObjectMapE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Map as generated by <a class="reference internal" href="#classstored_1_1_example_sync1_base_1ad8fea86b781c98550550465c955b56b2"><span class="std std-ref">map()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored16ExampleSync1Base7ObjectsE">
+<span id="_CPPv3N6stored16ExampleSync1Base7ObjectsE"></span><span id="_CPPv2N6stored16ExampleSync1Base7ObjectsE"></span><span id="stored::ExampleSync1Base::Objects"></span><span class="target" id="classstored_1_1_example_sync1_base_1ae47009919883424ace9141d1b43b886a"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleSync1ObjectsE" title="stored::ExampleSync1Objects">ExampleSync1Objects</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1BaseE" title="stored::ExampleSync1Base">ExampleSync1Base</a>, <a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1BaseE" title="stored::ExampleSync1Base::Implementation_">Implementation_</a>&gt; <code class="sig-name descname">Objects</code><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base7ObjectsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleSync1Base16ExampleSync1BaseERK16ExampleSync1Base">
+<span id="_CPPv3N6stored16ExampleSync1Base16ExampleSync1BaseERK16ExampleSync1Base"></span><span id="_CPPv2N6stored16ExampleSync1Base16ExampleSync1BaseERK16ExampleSync1Base"></span><span id="stored::ExampleSync1Base::ExampleSync1Base__ExampleSync1BaseCR"></span><span class="target" id="classstored_1_1_example_sync1_base_1acf4419ff2ebf98dc37a7952eba3609aa"></span><code class="sig-name descname">ExampleSync1Base</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync1Base16ExampleSync1BaseERK16ExampleSync1Base" title="stored::ExampleSync1Base::ExampleSync1Base">ExampleSync1Base</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base16ExampleSync1BaseERK16ExampleSync1Base" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleSync1Base16ExampleSync1BaseERR16ExampleSync1Base">
+<span id="_CPPv3N6stored16ExampleSync1Base16ExampleSync1BaseERR16ExampleSync1Base"></span><span id="_CPPv2N6stored16ExampleSync1Base16ExampleSync1BaseERR16ExampleSync1Base"></span><span id="stored::ExampleSync1Base::ExampleSync1Base__ExampleSync1BaseRR"></span><span class="target" id="classstored_1_1_example_sync1_base_1a55000e50c1eb40509f4a2afe2fc15ee3"></span><code class="sig-name descname">ExampleSync1Base</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync1Base16ExampleSync1BaseERR16ExampleSync1Base" title="stored::ExampleSync1Base::ExampleSync1Base">ExampleSync1Base</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base16ExampleSync1BaseERR16ExampleSync1Base" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored16ExampleSync1Base11bufferToKeyEPKv">
+<span id="_CPPv3NK6stored16ExampleSync1Base11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored16ExampleSync1Base11bufferToKeyEPKv"></span><span id="stored::ExampleSync1Base::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_sync1_base_1a31fd83df9dbbde19148f8368e648c7ce"></span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync1Base3KeyE" title="stored::ExampleSync1Base::Key">Key</a> <code class="sig-name descname">bufferToKey</code><span class="sig-paren">(</span>void <em class="property">const</em> *<em>buffer</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleSync1Base11bufferToKeyEPKv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Converts a variable’s buffer to a key. </p>
+<p>A key is unique for all variables of the same store, but identical for the same variables across different instances of the same store class. Therefore, the key can be used to synchronize between instances of the same store. A key does not contain meta data, such as type or length. It is up to the synchronization library to make sure that these properties are handled well.</p>
+<p>For synchronization, when hookEntryX() or hookEntryRO() is invoked, one can compute the key of the object that is accessed. The key can be used, for example, in a key-to-Variant map. When data arrives from another party, the key can be used to find the proper <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> in the map.</p>
+<p>This way, data exchange is type-safe, as the <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> can check if the data format matches the expected type. However, one cannot process data if the key is not set yet in the map. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleSync1Base4findEPKc6size_t">
+<span id="_CPPv3N6stored16ExampleSync1Base4findEPKc6size_t"></span><span id="_CPPv2N6stored16ExampleSync1Base4findEPKc6size_t"></span><span id="stored::ExampleSync1Base::find__cCP.s"></span><span class="target" id="classstored_1_1_example_sync1_base_1a2f9ee158a13ceb4e5b2a4837ce5527be"></span><a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored16ExampleSync1Base14ImplementationE" title="stored::ExampleSync1Base::Implementation">Implementation</a>&gt; <code class="sig-name descname">find</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>name</em>, size_t <em>len</em> = std::numeric_limits&lt;size_t&gt;::max()<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base4findEPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Finds an object with the given name. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>the object, or an invalid <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">stored::Variant</span></a> if not found. </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored16ExampleSync1Base14implementationEv">
+<span id="_CPPv3NK6stored16ExampleSync1Base14implementationEv"></span><span id="_CPPv2NK6stored16ExampleSync1Base14implementationEv"></span><span id="stored::ExampleSync1Base::implementationC"></span><span class="target" id="classstored_1_1_example_sync1_base_1ab07bb4a67ae7eaa9bce2b2b843c98784"></span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync1Base14ImplementationE" title="stored::ExampleSync1Base::Implementation">Implementation</a> <em class="property">const</em> &amp;<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleSync1Base14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the reference to the implementation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleSync1Base14implementationEv">
+<span id="_CPPv3N6stored16ExampleSync1Base14implementationEv"></span><span id="_CPPv2N6stored16ExampleSync1Base14implementationEv"></span><span id="stored::ExampleSync1Base::implementation"></span><span class="target" id="classstored_1_1_example_sync1_base_1a1be2260247bb4f30ef77becc29691a5c"></span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync1Base14ImplementationE" title="stored::ExampleSync1Base::Implementation">Implementation</a> &amp;<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the reference to the implementation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored16ExampleSync1Base4listEv1FPvPKc">
+<span id="_CPPv3I0EN6stored16ExampleSync1Base4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored16ExampleSync1Base4listE1FPvPKc"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_example_sync1_base_1a7aaa04444ef3e6496f4136be84c1b3d2"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1Base4listEv1FPvPKc" title="stored::ExampleSync1Base::list::F">F</a> <em>f</em>, void *<em>arg</em>, char <em class="property">const</em> *<em>prefix</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleSync1Base4listEv1FPvPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_sync1_base_1a9651957a0795dc0fd27d707f97f5fd4f"><span class="std std-ref">longDirectory()</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored16ExampleSync1Base4listEvRR1F">
+<span id="_CPPv3I0EN6stored16ExampleSync1Base4listERR1F"></span><span id="_CPPv2I0EN6stored16ExampleSync1Base4listERR1F"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_example_sync1_base_1ac3d1559e70d7a1f1fe862eb12e406ca9"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1Base4listEvRR1F" title="stored::ExampleSync1Base::list::F">F</a> &amp;&amp;<em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleSync1Base4listEvRR1F" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_sync1_base_1a9651957a0795dc0fd27d707f97f5fd4f"><span class="std std-ref">longDirectory()</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored16ExampleSync1Base13longDirectoryEv">
+<span id="_CPPv3NK6stored16ExampleSync1Base13longDirectoryEv"></span><span id="_CPPv2NK6stored16ExampleSync1Base13longDirectoryEv"></span><span id="stored::ExampleSync1Base::longDirectoryC"></span><span class="target" id="classstored_1_1_example_sync1_base_1a9651957a0795dc0fd27d707f97f5fd4f"></span>uint8_t <em class="property">const</em> *<code class="sig-name descname">longDirectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleSync1Base13longDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retuns the long directory. </p>
+<p>When not available, the short directory is returned. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleSync1Base3mapEPKc">
+<span id="_CPPv3N6stored16ExampleSync1Base3mapEPKc"></span><span id="_CPPv2N6stored16ExampleSync1Base3mapEPKc"></span><span id="stored::ExampleSync1Base::map__cCP"></span><span class="target" id="classstored_1_1_example_sync1_base_1ad8fea86b781c98550550465c955b56b2"></span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync1Base9ObjectMapE" title="stored::ExampleSync1Base::ObjectMap">ObjectMap</a> <code class="sig-name descname">map</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>prefix</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base3mapEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a name to <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> map for the store. </p>
+<p>Generating the map may be expensive and the result is not cached. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored16ExampleSync1Base4nameEv">
+<span id="_CPPv3NK6stored16ExampleSync1Base4nameEv"></span><span id="_CPPv2NK6stored16ExampleSync1Base4nameEv"></span><span id="stored::ExampleSync1Base::nameC"></span><span class="target" id="classstored_1_1_example_sync1_base_1a8395ff1b39fd87a4b1584c15815440b1"></span>char <em class="property">const</em> *<code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleSync1Base4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleSync1BaseaSERK16ExampleSync1Base">
+<span id="_CPPv3N6stored16ExampleSync1BaseaSERK16ExampleSync1Base"></span><span id="_CPPv2N6stored16ExampleSync1BaseaSERK16ExampleSync1Base"></span><span id="stored::ExampleSync1Base::assign-operator__ExampleSync1BaseCR"></span><span class="target" id="classstored_1_1_example_sync1_base_1afa2ce27e7bc387f369a823a4628605e9"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1BaseE" title="stored::ExampleSync1Base">ExampleSync1Base</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored16ExampleSync1BaseaSERK16ExampleSync1Base" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleSync1BaseaSERR16ExampleSync1Base">
+<span id="_CPPv3N6stored16ExampleSync1BaseaSERR16ExampleSync1Base"></span><span id="_CPPv2N6stored16ExampleSync1BaseaSERR16ExampleSync1Base"></span><span id="stored::ExampleSync1Base::assign-operator__ExampleSync1BaseRR"></span><span class="target" id="classstored_1_1_example_sync1_base_1a1652f2667214a5b368c15300f5bcd496"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1BaseE" title="stored::ExampleSync1Base">ExampleSync1Base</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored16ExampleSync1BaseaSERR16ExampleSync1Base" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored16ExampleSync1Base14shortDirectoryEv">
+<span id="_CPPv3NK6stored16ExampleSync1Base14shortDirectoryEv"></span><span id="_CPPv2NK6stored16ExampleSync1Base14shortDirectoryEv"></span><span id="stored::ExampleSync1Base::shortDirectoryC"></span><span class="target" id="classstored_1_1_example_sync1_base_1ad41640466c2828e1771ee993e302be92"></span>uint8_t <em class="property">const</em> *<code class="sig-name descname">shortDirectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleSync1Base14shortDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the short directory. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Static Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleSync1Base4hashEv">
+<span id="_CPPv3N6stored16ExampleSync1Base4hashEv"></span><span id="_CPPv2N6stored16ExampleSync1Base4hashEv"></span><span id="stored::ExampleSync1Base::hash"></span><span class="target" id="classstored_1_1_example_sync1_base_1a76fdf86052d62bf83c87eb3b3af9b40a"></span>char <em class="property">const</em> *<code class="sig-name descname">hash</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base4hashEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a unique hash of the store. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Friends</p>
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreFunction</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariable</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariantF</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariantV</dt>
+</dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4N6stored12ExampleSync1E">
+<span id="_CPPv3N6stored12ExampleSync1E"></span><span id="_CPPv2N6stored12ExampleSync1E"></span><span id="stored::ExampleSync1"></span><span class="target" id="classstored_1_1_example_sync1"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleSync1</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1BaseE" title="stored::ExampleSync1Base">ExampleSync1Base</a>&lt;<a class="reference internal" href="#_CPPv4N6stored12ExampleSync1E" title="stored::ExampleSync1">ExampleSync1</a>&gt;<a class="headerlink" href="#_CPPv4N6stored12ExampleSync1E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default <a class="reference internal" href="#classstored_1_1_example_sync1_base"><span class="std std-ref">ExampleSync1Base</span></a> implementation. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N6stored12ExampleSync14baseE">
+<span id="_CPPv3N6stored12ExampleSync14baseE"></span><span id="_CPPv2N6stored12ExampleSync14baseE"></span><span id="stored::ExampleSync1::base"></span><span class="target" id="classstored_1_1_example_sync1_1aa01d68ce26bed4b37ae477555bf571e6"></span><em class="property">typedef </em>stored::<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1BaseE" title="stored::ExampleSync1Base">ExampleSync1Base</a>&lt;<a class="reference internal" href="#_CPPv4N6stored12ExampleSync1E" title="stored::ExampleSync1">ExampleSync1</a>&gt; <code class="sig-name descname">base</code><a class="headerlink" href="#_CPPv4N6stored12ExampleSync14baseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored12ExampleSync114ImplementationE">
+<span id="_CPPv3N6stored12ExampleSync114ImplementationE"></span><span id="_CPPv2N6stored12ExampleSync114ImplementationE"></span><span id="stored::ExampleSync1::Implementation"></span><span class="target" id="classstored_1_1_example_sync1_1aa0197e75bf079853c6c2f23fe62fa5be"></span><em class="property">typedef </em>Implementation_ <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored12ExampleSync114ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of the actual implementation, which is the (lowest) subclass. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12ExampleSync112ExampleSync1ERK12ExampleSync1">
+<span id="_CPPv3N6stored12ExampleSync112ExampleSync1ERK12ExampleSync1"></span><span id="_CPPv2N6stored12ExampleSync112ExampleSync1ERK12ExampleSync1"></span><span id="stored::ExampleSync1::ExampleSync1__ExampleSync1CR"></span><span class="target" id="classstored_1_1_example_sync1_1acdffd4bbd326aeea7643516a42e8a88e"></span><code class="sig-name descname">ExampleSync1</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync112ExampleSync1ERK12ExampleSync1" title="stored::ExampleSync1::ExampleSync1">ExampleSync1</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12ExampleSync112ExampleSync1ERK12ExampleSync1" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12ExampleSync112ExampleSync1ERR12ExampleSync1">
+<span id="_CPPv3N6stored12ExampleSync112ExampleSync1ERR12ExampleSync1"></span><span id="_CPPv2N6stored12ExampleSync112ExampleSync1ERR12ExampleSync1"></span><span id="stored::ExampleSync1::ExampleSync1__ExampleSync1RR"></span><span class="target" id="classstored_1_1_example_sync1_1afc7015683188cfb42b380d1353e51d33"></span><code class="sig-name descname">ExampleSync1</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync112ExampleSync1ERR12ExampleSync1" title="stored::ExampleSync1::ExampleSync1">ExampleSync1</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12ExampleSync112ExampleSync1ERR12ExampleSync1" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12ExampleSync112ExampleSync1Ev">
+<span id="_CPPv3N6stored12ExampleSync112ExampleSync1Ev"></span><span id="_CPPv2N6stored12ExampleSync112ExampleSync1Ev"></span><span id="stored::ExampleSync1::ExampleSync1"></span><span class="target" id="classstored_1_1_example_sync1_1a70103477f0c116b2b6581eef080bfe5f"></span><code class="sig-name descname">ExampleSync1</code><span class="sig-paren">(</span><span class="sig-paren">)</span> = default<a class="headerlink" href="#_CPPv4N6stored12ExampleSync112ExampleSync1Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12ExampleSync1aSERK12ExampleSync1">
+<span id="_CPPv3N6stored12ExampleSync1aSERK12ExampleSync1"></span><span id="_CPPv2N6stored12ExampleSync1aSERK12ExampleSync1"></span><span id="stored::ExampleSync1::assign-operator__ExampleSync1CR"></span><span class="target" id="classstored_1_1_example_sync1_1a2cc14cd4f69a4bb0fa5b2227d630d56e"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync1E" title="stored::ExampleSync1">ExampleSync1</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12ExampleSync1aSERK12ExampleSync1" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12ExampleSync1aSERR12ExampleSync1">
+<span id="_CPPv3N6stored12ExampleSync1aSERR12ExampleSync1"></span><span id="_CPPv2N6stored12ExampleSync1aSERR12ExampleSync1"></span><span id="stored::ExampleSync1::assign-operator__ExampleSync1RR"></span><span class="target" id="classstored_1_1_example_sync1_1a28c542bb8f4b95efc3638f11235ba79d"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync1E" title="stored::ExampleSync1">ExampleSync1</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12ExampleSync1aSERR12ExampleSync1" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Friends</p>
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> stored::ExampleSync1Base&lt; ExampleSync1 &gt;</dt>
+</dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4I00EN6stored19ExampleSync2ObjectsE">
+<span id="_CPPv3I00EN6stored19ExampleSync2ObjectsE"></span><span id="_CPPv2I00EN6stored19ExampleSync2ObjectsE"></span>template&lt;typename <code class="sig-name descname">Base_</code>, typename <code class="sig-name descname">Implementation_</code>&gt;<br /><span class="target" id="classstored_1_1_example_sync2_objects"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleSync2Objects</code><a class="headerlink" href="#_CPPv4I00EN6stored19ExampleSync2ObjectsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>All <a class="reference internal" href="#classstored_1_1_example_sync2_base"><span class="std std-ref">ExampleSync2Base</span></a>’s objects. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N6stored19ExampleSync2Objects4BaseE">
+<span id="_CPPv3N6stored19ExampleSync2Objects4BaseE"></span><span id="_CPPv2N6stored19ExampleSync2Objects4BaseE"></span><span id="stored::ExampleSync2Objects::Base"></span><span class="target" id="classstored_1_1_example_sync2_objects_1ab8cd5fdfd371db6f386e0462794946da"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleSync2ObjectsE" title="stored::ExampleSync2Objects::Base_">Base_</a> <code class="sig-name descname">Base</code><a class="headerlink" href="#_CPPv4N6stored19ExampleSync2Objects4BaseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored19ExampleSync2Objects14ImplementationE">
+<span id="_CPPv3N6stored19ExampleSync2Objects14ImplementationE"></span><span id="_CPPv2N6stored19ExampleSync2Objects14ImplementationE"></span><span id="stored::ExampleSync2Objects::Implementation"></span><span class="target" id="classstored_1_1_example_sync2_objects_1a9935b53b715a69bd59a058f1c810cee4"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleSync2ObjectsE" title="stored::ExampleSync2Objects::Implementation_">Implementation_</a> <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored19ExampleSync2Objects14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleSync2Objects1bE">
+<span id="_CPPv3N6stored19ExampleSync2Objects1bE"></span><span id="_CPPv2N6stored19ExampleSync2Objects1bE"></span><span id="stored::ExampleSync2Objects::b__impl::StoreVariable:Base.Implementation.b.1u.1:"></span><span class="target" id="classstored_1_1_example_sync2_objects_1aea5a66ea30e67b29264cba250add19af"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleSync2Objects4BaseE" title="stored::ExampleSync2Objects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleSync2Objects14ImplementationE" title="stored::ExampleSync2Objects::Implementation">Implementation</a>, bool, 1u, 1&gt; <code class="sig-name descname">b</code><a class="headerlink" href="#_CPPv4N6stored19ExampleSync2Objects1bE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>b </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleSync2Objects1uE">
+<span id="_CPPv3N6stored19ExampleSync2Objects1uE"></span><span id="_CPPv2N6stored19ExampleSync2Objects1uE"></span><span id="stored::ExampleSync2Objects::u__impl::StoreVariable:Base.Implementation.uint8_t.0u.1:"></span><span class="target" id="classstored_1_1_example_sync2_objects_1ab60bdc990f35f2221e96296c5b1af69e"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleSync2Objects4BaseE" title="stored::ExampleSync2Objects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleSync2Objects14ImplementationE" title="stored::ExampleSync2Objects::Implementation">Implementation</a>, uint8_t, 0u, 1&gt; <code class="sig-name descname">u</code><a class="headerlink" href="#_CPPv4N6stored19ExampleSync2Objects1uE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>u </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4I0EN6stored16ExampleSync2BaseE">
+<span id="_CPPv3I0EN6stored16ExampleSync2BaseE"></span><span id="_CPPv2I0EN6stored16ExampleSync2BaseE"></span>template&lt;typename <code class="sig-name descname">Implementation_</code>&gt;<br /><span class="target" id="classstored_1_1_example_sync2_base"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleSync2Base</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4I00EN6stored19ExampleSync2ObjectsE" title="stored::ExampleSync2Objects">ExampleSync2Objects</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2BaseE" title="stored::ExampleSync2Base">ExampleSync2Base</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2BaseE" title="stored::ExampleSync2Base::Implementation_">Implementation_</a>&gt;, <a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2BaseE" title="stored::ExampleSync2Base::Implementation_">Implementation_</a>&gt;<a class="headerlink" href="#_CPPv4I0EN6stored16ExampleSync2BaseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Base class with default interface of all <a class="reference internal" href="#classstored_1_1_example_sync2"><span class="std std-ref">ExampleSync2</span></a> implementations. </p>
+<p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
+<p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_sync2"><span class="std std-ref">stored::ExampleSync2</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
+<p>To inherit the base class, you can use the following template:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleSync2 : public STORE_BASECLASS(ExampleSync2Base, ExampleSync2) {
+    STORE_CLASS_BODY(ExampleSync2Base, ExampleSync2)
+public:
+    // Your class implementation, such as:
+    ExampleSync2() is_default
+    // ...
+};
+</pre></div>
+</div>
+</p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_sync2"><span class="std std-ref">stored::ExampleSync2</span></a> </p>
+</dd>
+<dt><strong>See</strong></dt><dd><p>stored::ExampleSync2Data </p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp enum">
+<dt id="_CPPv4N6stored16ExampleSync2BaseUt2_34E">
+<span id="_CPPv3N6stored16ExampleSync2BaseUt2_34E"></span><span class="target" id="classstored_1_1_example_sync2_base_1ac4caa89e02fcf5366f322b5276105115"></span><em class="property">enum </em><strong>[anonymous]</strong><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2BaseUt2_34E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored16ExampleSync2BaseUt2_3411ObjectCountE">
+<span id="_CPPv3N6stored16ExampleSync2BaseUt2_3411ObjectCountE"></span><span class="target" id="classstored_1_1_example_sync2_base_1ac4caa89e02fcf5366f322b5276105115a122cc59bf50f8875831fe455017e8ee5"></span><em class="property">enumerator </em><code class="sig-name descname">ObjectCount</code><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2BaseUt2_3411ObjectCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of objects in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored16ExampleSync2BaseUt2_3413VariableCountE">
+<span id="_CPPv3N6stored16ExampleSync2BaseUt2_3413VariableCountE"></span><span class="target" id="classstored_1_1_example_sync2_base_1ac4caa89e02fcf5366f322b5276105115aad881c952eb7e2adb5e14a80df079bfd"></span><em class="property">enumerator </em><code class="sig-name descname">VariableCount</code><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2BaseUt2_3413VariableCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of variables in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored16ExampleSync2BaseUt2_3413FunctionCountE">
+<span id="_CPPv3N6stored16ExampleSync2BaseUt2_3413FunctionCountE"></span><span class="target" id="classstored_1_1_example_sync2_base_1ac4caa89e02fcf5366f322b5276105115afd0a1155aece201016854736d444dbe7"></span><em class="property">enumerator </em><code class="sig-name descname">FunctionCount</code><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2BaseUt2_3413FunctionCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of functions in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored16ExampleSync2BaseUt2_3410BufferSizeE">
+<span id="_CPPv3N6stored16ExampleSync2BaseUt2_3410BufferSizeE"></span><span class="target" id="classstored_1_1_example_sync2_base_1ac4caa89e02fcf5366f322b5276105115ab22ff9fb9d3fee2d24488b0cd30c374f"></span><em class="property">enumerator </em><code class="sig-name descname">BufferSize</code><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2BaseUt2_3410BufferSizeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Buffer size. </p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored16ExampleSync2Base14ImplementationE">
+<span id="_CPPv3N6stored16ExampleSync2Base14ImplementationE"></span><span id="_CPPv2N6stored16ExampleSync2Base14ImplementationE"></span><span id="stored::ExampleSync2Base::Implementation"></span><span class="target" id="classstored_1_1_example_sync2_base_1a4244fd29bb474629c9643fad1e8ca64c"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2BaseE" title="stored::ExampleSync2Base::Implementation_">Implementation_</a> <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2Base14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of the actual implementation, which is the (lowest) subclass. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored16ExampleSync2Base3KeyE">
+<span id="_CPPv3N6stored16ExampleSync2Base3KeyE"></span><span id="_CPPv2N6stored16ExampleSync2Base3KeyE"></span><span id="stored::ExampleSync2Base::Key"></span><span class="target" id="classstored_1_1_example_sync2_base_1a60bfcf74a2e1a6b68790eb89226fef0d"></span><em class="property">typedef </em>uintptr_t <code class="sig-name descname">Key</code><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2Base3KeyE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of a key. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_sync2_base_1ab4b6d85ed43a64f51bc8d06a71151fa1"><span class="std std-ref">bufferToKey()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored16ExampleSync2Base9ObjectMapE">
+<span id="_CPPv3N6stored16ExampleSync2Base9ObjectMapE"></span><span id="_CPPv2N6stored16ExampleSync2Base9ObjectMapE"></span><span id="stored::ExampleSync2Base::ObjectMap"></span><span class="target" id="classstored_1_1_example_sync2_base_1ada4d8dd0eb4ea77291774b66e63176a0"></span><em class="property">typedef </em>std::map&lt;std::string, <a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored16ExampleSync2Base14ImplementationE" title="stored::ExampleSync2Base::Implementation">Implementation</a>&gt;&gt; <code class="sig-name descname">ObjectMap</code><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2Base9ObjectMapE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Map as generated by <a class="reference internal" href="#classstored_1_1_example_sync2_base_1a31a5438f446ef34f670dce8e5b4d5ada"><span class="std std-ref">map()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored16ExampleSync2Base7ObjectsE">
+<span id="_CPPv3N6stored16ExampleSync2Base7ObjectsE"></span><span id="_CPPv2N6stored16ExampleSync2Base7ObjectsE"></span><span id="stored::ExampleSync2Base::Objects"></span><span class="target" id="classstored_1_1_example_sync2_base_1a0ec90fed495b5de583cdcd9680f1e40d"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleSync2ObjectsE" title="stored::ExampleSync2Objects">ExampleSync2Objects</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2BaseE" title="stored::ExampleSync2Base">ExampleSync2Base</a>, <a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2BaseE" title="stored::ExampleSync2Base::Implementation_">Implementation_</a>&gt; <code class="sig-name descname">Objects</code><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2Base7ObjectsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleSync2Base16ExampleSync2BaseERK16ExampleSync2Base">
+<span id="_CPPv3N6stored16ExampleSync2Base16ExampleSync2BaseERK16ExampleSync2Base"></span><span id="_CPPv2N6stored16ExampleSync2Base16ExampleSync2BaseERK16ExampleSync2Base"></span><span id="stored::ExampleSync2Base::ExampleSync2Base__ExampleSync2BaseCR"></span><span class="target" id="classstored_1_1_example_sync2_base_1a343021be5247ade58ff1b9144a2a322a"></span><code class="sig-name descname">ExampleSync2Base</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync2Base16ExampleSync2BaseERK16ExampleSync2Base" title="stored::ExampleSync2Base::ExampleSync2Base">ExampleSync2Base</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored16ExampleSync2Base16ExampleSync2BaseERK16ExampleSync2Base" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleSync2Base16ExampleSync2BaseERR16ExampleSync2Base">
+<span id="_CPPv3N6stored16ExampleSync2Base16ExampleSync2BaseERR16ExampleSync2Base"></span><span id="_CPPv2N6stored16ExampleSync2Base16ExampleSync2BaseERR16ExampleSync2Base"></span><span id="stored::ExampleSync2Base::ExampleSync2Base__ExampleSync2BaseRR"></span><span class="target" id="classstored_1_1_example_sync2_base_1ac395bb0183031f99ba05d1a79cd05647"></span><code class="sig-name descname">ExampleSync2Base</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync2Base16ExampleSync2BaseERR16ExampleSync2Base" title="stored::ExampleSync2Base::ExampleSync2Base">ExampleSync2Base</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored16ExampleSync2Base16ExampleSync2BaseERR16ExampleSync2Base" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored16ExampleSync2Base11bufferToKeyEPKv">
+<span id="_CPPv3NK6stored16ExampleSync2Base11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored16ExampleSync2Base11bufferToKeyEPKv"></span><span id="stored::ExampleSync2Base::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_sync2_base_1ab4b6d85ed43a64f51bc8d06a71151fa1"></span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync2Base3KeyE" title="stored::ExampleSync2Base::Key">Key</a> <code class="sig-name descname">bufferToKey</code><span class="sig-paren">(</span>void <em class="property">const</em> *<em>buffer</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleSync2Base11bufferToKeyEPKv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Converts a variable’s buffer to a key. </p>
+<p>A key is unique for all variables of the same store, but identical for the same variables across different instances of the same store class. Therefore, the key can be used to synchronize between instances of the same store. A key does not contain meta data, such as type or length. It is up to the synchronization library to make sure that these properties are handled well.</p>
+<p>For synchronization, when hookEntryX() or hookEntryRO() is invoked, one can compute the key of the object that is accessed. The key can be used, for example, in a key-to-Variant map. When data arrives from another party, the key can be used to find the proper <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> in the map.</p>
+<p>This way, data exchange is type-safe, as the <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> can check if the data format matches the expected type. However, one cannot process data if the key is not set yet in the map. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleSync2Base4findEPKc6size_t">
+<span id="_CPPv3N6stored16ExampleSync2Base4findEPKc6size_t"></span><span id="_CPPv2N6stored16ExampleSync2Base4findEPKc6size_t"></span><span id="stored::ExampleSync2Base::find__cCP.s"></span><span class="target" id="classstored_1_1_example_sync2_base_1afa5a73cd9c36df2d03b7afdbee092037"></span><a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored16ExampleSync2Base14ImplementationE" title="stored::ExampleSync2Base::Implementation">Implementation</a>&gt; <code class="sig-name descname">find</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>name</em>, size_t <em>len</em> = std::numeric_limits&lt;size_t&gt;::max()<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2Base4findEPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Finds an object with the given name. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>the object, or an invalid <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">stored::Variant</span></a> if not found. </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored16ExampleSync2Base14implementationEv">
+<span id="_CPPv3NK6stored16ExampleSync2Base14implementationEv"></span><span id="_CPPv2NK6stored16ExampleSync2Base14implementationEv"></span><span id="stored::ExampleSync2Base::implementationC"></span><span class="target" id="classstored_1_1_example_sync2_base_1adacb1a1496a5f77c0d09261dcdb520d2"></span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync2Base14ImplementationE" title="stored::ExampleSync2Base::Implementation">Implementation</a> <em class="property">const</em> &amp;<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleSync2Base14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the reference to the implementation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleSync2Base14implementationEv">
+<span id="_CPPv3N6stored16ExampleSync2Base14implementationEv"></span><span id="_CPPv2N6stored16ExampleSync2Base14implementationEv"></span><span id="stored::ExampleSync2Base::implementation"></span><span class="target" id="classstored_1_1_example_sync2_base_1a4bbcc69ab7b5b2c64ba7fa68a9dc5850"></span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync2Base14ImplementationE" title="stored::ExampleSync2Base::Implementation">Implementation</a> &amp;<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2Base14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the reference to the implementation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored16ExampleSync2Base4listEv1FPvPKc">
+<span id="_CPPv3I0EN6stored16ExampleSync2Base4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored16ExampleSync2Base4listE1FPvPKc"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_example_sync2_base_1a7e793586870d804df346f4c7537fe013"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2Base4listEv1FPvPKc" title="stored::ExampleSync2Base::list::F">F</a> <em>f</em>, void *<em>arg</em>, char <em class="property">const</em> *<em>prefix</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleSync2Base4listEv1FPvPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_sync2_base_1a1cf072708ba5dfc31ee4757c0a4969e7"><span class="std std-ref">longDirectory()</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored16ExampleSync2Base4listEvRR1F">
+<span id="_CPPv3I0EN6stored16ExampleSync2Base4listERR1F"></span><span id="_CPPv2I0EN6stored16ExampleSync2Base4listERR1F"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_example_sync2_base_1ac14820933e32ccd296cef14cc1df8e7f"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2Base4listEvRR1F" title="stored::ExampleSync2Base::list::F">F</a> &amp;&amp;<em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleSync2Base4listEvRR1F" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_sync2_base_1a1cf072708ba5dfc31ee4757c0a4969e7"><span class="std std-ref">longDirectory()</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored16ExampleSync2Base13longDirectoryEv">
+<span id="_CPPv3NK6stored16ExampleSync2Base13longDirectoryEv"></span><span id="_CPPv2NK6stored16ExampleSync2Base13longDirectoryEv"></span><span id="stored::ExampleSync2Base::longDirectoryC"></span><span class="target" id="classstored_1_1_example_sync2_base_1a1cf072708ba5dfc31ee4757c0a4969e7"></span>uint8_t <em class="property">const</em> *<code class="sig-name descname">longDirectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleSync2Base13longDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retuns the long directory. </p>
+<p>When not available, the short directory is returned. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleSync2Base3mapEPKc">
+<span id="_CPPv3N6stored16ExampleSync2Base3mapEPKc"></span><span id="_CPPv2N6stored16ExampleSync2Base3mapEPKc"></span><span id="stored::ExampleSync2Base::map__cCP"></span><span class="target" id="classstored_1_1_example_sync2_base_1a31a5438f446ef34f670dce8e5b4d5ada"></span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync2Base9ObjectMapE" title="stored::ExampleSync2Base::ObjectMap">ObjectMap</a> <code class="sig-name descname">map</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>prefix</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2Base3mapEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a name to <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> map for the store. </p>
+<p>Generating the map may be expensive and the result is not cached. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored16ExampleSync2Base4nameEv">
+<span id="_CPPv3NK6stored16ExampleSync2Base4nameEv"></span><span id="_CPPv2NK6stored16ExampleSync2Base4nameEv"></span><span id="stored::ExampleSync2Base::nameC"></span><span class="target" id="classstored_1_1_example_sync2_base_1a9d5f7cb571940c04bf7919162f7584f2"></span>char <em class="property">const</em> *<code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleSync2Base4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleSync2BaseaSERK16ExampleSync2Base">
+<span id="_CPPv3N6stored16ExampleSync2BaseaSERK16ExampleSync2Base"></span><span id="_CPPv2N6stored16ExampleSync2BaseaSERK16ExampleSync2Base"></span><span id="stored::ExampleSync2Base::assign-operator__ExampleSync2BaseCR"></span><span class="target" id="classstored_1_1_example_sync2_base_1a7937ff06b8089045dcb9ea925ec08f2c"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2BaseE" title="stored::ExampleSync2Base">ExampleSync2Base</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored16ExampleSync2BaseaSERK16ExampleSync2Base" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleSync2BaseaSERR16ExampleSync2Base">
+<span id="_CPPv3N6stored16ExampleSync2BaseaSERR16ExampleSync2Base"></span><span id="_CPPv2N6stored16ExampleSync2BaseaSERR16ExampleSync2Base"></span><span id="stored::ExampleSync2Base::assign-operator__ExampleSync2BaseRR"></span><span class="target" id="classstored_1_1_example_sync2_base_1ac992797170f888c1c5b31c1294f9ae44"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2BaseE" title="stored::ExampleSync2Base">ExampleSync2Base</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored16ExampleSync2BaseaSERR16ExampleSync2Base" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored16ExampleSync2Base14shortDirectoryEv">
+<span id="_CPPv3NK6stored16ExampleSync2Base14shortDirectoryEv"></span><span id="_CPPv2NK6stored16ExampleSync2Base14shortDirectoryEv"></span><span id="stored::ExampleSync2Base::shortDirectoryC"></span><span class="target" id="classstored_1_1_example_sync2_base_1aab95d8b90a322432ce3830121dfde6c8"></span>uint8_t <em class="property">const</em> *<code class="sig-name descname">shortDirectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleSync2Base14shortDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the short directory. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Static Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleSync2Base4hashEv">
+<span id="_CPPv3N6stored16ExampleSync2Base4hashEv"></span><span id="_CPPv2N6stored16ExampleSync2Base4hashEv"></span><span id="stored::ExampleSync2Base::hash"></span><span class="target" id="classstored_1_1_example_sync2_base_1aaf9f884fbe67dd12bb0a0519d32f8d61"></span>char <em class="property">const</em> *<code class="sig-name descname">hash</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2Base4hashEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a unique hash of the store. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Friends</p>
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreFunction</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariable</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariantF</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariantV</dt>
+</dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4N6stored12ExampleSync2E">
+<span id="_CPPv3N6stored12ExampleSync2E"></span><span id="_CPPv2N6stored12ExampleSync2E"></span><span id="stored::ExampleSync2"></span><span class="target" id="classstored_1_1_example_sync2"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleSync2</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2BaseE" title="stored::ExampleSync2Base">ExampleSync2Base</a>&lt;<a class="reference internal" href="#_CPPv4N6stored12ExampleSync2E" title="stored::ExampleSync2">ExampleSync2</a>&gt;<a class="headerlink" href="#_CPPv4N6stored12ExampleSync2E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default <a class="reference internal" href="#classstored_1_1_example_sync2_base"><span class="std std-ref">ExampleSync2Base</span></a> implementation. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N6stored12ExampleSync24baseE">
+<span id="_CPPv3N6stored12ExampleSync24baseE"></span><span id="_CPPv2N6stored12ExampleSync24baseE"></span><span id="stored::ExampleSync2::base"></span><span class="target" id="classstored_1_1_example_sync2_1a6f9dd2066212fa3d5ddd2cc9b909d7fd"></span><em class="property">typedef </em>stored::<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2BaseE" title="stored::ExampleSync2Base">ExampleSync2Base</a>&lt;<a class="reference internal" href="#_CPPv4N6stored12ExampleSync2E" title="stored::ExampleSync2">ExampleSync2</a>&gt; <code class="sig-name descname">base</code><a class="headerlink" href="#_CPPv4N6stored12ExampleSync24baseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored12ExampleSync214ImplementationE">
+<span id="_CPPv3N6stored12ExampleSync214ImplementationE"></span><span id="_CPPv2N6stored12ExampleSync214ImplementationE"></span><span id="stored::ExampleSync2::Implementation"></span><span class="target" id="classstored_1_1_example_sync2_1a4244fd29bb474629c9643fad1e8ca64c"></span><em class="property">typedef </em>Implementation_ <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored12ExampleSync214ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of the actual implementation, which is the (lowest) subclass. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12ExampleSync212ExampleSync2ERK12ExampleSync2">
+<span id="_CPPv3N6stored12ExampleSync212ExampleSync2ERK12ExampleSync2"></span><span id="_CPPv2N6stored12ExampleSync212ExampleSync2ERK12ExampleSync2"></span><span id="stored::ExampleSync2::ExampleSync2__ExampleSync2CR"></span><span class="target" id="classstored_1_1_example_sync2_1a16f1fca3e9e648237feffe286b7e8e29"></span><code class="sig-name descname">ExampleSync2</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync212ExampleSync2ERK12ExampleSync2" title="stored::ExampleSync2::ExampleSync2">ExampleSync2</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12ExampleSync212ExampleSync2ERK12ExampleSync2" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12ExampleSync212ExampleSync2ERR12ExampleSync2">
+<span id="_CPPv3N6stored12ExampleSync212ExampleSync2ERR12ExampleSync2"></span><span id="_CPPv2N6stored12ExampleSync212ExampleSync2ERR12ExampleSync2"></span><span id="stored::ExampleSync2::ExampleSync2__ExampleSync2RR"></span><span class="target" id="classstored_1_1_example_sync2_1aaa2550e5e1b2a9c49d5dbb583049a07d"></span><code class="sig-name descname">ExampleSync2</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync212ExampleSync2ERR12ExampleSync2" title="stored::ExampleSync2::ExampleSync2">ExampleSync2</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12ExampleSync212ExampleSync2ERR12ExampleSync2" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12ExampleSync212ExampleSync2Ev">
+<span id="_CPPv3N6stored12ExampleSync212ExampleSync2Ev"></span><span id="_CPPv2N6stored12ExampleSync212ExampleSync2Ev"></span><span id="stored::ExampleSync2::ExampleSync2"></span><span class="target" id="classstored_1_1_example_sync2_1a3af85293e61b94cefa5bbae644cd545b"></span><code class="sig-name descname">ExampleSync2</code><span class="sig-paren">(</span><span class="sig-paren">)</span> = default<a class="headerlink" href="#_CPPv4N6stored12ExampleSync212ExampleSync2Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12ExampleSync2aSERK12ExampleSync2">
+<span id="_CPPv3N6stored12ExampleSync2aSERK12ExampleSync2"></span><span id="_CPPv2N6stored12ExampleSync2aSERK12ExampleSync2"></span><span id="stored::ExampleSync2::assign-operator__ExampleSync2CR"></span><span class="target" id="classstored_1_1_example_sync2_1aa894be85120d919540a6d16be240599f"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync2E" title="stored::ExampleSync2">ExampleSync2</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12ExampleSync2aSERK12ExampleSync2" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12ExampleSync2aSERR12ExampleSync2">
+<span id="_CPPv3N6stored12ExampleSync2aSERR12ExampleSync2"></span><span id="_CPPv2N6stored12ExampleSync2aSERR12ExampleSync2"></span><span id="stored::ExampleSync2::assign-operator__ExampleSync2RR"></span><span class="target" id="classstored_1_1_example_sync2_1afe5ff6bf03b7461e022ab77b4ca1b247"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync2E" title="stored::ExampleSync2">ExampleSync2</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12ExampleSync2aSERR12ExampleSync2" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Friends</p>
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> stored::ExampleSync2Base&lt; ExampleSync2 &gt;</dt>
+</dl>
+
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+    <script type="text/javascript">
+        function init() {
+            WaveDrom.ProcessAll();
+        }
+        window.onload = init;
+    </script>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="example_9_fpga.html" class="btn btn-neutral float-right" title="9_fpga" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="example_7_protocol.html" class="btn btn-neutral float-left" title="7_protocol" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Jochem Rutgers
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

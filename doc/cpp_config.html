@@ -1,0 +1,393 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Config &mdash; libstored  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="http://wavedrom.com/skins/default.js"></script>
+        <script src="http://wavedrom.com/wavedrom.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Debugger" href="cpp_debugger.html" />
+    <link rel="prev" title="C++" href="cpp.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libstored
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Content</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="cpp.html">C++</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Config</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#stored-defaultconfig">stored::DefaultConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-config">stored::Config</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html">Debugger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_directory.html">Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html">Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_synchronizer.html">Synchronizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fpga.html">VHDL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libstored</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="cpp.html">C++</a> &raquo;</li>
+        
+      <li>Config</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/doc/cpp_config.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="config">
+<h1>Config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h1>
+<p>Static configuration of the libstored library.</p>
+<div class="section" id="stored-defaultconfig">
+<h2>stored::DefaultConfig<a class="headerlink" href="#stored-defaultconfig" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp struct">
+<dt id="_CPPv4N6stored13DefaultConfigE">
+<span id="_CPPv3N6stored13DefaultConfigE"></span><span id="_CPPv2N6stored13DefaultConfigE"></span><span id="stored::DefaultConfig"></span><span class="target" id="structstored_1_1_default_config"></span><em class="property">struct </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">DefaultConfig</code><a class="headerlink" href="#_CPPv4N6stored13DefaultConfigE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default configuration. </p>
+<p>All configuration options are set at compile-time.</p>
+<p>To override defaults, copy the file stored_config.h to your own project, set the configuration values properly, and make sure that that file is in the include path before the libstored one. </p>
+<p>Subclassed by <a class="reference internal" href="#structstored_1_1_config"><span class="std std-ref">stored::Config</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Static Attributes</p>
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig15CompressStreamsE">
+<span id="_CPPv3N6stored13DefaultConfig15CompressStreamsE"></span><span id="_CPPv2N6stored13DefaultConfig15CompressStreamsE"></span><span id="stored::DefaultConfig::CompressStreams__bC"></span><span class="target" id="structstored_1_1_default_config_1a3fa428d9b1ddf6eb651902014336b939"></span>bool <em class="property">const</em> <code class="sig-name descname">CompressStreams</code> = true<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig15CompressStreamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When <code class="docutils literal notranslate"><span class="pre">true</span></code>, all streams (including) trace are compressed using <a class="reference internal" href="cpp_protocol.html#classstored_1_1_compress_layer"><span class="std std-ref">stored::CompressLayer</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig5DebugE">
+<span id="_CPPv3N6stored13DefaultConfig5DebugE"></span><span id="_CPPv2N6stored13DefaultConfig5DebugE"></span><span id="stored::DefaultConfig::Debug__bC"></span><span class="target" id="structstored_1_1_default_config_1ae4336140326d450449613693e8a0db65"></span>bool <em class="property">const</em> <code class="sig-name descname">Debug</code> = true<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig5DebugE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When <code class="docutils literal notranslate"><span class="pre">true</span></code>, compile as debug binary. </p>
+<p>This may include additional (and possibly slow) code for debugging, which can safely left out for release builds. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig13DebuggerAliasE">
+<span id="_CPPv3N6stored13DefaultConfig13DebuggerAliasE"></span><span id="_CPPv2N6stored13DefaultConfig13DebuggerAliasE"></span><span id="stored::DefaultConfig::DebuggerAlias__iC"></span><span class="target" id="structstored_1_1_default_config_1a970c068d40c0af4f2b3d728fe392260d"></span>int <em class="property">const</em> <code class="sig-name descname">DebuggerAlias</code> = 0x100<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig13DebuggerAliasE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When not 0, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a> implements the alias capability. </p>
+<p>The defined number is the number of aliases that are supported at the same time. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig12DebuggerEchoE">
+<span id="_CPPv3N6stored13DefaultConfig12DebuggerEchoE"></span><span id="_CPPv2N6stored13DefaultConfig12DebuggerEchoE"></span><span id="stored::DefaultConfig::DebuggerEcho__bC"></span><span class="target" id="structstored_1_1_default_config_1ab0a20720dad13e96cd92907cf713833f"></span>bool <em class="property">const</em> <code class="sig-name descname">DebuggerEcho</code> = true<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig12DebuggerEchoE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When <code class="docutils literal notranslate"><span class="pre">true</span></code>, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a> implements the echo capability. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig22DebuggerIdentificationE">
+<span id="_CPPv3N6stored13DefaultConfig22DebuggerIdentificationE"></span><span id="_CPPv2N6stored13DefaultConfig22DebuggerIdentificationE"></span><span id="stored::DefaultConfig::DebuggerIdentification__bC"></span><span class="target" id="structstored_1_1_default_config_1ae682e25a62b00a803e2c05a58cfc8f74"></span>bool <em class="property">const</em> <code class="sig-name descname">DebuggerIdentification</code> = true<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig22DebuggerIdentificationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When <code class="docutils literal notranslate"><span class="pre">true</span></code>, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a> implements the identification capability. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig12DebuggerListE">
+<span id="_CPPv3N6stored13DefaultConfig12DebuggerListE"></span><span id="_CPPv2N6stored13DefaultConfig12DebuggerListE"></span><span id="stored::DefaultConfig::DebuggerList__bC"></span><span class="target" id="structstored_1_1_default_config_1a3a73a23e2faecc0124dea7c351ac4254"></span>bool <em class="property">const</em> <code class="sig-name descname">DebuggerList</code> = true<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig12DebuggerListE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When <code class="docutils literal notranslate"><span class="pre">true</span></code>, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a> implements the list capability. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig13DebuggerMacroE">
+<span id="_CPPv3N6stored13DefaultConfig13DebuggerMacroE"></span><span id="_CPPv2N6stored13DefaultConfig13DebuggerMacroE"></span><span id="stored::DefaultConfig::DebuggerMacro__iC"></span><span class="target" id="structstored_1_1_default_config_1a40296d9001a04b268f53644d1e6f9e67"></span>int <em class="property">const</em> <code class="sig-name descname">DebuggerMacro</code> = 0x1000<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig13DebuggerMacroE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When not 0, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a> implements the macro capability. </p>
+<p>The defined number is the total amount of memory that can be used for all macro definitions (excluding data structure overhead of the implementation). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig12DebuggerReadE">
+<span id="_CPPv3N6stored13DefaultConfig12DebuggerReadE"></span><span id="_CPPv2N6stored13DefaultConfig12DebuggerReadE"></span><span id="stored::DefaultConfig::DebuggerRead__bC"></span><span class="target" id="structstored_1_1_default_config_1a0fd0919a5e086f1156537fd40f6a8941"></span>bool <em class="property">const</em> <code class="sig-name descname">DebuggerRead</code> = true<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig12DebuggerReadE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When <code class="docutils literal notranslate"><span class="pre">true</span></code>, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a> implements the read capability. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig15DebuggerReadMemE">
+<span id="_CPPv3N6stored13DefaultConfig15DebuggerReadMemE"></span><span id="_CPPv2N6stored13DefaultConfig15DebuggerReadMemE"></span><span id="stored::DefaultConfig::DebuggerReadMem__bC"></span><span class="target" id="structstored_1_1_default_config_1a62fae29db37f024971ed2c371a808341"></span>bool <em class="property">const</em> <code class="sig-name descname">DebuggerReadMem</code> = true<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig15DebuggerReadMemE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When <code class="docutils literal notranslate"><span class="pre">true</span></code>, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a> implements the read memory capability. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig20DebuggerStreamBufferE">
+<span id="_CPPv3N6stored13DefaultConfig20DebuggerStreamBufferE"></span><span id="_CPPv2N6stored13DefaultConfig20DebuggerStreamBufferE"></span><span id="stored::DefaultConfig::DebuggerStreamBuffer__sC"></span><span class="target" id="structstored_1_1_default_config_1a21279247d11df5c7ccb61aa1a1fd45db"></span>size_t <em class="property">const</em> <code class="sig-name descname">DebuggerStreamBuffer</code> = 1024<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig20DebuggerStreamBufferE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Size of one stream buffer in bytes. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig15DebuggerStreamsE">
+<span id="_CPPv3N6stored13DefaultConfig15DebuggerStreamsE"></span><span id="_CPPv2N6stored13DefaultConfig15DebuggerStreamsE"></span><span id="stored::DefaultConfig::DebuggerStreams__iC"></span><span class="target" id="structstored_1_1_default_config_1a4352b3506e2ca35f622bf5fe859f18e1"></span>int <em class="property">const</em> <code class="sig-name descname">DebuggerStreams</code> = 2<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig15DebuggerStreamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When not 0, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a> implements the streams capability. </p>
+<p>The defined number is the number of concurrent streams that are supported. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig13DebuggerTraceE">
+<span id="_CPPv3N6stored13DefaultConfig13DebuggerTraceE"></span><span id="_CPPv2N6stored13DefaultConfig13DebuggerTraceE"></span><span id="stored::DefaultConfig::DebuggerTrace__bC"></span><span class="target" id="structstored_1_1_default_config_1a1f25d415c20ec7121ecc92985fdb2c90"></span>bool <em class="property">const</em> <code class="sig-name descname">DebuggerTrace</code> = <a class="reference internal" href="#_CPPv4N6stored13DefaultConfig15DebuggerStreamsE" title="stored::DefaultConfig::DebuggerStreams">DebuggerStreams</a> &gt; 0 &amp;&amp; <a class="reference internal" href="#_CPPv4N6stored13DefaultConfig13DebuggerMacroE" title="stored::DefaultConfig::DebuggerMacro">DebuggerMacro</a> &gt; 0<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig13DebuggerTraceE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When <code class="docutils literal notranslate"><span class="pre">true</span></code>, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a> implements the trace capability. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig15DebuggerVersionE">
+<span id="_CPPv3N6stored13DefaultConfig15DebuggerVersionE"></span><span id="_CPPv2N6stored13DefaultConfig15DebuggerVersionE"></span><span id="stored::DefaultConfig::DebuggerVersion__iC"></span><span class="target" id="structstored_1_1_default_config_1afc4b17f20c3adac422d85a7347114ad3"></span>int <em class="property">const</em> <code class="sig-name descname">DebuggerVersion</code> = 2<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig15DebuggerVersionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When <code class="docutils literal notranslate"><span class="pre">true</span></code>, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a> implements the version capability. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig13DebuggerWriteE">
+<span id="_CPPv3N6stored13DefaultConfig13DebuggerWriteE"></span><span id="_CPPv2N6stored13DefaultConfig13DebuggerWriteE"></span><span id="stored::DefaultConfig::DebuggerWrite__bC"></span><span class="target" id="structstored_1_1_default_config_1acb3bf44721fd1b23d97182586643e51d"></span>bool <em class="property">const</em> <code class="sig-name descname">DebuggerWrite</code> = true<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig13DebuggerWriteE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When <code class="docutils literal notranslate"><span class="pre">true</span></code>, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a> implements the write capability. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig16DebuggerWriteMemE">
+<span id="_CPPv3N6stored13DefaultConfig16DebuggerWriteMemE"></span><span id="_CPPv2N6stored13DefaultConfig16DebuggerWriteMemE"></span><span id="stored::DefaultConfig::DebuggerWriteMem__bC"></span><span class="target" id="structstored_1_1_default_config_1a3785559331646bd485e2afdc3fa6fab2"></span>bool <em class="property">const</em> <code class="sig-name descname">DebuggerWriteMem</code> = true<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig16DebuggerWriteMemE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When <code class="docutils literal notranslate"><span class="pre">true</span></code>, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a> implements the write memory capability. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig12EnableAssertE">
+<span id="_CPPv3N6stored13DefaultConfig12EnableAssertE"></span><span id="_CPPv2N6stored13DefaultConfig12EnableAssertE"></span><span id="stored::DefaultConfig::EnableAssert__bC"></span><span class="target" id="structstored_1_1_default_config_1a6d57db674741d0587772c3c496c2bb45"></span>bool <em class="property">const</em> <code class="sig-name descname">EnableAssert</code> = <a class="reference internal" href="#_CPPv4N6stored13DefaultConfig5DebugE" title="stored::DefaultConfig::Debug">Debug</a><a class="headerlink" href="#_CPPv4N6stored13DefaultConfig12EnableAssertE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When <code class="docutils literal notranslate"><span class="pre">true</span></code>, enable <a class="reference internal" href="cpp_util.html#util_8h_1ab750e51b876450a0a4ad419588a82a4d"><span class="std std-ref">stored_assert()</span></a> checks. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig11EnableHooksE">
+<span id="_CPPv3N6stored13DefaultConfig11EnableHooksE"></span><span id="_CPPv2N6stored13DefaultConfig11EnableHooksE"></span><span id="stored::DefaultConfig::EnableHooks__bC"></span><span class="target" id="structstored_1_1_default_config_1a3eed8ecf835e1dc613940db6be5340eb"></span>bool <em class="property">const</em> <code class="sig-name descname">EnableHooks</code> = true<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig11EnableHooksE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When <code class="docutils literal notranslate"><span class="pre">true</span></code>, enable calls to <code class="docutils literal notranslate"><span class="pre">hook</span></code>…() functions of the store. </p>
+<p>This may be required for additional synchronization, but may add overhead for every object access. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig9FullNamesE">
+<span id="_CPPv3N6stored13DefaultConfig9FullNamesE"></span><span id="_CPPv2N6stored13DefaultConfig9FullNamesE"></span><span id="stored::DefaultConfig::FullNames__bC"></span><span class="target" id="structstored_1_1_default_config_1abdff5ea91d2521e9bd1ee2c5a94f920d"></span>bool <em class="property">const</em> <code class="sig-name descname">FullNames</code> = true<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig9FullNamesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When <code class="docutils literal notranslate"><span class="pre">true</span></code>, include full name directory listing support. </p>
+<p>If <code class="docutils literal notranslate"><span class="pre">false</span></code>, a listing can be still be requested, but the names may be abbreviated. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored13DefaultConfig19StoreInLittleEndianE">
+<span id="_CPPv3N6stored13DefaultConfig19StoreInLittleEndianE"></span><span id="_CPPv2N6stored13DefaultConfig19StoreInLittleEndianE"></span><span id="stored::DefaultConfig::StoreInLittleEndian__bC"></span><span class="target" id="structstored_1_1_default_config_1a4e76106436b37677a138ec0f85e72be8"></span>bool <em class="property">const</em> <code class="sig-name descname">StoreInLittleEndian</code> = false<a class="headerlink" href="#_CPPv4N6stored13DefaultConfig19StoreInLittleEndianE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Indicate if the store’s buffer is in little endian. </p>
+<p>Usually, you would use the same endianness as the host, but as the <a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a> does not swap endianness for the data, synchronization between different CPU types is not possible. In that case, one on both sides should save its store differently.</p>
+<p>Make sure that this flag corresponds to the endianness setting of the generator (-b flag). </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="stored-config">
+<h2>stored::Config<a class="headerlink" href="#stored-config" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp struct">
+<dt id="_CPPv4N6stored6ConfigE">
+<span id="_CPPv3N6stored6ConfigE"></span><span id="_CPPv2N6stored6ConfigE"></span><span id="stored::Config"></span><span class="target" id="structstored_1_1_config"></span><em class="property">struct </em><code class="sig-name descname">Config</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4N6stored13DefaultConfigE" title="stored::DefaultConfig">DefaultConfig</a><a class="headerlink" href="#_CPPv4N6stored6ConfigE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Example of a configuration that override the <a class="reference internal" href="#structstored_1_1_default_config"><span class="std std-ref">stored::DefaultConfig</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p>stored_config.h </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+</div>
+</div>
+
+    <script type="text/javascript">
+        function init() {
+            WaveDrom.ProcessAll();
+        }
+        window.onload = init;
+    </script>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="cpp_debugger.html" class="btn btn-neutral float-right" title="Debugger" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="cpp.html" class="btn btn-neutral float-left" title="C++" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Jochem Rutgers
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

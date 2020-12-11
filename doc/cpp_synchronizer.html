@@ -1,0 +1,1056 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Synchronizer &mdash; libstored  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="http://wavedrom.com/skins/default.js"></script>
+        <script src="http://wavedrom.com/wavedrom.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Types" href="cpp_types.html" />
+    <link rel="prev" title="Protocol" href="cpp_protocol.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libstored
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Content</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="cpp.html">C++</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cpp_config.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html">Debugger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_directory.html">Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html">Protocol</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Synchronizer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#protocol">Protocol</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#hello">Hello</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#welcome">Welcome</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#update">Update</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bye">Bye</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-storejournal">stored::StoreJournal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-syncconnection">stored::SyncConnection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-synchronizable">stored::Synchronizable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-synchronizer">stored::Synchronizer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fpga.html">VHDL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libstored</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="cpp.html">C++</a> &raquo;</li>
+        
+      <li>Synchronizer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/doc/cpp_synchronizer.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="synchronizer">
+<h1>Synchronizer<a class="headerlink" href="#synchronizer" title="Permalink to this headline">¶</a></h1>
+<p>Distributed store synchronizer.</p>
+<p>In a distributed system, every process has its own instance of a store.
+Synchronization between these instances is implemented by the stored::Synchronizer.
+The Synchronizer can be seen as a service, usually one per process,
+which knows all stores in that process and all communication channels to other
+processes. At regular intervals, it sends updates of locally modified data
+to the other Synchronizers.</p>
+<p>The topology can be configured at will. In principle, a process can have any
+number of stores, any number of synchronizers (which all handle any subset of the stores),
+any number of connections to any other process in the system.</p>
+<p>There are a few rules to keep in mind:</p>
+<ul class="simple">
+<li><p>Only stored::Synchronizable stores can be handled by the Synchronizer.
+This has to be used correctly when the store is instantiated.</p></li>
+<li><p>To synchronize a store, one must define which store is the one that
+provides the initial value. Upon connection between Synchronizers, the
+store’s content is synchronized at once from one party to the other.
+Afterwards, updates are sent in both directions.</p></li>
+<li><p>Writes to different objects in the same store by the same process are
+observed by every other process in the same order. All other write orders
+are undefined (like writes to objects of different stores by the same
+process, or writes to the same store by different processes), and can be
+observed to happen in a different order by different processes at the same
+time.</p></li>
+<li><p>Writes to one object should only be done by one process. So, every process owns
+a subset of a store. If multiple processes write to the same object, behavior
+is undefined. That would be a race-condition anyway.</p></li>
+<li><p>The communication is done in the store’s endianness. If a distributed
+system have processors with different endianness, they should be configured
+to all-little or all-big endian. Accessing the store by the processor that
+has a store in a non-native endianness, might be a bit more expensive, but
+synchronization is cheaper.</p></li>
+<li><p>Stores are identified by their (SHA-1) hash. This hash is computed over the full
+source code of the store (the .st file). So, only stores with the exact same
+definition, and therefore layout, can be synchronized.</p></li>
+</ul>
+<div class="section" id="protocol">
+<h2>Protocol<a class="headerlink" href="#protocol" title="Permalink to this headline">¶</a></h2>
+<p>The protocol for synchronization consists of four messages. These are sent
+when appropriate, not in a request-response paradigm. There is no acknowledge.
+Invalid messages are just ignored.</p>
+<div class="section" id="hello">
+<h3>Hello<a class="headerlink" href="#hello" title="Permalink to this headline">¶</a></h3>
+<p>“I would like to have the full state and future changes
+of the given store (by hash). All updates, send to me
+using this reference.”</p>
+<p>(<code class="docutils literal notranslate"><span class="pre">h</span></code> | <code class="docutils literal notranslate"><span class="pre">H</span></code>) &lt;hash&gt; &lt;id&gt;</p>
+<p>The hash is returned by the <code class="docutils literal notranslate"><span class="pre">hash()</span></code> function of the store, including the
+null-terminator. The id is arbitrary chosen by the Synchronizer, and is 16-bit
+in the store’s endianness (<code class="docutils literal notranslate"><span class="pre">h</span></code> indicates little endian, <code class="docutils literal notranslate"><span class="pre">H</span></code> is big).</p>
+</div>
+<div class="section" id="welcome">
+<h3>Welcome<a class="headerlink" href="#welcome" title="Permalink to this headline">¶</a></h3>
+<p>This is a response to a Hello.</p>
+<p>“You are welcome. Here is the full buffer state, upon your request, of the
+store with given reference. Any updates to the store at your side,
+provide them to me with my reference.”</p>
+<p>(<code class="docutils literal notranslate"><span class="pre">w</span></code> | <code class="docutils literal notranslate"><span class="pre">W</span></code>) &lt;hello id&gt; &lt;welcome id&gt; &lt;buffer&gt;</p>
+<p>The hello id is the id as received in the hello message (by the other party).
+The welcome id is chosen by this Synchronizer, in the same manner.</p>
+</div>
+<div class="section" id="update">
+<h3>Update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h3>
+<p>“Your store, with given reference, has changed.
+The changes are attached.”</p>
+<p>(<code class="docutils literal notranslate"><span class="pre">u</span></code> | <code class="docutils literal notranslate"><span class="pre">U</span></code>) &lt;id&gt; &lt;updates&gt;</p>
+<p>The updates are a sequence of the triplet: &lt;key&gt; &lt;length&gt; &lt;data&gt;.  The key and
+length have the most significant bytes stripped, which would always be 0.  All
+values are in the store’s endianness (<code class="docutils literal notranslate"><span class="pre">u</span></code> is little, <code class="docutils literal notranslate"><span class="pre">U</span></code> is big endian).</p>
+<p>Proposal: The updates are a sequence defined as follows:
+&lt;5 MSb key offset, 3 LSb length&gt; &lt;additional key bytes&gt; &lt;additional length bytes&gt; &lt;data&gt;.</p>
+<p>The key offset + 1 is the offset from the previous entry in the updates
+sequence.  Updates are sent in strict ascending key offset.  The initial key is
+-1. For example, if the previous key was 10 and the 5 MSb indicate 3, then the
+next key is 10 + 3 + 1, so 14. If the 5 MSb are all 1 (so 31), an additional
+key byte is added after the first byte (which may be 0). This value is added to
+the key offset.  If that value is 255, another key byte is added, etc.</p>
+<p>The 3 LSb bits of the first byte are decoded according to the following list:</p>
+<ul class="simple">
+<li><p>0: data length is 1</p></li>
+<li><p>1: data length is 2</p></li>
+<li><p>2: data length is 3</p></li>
+<li><p>3: data length is 4</p></li>
+<li><p>4: data length is 5</p></li>
+<li><p>5: data length is 6</p></li>
+<li><p>6: data length is 7, and an additional length byte follows (like the key offset)</p></li>
+<li><p>7: data length is 8</p></li>
+</ul>
+<p>Using this scheme, when all variables change within the store, the overhead is
+always one byte per variable (plus additional length bytes, but this is
+uncommon and fixed for a given store). This is also the upper limit of the
+update message.  If less variables change, the key offset may be larger, but
+the total size is always less.</p>
+<p>The asymmetry of having 6 as indicator for additional length bytes is because
+this is an unlikely value (7 bytes data), and at least far less common than
+having 8 bytes of data.</p>
+<p>The data is sent in the store’s endianness (<code class="docutils literal notranslate"><span class="pre">u</span></code> is little, <code class="docutils literal notranslate"><span class="pre">U</span></code> is big
+endian).</p>
+</div>
+<div class="section" id="bye">
+<h3>Bye<a class="headerlink" href="#bye" title="Permalink to this headline">¶</a></h3>
+<p>“I do not need any more updates of the given store (by hash, by id or all).”</p>
+<div class="line-block">
+<div class="line">(<code class="docutils literal notranslate"><span class="pre">b</span></code> | <code class="docutils literal notranslate"><span class="pre">B</span></code>) &lt;hash&gt;</div>
+<div class="line">(<code class="docutils literal notranslate"><span class="pre">b</span></code> | <code class="docutils literal notranslate"><span class="pre">B</span></code>) &lt;id&gt;</div>
+<div class="line">(<code class="docutils literal notranslate"><span class="pre">b</span></code> | <code class="docutils literal notranslate"><span class="pre">B</span></code>)</div>
+</div>
+<p>A bye using the id can be used to respond to another message that has an unknown id.
+Previous communication sessions remnants can be cleaned up in this way.</p>
+<p><code class="docutils literal notranslate"><span class="pre">b</span></code> indicates that the id is as little endian, <code class="docutils literal notranslate"><span class="pre">B</span></code> indicates big endian.
+For the other two variants, there is no difference in endianness, but both
+versions are defined for symmetry.</p>
+</div>
+</div>
+<div class="section" id="stored-storejournal">
+<h2>stored::StoreJournal<a class="headerlink" href="#stored-storejournal" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt id="_CPPv4N6stored12StoreJournalE">
+<span id="_CPPv3N6stored12StoreJournalE"></span><span id="_CPPv2N6stored12StoreJournalE"></span><span id="stored::StoreJournal"></span><span class="target" id="classstored_1_1_store_journal"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">StoreJournal</code><a class="headerlink" href="#_CPPv4N6stored12StoreJournalE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>A record of all changes within a store. </p>
+<p>Every variable in the store registers updates in the journal. The journal keeps an administration based on the key of the variable. Every change has a sequence number, which is kind of a time stamp. This sequence number can be used to check which objects has changed since some point in time.</p>
+<p>The current sequence number (‘now’) is bumped upon an encode or decode, when there have been changes in between.</p>
+<p>Internally, only the last bytes of the sequence number is stored (short seq). Therefore, there is a window (now-ShortSeqWindow .. now) of which a short seq can be converted back to a real seq. Changes that are older than the safe margin (now-SeqLowerMargin), are automatically shifted in time to stay within the window. This may lead to some false positives when determining which objects have changed since an old seq number. This is safe behavior, but slightly less efficient for encoding updates.</p>
+<p>The administration is a binary tree, stored in a <code class="docutils literal notranslate"><span class="pre">std::vector</span></code>. Every node in the tree contains the maximum seq of any node below it, so a search like ‘find objects with a seq higher than x’ can terminate early. The vector must be regenerated when elements are inserted or removed. This is expensive, but usually only happens during the initial phase of the application.</p>
+<p>A store has only one journal, via <a class="reference internal" href="#classstored_1_1_synchronizable"><span class="std std-ref">stored::Synchronizable</span></a>. Multiple instances of <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">stored::SyncConnection</span></a> use the same journal.</p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_synchronizable"><span class="std std-ref">stored::Synchronizable</span></a> </p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp enum">
+<dt id="_CPPv4N6stored12StoreJournalUt2_14E">
+<span id="_CPPv3N6stored12StoreJournalUt2_14E"></span><span class="target" id="classstored_1_1_store_journal_1a53b55842826c4c597185b0874f163eb9"></span><em class="property">enum </em><strong>[anonymous]</strong><a class="headerlink" href="#_CPPv4N6stored12StoreJournalUt2_14E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored12StoreJournalUt2_1414ShortSeqWindowE">
+<span id="_CPPv3N6stored12StoreJournalUt2_1414ShortSeqWindowE"></span><span class="target" id="classstored_1_1_store_journal_1a53b55842826c4c597185b0874f163eb9ae1c5149eba2a5b6a26723d279d3d6df1"></span><em class="property">enumerator </em><code class="sig-name descname">ShortSeqWindow</code><a class="headerlink" href="#_CPPv4N6stored12StoreJournalUt2_1414ShortSeqWindowE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Maximum offset of <a class="reference internal" href="#classstored_1_1_store_journal_1adc2ea8f4e6cd15876d0eaaff5617c99a"><span class="std std-ref">seq()</span></a> that is a valid short seq. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored12StoreJournalUt2_1414SeqLowerMarginE">
+<span id="_CPPv3N6stored12StoreJournalUt2_1414SeqLowerMarginE"></span><span class="target" id="classstored_1_1_store_journal_1a53b55842826c4c597185b0874f163eb9ae53560694a25751a905ed7bdcbc06398"></span><em class="property">enumerator </em><code class="sig-name descname">SeqLowerMargin</code><a class="headerlink" href="#_CPPv4N6stored12StoreJournalUt2_1414SeqLowerMarginE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Oldest margin where the short seq of changes should be moved. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored12StoreJournalUt2_1417SeqCleanThresholdE">
+<span id="_CPPv3N6stored12StoreJournalUt2_1417SeqCleanThresholdE"></span><span class="target" id="classstored_1_1_store_journal_1a53b55842826c4c597185b0874f163eb9a03e52a7ab713953f3cb06c01c482d83a"></span><em class="property">enumerator </em><code class="sig-name descname">SeqCleanThreshold</code><a class="headerlink" href="#_CPPv4N6stored12StoreJournalUt2_1417SeqCleanThresholdE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Threshold for <a class="reference internal" href="#classstored_1_1_store_journal_1a5a54164f5c9b8c9003fe0da3526638c3"><span class="std std-ref">clean()</span></a>. </p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored12StoreJournal22IterateChangedCallbackE">
+<span id="_CPPv3N6stored12StoreJournal22IterateChangedCallbackE"></span><span id="_CPPv2N6stored12StoreJournal22IterateChangedCallbackE"></span><span class="target" id="classstored_1_1_store_journal_1aa1caa61050381dc09cf0804d4dd7897a"></span><em class="property">using </em><code class="sig-name descname">IterateChangedCallback</code> = void<span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal3KeyE" title="stored::StoreJournal::Key">Key</a>, void*<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12StoreJournal22IterateChangedCallbackE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored12StoreJournal3KeyE">
+<span id="_CPPv3N6stored12StoreJournal3KeyE"></span><span id="_CPPv2N6stored12StoreJournal3KeyE"></span><span id="stored::StoreJournal::Key"></span><span class="target" id="classstored_1_1_store_journal_1a274d35c3a886d0844400978c3eb48045"></span><em class="property">typedef </em>uint32_t <code class="sig-name descname">Key</code><a class="headerlink" href="#_CPPv4N6stored12StoreJournal3KeyE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The key, as produced by a store. </p>
+<p>The key of a store is <code class="docutils literal notranslate"><span class="pre">size_t</span></code>. Limit it to 32-bit, assuming that stores will not be bigger than 4G. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored12StoreJournal3SeqE">
+<span id="_CPPv3N6stored12StoreJournal3SeqE"></span><span id="_CPPv2N6stored12StoreJournal3SeqE"></span><span id="stored::StoreJournal::Seq"></span><span class="target" id="classstored_1_1_store_journal_1a38fbc85934a5c8c10da81826890481bf"></span><em class="property">typedef </em>uint64_t <code class="sig-name descname">Seq</code><a class="headerlink" href="#_CPPv4N6stored12StoreJournal3SeqE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Timestamp of a change. </p>
+<p>64-bit means that if it is bumped every ns, a wrap-around happens after 500 years. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored12StoreJournal8ShortSeqE">
+<span id="_CPPv3N6stored12StoreJournal8ShortSeqE"></span><span id="_CPPv2N6stored12StoreJournal8ShortSeqE"></span><span id="stored::StoreJournal::ShortSeq"></span><span class="target" id="classstored_1_1_store_journal_1a110f5b44fe681ab3ec3ebb910934652a"></span><em class="property">typedef </em>uint16_t <code class="sig-name descname">ShortSeq</code><a class="headerlink" href="#_CPPv4N6stored12StoreJournal8ShortSeqE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>A short version of Seq, used in all administration. </p>
+<p>This saves a lot of space, but limits handling timestamps to ShortSeqWindow. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored12StoreJournal4SizeE">
+<span id="_CPPv3N6stored12StoreJournal4SizeE"></span><span id="_CPPv2N6stored12StoreJournal4SizeE"></span><span id="stored::StoreJournal::Size"></span><span class="target" id="classstored_1_1_store_journal_1a9cf16bb0e25dc8e2c3d5499747aa0fd5"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4N6stored12StoreJournal3KeyE" title="stored::StoreJournal::Key">Key</a> <code class="sig-name descname">Size</code><a class="headerlink" href="#_CPPv4N6stored12StoreJournal4SizeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The size of an object. </p>
+<p>The 32-bit assumption is checked in the ctor. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12StoreJournal12StoreJournalERK12StoreJournal">
+<span id="_CPPv3N6stored12StoreJournal12StoreJournalERK12StoreJournal"></span><span id="_CPPv2N6stored12StoreJournal12StoreJournalERK12StoreJournal"></span><span id="stored::StoreJournal::StoreJournal__StoreJournalCR"></span><span class="target" id="classstored_1_1_store_journal_1a5381ec198ccadeab9ff28073b5b50089"></span><code class="sig-name descname">StoreJournal</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal12StoreJournalERK12StoreJournal" title="stored::StoreJournal::StoreJournal">StoreJournal</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12StoreJournal12StoreJournalERK12StoreJournal" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12StoreJournal12StoreJournalERR12StoreJournal">
+<span id="_CPPv3N6stored12StoreJournal12StoreJournalERR12StoreJournal"></span><span id="_CPPv2N6stored12StoreJournal12StoreJournalERR12StoreJournal"></span><span id="stored::StoreJournal::StoreJournal__StoreJournalRR"></span><span class="target" id="classstored_1_1_store_journal_1ad97dbb84b832a35e00ee5f0fe55188d8"></span><code class="sig-name descname">StoreJournal</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal12StoreJournalERR12StoreJournal" title="stored::StoreJournal::StoreJournal">StoreJournal</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12StoreJournal12StoreJournalERR12StoreJournal" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12StoreJournal12StoreJournalEPKcPv6size_t">
+<span id="_CPPv3N6stored12StoreJournal12StoreJournalEPKcPv6size_t"></span><span id="_CPPv2N6stored12StoreJournal12StoreJournalEPKcPv6size_t"></span><span id="stored::StoreJournal::StoreJournal__cCP.voidP.s"></span><span class="target" id="classstored_1_1_store_journal_1a28ba1cdad841041dbbe44b6b0b9dbc32"></span><code class="sig-name descname">StoreJournal</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>hash</em>, void *<em>buffer</em>, size_t <em>size</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12StoreJournal12StoreJournalEPKcPv6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Ctor. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">hash</span></code>: the hash of the store </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">buffer</span></code>: the buffer of the store </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">size</span></code>: the size of <code class="docutils literal notranslate"><span class="pre">buffer</span></code> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12StoreJournalD0Ev">
+<span id="_CPPv3N6stored12StoreJournalD0Ev"></span><span id="_CPPv2N6stored12StoreJournalD0Ev"></span><span id="stored::StoreJournal::~StoreJournal"></span><span class="target" id="classstored_1_1_store_journal_1a5321ccaa7777ffce67362e0697e8f526"></span><code class="sig-name descname">~StoreJournal</code><span class="sig-paren">(</span><span class="sig-paren">)</span> = default<a class="headerlink" href="#_CPPv4N6stored12StoreJournalD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12StoreJournal7bumpSeqEv">
+<span id="_CPPv3N6stored12StoreJournal7bumpSeqEv"></span><span id="_CPPv2N6stored12StoreJournal7bumpSeqEv"></span><span id="stored::StoreJournal::bumpSeq"></span><span class="target" id="classstored_1_1_store_journal_1ad24cb9be19ac06eda6881f0889f92b3b"></span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal3SeqE" title="stored::StoreJournal::Seq">Seq</a> <code class="sig-name descname">bumpSeq</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12StoreJournal7bumpSeqEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Bump <a class="reference internal" href="#classstored_1_1_store_journal_1adc2ea8f4e6cd15876d0eaaff5617c99a"><span class="std std-ref">seq()</span></a>, when required. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12StoreJournal7changedE3Key6size_tb">
+<span id="_CPPv3N6stored12StoreJournal7changedE3Key6size_tb"></span><span id="_CPPv2N6stored12StoreJournal7changedE3Key6size_tb"></span><span id="stored::StoreJournal::changed__Key.s.b"></span><span class="target" id="classstored_1_1_store_journal_1a7d3fce0ac060e77a4600d506f2c9602d"></span>void <code class="sig-name descname">changed</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal3KeyE" title="stored::StoreJournal::Key">Key</a> <em>key</em>, size_t <em>len</em>, bool <em>insertIfNew</em> = true<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12StoreJournal7changedE3Key6size_tb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Record a change. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: of the object within the store this is the journal of </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">len</span></code>: the length of the (changed) data of the object. This is usually constant, but may change if the object is a string, for example. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">insertIfNew</span></code>: when <code class="docutils literal notranslate"><span class="pre">true</span></code>, record the change, even if it is not in the journal yet </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12StoreJournal5cleanE3Seq">
+<span id="_CPPv3N6stored12StoreJournal5cleanE3Seq"></span><span id="_CPPv2N6stored12StoreJournal5cleanE3Seq"></span><span id="stored::StoreJournal::clean__Seq"></span><span class="target" id="classstored_1_1_store_journal_1a5a54164f5c9b8c9003fe0da3526638c3"></span>void <code class="sig-name descname">clean</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal3SeqE" title="stored::StoreJournal::Seq">Seq</a> <em>oldest</em> = 0<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12StoreJournal5cleanE3Seq" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Remove all elements from the administration older than the given threshold. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">oldest</span></code>: seq of oldest element to remain. If 0, use older than <a class="reference internal" href="#classstored_1_1_store_journal_1a53b55842826c4c597185b0874f163eb9a03e52a7ab713953f3cb06c01c482d83a"><span class="std std-ref">SeqCleanThreshold</span></a> before <a class="reference internal" href="#classstored_1_1_store_journal_1adc2ea8f4e6cd15876d0eaaff5617c99a"><span class="std std-ref">seq()</span></a>. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12StoreJournal12decodeBufferERPvR6size_t">
+<span id="_CPPv3N6stored12StoreJournal12decodeBufferERPvR6size_t"></span><span id="_CPPv2N6stored12StoreJournal12decodeBufferERPvR6size_t"></span><span id="stored::StoreJournal::decodeBuffer__voidPR.sR"></span><span class="target" id="classstored_1_1_store_journal_1a3573618dd74a5b3e2981bc550c4d05ea"></span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal3SeqE" title="stored::StoreJournal::Seq">Seq</a> <code class="sig-name descname">decodeBuffer</code><span class="sig-paren">(</span>void *&amp;<em>buffer</em>, size_t &amp;<em>len</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12StoreJournal12decodeBufferERPvR6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Decode and process a full store’s buffer from <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a> message. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>the seq number of the applied changes </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12StoreJournal13decodeUpdatesERPvR6size_tb">
+<span id="_CPPv3N6stored12StoreJournal13decodeUpdatesERPvR6size_tb"></span><span id="_CPPv2N6stored12StoreJournal13decodeUpdatesERPvR6size_tb"></span><span id="stored::StoreJournal::decodeUpdates__voidPR.sR.b"></span><span class="target" id="classstored_1_1_store_journal_1aa9b388dd5f934c00d151fd24d1bce97a"></span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal3SeqE" title="stored::StoreJournal::Seq">Seq</a> <code class="sig-name descname">decodeUpdates</code><span class="sig-paren">(</span>void *&amp;<em>buffer</em>, size_t &amp;<em>len</em>, bool <em>recordAll</em> = true<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12StoreJournal13decodeUpdatesERPvR6size_tb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Decode and apply updates from a <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a> message. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12StoreJournal12encodeBufferER13ProtocolLayerb">
+<span id="_CPPv3N6stored12StoreJournal12encodeBufferER13ProtocolLayerb"></span><span id="_CPPv2N6stored12StoreJournal12encodeBufferER13ProtocolLayerb"></span><span id="stored::StoreJournal::encodeBuffer__ProtocolLayerR.b"></span><span class="target" id="classstored_1_1_store_journal_1aca272a2e64cde16b6b2368bb812a510d"></span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal3SeqE" title="stored::StoreJournal::Seq">Seq</a> <code class="sig-name descname">encodeBuffer</code><span class="sig-paren">(</span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a> &amp;<em>p</em>, bool <em>last</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12StoreJournal12encodeBufferER13ProtocolLayerb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Encode full store’s buffer as a <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a> message. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>the seq number of the change set </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored12StoreJournal10encodeHashER13ProtocolLayerb">
+<span id="_CPPv3NK6stored12StoreJournal10encodeHashER13ProtocolLayerb"></span><span id="_CPPv2NK6stored12StoreJournal10encodeHashER13ProtocolLayerb"></span><span id="stored::StoreJournal::encodeHash__ProtocolLayerR.bC"></span><span class="target" id="classstored_1_1_store_journal_1a667296e61da16f91ccbd509de66cb000"></span>void <code class="sig-name descname">encodeHash</code><span class="sig-paren">(</span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a> &amp;<em>p</em>, bool <em>last</em> = false<span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored12StoreJournal10encodeHashER13ProtocolLayerb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Encode the store’s hash into a <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a> message. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12StoreJournal13encodeUpdatesER13ProtocolLayer3Seqb">
+<span id="_CPPv3N6stored12StoreJournal13encodeUpdatesER13ProtocolLayer3Seqb"></span><span id="_CPPv2N6stored12StoreJournal13encodeUpdatesER13ProtocolLayer3Seqb"></span><span id="stored::StoreJournal::encodeUpdates__ProtocolLayerR.Seq.b"></span><span class="target" id="classstored_1_1_store_journal_1a07eb53a4f8287ff5620a61e074fbb8d6"></span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal3SeqE" title="stored::StoreJournal::Seq">Seq</a> <code class="sig-name descname">encodeUpdates</code><span class="sig-paren">(</span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a> &amp;<em>p</em>, <a class="reference internal" href="#_CPPv4N6stored12StoreJournal3SeqE" title="stored::StoreJournal::Seq">Seq</a> <em>sinceSeq</em>, bool <em>last</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12StoreJournal13encodeUpdatesER13ProtocolLayer3Seqb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Encode all updates of changed objects since the given update sequence number (inclusive). </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The sequence number of the most recent update, to be passed to the next invocation of <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_store_journal_1a07eb53a4f8287ff5620a61e074fbb8d6"><span class="std std-ref"><span class="pre">encodeUpdates()</span></span></a></code>. </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored12StoreJournal10hasChangedE3Key3Seq">
+<span id="_CPPv3NK6stored12StoreJournal10hasChangedE3Key3Seq"></span><span id="_CPPv2NK6stored12StoreJournal10hasChangedE3Key3Seq"></span><span id="stored::StoreJournal::hasChanged__Key.SeqC"></span><span class="target" id="classstored_1_1_store_journal_1aded857db63d99d22c492896898fa2ddb"></span>bool <code class="sig-name descname">hasChanged</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal3KeyE" title="stored::StoreJournal::Key">Key</a> <em>key</em>, <a class="reference internal" href="#_CPPv4N6stored12StoreJournal3SeqE" title="stored::StoreJournal::Seq">Seq</a> <em>since</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored12StoreJournal10hasChangedE3Key3Seq" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Checks if the given object has changed since the given sequence number. </p>
+<p>The sequence number is the value returned by <a class="reference internal" href="#classstored_1_1_store_journal_1a07eb53a4f8287ff5620a61e074fbb8d6"><span class="std std-ref">encodeUpdates()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored12StoreJournal10hasChangedE3Seq">
+<span id="_CPPv3NK6stored12StoreJournal10hasChangedE3Seq"></span><span id="_CPPv2NK6stored12StoreJournal10hasChangedE3Seq"></span><span id="stored::StoreJournal::hasChanged__SeqC"></span><span class="target" id="classstored_1_1_store_journal_1af916ec11ec854a4f37d81fb06ab07bca"></span>bool <code class="sig-name descname">hasChanged</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal3SeqE" title="stored::StoreJournal::Seq">Seq</a> <em>since</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored12StoreJournal10hasChangedE3Seq" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Checks if any object has changed since the given sequence number. </p>
+<p>The sequence number is the value returned by <a class="reference internal" href="#classstored_1_1_store_journal_1a07eb53a4f8287ff5620a61e074fbb8d6"><span class="std std-ref">encodeUpdates()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored12StoreJournal4hashEv">
+<span id="_CPPv3NK6stored12StoreJournal4hashEv"></span><span id="_CPPv2NK6stored12StoreJournal4hashEv"></span><span id="stored::StoreJournal::hashC"></span><span class="target" id="classstored_1_1_store_journal_1af09dcedcdeaa89ae79dab27bb48dd359"></span>char <em class="property">const</em> *<code class="sig-name descname">hash</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored12StoreJournal4hashEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the hash of the corresponding store. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored12StoreJournal14iterateChangedE3SeqP22IterateChangedCallbackPv">
+<span id="_CPPv3NK6stored12StoreJournal14iterateChangedE3SeqP22IterateChangedCallbackPv"></span><span id="_CPPv2NK6stored12StoreJournal14iterateChangedE3SeqP22IterateChangedCallbackPv"></span><span id="stored::StoreJournal::iterateChanged__Seq.IterateChangedCallbackP.voidPC"></span><span class="target" id="classstored_1_1_store_journal_1a0a1e8a94f96a88459eb6b694c46d1ff8"></span>void <code class="sig-name descname">iterateChanged</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal3SeqE" title="stored::StoreJournal::Seq">Seq</a> <em>since</em>, <a class="reference internal" href="#_CPPv4N6stored12StoreJournal22IterateChangedCallbackE" title="stored::StoreJournal::IterateChangedCallback">IterateChangedCallback</a> *<em>cb</em>, void *<em>arg</em> = nullptr<span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored12StoreJournal14iterateChangedE3SeqP22IterateChangedCallbackPv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Iterate all changes since the given seq. </p>
+<p>The callback <code class="docutils literal notranslate"><span class="pre">will</span></code> receive the Key of the object that has changed since the given seq, and the supplied <code class="docutils literal notranslate"><span class="pre">arg</span></code>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0ENK6stored12StoreJournal14iterateChangedE3SeqRR1F">
+<span id="_CPPv3I0ENK6stored12StoreJournal14iterateChangedE3SeqRR1F"></span><span id="_CPPv2I0ENK6stored12StoreJournal14iterateChangedE3SeqRR1F"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_store_journal_1a74f2fa43d167890eee11563fb87466c1"></span><code class="sig-name descname">iterateChanged</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal3SeqE" title="stored::StoreJournal::Seq">Seq</a> <em>since</em>, <a class="reference internal" href="#_CPPv4I0ENK6stored12StoreJournal14iterateChangedE3SeqRR1F" title="stored::StoreJournal::iterateChanged::F">F</a> &amp;&amp;<em>cb</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4I0ENK6stored12StoreJournal14iterateChangedE3SeqRR1F" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Iterate all changes since the given seq. </p>
+<p>The callback <code class="docutils literal notranslate"><span class="pre">will</span></code> receive the Key of the object that has changed since the given seq. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored12StoreJournal11keyToBufferE3Key4SizePb">
+<span id="_CPPv3NK6stored12StoreJournal11keyToBufferE3Key4SizePb"></span><span id="_CPPv2NK6stored12StoreJournal11keyToBufferE3Key4SizePb"></span><span id="stored::StoreJournal::keyToBuffer__Key.Size.bPC"></span><span class="target" id="classstored_1_1_store_journal_1a95cc27294f713b39e0e5481249379136"></span>void *<code class="sig-name descname">keyToBuffer</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal3KeyE" title="stored::StoreJournal::Key">Key</a> <em>key</em>, <a class="reference internal" href="#_CPPv4N6stored12StoreJournal4SizeE" title="stored::StoreJournal::Size">Size</a> <em>len</em> = 0, bool *<em>ok</em> = nullptr<span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored12StoreJournal11keyToBufferE3Key4SizePb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the buffer of an object corresponding to the given key. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12StoreJournalaSERK12StoreJournal">
+<span id="_CPPv3N6stored12StoreJournalaSERK12StoreJournal"></span><span id="_CPPv2N6stored12StoreJournalaSERK12StoreJournal"></span><span id="stored::StoreJournal::assign-operator__StoreJournalCR"></span><span class="target" id="classstored_1_1_store_journal_1a454a9014abdd862bf5ed01dc495b407c"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal">StoreJournal</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12StoreJournalaSERK12StoreJournal" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12StoreJournalaSERR12StoreJournal">
+<span id="_CPPv3N6stored12StoreJournalaSERR12StoreJournal"></span><span id="_CPPv2N6stored12StoreJournalaSERR12StoreJournal"></span><span id="stored::StoreJournal::assign-operator__StoreJournalRR"></span><span class="target" id="classstored_1_1_store_journal_1a48e699a4b32d44dc9f0ad7f14f2ebcb8"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal">StoreJournal</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12StoreJournalaSERR12StoreJournal" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12StoreJournal11reserveHeapE6size_t">
+<span id="_CPPv3N6stored12StoreJournal11reserveHeapE6size_t"></span><span id="_CPPv2N6stored12StoreJournal11reserveHeapE6size_t"></span><span id="stored::StoreJournal::reserveHeap__s"></span><span class="target" id="classstored_1_1_store_journal_1a70c13cd96c475c2bacf91075a36a454a"></span>void <code class="sig-name descname">reserveHeap</code><span class="sig-paren">(</span>size_t <em>storeVariableCount</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12StoreJournal11reserveHeapE6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Pre-allocate memory for the given number of variables. </p>
+<p>As long as the number of changed variables remains below this number, no heap operations are performed during synchronization. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored12StoreJournal3seqEv">
+<span id="_CPPv3NK6stored12StoreJournal3seqEv"></span><span id="_CPPv2NK6stored12StoreJournal3seqEv"></span><span id="stored::StoreJournal::seqC"></span><span class="target" id="classstored_1_1_store_journal_1adc2ea8f4e6cd15876d0eaaff5617c99a"></span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal3SeqE" title="stored::StoreJournal::Seq">Seq</a> <code class="sig-name descname">seq</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored12StoreJournal3seqEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the current update sequence number. </p>
+<p>This number indicates in which period objects have changed. Then, a <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">SyncConnection</span></a> can determine which objects have already and which have not yet been updated remotely. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Static Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12StoreJournal10decodeHashERPvR6size_t">
+<span id="_CPPv3N6stored12StoreJournal10decodeHashERPvR6size_t"></span><span id="_CPPv2N6stored12StoreJournal10decodeHashERPvR6size_t"></span><span id="stored::StoreJournal::decodeHash__voidPR.sR"></span><span class="target" id="classstored_1_1_store_journal_1accf894398377aff343b5d68da178dbff"></span>char <em class="property">const</em> *<code class="sig-name descname">decodeHash</code><span class="sig-paren">(</span>void *&amp;<em>buffer</em>, size_t &amp;<em>len</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12StoreJournal10decodeHashERPvR6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Decode hash from a <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a> message. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>the hash, or an empty string upon decode error </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12StoreJournal10encodeHashER13ProtocolLayerPKcb">
+<span id="_CPPv3N6stored12StoreJournal10encodeHashER13ProtocolLayerPKcb"></span><span id="_CPPv2N6stored12StoreJournal10encodeHashER13ProtocolLayerPKcb"></span><span id="stored::StoreJournal::encodeHash__ProtocolLayerR.cCP.b"></span><span class="target" id="classstored_1_1_store_journal_1ada9dbd83139228b34ea73af71c647187"></span>void <code class="sig-name descname">encodeHash</code><span class="sig-paren">(</span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a> &amp;<em>p</em>, char <em class="property">const</em> *<em>hash</em>, bool <em>last</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12StoreJournal10encodeHashER13ProtocolLayerPKcb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Encode a hash into a <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a> message. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12StoreJournal7keySizeE6size_t">
+<span id="_CPPv3N6stored12StoreJournal7keySizeE6size_t"></span><span id="_CPPv2N6stored12StoreJournal7keySizeE6size_t"></span><span id="stored::StoreJournal::keySize__s"></span><span class="target" id="classstored_1_1_store_journal_1a8752ab1df7f29820d2cd6b95dc260a57"></span>uint8_t <code class="sig-name descname">keySize</code><span class="sig-paren">(</span>size_t <em>bufferSize</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12StoreJournal7keySizeE6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Compute key size in bytes given a buffer size. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="stored-syncconnection">
+<h2>stored::SyncConnection<a class="headerlink" href="#stored-syncconnection" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt id="_CPPv4N6stored14SyncConnectionE">
+<span id="_CPPv3N6stored14SyncConnectionE"></span><span id="_CPPv2N6stored14SyncConnectionE"></span><span id="stored::SyncConnection"></span><span class="target" id="classstored_1_1_sync_connection"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">SyncConnection</code> : <em class="property">public</em> stored::<a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a><a class="headerlink" href="#_CPPv4N6stored14SyncConnectionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>A one-to-one connection to synchronize one or more stores. </p>
+<p>A <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">SyncConnection</span></a> is related to one <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a>, and a protocol stack to one other party. Using this connection, multiple stores can be synchronized.</p>
+<p>The protocol is straight-forward: assume <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a> A wants to synchronize a store with <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a> B via a <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">SyncConnection</span></a>:</p>
+<p><ul class="simple">
+<li><p>A sends ‘Hello’ to B to indicate that it wants the full store immediately and updates afterwards.</p></li>
+<li><p>B sends ‘Welcome’ back to A, including the full store’s buffer.</p></li>
+<li><p>When A has updates, it sends ‘Update’ to B.</p></li>
+<li><p>When B has updates, it sensd ‘Update’ to A.</p></li>
+<li><p>If A does not need updates anymore, it sends ‘Bye’.</p></li>
+<li><p>B can send ‘Bye’ to A too, but this will probably break the application, as A usually cannot handle this.</p></li>
+</ul>
+</p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a> </p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N6stored14SyncConnection4baseE">
+<span id="_CPPv3N6stored14SyncConnection4baseE"></span><span id="_CPPv2N6stored14SyncConnection4baseE"></span><span id="stored::SyncConnection::base"></span><span class="target" id="classstored_1_1_sync_connection_1aef7463575c484fbde29a4f2019798cdb"></span><em class="property">typedef </em><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a> <code class="sig-name descname">base</code><a class="headerlink" href="#_CPPv4N6stored14SyncConnection4baseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored14SyncConnection2IdE">
+<span id="_CPPv3N6stored14SyncConnection2IdE"></span><span id="_CPPv2N6stored14SyncConnection2IdE"></span><span id="stored::SyncConnection::Id"></span><span class="target" id="classstored_1_1_sync_connection_1a3fa5207cb9dc868988362f9d62982966"></span><em class="property">typedef </em>uint16_t <code class="sig-name descname">Id</code><a class="headerlink" href="#_CPPv4N6stored14SyncConnection2IdE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14SyncConnection14SyncConnectionERK14SyncConnection">
+<span id="_CPPv3N6stored14SyncConnection14SyncConnectionERK14SyncConnection"></span><span id="_CPPv2N6stored14SyncConnection14SyncConnectionERK14SyncConnection"></span><span id="stored::SyncConnection::SyncConnection__SyncConnectionCR"></span><span class="target" id="classstored_1_1_sync_connection_1a534cb3db69bfa2d73a12197c29c8e792"></span><code class="sig-name descname">SyncConnection</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14SyncConnection14SyncConnectionERK14SyncConnection" title="stored::SyncConnection::SyncConnection">SyncConnection</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored14SyncConnection14SyncConnectionERK14SyncConnection" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14SyncConnection14SyncConnectionERR14SyncConnection">
+<span id="_CPPv3N6stored14SyncConnection14SyncConnectionERR14SyncConnection"></span><span id="_CPPv2N6stored14SyncConnection14SyncConnectionERR14SyncConnection"></span><span id="stored::SyncConnection::SyncConnection__SyncConnectionRR"></span><span class="target" id="classstored_1_1_sync_connection_1a38740a1d2f047d214cd180c3ab8295c8"></span><code class="sig-name descname">SyncConnection</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14SyncConnection14SyncConnectionERR14SyncConnection" title="stored::SyncConnection::SyncConnection">SyncConnection</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored14SyncConnection14SyncConnectionERR14SyncConnection" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14SyncConnection14SyncConnectionER12SynchronizerR13ProtocolLayer">
+<span id="_CPPv3N6stored14SyncConnection14SyncConnectionER12SynchronizerR13ProtocolLayer"></span><span id="_CPPv2N6stored14SyncConnection14SyncConnectionER12SynchronizerR13ProtocolLayer"></span><span id="stored::SyncConnection::SyncConnection__SynchronizerR.ProtocolLayerR"></span><span class="target" id="classstored_1_1_sync_connection_1a24570b59f12295974ddbb6b305af34ca"></span><code class="sig-name descname">SyncConnection</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12SynchronizerE" title="stored::Synchronizer">Synchronizer</a> &amp;<em>synchronizer</em>, <a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a> &amp;<em>connection</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14SyncConnection14SyncConnectionER12SynchronizerR13ProtocolLayer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Ctor. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">synchronizer</span></code>: the <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a> that manages this connection </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">connection</span></code>: the protocol stack that is to wrap this <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">SyncConnection</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14SyncConnectionD0Ev">
+<span id="_CPPv3N6stored14SyncConnectionD0Ev"></span><span id="_CPPv2N6stored14SyncConnectionD0Ev"></span><span id="stored::SyncConnection::~SyncConnection"></span><span class="target" id="classstored_1_1_sync_connection_1a1fda9fd47d0d61b0978ede5274705704"></span><code class="sig-name descname">~SyncConnection</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6stored14SyncConnectionD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Dtor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14SyncConnection6decodeEPv6size_t">
+<span id="_CPPv3N6stored14SyncConnection6decodeEPv6size_t"></span><span id="_CPPv2N6stored14SyncConnection6decodeEPv6size_t"></span><span id="stored::SyncConnection::decode__voidP.s"></span><span class="target" id="classstored_1_1_sync_connection_1a02f2c9f8bd944387ccc2b3d26168cfa6"></span>void <code class="sig-name descname">decode</code><span class="sig-paren">(</span>void *<em>buffer</em>, size_t <em>len</em><span class="sig-paren">)</span> <em class="property">final</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6stored14SyncConnection6decodeEPv6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Decode a frame and forward the decoded frame to the upper layer. </p>
+<p>The given buffer may be decoded in-place. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14SyncConnection4dropER12StoreJournal">
+<span id="_CPPv3N6stored14SyncConnection4dropER12StoreJournal"></span><span id="_CPPv2N6stored14SyncConnection4dropER12StoreJournal"></span><span id="stored::SyncConnection::drop__StoreJournalR"></span><span class="target" id="classstored_1_1_sync_connection_1aef30c6c866b2d5bd3b696e49c830a203"></span>void <code class="sig-name descname">drop</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal">StoreJournal</a> &amp;<em>store</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14SyncConnection4dropER12StoreJournal" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deregister a given store. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored14SyncConnection15isSynchronizingER12StoreJournal">
+<span id="_CPPv3NK6stored14SyncConnection15isSynchronizingER12StoreJournal"></span><span id="_CPPv2NK6stored14SyncConnection15isSynchronizingER12StoreJournal"></span><span id="stored::SyncConnection::isSynchronizing__StoreJournalRC"></span><span class="target" id="classstored_1_1_sync_connection_1a50170418af57d1349684a1e84ec6f037"></span>bool <code class="sig-name descname">isSynchronizing</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal">StoreJournal</a> &amp;<em>store</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored14SyncConnection15isSynchronizingER12StoreJournal" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns if the given store is synchronized over this connection. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14SyncConnectionaSERR14SyncConnection">
+<span id="_CPPv3N6stored14SyncConnectionaSERR14SyncConnection"></span><span id="_CPPv2N6stored14SyncConnectionaSERR14SyncConnection"></span><span id="stored::SyncConnection::assign-operator__SyncConnectionRR"></span><span class="target" id="classstored_1_1_sync_connection_1ae8604fa9fb8fd03f70c2e798de86560b"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14SyncConnectionE" title="stored::SyncConnection">SyncConnection</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored14SyncConnectionaSERR14SyncConnection" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14SyncConnectionaSERK14SyncConnection">
+<span id="_CPPv3N6stored14SyncConnectionaSERK14SyncConnection"></span><span id="_CPPv2N6stored14SyncConnectionaSERK14SyncConnection"></span><span id="stored::SyncConnection::assign-operator__SyncConnectionCR"></span><span class="target" id="classstored_1_1_sync_connection_1a6639455b75a42a36ed66aafca1056677"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14SyncConnectionE" title="stored::SyncConnection">SyncConnection</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored14SyncConnectionaSERK14SyncConnection" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14SyncConnection7processER12StoreJournal">
+<span id="_CPPv3N6stored14SyncConnection7processER12StoreJournal"></span><span id="_CPPv2N6stored14SyncConnection7processER12StoreJournal"></span><span id="stored::SyncConnection::process__StoreJournalR"></span><span class="target" id="classstored_1_1_sync_connection_1a18cc5d0fac67949b319b3578193f5de6"></span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal">StoreJournal</a>::<a class="reference internal" href="#_CPPv4N6stored12StoreJournal3SeqE" title="stored::StoreJournal::Seq">Seq</a> <code class="sig-name descname">process</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal">StoreJournal</a> &amp;<em>store</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14SyncConnection7processER12StoreJournal" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Send out all updates of the given store. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14SyncConnection5resetEv">
+<span id="_CPPv3N6stored14SyncConnection5resetEv"></span><span id="_CPPv2N6stored14SyncConnection5resetEv"></span><span id="stored::SyncConnection::reset"></span><span class="target" id="classstored_1_1_sync_connection_1aca59978ca6b6b640d0b05fd8c9d2c498"></span>void <code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6stored14SyncConnection5resetEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Reset the stack (top-down), and drop all messages. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14SyncConnection6sourceER12StoreJournal">
+<span id="_CPPv3N6stored14SyncConnection6sourceER12StoreJournal"></span><span id="_CPPv2N6stored14SyncConnection6sourceER12StoreJournal"></span><span id="stored::SyncConnection::source__StoreJournalR"></span><span class="target" id="classstored_1_1_sync_connection_1a59e2dbdfbbf4fcf019c8ba81eed03fe1"></span>void <code class="sig-name descname">source</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal">StoreJournal</a> &amp;<em>store</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14SyncConnection6sourceER12StoreJournal" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Use this connection as a source of the given store. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored14SyncConnection12synchronizerEv">
+<span id="_CPPv3NK6stored14SyncConnection12synchronizerEv"></span><span id="_CPPv2NK6stored14SyncConnection12synchronizerEv"></span><span id="stored::SyncConnection::synchronizerC"></span><span class="target" id="classstored_1_1_sync_connection_1a1d4e4b91326f257afdb9825e3f72c9c9"></span><a class="reference internal" href="#_CPPv4N6stored12SynchronizerE" title="stored::Synchronizer">Synchronizer</a> &amp;<code class="sig-name descname">synchronizer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored14SyncConnection12synchronizerEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a> that manages this connection. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Static Attributes</p>
+<dl class="cpp var">
+<dt id="_CPPv4N6stored14SyncConnection3ByeE">
+<span id="_CPPv3N6stored14SyncConnection3ByeE"></span><span id="_CPPv2N6stored14SyncConnection3ByeE"></span><span id="stored::SyncConnection::Bye__cC"></span><span class="target" id="classstored_1_1_sync_connection_1a5cf43e404650aa49eca9763bdceccb46"></span>char <em class="property">const</em> <code class="sig-name descname">Bye</code> = 'b'<a class="headerlink" href="#_CPPv4N6stored14SyncConnection3ByeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored14SyncConnection5HelloE">
+<span id="_CPPv3N6stored14SyncConnection5HelloE"></span><span id="_CPPv2N6stored14SyncConnection5HelloE"></span><span id="stored::SyncConnection::Hello__cC"></span><span class="target" id="classstored_1_1_sync_connection_1ac8ded02ad96765d5cea514ad70cfa41c"></span>char <em class="property">const</em> <code class="sig-name descname">Hello</code> = 'h'<a class="headerlink" href="#_CPPv4N6stored14SyncConnection5HelloE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored14SyncConnection6UpdateE">
+<span id="_CPPv3N6stored14SyncConnection6UpdateE"></span><span id="_CPPv2N6stored14SyncConnection6UpdateE"></span><span id="stored::SyncConnection::Update__cC"></span><span class="target" id="classstored_1_1_sync_connection_1adc9d8881155ebdc68a83b585e49083e5"></span>char <em class="property">const</em> <code class="sig-name descname">Update</code> = 'u'<a class="headerlink" href="#_CPPv4N6stored14SyncConnection6UpdateE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored14SyncConnection7WelcomeE">
+<span id="_CPPv3N6stored14SyncConnection7WelcomeE"></span><span id="_CPPv2N6stored14SyncConnection7WelcomeE"></span><span id="stored::SyncConnection::Welcome__cC"></span><span class="target" id="classstored_1_1_sync_connection_1a4e3f8faa9aedda9b7ca9bed735f2e339"></span>char <em class="property">const</em> <code class="sig-name descname">Welcome</code> = 'w'<a class="headerlink" href="#_CPPv4N6stored14SyncConnection7WelcomeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="stored-synchronizable">
+<h2>stored::Synchronizable<a class="headerlink" href="#stored-synchronizable" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt id="_CPPv4I0EN6stored14SynchronizableE">
+<span id="_CPPv3I0EN6stored14SynchronizableE"></span><span id="_CPPv2I0EN6stored14SynchronizableE"></span>template&lt;typename <code class="sig-name descname">Base</code>&gt;<br /><span class="target" id="classstored_1_1_synchronizable"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Synchronizable</code> : <em class="property">public</em> <a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable::Base">Base</a><a class="headerlink" href="#_CPPv4I0EN6stored14SynchronizableE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>An extension of a store to be used by the <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a>. </p>
+<p>Assume you have <code class="docutils literal notranslate"><span class="pre">MyStoreBase</span></code> (which takes a template parameter <code class="docutils literal notranslate"><span class="pre">Implementation</span></code>), and the actual store implementation <code class="docutils literal notranslate"><span class="pre">ActualStore</span></code>. If it does not have to be synchronizable, you would inherit <code class="docutils literal notranslate"><span class="pre">ActualStore</span></code> from <code class="docutils literal notranslate"><span class="pre">MyStoreBase&lt;ActualStore&gt;</span></code>.</p>
+<p>If it should be synchronizable, use <a class="reference internal" href="#classstored_1_1_synchronizable_1a3bc1ad747d4e160895d47012482f007c"><span class="std std-ref">Synchronizable</span></a> like this:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ActualStore : public stored::Synchronizable&lt;stored::MyStoreBase&lt;ActualStore&gt; &gt; {
+    CLASS_NOCOPY(ActualStore)
+public:
+    typedef stored::Synchronizable&lt;stored::MyStoreBase&lt;ActualStore&gt; &gt; base;
+    using typename base::Implementation;
+    friend class stored::MyStoreBase&lt;ActualStore&gt;;
+    ActualStore() is_default
+    ...
+};
+</pre></div>
+</div>
+</p>
+<p>Or with a few macros:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ActualStore: public STORE_SYNC_BASECLASS(MyStoreBase, ActualStore) {
+    STORE_SYNC_CLASS_BODY(MyStoreBase, ActualStore)
+public:
+    ActualStore() is_default
+};
+</pre></div>
+</div>
+</p>
+<p>Now, <code class="docutils literal notranslate"><span class="pre">ActualStore</span></code> inherits from <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_synchronizable"><span class="std std-ref"><span class="pre">Synchronizable</span></span></a></code>, which inherits from <code class="docutils literal notranslate"><span class="pre">MyStoreBase</span></code>. However, <code class="docutils literal notranslate"><span class="pre">ActualStore</span></code> is still used as the final implementation. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp enum">
+<dt id="_CPPv4N6stored14SynchronizableUt2_15E">
+<span id="_CPPv3N6stored14SynchronizableUt2_15E"></span><span class="target" id="classstored_1_1_synchronizable_1a477090bd45226851b7572821d0256621"></span><em class="property">enum </em><strong>[anonymous]</strong><a class="headerlink" href="#_CPPv4N6stored14SynchronizableUt2_15E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored14SynchronizableUt2_1514MaxMessageSizeE">
+<span id="_CPPv3N6stored14SynchronizableUt2_1514MaxMessageSizeE"></span><span class="target" id="classstored_1_1_synchronizable_1a477090bd45226851b7572821d0256621a99303b78e58017c2aa962fb625dc0459"></span><em class="property">enumerator </em><code class="sig-name descname">MaxMessageSize</code><a class="headerlink" href="#_CPPv4N6stored14SynchronizableUt2_1514MaxMessageSizeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Maximum size of any <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a> message for this store. </p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored14Synchronizable4baseE">
+<span id="_CPPv3N6stored14Synchronizable4baseE"></span><span id="_CPPv2N6stored14Synchronizable4baseE"></span><span id="stored::Synchronizable::base"></span><span class="target" id="classstored_1_1_synchronizable_1a4e7c1bda607d10c32470355a438132e4"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable::Base">Base</a> <code class="sig-name descname">base</code><a class="headerlink" href="#_CPPv4N6stored14Synchronizable4baseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored14Synchronizable14ImplementationE">
+<span id="_CPPv3N6stored14Synchronizable14ImplementationE"></span><span id="_CPPv2N6stored14Synchronizable14ImplementationE"></span><span id="stored::Synchronizable::Implementation"></span><span class="target" id="classstored_1_1_synchronizable_1a3ebedce88b06ef81aee9f323bb82f579"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4N6stored14Synchronizable4baseE" title="stored::Synchronizable::base">base</a>::Implementation <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored14Synchronizable14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored14Synchronizable7ObjectsE">
+<span id="_CPPv3N6stored14Synchronizable7ObjectsE"></span><span id="_CPPv2N6stored14Synchronizable7ObjectsE"></span><span id="stored::Synchronizable::Objects"></span><span class="target" id="classstored_1_1_synchronizable_1ad12fb534062dfcbf9ea45d7a471bdfaa"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4N6stored14Synchronizable4baseE" title="stored::Synchronizable::base">base</a>::Objects <code class="sig-name descname">Objects</code><a class="headerlink" href="#_CPPv4N6stored14Synchronizable7ObjectsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14Synchronizable14SynchronizableERK14SynchronizableI4BaseE">
+<span id="_CPPv3N6stored14Synchronizable14SynchronizableERK14SynchronizableI4BaseE"></span><span id="_CPPv2N6stored14Synchronizable14SynchronizableERK14SynchronizableI4BaseE"></span><span id="stored::Synchronizable::Synchronizable__Synchronizable:Base:CR"></span><span class="target" id="classstored_1_1_synchronizable_1a3bc1ad747d4e160895d47012482f007c"></span><code class="sig-name descname">Synchronizable</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14Synchronizable14SynchronizableERK14SynchronizableI4BaseE" title="stored::Synchronizable::Synchronizable">Synchronizable</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable::Base">Base</a>&gt; <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored14Synchronizable14SynchronizableERK14SynchronizableI4BaseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14Synchronizable14SynchronizableERR14SynchronizableI4BaseE">
+<span id="_CPPv3N6stored14Synchronizable14SynchronizableERR14SynchronizableI4BaseE"></span><span id="_CPPv2N6stored14Synchronizable14SynchronizableERR14SynchronizableI4BaseE"></span><span id="stored::Synchronizable::Synchronizable__Synchronizable:Base:RR"></span><span class="target" id="classstored_1_1_synchronizable_1a0e77cc5c63bb3d99c78ddceebc1d0d20"></span><code class="sig-name descname">Synchronizable</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14Synchronizable14SynchronizableERR14SynchronizableI4BaseE" title="stored::Synchronizable::Synchronizable">Synchronizable</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable::Base">Base</a>&gt;&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored14Synchronizable14SynchronizableERR14SynchronizableI4BaseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4IDpEN6stored14Synchronizable14SynchronizableEDpRR4Args">
+<span id="_CPPv3IDpEN6stored14Synchronizable14SynchronizableEDpRR4Args"></span><span id="_CPPv2IDpEN6stored14Synchronizable14SynchronizableEDpRR4Args"></span>template&lt;typename ...<code class="sig-name descname">Args</code>&gt;<br /><span class="target" id="classstored_1_1_synchronizable_1a83faa28fa20314195ebf74d740bf5524"></span><code class="sig-name descname">Synchronizable</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN6stored14Synchronizable14SynchronizableEDpRR4Args" title="stored::Synchronizable::Synchronizable::Args">Args</a>&amp;&amp;... <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN6stored14Synchronizable14SynchronizableEDpRR4Args" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14SynchronizableD0Ev">
+<span id="_CPPv3N6stored14SynchronizableD0Ev"></span><span id="_CPPv2N6stored14SynchronizableD0Ev"></span><span id="stored::Synchronizable::~Synchronizable"></span><span class="target" id="classstored_1_1_synchronizable_1a3d99a8a965a505af0ae3f861de18dde3"></span><code class="sig-name descname">~Synchronizable</code><span class="sig-paren">(</span><span class="sig-paren">)</span> = default<a class="headerlink" href="#_CPPv4N6stored14SynchronizableD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored14Synchronizable7journalEv">
+<span id="_CPPv3NK6stored14Synchronizable7journalEv"></span><span id="_CPPv2NK6stored14Synchronizable7journalEv"></span><span id="stored::Synchronizable::journalC"></span><span class="target" id="classstored_1_1_synchronizable_1a87fc4ad5d50a98633178056c809f218d"></span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal">StoreJournal</a> <em class="property">const</em> &amp;<code class="sig-name descname">journal</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored14Synchronizable7journalEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14Synchronizable7journalEv">
+<span id="_CPPv3N6stored14Synchronizable7journalEv"></span><span id="_CPPv2N6stored14Synchronizable7journalEv"></span><span id="stored::Synchronizable::journal"></span><span class="target" id="classstored_1_1_synchronizable_1aaea4f34590c85e08d759d88676190651"></span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal">StoreJournal</a> &amp;<code class="sig-name descname">journal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14Synchronizable7journalEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14SynchronizableaSERR14SynchronizableI4BaseE">
+<span id="_CPPv3N6stored14SynchronizableaSERR14SynchronizableI4BaseE"></span><span id="_CPPv2N6stored14SynchronizableaSERR14SynchronizableI4BaseE"></span><span id="stored::Synchronizable::assign-operator__Synchronizable:Base:RR"></span><span class="target" id="classstored_1_1_synchronizable_1aee974db694832c9766912fb6d9412bd1"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable">Synchronizable</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable::Base">Base</a>&gt;&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored14SynchronizableaSERR14SynchronizableI4BaseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14SynchronizableaSERK14SynchronizableI4BaseE">
+<span id="_CPPv3N6stored14SynchronizableaSERK14SynchronizableI4BaseE"></span><span id="_CPPv2N6stored14SynchronizableaSERK14SynchronizableI4BaseE"></span><span id="stored::Synchronizable::assign-operator__Synchronizable:Base:CR"></span><span class="target" id="classstored_1_1_synchronizable_1abeb440bc64f8144e8c9c8114c7743c0e"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable">Synchronizable</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable::Base">Base</a>&gt; <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored14SynchronizableaSERK14SynchronizableI4BaseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14Synchronizable11reserveHeapEv">
+<span id="_CPPv3N6stored14Synchronizable11reserveHeapEv"></span><span id="_CPPv2N6stored14Synchronizable11reserveHeapEv"></span><span id="stored::Synchronizable::reserveHeap"></span><span class="target" id="classstored_1_1_synchronizable_1aa285cbea0809844a480f8b659614ba24"></span>void <code class="sig-name descname">reserveHeap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14Synchronizable11reserveHeapEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Reserve worst-case heap usage. </p>
+<p>Afterwards, the store and synchronizer will not use any additional heap, which makes it possible to use it in a not-async-signal-safe context, like an interrupt handler. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="stored-synchronizer">
+<h2>stored::Synchronizer<a class="headerlink" href="#stored-synchronizer" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt id="_CPPv4N6stored12SynchronizerE">
+<span id="_CPPv3N6stored12SynchronizerE"></span><span id="_CPPv2N6stored12SynchronizerE"></span><span id="stored::Synchronizer"></span><span class="target" id="classstored_1_1_synchronizer"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Synchronizer</code><a class="headerlink" href="#_CPPv4N6stored12SynchronizerE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The service that manages synchronization of stores over SyncConnections. </p>
+<p>A <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a> holds a set of stores, and a set of SyncConnections. A store can be synchronized over multiple connections simultaneously. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12Synchronizer12SynchronizerERK12Synchronizer">
+<span id="_CPPv3N6stored12Synchronizer12SynchronizerERK12Synchronizer"></span><span id="_CPPv2N6stored12Synchronizer12SynchronizerERK12Synchronizer"></span><span id="stored::Synchronizer::Synchronizer__SynchronizerCR"></span><span class="target" id="classstored_1_1_synchronizer_1a127093e038524246f5ad6c642798c223"></span><code class="sig-name descname">Synchronizer</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12Synchronizer12SynchronizerERK12Synchronizer" title="stored::Synchronizer::Synchronizer">Synchronizer</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12Synchronizer12SynchronizerERK12Synchronizer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12Synchronizer12SynchronizerERR12Synchronizer">
+<span id="_CPPv3N6stored12Synchronizer12SynchronizerERR12Synchronizer"></span><span id="_CPPv2N6stored12Synchronizer12SynchronizerERR12Synchronizer"></span><span id="stored::Synchronizer::Synchronizer__SynchronizerRR"></span><span class="target" id="classstored_1_1_synchronizer_1a0b2b93c6263d2a0d4061f84855521966"></span><code class="sig-name descname">Synchronizer</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12Synchronizer12SynchronizerERR12Synchronizer" title="stored::Synchronizer::Synchronizer">Synchronizer</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12Synchronizer12SynchronizerERR12Synchronizer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12Synchronizer12SynchronizerEv">
+<span id="_CPPv3N6stored12Synchronizer12SynchronizerEv"></span><span id="_CPPv2N6stored12Synchronizer12SynchronizerEv"></span><span id="stored::Synchronizer::Synchronizer"></span><span class="target" id="classstored_1_1_synchronizer_1ab661ecdbb09af58a1d2f3c91543d7cd7"></span><code class="sig-name descname">Synchronizer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> = default<a class="headerlink" href="#_CPPv4N6stored12Synchronizer12SynchronizerEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Ctor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12SynchronizerD0Ev">
+<span id="_CPPv3N6stored12SynchronizerD0Ev"></span><span id="_CPPv2N6stored12SynchronizerD0Ev"></span><span id="stored::Synchronizer::~Synchronizer"></span><span class="target" id="classstored_1_1_synchronizer_1ab18af921b07af600d95d8902a66fcbba"></span><code class="sig-name descname">~Synchronizer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12SynchronizerD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Dtor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12Synchronizer7connectER13ProtocolLayer">
+<span id="_CPPv3N6stored12Synchronizer7connectER13ProtocolLayer"></span><span id="_CPPv2N6stored12Synchronizer7connectER13ProtocolLayer"></span><span id="stored::Synchronizer::connect__ProtocolLayerR"></span><span class="target" id="classstored_1_1_synchronizer_1a77e661d364e06752cda6b162414ef74c"></span>void <code class="sig-name descname">connect</code><span class="sig-paren">(</span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a> &amp;<em>connection</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12Synchronizer7connectER13ProtocolLayer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Connect the given connection to this <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a>. </p>
+<p>A <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">stored::SyncConnection</span></a> is instantiated on top of the given protocol stack. This <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">SyncConnection</span></a> is the OSI Application layer of the synchronization prococol. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12Synchronizer10disconnectER13ProtocolLayer">
+<span id="_CPPv3N6stored12Synchronizer10disconnectER13ProtocolLayer"></span><span id="_CPPv2N6stored12Synchronizer10disconnectER13ProtocolLayer"></span><span id="stored::Synchronizer::disconnect__ProtocolLayerR"></span><span class="target" id="classstored_1_1_synchronizer_1a5c8a59faccb30c08910551500d08ad75"></span>void <code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a> &amp;<em>connection</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12Synchronizer10disconnectER13ProtocolLayer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Disconnect the given connection from this <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a>. </p>
+<p>Provide the connection as given to <a class="reference internal" href="#classstored_1_1_synchronizer_1a77e661d364e06752cda6b162414ef74c"><span class="std std-ref">connect()</span></a> before. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored12Synchronizer15isSynchronizingER12StoreJournal">
+<span id="_CPPv3NK6stored12Synchronizer15isSynchronizingER12StoreJournal"></span><span id="_CPPv2NK6stored12Synchronizer15isSynchronizingER12StoreJournal"></span><span id="stored::Synchronizer::isSynchronizing__StoreJournalRC"></span><span class="target" id="classstored_1_1_synchronizer_1adbcaf3052a055128cb786d621c9d18c0"></span>bool <code class="sig-name descname">isSynchronizing</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal">StoreJournal</a> &amp;<em>j</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored12Synchronizer15isSynchronizingER12StoreJournal" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored12Synchronizer15isSynchronizingER12StoreJournalR14SyncConnection">
+<span id="_CPPv3NK6stored12Synchronizer15isSynchronizingER12StoreJournalR14SyncConnection"></span><span id="_CPPv2NK6stored12Synchronizer15isSynchronizingER12StoreJournalR14SyncConnection"></span><span id="stored::Synchronizer::isSynchronizing__StoreJournalR.SyncConnectionRC"></span><span class="target" id="classstored_1_1_synchronizer_1a5d4dd69d96ce0c318873a0d0d3723280"></span>bool <code class="sig-name descname">isSynchronizing</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal">StoreJournal</a> &amp;<em>j</em>, <a class="reference internal" href="#_CPPv4N6stored14SyncConnectionE" title="stored::SyncConnection">SyncConnection</a> &amp;<em>notOverConnection</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored12Synchronizer15isSynchronizingER12StoreJournalR14SyncConnection" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored12Synchronizer3mapEvR14SynchronizableI5StoreE">
+<span id="_CPPv3I0EN6stored12Synchronizer3mapER14SynchronizableI5StoreE"></span><span id="_CPPv2I0EN6stored12Synchronizer3mapER14SynchronizableI5StoreE"></span>template&lt;typename <code class="sig-name descname">Store</code>&gt;<br /><span class="target" id="classstored_1_1_synchronizer_1a141a57011f946f70f4b4e04d4a22001c"></span>void <code class="sig-name descname">map</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable">Synchronizable</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored12Synchronizer3mapEvR14SynchronizableI5StoreE" title="stored::Synchronizer::map::Store">Store</a>&gt; &amp;<em>store</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored12Synchronizer3mapEvR14SynchronizableI5StoreE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Register a store in this <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12SynchronizeraSERR12Synchronizer">
+<span id="_CPPv3N6stored12SynchronizeraSERR12Synchronizer"></span><span id="_CPPv2N6stored12SynchronizeraSERR12Synchronizer"></span><span id="stored::Synchronizer::assign-operator__SynchronizerRR"></span><span class="target" id="classstored_1_1_synchronizer_1a79c6cd962526431640297ff1817c5489"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12SynchronizerE" title="stored::Synchronizer">Synchronizer</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12SynchronizeraSERR12Synchronizer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12SynchronizeraSERK12Synchronizer">
+<span id="_CPPv3N6stored12SynchronizeraSERK12Synchronizer"></span><span id="_CPPv2N6stored12SynchronizeraSERK12Synchronizer"></span><span id="stored::Synchronizer::assign-operator__SynchronizerCR"></span><span class="target" id="classstored_1_1_synchronizer_1acc2811e9d12a27654cedbc47c79f6f35"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12SynchronizerE" title="stored::Synchronizer">Synchronizer</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12SynchronizeraSERK12Synchronizer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored12Synchronizer7processEvR14SynchronizableI5StoreE">
+<span id="_CPPv3I0EN6stored12Synchronizer7processER14SynchronizableI5StoreE"></span><span id="_CPPv2I0EN6stored12Synchronizer7processER14SynchronizableI5StoreE"></span>template&lt;typename <code class="sig-name descname">Store</code>&gt;<br /><span class="target" id="classstored_1_1_synchronizer_1ac2c1093610cb35cb966da07368bf043d"></span>void <code class="sig-name descname">process</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable">Synchronizable</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored12Synchronizer7processEvR14SynchronizableI5StoreE" title="stored::Synchronizer::process::Store">Store</a>&gt; &amp;<em>store</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored12Synchronizer7processEvR14SynchronizableI5StoreE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Process updates for the given store on all connections. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored12Synchronizer7processEN12StoreJournal3SeqER13ProtocolLayerR14SynchronizableI5StoreE">
+<span id="_CPPv3I0EN6stored12Synchronizer7processER13ProtocolLayerR14SynchronizableI5StoreE"></span><span id="_CPPv2I0EN6stored12Synchronizer7processER13ProtocolLayerR14SynchronizableI5StoreE"></span>template&lt;typename <code class="sig-name descname">Store</code>&gt;<br /><span class="target" id="classstored_1_1_synchronizer_1aaa7a2e906a37e1ea3b861c5356e6be0d"></span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal">StoreJournal</a>::<a class="reference internal" href="#_CPPv4N6stored12StoreJournal3SeqE" title="stored::StoreJournal::Seq">Seq</a> <code class="sig-name descname">process</code><span class="sig-paren">(</span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a> &amp;<em>connection</em>, <a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable">Synchronizable</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored12Synchronizer7processEN12StoreJournal3SeqER13ProtocolLayerR14SynchronizableI5StoreE" title="stored::Synchronizer::process::Store">Store</a>&gt; &amp;<em>store</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored12Synchronizer7processEN12StoreJournal3SeqER13ProtocolLayerR14SynchronizableI5StoreE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Process updates for the given store on the given connection. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12Synchronizer7processEv">
+<span id="_CPPv3N6stored12Synchronizer7processEv"></span><span id="_CPPv2N6stored12Synchronizer7processEv"></span><span id="stored::Synchronizer::process"></span><span class="target" id="classstored_1_1_synchronizer_1a44d88a63d162d35e1033f8437e5d99e0"></span>void <code class="sig-name descname">process</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12Synchronizer7processEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Process updates for all connections and all stores. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12Synchronizer7processER12StoreJournal">
+<span id="_CPPv3N6stored12Synchronizer7processER12StoreJournal"></span><span id="_CPPv2N6stored12Synchronizer7processER12StoreJournal"></span><span id="stored::Synchronizer::process__StoreJournalR"></span><span class="target" id="classstored_1_1_synchronizer_1a1af639c058937d60926ebdd9f3f9d436"></span>void <code class="sig-name descname">process</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal">StoreJournal</a> &amp;<em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12Synchronizer7processER12StoreJournal" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Process updates for the given journal on all connections. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12Synchronizer7processER13ProtocolLayer">
+<span id="_CPPv3N6stored12Synchronizer7processER13ProtocolLayer"></span><span id="_CPPv2N6stored12Synchronizer7processER13ProtocolLayer"></span><span id="stored::Synchronizer::process__ProtocolLayerR"></span><span class="target" id="classstored_1_1_synchronizer_1a2b5f169e452c131bd99aa76617f9a0f1"></span>void <code class="sig-name descname">process</code><span class="sig-paren">(</span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a> &amp;<em>connection</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12Synchronizer7processER13ProtocolLayer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Process updates for all stores on the given connection. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12Synchronizer7processER13ProtocolLayerR12StoreJournal">
+<span id="_CPPv3N6stored12Synchronizer7processER13ProtocolLayerR12StoreJournal"></span><span id="_CPPv2N6stored12Synchronizer7processER13ProtocolLayerR12StoreJournal"></span><span id="stored::Synchronizer::process__ProtocolLayerR.StoreJournalR"></span><span class="target" id="classstored_1_1_synchronizer_1ae0b00b783e2c67bd526bbf3f345c537a"></span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal">StoreJournal</a>::<a class="reference internal" href="#_CPPv4N6stored12StoreJournal3SeqE" title="stored::StoreJournal::Seq">Seq</a> <code class="sig-name descname">process</code><span class="sig-paren">(</span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a> &amp;<em>connection</em>, <a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal">StoreJournal</a> &amp;<em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12Synchronizer7processER13ProtocolLayerR12StoreJournal" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Process updates for the given store on the given connection. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored12Synchronizer8syncFromEvR14SynchronizableI5StoreER13ProtocolLayer">
+<span id="_CPPv3I0EN6stored12Synchronizer8syncFromER14SynchronizableI5StoreER13ProtocolLayer"></span><span id="_CPPv2I0EN6stored12Synchronizer8syncFromER14SynchronizableI5StoreER13ProtocolLayer"></span>template&lt;typename <code class="sig-name descname">Store</code>&gt;<br /><span class="target" id="classstored_1_1_synchronizer_1a669ed2f96d0cad88bc62bd728dfa0da3"></span>void <code class="sig-name descname">syncFrom</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable">Synchronizable</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored12Synchronizer8syncFromEvR14SynchronizableI5StoreER13ProtocolLayer" title="stored::Synchronizer::syncFrom::Store">Store</a>&gt; &amp;<em>store</em>, <a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a> &amp;<em>connection</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored12Synchronizer8syncFromEvR14SynchronizableI5StoreER13ProtocolLayer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Mark the connection to be a source of the given store. </p>
+<p>The full store’s buffer is received from the <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a> via the <code class="docutils literal notranslate"><span class="pre">connection</span></code>. Afterwards, updates and exchanged bidirectionally. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored12Synchronizer9toJournalEPKc">
+<span id="_CPPv3NK6stored12Synchronizer9toJournalEPKc"></span><span id="_CPPv2NK6stored12Synchronizer9toJournalEPKc"></span><span id="stored::Synchronizer::toJournal__cCPC"></span><span class="target" id="classstored_1_1_synchronizer_1a4241214092c772130031c647a6a31b31"></span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal">StoreJournal</a> *<code class="sig-name descname">toJournal</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>hash</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored12Synchronizer9toJournalEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Find a registered store given an hash. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>the store, or <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> when not found </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored12Synchronizer5unmapEvR14SynchronizableI5StoreE">
+<span id="_CPPv3I0EN6stored12Synchronizer5unmapER14SynchronizableI5StoreE"></span><span id="_CPPv2I0EN6stored12Synchronizer5unmapER14SynchronizableI5StoreE"></span>template&lt;typename <code class="sig-name descname">Store</code>&gt;<br /><span class="target" id="classstored_1_1_synchronizer_1ae7a5f2ce6a5ec9d028146153954c9ce8"></span>void <code class="sig-name descname">unmap</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable">Synchronizable</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored12Synchronizer5unmapEvR14SynchronizableI5StoreE" title="stored::Synchronizer::unmap::Store">Store</a>&gt; &amp;<em>store</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored12Synchronizer5unmapEvR14SynchronizableI5StoreE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deregister a store from this <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a>. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+    <script type="text/javascript">
+        function init() {
+            WaveDrom.ProcessAll();
+        }
+        window.onload = init;
+    </script>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="cpp_types.html" class="btn btn-neutral float-right" title="Types" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="cpp_protocol.html" class="btn btn-neutral float-left" title="Protocol" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Jochem Rutgers
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

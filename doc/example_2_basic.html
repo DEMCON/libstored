@@ -1,0 +1,842 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>2_basic &mdash; libstored  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="http://wavedrom.com/skins/default.js"></script>
+        <script src="http://wavedrom.com/wavedrom.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3_scope" href="example_3_scope.html" />
+    <link rel="prev" title="1_hello" href="example_1_hello.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libstored
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Content</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cpp.html">C++</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fpga.html">VHDL</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="example_1_hello.html">1_hello</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">2_basic</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#store-definition">Store definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#application">Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#output">Output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#store-reference">Store reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="example_3_scope.html">3_scope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_4_function.html">4_function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_5_debug.html">5_debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_6_hooks.html">6_hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_7_protocol.html">7_protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_8_sync.html">8_sync</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_9_fpga.html">9_fpga</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_zmqserver.html">zmqserver</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libstored</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="examples.html">Examples</a> &raquo;</li>
+        
+      <li>2_basic</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/doc/example_2_basic.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="basic">
+<h1>2_basic<a class="headerlink" href="#basic" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="store-definition">
+<h2>Store definition<a class="headerlink" href="#store-definition" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Did you enable syntax highlighting in Vim? See scripts/st.vim.
+
+// The following types are supported:
+bool       b
+int8       i8
+uint8      u8
+int16      i16
+uint16     u16
+int32      i32
+uint32     u32
+int64      i64
+uint64     u64
+float      f
+double     d
+
+// A string is a UTF-8 string. Indicate the length of the string in bytes,
+// excluding the \0 terminator, which is added implicitly.
+string:4   s
+
+// A blob is just a piece of memory. You can use it for any other buffer.
+// Indicate the size of the blob in bytes.
+blob:16    blob
+
+// To override the default-initialized value (which is zero), specify it like
+// this:
+int8=42    test42
+
+// An initializer can be an int, as shown above, but also hex (0x12ab), binary
+// (0b01101), and float (1.4, -3.2e-4, inf, nan). Initializer don&#39;t work on a
+// string and blob, though.
+
+// Note that there should not be any whitespace around the =, because after
+// from the first whitespace, the name is taken. So, this is not what you would
+// expect, although the syntax highlighting might give you a hint:
+int8 = 42  test42
+
+// If you make this error a lot, you may prefer writing the name on the next
+// line like this:
+int8=42
+another 42
+
+// The name of a variable consists of ASCII 0x20 (space) till 0x7e (~).  Spaces
+// at the start and end of the named are stripped off, and consecutive spaces
+// inside the name are merged. Otherwise, the name is as you type.
+bool=true So, this is a perfectly fine name, even if it includes characters like ~!@#$%; and so on.
+
+// In the C++ interface, all invalid characters are mapped and merged to _.
+// Check the generated Example.h!
+
+// Every type can be an array by adding [size]:
+int8[4] four ints
+int16[3]=2 three ints // All initialized to two.
+string:4[2] two strings
+
+// The generated store does not have arrays, however. The generator will expand
+// the array by adding [n] to the name. So, this is identical as the arrays
+// above:
+//int8 four ints[0]
+//int8 four ints[1]
+//int8 four ints[2]
+//int8 four ints[3]
+//int16=2 three ints[0]
+//int16=2 three ints[1]
+//int16=2 three ints[2]
+//string:4 two strings[0]
+//string:4 two strings[1]
+
+</pre></div>
+</div>
+</div>
+<div class="section" id="application">
+<h2>Application<a class="headerlink" href="#application" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
+<span class="cm"> * \file</span>
+<span class="cm"> * \brief Basic variable example.</span>
+<span class="cm"> */</span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;ExampleBasic.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">stored</span><span class="o">::</span><span class="n">ExampleBasic</span> <span class="n">e</span><span class="p">;</span>
+
+	<span class="c1">// Initialized value.</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;test42=%&quot;</span> <span class="n">PRId8</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">test42</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+
+	<span class="c1">// The thing with the space around the =</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;_42_test42=%&quot;</span> <span class="n">PRId8</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">_42_test42</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+
+	<span class="c1">// The initialized array element.</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;three ints[1]=%&quot;</span> <span class="n">PRId16</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">three_ints_1</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>test42=42
+_42_test42=0
+three ints[1]=2
+</pre></div>
+</div>
+</div>
+<div class="section" id="store-reference">
+<h2>Store reference<a class="headerlink" href="#store-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt id="_CPPv4I00EN6stored19ExampleBasicObjectsE">
+<span id="_CPPv3I00EN6stored19ExampleBasicObjectsE"></span><span id="_CPPv2I00EN6stored19ExampleBasicObjectsE"></span>template&lt;typename <code class="sig-name descname">Base_</code>, typename <code class="sig-name descname">Implementation_</code>&gt;<br /><span class="target" id="classstored_1_1_example_basic_objects"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleBasicObjects</code><a class="headerlink" href="#_CPPv4I00EN6stored19ExampleBasicObjectsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>All <a class="reference internal" href="#classstored_1_1_example_basic_base"><span class="std std-ref">ExampleBasicBase</span></a>’s objects. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N6stored19ExampleBasicObjects4BaseE">
+<span id="_CPPv3N6stored19ExampleBasicObjects4BaseE"></span><span id="_CPPv2N6stored19ExampleBasicObjects4BaseE"></span><span id="stored::ExampleBasicObjects::Base"></span><span class="target" id="classstored_1_1_example_basic_objects_1a32cb9898a6371ffd68f4d4a35f4c7470"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleBasicObjectsE" title="stored::ExampleBasicObjects::Base_">Base_</a> <code class="sig-name descname">Base</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored19ExampleBasicObjects14ImplementationE">
+<span id="_CPPv3N6stored19ExampleBasicObjects14ImplementationE"></span><span id="_CPPv2N6stored19ExampleBasicObjects14ImplementationE"></span><span id="stored::ExampleBasicObjects::Implementation"></span><span class="target" id="classstored_1_1_example_basic_objects_1a251682bbdbf0729bf0ba55ce2fe23a2c"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleBasicObjectsE" title="stored::ExampleBasicObjects::Implementation_">Implementation_</a> <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects10_42_test42E">
+<span id="_CPPv3N6stored19ExampleBasicObjects10_42_test42E"></span><span id="_CPPv2N6stored19ExampleBasicObjects10_42_test42E"></span><span id="stored::ExampleBasicObjects::_42_test42__impl::StoreVariable:Base.Implementation.int8_t.99u.1:"></span><span class="target" id="classstored_1_1_example_basic_objects_1ac70c95ad7a3363969c5f89c2e0b2b6f1"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, int8_t, 99u, 1&gt; <code class="sig-name descname">_42_test42</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects10_42_test42E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>= 42 test42 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects10another_42E">
+<span id="_CPPv3N6stored19ExampleBasicObjects10another_42E"></span><span id="_CPPv2N6stored19ExampleBasicObjects10another_42E"></span><span id="stored::ExampleBasicObjects::another_42__impl::StoreVariable:Base.Implementation.int8_t.7u.1:"></span><span class="target" id="classstored_1_1_example_basic_objects_1abc554e37c4f44d2ea64983638706b674"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, int8_t, 7u, 1&gt; <code class="sig-name descname">another_42</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects10another_42E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>another 42 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects1bE">
+<span id="_CPPv3N6stored19ExampleBasicObjects1bE"></span><span id="_CPPv2N6stored19ExampleBasicObjects1bE"></span><span id="stored::ExampleBasicObjects::b__impl::StoreVariable:Base.Implementation.b.96u.1:"></span><span class="target" id="classstored_1_1_example_basic_objects_1a63724119739d071a9bf240aef975b82a"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, bool, 96u, 1&gt; <code class="sig-name descname">b</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects1bE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>b </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects4blobE">
+<span id="_CPPv3N6stored19ExampleBasicObjects4blobE"></span><span id="_CPPv2N6stored19ExampleBasicObjects4blobE"></span><span id="stored::ExampleBasicObjects::blob__impl::StoreVariantV:Base.Implementation.Type::Blob.16u.16u:"></span><span class="target" id="classstored_1_1_example_basic_objects_1aff512989f4d31cea2f990549171340d7"></span>impl::StoreVariantV&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, Type::Blob, 16u, 16u&gt; <code class="sig-name descname">blob</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects4blobE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>blob </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects1dE">
+<span id="_CPPv3N6stored19ExampleBasicObjects1dE"></span><span id="_CPPv2N6stored19ExampleBasicObjects1dE"></span><span id="stored::ExampleBasicObjects::d__impl::StoreVariable:Base.Implementation.double.48u.8:"></span><span class="target" id="classstored_1_1_example_basic_objects_1a6ef08cc9d38c50b482d1a116b03cc98b"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, double, 48u, 8&gt; <code class="sig-name descname">d</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects1dE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>d </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects1fE">
+<span id="_CPPv3N6stored19ExampleBasicObjects1fE"></span><span id="_CPPv2N6stored19ExampleBasicObjects1fE"></span><span id="stored::ExampleBasicObjects::f__impl::StoreVariable:Base.Implementation.float.64u.4:"></span><span class="target" id="classstored_1_1_example_basic_objects_1ad83d1cee358e237a7b5c574c4979e9a6"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, float, 64u, 4&gt; <code class="sig-name descname">f</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects1fE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>f </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects11four_ints_0E">
+<span id="_CPPv3N6stored19ExampleBasicObjects11four_ints_0E"></span><span id="_CPPv2N6stored19ExampleBasicObjects11four_ints_0E"></span><span id="stored::ExampleBasicObjects::four_ints_0__impl::StoreVariable:Base.Implementation.int8_t.100u.1:"></span><span class="target" id="classstored_1_1_example_basic_objects_1a702e83c5f1d0d7f446268fcff605d935"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, int8_t, 100u, 1&gt; <code class="sig-name descname">four_ints_0</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects11four_ints_0E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>four ints[0] </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects11four_ints_1E">
+<span id="_CPPv3N6stored19ExampleBasicObjects11four_ints_1E"></span><span id="_CPPv2N6stored19ExampleBasicObjects11four_ints_1E"></span><span id="stored::ExampleBasicObjects::four_ints_1__impl::StoreVariable:Base.Implementation.int8_t.101u.1:"></span><span class="target" id="classstored_1_1_example_basic_objects_1ad94211d7ea095a8e0112442ce9d6e43d"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, int8_t, 101u, 1&gt; <code class="sig-name descname">four_ints_1</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects11four_ints_1E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>four ints[1] </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects11four_ints_2E">
+<span id="_CPPv3N6stored19ExampleBasicObjects11four_ints_2E"></span><span id="_CPPv2N6stored19ExampleBasicObjects11four_ints_2E"></span><span id="stored::ExampleBasicObjects::four_ints_2__impl::StoreVariable:Base.Implementation.int8_t.102u.1:"></span><span class="target" id="classstored_1_1_example_basic_objects_1afdb83cf49d1a404dea83325d4fc900fd"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, int8_t, 102u, 1&gt; <code class="sig-name descname">four_ints_2</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects11four_ints_2E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>four ints[2] </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects11four_ints_3E">
+<span id="_CPPv3N6stored19ExampleBasicObjects11four_ints_3E"></span><span id="_CPPv2N6stored19ExampleBasicObjects11four_ints_3E"></span><span id="stored::ExampleBasicObjects::four_ints_3__impl::StoreVariable:Base.Implementation.int8_t.103u.1:"></span><span class="target" id="classstored_1_1_example_basic_objects_1a28b7dad7b861d5e4b71d07915be6e97e"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, int8_t, 103u, 1&gt; <code class="sig-name descname">four_ints_3</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects11four_ints_3E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>four ints[3] </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects3i16E">
+<span id="_CPPv3N6stored19ExampleBasicObjects3i16E"></span><span id="_CPPv2N6stored19ExampleBasicObjects3i16E"></span><span id="stored::ExampleBasicObjects::i16__impl::StoreVariable:Base.Implementation.int16_t.92u.2:"></span><span class="target" id="classstored_1_1_example_basic_objects_1ab185870d6fc4334af5160f84098b416d"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, int16_t, 92u, 2&gt; <code class="sig-name descname">i16</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects3i16E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>i16 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects3i32E">
+<span id="_CPPv3N6stored19ExampleBasicObjects3i32E"></span><span id="_CPPv2N6stored19ExampleBasicObjects3i32E"></span><span id="stored::ExampleBasicObjects::i32__impl::StoreVariable:Base.Implementation.int32_t.56u.4:"></span><span class="target" id="classstored_1_1_example_basic_objects_1acc20c9df4167e708bd8f045a23127015"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, int32_t, 56u, 4&gt; <code class="sig-name descname">i32</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects3i32E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>i32 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects3i64E">
+<span id="_CPPv3N6stored19ExampleBasicObjects3i64E"></span><span id="_CPPv2N6stored19ExampleBasicObjects3i64E"></span><span id="stored::ExampleBasicObjects::i64__impl::StoreVariable:Base.Implementation.int64_t.32u.8:"></span><span class="target" id="classstored_1_1_example_basic_objects_1a25a3f8c805ed9cf0be479c55c2b3aa35"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, int64_t, 32u, 8&gt; <code class="sig-name descname">i64</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects3i64E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>i64 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects2i8E">
+<span id="_CPPv3N6stored19ExampleBasicObjects2i8E"></span><span id="_CPPv2N6stored19ExampleBasicObjects2i8E"></span><span id="stored::ExampleBasicObjects::i8__impl::StoreVariable:Base.Implementation.int8_t.97u.1:"></span><span class="target" id="classstored_1_1_example_basic_objects_1a7ad29da2174e8016482c0ca64e9a0a07"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, int8_t, 97u, 1&gt; <code class="sig-name descname">i8</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects2i8E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>i8 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects1sE">
+<span id="_CPPv3N6stored19ExampleBasicObjects1sE"></span><span id="_CPPv2N6stored19ExampleBasicObjects1sE"></span><span id="stored::ExampleBasicObjects::s__impl::StoreVariantV:Base.Implementation.Type::String.68u.4u:"></span><span class="target" id="classstored_1_1_example_basic_objects_1a9eaebb4547d6c8194d0b700c9d5d6cd0"></span>impl::StoreVariantV&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, Type::String, 68u, 4u&gt; <code class="sig-name descname">s</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects1sE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>s </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects78So_this_is_a_perfectly_fine_name_even_if_it_includes_characters_like_and_so_onE">
+<span id="_CPPv3N6stored19ExampleBasicObjects78So_this_is_a_perfectly_fine_name_even_if_it_includes_characters_like_and_so_onE"></span><span id="_CPPv2N6stored19ExampleBasicObjects78So_this_is_a_perfectly_fine_name_even_if_it_includes_characters_like_and_so_onE"></span><span id="stored::ExampleBasicObjects::So_this_is_a_perfectly_fine_name_even_if_it_includes_characters_like_and_so_on__impl::StoreVariable:Base.Implementation.b.8u.1:"></span><span class="target" id="classstored_1_1_example_basic_objects_1af6ae8e631be9b435050267b8f3e98b07"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, bool, 8u, 1&gt; <code class="sig-name descname">So_this_is_a_perfectly_fine_name_even_if_it_includes_characters_like_and_so_on</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects78So_this_is_a_perfectly_fine_name_even_if_it_includes_characters_like_and_so_onE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>So, this is a perfectly fine name, even if it includes characters like ~!#$%; and so on. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects6test42E">
+<span id="_CPPv3N6stored19ExampleBasicObjects6test42E"></span><span id="_CPPv2N6stored19ExampleBasicObjects6test42E"></span><span id="stored::ExampleBasicObjects::test42__impl::StoreVariable:Base.Implementation.int8_t.6u.1:"></span><span class="target" id="classstored_1_1_example_basic_objects_1aa7e0bf6f7f091b3cc497b3d208fcf4f8"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, int8_t, 6u, 1&gt; <code class="sig-name descname">test42</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects6test42E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>test42 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects12three_ints_0E">
+<span id="_CPPv3N6stored19ExampleBasicObjects12three_ints_0E"></span><span id="_CPPv2N6stored19ExampleBasicObjects12three_ints_0E"></span><span id="stored::ExampleBasicObjects::three_ints_0__impl::StoreVariable:Base.Implementation.int16_t.0u.2:"></span><span class="target" id="classstored_1_1_example_basic_objects_1adef5c84da0cbf9655063ee5e29248a54"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, int16_t, 0u, 2&gt; <code class="sig-name descname">three_ints_0</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects12three_ints_0E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>three ints[0] </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects12three_ints_1E">
+<span id="_CPPv3N6stored19ExampleBasicObjects12three_ints_1E"></span><span id="_CPPv2N6stored19ExampleBasicObjects12three_ints_1E"></span><span id="stored::ExampleBasicObjects::three_ints_1__impl::StoreVariable:Base.Implementation.int16_t.2u.2:"></span><span class="target" id="classstored_1_1_example_basic_objects_1a58543d7a4e41af52439ad1c84b89bba8"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, int16_t, 2u, 2&gt; <code class="sig-name descname">three_ints_1</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects12three_ints_1E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>three ints[1] </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects12three_ints_2E">
+<span id="_CPPv3N6stored19ExampleBasicObjects12three_ints_2E"></span><span id="_CPPv2N6stored19ExampleBasicObjects12three_ints_2E"></span><span id="stored::ExampleBasicObjects::three_ints_2__impl::StoreVariable:Base.Implementation.int16_t.4u.2:"></span><span class="target" id="classstored_1_1_example_basic_objects_1a926691d165ea6f7d6acc7b107c4afd6b"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, int16_t, 4u, 2&gt; <code class="sig-name descname">three_ints_2</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects12three_ints_2E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>three ints[2] </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects13two_strings_0E">
+<span id="_CPPv3N6stored19ExampleBasicObjects13two_strings_0E"></span><span id="_CPPv2N6stored19ExampleBasicObjects13two_strings_0E"></span><span id="stored::ExampleBasicObjects::two_strings_0__impl::StoreVariantV:Base.Implementation.Type::String.76u.4u:"></span><span class="target" id="classstored_1_1_example_basic_objects_1a25f57096ab07ebe05fd378159c62d43c"></span>impl::StoreVariantV&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, Type::String, 76u, 4u&gt; <code class="sig-name descname">two_strings_0</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects13two_strings_0E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>two strings[0] </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects13two_strings_1E">
+<span id="_CPPv3N6stored19ExampleBasicObjects13two_strings_1E"></span><span id="_CPPv2N6stored19ExampleBasicObjects13two_strings_1E"></span><span id="stored::ExampleBasicObjects::two_strings_1__impl::StoreVariantV:Base.Implementation.Type::String.84u.4u:"></span><span class="target" id="classstored_1_1_example_basic_objects_1abc46794d34f12c09fbc01a1a35583f71"></span>impl::StoreVariantV&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, Type::String, 84u, 4u&gt; <code class="sig-name descname">two_strings_1</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects13two_strings_1E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>two strings[1] </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects3u16E">
+<span id="_CPPv3N6stored19ExampleBasicObjects3u16E"></span><span id="_CPPv2N6stored19ExampleBasicObjects3u16E"></span><span id="stored::ExampleBasicObjects::u16__impl::StoreVariable:Base.Implementation.uint16_t.94u.2:"></span><span class="target" id="classstored_1_1_example_basic_objects_1a751fe97d5e737ca856995a9e7d1078e9"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, uint16_t, 94u, 2&gt; <code class="sig-name descname">u16</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects3u16E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>u16 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects3u32E">
+<span id="_CPPv3N6stored19ExampleBasicObjects3u32E"></span><span id="_CPPv2N6stored19ExampleBasicObjects3u32E"></span><span id="stored::ExampleBasicObjects::u32__impl::StoreVariable:Base.Implementation.uint32_t.60u.4:"></span><span class="target" id="classstored_1_1_example_basic_objects_1afc4b54b1819ded23dc59ba14245365ce"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, uint32_t, 60u, 4&gt; <code class="sig-name descname">u32</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects3u32E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>u32 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects3u64E">
+<span id="_CPPv3N6stored19ExampleBasicObjects3u64E"></span><span id="_CPPv2N6stored19ExampleBasicObjects3u64E"></span><span id="stored::ExampleBasicObjects::u64__impl::StoreVariable:Base.Implementation.uint64_t.40u.8:"></span><span class="target" id="classstored_1_1_example_basic_objects_1a31e5f96ba94053b33edfa44d11d1b8bd"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, uint64_t, 40u, 8&gt; <code class="sig-name descname">u64</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects3u64E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>u64 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N6stored19ExampleBasicObjects2u8E">
+<span id="_CPPv3N6stored19ExampleBasicObjects2u8E"></span><span id="_CPPv2N6stored19ExampleBasicObjects2u8E"></span><span id="stored::ExampleBasicObjects::u8__impl::StoreVariable:Base.Implementation.uint8_t.98u.1:"></span><span class="target" id="classstored_1_1_example_basic_objects_1a0a49bc1d32cc1c92a11d28714a56abe2"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects4BaseE" title="stored::ExampleBasicObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleBasicObjects14ImplementationE" title="stored::ExampleBasicObjects::Implementation">Implementation</a>, uint8_t, 98u, 1&gt; <code class="sig-name descname">u8</code><a class="headerlink" href="#_CPPv4N6stored19ExampleBasicObjects2u8E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>u8 </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4I0EN6stored16ExampleBasicBaseE">
+<span id="_CPPv3I0EN6stored16ExampleBasicBaseE"></span><span id="_CPPv2I0EN6stored16ExampleBasicBaseE"></span>template&lt;typename <code class="sig-name descname">Implementation_</code>&gt;<br /><span class="target" id="classstored_1_1_example_basic_base"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleBasicBase</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4I00EN6stored19ExampleBasicObjectsE" title="stored::ExampleBasicObjects">ExampleBasicObjects</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleBasicBaseE" title="stored::ExampleBasicBase">ExampleBasicBase</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleBasicBaseE" title="stored::ExampleBasicBase::Implementation_">Implementation_</a>&gt;, <a class="reference internal" href="#_CPPv4I0EN6stored16ExampleBasicBaseE" title="stored::ExampleBasicBase::Implementation_">Implementation_</a>&gt;<a class="headerlink" href="#_CPPv4I0EN6stored16ExampleBasicBaseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Base class with default interface of all <a class="reference internal" href="#classstored_1_1_example_basic"><span class="std std-ref">ExampleBasic</span></a> implementations. </p>
+<p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
+<p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_basic"><span class="std std-ref">stored::ExampleBasic</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
+<p>To inherit the base class, you can use the following template:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleBasic : public STORE_BASECLASS(ExampleBasicBase, ExampleBasic) {
+    STORE_CLASS_BODY(ExampleBasicBase, ExampleBasic)
+public:
+    // Your class implementation, such as:
+    ExampleBasic() is_default
+    // ...
+};
+</pre></div>
+</div>
+</p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_basic"><span class="std std-ref">stored::ExampleBasic</span></a> </p>
+</dd>
+<dt><strong>See</strong></dt><dd><p>stored::ExampleBasicData </p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp enum">
+<dt id="_CPPv4N6stored16ExampleBasicBaseUt2_26E">
+<span id="_CPPv3N6stored16ExampleBasicBaseUt2_26E"></span><span class="target" id="classstored_1_1_example_basic_base_1ade1be48ad1a74f4c2bafa8e6db6cba5d"></span><em class="property">enum </em><strong>[anonymous]</strong><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseUt2_26E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored16ExampleBasicBaseUt2_2611ObjectCountE">
+<span id="_CPPv3N6stored16ExampleBasicBaseUt2_2611ObjectCountE"></span><span class="target" id="classstored_1_1_example_basic_base_1ade1be48ad1a74f4c2bafa8e6db6cba5da4e22a2b2a8de56993771d183f49c8912"></span><em class="property">enumerator </em><code class="sig-name descname">ObjectCount</code><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseUt2_2611ObjectCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of objects in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored16ExampleBasicBaseUt2_2613VariableCountE">
+<span id="_CPPv3N6stored16ExampleBasicBaseUt2_2613VariableCountE"></span><span class="target" id="classstored_1_1_example_basic_base_1ade1be48ad1a74f4c2bafa8e6db6cba5dae001c655d56ee9d29d169fa05d19c6da"></span><em class="property">enumerator </em><code class="sig-name descname">VariableCount</code><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseUt2_2613VariableCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of variables in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored16ExampleBasicBaseUt2_2613FunctionCountE">
+<span id="_CPPv3N6stored16ExampleBasicBaseUt2_2613FunctionCountE"></span><span class="target" id="classstored_1_1_example_basic_base_1ade1be48ad1a74f4c2bafa8e6db6cba5da56067008cb7a6845b075a32db30e743f"></span><em class="property">enumerator </em><code class="sig-name descname">FunctionCount</code><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseUt2_2613FunctionCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Number of functions in the store. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N6stored16ExampleBasicBaseUt2_2610BufferSizeE">
+<span id="_CPPv3N6stored16ExampleBasicBaseUt2_2610BufferSizeE"></span><span class="target" id="classstored_1_1_example_basic_base_1ade1be48ad1a74f4c2bafa8e6db6cba5da966156d6e00f36f303fb4a5cf5ede4f5"></span><em class="property">enumerator </em><code class="sig-name descname">BufferSize</code><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseUt2_2610BufferSizeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Buffer size. </p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored16ExampleBasicBase14ImplementationE">
+<span id="_CPPv3N6stored16ExampleBasicBase14ImplementationE"></span><span id="_CPPv2N6stored16ExampleBasicBase14ImplementationE"></span><span id="stored::ExampleBasicBase::Implementation"></span><span class="target" id="classstored_1_1_example_basic_base_1ab563b600fee1173c8be1567823ffd135"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleBasicBaseE" title="stored::ExampleBasicBase::Implementation_">Implementation_</a> <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBase14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of the actual implementation, which is the (lowest) subclass. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored16ExampleBasicBase3KeyE">
+<span id="_CPPv3N6stored16ExampleBasicBase3KeyE"></span><span id="_CPPv2N6stored16ExampleBasicBase3KeyE"></span><span id="stored::ExampleBasicBase::Key"></span><span class="target" id="classstored_1_1_example_basic_base_1a2ddb301dba53ed370e1cc322759cb497"></span><em class="property">typedef </em>uintptr_t <code class="sig-name descname">Key</code><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBase3KeyE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of a key. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_basic_base_1adbb07105fc836e4d35b1556f716c067f"><span class="std std-ref">bufferToKey()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored16ExampleBasicBase9ObjectMapE">
+<span id="_CPPv3N6stored16ExampleBasicBase9ObjectMapE"></span><span id="_CPPv2N6stored16ExampleBasicBase9ObjectMapE"></span><span id="stored::ExampleBasicBase::ObjectMap"></span><span class="target" id="classstored_1_1_example_basic_base_1afefe333f494c45228bccfd4a790a2109"></span><em class="property">typedef </em>std::map&lt;std::string, <a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase14ImplementationE" title="stored::ExampleBasicBase::Implementation">Implementation</a>&gt;&gt; <code class="sig-name descname">ObjectMap</code><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBase9ObjectMapE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Map as generated by <a class="reference internal" href="#classstored_1_1_example_basic_base_1ad83bad80fb10fec2f746ddbc85b5e54f"><span class="std std-ref">map()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored16ExampleBasicBase7ObjectsE">
+<span id="_CPPv3N6stored16ExampleBasicBase7ObjectsE"></span><span id="_CPPv2N6stored16ExampleBasicBase7ObjectsE"></span><span id="stored::ExampleBasicBase::Objects"></span><span class="target" id="classstored_1_1_example_basic_base_1a63d3111d4b9d06ec76d8a28f8734a82b"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleBasicObjectsE" title="stored::ExampleBasicObjects">ExampleBasicObjects</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleBasicBaseE" title="stored::ExampleBasicBase">ExampleBasicBase</a>, <a class="reference internal" href="#_CPPv4I0EN6stored16ExampleBasicBaseE" title="stored::ExampleBasicBase::Implementation_">Implementation_</a>&gt; <code class="sig-name descname">Objects</code><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBase7ObjectsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleBasicBase16ExampleBasicBaseERK16ExampleBasicBase">
+<span id="_CPPv3N6stored16ExampleBasicBase16ExampleBasicBaseERK16ExampleBasicBase"></span><span id="_CPPv2N6stored16ExampleBasicBase16ExampleBasicBaseERK16ExampleBasicBase"></span><span id="stored::ExampleBasicBase::ExampleBasicBase__ExampleBasicBaseCR"></span><span class="target" id="classstored_1_1_example_basic_base_1a0262449bde91199d4dac9ba2bb81cbc4"></span><code class="sig-name descname">ExampleBasicBase</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase16ExampleBasicBaseERK16ExampleBasicBase" title="stored::ExampleBasicBase::ExampleBasicBase">ExampleBasicBase</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBase16ExampleBasicBaseERK16ExampleBasicBase" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleBasicBase16ExampleBasicBaseERR16ExampleBasicBase">
+<span id="_CPPv3N6stored16ExampleBasicBase16ExampleBasicBaseERR16ExampleBasicBase"></span><span id="_CPPv2N6stored16ExampleBasicBase16ExampleBasicBaseERR16ExampleBasicBase"></span><span id="stored::ExampleBasicBase::ExampleBasicBase__ExampleBasicBaseRR"></span><span class="target" id="classstored_1_1_example_basic_base_1a5f8a97097566f3d62f16d6852b68abd8"></span><code class="sig-name descname">ExampleBasicBase</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase16ExampleBasicBaseERR16ExampleBasicBase" title="stored::ExampleBasicBase::ExampleBasicBase">ExampleBasicBase</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBase16ExampleBasicBaseERR16ExampleBasicBase" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored16ExampleBasicBase11bufferToKeyEPKv">
+<span id="_CPPv3NK6stored16ExampleBasicBase11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored16ExampleBasicBase11bufferToKeyEPKv"></span><span id="stored::ExampleBasicBase::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_basic_base_1adbb07105fc836e4d35b1556f716c067f"></span><a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase3KeyE" title="stored::ExampleBasicBase::Key">Key</a> <code class="sig-name descname">bufferToKey</code><span class="sig-paren">(</span>void <em class="property">const</em> *<em>buffer</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleBasicBase11bufferToKeyEPKv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Converts a variable’s buffer to a key. </p>
+<p>A key is unique for all variables of the same store, but identical for the same variables across different instances of the same store class. Therefore, the key can be used to synchronize between instances of the same store. A key does not contain meta data, such as type or length. It is up to the synchronization library to make sure that these properties are handled well.</p>
+<p>For synchronization, when hookEntryX() or hookEntryRO() is invoked, one can compute the key of the object that is accessed. The key can be used, for example, in a key-to-Variant map. When data arrives from another party, the key can be used to find the proper <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> in the map.</p>
+<p>This way, data exchange is type-safe, as the <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> can check if the data format matches the expected type. However, one cannot process data if the key is not set yet in the map. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleBasicBase4findEPKc6size_t">
+<span id="_CPPv3N6stored16ExampleBasicBase4findEPKc6size_t"></span><span id="_CPPv2N6stored16ExampleBasicBase4findEPKc6size_t"></span><span id="stored::ExampleBasicBase::find__cCP.s"></span><span class="target" id="classstored_1_1_example_basic_base_1a4a50e187ec653524f1b746f6443f0a88"></span><a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase14ImplementationE" title="stored::ExampleBasicBase::Implementation">Implementation</a>&gt; <code class="sig-name descname">find</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>name</em>, size_t <em>len</em> = std::numeric_limits&lt;size_t&gt;::max()<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBase4findEPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Finds an object with the given name. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>the object, or an invalid <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">stored::Variant</span></a> if not found. </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleBasicBase11four_ints_aEi">
+<span id="_CPPv3N6stored16ExampleBasicBase11four_ints_aEi"></span><span id="_CPPv2N6stored16ExampleBasicBase11four_ints_aEi"></span><span id="stored::ExampleBasicBase::four_ints_a__i"></span><span class="target" id="classstored_1_1_example_basic_base_1a2853c11ba02e24d1520e97b8954545de"></span><a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase14ImplementationE" title="stored::ExampleBasicBase::Implementation">Implementation</a>&gt; <code class="sig-name descname">four_ints_a</code><span class="sig-paren">(</span>int <em>a</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBase11four_ints_aEi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Array-lookup accessor for four ints[a]. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored16ExampleBasicBase14implementationEv">
+<span id="_CPPv3NK6stored16ExampleBasicBase14implementationEv"></span><span id="_CPPv2NK6stored16ExampleBasicBase14implementationEv"></span><span id="stored::ExampleBasicBase::implementationC"></span><span class="target" id="classstored_1_1_example_basic_base_1aed1369ecf82582f884f6b6960e319a5a"></span><a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase14ImplementationE" title="stored::ExampleBasicBase::Implementation">Implementation</a> <em class="property">const</em> &amp;<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleBasicBase14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the reference to the implementation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleBasicBase14implementationEv">
+<span id="_CPPv3N6stored16ExampleBasicBase14implementationEv"></span><span id="_CPPv2N6stored16ExampleBasicBase14implementationEv"></span><span id="stored::ExampleBasicBase::implementation"></span><span class="target" id="classstored_1_1_example_basic_base_1ab7b65de3ded7283a1ff1d8263710b82d"></span><a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase14ImplementationE" title="stored::ExampleBasicBase::Implementation">Implementation</a> &amp;<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBase14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the reference to the implementation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored16ExampleBasicBase4listEv1FPvPKc">
+<span id="_CPPv3I0EN6stored16ExampleBasicBase4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored16ExampleBasicBase4listE1FPvPKc"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_example_basic_base_1acb67542f8419293119300844180483e1"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleBasicBase4listEv1FPvPKc" title="stored::ExampleBasicBase::list::F">F</a> <em>f</em>, void *<em>arg</em>, char <em class="property">const</em> *<em>prefix</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleBasicBase4listEv1FPvPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_basic_base_1a6bc705ca4911a7f2b7124aa0b6e91f8f"><span class="std std-ref">longDirectory()</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN6stored16ExampleBasicBase4listEvRR1F">
+<span id="_CPPv3I0EN6stored16ExampleBasicBase4listERR1F"></span><span id="_CPPv2I0EN6stored16ExampleBasicBase4listERR1F"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_example_basic_base_1ac942cf6c4325365d188928f543d02e3e"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleBasicBase4listEvRR1F" title="stored::ExampleBasicBase::list::F">F</a> &amp;&amp;<em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleBasicBase4listEvRR1F" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_basic_base_1a6bc705ca4911a7f2b7124aa0b6e91f8f"><span class="std std-ref">longDirectory()</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored16ExampleBasicBase13longDirectoryEv">
+<span id="_CPPv3NK6stored16ExampleBasicBase13longDirectoryEv"></span><span id="_CPPv2NK6stored16ExampleBasicBase13longDirectoryEv"></span><span id="stored::ExampleBasicBase::longDirectoryC"></span><span class="target" id="classstored_1_1_example_basic_base_1a6bc705ca4911a7f2b7124aa0b6e91f8f"></span>uint8_t <em class="property">const</em> *<code class="sig-name descname">longDirectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleBasicBase13longDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retuns the long directory. </p>
+<p>When not available, the short directory is returned. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleBasicBase3mapEPKc">
+<span id="_CPPv3N6stored16ExampleBasicBase3mapEPKc"></span><span id="_CPPv2N6stored16ExampleBasicBase3mapEPKc"></span><span id="stored::ExampleBasicBase::map__cCP"></span><span class="target" id="classstored_1_1_example_basic_base_1ad83bad80fb10fec2f746ddbc85b5e54f"></span><a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase9ObjectMapE" title="stored::ExampleBasicBase::ObjectMap">ObjectMap</a> <code class="sig-name descname">map</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>prefix</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBase3mapEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a name to <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> map for the store. </p>
+<p>Generating the map may be expensive and the result is not cached. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored16ExampleBasicBase4nameEv">
+<span id="_CPPv3NK6stored16ExampleBasicBase4nameEv"></span><span id="_CPPv2NK6stored16ExampleBasicBase4nameEv"></span><span id="stored::ExampleBasicBase::nameC"></span><span class="target" id="classstored_1_1_example_basic_base_1a0299178cf9b1b8291c869b3aef21c9fe"></span>char <em class="property">const</em> *<code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleBasicBase4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleBasicBaseaSERR16ExampleBasicBase">
+<span id="_CPPv3N6stored16ExampleBasicBaseaSERR16ExampleBasicBase"></span><span id="_CPPv2N6stored16ExampleBasicBaseaSERR16ExampleBasicBase"></span><span id="stored::ExampleBasicBase::assign-operator__ExampleBasicBaseRR"></span><span class="target" id="classstored_1_1_example_basic_base_1a9b098a3687f1100fc349a8c143592d32"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleBasicBaseE" title="stored::ExampleBasicBase">ExampleBasicBase</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseaSERR16ExampleBasicBase" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleBasicBaseaSERK16ExampleBasicBase">
+<span id="_CPPv3N6stored16ExampleBasicBaseaSERK16ExampleBasicBase"></span><span id="_CPPv2N6stored16ExampleBasicBaseaSERK16ExampleBasicBase"></span><span id="stored::ExampleBasicBase::assign-operator__ExampleBasicBaseCR"></span><span class="target" id="classstored_1_1_example_basic_base_1a0ed300987214e097fa901194a3676471"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleBasicBaseE" title="stored::ExampleBasicBase">ExampleBasicBase</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseaSERK16ExampleBasicBase" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored16ExampleBasicBase14shortDirectoryEv">
+<span id="_CPPv3NK6stored16ExampleBasicBase14shortDirectoryEv"></span><span id="_CPPv2NK6stored16ExampleBasicBase14shortDirectoryEv"></span><span id="stored::ExampleBasicBase::shortDirectoryC"></span><span class="target" id="classstored_1_1_example_basic_base_1a7f9ec3ca93d409684def8f8e14893e82"></span>uint8_t <em class="property">const</em> *<code class="sig-name descname">shortDirectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleBasicBase14shortDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the short directory. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleBasicBase12three_ints_aEi">
+<span id="_CPPv3N6stored16ExampleBasicBase12three_ints_aEi"></span><span id="_CPPv2N6stored16ExampleBasicBase12three_ints_aEi"></span><span id="stored::ExampleBasicBase::three_ints_a__i"></span><span class="target" id="classstored_1_1_example_basic_base_1af785945f6963daf71d76d450bdd23c60"></span><a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase14ImplementationE" title="stored::ExampleBasicBase::Implementation">Implementation</a>&gt; <code class="sig-name descname">three_ints_a</code><span class="sig-paren">(</span>int <em>a</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBase12three_ints_aEi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Array-lookup accessor for three ints[a]. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleBasicBase13two_strings_aEi">
+<span id="_CPPv3N6stored16ExampleBasicBase13two_strings_aEi"></span><span id="_CPPv2N6stored16ExampleBasicBase13two_strings_aEi"></span><span id="stored::ExampleBasicBase::two_strings_a__i"></span><span class="target" id="classstored_1_1_example_basic_base_1acc1ae4d43fb8492d170a369856f3d7df"></span><a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase14ImplementationE" title="stored::ExampleBasicBase::Implementation">Implementation</a>&gt; <code class="sig-name descname">two_strings_a</code><span class="sig-paren">(</span>int <em>a</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBase13two_strings_aEi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Array-lookup accessor for two strings[a]. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Static Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleBasicBase4hashEv">
+<span id="_CPPv3N6stored16ExampleBasicBase4hashEv"></span><span id="_CPPv2N6stored16ExampleBasicBase4hashEv"></span><span id="stored::ExampleBasicBase::hash"></span><span class="target" id="classstored_1_1_example_basic_base_1ae7f4ae697c52bf82f339a13d06b2e45e"></span>char <em class="property">const</em> *<code class="sig-name descname">hash</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBase4hashEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a unique hash of the store. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Friends</p>
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreFunction</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariable</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariantF</dt>
+</dl>
+
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> impl::StoreVariantV</dt>
+</dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4N6stored12ExampleBasicE">
+<span id="_CPPv3N6stored12ExampleBasicE"></span><span id="_CPPv2N6stored12ExampleBasicE"></span><span id="stored::ExampleBasic"></span><span class="target" id="classstored_1_1_example_basic"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleBasic</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleBasicBaseE" title="stored::ExampleBasicBase">ExampleBasicBase</a>&lt;<a class="reference internal" href="#_CPPv4N6stored12ExampleBasicE" title="stored::ExampleBasic">ExampleBasic</a>&gt;<a class="headerlink" href="#_CPPv4N6stored12ExampleBasicE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default <a class="reference internal" href="#classstored_1_1_example_basic_base"><span class="std std-ref">ExampleBasicBase</span></a> implementation. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="cpp type">
+<dt id="_CPPv4N6stored12ExampleBasic4baseE">
+<span id="_CPPv3N6stored12ExampleBasic4baseE"></span><span id="_CPPv2N6stored12ExampleBasic4baseE"></span><span id="stored::ExampleBasic::base"></span><span class="target" id="classstored_1_1_example_basic_1acd00dfbbf504b33d9c19074d50d9730f"></span><em class="property">typedef </em>stored::<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleBasicBaseE" title="stored::ExampleBasicBase">ExampleBasicBase</a>&lt;<a class="reference internal" href="#_CPPv4N6stored12ExampleBasicE" title="stored::ExampleBasic">ExampleBasic</a>&gt; <code class="sig-name descname">base</code><a class="headerlink" href="#_CPPv4N6stored12ExampleBasic4baseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt id="_CPPv4N6stored12ExampleBasic14ImplementationE">
+<span id="_CPPv3N6stored12ExampleBasic14ImplementationE"></span><span id="_CPPv2N6stored12ExampleBasic14ImplementationE"></span><span id="stored::ExampleBasic::Implementation"></span><span class="target" id="classstored_1_1_example_basic_1ab563b600fee1173c8be1567823ffd135"></span><em class="property">typedef </em>Implementation_ <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored12ExampleBasic14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Type of the actual implementation, which is the (lowest) subclass. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12ExampleBasic12ExampleBasicERK12ExampleBasic">
+<span id="_CPPv3N6stored12ExampleBasic12ExampleBasicERK12ExampleBasic"></span><span id="_CPPv2N6stored12ExampleBasic12ExampleBasicERK12ExampleBasic"></span><span id="stored::ExampleBasic::ExampleBasic__ExampleBasicCR"></span><span class="target" id="classstored_1_1_example_basic_1a78f8d4bdefd6553ee83ec982f5ea0b62"></span><code class="sig-name descname">ExampleBasic</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleBasic12ExampleBasicERK12ExampleBasic" title="stored::ExampleBasic::ExampleBasic">ExampleBasic</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12ExampleBasic12ExampleBasicERK12ExampleBasic" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12ExampleBasic12ExampleBasicERR12ExampleBasic">
+<span id="_CPPv3N6stored12ExampleBasic12ExampleBasicERR12ExampleBasic"></span><span id="_CPPv2N6stored12ExampleBasic12ExampleBasicERR12ExampleBasic"></span><span id="stored::ExampleBasic::ExampleBasic__ExampleBasicRR"></span><span class="target" id="classstored_1_1_example_basic_1a0ed3ef11ff64b796ca3f0b50781b0147"></span><code class="sig-name descname">ExampleBasic</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleBasic12ExampleBasicERR12ExampleBasic" title="stored::ExampleBasic::ExampleBasic">ExampleBasic</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12ExampleBasic12ExampleBasicERR12ExampleBasic" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12ExampleBasic12ExampleBasicEv">
+<span id="_CPPv3N6stored12ExampleBasic12ExampleBasicEv"></span><span id="_CPPv2N6stored12ExampleBasic12ExampleBasicEv"></span><span id="stored::ExampleBasic::ExampleBasic"></span><span class="target" id="classstored_1_1_example_basic_1a1db154d8a86521b2af3ffe693e4ac2d9"></span><code class="sig-name descname">ExampleBasic</code><span class="sig-paren">(</span><span class="sig-paren">)</span> = default<a class="headerlink" href="#_CPPv4N6stored12ExampleBasic12ExampleBasicEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12ExampleBasicaSERK12ExampleBasic">
+<span id="_CPPv3N6stored12ExampleBasicaSERK12ExampleBasic"></span><span id="_CPPv2N6stored12ExampleBasicaSERK12ExampleBasic"></span><span id="stored::ExampleBasic::assign-operator__ExampleBasicCR"></span><span class="target" id="classstored_1_1_example_basic_1a3dc02950e7fc41036149e520a87297be"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleBasicE" title="stored::ExampleBasic">ExampleBasic</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12ExampleBasicaSERK12ExampleBasic" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored12ExampleBasicaSERR12ExampleBasic">
+<span id="_CPPv3N6stored12ExampleBasicaSERR12ExampleBasic"></span><span id="_CPPv2N6stored12ExampleBasicaSERR12ExampleBasic"></span><span id="stored::ExampleBasic::assign-operator__ExampleBasicRR"></span><span class="target" id="classstored_1_1_example_basic_1a41c6cdb56157187afd7cb13d553a06e8"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleBasicE" title="stored::ExampleBasic">ExampleBasic</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12ExampleBasicaSERR12ExampleBasic" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Friends</p>
+<dl class="friendclass">
+<dt>
+<em class="property">friend class</em> stored::ExampleBasicBase&lt; ExampleBasic &gt;</dt>
+</dl>
+
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+    <script type="text/javascript">
+        function init() {
+            WaveDrom.ProcessAll();
+        }
+        window.onload = init;
+    </script>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="example_3_scope.html" class="btn btn-neutral float-right" title="3_scope" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="example_1_hello.html" class="btn btn-neutral float-left" title="1_hello" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Jochem Rutgers
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
