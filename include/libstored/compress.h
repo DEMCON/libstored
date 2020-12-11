@@ -73,7 +73,9 @@ namespace stored {
 
 		virtual void decode(void* buffer, size_t len) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#ifndef DOXYGEN
 		using base::encode;
+#endif
 		virtual size_t mtu() const override;
 
 		void setPurgeableResponse(bool UNUSED_PAR(purgeable) = true) final {}

@@ -38,11 +38,56 @@ Standard layer implementations can be used to construct the following stacks (to
 
 .. _client: py.html
 
+The inheritance of the layers is shown below.
 
-stored::ArqLayer
-----------------
+.. uml::
 
-.. doxygenclass:: stored::ArqLayer
+   abstract ProtocolLayer
+   ProtocolLayer <|-- AsciiEscapeLayer
+   ProtocolLayer <|-- TerminalLayer
+   AsciiEscapeLayer -[hidden]--> TerminalLayer
+   ProtocolLayer <|-- SegmentationLayer
+   ProtocolLayer <|-- Crc8Layer
+   ProtocolLayer <|-- Crc16Layer
+   Crc8Layer -[hidden]--> Crc16Layer
+   ProtocolLayer <|-- BufferLayer
+   ProtocolLayer <|-- PrintLayer
+
+   abstract ArqLayer
+   SegmentationLayer -[hidden]--> ArqLayer
+   ProtocolLayer <|-- ArqLayer
+   ArqLayer <|-- DebugArqLayer
+
+   abstract PolledLayer
+   abstract PolledFileLayer
+   abstract PolledSocketLayer
+   ProtocolLayer <|-- PolledLayer
+   PolledLayer <|-- PolledFileLayer
+   PolledFileLayer <|-- FileLayer
+   FileLayer <|-- NamedPipeLayer
+   PolledFileLayer <|-- DoublePipeLayer
+   DoublePipeLayer <|-- XsimLayer
+   XsimLayer --> NamedPipeLayer
+   PolledLayer <|-- PolledSocketLayer : Windows
+   PolledFileLayer <|-- PolledSocketLayer : POSIX
+   PolledFileLayer <|-- StdioLayer : Windows
+   FileLayer <|-- StdioLayer : POSIX
+   ProtocolLayer <|-- CompressLayer
+
+   ProtocolLayer <|-- Stream
+   Debugger --> Stream
+   Stream --> CompressLayer
+   ProtocolLayer <|-- Debugger
+   ProtocolLayer <|-- SyncConnection
+
+   abstract ZmqLayer
+   PolledSocketLayer <|-- ZmqLayer
+   ZmqLayer <|-- DebugZmqLayer
+   ZmqLayer <|-- SyncZmqLayer
+
+   class Loopback
+   class Poller
+
 
 stored::AsciiEscapeLayer
 ------------------------
@@ -79,6 +124,11 @@ stored::DebugZmqLayer
 
 .. doxygenclass:: stored::DebugZmqLayer
 
+stored::DoublePipeLayer
+-----------------------
+
+.. doxygenclass:: stored::DoublePipeLayer
+
 stored::FileLayer
 -----------------
 
@@ -104,11 +154,6 @@ stored::PrintLayer
 
 .. doxygenclass:: stored::PrintLayer
 
-stored::ProtocolLayer
----------------------
-
-.. doxygenclass:: stored::ProtocolLayer
-
 stored::SegmentationLayer
 -------------------------
 
@@ -128,4 +173,35 @@ stored::TerminalLayer
 ---------------------
 
 .. doxygenclass:: stored::TerminalLayer
+
+stored::XsimLayer
+-----------------------
+
+.. doxygenclass:: stored::XsimLayer
+
+
+
+Abstract classes
+----------------
+
+stored::ArqLayer
+````````````````
+
+.. doxygenclass:: stored::ArqLayer
+
+
+stored::PolledFileLayer
+```````````````````````
+
+.. doxygenclass:: stored::PolledFileLayer
+
+stored::PolledLayer
+```````````````````
+
+.. doxygenclass:: stored::PolledLayer
+
+stored::ProtocolLayer
+`````````````````````
+
+.. doxygenclass:: stored::ProtocolLayer
 

@@ -117,6 +117,7 @@ breathe_projects = {
 breathe_default_project = 'doxygen'
 breathe_default_members = ('members', 'undoc-members')
 
+plantuml_output_format = 'svg_img'
 
 # -- Options for HTMLHelp output ------------------------------------------
 

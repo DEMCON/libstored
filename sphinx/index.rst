@@ -9,7 +9,7 @@ debug it remotely.
    :caption: Content
 
    doc/intro
-   Presentation <libstored.sozi.html#http://>
+   Presentation <https://demcon.github.io/libstored/libstored.sozi.html>
    doc/cpp
    doc/py
    doc/fpga

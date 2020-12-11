@@ -54,7 +54,9 @@ namespace stored {
 		virtual fd_type fd() const override;
 
 		void encode(void const* buffer, size_t len, bool last = true) final;
+#ifndef DOXYGEN
 		using base::encode;
+#endif
 
 	protected:
 		int block(fd_type fd, bool forReading, bool suspend = false) final;

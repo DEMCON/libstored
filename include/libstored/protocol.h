@@ -247,7 +247,9 @@ namespace stored {
 
 		virtual void decode(void* buffer, size_t len) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#ifndef DOXYGEN
 		using base::encode;
+#endif
 		virtual size_t mtu() const override;
 
 	protected:
@@ -293,7 +295,9 @@ namespace stored {
 
 		virtual void decode(void* buffer, size_t len) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#ifndef DOXYGEN
 		using base::encode;
+#endif
 		virtual size_t mtu() const override;
 		virtual void reset() override;
 
@@ -350,7 +354,9 @@ namespace stored {
 
 		virtual void decode(void* buffer, size_t len) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#ifndef DOXYGEN
 		using base::encode;
+#endif
 
 		size_t mtu() const final;
 		size_t lowerMtu() const;
@@ -421,7 +427,9 @@ namespace stored {
 
 		virtual void decode(void* buffer, size_t len) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#ifndef DOXYGEN
 		using base::encode;
+#endif
 
 		virtual size_t mtu() const override;
 		virtual bool flush() override;
@@ -637,7 +645,9 @@ namespace stored {
 
 		virtual void decode(void* buffer, size_t len) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#ifndef DOXYGEN
 		using base::encode;
+#endif
 
 		virtual void setPurgeableResponse(bool purgeable = true) override;
 		virtual size_t mtu() const override;
@@ -692,7 +702,9 @@ namespace stored {
 
 		virtual void decode(void* buffer, size_t len) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#ifndef DOXYGEN
 		using base::encode;
+#endif
 
 		virtual size_t mtu() const override;
 		virtual void reset() override;
@@ -722,7 +734,9 @@ namespace stored {
 
 		virtual void decode(void* buffer, size_t len) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#ifndef DOXYGEN
 		using base::encode;
+#endif
 
 		virtual size_t mtu() const override;
 		virtual void reset() override;
@@ -752,7 +766,9 @@ namespace stored {
 		virtual ~BufferLayer() override is_default
 
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#ifndef DOXYGEN
 		using base::encode;
+#endif
 
 		virtual void reset() override;
 
@@ -779,7 +795,9 @@ namespace stored {
 
 		virtual void decode(void* buffer, size_t len) override;
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#ifndef DOXYGEN
 		using base::encode;
+#endif
 
 		void setFile(FILE* f);
 
@@ -994,7 +1012,9 @@ public:
 		virtual ~FileLayer() override;
 
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#ifndef DOXYGEN
 		using base::encode;
+#endif
 
 		virtual fd_type fd() const override;
 		virtual int recv(bool block = false) override;
@@ -1061,7 +1081,9 @@ public:
 		HANDLE handle() const;
 
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#ifndef DOXYGEN
 		using base::encode;
+#endif
 
 	protected:
 		void close() final;
@@ -1095,7 +1117,9 @@ public:
 		virtual ~DoublePipeLayer() override;
 
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#ifndef DOXYGEN
 		using base::encode;
+#endif
 
 		virtual bool isOpen() const override;
 		virtual int recv(bool block = false) override;
@@ -1130,7 +1154,9 @@ public:
 		virtual ~XsimLayer() override;
 
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#ifndef DOXYGEN
 		using base::encode;
+#endif
 
 		virtual int recv(bool block = false) override;
 		virtual void reset() override;
@@ -1189,7 +1215,9 @@ public:
 		virtual int recv(bool block = false) override;
 
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#ifndef DOXYGEN
 		using base::encode;
+#endif
 
 		bool isPipeIn() const;
 		bool isPipeOut() const;
