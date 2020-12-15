@@ -140,7 +140,9 @@ namespace stored {
 		static events_t const PollIn = (events_t)POLLIN;
 		static events_t const PollOut = (events_t)POLLOUT;
 		static events_t const PollErr = (events_t)POLLERR;
+#  ifdef POLLHUP
 		static events_t const PollHup = (events_t)POLLHUP;
+#  endif
 #else
 		static events_t const PollIn = 1u;
 		static events_t const PollOut = 2u;
