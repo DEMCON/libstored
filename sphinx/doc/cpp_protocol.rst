@@ -57,6 +57,12 @@ Standard layer implementations can be used to construct the following stacks (to
   :cpp:class:`stored::TerminalLayer`,
   :cpp:class:`stored::XsimLayer`
 
+If you have to implement you own protocol layer, start with
+:cpp:class:`stored::ProtocolLayer`. Especially, override
+:cpp:func:`stored::ProtocolLayer::encode()` for messages passed down the stack
+towards the hardware, and :cpp:func:`stored::ProtocolLayer::decode()` for
+messages from the hardware up.
+
 .. _client: py.html
 
 The inheritance of the layers is shown below.
