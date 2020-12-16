@@ -1,8 +1,8 @@
 Protocol
 ========
 
-Protocol layers, to be wrapped around a stored::Debugger or
-stored::Synchronizer instance.
+Protocol layers, to be wrapped around a :cpp:class:`stored::Debugger` or
+:cpp:class:`stored::Synchronizer` instance.
 
 Every embedded device is different, so the required protocol layers are too.
 What is common, is the Application layer, but as the Transport and Physical
@@ -30,11 +30,32 @@ Test it using the ``terminal`` example, started using the
 libstored suggests to use the protocol layers below, where applicable.
 Standard layer implementations can be used to construct the following stacks (top-down):
 
-- Lossless UART: stored::Debugger, `stored::AsciiEscapeLayer`_, `stored::TerminalLayer`_, `stored::StdioLayer`_
-- Lossy UART: stored::Debugger, `stored::DebugArqLayer`_, `stored::Crc16Layer`_, `stored::AsciiEscapeLayer`_, `stored::TerminalLayer`_, `stored::StdioLayer`_
-- CAN: stored::Debugger, `stored::SegmentationLayer`_, `stored::DebugArqLayer`_, `stored::BufferLayer`_, CAN driver
-- ZMQ: stored::Debugger, `stored::DebugZmqLayer`_
-- VHDL simulation: stored::Synchronizer, `stored::AsciiEscapeLayer`_, `stored::TerminalLayer`_, `stored::NamedPipeLayer`_
+- Lossless UART:
+  :cpp:class:`stored::Debugger`,
+  :cpp:class:`stored::AsciiEscapeLayer`,
+  :cpp:class:`stored::TerminalLayer`,
+  :cpp:class:`stored::StdioLayer`
+- Lossy UART:
+  :cpp:class:`stored::Debugger`,
+  :cpp:class:`stored::DebugArqLayer`,
+  :cpp:class:`stored::Crc16Layer`,
+  :cpp:class:`stored::AsciiEscapeLayer`,
+  :cpp:class:`stored::TerminalLayer`,
+  :cpp:class:`stored::StdioLayer`
+- CAN:
+  :cpp:class:`stored::Debugger`,
+  :cpp:class:`stored::SegmentationLayer`,
+  :cpp:class:`stored::DebugArqLayer`,
+  :cpp:class:`stored::BufferLayer`,
+  CAN driver
+- ZMQ:
+  :cpp:class:`stored::Debugger`,
+  :cpp:class:`stored::DebugZmqLayer`
+- VHDL simulation:
+  :cpp:class:`stored::Synchronizer`,
+  :cpp:class:`stored::AsciiEscapeLayer`,
+  :cpp:class:`stored::TerminalLayer`,
+  :cpp:class:`stored::XsimLayer`
 
 .. _client: py.html
 

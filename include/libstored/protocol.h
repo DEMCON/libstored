@@ -228,7 +228,9 @@ namespace stored {
 	};
 
 	/*!
-	 * \brief Escape non-ASCII bytes.
+	 * \brief Escape ASCII control characters.
+	 *
+	 * This is required to encapsulate messages within #stored::TerminalLayer, for example.
 	 */
 	class AsciiEscapeLayer : public ProtocolLayer {
 		CLASS_NOCOPY(AsciiEscapeLayer)
