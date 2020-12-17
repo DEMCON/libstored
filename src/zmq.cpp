@@ -177,7 +177,7 @@ int ZmqLayer::recv1(long timeout_us) {
 			goto error_recv;
 		} else {
 			// Go block first, then retry.
-			if((res = block(timeout_us)))
+			if((res = block(true, timeout_us)))
 				goto error_recv;
 
 			if(zmq_msg_recv(&msg, m_socket, 0) == -1) {
