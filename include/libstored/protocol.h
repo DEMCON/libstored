@@ -890,7 +890,7 @@ namespace stored {
 		 * \brief Try to receive and decode data.
 		 * \return 0 on success, otherwise an \c errno
 		 */
-		virtual int recv(bool block = false) = 0;
+		virtual int recv(long timeout_us = 0) = 0;
 
 	protected:
 		Poller& poller();
@@ -947,7 +947,7 @@ namespace stored {
 		virtual fd_type fd() const = 0;
 
 	protected:
-		virtual int block(fd_type fd, bool forReading, bool suspend = false);
+		virtual int block(fd_type fd, bool forReading, long timeout_us = -1, bool suspend = false);
 	};
 
 #ifdef STORED_OS_WINDOWS
@@ -970,7 +970,7 @@ namespace stored {
 		virtual fd_type fd() const = 0;
 
 	protected:
-		virtual int block(fd_type fd, bool forReading, bool suspend = false) = 0;
+		virtual int block(fd_type fd, bool forReading, long timeout_us = -1, bool suspend = false) = 0;
 	};
 #else // !STORED_OS_WINDOWS
 
@@ -1019,7 +1019,7 @@ public:
 #endif
 
 		virtual fd_type fd() const override;
-		virtual int recv(bool block = false) override;
+		virtual int recv(long timeout_us = 0) override;
 		virtual bool isOpen() const override;
 
 	protected:
@@ -1079,7 +1079,7 @@ public:
 		NamedPipeLayer(char const* name, DWORD openMode = PIPE_ACCESS_DUPLEX, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~NamedPipeLayer() override;
 		std::string const& name() const;
-		int recv(bool block = false) final;
+		int recv(long timeout_us = 0) final;
 		HANDLE handle() const;
 
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
@@ -1124,7 +1124,7 @@ public:
 #endif
 
 		virtual bool isOpen() const override;
-		virtual int recv(bool block = false) override;
+		virtual int recv(long timeout_us = 0) override;
 		virtual fd_type fd() const override;
 
 	private:
@@ -1160,7 +1160,7 @@ public:
 		using base::encode;
 #endif
 
-		virtual int recv(bool block = false) override;
+		virtual int recv(long timeout_us = 0) override;
 		virtual void reset() override;
 		void keepAlive();
 
@@ -1214,7 +1214,7 @@ public:
 
 		virtual bool isOpen() const override;
 		virtual fd_type fd() const override;
-		virtual int recv(bool block = false) override;
+		virtual int recv(long timeout_us = 0) override;
 
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
 #ifndef DOXYGEN
@@ -1226,7 +1226,7 @@ public:
 	protected:
 		fd_type fd_r() const;
 		fd_type fd_w() const;
-		virtual int block(fd_type fd, bool forReading, bool suspend = false) override;
+		virtual int block(fd_type fd, bool forReading, long timeout_us = -1, bool suspend = false) override;
 		virtual void close() override;
 		void close_();
 	private:

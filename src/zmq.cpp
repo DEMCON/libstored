@@ -108,15 +108,15 @@ ZmqLayer::fd_type ZmqLayer::fd() const {
 	return socket;
 }
 
-int ZmqLayer::block(fd_type UNUSED_PAR(fd), bool forReading, bool suspend) {
+int ZmqLayer::block(fd_type UNUSED_PAR(fd), bool forReading, long timeout_us, bool suspend) {
 	// Just use our socket.
-	return block(forReading, suspend);
+	return block(forReading, timeout_us, suspend);
 }
 
 /*!
- * \brief Like #block(fd_type,bool,bool), but using the #socket() by default.
+ * \brief Like #block(fd_type,bool,long,bool), but using the #socket() by default.
  */
-int ZmqLayer::block(bool forReading, bool suspend) {
+int ZmqLayer::block(bool forReading, long timeout_us, bool suspend) {
 	setLastError(0);
 
 	Poller& poller = this->poller();
@@ -131,11 +131,12 @@ int ZmqLayer::block(bool forReading, bool suspend) {
 	}
 
 	while(true) {
-		Poller::Result const& pres = poller.poll(-1, suspend);
+		Poller::Result const& pres = poller.poll(timeout_us, suspend);
 
 		if(pres.empty()) {
-			// Should not happen.
-			err = EINVAL;
+			if(!(err = errno))
+				// Should not happen.
+				err = EINVAL;
 			break;
 		} else if(((Poller::events_t)pres[0].events) & (Poller::events_t)(Poller::PollErr | Poller::PollHup)) {
 			// Something is wrong with the socket.
@@ -157,9 +158,9 @@ done:
 
 /*!
  * \brief Try to receive a message from the ZeroMQ REP socket, and decode() it.
- * \param block if \c true, this function will block on receiving data from the ZeroMQ socket
+ * \param timeout_us if zero, this function does not block. -1 blocks indefinitely.
  */
-int ZmqLayer::recv1(bool block) {
+int ZmqLayer::recv1(long timeout_us) {
 	int res = 0;
 	int more = 0;
 
@@ -172,15 +173,15 @@ int ZmqLayer::recv1(bool block) {
 
 	if(unlikely(zmq_msg_recv(&msg, m_socket, ZMQ_DONTWAIT) == -1)) {
 		res = errno;
-		if(!block || errno != EAGAIN) {
+		if(timeout_us == 0 || errno != EAGAIN) {
 			goto error_recv;
 		} else {
 			// Go block first, then retry.
-			if((res = this->block(true)))
+			if((res = block(timeout_us)))
 				goto error_recv;
 
 			if(zmq_msg_recv(&msg, m_socket, 0) == -1) {
-				// Still an error. Giveup.
+				// Still an error. Give up.
 				res = errno;
 				goto error_recv;
 			}
@@ -237,13 +238,13 @@ error_msg:
 
 /*!
  * \brief Try to receive all available data from the ZeroMQ REP socket, and decode() it.
- * \param block if \c true, this function will block on receiving data from the ZeroMQ socket
+ * \param timeout_us if zero, this function does not block. -1 blocks indefinitely.
  */
-int ZmqLayer::recv(bool block) {
+int ZmqLayer::recv(long timeout_us) {
 	bool first = true;
 
 	while(true) {
-		int res = recv1(block && first);
+		int res = recv1(first ? timeout_us : 0);
 
 		switch(res) {
 		case 0:
@@ -320,8 +321,8 @@ DebugZmqLayer::DebugZmqLayer(void* context, int port, ProtocolLayer* up, Protoco
 		setLastError(errno);
 }
 
-int DebugZmqLayer::recv(bool block) {
-	int res = base::recv(block);
+int DebugZmqLayer::recv(long timeout_us) {
+	int res = base::recv(timeout_us);
 
 	if(res == EFSM) {
 		// We should not be receiving at the moment.

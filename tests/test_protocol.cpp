@@ -834,7 +834,9 @@ static int recvAll(L& l) {
 	int res = 0;
 	int idle = 0;
 	while(true) {
-		switch((res = l.recv(first))) {
+		// Do a blocking recv(), but limit it to 10 s.
+		// Longer waiting is not required for testing.
+		switch((res = l.recv(first ? 10000000L : 0))) {
 		case 0:
 			first = false;
 			idle = 0;

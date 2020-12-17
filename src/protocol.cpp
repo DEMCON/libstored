@@ -1484,10 +1484,11 @@ PolledFileLayer::~PolledFileLayer() is_default
  *
  * \param fd the file descriptor to block on
  * \param forReading when \c true, it blocks till stored::Poller::PollIn, otherwise PollOut
+ * \param timeout_us if zero, this function does not block. -1 blocks indefinitely.
  * \param suspend if \c true, do a suspend of the thread while blocking, otherwise allow fiber switching (when using Zth)
  * \return 0 on success, otherwise an \c errno
  */
-int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, bool suspend) {
+int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, long timeout_us, bool suspend) {
 	setLastError(0);
 
 	Poller& poller = this->poller();
@@ -1507,15 +1508,16 @@ int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, bool su
 	}
 
 	while(true) {
-		Poller::Result const& pres = poller.poll(-1, suspend);
+		Poller::Result const& pres = poller.poll(timeout_us, suspend);
 
 		if(pres.empty()) {
-			if(errno == EINTR)
+			if(timeout_us <= 0 && errno == EINTR)
 				// Interrupted. Retry.
 				continue;
 
-			// Should not happen.
-			err = EINVAL;
+			if(!(err = errno) || timeout_us < 0)
+				// Should not happen.
+				err = EINVAL;
 			break;
 		} else if(((Poller::events_t)pres[0].events) & (Poller::events_t)(Poller::PollErr | Poller::PollHup)) {
 			// Something is wrong with the pipe/socket.
@@ -1536,8 +1538,17 @@ int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, bool su
 		err = res;
 
 done:
-	if(err)
+	switch(err) {
+	case EAGAIN:
+#if EAGAIN != EWOULDBLOCK
+	case EWOULDBLOCK:
+#endif
+	case EINTR:
+	case 0:
+		break;
+	default:
 		close();
+	}
 
 	return setLastError(err);
 }
@@ -1737,7 +1748,7 @@ done:
 			case EWOULDBLOCK:
 #endif
 			case EAGAIN: {
-				if(this->block(m_fd_w, false, m_fd_w == STDOUT_FILENO))
+				if(this->block(m_fd_w, false, -1, m_fd_w == STDOUT_FILENO))
 					return;
 
 				// We should be able to write more now. Retry.
@@ -1789,10 +1800,10 @@ FileLayer::fd_type FileLayer::fd_w() const {
 
 /*!
  * \brief Try to receive data from the file descriptor and forward it for decoding.
- * \param block if \c true, it blocks until something has read
+ * \param timeout_us if zero, this function does not block. -1 blocks indefinitely.
  * \return 0 on success, otherwise an errno
  */
-int FileLayer::recv(bool block) {
+int FileLayer::recv(long timeout_us) {
 	if(fd_r() == -1)
 		return setLastError(EBADF);
 
@@ -1805,10 +1816,10 @@ again:
 #if EAGAIN != EWOULDBLOCK
 		case EWOULDBLOCK:
 #endif
-			if(!block)
+			if(timeout_us == 0)
 				return setLastError(errno);
 
-			if(this->block(fd_r(), true))
+			if(block(fd_r(), true, timeout_us))
 				return lastError();
 
 			goto again;
@@ -2329,16 +2340,16 @@ size_t FileLayer::available() {
 
 /*!
  * \brief Try to receive data from the file descriptor and forward it for decoding.
- * \param block if \c true, it blocks until something has read
+ * \param timeout_us if zero, this function does not block. -1 blocks indefinitely.
  * \return 0 on success, otherwise an errno
  */
-int FileLayer::recv(bool block) {
+int FileLayer::recv(long timeout_us) {
 	bool didDecode = false;
 
 	setLastError(0);
 
-	if(block)
-		if(this->block(overlappedRead().hEvent, true))
+	if(timeout_us)
+		if(block(overlappedRead().hEvent, true, timeout_us))
 			return lastError();
 
 again:
@@ -2357,9 +2368,9 @@ again:
 				// But we did something already.
 				return setLastError(0);
 
-			if(block) {
+			if(timeout_us) {
 				// Go block till we are readable.
-				if(this->block(overlappedRead().hEvent, true))
+				if(block(overlappedRead().hEvent, true, timeout_us))
 					return lastError();
 
 				goto again;
@@ -2489,7 +2500,7 @@ void NamedPipeLayer::close() {
 	}
 }
 
-int NamedPipeLayer::recv(bool block) {
+int NamedPipeLayer::recv(long timeout_us) {
 	bool didDecode = false;
 again:
 	switch(m_state) {
@@ -2505,7 +2516,7 @@ again:
 			case ERROR_IO_INCOMPLETE:
 			case ERROR_IO_PENDING:
 				m_state = StateConnecting;
-				if(block)
+				if(timeout_us)
 					goto again;
 				return setLastError(EAGAIN);
 			case ERROR_PIPE_CONNECTED:
@@ -2523,14 +2534,14 @@ again:
 		break;
 	case StateConnecting: {
 		DWORD dummy = 0;
-		if(!didDecode && block)
-			this->block(overlappedRead().hEvent, true);
+		if(!didDecode && timeout_us)
+			block(overlappedRead().hEvent, true, timeout_us);
 
 		if(GetOverlappedResult(fd_r(), &overlappedRead(), &dummy, FALSE)) {
 			m_state = StateConnected;
 			if(m_openMode != PIPE_ACCESS_OUTBOUND && startRead()) {
 				if(lastError() == EAGAIN) {
-					if(!didDecode && block)
+					if(!didDecode && timeout_us < 0)
 						// Wait for more data.
 						goto again;
 					else
@@ -2555,7 +2566,7 @@ again:
 	case StateConnected:
 		if(m_openMode == PIPE_ACCESS_OUTBOUND)
 			return setLastError(0); // NOLINT(bugprone-branch-clone)
-		else if(base::recv(block) == EAGAIN && didDecode)
+		else if(base::recv(timeout_us) == EAGAIN && didDecode)
 			return setLastError(0);
 		else
 			return lastError();
@@ -2644,9 +2655,9 @@ bool DoublePipeLayer::isOpen() const {
 	return m_r.isOpen() || m_w.isOpen();
 }
 
-int DoublePipeLayer::recv(bool block) {
+int DoublePipeLayer::recv(long timeout_us) {
 	m_w.recv(false);
-	return setLastError(m_r.recv(block));
+	return setLastError(m_r.recv(timeout_us));
 }
 
 DoublePipeLayer::fd_type DoublePipeLayer::fd() const {
@@ -2715,10 +2726,10 @@ void XsimLayer::decoded(size_t len) {
 	keepAlive();
 }
 
-int XsimLayer::recv(bool block) {
-	int res = m_req.recv(false);
+int XsimLayer::recv(long timeout_us) {
+	int res = m_req.recv();
 
-	if(base::recv(block))
+	if(base::recv(timeout_us))
 		return lastError();
 	else
 		return setLastError(res);
@@ -2786,7 +2797,7 @@ bool StdioLayer::isPipeOut() const {
 	return m_pipe_w;
 }
 
-int StdioLayer::block(fd_type UNUSED_PAR(fd), bool UNUSED_PAR(forReading), bool UNUSED_PAR(suspend)) {
+int StdioLayer::block(fd_type UNUSED_PAR(fd), bool UNUSED_PAR(forReading), long UNUSED_PAR(timeout_us), bool UNUSED_PAR(suspend)) {
 	stored_assert(false);
 	return setLastError(EINVAL);
 }
@@ -2818,7 +2829,7 @@ StdioLayer::fd_type StdioLayer::fd_w() const {
 }
 
 // Guess what, Overlapped I/O is not supported on the console...
-int StdioLayer::recv(bool block) {
+int StdioLayer::recv(long timeout_us) {
 	if(!isValidHandle(fd_r()))
 		return setLastError(EBADF);
 
@@ -2835,7 +2846,7 @@ again:
 	if(cnt == 0) {
 		if(didDecode)
 			return setLastError(0);
-		if(!block)
+		if(timeout_us >= 0)
 			return EAGAIN;
 
 		cnt = 1;
