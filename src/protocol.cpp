@@ -2566,7 +2566,7 @@ again:
 	case StateConnected:
 		if(m_openMode == PIPE_ACCESS_OUTBOUND)
 			return setLastError(0); // NOLINT(bugprone-branch-clone)
-		else if(base::recv(timeout_us) == EAGAIN && didDecode)
+		else if(base::recv(didDecode ? 0 : timeout_us) == EAGAIN && didDecode)
 			return setLastError(0);
 		else
 			return lastError();

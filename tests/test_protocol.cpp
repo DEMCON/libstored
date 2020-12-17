@@ -826,6 +826,8 @@ TEST(CompressLayer, Compress) {
 
 #ifdef STORED_OS_WINDOWS
 
+static long recvAll_sleep = 1000000L;
+
 template <typename L>
 static int recvAll(L& l) {
 	using namespace std::chrono_literals;
@@ -836,7 +838,8 @@ static int recvAll(L& l) {
 	while(true) {
 		// Do a blocking recv(), but limit it to 10 s.
 		// Longer waiting is not required for testing.
-		switch((res = l.recv(first ? 10000000L : 0))) {
+//		switch((res = l.recv(first ? 10000000L : 0))) {
+		switch((res = l.recv(first ? (recvAll_sleep <<= 1L) : 0))) {
 		case 0:
 			first = false;
 			idle = 0;
