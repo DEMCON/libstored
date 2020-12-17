@@ -87,9 +87,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="doc/intro.html">libstored</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc/workflow.html">Workflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/cpp.html">C++</a></li>
-<li class="toctree-l1"><a class="reference internal" href="doc/py.html">Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/fpga.html">VHDL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc/py.html">Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/examples.html">Examples</a></li>
 </ul>
 
@@ -190,6 +191,7 @@ debug it remotely.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc/workflow.html">Workflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/cpp.html">C++</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="doc/cpp_config.html">Config</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="doc/cpp_config.html#stored-defaultconfig">stored::DefaultConfig</a></li>
@@ -256,7 +258,10 @@ debug it remotely.</p>
 <li class="toctree-l3"><a class="reference internal" href="doc/cpp_synchronizer.html#protocol">Protocol</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="doc/cpp_synchronizer.html#hello">Hello</a></li>
 <li class="toctree-l4"><a class="reference internal" href="doc/cpp_synchronizer.html#welcome">Welcome</a></li>
-<li class="toctree-l4"><a class="reference internal" href="doc/cpp_synchronizer.html#update">Update</a></li>
+<li class="toctree-l4"><a class="reference internal" href="doc/cpp_synchronizer.html#update">Update</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="doc/cpp_synchronizer.html#proposal">Proposal</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="doc/cpp_synchronizer.html#bye">Bye</a></li>
 </ul>
 </li>
@@ -276,6 +281,28 @@ debug it remotely.</p>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="doc/cpp_util.html">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="doc/fpga.html">VHDL</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="doc/fpga.html#store-entity">Store entity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc/fpga.html#store-package">Store package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc/fpga.html#common-package">Common package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc/fpga.html#protocol">Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="doc/fpga.html#asciiescapelayer">AsciiEscapeLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc/fpga.html#bufferlayer">BufferLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc/fpga.html#terminallayer">TerminalLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc/fpga.html#uartlayer">UARTLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc/fpga.html#filelayer">FileLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc/fpga.html#teelayer">TeeLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc/fpga.html#xsimlayer">XsimLayer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="doc/fpga.html#utilities">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="doc/fpga.html#libstored-droptail">libstored_droptail</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc/fpga.html#libstored-stream-buffer">libstored_stream_buffer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc/fpga.html#libstored-fifo">libstored_fifo</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="doc/py.html">Python</a><ul>
@@ -311,7 +338,6 @@ debug it remotely.</p>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="doc/fpga.html">VHDL</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/examples.html">Examples</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="doc/example_1_hello.html">1_hello</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="doc/example_1_hello.html#store-definition">Store definition</a></li>

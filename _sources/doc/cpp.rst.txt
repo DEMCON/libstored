@@ -2,9 +2,10 @@ C++
 ===
 
 This is the C++ API used by the generated store classes, and to be used in the
-application to instantiate the stored::Debugger, stored::Synchronizer and the
-relevant stored::ProtocolLayer subclasses to build a protocol stack for your
-application.
+application to instantiate the :cpp:class:`stored::Debugger`,
+:cpp:class:`stored::Synchronizer` and the relevant
+:cpp:class:`stored::ProtocolLayer` subclasses to build a protocol stack for
+your application.
 
 .. toctree::
    cpp_config

@@ -10,9 +10,10 @@ debug it remotely.
 
    doc/intro
    Presentation <https://demcon.github.io/libstored/libstored.sozi.html>
+   doc/workflow
    doc/cpp
-   doc/py
    doc/fpga
+   doc/py
    doc/examples
 
 

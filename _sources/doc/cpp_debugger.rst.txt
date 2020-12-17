@@ -6,9 +6,9 @@ Embedded Debugger message handling.
 Protocol
 --------
 
-The default set of commands that is processed by stored::Debugger is listed
-below.  A subclass of Debugger may extend the set of capabilities, for
-application-specific purposes.
+The default set of commands that is processed by :cpp:class:`stored::Debugger`
+is listed below.  A subclass of :cpp:class:`stored::Debugger` may extend the
+set of capabilities, for application-specific purposes.
 
 The protocol is a request-response mechanism; for every request, there must be
 a response.  Requests are processed in order.  This is the OSI application
@@ -111,9 +111,9 @@ Response: ( <type byte in hex> <length in hex> <name of object> ``\n`` ) * | ``?
    3b4/b/i8
    201/b/b
 
-See stored::Type for the type byte. The type byte is always two hex characters.
-The number of characters of the length of the object depends on the value;
-leading zeros may be removed.
+See :cpp:class:`stored::Type` for the type byte. The type byte is always two hex
+characters.  The number of characters of the length of the object depends on
+the value; leading zeros may be removed.
 
 Alias
 `````
@@ -281,7 +281,7 @@ data, the response is empty.
 
 The number of streams and the maximum buffer size of a stream may be limited.
 
-Depending on stored::Config::CompressStreams, the data returned by ``s``
+Depending on :cpp:var:`stored::Config::CompressStreams`, the data returned by ``s``
 is compressed using heatshrink (window=8, lookahead=4). Every chunk of data
 returned by ``s`` is part of a single stream, and must be decompressed as
 such. As (de)compression is stateful, all data from the start of the stream is
@@ -323,7 +323,7 @@ an atomic flush-retrieve, use a macro.
 Tracing
 ```````
 
-Executes a macro every time the application invokes stored::Debugger::trace().
+Executes a macro every time the application invokes :cpp:func:`stored::Debugger::trace()`.
 A stream is filled with the macro output.
 
 Request: ``t`` ( <macro> <stream> ( <decimate in hex> ) ? ) ?

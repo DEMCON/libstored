@@ -88,6 +88,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="cpp.html">C++</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="cpp_config.html">Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html">Debugger</a></li>
@@ -125,8 +126,8 @@
 <li class="toctree-l2"><a class="reference internal" href="cpp_util.html">Utilities</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fpga.html">VHDL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
@@ -197,8 +198,8 @@
             
   <div class="section" id="protocol">
 <h1>Protocol<a class="headerlink" href="#protocol" title="Permalink to this headline">¶</a></h1>
-<p>Protocol layers, to be wrapped around a stored::Debugger or
-stored::Synchronizer instance.</p>
+<p>Protocol layers, to be wrapped around a <a class="reference internal" href="cpp_debugger.html#_CPPv4N6stored8DebuggerE" title="stored::Debugger"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Debugger</span></code></a> or
+<a class="reference internal" href="cpp_synchronizer.html#_CPPv4N6stored12SynchronizerE" title="stored::Synchronizer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Synchronizer</span></code></a> instance.</p>
 <p>Every embedded device is different, so the required protocol layers are too.
 What is common, is the Application layer, but as the Transport and Physical
 layer are often different, the layers in between are often different too.  To
@@ -222,12 +223,38 @@ ZeroMQ bridge is required.</p></li>
 <p>libstored suggests to use the protocol layers below, where applicable.
 Standard layer implementations can be used to construct the following stacks (top-down):</p>
 <ul class="simple">
-<li><p>Lossless UART: stored::Debugger, <a class="reference internal" href="#stored-asciiescapelayer">stored::AsciiEscapeLayer</a>, <a class="reference internal" href="#stored-terminallayer">stored::TerminalLayer</a>, <a class="reference internal" href="#stored-stdiolayer">stored::StdioLayer</a></p></li>
-<li><p>Lossy UART: stored::Debugger, <a class="reference internal" href="#stored-debugarqlayer">stored::DebugArqLayer</a>, <a class="reference internal" href="#stored-crc16layer">stored::Crc16Layer</a>, <a class="reference internal" href="#stored-asciiescapelayer">stored::AsciiEscapeLayer</a>, <a class="reference internal" href="#stored-terminallayer">stored::TerminalLayer</a>, <a class="reference internal" href="#stored-stdiolayer">stored::StdioLayer</a></p></li>
-<li><p>CAN: stored::Debugger, <a class="reference internal" href="#stored-segmentationlayer">stored::SegmentationLayer</a>, <a class="reference internal" href="#stored-debugarqlayer">stored::DebugArqLayer</a>, <a class="reference internal" href="#stored-bufferlayer">stored::BufferLayer</a>, CAN driver</p></li>
-<li><p>ZMQ: stored::Debugger, <a class="reference internal" href="#stored-debugzmqlayer">stored::DebugZmqLayer</a></p></li>
-<li><p>VHDL simulation: stored::Synchronizer, <a class="reference internal" href="#stored-asciiescapelayer">stored::AsciiEscapeLayer</a>, <a class="reference internal" href="#stored-terminallayer">stored::TerminalLayer</a>, <a class="reference internal" href="#stored-namedpipelayer">stored::NamedPipeLayer</a></p></li>
+<li><p>Lossless UART:
+<a class="reference internal" href="cpp_debugger.html#_CPPv4N6stored8DebuggerE" title="stored::Debugger"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Debugger</span></code></a>,
+<a class="reference internal" href="#_CPPv4N6stored16AsciiEscapeLayerE" title="stored::AsciiEscapeLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::AsciiEscapeLayer</span></code></a>,
+<a class="reference internal" href="#_CPPv4N6stored13TerminalLayerE" title="stored::TerminalLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::TerminalLayer</span></code></a>,
+<a class="reference internal" href="#_CPPv4N6stored10StdioLayerE" title="stored::StdioLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::StdioLayer</span></code></a></p></li>
+<li><p>Lossy UART:
+<a class="reference internal" href="cpp_debugger.html#_CPPv4N6stored8DebuggerE" title="stored::Debugger"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Debugger</span></code></a>,
+<a class="reference internal" href="#_CPPv4N6stored13DebugArqLayerE" title="stored::DebugArqLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::DebugArqLayer</span></code></a>,
+<a class="reference internal" href="#_CPPv4N6stored10Crc16LayerE" title="stored::Crc16Layer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Crc16Layer</span></code></a>,
+<a class="reference internal" href="#_CPPv4N6stored16AsciiEscapeLayerE" title="stored::AsciiEscapeLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::AsciiEscapeLayer</span></code></a>,
+<a class="reference internal" href="#_CPPv4N6stored13TerminalLayerE" title="stored::TerminalLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::TerminalLayer</span></code></a>,
+<a class="reference internal" href="#_CPPv4N6stored10StdioLayerE" title="stored::StdioLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::StdioLayer</span></code></a></p></li>
+<li><p>CAN:
+<a class="reference internal" href="cpp_debugger.html#_CPPv4N6stored8DebuggerE" title="stored::Debugger"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Debugger</span></code></a>,
+<a class="reference internal" href="#_CPPv4N6stored17SegmentationLayerE" title="stored::SegmentationLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::SegmentationLayer</span></code></a>,
+<a class="reference internal" href="#_CPPv4N6stored13DebugArqLayerE" title="stored::DebugArqLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::DebugArqLayer</span></code></a>,
+<a class="reference internal" href="#_CPPv4N6stored11BufferLayerE" title="stored::BufferLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::BufferLayer</span></code></a>,
+CAN driver</p></li>
+<li><p>ZMQ:
+<a class="reference internal" href="cpp_debugger.html#_CPPv4N6stored8DebuggerE" title="stored::Debugger"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Debugger</span></code></a>,
+<a class="reference internal" href="#_CPPv4N6stored13DebugZmqLayerE" title="stored::DebugZmqLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::DebugZmqLayer</span></code></a></p></li>
+<li><p>VHDL simulation:
+<a class="reference internal" href="cpp_synchronizer.html#_CPPv4N6stored12SynchronizerE" title="stored::Synchronizer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Synchronizer</span></code></a>,
+<a class="reference internal" href="#_CPPv4N6stored16AsciiEscapeLayerE" title="stored::AsciiEscapeLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::AsciiEscapeLayer</span></code></a>,
+<a class="reference internal" href="#_CPPv4N6stored13TerminalLayerE" title="stored::TerminalLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::TerminalLayer</span></code></a>,
+<a class="reference internal" href="#_CPPv4N6stored9XsimLayerE" title="stored::XsimLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::XsimLayer</span></code></a></p></li>
 </ul>
+<p>If you have to implement you own protocol layer, start with
+<a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::ProtocolLayer</span></code></a>. Especially, override
+<a class="reference internal" href="#_CPPv4N6stored13ProtocolLayer6encodeEv" title="stored::ProtocolLayer::encode"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">stored::ProtocolLayer::encode()</span></code></a> for messages passed down the stack
+towards the hardware, and <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayer6decodeEPv6size_t" title="stored::ProtocolLayer::decode"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">stored::ProtocolLayer::decode()</span></code></a> for
+messages from the hardware up.</p>
 <p>The inheritance of the layers is shown below.</p>
 <p class="plantuml">
 <img src="../_images/plantuml-d3011c77c8b1d3ba94ecf78ea6a154f03dc944a4.svg" alt="abstract ProtocolLayer
@@ -280,7 +307,8 @@ class Poller"/></p>
 <dl class="cpp class">
 <dt id="_CPPv4N6stored16AsciiEscapeLayerE">
 <span id="_CPPv3N6stored16AsciiEscapeLayerE"></span><span id="_CPPv2N6stored16AsciiEscapeLayerE"></span><span id="stored::AsciiEscapeLayer"></span><span class="target" id="classstored_1_1_ascii_escape_layer"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">AsciiEscapeLayer</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a><a class="headerlink" href="#_CPPv4N6stored16AsciiEscapeLayerE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Escape non-ASCII bytes. </p>
+<dd><p>Escape ASCII control characters. </p>
+<p>This is required to encapsulate messages within <a class="reference internal" href="#classstored_1_1_terminal_layer"><span class="std std-ref">stored::TerminalLayer</span></a>, for example. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
@@ -979,12 +1007,12 @@ class Poller"/></p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N6stored13DebugZmqLayer4recvEb">
-<span id="_CPPv3N6stored13DebugZmqLayer4recvEb"></span><span id="_CPPv2N6stored13DebugZmqLayer4recvEb"></span><span id="stored::DebugZmqLayer::recv__b"></span><span class="target" id="classstored_1_1_debug_zmq_layer_1a85dff6acf4316281ef3f0912981f9f1f"></span>int <code class="sig-name descname">recv</code><span class="sig-paren">(</span>bool <em>block</em> = false<span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6stored13DebugZmqLayer4recvEb" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6stored13DebugZmqLayer4recvEl">
+<span id="_CPPv3N6stored13DebugZmqLayer4recvEl"></span><span id="_CPPv2N6stored13DebugZmqLayer4recvEl"></span><span id="stored::DebugZmqLayer::recv__l"></span><span class="target" id="classstored_1_1_debug_zmq_layer_1a5bf4a78f80f8dfb760c45402c4378636"></span>int <code class="sig-name descname">recv</code><span class="sig-paren">(</span>long <em>timeout_us</em> = 0<span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6stored13DebugZmqLayer4recvEl" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Try to receive all available data from the ZeroMQ REP socket, and <a class="reference internal" href="#classstored_1_1_protocol_layer_1a357b029311be09df61e019682a848ab5"><span class="std std-ref">decode()</span></a> it. </p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">block</span></code>: if <code class="docutils literal notranslate"><span class="pre">true</span></code>, this function will block on receiving data from the ZeroMQ socket </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">timeout_us</span></code>: if zero, this function does not block. -1 blocks indefinitely. </p></li>
 </ul>
 </dd>
 </dl>
@@ -1045,7 +1073,13 @@ class Poller"/></p>
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored15DoublePipeLayer2fdEv">
 <span id="_CPPv3NK6stored15DoublePipeLayer2fdEv"></span><span id="_CPPv2NK6stored15DoublePipeLayer2fdEv"></span><span id="stored::DoublePipeLayer::fdC"></span><span class="target" id="classstored_1_1_double_pipe_layer_1a231755678ffd06a3eadc3830cdbf19bd"></span>fd_type <code class="sig-name descname">fd</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK6stored15DoublePipeLayer2fdEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>The file descriptor you may poll before calling <a class="reference internal" href="#classstored_1_1_double_pipe_layer_1a5ab10e4b031ea4249c30207c62e1f4ff"><span class="std std-ref">recv()</span></a>. </p>
+<dd><p>The file descriptor you may poll before calling <a class="reference internal" href="#classstored_1_1_double_pipe_layer_1a4d8673812dd68a23ae00a0e98c003a21"><span class="std std-ref">recv()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored15DoublePipeLayer11isConnectedEv">
+<span id="_CPPv3NK6stored15DoublePipeLayer11isConnectedEv"></span><span id="_CPPv2NK6stored15DoublePipeLayer11isConnectedEv"></span><span id="stored::DoublePipeLayer::isConnectedC"></span><span class="target" id="classstored_1_1_double_pipe_layer_1ac3e6c74b4305ef78a327979967238aa3"></span>bool <code class="sig-name descname">isConnected</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored15DoublePipeLayer11isConnectedEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Checks if both pipes are connected. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1067,8 +1101,8 @@ class Poller"/></p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N6stored15DoublePipeLayer4recvEb">
-<span id="_CPPv3N6stored15DoublePipeLayer4recvEb"></span><span id="_CPPv2N6stored15DoublePipeLayer4recvEb"></span><span id="stored::DoublePipeLayer::recv__b"></span><span class="target" id="classstored_1_1_double_pipe_layer_1a5ab10e4b031ea4249c30207c62e1f4ff"></span>int <code class="sig-name descname">recv</code><span class="sig-paren">(</span>bool <em>block</em> = false<span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6stored15DoublePipeLayer4recvEb" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6stored15DoublePipeLayer4recvEl">
+<span id="_CPPv3N6stored15DoublePipeLayer4recvEl"></span><span id="_CPPv2N6stored15DoublePipeLayer4recvEl"></span><span id="stored::DoublePipeLayer::recv__l"></span><span class="target" id="classstored_1_1_double_pipe_layer_1a4d8673812dd68a23ae00a0e98c003a21"></span>int <code class="sig-name descname">recv</code><span class="sig-paren">(</span>long <em>timeout_us</em> = 0<span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6stored15DoublePipeLayer4recvEl" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Try to receive and decode data. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>0 on success, otherwise an <code class="docutils literal notranslate"><span class="pre">errno</span></code> </p>
@@ -1164,7 +1198,7 @@ class Poller"/></p>
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored9FileLayer2fdEv">
 <span id="_CPPv3NK6stored9FileLayer2fdEv"></span><span id="_CPPv2NK6stored9FileLayer2fdEv"></span><span id="stored::FileLayer::fdC"></span><span class="target" id="classstored_1_1_file_layer_1a58badaa958c01f0f22eaf298788148e8"></span><a class="reference internal" href="#_CPPv4N6stored9FileLayer7fd_typeE" title="stored::FileLayer::fd_type">fd_type</a> <code class="sig-name descname">fd</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK6stored9FileLayer2fdEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Returns the file descriptor to be used by a <a class="reference internal" href="#classstored_1_1_poller"><span class="std std-ref">stored::Poller</span></a> in order to call <a class="reference internal" href="#classstored_1_1_file_layer_1af12a800260514618e1ef49179a78dbd1"><span class="std std-ref">recv()</span></a>. </p>
+<dd><p>Returns the file descriptor to be used by a <a class="reference internal" href="#classstored_1_1_poller"><span class="std std-ref">stored::Poller</span></a> in order to call <a class="reference internal" href="#classstored_1_1_file_layer_1a1383d4291a2835c5015bdc2dd4dd53c7"><span class="std std-ref">recv()</span></a>. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1186,14 +1220,14 @@ class Poller"/></p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N6stored9FileLayer4recvEb">
-<span id="_CPPv3N6stored9FileLayer4recvEb"></span><span id="_CPPv2N6stored9FileLayer4recvEb"></span><span id="stored::FileLayer::recv__b"></span><span class="target" id="classstored_1_1_file_layer_1af12a800260514618e1ef49179a78dbd1"></span>int <code class="sig-name descname">recv</code><span class="sig-paren">(</span>bool <em>block</em> = false<span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6stored9FileLayer4recvEb" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6stored9FileLayer4recvEl">
+<span id="_CPPv3N6stored9FileLayer4recvEl"></span><span id="_CPPv2N6stored9FileLayer4recvEl"></span><span id="stored::FileLayer::recv__l"></span><span class="target" id="classstored_1_1_file_layer_1a1383d4291a2835c5015bdc2dd4dd53c7"></span>int <code class="sig-name descname">recv</code><span class="sig-paren">(</span>long <em>timeout_us</em> = 0<span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6stored9FileLayer4recvEl" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Try to receive data from the file descriptor and forward it for decoding. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>0 on success, otherwise an errno </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">block</span></code>: if <code class="docutils literal notranslate"><span class="pre">true</span></code>, it blocks until something has read </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">timeout_us</span></code>: if zero, this function does not block. -1 blocks indefinitely. </p></li>
 </ul>
 </dd>
 </dl>
@@ -1320,6 +1354,12 @@ class Poller"/></p>
 </dd></dl>
 
 <dl class="cpp function">
+<dt id="_CPPv4NK6stored14NamedPipeLayer11isConnectedEv">
+<span id="_CPPv3NK6stored14NamedPipeLayer11isConnectedEv"></span><span id="_CPPv2NK6stored14NamedPipeLayer11isConnectedEv"></span><span id="stored::NamedPipeLayer::isConnectedC"></span><span class="target" id="classstored_1_1_named_pipe_layer_1aa829cfd7589c7418c2b9813eaa6ae418"></span>bool <code class="sig-name descname">isConnected</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored14NamedPipeLayer11isConnectedEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Checks if the pipe is connected. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt id="_CPPv4NK6stored14NamedPipeLayer4nameEv">
 <span id="_CPPv3NK6stored14NamedPipeLayer4nameEv"></span><span id="_CPPv2NK6stored14NamedPipeLayer4nameEv"></span><span id="stored::NamedPipeLayer::nameC"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a0e56c1ec8a39f005b6d5b6ebaa53683a"></span>std::string <em class="property">const</em> &amp;<code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored14NamedPipeLayer4nameEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the full name of the pipe. </p>
@@ -1339,14 +1379,14 @@ class Poller"/></p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N6stored14NamedPipeLayer4recvEb">
-<span id="_CPPv3N6stored14NamedPipeLayer4recvEb"></span><span id="_CPPv2N6stored14NamedPipeLayer4recvEb"></span><span id="stored::NamedPipeLayer::recv__b"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a187848d2bfe54ee46fce4a7a8ef786e2"></span>int <code class="sig-name descname">recv</code><span class="sig-paren">(</span>bool <em>block</em> = false<span class="sig-paren">)</span> <em class="property">final</em><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayer4recvEb" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6stored14NamedPipeLayer4recvEl">
+<span id="_CPPv3N6stored14NamedPipeLayer4recvEl"></span><span id="_CPPv2N6stored14NamedPipeLayer4recvEl"></span><span id="stored::NamedPipeLayer::recv__l"></span><span class="target" id="classstored_1_1_named_pipe_layer_1adf4280b91f407b0fcb33787ac1598cd2"></span>int <code class="sig-name descname">recv</code><span class="sig-paren">(</span>long <em>timeout_us</em> = 0<span class="sig-paren">)</span> <em class="property">final</em><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayer4recvEl" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Try to receive data from the file descriptor and forward it for decoding. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>0 on success, otherwise an errno </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">block</span></code>: if <code class="docutils literal notranslate"><span class="pre">true</span></code>, it blocks until something has read </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">timeout_us</span></code>: if zero, this function does not block. -1 blocks indefinitely. </p></li>
 </ul>
 </dd>
 </dl>
@@ -1922,7 +1962,7 @@ while(true) {
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored10StdioLayer2fdEv">
 <span id="_CPPv3NK6stored10StdioLayer2fdEv"></span><span id="_CPPv2NK6stored10StdioLayer2fdEv"></span><span id="stored::StdioLayer::fdC"></span><span class="target" id="classstored_1_1_stdio_layer_1a56051e8a14208cd012c7b9d8163539ea"></span><a class="reference internal" href="#_CPPv4N6stored10StdioLayer7fd_typeE" title="stored::StdioLayer::fd_type">fd_type</a> <code class="sig-name descname">fd</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK6stored10StdioLayer2fdEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>The file descriptor you may poll before calling <a class="reference internal" href="#classstored_1_1_stdio_layer_1a1117d19aa41e560833388c5833837d1f"><span class="std std-ref">recv()</span></a>. </p>
+<dd><p>The file descriptor you may poll before calling <a class="reference internal" href="#classstored_1_1_stdio_layer_1a1265212568866ed1c6b8fb748bd47bcb"><span class="std std-ref">recv()</span></a>. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1954,8 +1994,8 @@ while(true) {
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N6stored10StdioLayer4recvEb">
-<span id="_CPPv3N6stored10StdioLayer4recvEb"></span><span id="_CPPv2N6stored10StdioLayer4recvEb"></span><span id="stored::StdioLayer::recv__b"></span><span class="target" id="classstored_1_1_stdio_layer_1a1117d19aa41e560833388c5833837d1f"></span>int <code class="sig-name descname">recv</code><span class="sig-paren">(</span>bool <em>block</em> = false<span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6stored10StdioLayer4recvEb" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6stored10StdioLayer4recvEl">
+<span id="_CPPv3N6stored10StdioLayer4recvEl"></span><span id="_CPPv2N6stored10StdioLayer4recvEl"></span><span id="stored::StdioLayer::recv__l"></span><span class="target" id="classstored_1_1_stdio_layer_1a1265212568866ed1c6b8fb748bd47bcb"></span>int <code class="sig-name descname">recv</code><span class="sig-paren">(</span>long <em>timeout_us</em> = 0<span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6stored10StdioLayer4recvEl" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Try to receive and decode data. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>0 on success, otherwise an <code class="docutils literal notranslate"><span class="pre">errno</span></code> </p>
@@ -2229,8 +2269,8 @@ while(true) {
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N6stored9XsimLayer4recvEb">
-<span id="_CPPv3N6stored9XsimLayer4recvEb"></span><span id="_CPPv2N6stored9XsimLayer4recvEb"></span><span id="stored::XsimLayer::recv__b"></span><span class="target" id="classstored_1_1_xsim_layer_1a11565162b85d5de8874dc103fa8c56f4"></span>int <code class="sig-name descname">recv</code><span class="sig-paren">(</span>bool <em>block</em> = false<span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6stored9XsimLayer4recvEb" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6stored9XsimLayer4recvEl">
+<span id="_CPPv3N6stored9XsimLayer4recvEl"></span><span id="_CPPv2N6stored9XsimLayer4recvEl"></span><span id="stored::XsimLayer::recv__l"></span><span class="target" id="classstored_1_1_xsim_layer_1a71ca3aacf2e97721ddd4bbe583a5432e"></span>int <code class="sig-name descname">recv</code><span class="sig-paren">(</span>long <em>timeout_us</em> = 0<span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6stored9XsimLayer4recvEl" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Try to receive and decode data. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>0 on success, otherwise an <code class="docutils literal notranslate"><span class="pre">errno</span></code> </p>
@@ -2554,7 +2594,7 @@ while(true) {
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored15PolledFileLayer2fdEv">
 <span id="_CPPv3NK6stored15PolledFileLayer2fdEv"></span><span id="_CPPv2NK6stored15PolledFileLayer2fdEv"></span><span id="stored::PolledFileLayer::fdC"></span><span class="target" id="classstored_1_1_polled_file_layer_1a194cabba4326353280b5a677afa2c0cc"></span><a class="reference internal" href="#_CPPv4N6stored15PolledFileLayer7fd_typeE" title="stored::PolledFileLayer::fd_type">fd_type</a> <code class="sig-name descname">fd</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em> = 0<a class="headerlink" href="#_CPPv4NK6stored15PolledFileLayer2fdEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>The file descriptor you may poll before calling <a class="reference internal" href="#classstored_1_1_polled_layer_1a988e642fff4f1ee1ec3c8557be8bc0bf"><span class="std std-ref">recv()</span></a>. </p>
+<dd><p>The file descriptor you may poll before calling <a class="reference internal" href="#classstored_1_1_polled_layer_1a5543b676964a05c72c40137edeb4af98"><span class="std std-ref">recv()</span></a>. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -2578,8 +2618,8 @@ while(true) {
 <dl class="cpp class">
 <dt id="_CPPv4N6stored11PolledLayerE">
 <span id="_CPPv3N6stored11PolledLayerE"></span><span id="_CPPv2N6stored11PolledLayerE"></span><span id="stored::PolledLayer"></span><span class="target" id="classstored_1_1_polled_layer"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">PolledLayer</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a><a class="headerlink" href="#_CPPv4N6stored11PolledLayerE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>A generalized layer that needs a call to <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_polled_layer_1a988e642fff4f1ee1ec3c8557be8bc0bf"><span class="std std-ref"><span class="pre">recv()</span></span></a></code> to get decodable data from somewhere else. </p>
-<p>This includes files, sockets, etc. <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_polled_layer_1a988e642fff4f1ee1ec3c8557be8bc0bf"><span class="std std-ref"><span class="pre">recv()</span></span></a></code> reads data, and passes the data upstream. </p>
+<dd><p>A generalized layer that needs a call to <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_polled_layer_1a5543b676964a05c72c40137edeb4af98"><span class="std std-ref"><span class="pre">recv()</span></span></a></code> to get decodable data from somewhere else. </p>
+<p>This includes files, sockets, etc. <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_polled_layer_1a5543b676964a05c72c40137edeb4af98"><span class="std std-ref"><span class="pre">recv()</span></span></a></code> reads data, and passes the data upstream. </p>
 <p>Subclassed by <a class="reference internal" href="#classstored_1_1_polled_file_layer"><span class="std std-ref">stored::PolledFileLayer</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Types</p>
@@ -2636,8 +2676,8 @@ while(true) {
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N6stored11PolledLayer4recvEb">
-<span id="_CPPv3N6stored11PolledLayer4recvEb"></span><span id="_CPPv2N6stored11PolledLayer4recvEb"></span><span id="stored::PolledLayer::recv__b"></span><span class="target" id="classstored_1_1_polled_layer_1a988e642fff4f1ee1ec3c8557be8bc0bf"></span>int <code class="sig-name descname">recv</code><span class="sig-paren">(</span>bool <em>block</em> = false<span class="sig-paren">)</span> = 0<a class="headerlink" href="#_CPPv4N6stored11PolledLayer4recvEb" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6stored11PolledLayer4recvEl">
+<span id="_CPPv3N6stored11PolledLayer4recvEl"></span><span id="_CPPv2N6stored11PolledLayer4recvEl"></span><span id="stored::PolledLayer::recv__l"></span><span class="target" id="classstored_1_1_polled_layer_1a5543b676964a05c72c40137edeb4af98"></span>int <code class="sig-name descname">recv</code><span class="sig-paren">(</span>long <em>timeout_us</em> = 0<span class="sig-paren">)</span> = 0<a class="headerlink" href="#_CPPv4N6stored11PolledLayer4recvEl" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Try to receive and decode data. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>0 on success, otherwise an <code class="docutils literal notranslate"><span class="pre">errno</span></code> </p>

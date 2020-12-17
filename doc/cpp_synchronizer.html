@@ -88,6 +88,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="cpp.html">C++</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="cpp_config.html">Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html">Debugger</a></li>
@@ -111,8 +112,8 @@
 <li class="toctree-l2"><a class="reference internal" href="cpp_util.html">Utilities</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fpga.html">VHDL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
@@ -185,18 +186,18 @@
 <h1>Synchronizer<a class="headerlink" href="#synchronizer" title="Permalink to this headline">¶</a></h1>
 <p>Distributed store synchronizer.</p>
 <p>In a distributed system, every process has its own instance of a store.
-Synchronization between these instances is implemented by the stored::Synchronizer.
-The Synchronizer can be seen as a service, usually one per process,
-which knows all stores in that process and all communication channels to other
-processes. At regular intervals, it sends updates of locally modified data
-to the other Synchronizers.</p>
+Synchronization between these instances is implemented by the
+<a class="reference internal" href="#_CPPv4N6stored12SynchronizerE" title="stored::Synchronizer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Synchronizer</span></code></a>.  The Synchronizer can be seen as a service,
+usually one per process, which knows all stores in that process and all
+communication channels to other processes. At regular intervals, it sends
+updates of locally modified data to the other Synchronizers.</p>
 <p>The topology can be configured at will. In principle, a process can have any
 number of stores, any number of synchronizers (which all handle any subset of the stores),
 any number of connections to any other process in the system.</p>
 <p>There are a few rules to keep in mind:</p>
 <ul class="simple">
-<li><p>Only stored::Synchronizable stores can be handled by the Synchronizer.
-This has to be used correctly when the store is instantiated.</p></li>
+<li><p>Only <a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Synchronizable</span></code></a> stores can be handled by the
+Synchronizer.  This has to be used correctly when the store is instantiated.</p></li>
 <li><p>To synchronize a store, one must define which store is the one that
 provides the initial value. Upon connection between Synchronizers, the
 store’s content is synchronized at once from one party to the other.
@@ -252,7 +253,9 @@ The changes are attached.”</p>
 <p>The updates are a sequence of the triplet: &lt;key&gt; &lt;length&gt; &lt;data&gt;.  The key and
 length have the most significant bytes stripped, which would always be 0.  All
 values are in the store’s endianness (<code class="docutils literal notranslate"><span class="pre">u</span></code> is little, <code class="docutils literal notranslate"><span class="pre">U</span></code> is big endian).</p>
-<p>Proposal: The updates are a sequence defined as follows:
+<div class="section" id="proposal">
+<h4>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h4>
+<p>The updates are a sequence defined as follows:
 &lt;5 MSb key offset, 3 LSb length&gt; &lt;additional key bytes&gt; &lt;additional length bytes&gt; &lt;data&gt;.</p>
 <p>The key offset + 1 is the offset from the previous entry in the updates
 sequence.  Updates are sent in strict ascending key offset.  The initial key is
@@ -281,6 +284,7 @@ this is an unlikely value (7 bytes data), and at least far less common than
 having 8 bytes of data.</p>
 <p>The data is sent in the store’s endianness (<code class="docutils literal notranslate"><span class="pre">u</span></code> is little, <code class="docutils literal notranslate"><span class="pre">U</span></code> is big
 endian).</p>
+</div>
 </div>
 <div class="section" id="bye">
 <h3>Bye<a class="headerlink" href="#bye" title="Permalink to this headline">¶</a></h3>

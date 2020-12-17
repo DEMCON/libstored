@@ -88,6 +88,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="cpp.html">C++</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="cpp_config.html">Config</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Debugger</a><ul>
@@ -120,8 +121,8 @@
 <li class="toctree-l2"><a class="reference internal" href="cpp_util.html">Utilities</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fpga.html">VHDL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
@@ -195,9 +196,9 @@
 <p>Embedded Debugger message handling.</p>
 <div class="section" id="protocol">
 <h2>Protocol<a class="headerlink" href="#protocol" title="Permalink to this headline">¶</a></h2>
-<p>The default set of commands that is processed by stored::Debugger is listed
-below.  A subclass of Debugger may extend the set of capabilities, for
-application-specific purposes.</p>
+<p>The default set of commands that is processed by <a class="reference internal" href="#_CPPv4N6stored8DebuggerE" title="stored::Debugger"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Debugger</span></code></a>
+is listed below.  A subclass of <a class="reference internal" href="#_CPPv4N6stored8DebuggerE" title="stored::Debugger"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Debugger</span></code></a> may extend the
+set of capabilities, for application-specific purposes.</p>
 <p>The protocol is a request-response mechanism; for every request, there must be
 a response.  Requests are processed in order.  This is the OSI application
 layer of the protocol stack.  For other layers, see <a class="reference external" href="cpp_protocol.html">Protocol</a>.</p>
@@ -271,9 +272,9 @@ Embedded Debugger.</p>
 201/b/b
 </pre></div>
 </div>
-<p>See stored::Type for the type byte. The type byte is always two hex characters.
-The number of characters of the length of the object depends on the value;
-leading zeros may be removed.</p>
+<p>See <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Type</span></code> for the type byte. The type byte is always two hex
+characters.  The number of characters of the length of the object depends on
+the value; leading zeros may be removed.</p>
 </div>
 <div class="section" id="alias">
 <h3>Alias<a class="headerlink" href="#alias" title="Permalink to this headline">¶</a></h3>
@@ -394,7 +395,7 @@ used, but it is empty now, the stream char does not show up in the <code class="
 but does respond with the suffix. If no suffix was provided, and there is no
 data, the response is empty.</p>
 <p>The number of streams and the maximum buffer size of a stream may be limited.</p>
-<p>Depending on stored::Config::CompressStreams, the data returned by <code class="docutils literal notranslate"><span class="pre">s</span></code>
+<p>Depending on <code class="xref cpp cpp-var docutils literal notranslate"><span class="pre">stored::Config::CompressStreams</span></code>, the data returned by <code class="docutils literal notranslate"><span class="pre">s</span></code>
 is compressed using heatshrink (window=8, lookahead=4). Every chunk of data
 returned by <code class="docutils literal notranslate"><span class="pre">s</span></code> is part of a single stream, and must be decompressed as
 such. As (de)compression is stateful, all data from the start of the stream is
@@ -429,7 +430,7 @@ an atomic flush-retrieve, use a macro.</p>
 </div>
 <div class="section" id="tracing">
 <h3>Tracing<a class="headerlink" href="#tracing" title="Permalink to this headline">¶</a></h3>
-<p>Executes a macro every time the application invokes stored::Debugger::trace().
+<p>Executes a macro every time the application invokes <a class="reference internal" href="#_CPPv4N6stored8Debugger5traceEv" title="stored::Debugger::trace"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">stored::Debugger::trace()</span></code></a>.
 A stream is filled with the macro output.</p>
 <p>Request: <code class="docutils literal notranslate"><span class="pre">t</span></code> ( &lt;macro&gt; &lt;stream&gt; ( &lt;decimate in hex&gt; ) ? ) ?</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>tms64
