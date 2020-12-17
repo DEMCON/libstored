@@ -358,7 +358,7 @@ this:</p>
 </pre></div>
 </div>
 <p>The output timing is exemplified below.</p>
-<img alt="../_images/wavedrom-6f415098-43b9-4d37-a2e8-bc2077178e78.svg" src="../_images/wavedrom-6f415098-43b9-4d37-a2e8-bc2077178e78.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
+<img alt="../_images/wavedrom-8deba770-d79a-4fac-a144-3462623cd67c.svg" src="../_images/wavedrom-8deba770-d79a-4fac-a144-3462623cd67c.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
 When the value is written, via <code class="docutils literal notranslate"><span class="pre">var_in</span></code>, the AXI interface, or via the
 Synchronizer, <code class="docutils literal notranslate"><span class="pre">value</span></code> is updated and <code class="docutils literal notranslate"><span class="pre">updated</span></code> is flagged for one
 clock cycle.  The flag is set at every write, not only when the data
@@ -394,7 +394,7 @@ this:</p>
 </pre></div>
 </div>
 <p>When <code class="docutils literal notranslate"><span class="pre">we</span></code> is high, the <code class="docutils literal notranslate"><span class="pre">value</span></code> is written to the store.</p>
-<img alt="../_images/wavedrom-e3144cdc-413d-4751-be4a-1753a33fa094.svg" src="../_images/wavedrom-e3144cdc-413d-4751-be4a-1753a33fa094.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
+<img alt="../_images/wavedrom-afdde2cc-2690-409b-bc51-4a60bc543a2f.svg" src="../_images/wavedrom-afdde2cc-2690-409b-bc51-4a60bc543a2f.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
 the case that a microcontroller and the FPGA synchronize a store.  If a
 variable should be read-only for the microcontroller, <code class="docutils literal notranslate"><span class="pre">we</span></code> can be tied
 high by the FPGA, such that the FPGA updates the variable constantly.  In
@@ -512,7 +512,7 @@ layer in the stack.</p>
 </dd>
 </dl>
 <p>Passing messages follows this scheme, which is resembles the AXI4-Stream Protocol:</p>
-<img alt="../_images/wavedrom-325a8d79-863b-4782-b0a3-debbab081feb.svg" src="../_images/wavedrom-325a8d79-863b-4782-b0a3-debbab081feb.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
+<img alt="../_images/wavedrom-450bfbb8-fb83-4ea2-8ad0-a258f17c4cea.svg" src="../_images/wavedrom-450bfbb8-fb83-4ea2-8ad0-a258f17c4cea.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
 clock edge.  In the example above, this happens at edge 2, 3, 6, 9, and 10.
 There is no order or dependency in <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code>; both can be
 high while other is not, indicating ‘there is data’, or ‘the data can be
@@ -815,7 +815,7 @@ Only available in simulation.</p>
 <code class="sig-name descname">libstored_droptail</code></dt>
 <dd><p>Drop the tail with a fixed length from a message.</p>
 <p>Example that drops a tail of length 1:</p>
-<img alt="../_images/wavedrom-f74c2ec2-aeed-4851-9944-07dfba2cd0a1.svg" src="../_images/wavedrom-f74c2ec2-aeed-4851-9944-07dfba2cd0a1.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
+<img alt="../_images/wavedrom-444599bc-c09d-4b13-a352-d568b89d16a3.svg" src="../_images/wavedrom-444599bc-c09d-4b13-a352-d568b89d16a3.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
 unspecified.</p>
 <div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">libstored_droptail</span> <span class="k">is</span>
    <span class="k">generic</span> <span class="p">(</span>
@@ -889,8 +889,8 @@ This is effectively a FIFO of size 1.</p>
 <code class="sig-name descname">libstored_fifo</code></dt>
 <dd><p>FIFO with optional conditional push, and lookahead before actual pop.</p>
 <p>Example to drop and commit pushed data:</p>
-<img alt="../_images/wavedrom-37fea4d6-19a4-4cfb-b280-9b92b7483501.svg" src="../_images/wavedrom-37fea4d6-19a4-4cfb-b280-9b92b7483501.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
-<img alt="../_images/wavedrom-d72fcd2f-e02b-4280-8a88-fc2add18d4b4.svg" src="../_images/wavedrom-d72fcd2f-e02b-4280-8a88-fc2add18d4b4.svg" /><div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">libstored_fifo</span> <span class="k">is</span>
+<img alt="../_images/wavedrom-ccb0cc1f-f616-4f39-9d88-efe0f91f6249.svg" src="../_images/wavedrom-ccb0cc1f-f616-4f39-9d88-efe0f91f6249.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
+<img alt="../_images/wavedrom-54014b92-44af-4f89-aec4-8170ded82450.svg" src="../_images/wavedrom-54014b92-44af-4f89-aec4-8170ded82450.svg" /><div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">libstored_fifo</span> <span class="k">is</span>
    <span class="k">generic</span> <span class="p">(</span>
       <span class="n">WIDTH</span> <span class="o">:</span> <span class="kt">positive</span><span class="p">;</span>
       <span class="n">DEPTH</span> <span class="o">:</span> <span class="kt">natural</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span>
