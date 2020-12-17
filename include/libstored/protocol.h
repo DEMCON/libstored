@@ -1081,6 +1081,7 @@ public:
 		std::string const& name() const;
 		int recv(long timeout_us = 0) final;
 		HANDLE handle() const;
+		bool isConnected() const;
 
 		virtual void encode(void const* buffer, size_t len, bool last = true) override;
 #ifndef DOXYGEN
@@ -1126,6 +1127,7 @@ public:
 		virtual bool isOpen() const override;
 		virtual int recv(long timeout_us = 0) override;
 		virtual fd_type fd() const override;
+		bool isConnected() const;
 
 	private:
 		NamedPipeLayer m_r;

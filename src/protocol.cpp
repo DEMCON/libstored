@@ -2626,6 +2626,13 @@ HANDLE NamedPipeLayer::handle() const {
 	return fd_r();
 }
 
+/*!
+ * \brief Checks if the pipe is connected.
+ */
+bool NamedPipeLayer::isConnected() const {
+	return m_state == StateConnected;
+}
+
 
 
 //////////////////////////////
@@ -2662,6 +2669,13 @@ int DoublePipeLayer::recv(long timeout_us) {
 
 DoublePipeLayer::fd_type DoublePipeLayer::fd() const {
 	return m_r.fd();
+}
+
+/*!
+ * \brief Checks if both pipes are connected.
+ */
+bool DoublePipeLayer::isConnected() const {
+	return m_r.isConnected() && m_w.isConnected();
 }
 
 

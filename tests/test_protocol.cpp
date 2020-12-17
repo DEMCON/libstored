@@ -902,6 +902,7 @@ TEST(FileLayer, DoublePipe) {
 	stored::FileLayer p2("\\\\.\\pipe\\test_1to2", "\\\\.\\pipe\\test_2to1");
 	// Make sure the pipes are connected.
 	p1.recv();
+	EXPECT_TRUE(p1.isConnected());
 #else
 	int fds_1to2[2];
 	int fds_2to1[2];
