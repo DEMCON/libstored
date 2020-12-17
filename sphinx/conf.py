@@ -79,6 +79,8 @@ pygments_style = 'sphinx'
 todo_include_todos = False
 
 highlight_language = 'none'
+wavedrom_html_jsinline = False
+render_using_wavedrompy = True
 
 # -- Options for HTML output ----------------------------------------------
 

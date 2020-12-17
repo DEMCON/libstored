@@ -424,8 +424,8 @@ All layers have a similar interface:
                { "name": "valid",  "wave": "01....01..0" },
                { "name": "accept", "wave": "1..0.10.1.." }
             ],
-            head: {
-               tick:0,
+            "head": {
+               "tick": 0
             }
          }
 
@@ -849,7 +849,7 @@ libstored_fifo
 
          { "name": "o",          "wave": "x........==x", "data": "D E" },
          { "name": "o_valid",    "wave": "0........1.0", "node": ".........b" },
-         { "name": "o_accept",   "wave": "1...........", },
+         { "name": "o_accept",   "wave": "1..........." },
 
          { "name": "empty",      "wave": "1........0.1" }
       ], "edge": [
@@ -863,7 +863,7 @@ libstored_fifo
       { "signal": [
          { "name": "clk",        "wave": "P........." },
 
-         { "name": "i",          "wave": "====x.=x..", "data": "A B C D E" },
+         { "name": "i",          "wave": "=====..x..", "data": "A B C D E" },
          { "name": "i_valid",    "wave": "1......0.." },
          { "name": "i_accept",   "wave": "1...0.1...", "node": "......d" },
          { "name": "i_commit",   "wave": "1........." },
@@ -872,7 +872,7 @@ libstored_fifo
          { "name": "o_valid",    "wave": "01.......0" },
          { "name": "o_accept",   "wave": "1........." },
          { "name": "o_commit",   "wave": "0....1...0", "node": ".....c" },
-         { "name": "o_rollback", "wave": "0..10.....", "node": "...a" },
+         { "name": "o_rollback", "wave": "0..10.....", "node": "...a" }
       ], "edge": [
          "a-~>b", "c-~>d"
       ]}
