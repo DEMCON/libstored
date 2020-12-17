@@ -824,19 +824,20 @@ TEST(CompressLayer, Compress) {
 	EXPECT_EQ(top.decoded().at(0), "Hello World! Nice World!");
 }
 
-#ifdef STORED_OS_WINDOWS
-
 template <typename L>
 static int recvAll(L& l) {
 	using namespace std::chrono_literals;
 
-	bool first = false;//true;
+	bool first = true;
 	int res = 0;
 	int idle = 0;
 	while(true) {
-		switch((res = l.recv(first))) {
+		// Do a blocking recv(), but limit it to 10 s.
+		// Longer waiting is not required for testing.
+		switch((res = l.recv(first ? 10000000L : 0))) {
 		case 0:
 			first = false;
+			idle = 0;
 			// fall-through
 		case EINTR:
 			break;
@@ -851,7 +852,8 @@ static int recvAll(L& l) {
 	}
 }
 
-TEST(FileLayer, Pipe) {
+#ifdef STORED_OS_WINDOWS
+TEST(FileLayer, NamedPipe) {
 	LoggingLayer top;
 	stored::NamedPipeLayer l("test");
 	l.wrap(top);
@@ -892,6 +894,42 @@ TEST(FileLayer, Pipe) {
 	EXPECT_EQ(recvAll(f), 0);
 	EXPECT_EQ(ftop.allDecoded(), " Upon a Star");
 }
+#endif // STORED_OS_WINDOWS
+
+TEST(FileLayer, DoublePipe) {
+#ifdef STORED_OS_WINDOWS
+	stored::DoublePipeLayer p1("test_2to1", "test_1to2");
+	stored::FileLayer p2("\\\\.\\pipe\\test_1to2", "\\\\.\\pipe\\test_2to1");
+	// Make sure the pipes are connected.
+	p1.recv();
+	EXPECT_TRUE(p1.isConnected());
+#else
+	int fds_1to2[2];
+	int fds_2to1[2];
+	ASSERT_EQ(pipe(fds_1to2), 0);
+	ASSERT_EQ(pipe(fds_2to1), 0);
+	stored::DoublePipeLayer p1(fds_2to1[0], fds_1to2[1]);
+	stored::FileLayer p2(fds_1to2[0], fds_2to1[1]);
 #endif
+
+	LoggingLayer top1;
+	p1.wrap(top1);
+
+	LoggingLayer top2;
+	p2.wrap(top2);
+
+	p1.encode("Great ", 6);
+	p1.encode("Big ", 4);
+	p2.encode("Beautiful ", 10);
+	p2.encode("Tomorrow", 8);
+
+	EXPECT_EQ(recvAll(p1), 0);
+	EXPECT_EQ(p1.recv(), EAGAIN);
+	EXPECT_EQ(recvAll(p2), 0);
+	EXPECT_EQ(p2.recv(), EAGAIN);
+
+	EXPECT_EQ(top2.allDecoded(), "Great Big ");
+	EXPECT_EQ(top1.allDecoded(), "Beautiful Tomorrow");
+}
 
 } // namespace

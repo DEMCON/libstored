@@ -49,7 +49,7 @@ namespace stored {
 
 		void* context() const;
 		void* socket() const;
-		virtual int recv(bool block = false) override;
+		virtual int recv(long timeout_us = 0) override;
 
 		virtual fd_type fd() const override;
 
@@ -59,9 +59,9 @@ namespace stored {
 #endif
 
 	protected:
-		int block(fd_type fd, bool forReading, bool suspend = false) final;
-		int block(bool forReading, bool suspend = false);
-		int recv1(bool block = false);
+		int block(fd_type fd, bool forReading, long timeout_us = -1, bool suspend = false) final;
+		int block(bool forReading, long timeout_us = -1, bool suspend = false);
+		int recv1(long timeout_us = 0);
 
 	private:
 		/*! \brief The ZeroMQ context. */
@@ -94,7 +94,7 @@ namespace stored {
 		/*! \brief Dtor. */
 		virtual ~DebugZmqLayer() override is_default
 
-		virtual int recv(bool block = false) override;
+		virtual int recv(long timeout_us = 0) override;
 	};
 
 	/*!

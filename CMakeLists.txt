@@ -157,6 +157,12 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0")
 	option(LIBSTORED_TESTS "Build the tests" ON)
 	if(LIBSTORED_TESTS)
 		enable_testing()
+
+		if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.17.0")
+			set(CTEST_OUTPUT_ON_FAILURE 1)
+			list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
+		endif()
+
 		include(GoogleTest)
 		add_subdirectory(tests)
 	endif()

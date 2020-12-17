@@ -1541,7 +1541,7 @@ use work.libstored_tb_pkg;
 
 entity XsimLayer is
 	generic (
-		PIPE_PREFIX : string := "";
+		PIPE_PREFIX : string;
 		VERBOSE : boolean := false
 	);
 	port (

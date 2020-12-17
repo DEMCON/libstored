@@ -4,11 +4,11 @@ Synchronizer
 Distributed store synchronizer.
 
 In a distributed system, every process has its own instance of a store.
-Synchronization between these instances is implemented by the stored::Synchronizer.
-The Synchronizer can be seen as a service, usually one per process,
-which knows all stores in that process and all communication channels to other
-processes. At regular intervals, it sends updates of locally modified data
-to the other Synchronizers.
+Synchronization between these instances is implemented by the
+:cpp:class:`stored::Synchronizer`.  The Synchronizer can be seen as a service,
+usually one per process, which knows all stores in that process and all
+communication channels to other processes. At regular intervals, it sends
+updates of locally modified data to the other Synchronizers.
 
 The topology can be configured at will. In principle, a process can have any
 number of stores, any number of synchronizers (which all handle any subset of the stores),
@@ -16,8 +16,8 @@ any number of connections to any other process in the system.
 
 There are a few rules to keep in mind:
 
-- Only stored::Synchronizable stores can be handled by the Synchronizer.
-  This has to be used correctly when the store is instantiated.
+- Only :cpp:class:`stored::Synchronizable` stores can be handled by the
+  Synchronizer.  This has to be used correctly when the store is instantiated.
 - To synchronize a store, one must define which store is the one that
   provides the initial value. Upon connection between Synchronizers, the
   store's content is synchronized at once from one party to the other.
@@ -86,7 +86,10 @@ The updates are a sequence of the triplet: <key> <length> <data>.  The key and
 length have the most significant bytes stripped, which would always be 0.  All
 values are in the store's endianness (``u`` is little, ``U`` is big endian).
 
-Proposal: The updates are a sequence defined as follows:
+Proposal
+''''''''
+
+The updates are a sequence defined as follows:
 <5 MSb key offset, 3 LSb length> <additional key bytes> <additional length bytes> <data>.
 
 The key offset + 1 is the offset from the previous entry in the updates
