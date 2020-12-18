@@ -216,7 +216,7 @@ Store package
 
          { "signal": [
             { "name": "clk",     "wave": "P......" },
-            { "name": "rstn",    "wave": "1.0...." },
+            { "name": "rstn",    "wave": "0.1...." },
             { "name": "value",   "wave": "x=.=...", "data": ["1", "2"] },
             { "name": "updated", "wave": "0..1010" }
          ]}
@@ -739,29 +739,6 @@ libstored_droptail
 
    Drop the tail with a fixed length from a message.
 
-   Example that drops a tail of length 1:
-
-   .. wavedrom::
-
-      { "signal": [
-         { "name": "clk",        "wave": "P....." },
-
-         { "name": "data_in",    "wave": "x===x.", "data": "A B C" },
-         { "name": "valid_in",   "wave": "01..x." },
-         { "name": "last_in",    "wave": "x0.1x." },
-         { "name": "accept_in",  "wave": "1....." },
-         { "name": "drop",       "wave": "x..1x." },
-
-         { "name": "data_out",   "wave": "x..==x", "data": "A B" },
-         { "name": "valid_out",  "wave": "0..1.0" },
-         { "name": "last_out",   "wave": "x..01x" },
-         { "name": "accept_out", "wave": "1....." }
-      ]}
-
-   Note that the precise latency from ``data_in`` to ``data_out`` is
-   unspecified.
-
-
    .. code-block:: vhdl
 
       entity libstored_droptail is
@@ -785,6 +762,29 @@ libstored_droptail
             accept_out : in std_logic
          );
       end libstored_droptail;
+
+   Example that drops a tail of length 1:
+
+   .. wavedrom::
+
+      { "signal": [
+         { "name": "clk",        "wave": "P....." },
+
+         { "name": "data_in",    "wave": "x===x.", "data": "A B C" },
+         { "name": "valid_in",   "wave": "01..x." },
+         { "name": "last_in",    "wave": "x0.1x." },
+         { "name": "accept_in",  "wave": "1....." },
+         { "name": "drop",       "wave": "x..1x." },
+
+         { "name": "data_out",   "wave": "x..==x", "data": "A B" },
+         { "name": "valid_out",  "wave": "0..1.0" },
+         { "name": "last_out",   "wave": "x..01x" },
+         { "name": "accept_out", "wave": "1....." }
+      ]}
+
+   Note that the precise latency from ``data_in`` to ``data_out`` is
+   unspecified.
+
 
    FIFO_DEPTH : natural := 0
       Minimum FIFO depth. Set to 0 to allow pass-through.
@@ -834,6 +834,38 @@ libstored_fifo
 
    FIFO with optional conditional push, and lookahead before actual pop.
 
+   .. code-block:: vhdl
+
+      entity libstored_fifo is
+         generic (
+            WIDTH : positive;
+            DEPTH : natural := 1;
+            ALMOST_FULL_REMAINING : natural := 0;
+            ALMOST_EMPTY_REMAINING : natural := 0
+         );
+         port (
+            clk : in std_logic;
+            rstn : in std_logic;
+
+            i : in std_logic_vector(WIDTH - 1 downto 0);
+            i_valid : in std_logic;
+            i_accept : out std_logic;
+            i_commit : in std_logic := '1';
+            i_rollback : in std_logic := '0';
+
+            o : out std_logic_vector(WIDTH - 1 downto 0);
+            o_valid : out std_logic;
+            o_accept : in std_logic;
+            o_commit : in std_logic := '1';
+            o_rollback : in std_logic := '0';
+
+            full : out std_logic;
+            empty : out std_logic;
+            almost_full : out std_logic;
+            almost_empty : out std_logic
+         );
+      end libstored_fifo;
+
    Example to drop and commit pushed data:
 
    .. wavedrom::
@@ -876,38 +908,6 @@ libstored_fifo
       ], "edge": [
          "a-~>b", "c-~>d"
       ]}
-
-   .. code-block:: vhdl
-
-      entity libstored_fifo is
-         generic (
-            WIDTH : positive;
-            DEPTH : natural := 1;
-            ALMOST_FULL_REMAINING : natural := 0;
-            ALMOST_EMPTY_REMAINING : natural := 0
-         );
-         port (
-            clk : in std_logic;
-            rstn : in std_logic;
-
-            i : in std_logic_vector(WIDTH - 1 downto 0);
-            i_valid : in std_logic;
-            i_accept : out std_logic;
-            i_commit : in std_logic := '1';
-            i_rollback : in std_logic := '0';
-
-            o : out std_logic_vector(WIDTH - 1 downto 0);
-            o_valid : out std_logic;
-            o_accept : in std_logic;
-            o_commit : in std_logic := '1';
-            o_rollback : in std_logic := '0';
-
-            full : out std_logic;
-            empty : out std_logic;
-            almost_full : out std_logic;
-            almost_empty : out std_logic
-         );
-      end libstored_fifo;
 
    WIDTH : positive
       Data width.
