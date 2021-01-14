@@ -1,5 +1,5 @@
-#ifndef __LIBSTORED_ZMQ_H
-#define __LIBSTORED_ZMQ_H
+#ifndef LIBSTORED_ZMQ_H
+#define LIBSTORED_ZMQ_H
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
@@ -114,4 +114,4 @@ namespace stored {
 
 #  endif // STORED_HAVE_ZMQ
 #endif // __cplusplus
-#endif // __LIBSTORED_ZMQ_H
+#endif // LIBSTORED_ZMQ_H

@@ -1,5 +1,5 @@
-#ifndef __LIBSTORED_MACROS_H
-#define __LIBSTORED_MACROS_H
+#ifndef LIBSTORED_MACROS_H
+#define LIBSTORED_MACROS_H
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
@@ -216,4 +216,4 @@ typedef SSIZE_T ssize_t;
 #  endif
 #endif
 
-#endif // __LIBSTORED_MACROS_H
+#endif // LIBSTORED_MACROS_H

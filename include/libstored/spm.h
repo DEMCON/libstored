@@ -1,5 +1,5 @@
-#ifndef __LIBSTORED_SPM_H
-#define __LIBSTORED_SPM_H
+#ifndef LIBSTORED_SPM_H
+#define LIBSTORED_SPM_H
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
@@ -541,4 +541,4 @@ public:
 
 } // namespace
 #endif // __cplusplus
-#endif // __LIBSTORED_SPM_H
+#endif // LIBSTORED_SPM_H

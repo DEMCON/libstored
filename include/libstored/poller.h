@@ -1,5 +1,5 @@
-#ifndef __LIBSTORED_POLLER_H
-#define __LIBSTORED_POLLER_H
+#ifndef LIBSTORED_POLLER_H
+#define LIBSTORED_POLLER_H
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
@@ -342,4 +342,4 @@ namespace stored {
 
 } // namespace
 #endif // __cplusplus
-#endif // __LIBSTORED_POLLER_H
+#endif // LIBSTORED_POLLER_H

@@ -1,5 +1,5 @@
-#ifndef __LIBSTORED_SYNCHRONIZER_H
-#define __LIBSTORED_SYNCHRONIZER_H
+#ifndef LIBSTORED_SYNCHRONIZER_H
+#define LIBSTORED_SYNCHRONIZER_H
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
@@ -542,4 +542,4 @@ private:
 
 } // namespace
 #endif // __cplusplus
-#endif // __LIBSTORED_SYNCHRONIZER_H
+#endif // LIBSTORED_SYNCHRONIZER_H

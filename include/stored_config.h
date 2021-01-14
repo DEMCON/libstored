@@ -6,7 +6,7 @@
  * your file is found before the default supplied one.
  */
 
-#ifndef __LIBSTORED_CONFIG_H
+#ifndef LIBSTORED_CONFIG_H
 #  error Do not include this file directly, include <stored> instead.
 #endif
 

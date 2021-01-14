@@ -1,5 +1,5 @@
-#ifndef __LIBSTORED_UTIL_H
-#define __LIBSTORED_UTIL_H
+#ifndef LIBSTORED_UTIL_H
+#define LIBSTORED_UTIL_H
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
@@ -431,4 +431,4 @@ public: \
 private:
 
 #endif // __cplusplus
-#endif // __LIBSTORED_UTIL_H
+#endif // LIBSTORED_UTIL_H

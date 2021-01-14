@@ -1,5 +1,5 @@
-#ifndef __LIBSTORED_TYPES_H
-#define __LIBSTORED_TYPES_H
+#ifndef LIBSTORED_TYPES_H
+#define LIBSTORED_TYPES_H
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
@@ -1322,4 +1322,4 @@ namespace stored {
 
 } // namespace
 #endif // __cplusplus
-#endif // __LIBSTORED_TYPES_H
+#endif // LIBSTORED_TYPES_H

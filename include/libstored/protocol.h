@@ -1,5 +1,5 @@
-#ifndef __LIBSTORED_PROTOCOL_H
-#define __LIBSTORED_PROTOCOL_H
+#ifndef LIBSTORED_PROTOCOL_H
+#define LIBSTORED_PROTOCOL_H
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
@@ -1265,4 +1265,4 @@ public:
 
 #include <libstored/zmq.h>
 
-#endif // __LIBSTORED_PROTOCOL_H
+#endif // LIBSTORED_PROTOCOL_H

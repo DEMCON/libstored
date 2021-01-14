@@ -1,5 +1,5 @@
-#ifndef __LIBSTORED_COMPRESS_H
-#define __LIBSTORED_COMPRESS_H
+#ifndef LIBSTORED_COMPRESS_H
+#define LIBSTORED_COMPRESS_H
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers

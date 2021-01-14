@@ -1,5 +1,5 @@
-#ifndef __LIBSTORED_H
-#define __LIBSTORED_H
+#ifndef LIBSTORED_H
+#define LIBSTORED_H
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
@@ -28,4 +28,4 @@
 #include <libstored/poller.h>
 #include <libstored/compress.h>
 
-#endif // __LIBSTORED_H
+#endif // LIBSTORED_H

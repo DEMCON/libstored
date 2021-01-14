@@ -1,5 +1,5 @@
-#ifndef __LIBSTORED_CONFIG_H
-#define __LIBSTORED_CONFIG_H
+#ifndef LIBSTORED_CONFIG_H
+#define LIBSTORED_CONFIG_H
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
@@ -146,5 +146,5 @@ namespace stored {
 
 #include "stored_config.h"
 
-#endif // __LIBSTORED_CONFIG_H
+#endif // LIBSTORED_CONFIG_H
 

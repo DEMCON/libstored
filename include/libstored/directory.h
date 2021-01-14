@@ -1,5 +1,5 @@
-#ifndef __LIBSTORED_DIRECTORY_H
-#define __LIBSTORED_DIRECTORY_H
+#ifndef LIBSTORED_DIRECTORY_H
+#define LIBSTORED_DIRECTORY_H
 /*
  * libstored, a Store for Embedded Debugger.
  * Copyright (C) 2020  Jochem Rutgers
@@ -75,4 +75,4 @@ namespace stored {
 
 } // namespace
 #endif // __cplusplus
-#endif // __LIBSTORED_DIRECTORY_H
+#endif // LIBSTORED_DIRECTORY_H

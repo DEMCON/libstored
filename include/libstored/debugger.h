@@ -1,5 +1,5 @@
-#ifndef __LIBSTORED_DEBUGGER_H
-#define __LIBSTORED_DEBUGGER_H
+#ifndef LIBSTORED_DEBUGGER_H
+#define LIBSTORED_DEBUGGER_H
 // vim:fileencoding=utf-8
 /*
  * libstored, a Store for Embedded Debugger.
@@ -756,4 +756,4 @@ namespace stored {
 
 } // namespace
 #endif // __cplusplus
-#endif // __LIBSTORED_DEBUGGER_H
+#endif // LIBSTORED_DEBUGGER_H
