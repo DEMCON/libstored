@@ -610,7 +610,7 @@ begin
 				'0' when others;
 
 		sync_chained_out.accept <=
-			r.passthrough;
+			r.passthrough and sync_out_accept_i;
 
 	end generate;
 

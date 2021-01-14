@@ -50,6 +50,7 @@ architecture rtl of example_9_fpga is
 		-- Save some LUTs by limiting how we are going to access these variables.
 		v.\t_clk\ := ACCESS_WO;
 		v.\default_register_write_count\ := ACCESS_WO;
+		v.\read_only_register\ := ACCESS_RO;
 		return v;
 	end function;
 
@@ -83,9 +84,9 @@ begin
 			var_in => var_in,
 			sync_in => sync_in,
 			sync_out => sync_out,
-			sync_id => sync_chained_id --,
---			sync_chained_in => sync_chained_out,
---			sync_chained_out => sync_chained_in
+			sync_id => sync_chained_id,
+			sync_chained_in => sync_chained_out,
+			sync_chained_out => sync_chained_in
 		);
 
 	store2_inst : entity work.ExampleFpga2_hdl
@@ -98,8 +99,8 @@ begin
 			rstn => rstn,
 			var_out => var2_out,
 			var_in => var2_in,
---			sync_in => sync_chained_in,
---			sync_out => sync_chained_out,
+			sync_in => sync_chained_in,
+			sync_out => sync_chained_out,
 			sync_chained_id => sync_chained_id
 		);
 
@@ -171,6 +172,7 @@ begin
 	begin
 		if rising_edge(clk) then
 			var_in <= ExampleFpga_pkg.var_in_default;
+			var2_in <= ExampleFpga2_pkg.var_in_default;
 
 
 
@@ -186,7 +188,7 @@ begin
 
 
 
-			-- implementaton of ExampleFpga/read-only register
+			-- writes to ExampleFpga/read-only register should be ignored
 			var_in.\read_only_register\.value <= x"abcd";
 			var_in.\read_only_register\.we <= '1';
 
