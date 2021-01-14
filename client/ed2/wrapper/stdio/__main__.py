@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # libstored, a Store for Embedded Debugger.
-# Copyright (C) 2020  Jochem Rutgers
+# Copyright (C) 2020-2021  Jochem Rutgers
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
