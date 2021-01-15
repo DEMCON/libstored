@@ -1,7 +1,7 @@
 #ifndef LIBSTORED_ZMQ_H
 #define LIBSTORED_ZMQ_H
 /*
- * libstored, a Store for Embedded Debugger.
+ * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2021  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
