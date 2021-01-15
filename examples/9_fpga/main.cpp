@@ -86,6 +86,7 @@ int main() {
 
 		zmq.recv();
 		xsim.recv();
+		synchronizer.process();
 
 		// Inject a dummy byte to keep xsim alive, as it blocks on a read from file.
 		xsim.keepAlive();
