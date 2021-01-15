@@ -566,11 +566,13 @@ begin
 
 	process
 	begin
-		wait until not VAR_WRITE and rstn = '1' and rising_edge(clk) and data_in_we = '1';
-		report "Writing non-writable variable" severity warning;
-		-- Only report it once.
+		while true loop
+			wait until not VAR_WRITE and rstn = '1' and rising_edge(clk) and data_in_we = '1';
+			report "Writing non-writable variable" severity warning;
+			wait until rising_edge(clk) and data_in_we = '0';
+		end loop;
 		wait;
-	end if;
+	end process;
 --pragma translate_on
 end rtl;
 
