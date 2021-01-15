@@ -297,6 +297,7 @@ namespace stored {
 			pointer wp_next;
 			reserve_back(wp, wp_next);
 
+			m_buffer[wp].~type();
 			new(&m_buffer[wp]) type(std::forward<Arg>(arg)...);
 			m_wp.store(wp_next, ThreadSafe ? std::memory_order_release : std::memory_order_relaxed);
 		}
