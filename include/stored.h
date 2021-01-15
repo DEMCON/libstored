@@ -27,5 +27,6 @@
 #include <libstored/synchronizer.h>
 #include <libstored/poller.h>
 #include <libstored/compress.h>
+#include <libstored/fifo.h>
 
 #endif // LIBSTORED_H
