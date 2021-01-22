@@ -15,8 +15,8 @@ case `uname -s` in
 			python3 python3-pip python3-setuptools \
 			python3-pyqt5 python3-pyqt5.qtquick \
 			spin plantuml
-		/usr/bin/pip3 install wheel
-		/usr/bin/pip3 install jinja2 textx pyzmq pyside2 pyserial lognplot natsort crcmod heatshrink2 \
+		python3 -m pip install wheel
+		python3 -m pip install jinja2 textx pyzmq pyside2 pyserial lognplot natsort crcmod heatshrink2 \
 			Sphinx sphinx-rtd-theme sphinxcontrib-plantuml breathe sphinxcontrib-wavedrom
 
 		if ! python3 -V | awk '$2~/^3.[0-6]/{exit 1}'; then
