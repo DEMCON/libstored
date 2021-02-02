@@ -1,0 +1,16 @@
+setuptools
+wheel
+jinja2
+textx
+pyzmq
+pyside2
+pyserial
+lognplot
+natsort
+crcmod
+heatshrink2
+Sphinx
+sphinx-rtd-theme
+sphinxcontrib-plantuml
+breathe
+sphinxcontrib-wavedrom
