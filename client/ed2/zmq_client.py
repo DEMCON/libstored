@@ -25,6 +25,7 @@ import math
 import logging
 import heatshrink2
 import keyword
+import weakref
 
 from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, \
     QEvent, QCoreApplication, QStandardPaths, QSocketNotifier, QEventLoop, SIGNAL
@@ -1181,9 +1182,12 @@ class ZmqClient(QObject):
         except:
             pass
 
-        app = QCoreApplication.instance()
-        if app != None:
-            app.aboutToQuit.disconnect(self._aboutToQuit)
+        try:
+            app = QCoreApplication.instance()
+            if app != None:
+                app.aboutToQuit.disconnect(self._aboutToQuit)
+        except:
+            pass
 
     def time(self):
         if self._t == False:
@@ -1270,6 +1274,25 @@ class ZmqClient(QObject):
             s.close(0)
         self._aboutToQuit()
 
+        # Break all references to Objects for gc
+        self._temporaryAliases = {}
+        self._permanentAliases = {}
+
+        self._fastPollMacro = None
+        self._tracing = None
+        self._t = None
+
+        for o in self._objects:
+            o.setParent(None)
+
+        self._objects = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+
     def __del__(self):
         self.logger.debug('del')
         s = self._socket
@@ -1311,9 +1334,9 @@ class ZmqClient(QObject):
 
         if hasattr(self, n):
             i = 1
-            while hasattr(self, f'n_{i}'):
+            while hasattr(self, f'{n}_{i}'):
                 i += 1
-            n = f'n_{i}'
+            n = f'{n}_{i}'
 
         return n
 
@@ -1327,7 +1350,8 @@ class ZmqClient(QObject):
             if obj != None:
                 res.append(obj)
                 pyname = self.pyname(obj.name)
-                setattr(ZmqClient, pyname, _Property(Object, lambda s, obj=obj: obj, constant=True))
+                wobj = weakref.ref(obj)
+                setattr(ZmqClient, pyname, _Property(Object, lambda s, wobj=wobj: obj, constant=True))
 
         self._objects = res
 
