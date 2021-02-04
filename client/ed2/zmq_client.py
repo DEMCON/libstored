@@ -614,12 +614,17 @@ class Object(QObject):
         self._pollTimer.start()
 
     def _pollRead(self):
-        if self.alias == None:
-            # Do a sequential read to get an alias.
-            self._read(True)
-        else:
-            # Now we have an alias, do async reads.
-            self._asyncRead()
+        try:
+            if self.alias == None:
+                # Do a sequential read to get an alias.
+                self._read(True)
+            else:
+                # Now we have an alias, do async reads.
+                self._asyncRead()
+        except zmq.ZMQError as e:
+            if self._client.socket != None:
+                # Only reraise error when the socket wasn't closed meanwhile.
+                raise e
 
     def _pollFast(self, interval_s):
         if interval_s < 0.01:
@@ -1063,6 +1068,9 @@ class ZmqClient(QObject):
             # Wait for all outstanding requests first.
             QCoreApplication.processEvents(QEventLoop.AllEvents, 100)
 
+        if self._socket == None:
+            return None
+
         self.logger.debug('req %s', message)
         self._socket.send(message)
 
@@ -1111,7 +1119,7 @@ class ZmqClient(QObject):
             self.logger.debug('req async queued %s', message)
 
     def _reqAsyncSendNext(self):
-        if self._reqQueue != []:
+        if self._socket != None and self._reqQueue != []:
             req, _ = self._reqQueue[0]
             self.logger.debug('req async send %s', req)
             self._socket.send(req)
@@ -1121,8 +1129,9 @@ class ZmqClient(QObject):
     @Slot()
     def _reqAsyncCheckResponse(self):
         res = False
+
         try:
-            while True:
+            while self._socket != None:
                 resp = b''.join(self._socket.recv_multipart(zmq.NOBLOCK))
                 self._reqAsyncHandleResponse(resp)
                 res = True
@@ -1151,6 +1160,9 @@ class ZmqClient(QObject):
             if timeout != None and time.time() - start > timeout:
                 raise TimeoutError()
 
+            if self._socket == None:
+                return
+
             try:
                 self._reqAsyncHandleResponse(b''.join(self._socket.recv_multipart(zmq.NOBLOCK)))
             except zmq.ZMQError as e:
@@ -1163,7 +1175,10 @@ class ZmqClient(QObject):
     def _aboutToQuit(self):
         self.logger.debug('aboutToQuit')
         self._useEventLoop = False
-        self._reqAsyncFlush(10)
+        try:
+            self._reqAsyncFlush(10)
+        except:
+            pass
 
     def time(self):
         if self._t == False:
@@ -1244,10 +1259,16 @@ class ZmqClient(QObject):
             self._fastPollTimer.stop()
         if self._tracingTimer:
             self._tracingTimer.stop()
-        self._socket.close(0)
+        s = self._socket
+        self._socket = None
+        if s != None:
+            s.close(0)
 
     def __del__(self):
-        self._socket.close(0)
+        s = self._socket
+        self._socket = None
+        if s != None:
+            s.close(0)
 
     @Slot(result=str)
     def capabilities(self):
