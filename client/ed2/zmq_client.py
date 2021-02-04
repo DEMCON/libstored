@@ -1161,7 +1161,8 @@ class ZmqClient(QObject):
                 raise TimeoutError()
 
             if self._socket == None:
-                return
+                self._reqAsyncHandleResponse(b'')
+                continue
 
             try:
                 self._reqAsyncHandleResponse(b''.join(self._socket.recv_multipart(zmq.NOBLOCK)))
@@ -1179,6 +1180,10 @@ class ZmqClient(QObject):
             self._reqAsyncFlush(10)
         except:
             pass
+
+        app = QCoreApplication.instance()
+        if app != None:
+            app.aboutToQuit.disconnect(self._aboutToQuit)
 
     def time(self):
         if self._t == False:
@@ -1263,8 +1268,10 @@ class ZmqClient(QObject):
         self._socket = None
         if s != None:
             s.close(0)
+        self._aboutToQuit()
 
     def __del__(self):
+        self.logger.debug('del')
         s = self._socket
         self._socket = None
         if s != None:
