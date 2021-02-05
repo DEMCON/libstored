@@ -31,7 +31,8 @@ TextField {
 
     property string unit: ''
 
-    property alias obj: o.ref
+    property alias ref: o.ref
+    property alias obj: o.obj
     property alias pollInterval: o.pollInterval
     property alias refreshed: o.refreshed
 
