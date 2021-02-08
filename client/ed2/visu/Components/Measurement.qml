@@ -23,6 +23,7 @@ TextField {
     id: comp
 
     background.antialiasing: true
+
     topPadding: 0
     bottomPadding: 0
     leftPadding: 0
@@ -35,14 +36,16 @@ TextField {
     property alias obj: o.obj
     property alias pollInterval: o.pollInterval
     property alias refreshed: o.refreshed
+    property alias value: o.value
+    property bool connected: o.obj !== null
 
     property var o: StoreObject {
         id: o
     }
 
-    property string _text: unit === '' ? o.valueString : o.valueString + ' ' + unit
+    property string _text: (connected ? o.valueString : '?') + (unit === '' ? '' : ' ' + unit)
     text: _text
 
-    color: refreshed ? "blue" : "black"
+    color: !connected ? "gray" : refreshed ? "blue" : "black"
 }
 

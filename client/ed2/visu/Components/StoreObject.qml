@@ -46,6 +46,8 @@ Item {
                 else
                     obj.asyncRead()
             }
+        } else {
+            value = null
         }
     }
 

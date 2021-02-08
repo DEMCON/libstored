@@ -33,7 +33,12 @@ Measurement {
         }
     }
 
-    color: editing ? "red" : refreshed && !_edited ? "blue" : "black"
+    property bool valid: true
+    property color validBackgroundColor: "white"
+    property color invalidBackgroundColor: "#ffe0e0"
+    palette.base: valid ? validBackgroundColor : invalidBackgroundColor
+
+    color: editing ? "red" : !connected ? "gray" : refreshed && !_edited ? "blue" : "black"
     text: ""
 
     onAccepted: {
