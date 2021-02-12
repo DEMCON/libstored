@@ -43,7 +43,24 @@ TextField {
         id: o
     }
 
-    property string _text: (connected ? o.valueString : '?') + (unit === '' ? '' : ' ' + unit)
+    // Specify a (lambda) function, which will be used to convert the value
+    // to a string. If null, the valueString of the object is used.
+    property var formatter: null
+
+    property string _text: {
+        var s = '';
+        if(!connected)
+            s = '?';
+        else if(formatter)
+            s = formatter(o.value);
+        else
+            s = o.valueString;
+
+        if(unit != '')
+            s += ' ' + unit
+
+        return s
+    }
     text: _text
 
     color: !connected ? "gray" : refreshed ? "blue" : "black"
