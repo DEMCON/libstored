@@ -821,6 +821,7 @@ namespace stored {
 
 			void encode(void const* buffer, size_t len, bool last = true) override final;
 			void reset() override final;
+			void reserve(size_t capacity);
 		private:
 			ProtocolLayer& m_to;
 			char* m_buffer;
@@ -837,6 +838,7 @@ namespace stored {
 	public:
 		Loopback(ProtocolLayer& a, ProtocolLayer& b);
 		~Loopback() is_default
+		void reserve(size_t capacity);
 	private:
 		impl::Loopback1 m_a2b;
 		impl::Loopback1 m_b2a;

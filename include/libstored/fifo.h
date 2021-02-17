@@ -25,6 +25,7 @@
 #if STORED_cplusplus >= 201103L
 
 #include <libstored/util.h>
+#include <libstored/protocol.h>
 
 #include <type_traits>
 #include <atomic>
@@ -34,6 +35,10 @@
 #include <array>
 #include <vector>
 #include <utility>
+#include <string>
+#if STORED_cplusplus >= 201703L
+#  include <string_view>
+#endif
 
 namespace stored {
 
@@ -101,8 +106,8 @@ namespace stored {
 			assert(len <= size());
 			assert(dst + (pointer)len >= dst);
 			assert(src + (pointer)len >= src);
-			assert((size_t)dst + len < size());
-			assert((size_t)src + len < size());
+			assert((size_t)dst + len <= size());
+			assert((size_t)src + len <= size());
 
 			impl::buffer_move(m_buffer, dst, src, len);
 		}
@@ -263,6 +268,12 @@ namespace stored {
 			return m_buffer[rp];
 		}
 
+		type& front() noexcept {
+			assert(!empty());
+			pointer rp = m_rp.load(ThreadSafe ? std::memory_order_consume : std::memory_order_relaxed);
+			return m_buffer[rp];
+		}
+
 		void pop_front() noexcept {
 			pointer wp = m_wp.load(std::memory_order_relaxed);
 			pointer rp = m_rp.load(std::memory_order_relaxed);
@@ -314,8 +325,8 @@ namespace stored {
 		}
 
 		typedef PopIterator<Fifo> iterator;
-		iterator begin() noexcept { return PopIterator<Fifo>(*this); }
-		iterator end() noexcept { return PopIterator<Fifo>(); }
+		constexpr iterator begin() noexcept { return PopIterator<Fifo>(*this); }
+		constexpr iterator end() noexcept { return PopIterator<Fifo>(); }
 
 		void clear() {
 			if(!bounded()) {
@@ -367,10 +378,59 @@ namespace stored {
 		std::atomic<pointer> m_rp{0};
 	};
 
-	struct Message {
-		char const* message;
-		size_t length;
+	/*!
+	 * Kind of modifiable C++17's std::string_view on a message within the MessageFifo.
+	 */
+	class Message {
+	public:
+		constexpr Message(char* message, size_t length) noexcept
+			: m_message(message), m_length(length)
+		{}
+
+		constexpr char* data() const noexcept { return m_message; }
+		constexpr size_t size() const noexcept { return m_length; }
+
+#if STORED_cplusplus >= 201703L
+		constexpr operator std::string_view() const noexcept {
+			return std::string_view(data(), size());
+		}
+#endif
+
+	private:
+		char* m_message;
+		size_t m_length;
 	};
+
+#if STORED_cplusplus < 201703L
+	/*!
+	 * A minimal C++17's std::string_view for MessageFifo.
+	 */
+	class MessageView {
+	public:
+		constexpr MessageView(char const* message, size_t length) noexcept
+			: m_message(message), m_length(length)
+		{}
+
+		MessageView(std::string const& str) noexcept
+			: m_message(str.data()), m_length(str.size())
+		{}
+
+		constexpr char const* data() const noexcept { return m_message; }
+		constexpr size_t size() const noexcept { return m_length; }
+
+	private:
+		char const* m_message;
+		size_t m_length;
+	};
+#else
+	using MessageView = std::string_view;
+#endif
+
+	namespace impl {
+		static constexpr size_t defaultMessages(size_t capacity) {
+			return capacity == 0 ? 0 : std::max<size_t>(2, capacity / sizeof(void*));
+		}
+	}
 
 	/*!
 	 * \brief FIFO for arbitrary-length messages.
@@ -389,12 +449,7 @@ namespace stored {
 	 * Therefore, it can be used to pass messages between threads, but also
 	 * from/to an interrupt handler.
 	 */
-#ifdef DOXYGEN
-	// Simplify a bit
-	template <size_t Capacity = 0, size_t Messages = 0, bool ThreadSafe = (Capacity > 0)>
-#else
-	template <size_t Capacity = 0, size_t Messages = Capacity == 0 ? 0 : std::max<size_t>(2, Capacity / sizeof(void*)), bool ThreadSafe = (Capacity > 0)>
-#endif
+	template <size_t Capacity = 0, size_t Messages = impl::defaultMessages(Capacity), bool ThreadSafe = (Capacity > 0)>
 	class MessageFifo {
 		static_assert(!(ThreadSafe && Capacity == 0), "Unbounded tread-safe FIFOs are not supported");
 
@@ -403,17 +458,21 @@ namespace stored {
 		typedef std::pair<buffer_pointer, buffer_pointer> Msg;
 	public:
 		typedef Message type;
-
-		MessageFifo() = default;
+		typedef MessageView const_type;
 
 		constexpr bool bounded() const noexcept { return Capacity > 0 || Messages > 0; }
 		bool empty() const noexcept { return m_msg.empty(); }
 		size_t available() const noexcept { return m_msg.available(); }
 		constexpr size_t size() const noexcept { return m_buffer.size(); }
 
-		Message front() const noexcept {
+		const_type front() const noexcept {
 			Msg const& msg = m_msg.front();
-			return Message{&m_buffer[msg.first], msg.second};
+			return const_type{&m_buffer[msg.first], msg.second};
+		}
+
+		type front() noexcept {
+			Msg& msg = m_msg.front();
+			return type{&m_buffer[msg.first], msg.second};
 		}
 
 		void pop_front() noexcept {
@@ -423,54 +482,98 @@ namespace stored {
 		}
 
 		bool push_back(char const* message, size_t length) {
-			return push_back(Message{message, length});
+			return push_back(const_type{message, length});
 		}
 
-		bool push_back(Message const& message) {
-			if(unlikely(Capacity > 0 && message.length > Capacity)) {
+		bool push_back(const_type const& message) {
+			if(m_msg.full())
+				return false;
+
+			if(!append_back(message))
+				return false;
+
+			push_back_partial();
+			return true;
+		}
+
+		bool push_back() {
+			if(m_msg.full())
+				return false;
+
+			push_back_partial();
+			return true;
+		}
+
+	protected:
+		void push_back_partial() {
+			assert(!m_msg.full());
+			buffer_pointer wp = m_wp.load(std::memory_order_relaxed);
+			assert(m_wp_partial >= wp);
+			m_wp.store(m_wp_partial, std::memory_order_relaxed);
+			m_msg.emplace_back(wp, m_wp_partial - wp);
+		}
+
+	public:
+		void pop_back() {
+			m_wp_partial = m_wp.load(std::memory_order_relaxed);
+		}
+
+		bool append_back(char const* message, size_t length) {
+			return append_back(const_type{message, length});
+		}
+
+		bool append_back(const_type const& message) {
+			if(!message.size())
+				return true;
+
+			buffer_pointer rp = m_rp.load(std::memory_order_relaxed);
+			buffer_pointer wp = m_wp.load(std::memory_order_relaxed);
+			buffer_pointer wp_partial = m_wp_partial;
+			assert(wp_partial >= wp);
+			size_t partial = (size_t)(wp_partial - wp);
+
+			if(unlikely(Capacity > 0 && message.size() + partial > Capacity)) {
 				// Will never fit.
 #ifdef __cpp_exceptions
 				throw std::bad_alloc();
 #else
-				std::abort();
+				std::terminate();
 #endif
 			}
 
-			if(m_msg.full())
-				return false;
-
-			buffer_pointer wp = m_wp.load(std::memory_order_relaxed);
-			buffer_pointer rp = m_rp.load(std::memory_order_relaxed);
-
 			bool e = empty();
 
-			if(e) {
+			if(e && !partial) {
 				// When empty, the other side ignores the wp/rp, so we
 				// can safely tinker with it.
-				wp = 0;
+				wp = m_wp_partial = wp_partial = 0;
 				rp = 0;
+				m_wp.store(wp, std::memory_order_relaxed);
 				m_rp.store(rp, std::memory_order_relaxed);
 			}
 
 			if(Capacity == 0) {
 				// Make buffer larger.
-				m_buffer.resize((size_t)wp + message.length);
+				m_buffer.resize((size_t)wp_partial + message.size());
 			} else if(e) {
 				// Empty, always fits.
 			} else if(wp > rp) {
-				// [rp,wp[ is in use.
-				if((size_t)wp + message.length <= m_buffer.size()) {
+				// [rp,wp_partial[ is in use.
+				if((size_t)wp_partial + message.size() <= m_buffer.size()) {
 					// Ok, fits in the buffer.
-				} else if((size_t)rp >= message.length) {
+				} else if((size_t)rp >= partial + message.size()) {
 					// The message fits at the start of the buffer.
+					m_buffer.move(0, wp, partial);
 					wp = 0;
+					m_wp_partial = wp_partial = (buffer_pointer)partial;
+					m_wp.store(wp, std::memory_order_relaxed);
 				} else {
 					// Does not fit.
 					return false;
 				}
 			} else {
-				// [0,wp[ and [rp,size()[ is in use.
-				if((size_t)(rp - wp) >= message.length) {
+				// [0,wp_partial[ and [rp,size()[ is in use.
+				if((size_t)(rp - wp_partial) >= message.size()) {
 					// Fits here.
 				} else {
 					// Does not fit.
@@ -479,12 +582,8 @@ namespace stored {
 			}
 
 			// Write message content.
-			buffer_pointer m = wp;
-			m_buffer.set(m, message.message, message.length);
-			m_wp.store((buffer_pointer)(wp + message.length), std::memory_order_relaxed);
-
-			// Write message meta data.
-			m_msg.emplace_back(m, (buffer_pointer)message.length);
+			m_buffer.set(wp_partial, message.data(), message.size());
+			m_wp_partial = (buffer_pointer)(m_wp_partial + message.size());
 			return true;
 		}
 
@@ -499,7 +598,7 @@ namespace stored {
 			return cnt;
 		}
 
-		size_t push_back(std::initializer_list<type> init) {
+		size_t push_back(std::initializer_list<const_type> init) {
 			size_t cnt = 0;
 
 			for(auto const& x : init) {
@@ -512,11 +611,11 @@ namespace stored {
 		}
 
 		typedef PopIterator<MessageFifo> iterator;
-		iterator begin() noexcept { return PopIterator<MessageFifo>(*this); }
-		iterator end() noexcept { return PopIterator<MessageFifo>(); }
+		constexpr iterator begin() noexcept { return PopIterator<MessageFifo>(*this); }
+		constexpr iterator end() noexcept { return PopIterator<MessageFifo>(); }
 
 		void clear() {
-			m_rp.store(m_wp.load(std::memory_order_relaxed), std::memory_order_relaxed);
+			m_rp.store(m_wp_partial = m_wp.load(std::memory_order_relaxed), std::memory_order_relaxed);
 			m_msg.clear();
 		}
 
@@ -524,8 +623,74 @@ namespace stored {
 		Buffer_type m_buffer;
 		std::atomic<buffer_pointer> m_rp{0};
 		std::atomic<buffer_pointer> m_wp{0};
+		buffer_pointer m_wp_partial{0};
 
 		Fifo<Msg, Messages> m_msg;
+	};
+
+	/*!
+	 * \brief A ProtocolLayer that buffers downstream messages.
+	 *
+	 * To get the messages from the fifo, call #recv(). If there are any, the
+	 * are passed upstream.  Blocking on a #recv() is not supported; always use
+	 * 0 as timeout (no waiting).
+	 *
+	 * This fifo is thread-safe by default. Only encode() messages from one
+	 * context, and only recv() (and therefore decode()) from another context.
+	 * Do not mix or have multiple encoding/decoding contexts.
+	 */
+	template <size_t Capacity, size_t Messages = impl::defaultMessages(Capacity)>
+	class FifoLoopback : public PolledLayer {
+		CLASS_NOCOPY(FifoLoopback)
+	public:
+		static_assert(Capacity > 0, "Only bounded fifos are supported");
+
+		typedef PolledLayer base;
+		typedef MessageFifo<Capacity, Messages, true> Fifo_type;
+
+		explicit FifoLoopback(ProtocolLayer* up = nullptr)
+			: base(up)
+		{}
+
+		virtual ~FifoLoopback() override = default;
+
+		virtual int recv(long UNUSED_PAR(timeout_us) = 0) override {
+			assert(timeout_us == 0);
+
+			if(m_fifo.empty())
+				return setLastError(EAGAIN);
+
+			for(auto m : m_fifo)
+				decode(m.data(), m.size());
+
+			return setLastError(0);
+		}
+
+		virtual void encode(void const* buffer, size_t len, bool last = true) override {
+			bool res = false;
+
+			if(last)
+				res = m_fifo.push_back((char const*)buffer, len);
+			else
+				res = m_fifo.append_back((char const*)buffer, len);
+
+			if(!res)
+				setLastError(ENOMEM);
+
+			base::encode(buffer, len, last);
+		}
+
+#ifndef DOXYGEN
+		using base::encode;
+#endif
+
+		constexpr bool bounded() const noexcept { return m_fifo.bounded(); }
+		bool empty() const noexcept { return m_fifo.empty(); }
+		size_t available() const noexcept { return m_fifo.available(); }
+		constexpr size_t size() const noexcept { return m_fifo.size(); }
+
+	private:
+		Fifo_type m_fifo;
 	};
 
 } // namespace

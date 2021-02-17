@@ -136,8 +136,8 @@ TEST(Fifo, IterateFifo) {
 #define EXPECT_EQ_MSG(msg, str) \
 	({ \
 		auto m_ = (msg); \
-		EXPECT_NE(m_.message, nullptr); \
-		std::string s_(m_.message, m_.length);\
+		EXPECT_NE(m_.data(), nullptr); \
+		std::string s_(m_.data(), m_.size());\
 		EXPECT_EQ(s_, "" str); \
 	})
 
@@ -163,10 +163,21 @@ TEST(Fifo, UnboundedMessageFifo) {
 	EXPECT_TRUE(f.empty());
 
 	// Fifo is empty, new message should be saved at the start of the buffer again.
-	EXPECT_TRUE(f.push_back(stored::Message{"hi", 2}));
+	EXPECT_TRUE(f.push_back(stored::MessageView{"hi", 2}));
 	EXPECT_EQ_MSG(f.front(), "hi");
 	EXPECT_FALSE(f.empty());
 	EXPECT_EQ(f.size(), 7u);
+
+	EXPECT_TRUE(f.append_back("jk", 2));
+	EXPECT_EQ_MSG(f.front(), "hi");
+	f.pop_front();
+	EXPECT_TRUE(f.empty());
+	EXPECT_TRUE(f.append_back("lmn", 3));
+	EXPECT_TRUE(f.push_back());
+	EXPECT_FALSE(f.empty());
+	EXPECT_EQ_MSG(f.front(), "jklmn");
+	f.pop_front();
+	EXPECT_TRUE(f.empty());
 }
 
 TEST(Fifo, BoundedMessageFifo) {
@@ -188,6 +199,15 @@ TEST(Fifo, BoundedMessageFifo) {
 
 	// Buffer fits, message queue not.
 	EXPECT_FALSE(f.push_back({"i", 1}));
+	EXPECT_TRUE(f.append_back({"i", 1}));
+	EXPECT_FALSE(f.push_back());
+
+	// Buffer is full.
+	EXPECT_FALSE(f.append_back({"jk", 2}));
+	f.pop_back();
+
+	// Not anymore.
+	EXPECT_TRUE(f.append_back({"jk", 2}));
 
 	f.clear();
 	EXPECT_TRUE(f.empty());
@@ -212,7 +232,7 @@ TEST(Fifo, IterateMessageFifo) {
 	EXPECT_EQ(f.push_back({{"0", 1}, {"1", 1}, {"2", 1}, {"3", 1}}), 4u);
 	int i = 0;
 	for(auto x : f)
-		EXPECT_EQ(x.message[0] - '0', i++);
+		EXPECT_EQ(x.data()[0] - '0', i++);
 
 	EXPECT_TRUE(f.empty());
 }
@@ -240,8 +260,8 @@ TEST(Fifo, ProducerConsumer) {
 					std::this_thread::yield();
 
 				auto m = f.front();
-				for(size_t i = 0; i < m.length; i++)
-					ccs += (long)(m.message[i] - 'a');
+				for(size_t i = 0; i < m.size(); i++)
+					ccs += (long)(m.data()[i] - 'a');
 
 				f.pop_front();
 			}

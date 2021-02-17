@@ -100,6 +100,7 @@ The inheritance of the layers is shown below.
    PolledFileLayer <|-- StdioLayer : Windows
    FileLayer <|-- StdioLayer : POSIX
    ProtocolLayer <|-- CompressLayer
+   PolledLayer <|-- FifoLoopback
 
    ProtocolLayer <|-- Stream
    Debugger --> Stream
@@ -155,6 +156,11 @@ stored::DoublePipeLayer
 -----------------------
 
 .. doxygenclass:: stored::DoublePipeLayer
+
+stored::FifoLoopback
+---------------------
+
+.. doxygenclass:: stored::FifoLoopback
 
 stored::FileLayer
 -----------------

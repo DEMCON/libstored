@@ -18,6 +18,7 @@
 
 #include "libstored/protocol.h"
 #include "libstored/compress.h"
+#include "libstored/fifo.h"
 #include "gtest/gtest.h"
 #include "LoggingLayer.h"
 
@@ -930,6 +931,31 @@ TEST(FileLayer, DoublePipe) {
 
 	EXPECT_EQ(top2.allDecoded(), "Great Big ");
 	EXPECT_EQ(top1.allDecoded(), "Beautiful Tomorrow");
+}
+
+TEST(FifoLoopback, FifoLoopback) {
+	LoggingLayer top;
+	stored::FifoLoopback<128> l;
+	l.wrap(top);
+
+	l.encode("This ", 5, false);
+	l.encode("is ", 3, false);
+	l.encode("the ", 4, false);
+	l.encode("night", 5);
+
+	EXPECT_EQ(l.recv(), 0);
+	EXPECT_EQ(top.decoded().size(), 1);
+	EXPECT_EQ(top.decoded().at(0), "This is the night");
+
+	l.encode("It's a beautiful night", 22);
+	l.encode("And we call it ", 15, false);
+	l.encode("bella notte", 11, false);
+	l.encode();
+
+	EXPECT_EQ(top.decoded().size(), 1);
+	EXPECT_EQ(l.recv(), 0);
+	EXPECT_EQ(l.recv(), EAGAIN);
+	EXPECT_EQ(top.decoded().size(), 3);
 }
 
 } // namespace

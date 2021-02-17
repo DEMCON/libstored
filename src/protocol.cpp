@@ -1401,20 +1401,31 @@ void impl::Loopback1::reset() {
 	base::reset();
 }
 
+void impl::Loopback1::reserve(size_t capacity) {
+	if(likely(capacity <= m_capacity))
+		return;
+
+	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory, cppcoreguidelines-no-malloc)
+	void* p = realloc(m_buffer, capacity);
+	if(unlikely(!p)) {
+#ifdef __cpp_exceptions
+		throw std::bad_alloc();
+#else
+		std::terminate();
+#endif
+	}
+
+	m_buffer = static_cast<char*>(p);
+	m_capacity = capacity;
+}
+
 /*!
  * \brief Collect partial data, and passes into the \c decode() of \c to when it has the full message.
  */
 void impl::Loopback1::encode(void const* buffer, size_t len, bool last) {
 	if(likely(len > 0)) {
-		if(unlikely(m_len + len > m_capacity)) {
-			size_t capacity = m_len + len + ExtraAlloc;
-			// NOLINTNEXTLINE(cppcoreguidelines-owning-memory, cppcoreguidelines-no-malloc)
-			void* p = realloc(m_buffer, capacity);
-			if(!p)
-				throw std::bad_alloc();
-			m_buffer = static_cast<char*>(p);
-			m_capacity = capacity;
-		}
+		if(unlikely(m_len + len > m_capacity))
+			reserve(m_len + len + ExtraAlloc);
 
 		memcpy(m_buffer + m_len, buffer, len);
 		m_len += len;
@@ -1433,6 +1444,16 @@ Loopback::Loopback(ProtocolLayer& a, ProtocolLayer& b)
 	: m_a2b(a, b)
 	, m_b2a(b, a)
 {
+}
+
+/*!
+ * \brief Reserve heap memory to assemble partial messages.
+ *
+ * The capacity is allocated twice; one for both directions.
+ */
+void Loopback::reserve(size_t capacity) {
+	m_a2b.reserve(capacity);
+	m_b2a.reserve(capacity);
 }
 
 
