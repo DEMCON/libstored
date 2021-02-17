@@ -134,12 +134,12 @@ TEST(Fifo, IterateFifo) {
 }
 
 #define EXPECT_EQ_MSG(msg, str) \
-	({ \
+	do { \
 		auto m_ = (msg); \
 		EXPECT_NE(m_.data(), nullptr); \
 		std::string s_(m_.data(), m_.size());\
 		EXPECT_EQ(s_, "" str); \
-	})
+	} while(0)
 
 TEST(Fifo, UnboundedMessageFifo) {
 	stored::MessageFifo<> f;
