@@ -43,27 +43,45 @@
 namespace stored {
 
 	namespace impl {
-		template <typename B, typename pointer>
-		void buffer_set(B& buffer, pointer p, typename B::value_type const* x, size_t len) noexcept {
-			if(std::is_trivially_copyable<typename B::value_type>::value)
+
+		template <typename B, typename pointer, bool trivial = std::is_trivially_copyable<typename B::value_type>::value>
+		struct buffer_ops {
+			static void set(B& buffer, pointer p, typename B::value_type const* x, size_t len) noexcept {
 				memcpy(&buffer[p], x, len);
-			else
+			}
+
+			static void move(B& buffer, pointer dst, pointer src, size_t len) noexcept {
+				memmove(&buffer[dst], &buffer[src], len);
+			}
+		};
+
+		template <typename B, typename pointer>
+		struct buffer_ops<B,pointer,false> {
+			static void set(B& buffer, pointer p, typename B::value_type const* x, size_t len) noexcept {
 				for(pointer i = 0; i < (pointer)len; i++)
 					buffer[p + i] = x[i];
+			}
+
+			static void move(B& buffer, pointer dst, pointer src, size_t len) noexcept {
+				if(dst == src)
+					;
+				else if(dst < src)
+					for(pointer i = 0; i < (pointer)len; i++)
+						buffer[dst + i] = buffer[src + i];
+				else
+					for(pointer i = 1; i <= (pointer)len; i++)
+						buffer[dst + len - i] = buffer[src + len - i];
+			}
+		};
+
+		template <typename B, typename pointer>
+		void buffer_set(B& buffer, pointer p, typename B::value_type const* x, size_t len) noexcept {
+			buffer_ops<B,pointer>::set(buffer, p, x, len);
 		}
 
 		template <typename B, typename pointer>
 		void buffer_move(B& buffer, pointer dst, pointer src, size_t len) noexcept {
-			if(std::is_trivially_copyable<typename B::value_type>::value)
-				memmove(&buffer[dst], &buffer[src], len);
-			else if(dst == src)
-				;
-			else if(dst < src)
-				for(pointer i = 0; i < (pointer)len; i++)
-					buffer[dst + i] = buffer[src + i];
-			else
-				for(pointer i = 1; i <= (pointer)len; i++)
-					buffer[dst + len - i] = buffer[src + len - i];
+			buffer_ops<B,pointer>::move(buffer, dst, src, len);
 		}
 	}
 
