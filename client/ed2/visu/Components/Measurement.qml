@@ -47,14 +47,25 @@ TextField {
     // to a string. If null, the valueString of the object is used.
     property var formatter: null
 
-    property string _text: {
-        var s = '';
+    property string valueFormatted: {
+        var s;
+
         if(!connected)
-            s = '?';
+            s = '';
         else if(formatter)
             s = formatter(o.value);
         else
             s = o.valueString;
+
+        return s
+    }
+
+    property string _text: {
+        var s = '';
+        if(!connected)
+            s = '?';
+        else
+            s = valueFormatted;
 
         if(unit != '')
             s += ' ' + unit

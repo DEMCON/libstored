@@ -23,7 +23,7 @@ Measurement {
     readOnly: false
     pollInterval: 0
 
-    property bool editing: activeFocus && displayText != o.valueString
+    property bool editing: activeFocus && displayText != valueFormatted
 
     property bool _edited: false
     onEditingChanged : {
@@ -43,12 +43,12 @@ Measurement {
 
     onAccepted: {
         o.set(displayText)
-        Qt.callLater(function() { text = o.valueString })
+        Qt.callLater(function() { text = valueFormatted })
     }
 
     onActiveFocusChanged: {
         if(activeFocus)
-            text = o.valueString
+            text = valueFormatted
         else
             text = _text
     }
