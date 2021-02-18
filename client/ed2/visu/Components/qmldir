@@ -1,0 +1,4 @@
+module Components
+Input 1.0 Input.qml
+Measurement 1.0 Measurement.qml
+StoreObject 1.0 StoreObject.qml

@@ -1,5 +1,5 @@
-# libstored, a Store for Embedded Debugger.
-# Copyright (C) 2020  Jochem Rutgers
+# libstored, distributed debuggable data stores.
+# Copyright (C) 2020-2021  Jochem Rutgers
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -25,6 +25,7 @@ import math
 import logging
 import heatshrink2
 import keyword
+import weakref
 
 from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, \
     QEvent, QCoreApplication, QStandardPaths, QSocketNotifier, QEventLoop, SIGNAL
@@ -614,12 +615,17 @@ class Object(QObject):
         self._pollTimer.start()
 
     def _pollRead(self):
-        if self.alias == None:
-            # Do a sequential read to get an alias.
-            self._read(True)
-        else:
-            # Now we have an alias, do async reads.
-            self._asyncRead()
+        try:
+            if self.alias == None:
+                # Do a sequential read to get an alias.
+                self._read(True)
+            else:
+                # Now we have an alias, do async reads.
+                self._asyncRead()
+        except zmq.ZMQError as e:
+            if self._client.socket != None:
+                # Only reraise error when the socket wasn't closed meanwhile.
+                raise e
 
     def _pollFast(self, interval_s):
         if interval_s < 0.01:
@@ -1063,6 +1069,9 @@ class ZmqClient(QObject):
             # Wait for all outstanding requests first.
             QCoreApplication.processEvents(QEventLoop.AllEvents, 100)
 
+        if self._socket == None:
+            return None
+
         self.logger.debug('req %s', message)
         self._socket.send(message)
 
@@ -1111,7 +1120,7 @@ class ZmqClient(QObject):
             self.logger.debug('req async queued %s', message)
 
     def _reqAsyncSendNext(self):
-        if self._reqQueue != []:
+        if self._socket != None and self._reqQueue != []:
             req, _ = self._reqQueue[0]
             self.logger.debug('req async send %s', req)
             self._socket.send(req)
@@ -1121,8 +1130,9 @@ class ZmqClient(QObject):
     @Slot()
     def _reqAsyncCheckResponse(self):
         res = False
+
         try:
-            while True:
+            while self._socket != None:
                 resp = b''.join(self._socket.recv_multipart(zmq.NOBLOCK))
                 self._reqAsyncHandleResponse(resp)
                 res = True
@@ -1151,6 +1161,10 @@ class ZmqClient(QObject):
             if timeout != None and time.time() - start > timeout:
                 raise TimeoutError()
 
+            if self._socket == None:
+                self._reqAsyncHandleResponse(b'')
+                continue
+
             try:
                 self._reqAsyncHandleResponse(b''.join(self._socket.recv_multipart(zmq.NOBLOCK)))
             except zmq.ZMQError as e:
@@ -1163,7 +1177,17 @@ class ZmqClient(QObject):
     def _aboutToQuit(self):
         self.logger.debug('aboutToQuit')
         self._useEventLoop = False
-        self._reqAsyncFlush(10)
+        try:
+            self._reqAsyncFlush(10)
+        except:
+            pass
+
+        try:
+            app = QCoreApplication.instance()
+            if app != None:
+                app.aboutToQuit.disconnect(self._aboutToQuit)
+        except:
+            pass
 
     def time(self):
         if self._t == False:
@@ -1244,10 +1268,37 @@ class ZmqClient(QObject):
             self._fastPollTimer.stop()
         if self._tracingTimer:
             self._tracingTimer.stop()
-        self._socket.close(0)
+        s = self._socket
+        self._socket = None
+        if s != None:
+            s.close(0)
+        self._aboutToQuit()
+
+        # Break all references to Objects for gc
+        self._temporaryAliases = {}
+        self._permanentAliases = {}
+
+        self._fastPollMacro = None
+        self._tracing = None
+        self._t = None
+
+        for o in self._objects:
+            o.setParent(None)
+
+        self._objects = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
 
     def __del__(self):
-        self._socket.close(0)
+        self.logger.debug('del')
+        s = self._socket
+        self._socket = None
+        if s != None:
+            s.close(0)
 
     @Slot(result=str)
     def capabilities(self):
@@ -1283,9 +1334,9 @@ class ZmqClient(QObject):
 
         if hasattr(self, n):
             i = 1
-            while hasattr(self, f'n_{i}'):
+            while hasattr(self, f'{n}_{i}'):
                 i += 1
-            n = f'n_{i}'
+            n = f'{n}_{i}'
 
         return n
 
@@ -1299,7 +1350,8 @@ class ZmqClient(QObject):
             if obj != None:
                 res.append(obj)
                 pyname = self.pyname(obj.name)
-                setattr(ZmqClient, pyname, _Property(Object, lambda s, obj=obj: obj, constant=True))
+                wobj = weakref.ref(obj)
+                setattr(ZmqClient, pyname, _Property(Object, lambda s, wobj=wobj: obj, constant=True))
 
         self._objects = res
 

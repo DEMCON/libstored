@@ -1,6 +1,6 @@
 /*
- * libstored, a Store for Embedded Debugger.
- * Copyright (C) 2020  Jochem Rutgers
+ * libstored, distributed debuggable data stores.
+ * Copyright (C) 2020-2021  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -21,9 +21,20 @@ import QtQuick 2.12
 Item {
     id: comp
 
-    required property string name
-    property var obj: client && name ? client.obj(name) : null
+    required property var ref
+    property var obj: null
+    property string name: obj ? obj.name : ""
     property real pollInterval: 1
+
+    onRefChanged: {
+        if(typeof(ref) != "string") {
+            obj = ref
+        } else if(typeof(client) == "undefined") {
+            obj = null
+        } else {
+            obj = client.obj(ref)
+        }
+    }
 
     onObjChanged: {
         if(obj) {
@@ -35,6 +46,8 @@ Item {
                 else
                     obj.asyncRead()
             }
+        } else {
+            value = null
         }
     }
 

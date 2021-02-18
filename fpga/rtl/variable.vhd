@@ -1,5 +1,5 @@
--- libstored, a Store for Embedded Debugger.
--- Copyright (C) 2020  Jochem Rutgers
+-- libstored, distributed debuggable data stores.
+-- Copyright (C) 2020-2021  Jochem Rutgers
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU Lesser General Public License as published by
@@ -88,7 +88,7 @@ architecture rtl of libstored_variable is
 	constant VAR_WRITE : boolean := VAR_ACCESS = ACCESS_WO or VAR_ACCESS = ACCESS_RW;
 
 	signal data_in_i, data, data_update, data_snapshot : std_logic_vector(DATA_INIT'length - 1 downto 0);
-	signal data_in_we_i, data_out_updated_i, data_out_changed : std_logic;
+	signal data_in_we_i, data_update_valid, data_out_updated_i, data_out_changed : std_logic;
 
 	signal sync_out_have_changes_i, sync_in_commit_r : std_logic;
 begin
@@ -135,13 +135,13 @@ begin
 
 	data_in_i <=
 		data_in when VAR_WRITE and data_in_we = '1' else
-		data_update when VAR_READ and sync_in_commit = '1' else
+		data_update when VAR_READ and sync_in_commit = '1' and data_update_valid = '1' else
 		(others => '-');
 
 	data_in_we_i <=
-		data_in_we or sync_in_commit when VAR_READ and VAR_WRITE else
+		data_in_we or (sync_in_commit and data_update_valid) when VAR_READ and VAR_WRITE else
 		data_in_we when not VAR_READ and VAR_WRITE else
-		sync_in_commit when VAR_READ and not VAR_WRITE else
+		sync_in_commit and data_update_valid when VAR_READ and not VAR_WRITE else
 		'0';
 
 	data_out_updated <=
@@ -294,8 +294,20 @@ begin
 			if rising_edge(clk) then
 				r <= r_in;
 
-				if VAR_READ and r_in.save = '1' then
-					data_update <= r_in.data;
+				if VAR_READ then
+					if r_in.save = '1' then
+						data_update <= r_in.data;
+						data_update_valid <= '1';
+					elsif data_in_we_i = '1' then
+--pragma translate_off
+						data_update <= (others => '-');
+--pragma translate_on
+						data_update_valid <= '0';
+					end if;
+
+					if rstn /= '1' then
+						data_update_valid <= '0';
+					end if;
 				end if;
 			end if;
 		end process;
@@ -551,8 +563,16 @@ begin
 	assert DATA_BITS mod 8 = 0 report "Data width not multiple of bytes" severity failure;
 	assert KEY'length mod 8 = 0 report "Key width not multiple of bytes" severity failure;
 	assert LEN_LENGTH mod 8 = 0 report "Len width not multiple of bytes" severity failure;
-	assert not (not VAR_WRITE and rising_edge(clk) and data_in_we = '1')
-		report "Writing non-writable variable" severity warning;
+
+	process
+	begin
+		while true loop
+			wait until not VAR_WRITE and rstn = '1' and rising_edge(clk) and data_in_we = '1';
+			report "Writing non-writable variable" severity warning;
+			wait until rising_edge(clk) and data_in_we = '0';
+		end loop;
+		wait;
+	end process;
 --pragma translate_on
 end rtl;
 

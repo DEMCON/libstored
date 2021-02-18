@@ -1,7 +1,8 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-	<file>Components/Input.qml</file>
-	<file>Components/Measurement.qml</file>
-	<file>Components/StoreObject.qml</file>
+	<file alias="libstored/Components/Input.qml">Components/Input.qml</file>
+	<file alias="libstored/Components/Measurement.qml">Components/Measurement.qml</file>
+	<file alias="libstored/Components/StoreObject.qml">Components/StoreObject.qml</file>
+	<file alias="libstored/Components/qmldir">Components/qmldir</file>
 </qresource>
 </RCC>

@@ -38,7 +38,10 @@ if errorlevel 1 goto error
 python.exe -m pip install wheel
 if errorlevel 1 goto error
 
-python.exe -m pip install textx jinja2 pyzmq pyside2 pyserial lognplot PyQt5 natsort crcmod heatshrink2 Sphinx sphinx-rtd-theme sphinxcontrib-plantuml breathe sphinxcontrib-wavedrom
+python.exe -m pip install -r scripts\requirements.txt
+if errorlevel 1 goto error
+
+python.exe -m pip install PyQt5
 if errorlevel 1 goto error
 
 :done

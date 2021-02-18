@@ -5,6 +5,10 @@ Misc helper functionality.
 
 .. doxygenclass:: stored::ScratchPad
 
+.. doxygenclass:: stored::Fifo
+
+.. doxygenclass:: stored::MessageFifo
+
 .. doxygendefine:: likely
 
 .. doxygendefine:: unlikely

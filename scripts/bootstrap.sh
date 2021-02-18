@@ -15,9 +15,8 @@ case `uname -s` in
 			python3 python3-pip python3-setuptools \
 			python3-pyqt5 python3-pyqt5.qtquick \
 			spin plantuml
-		/usr/bin/pip3 install wheel
-		/usr/bin/pip3 install jinja2 textx pyzmq pyside2 pyserial lognplot natsort crcmod heatshrink2 \
-			Sphinx sphinx-rtd-theme sphinxcontrib-plantuml breathe sphinxcontrib-wavedrom
+		python3 -m pip install wheel
+		python3 -m pip install -r scripts/requirements.txt
 
 		if ! python3 -V | awk '$2~/^3.[0-6]/{exit 1}'; then
 			# lognplot's server needs python 3.7+
@@ -43,8 +42,7 @@ case `uname -s` in
 		install_or_upgrade doxygen
 		install_or_upgrade plantuml
 		pip3 install wheel
-		pip3 install jinja2 textx pyzmq pyside2 pyserial lognplot natsort crcmod heatshrink2 \
-			Sphinx sphinx-rtd-theme sphinxcontrib-plantuml breathe sphinxcontrib-wavedrom
+		pip3 install -r scripts/requirements.txt
 		;;
 	*)
 		echo "Unknown OS"

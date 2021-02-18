@@ -1,8 +1,8 @@
-#ifndef __LIBSTORED_SYNCHRONIZER_H
-#define __LIBSTORED_SYNCHRONIZER_H
+#ifndef LIBSTORED_SYNCHRONIZER_H
+#define LIBSTORED_SYNCHRONIZER_H
 /*
- * libstored, a Store for Embedded Debugger.
- * Copyright (C) 2020  Jochem Rutgers
+ * libstored, distributed debuggable data stores.
+ * Copyright (C) 2020-2021  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -542,4 +542,4 @@ private:
 
 } // namespace
 #endif // __cplusplus
-#endif // __LIBSTORED_SYNCHRONIZER_H
+#endif // LIBSTORED_SYNCHRONIZER_H

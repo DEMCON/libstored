@@ -1,8 +1,8 @@
-#ifndef __LIBSTORED_H
-#define __LIBSTORED_H
+#ifndef LIBSTORED_H
+#define LIBSTORED_H
 /*
- * libstored, a Store for Embedded Debugger.
- * Copyright (C) 2020  Jochem Rutgers
+ * libstored, distributed debuggable data stores.
+ * Copyright (C) 2020-2021  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -27,5 +27,6 @@
 #include <libstored/synchronizer.h>
 #include <libstored/poller.h>
 #include <libstored/compress.h>
+#include <libstored/fifo.h>
 
-#endif // __LIBSTORED_H
+#endif // LIBSTORED_H

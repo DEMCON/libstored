@@ -1,6 +1,6 @@
 /*
- * libstored, a Store for Embedded Debugger.
- * Copyright (C) 2020  Jochem Rutgers
+ * libstored, distributed debuggable data stores.
+ * Copyright (C) 2020-2021  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,7 +23,7 @@ Measurement {
     readOnly: false
     pollInterval: 0
 
-    property bool editing: activeFocus && displayText != o.valueString
+    property bool editing: activeFocus && displayText != valueFormatted
 
     property bool _edited: false
     onEditingChanged : {
@@ -33,17 +33,22 @@ Measurement {
         }
     }
 
-    color: editing ? "red" : refreshed && !_edited ? "blue" : "black"
+    property bool valid: true
+    property color validBackgroundColor: "white"
+    property color invalidBackgroundColor: "#ffe0e0"
+    palette.base: valid ? validBackgroundColor : invalidBackgroundColor
+
+    color: editing ? "red" : !connected ? "gray" : refreshed && !_edited ? "blue" : "black"
     text: ""
 
     onAccepted: {
         o.set(displayText)
-        Qt.callLater(function() { text = o.valueString })
+        Qt.callLater(function() { text = valueFormatted })
     }
 
     onActiveFocusChanged: {
         if(activeFocus)
-            text = o.valueString
+            text = valueFormatted
         else
             text = _text
     }

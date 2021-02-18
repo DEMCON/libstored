@@ -1,8 +1,8 @@
-#ifndef __LIBSTORED_POLLER_H
-#define __LIBSTORED_POLLER_H
+#ifndef LIBSTORED_POLLER_H
+#define LIBSTORED_POLLER_H
 /*
- * libstored, a Store for Embedded Debugger.
- * Copyright (C) 2020  Jochem Rutgers
+ * libstored, distributed debuggable data stores.
+ * Copyright (C) 2020-2021  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -342,4 +342,4 @@ namespace stored {
 
 } // namespace
 #endif // __cplusplus
-#endif // __LIBSTORED_POLLER_H
+#endif // LIBSTORED_POLLER_H

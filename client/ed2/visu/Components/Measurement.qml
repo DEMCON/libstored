@@ -1,6 +1,6 @@
 /*
- * libstored, a Store for Embedded Debugger.
- * Copyright (C) 2020  Jochem Rutgers
+ * libstored, distributed debuggable data stores.
+ * Copyright (C) 2020-2021  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,6 +23,7 @@ TextField {
     id: comp
 
     background.antialiasing: true
+
     topPadding: 0
     bottomPadding: 0
     leftPadding: 0
@@ -31,17 +32,48 @@ TextField {
 
     property string unit: ''
 
-    property alias obj: o.name
+    property alias ref: o.ref
+    property alias obj: o.obj
     property alias pollInterval: o.pollInterval
     property alias refreshed: o.refreshed
+    property alias value: o.value
+    property bool connected: o.obj !== null
 
     property var o: StoreObject {
         id: o
     }
 
-    property string _text: unit === '' ? o.valueString : o.valueString + ' ' + unit
+    // Specify a (lambda) function, which will be used to convert the value
+    // to a string. If null, the valueString of the object is used.
+    property var formatter: null
+
+    property string valueFormatted: {
+        var s;
+
+        if(!connected)
+            s = '';
+        else if(formatter)
+            s = formatter(o.value);
+        else
+            s = o.valueString;
+
+        return s
+    }
+
+    property string _text: {
+        var s = '';
+        if(!connected)
+            s = '?';
+        else
+            s = valueFormatted;
+
+        if(unit != '')
+            s += ' ' + unit
+
+        return s
+    }
     text: _text
 
-    color: refreshed ? "blue" : "black"
+    color: !connected ? "gray" : refreshed ? "blue" : "black"
 }
 

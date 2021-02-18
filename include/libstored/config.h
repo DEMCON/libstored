@@ -1,8 +1,8 @@
-#ifndef __LIBSTORED_CONFIG_H
-#define __LIBSTORED_CONFIG_H
+#ifndef LIBSTORED_CONFIG_H
+#define LIBSTORED_CONFIG_H
 /*
- * libstored, a Store for Embedded Debugger.
- * Copyright (C) 2020  Jochem Rutgers
+ * libstored, distributed debuggable data stores.
+ * Copyright (C) 2020-2021  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -146,5 +146,5 @@ namespace stored {
 
 #include "stored_config.h"
 
-#endif // __LIBSTORED_CONFIG_H
+#endif // LIBSTORED_CONFIG_H
 
