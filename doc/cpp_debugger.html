@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Debugger &mdash; libstored  documentation</title>
   
@@ -16,7 +16,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -29,7 +32,6 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -51,7 +53,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libstored
+            <a href="../index.html" class="icon icon-home"> libstored
           
 
           
@@ -162,6 +164,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -175,7 +179,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/doc/cpp_debugger.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -495,7 +499,7 @@ than the actual tracing speed.</p>
 <h2>stored::Debugger<a class="headerlink" href="#stored-debugger" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp class">
 <dt id="_CPPv4N6stored8DebuggerE">
-<span id="_CPPv3N6stored8DebuggerE"></span><span id="_CPPv2N6stored8DebuggerE"></span><span id="stored::Debugger"></span><span class="target" id="classstored_1_1_debugger"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Debugger</code> : <em class="property">public</em> stored::<a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a><a class="headerlink" href="#_CPPv4N6stored8DebuggerE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8DebuggerE"></span><span id="_CPPv2N6stored8DebuggerE"></span><span id="stored::Debugger"></span><span class="target" id="classstored_1_1_debugger"></span><em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">stored</span><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">Debugger</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <span class="pre">stored</span><span class="pre">::</span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="pre">ProtocolLayer</span></a><a class="headerlink" href="#_CPPv4N6stored8DebuggerE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The application-layer implementation of the Embedded Debugger protocol. </p>
 <p>To use the <a class="reference internal" href="#classstored_1_1_debugger"><span class="std std-ref">Debugger</span></a> in your application:</p>
 <p><ul class="simple">
@@ -510,7 +514,7 @@ than the actual tracing speed.</p>
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N6stored8Debugger12ListCallbackE">
-<span id="_CPPv3N6stored8Debugger12ListCallbackE"></span><span id="_CPPv2N6stored8Debugger12ListCallbackE"></span><span class="target" id="classstored_1_1_debugger_1a1d40099f79daa811598bc8add4cb1f57"></span><em class="property">using </em><code class="sig-name descname">ListCallback</code> = void<span class="sig-paren">(</span>char <em class="property">const</em>*, <a class="reference internal" href="#_CPPv4N6stored12DebugVariantE" title="stored::DebugVariant">DebugVariant</a>&amp;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger12ListCallbackE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger12ListCallbackE"></span><span id="_CPPv2N6stored8Debugger12ListCallbackE"></span><span class="target" id="classstored_1_1_debugger_1a1d40099f79daa811598bc8add4cb1f57"></span><em class="property"><span class="pre">using</span> </em><code class="sig-name descname"><span class="pre">ListCallback</span></code> <span class="pre">=</span> <span class="pre">void</span><span class="sig-paren">(</span><span class="pre">char</span> <em class="property"><span class="pre">const</span></em><span class="pre">*</span>, <a class="reference internal" href="#_CPPv4N6stored12DebugVariantE" title="stored::DebugVariant"><span class="pre">DebugVariant</span></a><span class="pre">&amp;</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger12ListCallbackE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Callback function prototype as supplied to <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_debugger_1a52c30ab3e1c2bb160c96c65725e6b248"><span class="std std-ref"><span class="pre">list()</span></span></a></code>. </p>
 <p>It receives the name of the object, and the corresponding <a class="reference internal" href="#classstored_1_1_debug_variant"><span class="std std-ref">stored::DebugVariant</span></a> of the object.</p>
 <p><dl class="simple">
@@ -522,7 +526,7 @@ than the actual tracing speed.</p>
 
 <dl class="cpp type">
 <dt id="_CPPv4N6stored8Debugger15ListCallbackArgE">
-<span id="_CPPv3N6stored8Debugger15ListCallbackArgE"></span><span id="_CPPv2N6stored8Debugger15ListCallbackArgE"></span><span id="stored::Debugger::ListCallbackArg"></span><span class="target" id="classstored_1_1_debugger_1ae12fb095444cb839c2ec6b8ddf57f1ac"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4N6stored14DebugStoreBaseE" title="stored::DebugStoreBase">DebugStoreBase</a>::<a class="reference internal" href="#_CPPv4N6stored14DebugStoreBase15ListCallbackArgE" title="stored::DebugStoreBase::ListCallbackArg">ListCallbackArg</a> <code class="sig-name descname">ListCallbackArg</code><a class="headerlink" href="#_CPPv4N6stored8Debugger15ListCallbackArgE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger15ListCallbackArgE"></span><span id="_CPPv2N6stored8Debugger15ListCallbackArgE"></span><span id="stored::Debugger::ListCallbackArg"></span><span class="target" id="classstored_1_1_debugger_1ae12fb095444cb839c2ec6b8ddf57f1ac"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="#_CPPv4N6stored14DebugStoreBaseE" title="stored::DebugStoreBase"><span class="pre">DebugStoreBase</span></a><span class="pre">::</span><a class="reference internal" href="#_CPPv4N6stored14DebugStoreBase15ListCallbackArgE" title="stored::DebugStoreBase::ListCallbackArg"><span class="pre">ListCallbackArg</span></a> <code class="sig-name descname"><span class="pre">ListCallbackArg</span></code><a class="headerlink" href="#_CPPv4N6stored8Debugger15ListCallbackArgE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Callback function prototype as supplied to <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_debugger_1a52c30ab3e1c2bb160c96c65725e6b248"><span class="std std-ref"><span class="pre">list()</span></span></a></code>. </p>
 <p>It receives the name of the object, the corresponding <a class="reference internal" href="#classstored_1_1_debug_variant"><span class="std std-ref">stored::DebugVariant</span></a> of the object, and the <code class="docutils literal notranslate"><span class="pre">arg</span></code> value, as passed to <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_debugger_1a52c30ab3e1c2bb160c96c65725e6b248"><span class="std std-ref"><span class="pre">list()</span></span></a></code>.</p>
 <p><dl class="simple">
@@ -534,7 +538,7 @@ than the actual tracing speed.</p>
 
 <dl class="cpp type">
 <dt id="_CPPv4N6stored8Debugger8StoreMapE">
-<span id="_CPPv3N6stored8Debugger8StoreMapE"></span><span id="_CPPv2N6stored8Debugger8StoreMapE"></span><span id="stored::Debugger::StoreMap"></span><span class="target" id="classstored_1_1_debugger_1a54e810f8654981f13ec8915196def84d"></span><em class="property">typedef </em>std::map&lt;char <em class="property">const</em>*, std::unique_ptr&lt;<a class="reference internal" href="#_CPPv4N6stored14DebugStoreBaseE" title="stored::DebugStoreBase">DebugStoreBase</a>&gt;, <a class="reference internal" href="#_CPPv4N6stored8Debugger21StorePrefixComparatorE" title="stored::Debugger::StorePrefixComparator">StorePrefixComparator</a>&gt; <code class="sig-name descname">StoreMap</code><a class="headerlink" href="#_CPPv4N6stored8Debugger8StoreMapE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger8StoreMapE"></span><span id="_CPPv2N6stored8Debugger8StoreMapE"></span><span id="stored::Debugger::StoreMap"></span><span class="target" id="classstored_1_1_debugger_1a54e810f8654981f13ec8915196def84d"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">std</span><span class="pre">::</span><span class="pre">map</span><span class="pre">&lt;</span><span class="pre">char</span> <em class="property"><span class="pre">const</span></em><span class="pre">*</span><span class="pre">,</span> <span class="pre">std</span><span class="pre">::</span><span class="pre">unique_ptr</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored14DebugStoreBaseE" title="stored::DebugStoreBase"><span class="pre">DebugStoreBase</span></a><span class="pre">&gt;</span><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored8Debugger21StorePrefixComparatorE" title="stored::Debugger::StorePrefixComparator"><span class="pre">StorePrefixComparator</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">StoreMap</span></code><a class="headerlink" href="#_CPPv4N6stored8Debugger8StoreMapE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The map to used by <a class="reference internal" href="#classstored_1_1_debugger_1ae9f2965b44b4549ee4d05a48477c7655"><span class="std std-ref">map()</span></a>, which maps names to stores. </p>
 </dd></dl>
 
@@ -543,19 +547,19 @@ than the actual tracing speed.</p>
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8Debugger8DebuggerERK8Debugger">
-<span id="_CPPv3N6stored8Debugger8DebuggerERK8Debugger"></span><span id="_CPPv2N6stored8Debugger8DebuggerERK8Debugger"></span><span id="stored::Debugger::Debugger__DebuggerCR"></span><span class="target" id="classstored_1_1_debugger_1a45b234654d9c4aa76ffad67a9cb9d4a8"></span><code class="sig-name descname">Debugger</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored8Debugger8DebuggerERK8Debugger" title="stored::Debugger::Debugger">Debugger</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored8Debugger8DebuggerERK8Debugger" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger8DebuggerERK8Debugger"></span><span id="_CPPv2N6stored8Debugger8DebuggerERK8Debugger"></span><span id="stored::Debugger::Debugger__DebuggerCR"></span><span class="target" id="classstored_1_1_debugger_1a45b234654d9c4aa76ffad67a9cb9d4a8"></span><code class="sig-name descname"><span class="pre">Debugger</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored8Debugger8DebuggerERK8Debugger" title="stored::Debugger::Debugger"><span class="pre">Debugger</span></a> <em class="property"><span class="pre">const</span></em><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored8Debugger8DebuggerERK8Debugger" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted copy constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8Debugger8DebuggerERR8Debugger">
-<span id="_CPPv3N6stored8Debugger8DebuggerERR8Debugger"></span><span id="_CPPv2N6stored8Debugger8DebuggerERR8Debugger"></span><span id="stored::Debugger::Debugger__DebuggerRR"></span><span class="target" id="classstored_1_1_debugger_1ac8da1005e5fc1852cf017c2e123f26c6"></span><code class="sig-name descname">Debugger</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored8Debugger8DebuggerERR8Debugger" title="stored::Debugger::Debugger">Debugger</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored8Debugger8DebuggerERR8Debugger" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger8DebuggerERR8Debugger"></span><span id="_CPPv2N6stored8Debugger8DebuggerERR8Debugger"></span><span id="stored::Debugger::Debugger__DebuggerRR"></span><span class="target" id="classstored_1_1_debugger_1ac8da1005e5fc1852cf017c2e123f26c6"></span><code class="sig-name descname"><span class="pre">Debugger</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored8Debugger8DebuggerERR8Debugger" title="stored::Debugger::Debugger"><span class="pre">Debugger</span></a><span class="pre">&amp;</span><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored8Debugger8DebuggerERR8Debugger" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8Debugger8DebuggerEPKcPKc">
-<span id="_CPPv3N6stored8Debugger8DebuggerEPKcPKc"></span><span id="_CPPv2N6stored8Debugger8DebuggerEPKcPKc"></span><span id="stored::Debugger::Debugger__cCP.cCP"></span><span class="target" id="classstored_1_1_debugger_1a2d72ccca18b5c8351115c208d467204f"></span><code class="sig-name descname">Debugger</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>identification</em> = nullptr, char <em class="property">const</em> *<em>versions</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger8DebuggerEPKcPKc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger8DebuggerEPKcPKc"></span><span id="_CPPv2N6stored8Debugger8DebuggerEPKcPKc"></span><span id="stored::Debugger::Debugger__cCP.cCP"></span><span class="target" id="classstored_1_1_debugger_1a2d72ccca18b5c8351115c208d467204f"></span><em class="property"><span class="pre">explicit</span></em> <code class="sig-name descname"><span class="pre">Debugger</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">identification</span></em> <span class="pre">=</span> <span class="pre">nullptr</span>, <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">versions</span></em> <span class="pre">=</span> <span class="pre">nullptr</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger8DebuggerEPKcPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Constructor. </p>
 <p><dl class="simple">
 <dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_debugger_1a58172b25824dcf4d0347b6f101f333e8"><span class="std std-ref">setIdentification()</span></a> </p>
@@ -573,13 +577,13 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8DebuggerD0Ev">
-<span id="_CPPv3N6stored8DebuggerD0Ev"></span><span id="_CPPv2N6stored8DebuggerD0Ev"></span><span id="stored::Debugger::~Debugger"></span><span class="target" id="classstored_1_1_debugger_1a571cde110ec9f6ee1a7b1b082342edda"></span><code class="sig-name descname">~Debugger</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6stored8DebuggerD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8DebuggerD0Ev"></span><span id="_CPPv2N6stored8DebuggerD0Ev"></span><span id="stored::Debugger::~Debugger"></span><span class="target" id="classstored_1_1_debugger_1a571cde110ec9f6ee1a7b1b082342edda"></span><em class="property"><span class="pre">virtual</span></em> <code class="sig-name descname"><span class="pre">~Debugger</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4N6stored8DebuggerD0Ev" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Destructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8Debugger12capabilitiesERPcR6size_t6size_t">
-<span id="_CPPv3N6stored8Debugger12capabilitiesERPcR6size_t6size_t"></span><span id="_CPPv2N6stored8Debugger12capabilitiesERPcR6size_t6size_t"></span><span id="stored::Debugger::capabilities__cPR.sR.s"></span><span class="target" id="classstored_1_1_debugger_1ace1f0eb1dddf86514791ead65ae028fd"></span>void <code class="sig-name descname">capabilities</code><span class="sig-paren">(</span>char *&amp;<em>list</em>, size_t &amp;<em>len</em>, size_t <em>reserve</em> = 0<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger12capabilitiesERPcR6size_t6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger12capabilitiesERPcR6size_t6size_t"></span><span id="_CPPv2N6stored8Debugger12capabilitiesERPcR6size_t6size_t"></span><span id="stored::Debugger::capabilities__cPR.sR.s"></span><span class="target" id="classstored_1_1_debugger_1ace1f0eb1dddf86514791ead65ae028fd"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">capabilities</span></code><span class="sig-paren">(</span><span class="pre">char</span> <span class="pre">*</span><span class="pre">&amp;</span><em><span class="pre">list</span></em>, <span class="pre">size_t</span> <span class="pre">&amp;</span><em><span class="pre">len</span></em>, <span class="pre">size_t</span> <em><span class="pre">reserve</span></em> <span class="pre">=</span> <span class="pre">0</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger12capabilitiesERPcR6size_t6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Get the capabilities as supported by this <a class="reference internal" href="#classstored_1_1_debugger"><span class="std std-ref">Debugger</span></a>. </p>
 <p>The <code class="docutils literal notranslate"><span class="pre">list</span></code> is allocated on the spm(). The pointer and the length are returned through the <code class="docutils literal notranslate"><span class="pre">list</span></code> and <code class="docutils literal notranslate"><span class="pre">len</span></code> arguments.</p>
 <p><dl class="simple">
@@ -595,14 +599,14 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8Debugger6decodeEPv6size_t">
-<span id="_CPPv3N6stored8Debugger6decodeEPv6size_t"></span><span id="_CPPv2N6stored8Debugger6decodeEPv6size_t"></span><span id="stored::Debugger::decode__voidP.s"></span><span class="target" id="classstored_1_1_debugger_1ab898cc1ca7b88385ea50b39aa9d310ee"></span>void <code class="sig-name descname">decode</code><span class="sig-paren">(</span>void *<em>buffer</em>, size_t <em>len</em><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6stored8Debugger6decodeEPv6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger6decodeEPv6size_t"></span><span id="_CPPv2N6stored8Debugger6decodeEPv6size_t"></span><span id="stored::Debugger::decode__voidP.s"></span><span class="target" id="classstored_1_1_debugger_1ab898cc1ca7b88385ea50b39aa9d310ee"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">decode</span></code><span class="sig-paren">(</span><span class="pre">void</span> <span class="pre">*</span><em><span class="pre">buffer</span></em>, <span class="pre">size_t</span> <em><span class="pre">len</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4N6stored8Debugger6decodeEPv6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Decode a frame and forward the decoded frame to the upper layer. </p>
 <p>The given buffer may be decoded in-place. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored8Debugger4findEPKc6size_t">
-<span id="_CPPv3NK6stored8Debugger4findEPKc6size_t"></span><span id="_CPPv2NK6stored8Debugger4findEPKc6size_t"></span><span id="stored::Debugger::find__cCP.sC"></span><span class="target" id="classstored_1_1_debugger_1aa5cdcafd35a4ed86e39426c5068a29cf"></span><a class="reference internal" href="#_CPPv4N6stored12DebugVariantE" title="stored::DebugVariant">DebugVariant</a> <code class="sig-name descname">find</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>name</em>, size_t <em>len</em> = std::numeric_limits&lt;size_t&gt;::max()<span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored8Debugger4findEPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored8Debugger4findEPKc6size_t"></span><span id="_CPPv2NK6stored8Debugger4findEPKc6size_t"></span><span id="stored::Debugger::find__cCP.sC"></span><span class="target" id="classstored_1_1_debugger_1aa5cdcafd35a4ed86e39426c5068a29cf"></span><a class="reference internal" href="#_CPPv4N6stored12DebugVariantE" title="stored::DebugVariant"><span class="pre">DebugVariant</span></a> <code class="sig-name descname"><span class="pre">find</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">name</span></em>, <span class="pre">size_t</span> <em><span class="pre">len</span></em> <span class="pre">=</span> <span class="pre">std</span><span class="pre">::</span><span class="pre">numeric_limits</span><span class="pre">&lt;</span><span class="pre">size_t</span><span class="pre">&gt;</span><span class="pre">::</span><span class="pre">max</span><span class="pre">(</span><span class="pre">)</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored8Debugger4findEPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Performs a lookup of the given object name. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>a <a class="reference internal" href="#classstored_1_1_debug_variant"><span class="std std-ref">stored::DebugVariant</span></a>, which is invalid when the object was not found. </p>
@@ -618,7 +622,7 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8Debugger14identificationEv">
-<span id="_CPPv3N6stored8Debugger14identificationEv"></span><span id="_CPPv2N6stored8Debugger14identificationEv"></span><span id="stored::Debugger::identification"></span><span class="target" id="classstored_1_1_debugger_1a31663206e779bf86e74180fcc956a67a"></span>char <em class="property">const</em> *<code class="sig-name descname">identification</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger14identificationEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger14identificationEv"></span><span id="_CPPv2N6stored8Debugger14identificationEv"></span><span id="stored::Debugger::identification"></span><span class="target" id="classstored_1_1_debugger_1a31663206e779bf86e74180fcc956a67a"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><code class="sig-name descname"><span class="pre">identification</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger14identificationEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the identification. </p>
 <p><dl class="simple">
 <dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_debugger_1a58172b25824dcf4d0347b6f101f333e8"><span class="std std-ref">setIdentification()</span></a> </p>
@@ -629,7 +633,7 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored8Debugger4listEP15ListCallbackArgPv">
-<span id="_CPPv3NK6stored8Debugger4listEP15ListCallbackArgPv"></span><span id="_CPPv2NK6stored8Debugger4listEP15ListCallbackArgPv"></span><span id="stored::Debugger::list__ListCallbackArgP.voidPC"></span><span class="target" id="classstored_1_1_debugger_1a52c30ab3e1c2bb160c96c65725e6b248"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored8Debugger15ListCallbackArgE" title="stored::Debugger::ListCallbackArg">ListCallbackArg</a> *<em>f</em>, void *<em>arg</em> = nullptr<span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored8Debugger4listEP15ListCallbackArgPv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored8Debugger4listEP15ListCallbackArgPv"></span><span id="_CPPv2NK6stored8Debugger4listEP15ListCallbackArgPv"></span><span id="stored::Debugger::list__ListCallbackArgP.voidPC"></span><span class="target" id="classstored_1_1_debugger_1a52c30ab3e1c2bb160c96c65725e6b248"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">list</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored8Debugger15ListCallbackArgE" title="stored::Debugger::ListCallbackArg"><span class="pre">ListCallbackArg</span></a> <span class="pre">*</span><em><span class="pre">f</span></em>, <span class="pre">void</span> <span class="pre">*</span><em><span class="pre">arg</span></em> <span class="pre">=</span> <span class="pre">nullptr</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored8Debugger4listEP15ListCallbackArgPv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Iterates over the directory and invoke a callback for every object. </p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
@@ -643,7 +647,7 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4I0ENK6stored8Debugger4listERR1F">
-<span id="_CPPv3I0ENK6stored8Debugger4listERR1F"></span><span id="_CPPv2I0ENK6stored8Debugger4listERR1F"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_debugger_1a55c61c7d9c075cb84fe56e701d86bcd2"></span><code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0ENK6stored8Debugger4listERR1F" title="stored::Debugger::list::F">F</a> &amp;&amp;<em>f</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4I0ENK6stored8Debugger4listERR1F" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I0ENK6stored8Debugger4listERR1F"></span><span id="_CPPv2I0ENK6stored8Debugger4listERR1F"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">F</span></code><span class="pre">&gt;</span><br /><span class="target" id="classstored_1_1_debugger_1a55c61c7d9c075cb84fe56e701d86bcd2"></span><em class="property"><span class="pre">inline</span></em> <code class="sig-name descname"><span class="pre">list</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0ENK6stored8Debugger4listERR1F" title="stored::Debugger::list::F"><span class="pre">F</span></a> <span class="pre">&amp;</span><span class="pre">&amp;</span><em><span class="pre">f</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4I0ENK6stored8Debugger4listERR1F" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Iterates over the directory and invoke a callback for every object. </p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
@@ -656,26 +660,26 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4I0EN6stored8Debugger3mapEvR5StorePKc">
-<span id="_CPPv3I0EN6stored8Debugger3mapER5StorePKc"></span><span id="_CPPv2I0EN6stored8Debugger3mapER5StorePKc"></span>template&lt;typename <code class="sig-name descname">Store</code>&gt;<br /><span class="target" id="classstored_1_1_debugger_1ae9f2965b44b4549ee4d05a48477c7655"></span>void <code class="sig-name descname">map</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored8Debugger3mapEvR5StorePKc" title="stored::Debugger::map::Store">Store</a> &amp;<em>store</em>, char <em class="property">const</em> *<em>name</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored8Debugger3mapEvR5StorePKc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I0EN6stored8Debugger3mapER5StorePKc"></span><span id="_CPPv2I0EN6stored8Debugger3mapER5StorePKc"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">Store</span></code><span class="pre">&gt;</span><br /><span class="target" id="classstored_1_1_debugger_1ae9f2965b44b4549ee4d05a48477c7655"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">map</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored8Debugger3mapEvR5StorePKc" title="stored::Debugger::map::Store"><span class="pre">Store</span></a> <span class="pre">&amp;</span><em><span class="pre">store</span></em>, <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">name</span></em> <span class="pre">=</span> <span class="pre">nullptr</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored8Debugger3mapEvR5StorePKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Register a store to this <a class="reference internal" href="#classstored_1_1_debugger"><span class="std std-ref">Debugger</span></a>. </p>
 <p>If there is only one store registered, all objects of that store are accessible using the names as defined by the store. If multiple stores are mapped, all objects are prefixed using either the prefix supplied to <a class="reference internal" href="#classstored_1_1_debugger_1ae9f2965b44b4549ee4d05a48477c7655"><span class="std std-ref">map()</span></a>, or using the store’s name when <code class="docutils literal notranslate"><span class="pre">name</span></code> is <code class="docutils literal notranslate"><span class="pre">nullptr</span></code>. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8DebuggeraSERR8Debugger">
-<span id="_CPPv3N6stored8DebuggeraSERR8Debugger"></span><span id="_CPPv2N6stored8DebuggeraSERR8Debugger"></span><span id="stored::Debugger::assign-operator__DebuggerRR"></span><span class="target" id="classstored_1_1_debugger_1a076316aa96bd6f0f81fd27a49f285cf9"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored8DebuggerE" title="stored::Debugger">Debugger</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored8DebuggeraSERR8Debugger" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8DebuggeraSERR8Debugger"></span><span id="_CPPv2N6stored8DebuggeraSERR8Debugger"></span><span id="stored::Debugger::assign-operator__DebuggerRR"></span><span class="target" id="classstored_1_1_debugger_1a076316aa96bd6f0f81fd27a49f285cf9"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored8DebuggerE" title="stored::Debugger"><span class="pre">Debugger</span></a><span class="pre">&amp;</span><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored8DebuggeraSERR8Debugger" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8DebuggeraSERK8Debugger">
-<span id="_CPPv3N6stored8DebuggeraSERK8Debugger"></span><span id="_CPPv2N6stored8DebuggeraSERK8Debugger"></span><span id="stored::Debugger::assign-operator__DebuggerCR"></span><span class="target" id="classstored_1_1_debugger_1a5cdeaf0fda42b6c7d4538a67cebeec0e"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored8DebuggerE" title="stored::Debugger">Debugger</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored8DebuggeraSERK8Debugger" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8DebuggeraSERK8Debugger"></span><span id="_CPPv2N6stored8DebuggeraSERK8Debugger"></span><span id="stored::Debugger::assign-operator__DebuggerCR"></span><span class="target" id="classstored_1_1_debugger_1a5cdeaf0fda42b6c7d4538a67cebeec0e"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored8DebuggerE" title="stored::Debugger"><span class="pre">Debugger</span></a> <em class="property"><span class="pre">const</span></em><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored8DebuggeraSERK8Debugger" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8Debugger7processEPKv6size_tR13ProtocolLayer">
-<span id="_CPPv3N6stored8Debugger7processEPKv6size_tR13ProtocolLayer"></span><span id="_CPPv2N6stored8Debugger7processEPKv6size_tR13ProtocolLayer"></span><span id="stored::Debugger::process__voidCP.s.ProtocolLayerR"></span><span class="target" id="classstored_1_1_debugger_1ab790d058db43fd5953758001e361cf3b"></span>void <code class="sig-name descname">process</code><span class="sig-paren">(</span>void <em class="property">const</em> *<em>frame</em>, size_t <em>len</em>, <a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a> &amp;<em>response</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger7processEPKv6size_tR13ProtocolLayer" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger7processEPKv6size_tR13ProtocolLayer"></span><span id="_CPPv2N6stored8Debugger7processEPKv6size_tR13ProtocolLayer"></span><span id="stored::Debugger::process__voidCP.s.ProtocolLayerR"></span><span class="target" id="classstored_1_1_debugger_1ab790d058db43fd5953758001e361cf3b"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">process</span></code><span class="sig-paren">(</span><span class="pre">void</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">frame</span></em>, <span class="pre">size_t</span> <em><span class="pre">len</span></em>, <a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="pre">ProtocolLayer</span></a> <span class="pre">&amp;</span><em><span class="pre">response</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger7processEPKv6size_tR13ProtocolLayer" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Process a Embedded Debugger message. </p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
@@ -690,7 +694,7 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8Debugger17setIdentificationEPKc">
-<span id="_CPPv3N6stored8Debugger17setIdentificationEPKc"></span><span id="_CPPv2N6stored8Debugger17setIdentificationEPKc"></span><span id="stored::Debugger::setIdentification__cCP"></span><span class="target" id="classstored_1_1_debugger_1a58172b25824dcf4d0347b6f101f333e8"></span>void <code class="sig-name descname">setIdentification</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>identification</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger17setIdentificationEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger17setIdentificationEPKc"></span><span id="_CPPv2N6stored8Debugger17setIdentificationEPKc"></span><span id="stored::Debugger::setIdentification__cCP"></span><span class="target" id="classstored_1_1_debugger_1a58172b25824dcf4d0347b6f101f333e8"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">setIdentification</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">identification</span></em> <span class="pre">=</span> <span class="pre">nullptr</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger17setIdentificationEPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Sets the identification. </p>
 <p>The supplied string is not copied; just the pointer is saved, so the string must remain valid while the <a class="reference internal" href="#classstored_1_1_debugger"><span class="std std-ref">Debugger</span></a> has its pointer. So, it is fine to supply a string literal.</p>
 <p><dl class="simple">
@@ -702,7 +706,7 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8Debugger11setVersionsEPKc">
-<span id="_CPPv3N6stored8Debugger11setVersionsEPKc"></span><span id="_CPPv2N6stored8Debugger11setVersionsEPKc"></span><span id="stored::Debugger::setVersions__cCP"></span><span class="target" id="classstored_1_1_debugger_1af6b6842d2ff19f0d9813fe379bf0d07a"></span>void <code class="sig-name descname">setVersions</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>versions</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger11setVersionsEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger11setVersionsEPKc"></span><span id="_CPPv2N6stored8Debugger11setVersionsEPKc"></span><span id="stored::Debugger::setVersions__cCP"></span><span class="target" id="classstored_1_1_debugger_1af6b6842d2ff19f0d9813fe379bf0d07a"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">setVersions</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">versions</span></em> <span class="pre">=</span> <span class="pre">nullptr</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger11setVersionsEPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Set the versions as used by <a class="reference internal" href="#classstored_1_1_debugger_1ab6203b1226153a94c9ba87ae88931d6a"><span class="std std-ref">version()</span></a>. </p>
 <p>The supplied string is not copied; just the pointer is saved, so the string must remain valid while the <a class="reference internal" href="#classstored_1_1_debugger"><span class="std std-ref">Debugger</span></a> has its pointer. So, it is fine to supply a string literal.</p>
 <p><dl class="simple">
@@ -714,13 +718,13 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored8Debugger6storesEv">
-<span id="_CPPv3NK6stored8Debugger6storesEv"></span><span id="_CPPv2NK6stored8Debugger6storesEv"></span><span id="stored::Debugger::storesC"></span><span class="target" id="classstored_1_1_debugger_1aa5d552f9924f8ebc4bb64d36bf48a2c8"></span><a class="reference internal" href="#_CPPv4N6stored8Debugger8StoreMapE" title="stored::Debugger::StoreMap">StoreMap</a> <em class="property">const</em> &amp;<code class="sig-name descname">stores</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored8Debugger6storesEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored8Debugger6storesEv"></span><span id="_CPPv2NK6stored8Debugger6storesEv"></span><span id="stored::Debugger::storesC"></span><span class="target" id="classstored_1_1_debugger_1aa5d552f9924f8ebc4bb64d36bf48a2c8"></span><a class="reference internal" href="#_CPPv4N6stored8Debugger8StoreMapE" title="stored::Debugger::StoreMap"><span class="pre">StoreMap</span></a> <em class="property"><span class="pre">const</span></em> <span class="pre">&amp;</span><code class="sig-name descname"><span class="pre">stores</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored8Debugger6storesEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the mapped stores. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8Debugger6streamEcPKc">
-<span id="_CPPv3N6stored8Debugger6streamEcPKc"></span><span id="_CPPv2N6stored8Debugger6streamEcPKc"></span><span id="stored::Debugger::stream__c.cCP"></span><span class="target" id="classstored_1_1_debugger_1a9beaf6ddceb7169484385623446ade8b"></span>size_t <code class="sig-name descname">stream</code><span class="sig-paren">(</span>char <em>s</em>, char <em class="property">const</em> *<em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger6streamEcPKc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger6streamEcPKc"></span><span id="_CPPv2N6stored8Debugger6streamEcPKc"></span><span id="stored::Debugger::stream__c.cCP"></span><span class="target" id="classstored_1_1_debugger_1a9beaf6ddceb7169484385623446ade8b"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">stream</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em><span class="pre">s</span></em>, <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger6streamEcPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Adds a zero-terminated string to the given stream. </p>
 <p><dl class="simple">
 <dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_debugger_1ae5984c100fffd78efdb1364d077bfbb8"><span class="std std-ref">stream(char, char const*, size_t)</span></a> </p>
@@ -731,7 +735,7 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8Debugger6streamEcPKc6size_t">
-<span id="_CPPv3N6stored8Debugger6streamEcPKc6size_t"></span><span id="_CPPv2N6stored8Debugger6streamEcPKc6size_t"></span><span id="stored::Debugger::stream__c.cCP.s"></span><span class="target" id="classstored_1_1_debugger_1ae5984c100fffd78efdb1364d077bfbb8"></span>size_t <code class="sig-name descname">stream</code><span class="sig-paren">(</span>char <em>s</em>, char <em class="property">const</em> *<em>data</em>, size_t <em>len</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger6streamEcPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger6streamEcPKc6size_t"></span><span id="_CPPv2N6stored8Debugger6streamEcPKc6size_t"></span><span id="stored::Debugger::stream__c.cCP.s"></span><span class="target" id="classstored_1_1_debugger_1ae5984c100fffd78efdb1364d077bfbb8"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">stream</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em><span class="pre">s</span></em>, <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">data</span></em>, <span class="pre">size_t</span> <em><span class="pre">len</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger6streamEcPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Adds a buffer to the given stream. </p>
 <p>This function does not block when the buffer is full.</p>
 <p><dl class="simple">
@@ -749,7 +753,7 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8Debugger6streamEcb">
-<span id="_CPPv3N6stored8Debugger6streamEcb"></span><span id="_CPPv2N6stored8Debugger6streamEcb"></span><span id="stored::Debugger::stream__c.b"></span><span class="target" id="classstored_1_1_debugger_1a9a149dae5b3a6b6cb6e805f0ce12b2a3"></span>Stream *<code class="sig-name descname">stream</code><span class="sig-paren">(</span>char <em>s</em>, bool <em>alloc</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger6streamEcb" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger6streamEcb"></span><span id="_CPPv2N6stored8Debugger6streamEcb"></span><span id="stored::Debugger::stream__c.b"></span><span class="target" id="classstored_1_1_debugger_1a9a149dae5b3a6b6cb6e805f0ce12b2a3"></span><span class="pre">Stream</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">stream</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em><span class="pre">s</span></em>, <span class="pre">bool</span> <em><span class="pre">alloc</span></em> <span class="pre">=</span> <span class="pre">false</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger6streamEcb" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the stream buffer given a stream name. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>the stream or <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> when there is no stream with the given name </p>
@@ -765,7 +769,7 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored8Debugger6streamEc">
-<span id="_CPPv3NK6stored8Debugger6streamEc"></span><span id="_CPPv2NK6stored8Debugger6streamEc"></span><span id="stored::Debugger::stream__cC"></span><span class="target" id="classstored_1_1_debugger_1ad94402b9b01d018e0e8c948149cee9a0"></span>Stream <em class="property">const</em> *<code class="sig-name descname">stream</code><span class="sig-paren">(</span>char <em>s</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored8Debugger6streamEc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored8Debugger6streamEc"></span><span id="_CPPv2NK6stored8Debugger6streamEc"></span><span id="stored::Debugger::stream__cC"></span><span class="target" id="classstored_1_1_debugger_1ad94402b9b01d018e0e8c948149cee9a0"></span><span class="pre">Stream</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><code class="sig-name descname"><span class="pre">stream</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em><span class="pre">s</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored8Debugger6streamEc" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the stream buffer given a stream name. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>the stream or <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> when there is no stream with the given name </p>
@@ -776,7 +780,7 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8Debugger7streamsERPKvR6size_t">
-<span id="_CPPv3N6stored8Debugger7streamsERPKvR6size_t"></span><span id="_CPPv2N6stored8Debugger7streamsERPKvR6size_t"></span><span id="stored::Debugger::streams__voidCPR.sR"></span><span class="target" id="classstored_1_1_debugger_1aa44e53fc3bc28e0161fe1bcaf3c14d94"></span>char <em class="property">const</em> *<code class="sig-name descname">streams</code><span class="sig-paren">(</span>void <em class="property">const</em> *&amp;<em>buffer</em>, size_t &amp;<em>len</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger7streamsERPKvR6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger7streamsERPKvR6size_t"></span><span id="_CPPv2N6stored8Debugger7streamsERPKvR6size_t"></span><span id="stored::Debugger::streams__voidCPR.sR"></span><span class="target" id="classstored_1_1_debugger_1aa44e53fc3bc28e0161fe1bcaf3c14d94"></span><span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><code class="sig-name descname"><span class="pre">streams</span></code><span class="sig-paren">(</span><span class="pre">void</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><span class="pre">&amp;</span><em><span class="pre">buffer</span></em>, <span class="pre">size_t</span> <span class="pre">&amp;</span><em><span class="pre">len</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger7streamsERPKvR6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Gets the existing streams. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>0-terminated string of stream names (which equals <code class="docutils literal notranslate"><span class="pre">buffer</span></code>) </p>
@@ -792,7 +796,7 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8Debugger5traceEv">
-<span id="_CPPv3N6stored8Debugger5traceEv"></span><span id="_CPPv2N6stored8Debugger5traceEv"></span><span id="stored::Debugger::trace"></span><span class="target" id="classstored_1_1_debugger_1a65e235d57bae057514396431c97db437"></span>void <code class="sig-name descname">trace</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger5traceEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger5traceEv"></span><span id="_CPPv2N6stored8Debugger5traceEv"></span><span id="stored::Debugger::trace"></span><span class="target" id="classstored_1_1_debugger_1a65e235d57bae057514396431c97db437"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">trace</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger5traceEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Executes the trace macro and appends the output to the trace buffer. </p>
 <p>The application should always call this function as often as required for tracing. For example, if 1 kHz tracing is to be supported, make sure to call this function at (about) 1 kHz. Depending on the configuration, decimation is applied. This call will execute the macro, when required, so the call is potentially expensive.</p>
 <p>The output of the macro is either completely or not at all put in the stream buffer; it is not truncated. </p>
@@ -800,13 +804,13 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored8Debugger7tracingEv">
-<span id="_CPPv3NK6stored8Debugger7tracingEv"></span><span id="_CPPv2NK6stored8Debugger7tracingEv"></span><span id="stored::Debugger::tracingC"></span><span class="target" id="classstored_1_1_debugger_1a03a04acf4a0ebf7003a473d9c1951e65"></span>bool <code class="sig-name descname">tracing</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored8Debugger7tracingEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored8Debugger7tracingEv"></span><span id="_CPPv2NK6stored8Debugger7tracingEv"></span><span id="stored::Debugger::tracingC"></span><span class="target" id="classstored_1_1_debugger_1a03a04acf4a0ebf7003a473d9c1951e65"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">tracing</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored8Debugger7tracingEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Checks if tracing is currently enabled and configured. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8Debugger5unmapEPKc">
-<span id="_CPPv3N6stored8Debugger5unmapEPKc"></span><span id="_CPPv2N6stored8Debugger5unmapEPKc"></span><span id="stored::Debugger::unmap__cCP"></span><span class="target" id="classstored_1_1_debugger_1ab7970bba0c51897467aa260705a22965"></span>void <code class="sig-name descname">unmap</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger5unmapEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger5unmapEPKc"></span><span id="_CPPv2N6stored8Debugger5unmapEPKc"></span><span id="stored::Debugger::unmap__cCP"></span><span class="target" id="classstored_1_1_debugger_1ab7970bba0c51897467aa260705a22965"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">unmap</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger5unmapEPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Unmaps a store from this <a class="reference internal" href="#classstored_1_1_debugger"><span class="std std-ref">Debugger</span></a>. </p>
 <p>Note that if after unmapping there is only one mapped store left, the prefixes are automatically dropped from all names.</p>
 <p><dl class="simple">
@@ -818,7 +822,7 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored8Debugger7versionER13ProtocolLayer">
-<span id="_CPPv3N6stored8Debugger7versionER13ProtocolLayer"></span><span id="_CPPv2N6stored8Debugger7versionER13ProtocolLayer"></span><span id="stored::Debugger::version__ProtocolLayerR"></span><span class="target" id="classstored_1_1_debugger_1ab6203b1226153a94c9ba87ae88931d6a"></span>bool <code class="sig-name descname">version</code><span class="sig-paren">(</span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer">ProtocolLayer</a> &amp;<em>response</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger7versionER13ProtocolLayer" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger7versionER13ProtocolLayer"></span><span id="_CPPv2N6stored8Debugger7versionER13ProtocolLayer"></span><span id="stored::Debugger::version__ProtocolLayerR"></span><span class="target" id="classstored_1_1_debugger_1ab6203b1226153a94c9ba87ae88931d6a"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">bool</span> <code class="sig-name descname"><span class="pre">version</span></code><span class="sig-paren">(</span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="pre">ProtocolLayer</span></a> <span class="pre">&amp;</span><em><span class="pre">response</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8Debugger7versionER13ProtocolLayer" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Push the version string into the given response. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">true</span></code> if the version is pushed, <code class="docutils literal notranslate"><span class="pre">false</span></code> if not available </p>
@@ -834,94 +838,94 @@ than the actual tracing speed.</p>
 <p class="breathe-sectiondef-title rubric">Public Static Attributes</p>
 <dl class="cpp var">
 <dt id="_CPPv4N6stored8Debugger3AckE">
-<span id="_CPPv3N6stored8Debugger3AckE"></span><span id="_CPPv2N6stored8Debugger3AckE"></span><span id="stored::Debugger::Ack__cC"></span><span class="target" id="classstored_1_1_debugger_1aaf9a895dd57e6161532b2eaf9558fb7d"></span>char <em class="property">const</em> <code class="sig-name descname">Ack</code> = '!'<a class="headerlink" href="#_CPPv4N6stored8Debugger3AckE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger3AckE"></span><span id="_CPPv2N6stored8Debugger3AckE"></span><span id="stored::Debugger::Ack__cC"></span><span class="target" id="classstored_1_1_debugger_1aaf9a895dd57e6161532b2eaf9558fb7d"></span><em class="property"><span class="pre">static</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <code class="sig-name descname"><span class="pre">Ack</span></code> <span class="pre">=</span> <span class="pre">'!'</span><a class="headerlink" href="#_CPPv4N6stored8Debugger3AckE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored8Debugger8CmdAliasE">
-<span id="_CPPv3N6stored8Debugger8CmdAliasE"></span><span id="_CPPv2N6stored8Debugger8CmdAliasE"></span><span id="stored::Debugger::CmdAlias__cC"></span><span class="target" id="classstored_1_1_debugger_1a431fef6fe27b92d4bed592a2ea70db78"></span>char <em class="property">const</em> <code class="sig-name descname">CmdAlias</code> = 'a'<a class="headerlink" href="#_CPPv4N6stored8Debugger8CmdAliasE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger8CmdAliasE"></span><span id="_CPPv2N6stored8Debugger8CmdAliasE"></span><span id="stored::Debugger::CmdAlias__cC"></span><span class="target" id="classstored_1_1_debugger_1a431fef6fe27b92d4bed592a2ea70db78"></span><em class="property"><span class="pre">static</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <code class="sig-name descname"><span class="pre">CmdAlias</span></code> <span class="pre">=</span> <span class="pre">'a'</span><a class="headerlink" href="#_CPPv4N6stored8Debugger8CmdAliasE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored8Debugger15CmdCapabilitiesE">
-<span id="_CPPv3N6stored8Debugger15CmdCapabilitiesE"></span><span id="_CPPv2N6stored8Debugger15CmdCapabilitiesE"></span><span id="stored::Debugger::CmdCapabilities__cC"></span><span class="target" id="classstored_1_1_debugger_1ad6ed2056bcebe092cc284524664a1baa"></span>char <em class="property">const</em> <code class="sig-name descname">CmdCapabilities</code> = '?'<a class="headerlink" href="#_CPPv4N6stored8Debugger15CmdCapabilitiesE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger15CmdCapabilitiesE"></span><span id="_CPPv2N6stored8Debugger15CmdCapabilitiesE"></span><span id="stored::Debugger::CmdCapabilities__cC"></span><span class="target" id="classstored_1_1_debugger_1ad6ed2056bcebe092cc284524664a1baa"></span><em class="property"><span class="pre">static</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <code class="sig-name descname"><span class="pre">CmdCapabilities</span></code> <span class="pre">=</span> <span class="pre">'?'</span><a class="headerlink" href="#_CPPv4N6stored8Debugger15CmdCapabilitiesE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored8Debugger7CmdEchoE">
-<span id="_CPPv3N6stored8Debugger7CmdEchoE"></span><span id="_CPPv2N6stored8Debugger7CmdEchoE"></span><span id="stored::Debugger::CmdEcho__cC"></span><span class="target" id="classstored_1_1_debugger_1a1dd47c1cff6290b6186eab05566c038a"></span>char <em class="property">const</em> <code class="sig-name descname">CmdEcho</code> = 'e'<a class="headerlink" href="#_CPPv4N6stored8Debugger7CmdEchoE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger7CmdEchoE"></span><span id="_CPPv2N6stored8Debugger7CmdEchoE"></span><span id="stored::Debugger::CmdEcho__cC"></span><span class="target" id="classstored_1_1_debugger_1a1dd47c1cff6290b6186eab05566c038a"></span><em class="property"><span class="pre">static</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <code class="sig-name descname"><span class="pre">CmdEcho</span></code> <span class="pre">=</span> <span class="pre">'e'</span><a class="headerlink" href="#_CPPv4N6stored8Debugger7CmdEchoE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored8Debugger8CmdFlushE">
-<span id="_CPPv3N6stored8Debugger8CmdFlushE"></span><span id="_CPPv2N6stored8Debugger8CmdFlushE"></span><span id="stored::Debugger::CmdFlush__cC"></span><span class="target" id="classstored_1_1_debugger_1a619bb6607bbda5621c9c123ac385910b"></span>char <em class="property">const</em> <code class="sig-name descname">CmdFlush</code> = 'f'<a class="headerlink" href="#_CPPv4N6stored8Debugger8CmdFlushE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger8CmdFlushE"></span><span id="_CPPv2N6stored8Debugger8CmdFlushE"></span><span id="stored::Debugger::CmdFlush__cC"></span><span class="target" id="classstored_1_1_debugger_1a619bb6607bbda5621c9c123ac385910b"></span><em class="property"><span class="pre">static</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <code class="sig-name descname"><span class="pre">CmdFlush</span></code> <span class="pre">=</span> <span class="pre">'f'</span><a class="headerlink" href="#_CPPv4N6stored8Debugger8CmdFlushE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored8Debugger17CmdIdentificationE">
-<span id="_CPPv3N6stored8Debugger17CmdIdentificationE"></span><span id="_CPPv2N6stored8Debugger17CmdIdentificationE"></span><span id="stored::Debugger::CmdIdentification__cC"></span><span class="target" id="classstored_1_1_debugger_1a314defdb44af77074a652a530de76222"></span>char <em class="property">const</em> <code class="sig-name descname">CmdIdentification</code> = 'i'<a class="headerlink" href="#_CPPv4N6stored8Debugger17CmdIdentificationE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger17CmdIdentificationE"></span><span id="_CPPv2N6stored8Debugger17CmdIdentificationE"></span><span id="stored::Debugger::CmdIdentification__cC"></span><span class="target" id="classstored_1_1_debugger_1a314defdb44af77074a652a530de76222"></span><em class="property"><span class="pre">static</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <code class="sig-name descname"><span class="pre">CmdIdentification</span></code> <span class="pre">=</span> <span class="pre">'i'</span><a class="headerlink" href="#_CPPv4N6stored8Debugger17CmdIdentificationE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored8Debugger7CmdListE">
-<span id="_CPPv3N6stored8Debugger7CmdListE"></span><span id="_CPPv2N6stored8Debugger7CmdListE"></span><span id="stored::Debugger::CmdList__cC"></span><span class="target" id="classstored_1_1_debugger_1a72886151c808cee9d126675349b602c5"></span>char <em class="property">const</em> <code class="sig-name descname">CmdList</code> = 'l'<a class="headerlink" href="#_CPPv4N6stored8Debugger7CmdListE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger7CmdListE"></span><span id="_CPPv2N6stored8Debugger7CmdListE"></span><span id="stored::Debugger::CmdList__cC"></span><span class="target" id="classstored_1_1_debugger_1a72886151c808cee9d126675349b602c5"></span><em class="property"><span class="pre">static</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <code class="sig-name descname"><span class="pre">CmdList</span></code> <span class="pre">=</span> <span class="pre">'l'</span><a class="headerlink" href="#_CPPv4N6stored8Debugger7CmdListE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored8Debugger8CmdMacroE">
-<span id="_CPPv3N6stored8Debugger8CmdMacroE"></span><span id="_CPPv2N6stored8Debugger8CmdMacroE"></span><span id="stored::Debugger::CmdMacro__cC"></span><span class="target" id="classstored_1_1_debugger_1a2901fcc18b3cec21c506b0fc30948063"></span>char <em class="property">const</em> <code class="sig-name descname">CmdMacro</code> = 'm'<a class="headerlink" href="#_CPPv4N6stored8Debugger8CmdMacroE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger8CmdMacroE"></span><span id="_CPPv2N6stored8Debugger8CmdMacroE"></span><span id="stored::Debugger::CmdMacro__cC"></span><span class="target" id="classstored_1_1_debugger_1a2901fcc18b3cec21c506b0fc30948063"></span><em class="property"><span class="pre">static</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <code class="sig-name descname"><span class="pre">CmdMacro</span></code> <span class="pre">=</span> <span class="pre">'m'</span><a class="headerlink" href="#_CPPv4N6stored8Debugger8CmdMacroE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored8Debugger7CmdReadE">
-<span id="_CPPv3N6stored8Debugger7CmdReadE"></span><span id="_CPPv2N6stored8Debugger7CmdReadE"></span><span id="stored::Debugger::CmdRead__cC"></span><span class="target" id="classstored_1_1_debugger_1a55d5fb1ac11bd741f5bc7974b1eddad1"></span>char <em class="property">const</em> <code class="sig-name descname">CmdRead</code> = 'r'<a class="headerlink" href="#_CPPv4N6stored8Debugger7CmdReadE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger7CmdReadE"></span><span id="_CPPv2N6stored8Debugger7CmdReadE"></span><span id="stored::Debugger::CmdRead__cC"></span><span class="target" id="classstored_1_1_debugger_1a55d5fb1ac11bd741f5bc7974b1eddad1"></span><em class="property"><span class="pre">static</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <code class="sig-name descname"><span class="pre">CmdRead</span></code> <span class="pre">=</span> <span class="pre">'r'</span><a class="headerlink" href="#_CPPv4N6stored8Debugger7CmdReadE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored8Debugger10CmdReadMemE">
-<span id="_CPPv3N6stored8Debugger10CmdReadMemE"></span><span id="_CPPv2N6stored8Debugger10CmdReadMemE"></span><span id="stored::Debugger::CmdReadMem__cC"></span><span class="target" id="classstored_1_1_debugger_1a32be09384b1099b0f0f432f5fe5229e4"></span>char <em class="property">const</em> <code class="sig-name descname">CmdReadMem</code> = 'R'<a class="headerlink" href="#_CPPv4N6stored8Debugger10CmdReadMemE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger10CmdReadMemE"></span><span id="_CPPv2N6stored8Debugger10CmdReadMemE"></span><span id="stored::Debugger::CmdReadMem__cC"></span><span class="target" id="classstored_1_1_debugger_1a32be09384b1099b0f0f432f5fe5229e4"></span><em class="property"><span class="pre">static</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <code class="sig-name descname"><span class="pre">CmdReadMem</span></code> <span class="pre">=</span> <span class="pre">'R'</span><a class="headerlink" href="#_CPPv4N6stored8Debugger10CmdReadMemE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored8Debugger9CmdStreamE">
-<span id="_CPPv3N6stored8Debugger9CmdStreamE"></span><span id="_CPPv2N6stored8Debugger9CmdStreamE"></span><span id="stored::Debugger::CmdStream__cC"></span><span class="target" id="classstored_1_1_debugger_1aee36a94c73ea14531b664c5885c27247"></span>char <em class="property">const</em> <code class="sig-name descname">CmdStream</code> = 's'<a class="headerlink" href="#_CPPv4N6stored8Debugger9CmdStreamE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger9CmdStreamE"></span><span id="_CPPv2N6stored8Debugger9CmdStreamE"></span><span id="stored::Debugger::CmdStream__cC"></span><span class="target" id="classstored_1_1_debugger_1aee36a94c73ea14531b664c5885c27247"></span><em class="property"><span class="pre">static</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <code class="sig-name descname"><span class="pre">CmdStream</span></code> <span class="pre">=</span> <span class="pre">'s'</span><a class="headerlink" href="#_CPPv4N6stored8Debugger9CmdStreamE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored8Debugger8CmdTraceE">
-<span id="_CPPv3N6stored8Debugger8CmdTraceE"></span><span id="_CPPv2N6stored8Debugger8CmdTraceE"></span><span id="stored::Debugger::CmdTrace__cC"></span><span class="target" id="classstored_1_1_debugger_1a110a177a178e9090c45830074e14d02b"></span>char <em class="property">const</em> <code class="sig-name descname">CmdTrace</code> = 't'<a class="headerlink" href="#_CPPv4N6stored8Debugger8CmdTraceE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger8CmdTraceE"></span><span id="_CPPv2N6stored8Debugger8CmdTraceE"></span><span id="stored::Debugger::CmdTrace__cC"></span><span class="target" id="classstored_1_1_debugger_1a110a177a178e9090c45830074e14d02b"></span><em class="property"><span class="pre">static</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <code class="sig-name descname"><span class="pre">CmdTrace</span></code> <span class="pre">=</span> <span class="pre">'t'</span><a class="headerlink" href="#_CPPv4N6stored8Debugger8CmdTraceE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored8Debugger10CmdVersionE">
-<span id="_CPPv3N6stored8Debugger10CmdVersionE"></span><span id="_CPPv2N6stored8Debugger10CmdVersionE"></span><span id="stored::Debugger::CmdVersion__cC"></span><span class="target" id="classstored_1_1_debugger_1a4a0cc435bd4d9d2cde9623ef29c2b98e"></span>char <em class="property">const</em> <code class="sig-name descname">CmdVersion</code> = 'v'<a class="headerlink" href="#_CPPv4N6stored8Debugger10CmdVersionE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger10CmdVersionE"></span><span id="_CPPv2N6stored8Debugger10CmdVersionE"></span><span id="stored::Debugger::CmdVersion__cC"></span><span class="target" id="classstored_1_1_debugger_1a4a0cc435bd4d9d2cde9623ef29c2b98e"></span><em class="property"><span class="pre">static</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <code class="sig-name descname"><span class="pre">CmdVersion</span></code> <span class="pre">=</span> <span class="pre">'v'</span><a class="headerlink" href="#_CPPv4N6stored8Debugger10CmdVersionE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored8Debugger8CmdWriteE">
-<span id="_CPPv3N6stored8Debugger8CmdWriteE"></span><span id="_CPPv2N6stored8Debugger8CmdWriteE"></span><span id="stored::Debugger::CmdWrite__cC"></span><span class="target" id="classstored_1_1_debugger_1aa8059debdaef039b212fbce8b2c01adf"></span>char <em class="property">const</em> <code class="sig-name descname">CmdWrite</code> = 'w'<a class="headerlink" href="#_CPPv4N6stored8Debugger8CmdWriteE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger8CmdWriteE"></span><span id="_CPPv2N6stored8Debugger8CmdWriteE"></span><span id="stored::Debugger::CmdWrite__cC"></span><span class="target" id="classstored_1_1_debugger_1aa8059debdaef039b212fbce8b2c01adf"></span><em class="property"><span class="pre">static</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <code class="sig-name descname"><span class="pre">CmdWrite</span></code> <span class="pre">=</span> <span class="pre">'w'</span><a class="headerlink" href="#_CPPv4N6stored8Debugger8CmdWriteE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored8Debugger11CmdWriteMemE">
-<span id="_CPPv3N6stored8Debugger11CmdWriteMemE"></span><span id="_CPPv2N6stored8Debugger11CmdWriteMemE"></span><span id="stored::Debugger::CmdWriteMem__cC"></span><span class="target" id="classstored_1_1_debugger_1a6a2a664ce598714e5a0bce09cbea4e9f"></span>char <em class="property">const</em> <code class="sig-name descname">CmdWriteMem</code> = 'W'<a class="headerlink" href="#_CPPv4N6stored8Debugger11CmdWriteMemE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger11CmdWriteMemE"></span><span id="_CPPv2N6stored8Debugger11CmdWriteMemE"></span><span id="stored::Debugger::CmdWriteMem__cC"></span><span class="target" id="classstored_1_1_debugger_1a6a2a664ce598714e5a0bce09cbea4e9f"></span><em class="property"><span class="pre">static</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <code class="sig-name descname"><span class="pre">CmdWriteMem</span></code> <span class="pre">=</span> <span class="pre">'W'</span><a class="headerlink" href="#_CPPv4N6stored8Debugger11CmdWriteMemE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored8Debugger4NackE">
-<span id="_CPPv3N6stored8Debugger4NackE"></span><span id="_CPPv2N6stored8Debugger4NackE"></span><span id="stored::Debugger::Nack__cC"></span><span class="target" id="classstored_1_1_debugger_1a03cb96ff01407440864c76a10828dc42"></span>char <em class="property">const</em> <code class="sig-name descname">Nack</code> = '?'<a class="headerlink" href="#_CPPv4N6stored8Debugger4NackE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger4NackE"></span><span id="_CPPv2N6stored8Debugger4NackE"></span><span id="stored::Debugger::Nack__cC"></span><span class="target" id="classstored_1_1_debugger_1a03cb96ff01407440864c76a10828dc42"></span><em class="property"><span class="pre">static</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <code class="sig-name descname"><span class="pre">Nack</span></code> <span class="pre">=</span> <span class="pre">'?'</span><a class="headerlink" href="#_CPPv4N6stored8Debugger4NackE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
 <dl class="cpp struct">
 <dt id="_CPPv4N6stored8Debugger21StorePrefixComparatorE">
-<span id="_CPPv3N6stored8Debugger21StorePrefixComparatorE"></span><span id="_CPPv2N6stored8Debugger21StorePrefixComparatorE"></span><span id="stored::Debugger::StorePrefixComparator"></span><span class="target" id="structstored_1_1_debugger_1_1_store_prefix_comparator"></span><em class="property">struct </em><code class="sig-name descname">StorePrefixComparator</code><a class="headerlink" href="#_CPPv4N6stored8Debugger21StorePrefixComparatorE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored8Debugger21StorePrefixComparatorE"></span><span id="_CPPv2N6stored8Debugger21StorePrefixComparatorE"></span><span id="stored::Debugger::StorePrefixComparator"></span><span class="target" id="structstored_1_1_debugger_1_1_store_prefix_comparator"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">StorePrefixComparator</span></code><a class="headerlink" href="#_CPPv4N6stored8Debugger21StorePrefixComparatorE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Helper class to sort <a class="reference internal" href="#classstored_1_1_debugger_1a54e810f8654981f13ec8915196def84d"><span class="std std-ref">StoreMap</span></a> based on name. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored8Debugger21StorePrefixComparatorclEPKcPKc">
-<span id="_CPPv3NK6stored8Debugger21StorePrefixComparatorclEPKcPKc"></span><span id="_CPPv2NK6stored8Debugger21StorePrefixComparatorclEPKcPKc"></span><span id="stored::Debugger::StorePrefixComparator::call-operator__cCP.cCPC"></span><span class="target" id="structstored_1_1_debugger_1_1_store_prefix_comparator_1ab0dbceb30d47f8a527f075115240fe85"></span>bool <code class="sig-name descname">operator()</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>lhs</em>, char <em class="property">const</em> *<em>rhs</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored8Debugger21StorePrefixComparatorclEPKcPKc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored8Debugger21StorePrefixComparatorclEPKcPKc"></span><span id="_CPPv2NK6stored8Debugger21StorePrefixComparatorclEPKcPKc"></span><span id="stored::Debugger::StorePrefixComparator::call-operator__cCP.cCPC"></span><span class="target" id="structstored_1_1_debugger_1_1_store_prefix_comparator_1ab0dbceb30d47f8a527f075115240fe85"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">bool</span> <code class="sig-name descname"><span class="pre">operator()</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">lhs</span></em>, <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">rhs</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored8Debugger21StorePrefixComparatorclEPKcPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -934,7 +938,7 @@ than the actual tracing speed.</p>
 <h2>stored::DebugStoreBase<a class="headerlink" href="#stored-debugstorebase" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp class">
 <dt id="_CPPv4N6stored14DebugStoreBaseE">
-<span id="_CPPv3N6stored14DebugStoreBaseE"></span><span id="_CPPv2N6stored14DebugStoreBaseE"></span><span id="stored::DebugStoreBase"></span><span class="target" id="classstored_1_1_debug_store_base"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">DebugStoreBase</code><a class="headerlink" href="#_CPPv4N6stored14DebugStoreBaseE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored14DebugStoreBaseE"></span><span id="_CPPv2N6stored14DebugStoreBaseE"></span><span id="stored::DebugStoreBase"></span><span class="target" id="classstored_1_1_debug_store_base"></span><em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">stored</span><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">DebugStoreBase</span></code><a class="headerlink" href="#_CPPv4N6stored14DebugStoreBaseE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Wrapper for a store, that hides the store’s template parameters. </p>
 <p>This is a type-independent base class of stored::DebugStore. For <a class="reference internal" href="#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>, this is the interface to access a specific store.</p>
 <p><dl class="simple">
@@ -947,7 +951,7 @@ than the actual tracing speed.</p>
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N6stored14DebugStoreBase15ListCallbackArgE">
-<span id="_CPPv3N6stored14DebugStoreBase15ListCallbackArgE"></span><span id="_CPPv2N6stored14DebugStoreBase15ListCallbackArgE"></span><span class="target" id="classstored_1_1_debug_store_base_1ab05190fd8e25c3345d04997187ff5a46"></span><em class="property">using </em><code class="sig-name descname">ListCallbackArg</code> = void<span class="sig-paren">(</span>char <em class="property">const</em>*, <a class="reference internal" href="#_CPPv4N6stored12DebugVariantE" title="stored::DebugVariant">DebugVariant</a>&amp;, void*<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14DebugStoreBase15ListCallbackArgE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored14DebugStoreBase15ListCallbackArgE"></span><span id="_CPPv2N6stored14DebugStoreBase15ListCallbackArgE"></span><span class="target" id="classstored_1_1_debug_store_base_1ab05190fd8e25c3345d04997187ff5a46"></span><em class="property"><span class="pre">using</span> </em><code class="sig-name descname"><span class="pre">ListCallbackArg</span></code> <span class="pre">=</span> <span class="pre">void</span><span class="sig-paren">(</span><span class="pre">char</span> <em class="property"><span class="pre">const</span></em><span class="pre">*</span>, <a class="reference internal" href="#_CPPv4N6stored12DebugVariantE" title="stored::DebugVariant"><span class="pre">DebugVariant</span></a><span class="pre">&amp;</span>, <span class="pre">void</span><span class="pre">*</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14DebugStoreBase15ListCallbackArgE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Callback function prototype as supplied to <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_debug_store_base_1afe84fc6c67d903c78ea515da4b9a813a"><span class="std std-ref"><span class="pre">list()</span></span></a></code>. </p>
 <p>It receives the name of the object, the corresponding <a class="reference internal" href="#classstored_1_1_debug_variant"><span class="std std-ref">stored::DebugVariant</span></a> of the object, and the <code class="docutils literal notranslate"><span class="pre">arg</span></code> value, as passed to <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_debug_store_base_1afe84fc6c67d903c78ea515da4b9a813a"><span class="std std-ref"><span class="pre">list()</span></span></a></code>.</p>
 <p><dl class="simple">
@@ -962,25 +966,25 @@ than the actual tracing speed.</p>
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N6stored14DebugStoreBase14DebugStoreBaseERK14DebugStoreBase">
-<span id="_CPPv3N6stored14DebugStoreBase14DebugStoreBaseERK14DebugStoreBase"></span><span id="_CPPv2N6stored14DebugStoreBase14DebugStoreBaseERK14DebugStoreBase"></span><span id="stored::DebugStoreBase::DebugStoreBase__DebugStoreBaseCR"></span><span class="target" id="classstored_1_1_debug_store_base_1aedbc1e773d565c078b984c559327c4ef"></span><code class="sig-name descname">DebugStoreBase</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14DebugStoreBase14DebugStoreBaseERK14DebugStoreBase" title="stored::DebugStoreBase::DebugStoreBase">DebugStoreBase</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored14DebugStoreBase14DebugStoreBaseERK14DebugStoreBase" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored14DebugStoreBase14DebugStoreBaseERK14DebugStoreBase"></span><span id="_CPPv2N6stored14DebugStoreBase14DebugStoreBaseERK14DebugStoreBase"></span><span id="stored::DebugStoreBase::DebugStoreBase__DebugStoreBaseCR"></span><span class="target" id="classstored_1_1_debug_store_base_1aedbc1e773d565c078b984c559327c4ef"></span><code class="sig-name descname"><span class="pre">DebugStoreBase</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14DebugStoreBase14DebugStoreBaseERK14DebugStoreBase" title="stored::DebugStoreBase::DebugStoreBase"><span class="pre">DebugStoreBase</span></a> <em class="property"><span class="pre">const</span></em><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored14DebugStoreBase14DebugStoreBaseERK14DebugStoreBase" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted copy constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored14DebugStoreBase14DebugStoreBaseERR14DebugStoreBase">
-<span id="_CPPv3N6stored14DebugStoreBase14DebugStoreBaseERR14DebugStoreBase"></span><span id="_CPPv2N6stored14DebugStoreBase14DebugStoreBaseERR14DebugStoreBase"></span><span id="stored::DebugStoreBase::DebugStoreBase__DebugStoreBaseRR"></span><span class="target" id="classstored_1_1_debug_store_base_1a2e4e7eb7d2bf82f1f3ac08f54e7b5533"></span><code class="sig-name descname">DebugStoreBase</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14DebugStoreBase14DebugStoreBaseERR14DebugStoreBase" title="stored::DebugStoreBase::DebugStoreBase">DebugStoreBase</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored14DebugStoreBase14DebugStoreBaseERR14DebugStoreBase" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored14DebugStoreBase14DebugStoreBaseERR14DebugStoreBase"></span><span id="_CPPv2N6stored14DebugStoreBase14DebugStoreBaseERR14DebugStoreBase"></span><span id="stored::DebugStoreBase::DebugStoreBase__DebugStoreBaseRR"></span><span class="target" id="classstored_1_1_debug_store_base_1a2e4e7eb7d2bf82f1f3ac08f54e7b5533"></span><code class="sig-name descname"><span class="pre">DebugStoreBase</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14DebugStoreBase14DebugStoreBaseERR14DebugStoreBase" title="stored::DebugStoreBase::DebugStoreBase"><span class="pre">DebugStoreBase</span></a><span class="pre">&amp;</span><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored14DebugStoreBase14DebugStoreBaseERR14DebugStoreBase" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored14DebugStoreBaseD0Ev">
-<span id="_CPPv3N6stored14DebugStoreBaseD0Ev"></span><span id="_CPPv2N6stored14DebugStoreBaseD0Ev"></span><span id="stored::DebugStoreBase::~DebugStoreBase"></span><span class="target" id="classstored_1_1_debug_store_base_1aae6e15009f8bd0e9ed08e70b2ee09909"></span><code class="sig-name descname">~DebugStoreBase</code><span class="sig-paren">(</span><span class="sig-paren">)</span> = default<a class="headerlink" href="#_CPPv4N6stored14DebugStoreBaseD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored14DebugStoreBaseD0Ev"></span><span id="_CPPv2N6stored14DebugStoreBaseD0Ev"></span><span id="stored::DebugStoreBase::~DebugStoreBase"></span><span class="target" id="classstored_1_1_debug_store_base_1aae6e15009f8bd0e9ed08e70b2ee09909"></span><em class="property"><span class="pre">virtual</span></em> <code class="sig-name descname"><span class="pre">~DebugStoreBase</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">default</span><a class="headerlink" href="#_CPPv4N6stored14DebugStoreBaseD0Ev" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Destructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored14DebugStoreBase4findEPKc6size_t">
-<span id="_CPPv3N6stored14DebugStoreBase4findEPKc6size_t"></span><span id="_CPPv2N6stored14DebugStoreBase4findEPKc6size_t"></span><span id="stored::DebugStoreBase::find__cCP.s"></span><span class="target" id="classstored_1_1_debug_store_base_1ab4a0f85197fe940441ea2a1738dc9b4c"></span><a class="reference internal" href="#_CPPv4N6stored12DebugVariantE" title="stored::DebugVariant">DebugVariant</a> <code class="sig-name descname">find</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>name</em>, size_t <em>len</em> = std::numeric_limits&lt;size_t&gt;::max()<span class="sig-paren">)</span> = 0<a class="headerlink" href="#_CPPv4N6stored14DebugStoreBase4findEPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored14DebugStoreBase4findEPKc6size_t"></span><span id="_CPPv2N6stored14DebugStoreBase4findEPKc6size_t"></span><span id="stored::DebugStoreBase::find__cCP.s"></span><span class="target" id="classstored_1_1_debug_store_base_1ab4a0f85197fe940441ea2a1738dc9b4c"></span><em class="property"><span class="pre">virtual</span></em> <a class="reference internal" href="#_CPPv4N6stored12DebugVariantE" title="stored::DebugVariant"><span class="pre">DebugVariant</span></a> <code class="sig-name descname"><span class="pre">find</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">name</span></em>, <span class="pre">size_t</span> <em><span class="pre">len</span></em> <span class="pre">=</span> <span class="pre">std</span><span class="pre">::</span><span class="pre">numeric_limits</span><span class="pre">&lt;</span><span class="pre">size_t</span><span class="pre">&gt;</span><span class="pre">::</span><span class="pre">max</span><span class="pre">(</span><span class="pre">)</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">0</span><a class="headerlink" href="#_CPPv4N6stored14DebugStoreBase4findEPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Performs a lookup of the given object name. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>a <a class="reference internal" href="#classstored_1_1_debug_variant"><span class="std std-ref">stored::DebugVariant</span></a>, which is invalid when the object was not found. </p>
@@ -996,7 +1000,7 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored14DebugStoreBase4listEP15ListCallbackArgPvPKc">
-<span id="_CPPv3NK6stored14DebugStoreBase4listEP15ListCallbackArgPvPKc"></span><span id="_CPPv2NK6stored14DebugStoreBase4listEP15ListCallbackArgPvPKc"></span><span id="stored::DebugStoreBase::list__ListCallbackArgP.voidP.cCPC"></span><span class="target" id="classstored_1_1_debug_store_base_1afe84fc6c67d903c78ea515da4b9a813a"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14DebugStoreBase15ListCallbackArgE" title="stored::DebugStoreBase::ListCallbackArg">ListCallbackArg</a> *<em>f</em>, void *<em>arg</em> = nullptr, char <em class="property">const</em> *<em>prefix</em> = nullptr<span class="sig-paren">)</span> <em class="property">const</em> = 0<a class="headerlink" href="#_CPPv4NK6stored14DebugStoreBase4listEP15ListCallbackArgPvPKc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored14DebugStoreBase4listEP15ListCallbackArgPvPKc"></span><span id="_CPPv2NK6stored14DebugStoreBase4listEP15ListCallbackArgPvPKc"></span><span id="stored::DebugStoreBase::list__ListCallbackArgP.voidP.cCPC"></span><span class="target" id="classstored_1_1_debug_store_base_1afe84fc6c67d903c78ea515da4b9a813a"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">list</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14DebugStoreBase15ListCallbackArgE" title="stored::DebugStoreBase::ListCallbackArg"><span class="pre">ListCallbackArg</span></a> <span class="pre">*</span><em><span class="pre">f</span></em>, <span class="pre">void</span> <span class="pre">*</span><em><span class="pre">arg</span></em> <span class="pre">=</span> <span class="pre">nullptr</span>, <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">prefix</span></em> <span class="pre">=</span> <span class="pre">nullptr</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <span class="pre">=</span> <span class="pre">0</span><a class="headerlink" href="#_CPPv4NK6stored14DebugStoreBase4listEP15ListCallbackArgPvPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Iterates over the directory and invoke a callback for every object. </p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
@@ -1011,7 +1015,7 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored14DebugStoreBase4nameEv">
-<span id="_CPPv3NK6stored14DebugStoreBase4nameEv"></span><span id="_CPPv2NK6stored14DebugStoreBase4nameEv"></span><span id="stored::DebugStoreBase::nameC"></span><span class="target" id="classstored_1_1_debug_store_base_1a7b0b381124d16d74aa0fdd01bdf56d48"></span>char <em class="property">const</em> *<code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em> = 0<a class="headerlink" href="#_CPPv4NK6stored14DebugStoreBase4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored14DebugStoreBase4nameEv"></span><span id="_CPPv2NK6stored14DebugStoreBase4nameEv"></span><span id="stored::DebugStoreBase::nameC"></span><span class="target" id="classstored_1_1_debug_store_base_1a7b0b381124d16d74aa0fdd01bdf56d48"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><code class="sig-name descname"><span class="pre">name</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <span class="pre">=</span> <span class="pre">0</span><a class="headerlink" href="#_CPPv4NK6stored14DebugStoreBase4nameEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the name of this store. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>the name, which cannot be <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> </p>
@@ -1022,13 +1026,13 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored14DebugStoreBaseaSERK14DebugStoreBase">
-<span id="_CPPv3N6stored14DebugStoreBaseaSERK14DebugStoreBase"></span><span id="_CPPv2N6stored14DebugStoreBaseaSERK14DebugStoreBase"></span><span id="stored::DebugStoreBase::assign-operator__DebugStoreBaseCR"></span><span class="target" id="classstored_1_1_debug_store_base_1af01966dc48306528400f888fb8a14fa3"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14DebugStoreBaseE" title="stored::DebugStoreBase">DebugStoreBase</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored14DebugStoreBaseaSERK14DebugStoreBase" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored14DebugStoreBaseaSERK14DebugStoreBase"></span><span id="_CPPv2N6stored14DebugStoreBaseaSERK14DebugStoreBase"></span><span id="stored::DebugStoreBase::assign-operator__DebugStoreBaseCR"></span><span class="target" id="classstored_1_1_debug_store_base_1af01966dc48306528400f888fb8a14fa3"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14DebugStoreBaseE" title="stored::DebugStoreBase"><span class="pre">DebugStoreBase</span></a> <em class="property"><span class="pre">const</span></em><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored14DebugStoreBaseaSERK14DebugStoreBase" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored14DebugStoreBaseaSERR14DebugStoreBase">
-<span id="_CPPv3N6stored14DebugStoreBaseaSERR14DebugStoreBase"></span><span id="_CPPv2N6stored14DebugStoreBaseaSERR14DebugStoreBase"></span><span id="stored::DebugStoreBase::assign-operator__DebugStoreBaseRR"></span><span class="target" id="classstored_1_1_debug_store_base_1a3f407c6d3f3a304925176ea0ab6337dc"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14DebugStoreBaseE" title="stored::DebugStoreBase">DebugStoreBase</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored14DebugStoreBaseaSERR14DebugStoreBase" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored14DebugStoreBaseaSERR14DebugStoreBase"></span><span id="_CPPv2N6stored14DebugStoreBaseaSERR14DebugStoreBase"></span><span id="stored::DebugStoreBase::assign-operator__DebugStoreBaseRR"></span><span class="target" id="classstored_1_1_debug_store_base_1a3f407c6d3f3a304925176ea0ab6337dc"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14DebugStoreBaseE" title="stored::DebugStoreBase"><span class="pre">DebugStoreBase</span></a><span class="pre">&amp;</span><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored14DebugStoreBaseaSERR14DebugStoreBase" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 
@@ -1040,7 +1044,7 @@ than the actual tracing speed.</p>
 <h2>stored::DebugVariant<a class="headerlink" href="#stored-debugvariant" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp class">
 <dt id="_CPPv4N6stored12DebugVariantE">
-<span id="_CPPv3N6stored12DebugVariantE"></span><span id="_CPPv2N6stored12DebugVariantE"></span><span id="stored::DebugVariant"></span><span class="target" id="classstored_1_1_debug_variant"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">DebugVariant</code> : <em class="property">public</em> stored::DebugVariantBase<a class="headerlink" href="#_CPPv4N6stored12DebugVariantE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored12DebugVariantE"></span><span id="_CPPv2N6stored12DebugVariantE"></span><span id="stored::DebugVariant"></span><span class="target" id="classstored_1_1_debug_variant"></span><em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">stored</span><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">DebugVariant</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <span class="pre">stored</span><span class="pre">::</span><span class="pre">DebugVariantBase</span><a class="headerlink" href="#_CPPv4N6stored12DebugVariantE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>A wrapper for any type of object in a store. </p>
 <p>This is a template-type-independent container for a stored::DebugVariantTyped.</p>
 <p>Even though the <code class="docutils literal notranslate"><span class="pre">DebugVariantTyped</span></code> uses virtual functions, inheritance, and templates, the allocation is done within this object. This object is small, efficient, default-copyable and default-assignable, and can therefore be used as a value in a standard container. </p>
@@ -1048,7 +1052,7 @@ than the actual tracing speed.</p>
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N6stored12DebugVariant4baseE">
-<span id="_CPPv3N6stored12DebugVariant4baseE"></span><span id="_CPPv2N6stored12DebugVariant4baseE"></span><span id="stored::DebugVariant::base"></span><span class="target" id="classstored_1_1_debug_variant_1ae98e0c3b3da8be548667ccefa974c59b"></span><em class="property">typedef </em>DebugVariantBase <code class="sig-name descname">base</code><a class="headerlink" href="#_CPPv4N6stored12DebugVariant4baseE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored12DebugVariant4baseE"></span><span id="_CPPv2N6stored12DebugVariant4baseE"></span><span id="stored::DebugVariant::base"></span><span class="target" id="classstored_1_1_debug_variant_1ae98e0c3b3da8be548667ccefa974c59b"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">DebugVariantBase</span> <code class="sig-name descname"><span class="pre">base</span></code><a class="headerlink" href="#_CPPv4N6stored12DebugVariant4baseE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -1056,19 +1060,19 @@ than the actual tracing speed.</p>
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N6stored12DebugVariant12DebugVariantEv">
-<span id="_CPPv3N6stored12DebugVariant12DebugVariantEv"></span><span id="_CPPv2N6stored12DebugVariant12DebugVariantEv"></span><span id="stored::DebugVariant::DebugVariant"></span><span class="target" id="classstored_1_1_debug_variant_1a7f9d9a7ddd78a9649c48a14fe260efaf"></span><code class="sig-name descname">DebugVariant</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12DebugVariant12DebugVariantEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored12DebugVariant12DebugVariantEv"></span><span id="_CPPv2N6stored12DebugVariant12DebugVariantEv"></span><span id="stored::DebugVariant::DebugVariant"></span><span class="target" id="classstored_1_1_debug_variant_1a7f9d9a7ddd78a9649c48a14fe260efaf"></span><em class="property"><span class="pre">inline</span></em> <code class="sig-name descname"><span class="pre">DebugVariant</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12DebugVariant12DebugVariantEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Constructor for an invalid <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">stored::Variant</span></a> wrapper. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4I0EN6stored12DebugVariant12DebugVariantERK7VariantI9ContainerE">
-<span id="_CPPv3I0EN6stored12DebugVariant12DebugVariantERK7VariantI9ContainerE"></span><span id="_CPPv2I0EN6stored12DebugVariant12DebugVariantERK7VariantI9ContainerE"></span>template&lt;typename <code class="sig-name descname">Container</code>&gt;<br /><span class="target" id="classstored_1_1_debug_variant_1a660353b707d5c3f504df46fcdaf13a22"></span><code class="sig-name descname">DebugVariant</code><span class="sig-paren">(</span><a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored12DebugVariant12DebugVariantERK7VariantI9ContainerE" title="stored::DebugVariant::DebugVariant::Container">Container</a>&gt; <em class="property">const</em> &amp;<em>variant</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored12DebugVariant12DebugVariantERK7VariantI9ContainerE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I0EN6stored12DebugVariant12DebugVariantERK7VariantI9ContainerE"></span><span id="_CPPv2I0EN6stored12DebugVariant12DebugVariantERK7VariantI9ContainerE"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">Container</span></code><span class="pre">&gt;</span><br /><span class="target" id="classstored_1_1_debug_variant_1a660353b707d5c3f504df46fcdaf13a22"></span><em class="property"><span class="pre">inline</span></em> <em class="property"><span class="pre">explicit</span></em> <code class="sig-name descname"><span class="pre">DebugVariant</span></code><span class="sig-paren">(</span><a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant"><span class="pre">Variant</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4I0EN6stored12DebugVariant12DebugVariantERK7VariantI9ContainerE" title="stored::DebugVariant::DebugVariant::Container"><span class="pre">Container</span></a><span class="pre">&gt;</span> <em class="property"><span class="pre">const</span></em> <span class="pre">&amp;</span><em><span class="pre">variant</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored12DebugVariant12DebugVariantERK7VariantI9ContainerE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Constructor for a <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">stored::Variant</span></a> wrapper. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored12DebugVariant3getEPv6size_t">
-<span id="_CPPv3NK6stored12DebugVariant3getEPv6size_t"></span><span id="_CPPv2NK6stored12DebugVariant3getEPv6size_t"></span><span id="stored::DebugVariant::get__voidP.sC"></span><span class="target" id="classstored_1_1_debug_variant_1abb3c7c13ab41a060eef1f35ec290d1e6"></span>size_t <code class="sig-name descname">get</code><span class="sig-paren">(</span>void *<em>dst</em>, size_t <em>len</em> = 0<span class="sig-paren">)</span> <em class="property">const</em> <em class="property">final</em><a class="headerlink" href="#_CPPv4NK6stored12DebugVariant3getEPv6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored12DebugVariant3getEPv6size_t"></span><span id="_CPPv2NK6stored12DebugVariant3getEPv6size_t"></span><span id="stored::DebugVariant::get__voidP.sC"></span><span class="target" id="classstored_1_1_debug_variant_1abb3c7c13ab41a060eef1f35ec290d1e6"></span><em class="property"><span class="pre">inline</span></em> <em class="property"><span class="pre">virtual</span></em> <span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><span class="pre">void</span> <span class="pre">*</span><em><span class="pre">dst</span></em>, <span class="pre">size_t</span> <em><span class="pre">len</span></em> <span class="pre">=</span> <span class="pre">0</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">final</span></em><a class="headerlink" href="#_CPPv4NK6stored12DebugVariant3getEPv6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Retrieve data from the object. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>the number of bytes written into <code class="docutils literal notranslate"><span class="pre">dst</span></code> </p>
@@ -1084,17 +1088,17 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored12DebugVariantneERK12DebugVariant">
-<span id="_CPPv3NK6stored12DebugVariantneERK12DebugVariant"></span><span id="_CPPv2NK6stored12DebugVariantneERK12DebugVariant"></span><span id="stored::DebugVariant::neq-operator__DebugVariantCRC"></span><span class="target" id="classstored_1_1_debug_variant_1a5435c1ed99b1d5aebaa26ef2827d4c53"></span>bool <code class="sig-name descname">operator!=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12DebugVariantE" title="stored::DebugVariant">DebugVariant</a> <em class="property">const</em> &amp;<em>rhs</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored12DebugVariantneERK12DebugVariant" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored12DebugVariantneERK12DebugVariant"></span><span id="_CPPv2NK6stored12DebugVariantneERK12DebugVariant"></span><span id="stored::DebugVariant::neq-operator__DebugVariantCRC"></span><span class="target" id="classstored_1_1_debug_variant_1a5435c1ed99b1d5aebaa26ef2827d4c53"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">bool</span> <code class="sig-name descname"><span class="pre">operator!=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12DebugVariantE" title="stored::DebugVariant"><span class="pre">DebugVariant</span></a> <em class="property"><span class="pre">const</span></em> <span class="pre">&amp;</span><em><span class="pre">rhs</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored12DebugVariantneERK12DebugVariant" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored12DebugVarianteqERK12DebugVariant">
-<span id="_CPPv3NK6stored12DebugVarianteqERK12DebugVariant"></span><span id="_CPPv2NK6stored12DebugVarianteqERK12DebugVariant"></span><span id="stored::DebugVariant::eq-operator__DebugVariantCRC"></span><span class="target" id="classstored_1_1_debug_variant_1acfeb6828622807c116f9e300b39d3ba3"></span>bool <code class="sig-name descname">operator==</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12DebugVariantE" title="stored::DebugVariant">DebugVariant</a> <em class="property">const</em> &amp;<em>rhs</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored12DebugVarianteqERK12DebugVariant" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored12DebugVarianteqERK12DebugVariant"></span><span id="_CPPv2NK6stored12DebugVarianteqERK12DebugVariant"></span><span id="stored::DebugVariant::eq-operator__DebugVariantCRC"></span><span class="target" id="classstored_1_1_debug_variant_1acfeb6828622807c116f9e300b39d3ba3"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">bool</span> <code class="sig-name descname"><span class="pre">operator==</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12DebugVariantE" title="stored::DebugVariant"><span class="pre">DebugVariant</span></a> <em class="property"><span class="pre">const</span></em> <span class="pre">&amp;</span><em><span class="pre">rhs</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored12DebugVarianteqERK12DebugVariant" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored12DebugVariant3setEPKv6size_t">
-<span id="_CPPv3N6stored12DebugVariant3setEPKv6size_t"></span><span id="_CPPv2N6stored12DebugVariant3setEPKv6size_t"></span><span id="stored::DebugVariant::set__voidCP.s"></span><span class="target" id="classstored_1_1_debug_variant_1a7bc75c879c3c71e2a288266b01f9a643"></span>size_t <code class="sig-name descname">set</code><span class="sig-paren">(</span>void <em class="property">const</em> *<em>src</em>, size_t <em>len</em> = 0<span class="sig-paren">)</span> <em class="property">final</em><a class="headerlink" href="#_CPPv4N6stored12DebugVariant3setEPKv6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored12DebugVariant3setEPKv6size_t"></span><span id="_CPPv2N6stored12DebugVariant3setEPKv6size_t"></span><span id="stored::DebugVariant::set__voidCP.s"></span><span class="target" id="classstored_1_1_debug_variant_1a7bc75c879c3c71e2a288266b01f9a643"></span><em class="property"><span class="pre">inline</span></em> <em class="property"><span class="pre">virtual</span></em> <span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">set</span></code><span class="sig-paren">(</span><span class="pre">void</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">src</span></em>, <span class="pre">size_t</span> <em><span class="pre">len</span></em> <span class="pre">=</span> <span class="pre">0</span><span class="sig-paren">)</span> <em class="property"><span class="pre">final</span></em><a class="headerlink" href="#_CPPv4N6stored12DebugVariant3setEPKv6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Set data to the buffer. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>the number of bytes consumed </p>
@@ -1110,19 +1114,19 @@ than the actual tracing speed.</p>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored12DebugVariant4sizeEv">
-<span id="_CPPv3NK6stored12DebugVariant4sizeEv"></span><span id="_CPPv2NK6stored12DebugVariant4sizeEv"></span><span id="stored::DebugVariant::sizeC"></span><span class="target" id="classstored_1_1_debug_variant_1a64ae972a9a9ba7bfc7f706985cb16523"></span>size_t <code class="sig-name descname">size</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">final</em><a class="headerlink" href="#_CPPv4NK6stored12DebugVariant4sizeEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored12DebugVariant4sizeEv"></span><span id="_CPPv2NK6stored12DebugVariant4sizeEv"></span><span id="stored::DebugVariant::sizeC"></span><span class="target" id="classstored_1_1_debug_variant_1a64ae972a9a9ba7bfc7f706985cb16523"></span><em class="property"><span class="pre">inline</span></em> <em class="property"><span class="pre">virtual</span></em> <span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">size</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">final</span></em><a class="headerlink" href="#_CPPv4NK6stored12DebugVariant4sizeEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The size of this object. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored12DebugVariant4typeEv">
-<span id="_CPPv3NK6stored12DebugVariant4typeEv"></span><span id="_CPPv2NK6stored12DebugVariant4typeEv"></span><span id="stored::DebugVariant::typeC"></span><span class="target" id="classstored_1_1_debug_variant_1aa3c3a6a5dcb317b00a67265f09aa7f81"></span>Type::type <code class="sig-name descname">type</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">final</em><a class="headerlink" href="#_CPPv4NK6stored12DebugVariant4typeEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored12DebugVariant4typeEv"></span><span id="_CPPv2NK6stored12DebugVariant4typeEv"></span><span id="stored::DebugVariant::typeC"></span><span class="target" id="classstored_1_1_debug_variant_1aa3c3a6a5dcb317b00a67265f09aa7f81"></span><em class="property"><span class="pre">inline</span></em> <em class="property"><span class="pre">virtual</span></em> <span class="pre">Type</span><span class="pre">::</span><span class="pre">type</span> <code class="sig-name descname"><span class="pre">type</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">final</span></em><a class="headerlink" href="#_CPPv4NK6stored12DebugVariant4typeEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The type of this object. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored12DebugVariant5validEv">
-<span id="_CPPv3NK6stored12DebugVariant5validEv"></span><span id="_CPPv2NK6stored12DebugVariant5validEv"></span><span id="stored::DebugVariant::validC"></span><span class="target" id="classstored_1_1_debug_variant_1a34af04b37012ab79a5b33e15ceee2b87"></span>bool <code class="sig-name descname">valid</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">final</em><a class="headerlink" href="#_CPPv4NK6stored12DebugVariant5validEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored12DebugVariant5validEv"></span><span id="_CPPv2NK6stored12DebugVariant5validEv"></span><span id="stored::DebugVariant::validC"></span><span class="target" id="classstored_1_1_debug_variant_1a34af04b37012ab79a5b33e15ceee2b87"></span><em class="property"><span class="pre">inline</span></em> <em class="property"><span class="pre">virtual</span></em> <span class="pre">bool</span> <code class="sig-name descname"><span class="pre">valid</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">final</span></em><a class="headerlink" href="#_CPPv4NK6stored12DebugVariant5validEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns if this wrapper points to a valid object. </p>
 </dd></dl>
 
@@ -1137,37 +1141,29 @@ than the actual tracing speed.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="cpp_directory.html" class="btn btn-neutral float-right" title="Directory" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="cpp_config.html" class="btn btn-neutral float-left" title="Config" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="cpp_directory.html" class="btn btn-neutral float-right" title="Directory" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="cpp_config.html" class="btn btn-neutral float-left" title="Config" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, Jochem Rutgers
+        &#169; Copyright 2020, Jochem Rutgers.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

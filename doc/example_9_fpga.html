@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>9_fpga &mdash; libstored  documentation</title>
   
@@ -16,7 +16,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -29,7 +32,6 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -51,7 +53,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libstored
+            <a href="../index.html" class="icon icon-home"> libstored
           
 
           
@@ -154,6 +156,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -167,7 +171,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/doc/example_9_fpga.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -317,6 +321,7 @@ int8 other store&#39;s int8
 
 		<span class="n">zmq</span><span class="p">.</span><span class="n">recv</span><span class="p">();</span>
 		<span class="n">xsim</span><span class="p">.</span><span class="n">recv</span><span class="p">();</span>
+		<span class="n">synchronizer</span><span class="p">.</span><span class="n">process</span><span class="p">();</span>
 
 		<span class="c1">// Inject a dummy byte to keep xsim alive, as it blocks on a read from file.</span>
 		<span class="n">xsim</span><span class="p">.</span><span class="n">keepAlive</span><span class="p">();</span>
@@ -327,8 +332,8 @@ int8 other store&#39;s int8
 </div>
 <div class="section" id="id1">
 <h2>FPGA<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-- libstored, a Store for Embedded Debugger.
--- Copyright (C) 2020  Jochem Rutgers
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-- libstored, distributed debuggable data stores.
+-- Copyright (C) 2020-2021  Jochem Rutgers
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU Lesser General Public License as published by
@@ -379,6 +384,7 @@ architecture rtl of example_9_fpga is
 		-- Save some LUTs by limiting how we are going to access these variables.
 		v.\t_clk\ := ACCESS_WO;
 		v.\default_register_write_count\ := ACCESS_WO;
+		v.\read_only_register\ := ACCESS_RO;
 		return v;
 	end function;
 
@@ -412,9 +418,9 @@ begin
 			var_in =&gt; var_in,
 			sync_in =&gt; sync_in,
 			sync_out =&gt; sync_out,
-			sync_id =&gt; sync_chained_id --,
---			sync_chained_in =&gt; sync_chained_out,
---			sync_chained_out =&gt; sync_chained_in
+			sync_id =&gt; sync_chained_id,
+			sync_chained_in =&gt; sync_chained_out,
+			sync_chained_out =&gt; sync_chained_in
 		);
 
 	store2_inst : entity work.ExampleFpga2_hdl
@@ -427,8 +433,8 @@ begin
 			rstn =&gt; rstn,
 			var_out =&gt; var2_out,
 			var_in =&gt; var2_in,
---			sync_in =&gt; sync_chained_in,
---			sync_out =&gt; sync_chained_out,
+			sync_in =&gt; sync_chained_in,
+			sync_out =&gt; sync_chained_out,
 			sync_chained_id =&gt; sync_chained_id
 		);
 
@@ -500,6 +506,7 @@ begin
 	begin
 		if rising_edge(clk) then
 			var_in &lt;= ExampleFpga_pkg.var_in_default;
+			var2_in &lt;= ExampleFpga2_pkg.var_in_default;
 
 
 
@@ -515,7 +522,7 @@ begin
 
 
 
-			-- implementaton of ExampleFpga/read-only register
+			-- writes to ExampleFpga/read-only register should be ignored
 			var_in.\read_only_register\.value &lt;= x&quot;abcd&quot;;
 			var_in.\read_only_register\.we &lt;= &#39;1&#39;;
 
@@ -545,18 +552,18 @@ end rtl;
 <h2>Store reference<a class="headerlink" href="#store-reference" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp class">
 <dt id="_CPPv4I00EN6stored18ExampleFpgaObjectsE">
-<span id="_CPPv3I00EN6stored18ExampleFpgaObjectsE"></span><span id="_CPPv2I00EN6stored18ExampleFpgaObjectsE"></span>template&lt;typename <code class="sig-name descname">Base_</code>, typename <code class="sig-name descname">Implementation_</code>&gt;<br /><span class="target" id="classstored_1_1_example_fpga_objects"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleFpgaObjects</code><a class="headerlink" href="#_CPPv4I00EN6stored18ExampleFpgaObjectsE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I00EN6stored18ExampleFpgaObjectsE"></span><span id="_CPPv2I00EN6stored18ExampleFpgaObjectsE"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">Base_</span></code><span class="pre">,</span> <span class="pre">typename</span> <code class="sig-name descname"><span class="pre">Implementation_</span></code><span class="pre">&gt;</span><br /><span class="target" id="classstored_1_1_example_fpga_objects"></span><em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">stored</span><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">ExampleFpgaObjects</span></code><a class="headerlink" href="#_CPPv4I00EN6stored18ExampleFpgaObjectsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>All <a class="reference internal" href="#classstored_1_1_example_fpga_base"><span class="std std-ref">ExampleFpgaBase</span></a>’s objects. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N6stored18ExampleFpgaObjects4BaseE">
-<span id="_CPPv3N6stored18ExampleFpgaObjects4BaseE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects4BaseE"></span><span id="stored::ExampleFpgaObjects::Base"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a3ffc4d6bbbd3027ab0c9421d3105c38b"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored18ExampleFpgaObjectsE" title="stored::ExampleFpgaObjects::Base_">Base_</a> <code class="sig-name descname">Base</code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored18ExampleFpgaObjects4BaseE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects4BaseE"></span><span id="stored::ExampleFpgaObjects::Base"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a3ffc4d6bbbd3027ab0c9421d3105c38b"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="#_CPPv4I00EN6stored18ExampleFpgaObjectsE" title="stored::ExampleFpgaObjects::Base_"><span class="pre">Base_</span></a> <code class="sig-name descname"><span class="pre">Base</span></code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv4N6stored18ExampleFpgaObjects14ImplementationE">
-<span id="_CPPv3N6stored18ExampleFpgaObjects14ImplementationE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects14ImplementationE"></span><span id="stored::ExampleFpgaObjects::Implementation"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a1e86db575782ac7ccbc5b1e525cfb8e8"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored18ExampleFpgaObjectsE" title="stored::ExampleFpgaObjects::Implementation_">Implementation_</a> <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored18ExampleFpgaObjects14ImplementationE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects14ImplementationE"></span><span id="stored::ExampleFpgaObjects::Implementation"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a1e86db575782ac7ccbc5b1e525cfb8e8"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="#_CPPv4I00EN6stored18ExampleFpgaObjectsE" title="stored::ExampleFpgaObjects::Implementation_"><span class="pre">Implementation_</span></a> <code class="sig-name descname"><span class="pre">Implementation</span></code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -564,55 +571,55 @@ end rtl;
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N6stored18ExampleFpgaObjects4blobE">
-<span id="_CPPv3N6stored18ExampleFpgaObjects4blobE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects4blobE"></span><span id="stored::ExampleFpgaObjects::blob__impl::StoreVariantV:Base.Implementation.Type::Blob.28u.3u:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a1dd07b3a6933d4f02081492ff33b4999"></span>impl::StoreVariantV&lt;<a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation">Implementation</a>, Type::Blob, 28u, 3u&gt; <code class="sig-name descname">blob</code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects4blobE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored18ExampleFpgaObjects4blobE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects4blobE"></span><span id="stored::ExampleFpgaObjects::blob__impl::StoreVariantV:Base.Implementation.Type::Blob.28u.3u:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a1dd07b3a6933d4f02081492ff33b4999"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreVariantV</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">Type</span><span class="pre">::</span><span class="pre">Blob</span><span class="pre">,</span> <span class="pre">28u</span><span class="pre">,</span> <span class="pre">3u</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">blob</span></code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects4blobE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>blob </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored18ExampleFpgaObjects8bool_objE">
-<span id="_CPPv3N6stored18ExampleFpgaObjects8bool_objE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects8bool_objE"></span><span id="stored::ExampleFpgaObjects::bool_obj__impl::StoreVariable:Base.Implementation.b.34u.1:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1ad067f1a5bedd117132b616d5afa38351"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation">Implementation</a>, bool, 34u, 1&gt; <code class="sig-name descname">bool_obj</code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects8bool_objE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored18ExampleFpgaObjects8bool_objE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects8bool_objE"></span><span id="stored::ExampleFpgaObjects::bool_obj__impl::StoreVariable:Base.Implementation.b.34u.1:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1ad067f1a5bedd117132b616d5afa38351"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreVariable</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">bool</span><span class="pre">,</span> <span class="pre">34u</span><span class="pre">,</span> <span class="pre">1</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">bool_obj</span></code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects8bool_objE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>bool </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored18ExampleFpgaObjects16default_registerE">
-<span id="_CPPv3N6stored18ExampleFpgaObjects16default_registerE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects16default_registerE"></span><span id="stored::ExampleFpgaObjects::default_register__impl::StoreVariable:Base.Implementation.uint32_t.20u.4:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1aac75985dc0336a960cf9dfaf484053ce"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation">Implementation</a>, uint32_t, 20u, 4&gt; <code class="sig-name descname">default_register</code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects16default_registerE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored18ExampleFpgaObjects16default_registerE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects16default_registerE"></span><span id="stored::ExampleFpgaObjects::default_register__impl::StoreVariable:Base.Implementation.uint32_t.20u.4:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1aac75985dc0336a960cf9dfaf484053ce"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreVariable</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">uint32_t</span><span class="pre">,</span> <span class="pre">20u</span><span class="pre">,</span> <span class="pre">4</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">default_register</span></code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects16default_registerE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>default register </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored18ExampleFpgaObjects28default_register_write_countE">
-<span id="_CPPv3N6stored18ExampleFpgaObjects28default_register_write_countE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects28default_register_write_countE"></span><span id="stored::ExampleFpgaObjects::default_register_write_count__impl::StoreVariable:Base.Implementation.uint32_t.24u.4:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a2337e86f2b6ae22253418b9e25b38940"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation">Implementation</a>, uint32_t, 24u, 4&gt; <code class="sig-name descname">default_register_write_count</code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects28default_register_write_countE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored18ExampleFpgaObjects28default_register_write_countE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects28default_register_write_countE"></span><span id="stored::ExampleFpgaObjects::default_register_write_count__impl::StoreVariable:Base.Implementation.uint32_t.24u.4:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a2337e86f2b6ae22253418b9e25b38940"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreVariable</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">uint32_t</span><span class="pre">,</span> <span class="pre">24u</span><span class="pre">,</span> <span class="pre">4</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">default_register_write_count</span></code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects28default_register_write_countE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>default register write count </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored18ExampleFpgaObjects16ignored_functionE">
-<span id="_CPPv3N6stored18ExampleFpgaObjects16ignored_functionE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects16ignored_functionE"></span><span id="stored::ExampleFpgaObjects::ignored_function__impl::StoreFunction:Base.Implementation.int32_t.1u:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a98a493fc6bf9afa3470c0711ae929b5f"></span>impl::StoreFunction&lt;<a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation">Implementation</a>, int32_t, 1u&gt; <code class="sig-name descname">ignored_function</code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects16ignored_functionE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored18ExampleFpgaObjects16ignored_functionE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects16ignored_functionE"></span><span id="stored::ExampleFpgaObjects::ignored_function__impl::StoreFunction:Base.Implementation.int32_t.1u:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a98a493fc6bf9afa3470c0711ae929b5f"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreFunction</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">int32_t</span><span class="pre">,</span> <span class="pre">1u</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">ignored_function</span></code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects16ignored_functionE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>ignored function </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored18ExampleFpgaObjects20initialized_registerE">
-<span id="_CPPv3N6stored18ExampleFpgaObjects20initialized_registerE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects20initialized_registerE"></span><span id="stored::ExampleFpgaObjects::initialized_register__impl::StoreVariable:Base.Implementation.uint32_t.0u.4:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a2f2952ac92fb9d989bf8cb18dba54d40"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation">Implementation</a>, uint32_t, 0u, 4&gt; <code class="sig-name descname">initialized_register</code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects20initialized_registerE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored18ExampleFpgaObjects20initialized_registerE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects20initialized_registerE"></span><span id="stored::ExampleFpgaObjects::initialized_register__impl::StoreVariable:Base.Implementation.uint32_t.0u.4:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a2f2952ac92fb9d989bf8cb18dba54d40"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreVariable</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">uint32_t</span><span class="pre">,</span> <span class="pre">0u</span><span class="pre">,</span> <span class="pre">4</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">initialized_register</span></code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects20initialized_registerE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>initialized register </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored18ExampleFpgaObjects18read_only_registerE">
-<span id="_CPPv3N6stored18ExampleFpgaObjects18read_only_registerE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects18read_only_registerE"></span><span id="stored::ExampleFpgaObjects::read_only_register__impl::StoreVariable:Base.Implementation.uint16_t.32u.2:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a4f89fad63d8c83e24efd0b3bbc975458"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation">Implementation</a>, uint16_t, 32u, 2&gt; <code class="sig-name descname">read_only_register</code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects18read_only_registerE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored18ExampleFpgaObjects18read_only_registerE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects18read_only_registerE"></span><span id="stored::ExampleFpgaObjects::read_only_register__impl::StoreVariable:Base.Implementation.uint16_t.32u.2:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a4f89fad63d8c83e24efd0b3bbc975458"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreVariable</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">uint16_t</span><span class="pre">,</span> <span class="pre">32u</span><span class="pre">,</span> <span class="pre">2</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">read_only_register</span></code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects18read_only_registerE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>read-only register </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored18ExampleFpgaObjects6stringE">
-<span id="_CPPv3N6stored18ExampleFpgaObjects6stringE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects6stringE"></span><span id="stored::ExampleFpgaObjects::string__impl::StoreVariantV:Base.Implementation.Type::String.8u.6u:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a4f6a6aa107f025c2d21bb15e9dee7462"></span>impl::StoreVariantV&lt;<a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation">Implementation</a>, Type::String, 8u, 6u&gt; <code class="sig-name descname">string</code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored18ExampleFpgaObjects6stringE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects6stringE"></span><span id="stored::ExampleFpgaObjects::string__impl::StoreVariantV:Base.Implementation.Type::String.8u.6u:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a4f6a6aa107f025c2d21bb15e9dee7462"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreVariantV</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">Type</span><span class="pre">::</span><span class="pre">String</span><span class="pre">,</span> <span class="pre">8u</span><span class="pre">,</span> <span class="pre">6u</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">string</span></code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects6stringE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>string </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored18ExampleFpgaObjects5t_clkE">
-<span id="_CPPv3N6stored18ExampleFpgaObjects5t_clkE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects5t_clkE"></span><span id="stored::ExampleFpgaObjects::t_clk__impl::StoreVariable:Base.Implementation.uint32_t.16u.4:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a2ec47b8a9e78bbf3efb208e177253bea"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation">Implementation</a>, uint32_t, 16u, 4&gt; <code class="sig-name descname">t_clk</code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects5t_clkE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored18ExampleFpgaObjects5t_clkE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects5t_clkE"></span><span id="stored::ExampleFpgaObjects::t_clk__impl::StoreVariable:Base.Implementation.uint32_t.16u.4:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a2ec47b8a9e78bbf3efb208e177253bea"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreVariable</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">uint32_t</span><span class="pre">,</span> <span class="pre">16u</span><span class="pre">,</span> <span class="pre">4</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">t_clk</span></code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects5t_clkE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>t (clk) </p>
 </dd></dl>
 
@@ -621,7 +628,7 @@ end rtl;
 
 <dl class="cpp class">
 <dt id="_CPPv4I0EN6stored15ExampleFpgaBaseE">
-<span id="_CPPv3I0EN6stored15ExampleFpgaBaseE"></span><span id="_CPPv2I0EN6stored15ExampleFpgaBaseE"></span>template&lt;typename <code class="sig-name descname">Implementation_</code>&gt;<br /><span class="target" id="classstored_1_1_example_fpga_base"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleFpgaBase</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4I00EN6stored18ExampleFpgaObjectsE" title="stored::ExampleFpgaObjects">ExampleFpgaObjects</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase">ExampleFpgaBase</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase::Implementation_">Implementation_</a>&gt;, <a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase::Implementation_">Implementation_</a>&gt;<a class="headerlink" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I0EN6stored15ExampleFpgaBaseE"></span><span id="_CPPv2I0EN6stored15ExampleFpgaBaseE"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">Implementation_</span></code><span class="pre">&gt;</span><br /><span class="target" id="classstored_1_1_example_fpga_base"></span><em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">stored</span><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">ExampleFpgaBase</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <span class="pre">stored</span><span class="pre">::</span><a class="reference internal" href="#_CPPv4I00EN6stored18ExampleFpgaObjectsE" title="stored::ExampleFpgaObjects"><span class="pre">ExampleFpgaObjects</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase"><span class="pre">ExampleFpgaBase</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase::Implementation_"><span class="pre">Implementation_</span></a><span class="pre">&gt;</span><span class="pre">,</span> <a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase::Implementation_"><span class="pre">Implementation_</span></a><span class="pre">&gt;</span><a class="headerlink" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Base class with default interface of all <a class="reference internal" href="#classstored_1_1_example_fpga"><span class="std std-ref">ExampleFpga</span></a> implementations. </p>
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_fpga"><span class="std std-ref">stored::ExampleFpga</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
@@ -646,30 +653,30 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp enum">
-<dt id="_CPPv4N6stored15ExampleFpgaBaseUt2_35E">
-<span id="_CPPv3N6stored15ExampleFpgaBaseUt2_35E"></span><span class="target" id="classstored_1_1_example_fpga_base_1a9563c23c3222a262281db8b95b34eb2f"></span><em class="property">enum </em><strong>[anonymous]</strong><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBaseUt2_35E" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6stored15ExampleFpgaBaseUt2_36E">
+<span id="_CPPv3N6stored15ExampleFpgaBaseUt2_36E"></span><span class="target" id="classstored_1_1_example_fpga_base_1a04fef0445daaa9f39f53c2727c4d4bfb"></span><em class="property"><span class="pre">enum</span> </em><strong><span class="pre">[anonymous]</span></strong><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBaseUt2_36E" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt id="_CPPv4N6stored15ExampleFpgaBaseUt2_3511ObjectCountE">
-<span id="_CPPv3N6stored15ExampleFpgaBaseUt2_3511ObjectCountE"></span><span class="target" id="classstored_1_1_example_fpga_base_1a9563c23c3222a262281db8b95b34eb2fa294ebfc4deaabf139efc2cd0eba27b8c"></span><em class="property">enumerator </em><code class="sig-name descname">ObjectCount</code><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBaseUt2_3511ObjectCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6stored15ExampleFpgaBaseUt2_3611ObjectCountE">
+<span id="_CPPv3N6stored15ExampleFpgaBaseUt2_3611ObjectCountE"></span><span class="target" id="classstored_1_1_example_fpga_base_1a04fef0445daaa9f39f53c2727c4d4bfba294ebfc4deaabf139efc2cd0eba27b8c"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">ObjectCount</span></code><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBaseUt2_3611ObjectCountE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Number of objects in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt id="_CPPv4N6stored15ExampleFpgaBaseUt2_3513VariableCountE">
-<span id="_CPPv3N6stored15ExampleFpgaBaseUt2_3513VariableCountE"></span><span class="target" id="classstored_1_1_example_fpga_base_1a9563c23c3222a262281db8b95b34eb2fac33ae3a153c806dac402dd96b350c2c5"></span><em class="property">enumerator </em><code class="sig-name descname">VariableCount</code><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBaseUt2_3513VariableCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6stored15ExampleFpgaBaseUt2_3613VariableCountE">
+<span id="_CPPv3N6stored15ExampleFpgaBaseUt2_3613VariableCountE"></span><span class="target" id="classstored_1_1_example_fpga_base_1a04fef0445daaa9f39f53c2727c4d4bfbac33ae3a153c806dac402dd96b350c2c5"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">VariableCount</span></code><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBaseUt2_3613VariableCountE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Number of variables in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt id="_CPPv4N6stored15ExampleFpgaBaseUt2_3513FunctionCountE">
-<span id="_CPPv3N6stored15ExampleFpgaBaseUt2_3513FunctionCountE"></span><span class="target" id="classstored_1_1_example_fpga_base_1a9563c23c3222a262281db8b95b34eb2fa0f126f67291796157a105a09bce833d3"></span><em class="property">enumerator </em><code class="sig-name descname">FunctionCount</code><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBaseUt2_3513FunctionCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6stored15ExampleFpgaBaseUt2_3613FunctionCountE">
+<span id="_CPPv3N6stored15ExampleFpgaBaseUt2_3613FunctionCountE"></span><span class="target" id="classstored_1_1_example_fpga_base_1a04fef0445daaa9f39f53c2727c4d4bfba0f126f67291796157a105a09bce833d3"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">FunctionCount</span></code><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBaseUt2_3613FunctionCountE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Number of functions in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt id="_CPPv4N6stored15ExampleFpgaBaseUt2_3510BufferSizeE">
-<span id="_CPPv3N6stored15ExampleFpgaBaseUt2_3510BufferSizeE"></span><span class="target" id="classstored_1_1_example_fpga_base_1a9563c23c3222a262281db8b95b34eb2fa1204ae3738f26e9a5a0fe9f7a2faf269"></span><em class="property">enumerator </em><code class="sig-name descname">BufferSize</code><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBaseUt2_3510BufferSizeE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6stored15ExampleFpgaBaseUt2_3610BufferSizeE">
+<span id="_CPPv3N6stored15ExampleFpgaBaseUt2_3610BufferSizeE"></span><span class="target" id="classstored_1_1_example_fpga_base_1a04fef0445daaa9f39f53c2727c4d4bfba1204ae3738f26e9a5a0fe9f7a2faf269"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">BufferSize</span></code><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBaseUt2_3610BufferSizeE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Buffer size. </p>
 </dd></dl>
 
@@ -677,13 +684,13 @@ public:
 
 <dl class="cpp type">
 <dt id="_CPPv4N6stored15ExampleFpgaBase14ImplementationE">
-<span id="_CPPv3N6stored15ExampleFpgaBase14ImplementationE"></span><span id="_CPPv2N6stored15ExampleFpgaBase14ImplementationE"></span><span id="stored::ExampleFpgaBase::Implementation"></span><span class="target" id="classstored_1_1_example_fpga_base_1a3d2b926e0e6669c0b0e51ded1bb06d8f"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase::Implementation_">Implementation_</a> <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored15ExampleFpgaBase14ImplementationE"></span><span id="_CPPv2N6stored15ExampleFpgaBase14ImplementationE"></span><span id="stored::ExampleFpgaBase::Implementation"></span><span class="target" id="classstored_1_1_example_fpga_base_1a3d2b926e0e6669c0b0e51ded1bb06d8f"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase::Implementation_"><span class="pre">Implementation_</span></a> <code class="sig-name descname"><span class="pre">Implementation</span></code><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Type of the actual implementation, which is the (lowest) subclass. </p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv4N6stored15ExampleFpgaBase3KeyE">
-<span id="_CPPv3N6stored15ExampleFpgaBase3KeyE"></span><span id="_CPPv2N6stored15ExampleFpgaBase3KeyE"></span><span id="stored::ExampleFpgaBase::Key"></span><span class="target" id="classstored_1_1_example_fpga_base_1a678eba916ea4aba40ad74be21bef0e4f"></span><em class="property">typedef </em>uintptr_t <code class="sig-name descname">Key</code><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase3KeyE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored15ExampleFpgaBase3KeyE"></span><span id="_CPPv2N6stored15ExampleFpgaBase3KeyE"></span><span id="stored::ExampleFpgaBase::Key"></span><span class="target" id="classstored_1_1_example_fpga_base_1a678eba916ea4aba40ad74be21bef0e4f"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">uintptr_t</span> <code class="sig-name descname"><span class="pre">Key</span></code><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase3KeyE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Type of a key. </p>
 <p><dl class="simple">
 <dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_fpga_base_1ab4aa696e4ba29b0d972762869b8fad4a"><span class="std std-ref">bufferToKey()</span></a> </p>
@@ -694,13 +701,13 @@ public:
 
 <dl class="cpp type">
 <dt id="_CPPv4N6stored15ExampleFpgaBase9ObjectMapE">
-<span id="_CPPv3N6stored15ExampleFpgaBase9ObjectMapE"></span><span id="_CPPv2N6stored15ExampleFpgaBase9ObjectMapE"></span><span id="stored::ExampleFpgaBase::ObjectMap"></span><span class="target" id="classstored_1_1_example_fpga_base_1a9bbd713e45fb6a5247f5283b5ab941e9"></span><em class="property">typedef </em>std::map&lt;std::string, <a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored15ExampleFpgaBase14ImplementationE" title="stored::ExampleFpgaBase::Implementation">Implementation</a>&gt;&gt; <code class="sig-name descname">ObjectMap</code><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase9ObjectMapE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored15ExampleFpgaBase9ObjectMapE"></span><span id="_CPPv2N6stored15ExampleFpgaBase9ObjectMapE"></span><span id="stored::ExampleFpgaBase::ObjectMap"></span><span class="target" id="classstored_1_1_example_fpga_base_1a9bbd713e45fb6a5247f5283b5ab941e9"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">std</span><span class="pre">::</span><span class="pre">map</span><span class="pre">&lt;</span><span class="pre">std</span><span class="pre">::</span><span class="pre">string</span><span class="pre">,</span> <a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant"><span class="pre">Variant</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored15ExampleFpgaBase14ImplementationE" title="stored::ExampleFpgaBase::Implementation"><span class="pre">Implementation</span></a><span class="pre">&gt;</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">ObjectMap</span></code><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase9ObjectMapE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Map as generated by <a class="reference internal" href="#classstored_1_1_example_fpga_base_1a54e94f96123d2014f4e86beb33e0a85b"><span class="std std-ref">map()</span></a>. </p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv4N6stored15ExampleFpgaBase7ObjectsE">
-<span id="_CPPv3N6stored15ExampleFpgaBase7ObjectsE"></span><span id="_CPPv2N6stored15ExampleFpgaBase7ObjectsE"></span><span id="stored::ExampleFpgaBase::Objects"></span><span class="target" id="classstored_1_1_example_fpga_base_1a71b2a07b920beb4beff6db61d7c6fcdf"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored18ExampleFpgaObjectsE" title="stored::ExampleFpgaObjects">ExampleFpgaObjects</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase">ExampleFpgaBase</a>, <a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase::Implementation_">Implementation_</a>&gt; <code class="sig-name descname">Objects</code><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase7ObjectsE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored15ExampleFpgaBase7ObjectsE"></span><span id="_CPPv2N6stored15ExampleFpgaBase7ObjectsE"></span><span id="stored::ExampleFpgaBase::Objects"></span><span class="target" id="classstored_1_1_example_fpga_base_1a71b2a07b920beb4beff6db61d7c6fcdf"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="#_CPPv4I00EN6stored18ExampleFpgaObjectsE" title="stored::ExampleFpgaObjects"><span class="pre">ExampleFpgaObjects</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase"><span class="pre">ExampleFpgaBase</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase::Implementation_"><span class="pre">Implementation_</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">Objects</span></code><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase7ObjectsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -708,19 +715,19 @@ public:
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N6stored15ExampleFpgaBase15ExampleFpgaBaseERK15ExampleFpgaBase">
-<span id="_CPPv3N6stored15ExampleFpgaBase15ExampleFpgaBaseERK15ExampleFpgaBase"></span><span id="_CPPv2N6stored15ExampleFpgaBase15ExampleFpgaBaseERK15ExampleFpgaBase"></span><span id="stored::ExampleFpgaBase::ExampleFpgaBase__ExampleFpgaBaseCR"></span><span class="target" id="classstored_1_1_example_fpga_base_1a6d8a14f9547bcd97b5d155fef83a1083"></span><code class="sig-name descname">ExampleFpgaBase</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleFpgaBase15ExampleFpgaBaseERK15ExampleFpgaBase" title="stored::ExampleFpgaBase::ExampleFpgaBase">ExampleFpgaBase</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase15ExampleFpgaBaseERK15ExampleFpgaBase" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored15ExampleFpgaBase15ExampleFpgaBaseERK15ExampleFpgaBase"></span><span id="_CPPv2N6stored15ExampleFpgaBase15ExampleFpgaBaseERK15ExampleFpgaBase"></span><span id="stored::ExampleFpgaBase::ExampleFpgaBase__ExampleFpgaBaseCR"></span><span class="target" id="classstored_1_1_example_fpga_base_1a6d8a14f9547bcd97b5d155fef83a1083"></span><code class="sig-name descname"><span class="pre">ExampleFpgaBase</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleFpgaBase15ExampleFpgaBaseERK15ExampleFpgaBase" title="stored::ExampleFpgaBase::ExampleFpgaBase"><span class="pre">ExampleFpgaBase</span></a> <em class="property"><span class="pre">const</span></em><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase15ExampleFpgaBaseERK15ExampleFpgaBase" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted copy constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored15ExampleFpgaBase15ExampleFpgaBaseERR15ExampleFpgaBase">
-<span id="_CPPv3N6stored15ExampleFpgaBase15ExampleFpgaBaseERR15ExampleFpgaBase"></span><span id="_CPPv2N6stored15ExampleFpgaBase15ExampleFpgaBaseERR15ExampleFpgaBase"></span><span id="stored::ExampleFpgaBase::ExampleFpgaBase__ExampleFpgaBaseRR"></span><span class="target" id="classstored_1_1_example_fpga_base_1a2cffaee26fd065dcc752e68b810e2a99"></span><code class="sig-name descname">ExampleFpgaBase</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleFpgaBase15ExampleFpgaBaseERR15ExampleFpgaBase" title="stored::ExampleFpgaBase::ExampleFpgaBase">ExampleFpgaBase</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase15ExampleFpgaBaseERR15ExampleFpgaBase" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored15ExampleFpgaBase15ExampleFpgaBaseERR15ExampleFpgaBase"></span><span id="_CPPv2N6stored15ExampleFpgaBase15ExampleFpgaBaseERR15ExampleFpgaBase"></span><span id="stored::ExampleFpgaBase::ExampleFpgaBase__ExampleFpgaBaseRR"></span><span class="target" id="classstored_1_1_example_fpga_base_1a2cffaee26fd065dcc752e68b810e2a99"></span><code class="sig-name descname"><span class="pre">ExampleFpgaBase</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleFpgaBase15ExampleFpgaBaseERR15ExampleFpgaBase" title="stored::ExampleFpgaBase::ExampleFpgaBase"><span class="pre">ExampleFpgaBase</span></a><span class="pre">&amp;</span><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase15ExampleFpgaBaseERR15ExampleFpgaBase" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored15ExampleFpgaBase11bufferToKeyEPKv">
-<span id="_CPPv3NK6stored15ExampleFpgaBase11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored15ExampleFpgaBase11bufferToKeyEPKv"></span><span id="stored::ExampleFpgaBase::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_fpga_base_1ab4aa696e4ba29b0d972762869b8fad4a"></span><a class="reference internal" href="#_CPPv4N6stored15ExampleFpgaBase3KeyE" title="stored::ExampleFpgaBase::Key">Key</a> <code class="sig-name descname">bufferToKey</code><span class="sig-paren">(</span>void <em class="property">const</em> *<em>buffer</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored15ExampleFpgaBase11bufferToKeyEPKv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored15ExampleFpgaBase11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored15ExampleFpgaBase11bufferToKeyEPKv"></span><span id="stored::ExampleFpgaBase::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_fpga_base_1ab4aa696e4ba29b0d972762869b8fad4a"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="#_CPPv4N6stored15ExampleFpgaBase3KeyE" title="stored::ExampleFpgaBase::Key"><span class="pre">Key</span></a> <code class="sig-name descname"><span class="pre">bufferToKey</span></code><span class="sig-paren">(</span><span class="pre">void</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">buffer</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored15ExampleFpgaBase11bufferToKeyEPKv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Converts a variable’s buffer to a key. </p>
 <p>A key is unique for all variables of the same store, but identical for the same variables across different instances of the same store class. Therefore, the key can be used to synchronize between instances of the same store. A key does not contain meta data, such as type or length. It is up to the synchronization library to make sure that these properties are handled well.</p>
 <p>For synchronization, when hookEntryX() or hookEntryRO() is invoked, one can compute the key of the object that is accessed. The key can be used, for example, in a key-to-Variant map. When data arrives from another party, the key can be used to find the proper <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> in the map.</p>
@@ -729,7 +736,7 @@ public:
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored15ExampleFpgaBase4findEPKc6size_t">
-<span id="_CPPv3N6stored15ExampleFpgaBase4findEPKc6size_t"></span><span id="_CPPv2N6stored15ExampleFpgaBase4findEPKc6size_t"></span><span id="stored::ExampleFpgaBase::find__cCP.s"></span><span class="target" id="classstored_1_1_example_fpga_base_1ad4a72cae527c793df70b14ddfaab75eb"></span><a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored15ExampleFpgaBase14ImplementationE" title="stored::ExampleFpgaBase::Implementation">Implementation</a>&gt; <code class="sig-name descname">find</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>name</em>, size_t <em>len</em> = std::numeric_limits&lt;size_t&gt;::max()<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase4findEPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored15ExampleFpgaBase4findEPKc6size_t"></span><span id="_CPPv2N6stored15ExampleFpgaBase4findEPKc6size_t"></span><span id="stored::ExampleFpgaBase::find__cCP.s"></span><span class="target" id="classstored_1_1_example_fpga_base_1ad4a72cae527c793df70b14ddfaab75eb"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant"><span class="pre">Variant</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored15ExampleFpgaBase14ImplementationE" title="stored::ExampleFpgaBase::Implementation"><span class="pre">Implementation</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">find</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">name</span></em>, <span class="pre">size_t</span> <em><span class="pre">len</span></em> <span class="pre">=</span> <span class="pre">std</span><span class="pre">::</span><span class="pre">numeric_limits</span><span class="pre">&lt;</span><span class="pre">size_t</span><span class="pre">&gt;</span><span class="pre">::</span><span class="pre">max</span><span class="pre">(</span><span class="pre">)</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase4findEPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Finds an object with the given name. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>the object, or an invalid <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">stored::Variant</span></a> if not found. </p>
@@ -740,19 +747,19 @@ public:
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored15ExampleFpgaBase14implementationEv">
-<span id="_CPPv3NK6stored15ExampleFpgaBase14implementationEv"></span><span id="_CPPv2NK6stored15ExampleFpgaBase14implementationEv"></span><span id="stored::ExampleFpgaBase::implementationC"></span><span class="target" id="classstored_1_1_example_fpga_base_1a0845517ebfa6c08eef331f60cacafaee"></span><a class="reference internal" href="#_CPPv4N6stored15ExampleFpgaBase14ImplementationE" title="stored::ExampleFpgaBase::Implementation">Implementation</a> <em class="property">const</em> &amp;<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored15ExampleFpgaBase14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored15ExampleFpgaBase14implementationEv"></span><span id="_CPPv2NK6stored15ExampleFpgaBase14implementationEv"></span><span id="stored::ExampleFpgaBase::implementationC"></span><span class="target" id="classstored_1_1_example_fpga_base_1a0845517ebfa6c08eef331f60cacafaee"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="#_CPPv4N6stored15ExampleFpgaBase14ImplementationE" title="stored::ExampleFpgaBase::Implementation"><span class="pre">Implementation</span></a> <em class="property"><span class="pre">const</span></em> <span class="pre">&amp;</span><code class="sig-name descname"><span class="pre">implementation</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored15ExampleFpgaBase14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored15ExampleFpgaBase14implementationEv">
-<span id="_CPPv3N6stored15ExampleFpgaBase14implementationEv"></span><span id="_CPPv2N6stored15ExampleFpgaBase14implementationEv"></span><span id="stored::ExampleFpgaBase::implementation"></span><span class="target" id="classstored_1_1_example_fpga_base_1a7518bb27ba9c84fa3b83c0b2e43800f5"></span><a class="reference internal" href="#_CPPv4N6stored15ExampleFpgaBase14ImplementationE" title="stored::ExampleFpgaBase::Implementation">Implementation</a> &amp;<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored15ExampleFpgaBase14implementationEv"></span><span id="_CPPv2N6stored15ExampleFpgaBase14implementationEv"></span><span id="stored::ExampleFpgaBase::implementation"></span><span class="target" id="classstored_1_1_example_fpga_base_1a7518bb27ba9c84fa3b83c0b2e43800f5"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="#_CPPv4N6stored15ExampleFpgaBase14ImplementationE" title="stored::ExampleFpgaBase::Implementation"><span class="pre">Implementation</span></a> <span class="pre">&amp;</span><code class="sig-name descname"><span class="pre">implementation</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4I0EN6stored15ExampleFpgaBase4listEv1FPvPKc">
-<span id="_CPPv3I0EN6stored15ExampleFpgaBase4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored15ExampleFpgaBase4listE1FPvPKc"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_example_fpga_base_1ab6111f800b85b34ab36eeb3e4aee9e35"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBase4listEv1FPvPKc" title="stored::ExampleFpgaBase::list::F">F</a> <em>f</em>, void *<em>arg</em>, char <em class="property">const</em> *<em>prefix</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored15ExampleFpgaBase4listEv1FPvPKc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I0EN6stored15ExampleFpgaBase4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored15ExampleFpgaBase4listE1FPvPKc"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">F</span></code><span class="pre">&gt;</span><br /><span class="target" id="classstored_1_1_example_fpga_base_1ab6111f800b85b34ab36eeb3e4aee9e35"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">list</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBase4listEv1FPvPKc" title="stored::ExampleFpgaBase::list::F"><span class="pre">F</span></a> <em><span class="pre">f</span></em>, <span class="pre">void</span> <span class="pre">*</span><em><span class="pre">arg</span></em>, <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">prefix</span></em> <span class="pre">=</span> <span class="pre">nullptr</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored15ExampleFpgaBase4listEv1FPvPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_fpga_base_1a5a1fe52620bee3002525d655b2c0f4b9"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><dl class="simple">
 <dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
@@ -763,7 +770,7 @@ public:
 
 <dl class="cpp function">
 <dt id="_CPPv4I0EN6stored15ExampleFpgaBase4listEvRR1F">
-<span id="_CPPv3I0EN6stored15ExampleFpgaBase4listERR1F"></span><span id="_CPPv2I0EN6stored15ExampleFpgaBase4listERR1F"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_example_fpga_base_1a2d32db5beff81b4c739852c1444ff50c"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBase4listEvRR1F" title="stored::ExampleFpgaBase::list::F">F</a> &amp;&amp;<em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored15ExampleFpgaBase4listEvRR1F" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I0EN6stored15ExampleFpgaBase4listERR1F"></span><span id="_CPPv2I0EN6stored15ExampleFpgaBase4listERR1F"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">F</span></code><span class="pre">&gt;</span><br /><span class="target" id="classstored_1_1_example_fpga_base_1a2d32db5beff81b4c739852c1444ff50c"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">list</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBase4listEvRR1F" title="stored::ExampleFpgaBase::list::F"><span class="pre">F</span></a> <span class="pre">&amp;</span><span class="pre">&amp;</span><em><span class="pre">f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored15ExampleFpgaBase4listEvRR1F" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_fpga_base_1a5a1fe52620bee3002525d655b2c0f4b9"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><dl class="simple">
 <dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
@@ -774,39 +781,39 @@ public:
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored15ExampleFpgaBase13longDirectoryEv">
-<span id="_CPPv3NK6stored15ExampleFpgaBase13longDirectoryEv"></span><span id="_CPPv2NK6stored15ExampleFpgaBase13longDirectoryEv"></span><span id="stored::ExampleFpgaBase::longDirectoryC"></span><span class="target" id="classstored_1_1_example_fpga_base_1a5a1fe52620bee3002525d655b2c0f4b9"></span>uint8_t <em class="property">const</em> *<code class="sig-name descname">longDirectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored15ExampleFpgaBase13longDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored15ExampleFpgaBase13longDirectoryEv"></span><span id="_CPPv2NK6stored15ExampleFpgaBase13longDirectoryEv"></span><span id="stored::ExampleFpgaBase::longDirectoryC"></span><span class="target" id="classstored_1_1_example_fpga_base_1a5a1fe52620bee3002525d655b2c0f4b9"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">uint8_t</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><code class="sig-name descname"><span class="pre">longDirectory</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored15ExampleFpgaBase13longDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Retuns the long directory. </p>
 <p>When not available, the short directory is returned. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored15ExampleFpgaBase3mapEPKc">
-<span id="_CPPv3N6stored15ExampleFpgaBase3mapEPKc"></span><span id="_CPPv2N6stored15ExampleFpgaBase3mapEPKc"></span><span id="stored::ExampleFpgaBase::map__cCP"></span><span class="target" id="classstored_1_1_example_fpga_base_1a54e94f96123d2014f4e86beb33e0a85b"></span><a class="reference internal" href="#_CPPv4N6stored15ExampleFpgaBase9ObjectMapE" title="stored::ExampleFpgaBase::ObjectMap">ObjectMap</a> <code class="sig-name descname">map</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>prefix</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase3mapEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored15ExampleFpgaBase3mapEPKc"></span><span id="_CPPv2N6stored15ExampleFpgaBase3mapEPKc"></span><span id="stored::ExampleFpgaBase::map__cCP"></span><span class="target" id="classstored_1_1_example_fpga_base_1a54e94f96123d2014f4e86beb33e0a85b"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="#_CPPv4N6stored15ExampleFpgaBase9ObjectMapE" title="stored::ExampleFpgaBase::ObjectMap"><span class="pre">ObjectMap</span></a> <code class="sig-name descname"><span class="pre">map</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">prefix</span></em> <span class="pre">=</span> <span class="pre">nullptr</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase3mapEPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Create a name to <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> map for the store. </p>
 <p>Generating the map may be expensive and the result is not cached. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored15ExampleFpgaBase4nameEv">
-<span id="_CPPv3NK6stored15ExampleFpgaBase4nameEv"></span><span id="_CPPv2NK6stored15ExampleFpgaBase4nameEv"></span><span id="stored::ExampleFpgaBase::nameC"></span><span class="target" id="classstored_1_1_example_fpga_base_1a082b68cb211080ce4e866ef177045c70"></span>char <em class="property">const</em> *<code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored15ExampleFpgaBase4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored15ExampleFpgaBase4nameEv"></span><span id="_CPPv2NK6stored15ExampleFpgaBase4nameEv"></span><span id="stored::ExampleFpgaBase::nameC"></span><span class="target" id="classstored_1_1_example_fpga_base_1a082b68cb211080ce4e866ef177045c70"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><code class="sig-name descname"><span class="pre">name</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored15ExampleFpgaBase4nameEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored15ExampleFpgaBaseaSERK15ExampleFpgaBase">
-<span id="_CPPv3N6stored15ExampleFpgaBaseaSERK15ExampleFpgaBase"></span><span id="_CPPv2N6stored15ExampleFpgaBaseaSERK15ExampleFpgaBase"></span><span id="stored::ExampleFpgaBase::assign-operator__ExampleFpgaBaseCR"></span><span class="target" id="classstored_1_1_example_fpga_base_1ad6b8344d1f0bdd0dd330fe60ef9de56a"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase">ExampleFpgaBase</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBaseaSERK15ExampleFpgaBase" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored15ExampleFpgaBaseaSERK15ExampleFpgaBase"></span><span id="_CPPv2N6stored15ExampleFpgaBaseaSERK15ExampleFpgaBase"></span><span id="stored::ExampleFpgaBase::assign-operator__ExampleFpgaBaseCR"></span><span class="target" id="classstored_1_1_example_fpga_base_1ad6b8344d1f0bdd0dd330fe60ef9de56a"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase"><span class="pre">ExampleFpgaBase</span></a> <em class="property"><span class="pre">const</span></em><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBaseaSERK15ExampleFpgaBase" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored15ExampleFpgaBaseaSERR15ExampleFpgaBase">
-<span id="_CPPv3N6stored15ExampleFpgaBaseaSERR15ExampleFpgaBase"></span><span id="_CPPv2N6stored15ExampleFpgaBaseaSERR15ExampleFpgaBase"></span><span id="stored::ExampleFpgaBase::assign-operator__ExampleFpgaBaseRR"></span><span class="target" id="classstored_1_1_example_fpga_base_1ae98696e1c335999b111db0d31ce2ce65"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase">ExampleFpgaBase</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBaseaSERR15ExampleFpgaBase" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored15ExampleFpgaBaseaSERR15ExampleFpgaBase"></span><span id="_CPPv2N6stored15ExampleFpgaBaseaSERR15ExampleFpgaBase"></span><span id="stored::ExampleFpgaBase::assign-operator__ExampleFpgaBaseRR"></span><span class="target" id="classstored_1_1_example_fpga_base_1ae98696e1c335999b111db0d31ce2ce65"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase"><span class="pre">ExampleFpgaBase</span></a><span class="pre">&amp;</span><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBaseaSERR15ExampleFpgaBase" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored15ExampleFpgaBase14shortDirectoryEv">
-<span id="_CPPv3NK6stored15ExampleFpgaBase14shortDirectoryEv"></span><span id="_CPPv2NK6stored15ExampleFpgaBase14shortDirectoryEv"></span><span id="stored::ExampleFpgaBase::shortDirectoryC"></span><span class="target" id="classstored_1_1_example_fpga_base_1acb2961dbc6f2cf42ba5fcbca00010a9c"></span>uint8_t <em class="property">const</em> *<code class="sig-name descname">shortDirectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored15ExampleFpgaBase14shortDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored15ExampleFpgaBase14shortDirectoryEv"></span><span id="_CPPv2NK6stored15ExampleFpgaBase14shortDirectoryEv"></span><span id="stored::ExampleFpgaBase::shortDirectoryC"></span><span class="target" id="classstored_1_1_example_fpga_base_1acb2961dbc6f2cf42ba5fcbca00010a9c"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">uint8_t</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><code class="sig-name descname"><span class="pre">shortDirectory</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored15ExampleFpgaBase14shortDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the short directory. </p>
 </dd></dl>
 
@@ -815,7 +822,7 @@ public:
 <p class="breathe-sectiondef-title rubric">Public Static Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N6stored15ExampleFpgaBase4hashEv">
-<span id="_CPPv3N6stored15ExampleFpgaBase4hashEv"></span><span id="_CPPv2N6stored15ExampleFpgaBase4hashEv"></span><span id="stored::ExampleFpgaBase::hash"></span><span class="target" id="classstored_1_1_example_fpga_base_1a78e332addf949ccb535b026ee2332f7a"></span>char <em class="property">const</em> *<code class="sig-name descname">hash</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase4hashEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored15ExampleFpgaBase4hashEv"></span><span id="_CPPv2N6stored15ExampleFpgaBase4hashEv"></span><span id="stored::ExampleFpgaBase::hash"></span><span class="target" id="classstored_1_1_example_fpga_base_1a78e332addf949ccb535b026ee2332f7a"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><code class="sig-name descname"><span class="pre">hash</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase4hashEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns a unique hash of the store. </p>
 </dd></dl>
 
@@ -824,22 +831,22 @@ public:
 <p class="breathe-sectiondef-title rubric">Friends</p>
 <dl class="friendclass">
 <dt>
-<em class="property">friend class</em> impl::StoreFunction</dt>
+<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">impl::StoreFunction</span></dt>
 </dl>
 
 <dl class="friendclass">
 <dt>
-<em class="property">friend class</em> impl::StoreVariable</dt>
+<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">impl::StoreVariable</span></dt>
 </dl>
 
 <dl class="friendclass">
 <dt>
-<em class="property">friend class</em> impl::StoreVariantF</dt>
+<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">impl::StoreVariantF</span></dt>
 </dl>
 
 <dl class="friendclass">
 <dt>
-<em class="property">friend class</em> impl::StoreVariantV</dt>
+<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">impl::StoreVariantV</span></dt>
 </dl>
 
 </div>
@@ -847,18 +854,18 @@ public:
 
 <dl class="cpp class">
 <dt id="_CPPv4N6stored11ExampleFpgaE">
-<span id="_CPPv3N6stored11ExampleFpgaE"></span><span id="_CPPv2N6stored11ExampleFpgaE"></span><span id="stored::ExampleFpga"></span><span class="target" id="classstored_1_1_example_fpga"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleFpga</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase">ExampleFpgaBase</a>&lt;<a class="reference internal" href="#_CPPv4N6stored11ExampleFpgaE" title="stored::ExampleFpga">ExampleFpga</a>&gt;<a class="headerlink" href="#_CPPv4N6stored11ExampleFpgaE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored11ExampleFpgaE"></span><span id="_CPPv2N6stored11ExampleFpgaE"></span><span id="stored::ExampleFpga"></span><span class="target" id="classstored_1_1_example_fpga"></span><em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">stored</span><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">ExampleFpga</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <span class="pre">stored</span><span class="pre">::</span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase"><span class="pre">ExampleFpgaBase</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored11ExampleFpgaE" title="stored::ExampleFpga"><span class="pre">ExampleFpga</span></a><span class="pre">&gt;</span><a class="headerlink" href="#_CPPv4N6stored11ExampleFpgaE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Default <a class="reference internal" href="#classstored_1_1_example_fpga_base"><span class="std std-ref">ExampleFpgaBase</span></a> implementation. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N6stored11ExampleFpga4baseE">
-<span id="_CPPv3N6stored11ExampleFpga4baseE"></span><span id="_CPPv2N6stored11ExampleFpga4baseE"></span><span id="stored::ExampleFpga::base"></span><span class="target" id="classstored_1_1_example_fpga_1a9b05e8367b7e53564ef87cfbae8445ac"></span><em class="property">typedef </em>stored::<a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase">ExampleFpgaBase</a>&lt;<a class="reference internal" href="#_CPPv4N6stored11ExampleFpgaE" title="stored::ExampleFpga">ExampleFpga</a>&gt; <code class="sig-name descname">base</code><a class="headerlink" href="#_CPPv4N6stored11ExampleFpga4baseE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored11ExampleFpga4baseE"></span><span id="_CPPv2N6stored11ExampleFpga4baseE"></span><span id="stored::ExampleFpga::base"></span><span class="target" id="classstored_1_1_example_fpga_1a9b05e8367b7e53564ef87cfbae8445ac"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">stored</span><span class="pre">::</span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase"><span class="pre">ExampleFpgaBase</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored11ExampleFpgaE" title="stored::ExampleFpga"><span class="pre">ExampleFpga</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">base</span></code><a class="headerlink" href="#_CPPv4N6stored11ExampleFpga4baseE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv4N6stored11ExampleFpga14ImplementationE">
-<span id="_CPPv3N6stored11ExampleFpga14ImplementationE"></span><span id="_CPPv2N6stored11ExampleFpga14ImplementationE"></span><span id="stored::ExampleFpga::Implementation"></span><span class="target" id="classstored_1_1_example_fpga_1a3d2b926e0e6669c0b0e51ded1bb06d8f"></span><em class="property">typedef </em>Implementation_ <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored11ExampleFpga14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored11ExampleFpga14ImplementationE"></span><span id="_CPPv2N6stored11ExampleFpga14ImplementationE"></span><span id="stored::ExampleFpga::Implementation"></span><span class="target" id="classstored_1_1_example_fpga_1a3d2b926e0e6669c0b0e51ded1bb06d8f"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">Implementation_</span> <code class="sig-name descname"><span class="pre">Implementation</span></code><a class="headerlink" href="#_CPPv4N6stored11ExampleFpga14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Type of the actual implementation, which is the (lowest) subclass. </p>
 </dd></dl>
 
@@ -867,31 +874,31 @@ public:
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N6stored11ExampleFpga11ExampleFpgaERK11ExampleFpga">
-<span id="_CPPv3N6stored11ExampleFpga11ExampleFpgaERK11ExampleFpga"></span><span id="_CPPv2N6stored11ExampleFpga11ExampleFpgaERK11ExampleFpga"></span><span id="stored::ExampleFpga::ExampleFpga__ExampleFpgaCR"></span><span class="target" id="classstored_1_1_example_fpga_1a2ec1903902117522fec2992a4838b24b"></span><code class="sig-name descname">ExampleFpga</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored11ExampleFpga11ExampleFpgaERK11ExampleFpga" title="stored::ExampleFpga::ExampleFpga">ExampleFpga</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored11ExampleFpga11ExampleFpgaERK11ExampleFpga" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored11ExampleFpga11ExampleFpgaERK11ExampleFpga"></span><span id="_CPPv2N6stored11ExampleFpga11ExampleFpgaERK11ExampleFpga"></span><span id="stored::ExampleFpga::ExampleFpga__ExampleFpgaCR"></span><span class="target" id="classstored_1_1_example_fpga_1a2ec1903902117522fec2992a4838b24b"></span><code class="sig-name descname"><span class="pre">ExampleFpga</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored11ExampleFpga11ExampleFpgaERK11ExampleFpga" title="stored::ExampleFpga::ExampleFpga"><span class="pre">ExampleFpga</span></a> <em class="property"><span class="pre">const</span></em><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored11ExampleFpga11ExampleFpgaERK11ExampleFpga" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted copy constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored11ExampleFpga11ExampleFpgaERR11ExampleFpga">
-<span id="_CPPv3N6stored11ExampleFpga11ExampleFpgaERR11ExampleFpga"></span><span id="_CPPv2N6stored11ExampleFpga11ExampleFpgaERR11ExampleFpga"></span><span id="stored::ExampleFpga::ExampleFpga__ExampleFpgaRR"></span><span class="target" id="classstored_1_1_example_fpga_1a13c569ecb9d99067419ad2e131046582"></span><code class="sig-name descname">ExampleFpga</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored11ExampleFpga11ExampleFpgaERR11ExampleFpga" title="stored::ExampleFpga::ExampleFpga">ExampleFpga</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored11ExampleFpga11ExampleFpgaERR11ExampleFpga" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored11ExampleFpga11ExampleFpgaERR11ExampleFpga"></span><span id="_CPPv2N6stored11ExampleFpga11ExampleFpgaERR11ExampleFpga"></span><span id="stored::ExampleFpga::ExampleFpga__ExampleFpgaRR"></span><span class="target" id="classstored_1_1_example_fpga_1a13c569ecb9d99067419ad2e131046582"></span><code class="sig-name descname"><span class="pre">ExampleFpga</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored11ExampleFpga11ExampleFpgaERR11ExampleFpga" title="stored::ExampleFpga::ExampleFpga"><span class="pre">ExampleFpga</span></a><span class="pre">&amp;</span><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored11ExampleFpga11ExampleFpgaERR11ExampleFpga" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored11ExampleFpga11ExampleFpgaEv">
-<span id="_CPPv3N6stored11ExampleFpga11ExampleFpgaEv"></span><span id="_CPPv2N6stored11ExampleFpga11ExampleFpgaEv"></span><span id="stored::ExampleFpga::ExampleFpga"></span><span class="target" id="classstored_1_1_example_fpga_1aa96d8cb16efe9183395a8d24e229d3b4"></span><code class="sig-name descname">ExampleFpga</code><span class="sig-paren">(</span><span class="sig-paren">)</span> = default<a class="headerlink" href="#_CPPv4N6stored11ExampleFpga11ExampleFpgaEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored11ExampleFpga11ExampleFpgaEv"></span><span id="_CPPv2N6stored11ExampleFpga11ExampleFpgaEv"></span><span id="stored::ExampleFpga::ExampleFpga"></span><span class="target" id="classstored_1_1_example_fpga_1aa96d8cb16efe9183395a8d24e229d3b4"></span><code class="sig-name descname"><span class="pre">ExampleFpga</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">default</span><a class="headerlink" href="#_CPPv4N6stored11ExampleFpga11ExampleFpgaEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Default constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored11ExampleFpgaaSERK11ExampleFpga">
-<span id="_CPPv3N6stored11ExampleFpgaaSERK11ExampleFpga"></span><span id="_CPPv2N6stored11ExampleFpgaaSERK11ExampleFpga"></span><span id="stored::ExampleFpga::assign-operator__ExampleFpgaCR"></span><span class="target" id="classstored_1_1_example_fpga_1a28f7cd432f48c0cc71b042e32ba4664a"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored11ExampleFpgaE" title="stored::ExampleFpga">ExampleFpga</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored11ExampleFpgaaSERK11ExampleFpga" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored11ExampleFpgaaSERK11ExampleFpga"></span><span id="_CPPv2N6stored11ExampleFpgaaSERK11ExampleFpga"></span><span id="stored::ExampleFpga::assign-operator__ExampleFpgaCR"></span><span class="target" id="classstored_1_1_example_fpga_1a28f7cd432f48c0cc71b042e32ba4664a"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored11ExampleFpgaE" title="stored::ExampleFpga"><span class="pre">ExampleFpga</span></a> <em class="property"><span class="pre">const</span></em><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored11ExampleFpgaaSERK11ExampleFpga" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored11ExampleFpgaaSERR11ExampleFpga">
-<span id="_CPPv3N6stored11ExampleFpgaaSERR11ExampleFpga"></span><span id="_CPPv2N6stored11ExampleFpgaaSERR11ExampleFpga"></span><span id="stored::ExampleFpga::assign-operator__ExampleFpgaRR"></span><span class="target" id="classstored_1_1_example_fpga_1a31baceb4b346037422c54adfcee61b3c"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored11ExampleFpgaE" title="stored::ExampleFpga">ExampleFpga</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored11ExampleFpgaaSERR11ExampleFpga" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored11ExampleFpgaaSERR11ExampleFpga"></span><span id="_CPPv2N6stored11ExampleFpgaaSERR11ExampleFpga"></span><span id="stored::ExampleFpga::assign-operator__ExampleFpgaRR"></span><span class="target" id="classstored_1_1_example_fpga_1a31baceb4b346037422c54adfcee61b3c"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored11ExampleFpgaE" title="stored::ExampleFpga"><span class="pre">ExampleFpga</span></a><span class="pre">&amp;</span><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored11ExampleFpgaaSERR11ExampleFpga" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 
@@ -900,7 +907,7 @@ public:
 <p class="breathe-sectiondef-title rubric">Friends</p>
 <dl class="friendclass">
 <dt>
-<em class="property">friend class</em> stored::ExampleFpgaBase&lt; ExampleFpga &gt;</dt>
+<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">stored::ExampleFpgaBase&lt;</span> <span class="pre">ExampleFpga</span> <span class="pre">&gt;</span></dt>
 </dl>
 
 </div>
@@ -908,18 +915,18 @@ public:
 
 <dl class="cpp class">
 <dt id="_CPPv4I00EN6stored19ExampleFpga2ObjectsE">
-<span id="_CPPv3I00EN6stored19ExampleFpga2ObjectsE"></span><span id="_CPPv2I00EN6stored19ExampleFpga2ObjectsE"></span>template&lt;typename <code class="sig-name descname">Base_</code>, typename <code class="sig-name descname">Implementation_</code>&gt;<br /><span class="target" id="classstored_1_1_example_fpga2_objects"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleFpga2Objects</code><a class="headerlink" href="#_CPPv4I00EN6stored19ExampleFpga2ObjectsE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I00EN6stored19ExampleFpga2ObjectsE"></span><span id="_CPPv2I00EN6stored19ExampleFpga2ObjectsE"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">Base_</span></code><span class="pre">,</span> <span class="pre">typename</span> <code class="sig-name descname"><span class="pre">Implementation_</span></code><span class="pre">&gt;</span><br /><span class="target" id="classstored_1_1_example_fpga2_objects"></span><em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">stored</span><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">ExampleFpga2Objects</span></code><a class="headerlink" href="#_CPPv4I00EN6stored19ExampleFpga2ObjectsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>All <a class="reference internal" href="#classstored_1_1_example_fpga2_base"><span class="std std-ref">ExampleFpga2Base</span></a>’s objects. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N6stored19ExampleFpga2Objects4BaseE">
-<span id="_CPPv3N6stored19ExampleFpga2Objects4BaseE"></span><span id="_CPPv2N6stored19ExampleFpga2Objects4BaseE"></span><span id="stored::ExampleFpga2Objects::Base"></span><span class="target" id="classstored_1_1_example_fpga2_objects_1abbe2d5a8b9bc421609df2c882f1ada0f"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleFpga2ObjectsE" title="stored::ExampleFpga2Objects::Base_">Base_</a> <code class="sig-name descname">Base</code><a class="headerlink" href="#_CPPv4N6stored19ExampleFpga2Objects4BaseE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored19ExampleFpga2Objects4BaseE"></span><span id="_CPPv2N6stored19ExampleFpga2Objects4BaseE"></span><span id="stored::ExampleFpga2Objects::Base"></span><span class="target" id="classstored_1_1_example_fpga2_objects_1abbe2d5a8b9bc421609df2c882f1ada0f"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleFpga2ObjectsE" title="stored::ExampleFpga2Objects::Base_"><span class="pre">Base_</span></a> <code class="sig-name descname"><span class="pre">Base</span></code><a class="headerlink" href="#_CPPv4N6stored19ExampleFpga2Objects4BaseE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv4N6stored19ExampleFpga2Objects14ImplementationE">
-<span id="_CPPv3N6stored19ExampleFpga2Objects14ImplementationE"></span><span id="_CPPv2N6stored19ExampleFpga2Objects14ImplementationE"></span><span id="stored::ExampleFpga2Objects::Implementation"></span><span class="target" id="classstored_1_1_example_fpga2_objects_1a8c460da98861a6205367adfcdcb3d71b"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleFpga2ObjectsE" title="stored::ExampleFpga2Objects::Implementation_">Implementation_</a> <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored19ExampleFpga2Objects14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored19ExampleFpga2Objects14ImplementationE"></span><span id="_CPPv2N6stored19ExampleFpga2Objects14ImplementationE"></span><span id="stored::ExampleFpga2Objects::Implementation"></span><span class="target" id="classstored_1_1_example_fpga2_objects_1a8c460da98861a6205367adfcdcb3d71b"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleFpga2ObjectsE" title="stored::ExampleFpga2Objects::Implementation_"><span class="pre">Implementation_</span></a> <code class="sig-name descname"><span class="pre">Implementation</span></code><a class="headerlink" href="#_CPPv4N6stored19ExampleFpga2Objects14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -927,7 +934,7 @@ public:
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N6stored19ExampleFpga2Objects18other_store_s_int8E">
-<span id="_CPPv3N6stored19ExampleFpga2Objects18other_store_s_int8E"></span><span id="_CPPv2N6stored19ExampleFpga2Objects18other_store_s_int8E"></span><span id="stored::ExampleFpga2Objects::other_store_s_int8__impl::StoreVariable:Base.Implementation.int8_t.0u.1:"></span><span class="target" id="classstored_1_1_example_fpga2_objects_1a9718511a7d11a1d95220992c5b2bfd5f"></span>impl::StoreVariable&lt;<a class="reference internal" href="#_CPPv4N6stored19ExampleFpga2Objects4BaseE" title="stored::ExampleFpga2Objects::Base">Base</a>, <a class="reference internal" href="#_CPPv4N6stored19ExampleFpga2Objects14ImplementationE" title="stored::ExampleFpga2Objects::Implementation">Implementation</a>, int8_t, 0u, 1&gt; <code class="sig-name descname">other_store_s_int8</code><a class="headerlink" href="#_CPPv4N6stored19ExampleFpga2Objects18other_store_s_int8E" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored19ExampleFpga2Objects18other_store_s_int8E"></span><span id="_CPPv2N6stored19ExampleFpga2Objects18other_store_s_int8E"></span><span id="stored::ExampleFpga2Objects::other_store_s_int8__impl::StoreVariable:Base.Implementation.int8_t.0u.1:"></span><span class="target" id="classstored_1_1_example_fpga2_objects_1a9718511a7d11a1d95220992c5b2bfd5f"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreVariable</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored19ExampleFpga2Objects4BaseE" title="stored::ExampleFpga2Objects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored19ExampleFpga2Objects14ImplementationE" title="stored::ExampleFpga2Objects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">int8_t</span><span class="pre">,</span> <span class="pre">0u</span><span class="pre">,</span> <span class="pre">1</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">other_store_s_int8</span></code><a class="headerlink" href="#_CPPv4N6stored19ExampleFpga2Objects18other_store_s_int8E" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>other store’s int8 </p>
 </dd></dl>
 
@@ -936,7 +943,7 @@ public:
 
 <dl class="cpp class">
 <dt id="_CPPv4I0EN6stored16ExampleFpga2BaseE">
-<span id="_CPPv3I0EN6stored16ExampleFpga2BaseE"></span><span id="_CPPv2I0EN6stored16ExampleFpga2BaseE"></span>template&lt;typename <code class="sig-name descname">Implementation_</code>&gt;<br /><span class="target" id="classstored_1_1_example_fpga2_base"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleFpga2Base</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4I00EN6stored19ExampleFpga2ObjectsE" title="stored::ExampleFpga2Objects">ExampleFpga2Objects</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base">ExampleFpga2Base</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base::Implementation_">Implementation_</a>&gt;, <a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base::Implementation_">Implementation_</a>&gt;<a class="headerlink" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I0EN6stored16ExampleFpga2BaseE"></span><span id="_CPPv2I0EN6stored16ExampleFpga2BaseE"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">Implementation_</span></code><span class="pre">&gt;</span><br /><span class="target" id="classstored_1_1_example_fpga2_base"></span><em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">stored</span><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">ExampleFpga2Base</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <span class="pre">stored</span><span class="pre">::</span><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleFpga2ObjectsE" title="stored::ExampleFpga2Objects"><span class="pre">ExampleFpga2Objects</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base"><span class="pre">ExampleFpga2Base</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base::Implementation_"><span class="pre">Implementation_</span></a><span class="pre">&gt;</span><span class="pre">,</span> <a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base::Implementation_"><span class="pre">Implementation_</span></a><span class="pre">&gt;</span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Base class with default interface of all <a class="reference internal" href="#classstored_1_1_example_fpga2"><span class="std std-ref">ExampleFpga2</span></a> implementations. </p>
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_fpga2"><span class="std std-ref">stored::ExampleFpga2</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
@@ -961,30 +968,30 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp enum">
-<dt id="_CPPv4N6stored16ExampleFpga2BaseUt2_36E">
-<span id="_CPPv3N6stored16ExampleFpga2BaseUt2_36E"></span><span class="target" id="classstored_1_1_example_fpga2_base_1ace26631fa1b0e4b519761976766542c3"></span><em class="property">enum </em><strong>[anonymous]</strong><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2BaseUt2_36E" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6stored16ExampleFpga2BaseUt2_37E">
+<span id="_CPPv3N6stored16ExampleFpga2BaseUt2_37E"></span><span class="target" id="classstored_1_1_example_fpga2_base_1acf4651e43d952a116e1512468243c61d"></span><em class="property"><span class="pre">enum</span> </em><strong><span class="pre">[anonymous]</span></strong><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2BaseUt2_37E" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt id="_CPPv4N6stored16ExampleFpga2BaseUt2_3611ObjectCountE">
-<span id="_CPPv3N6stored16ExampleFpga2BaseUt2_3611ObjectCountE"></span><span class="target" id="classstored_1_1_example_fpga2_base_1ace26631fa1b0e4b519761976766542c3a8b263ba1a869f6769bf6b48b072de63d"></span><em class="property">enumerator </em><code class="sig-name descname">ObjectCount</code><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2BaseUt2_3611ObjectCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6stored16ExampleFpga2BaseUt2_3711ObjectCountE">
+<span id="_CPPv3N6stored16ExampleFpga2BaseUt2_3711ObjectCountE"></span><span class="target" id="classstored_1_1_example_fpga2_base_1acf4651e43d952a116e1512468243c61da8b263ba1a869f6769bf6b48b072de63d"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">ObjectCount</span></code><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2BaseUt2_3711ObjectCountE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Number of objects in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt id="_CPPv4N6stored16ExampleFpga2BaseUt2_3613VariableCountE">
-<span id="_CPPv3N6stored16ExampleFpga2BaseUt2_3613VariableCountE"></span><span class="target" id="classstored_1_1_example_fpga2_base_1ace26631fa1b0e4b519761976766542c3abfa46645e81372698ad3b56b85a50962"></span><em class="property">enumerator </em><code class="sig-name descname">VariableCount</code><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2BaseUt2_3613VariableCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6stored16ExampleFpga2BaseUt2_3713VariableCountE">
+<span id="_CPPv3N6stored16ExampleFpga2BaseUt2_3713VariableCountE"></span><span class="target" id="classstored_1_1_example_fpga2_base_1acf4651e43d952a116e1512468243c61dabfa46645e81372698ad3b56b85a50962"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">VariableCount</span></code><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2BaseUt2_3713VariableCountE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Number of variables in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt id="_CPPv4N6stored16ExampleFpga2BaseUt2_3613FunctionCountE">
-<span id="_CPPv3N6stored16ExampleFpga2BaseUt2_3613FunctionCountE"></span><span class="target" id="classstored_1_1_example_fpga2_base_1ace26631fa1b0e4b519761976766542c3aad0f16c7cb95145d278ad48f4428345c"></span><em class="property">enumerator </em><code class="sig-name descname">FunctionCount</code><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2BaseUt2_3613FunctionCountE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6stored16ExampleFpga2BaseUt2_3713FunctionCountE">
+<span id="_CPPv3N6stored16ExampleFpga2BaseUt2_3713FunctionCountE"></span><span class="target" id="classstored_1_1_example_fpga2_base_1acf4651e43d952a116e1512468243c61daad0f16c7cb95145d278ad48f4428345c"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">FunctionCount</span></code><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2BaseUt2_3713FunctionCountE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Number of functions in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt id="_CPPv4N6stored16ExampleFpga2BaseUt2_3610BufferSizeE">
-<span id="_CPPv3N6stored16ExampleFpga2BaseUt2_3610BufferSizeE"></span><span class="target" id="classstored_1_1_example_fpga2_base_1ace26631fa1b0e4b519761976766542c3a1c8a44a70a726b4671c568ed89d60267"></span><em class="property">enumerator </em><code class="sig-name descname">BufferSize</code><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2BaseUt2_3610BufferSizeE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6stored16ExampleFpga2BaseUt2_3710BufferSizeE">
+<span id="_CPPv3N6stored16ExampleFpga2BaseUt2_3710BufferSizeE"></span><span class="target" id="classstored_1_1_example_fpga2_base_1acf4651e43d952a116e1512468243c61da1c8a44a70a726b4671c568ed89d60267"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">BufferSize</span></code><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2BaseUt2_3710BufferSizeE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Buffer size. </p>
 </dd></dl>
 
@@ -992,13 +999,13 @@ public:
 
 <dl class="cpp type">
 <dt id="_CPPv4N6stored16ExampleFpga2Base14ImplementationE">
-<span id="_CPPv3N6stored16ExampleFpga2Base14ImplementationE"></span><span id="_CPPv2N6stored16ExampleFpga2Base14ImplementationE"></span><span id="stored::ExampleFpga2Base::Implementation"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a75de4b4061f58cfbc20015983c87603f"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base::Implementation_">Implementation_</a> <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored16ExampleFpga2Base14ImplementationE"></span><span id="_CPPv2N6stored16ExampleFpga2Base14ImplementationE"></span><span id="stored::ExampleFpga2Base::Implementation"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a75de4b4061f58cfbc20015983c87603f"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base::Implementation_"><span class="pre">Implementation_</span></a> <code class="sig-name descname"><span class="pre">Implementation</span></code><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base14ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Type of the actual implementation, which is the (lowest) subclass. </p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv4N6stored16ExampleFpga2Base3KeyE">
-<span id="_CPPv3N6stored16ExampleFpga2Base3KeyE"></span><span id="_CPPv2N6stored16ExampleFpga2Base3KeyE"></span><span id="stored::ExampleFpga2Base::Key"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a12eb7ea9c5cae46bb670fbed2477d2f1"></span><em class="property">typedef </em>uintptr_t <code class="sig-name descname">Key</code><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base3KeyE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored16ExampleFpga2Base3KeyE"></span><span id="_CPPv2N6stored16ExampleFpga2Base3KeyE"></span><span id="stored::ExampleFpga2Base::Key"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a12eb7ea9c5cae46bb670fbed2477d2f1"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">uintptr_t</span> <code class="sig-name descname"><span class="pre">Key</span></code><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base3KeyE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Type of a key. </p>
 <p><dl class="simple">
 <dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_fpga2_base_1a06f002a4420aab0e44ac6400e84c2257"><span class="std std-ref">bufferToKey()</span></a> </p>
@@ -1009,13 +1016,13 @@ public:
 
 <dl class="cpp type">
 <dt id="_CPPv4N6stored16ExampleFpga2Base9ObjectMapE">
-<span id="_CPPv3N6stored16ExampleFpga2Base9ObjectMapE"></span><span id="_CPPv2N6stored16ExampleFpga2Base9ObjectMapE"></span><span id="stored::ExampleFpga2Base::ObjectMap"></span><span class="target" id="classstored_1_1_example_fpga2_base_1ab5b75f7ef5cecf18eef63ee4afb7406d"></span><em class="property">typedef </em>std::map&lt;std::string, <a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored16ExampleFpga2Base14ImplementationE" title="stored::ExampleFpga2Base::Implementation">Implementation</a>&gt;&gt; <code class="sig-name descname">ObjectMap</code><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base9ObjectMapE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored16ExampleFpga2Base9ObjectMapE"></span><span id="_CPPv2N6stored16ExampleFpga2Base9ObjectMapE"></span><span id="stored::ExampleFpga2Base::ObjectMap"></span><span class="target" id="classstored_1_1_example_fpga2_base_1ab5b75f7ef5cecf18eef63ee4afb7406d"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">std</span><span class="pre">::</span><span class="pre">map</span><span class="pre">&lt;</span><span class="pre">std</span><span class="pre">::</span><span class="pre">string</span><span class="pre">,</span> <a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant"><span class="pre">Variant</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored16ExampleFpga2Base14ImplementationE" title="stored::ExampleFpga2Base::Implementation"><span class="pre">Implementation</span></a><span class="pre">&gt;</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">ObjectMap</span></code><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base9ObjectMapE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Map as generated by <a class="reference internal" href="#classstored_1_1_example_fpga2_base_1a279a7d3f995542a3be2c4a65555a768a"><span class="std std-ref">map()</span></a>. </p>
 </dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv4N6stored16ExampleFpga2Base7ObjectsE">
-<span id="_CPPv3N6stored16ExampleFpga2Base7ObjectsE"></span><span id="_CPPv2N6stored16ExampleFpga2Base7ObjectsE"></span><span id="stored::ExampleFpga2Base::Objects"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a1373e78a8a17e9dddebfe365d27f7040"></span><em class="property">typedef </em><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleFpga2ObjectsE" title="stored::ExampleFpga2Objects">ExampleFpga2Objects</a>&lt;<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base">ExampleFpga2Base</a>, <a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base::Implementation_">Implementation_</a>&gt; <code class="sig-name descname">Objects</code><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base7ObjectsE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored16ExampleFpga2Base7ObjectsE"></span><span id="_CPPv2N6stored16ExampleFpga2Base7ObjectsE"></span><span id="stored::ExampleFpga2Base::Objects"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a1373e78a8a17e9dddebfe365d27f7040"></span><em class="property"><span class="pre">typedef</span> </em><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleFpga2ObjectsE" title="stored::ExampleFpga2Objects"><span class="pre">ExampleFpga2Objects</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base"><span class="pre">ExampleFpga2Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base::Implementation_"><span class="pre">Implementation_</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">Objects</span></code><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base7ObjectsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -1023,19 +1030,19 @@ public:
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N6stored16ExampleFpga2Base16ExampleFpga2BaseERK16ExampleFpga2Base">
-<span id="_CPPv3N6stored16ExampleFpga2Base16ExampleFpga2BaseERK16ExampleFpga2Base"></span><span id="_CPPv2N6stored16ExampleFpga2Base16ExampleFpga2BaseERK16ExampleFpga2Base"></span><span id="stored::ExampleFpga2Base::ExampleFpga2Base__ExampleFpga2BaseCR"></span><span class="target" id="classstored_1_1_example_fpga2_base_1ab303ad8e73655463f895bdbb181a40f8"></span><code class="sig-name descname">ExampleFpga2Base</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16ExampleFpga2Base16ExampleFpga2BaseERK16ExampleFpga2Base" title="stored::ExampleFpga2Base::ExampleFpga2Base">ExampleFpga2Base</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base16ExampleFpga2BaseERK16ExampleFpga2Base" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored16ExampleFpga2Base16ExampleFpga2BaseERK16ExampleFpga2Base"></span><span id="_CPPv2N6stored16ExampleFpga2Base16ExampleFpga2BaseERK16ExampleFpga2Base"></span><span id="stored::ExampleFpga2Base::ExampleFpga2Base__ExampleFpga2BaseCR"></span><span class="target" id="classstored_1_1_example_fpga2_base_1ab303ad8e73655463f895bdbb181a40f8"></span><code class="sig-name descname"><span class="pre">ExampleFpga2Base</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16ExampleFpga2Base16ExampleFpga2BaseERK16ExampleFpga2Base" title="stored::ExampleFpga2Base::ExampleFpga2Base"><span class="pre">ExampleFpga2Base</span></a> <em class="property"><span class="pre">const</span></em><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base16ExampleFpga2BaseERK16ExampleFpga2Base" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted copy constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored16ExampleFpga2Base16ExampleFpga2BaseERR16ExampleFpga2Base">
-<span id="_CPPv3N6stored16ExampleFpga2Base16ExampleFpga2BaseERR16ExampleFpga2Base"></span><span id="_CPPv2N6stored16ExampleFpga2Base16ExampleFpga2BaseERR16ExampleFpga2Base"></span><span id="stored::ExampleFpga2Base::ExampleFpga2Base__ExampleFpga2BaseRR"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a8590e3b70a6946e9584be9f54ee1491b"></span><code class="sig-name descname">ExampleFpga2Base</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16ExampleFpga2Base16ExampleFpga2BaseERR16ExampleFpga2Base" title="stored::ExampleFpga2Base::ExampleFpga2Base">ExampleFpga2Base</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base16ExampleFpga2BaseERR16ExampleFpga2Base" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored16ExampleFpga2Base16ExampleFpga2BaseERR16ExampleFpga2Base"></span><span id="_CPPv2N6stored16ExampleFpga2Base16ExampleFpga2BaseERR16ExampleFpga2Base"></span><span id="stored::ExampleFpga2Base::ExampleFpga2Base__ExampleFpga2BaseRR"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a8590e3b70a6946e9584be9f54ee1491b"></span><code class="sig-name descname"><span class="pre">ExampleFpga2Base</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16ExampleFpga2Base16ExampleFpga2BaseERR16ExampleFpga2Base" title="stored::ExampleFpga2Base::ExampleFpga2Base"><span class="pre">ExampleFpga2Base</span></a><span class="pre">&amp;</span><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base16ExampleFpga2BaseERR16ExampleFpga2Base" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored16ExampleFpga2Base11bufferToKeyEPKv">
-<span id="_CPPv3NK6stored16ExampleFpga2Base11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored16ExampleFpga2Base11bufferToKeyEPKv"></span><span id="stored::ExampleFpga2Base::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a06f002a4420aab0e44ac6400e84c2257"></span><a class="reference internal" href="#_CPPv4N6stored16ExampleFpga2Base3KeyE" title="stored::ExampleFpga2Base::Key">Key</a> <code class="sig-name descname">bufferToKey</code><span class="sig-paren">(</span>void <em class="property">const</em> *<em>buffer</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleFpga2Base11bufferToKeyEPKv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored16ExampleFpga2Base11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored16ExampleFpga2Base11bufferToKeyEPKv"></span><span id="stored::ExampleFpga2Base::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a06f002a4420aab0e44ac6400e84c2257"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="#_CPPv4N6stored16ExampleFpga2Base3KeyE" title="stored::ExampleFpga2Base::Key"><span class="pre">Key</span></a> <code class="sig-name descname"><span class="pre">bufferToKey</span></code><span class="sig-paren">(</span><span class="pre">void</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">buffer</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored16ExampleFpga2Base11bufferToKeyEPKv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Converts a variable’s buffer to a key. </p>
 <p>A key is unique for all variables of the same store, but identical for the same variables across different instances of the same store class. Therefore, the key can be used to synchronize between instances of the same store. A key does not contain meta data, such as type or length. It is up to the synchronization library to make sure that these properties are handled well.</p>
 <p>For synchronization, when hookEntryX() or hookEntryRO() is invoked, one can compute the key of the object that is accessed. The key can be used, for example, in a key-to-Variant map. When data arrives from another party, the key can be used to find the proper <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> in the map.</p>
@@ -1044,7 +1051,7 @@ public:
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored16ExampleFpga2Base4findEPKc6size_t">
-<span id="_CPPv3N6stored16ExampleFpga2Base4findEPKc6size_t"></span><span id="_CPPv2N6stored16ExampleFpga2Base4findEPKc6size_t"></span><span id="stored::ExampleFpga2Base::find__cCP.s"></span><span class="target" id="classstored_1_1_example_fpga2_base_1adeb230727d0af227f811135948b5a136"></span><a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant">Variant</a>&lt;<a class="reference internal" href="#_CPPv4N6stored16ExampleFpga2Base14ImplementationE" title="stored::ExampleFpga2Base::Implementation">Implementation</a>&gt; <code class="sig-name descname">find</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>name</em>, size_t <em>len</em> = std::numeric_limits&lt;size_t&gt;::max()<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base4findEPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored16ExampleFpga2Base4findEPKc6size_t"></span><span id="_CPPv2N6stored16ExampleFpga2Base4findEPKc6size_t"></span><span id="stored::ExampleFpga2Base::find__cCP.s"></span><span class="target" id="classstored_1_1_example_fpga2_base_1adeb230727d0af227f811135948b5a136"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant"><span class="pre">Variant</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored16ExampleFpga2Base14ImplementationE" title="stored::ExampleFpga2Base::Implementation"><span class="pre">Implementation</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">find</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">name</span></em>, <span class="pre">size_t</span> <em><span class="pre">len</span></em> <span class="pre">=</span> <span class="pre">std</span><span class="pre">::</span><span class="pre">numeric_limits</span><span class="pre">&lt;</span><span class="pre">size_t</span><span class="pre">&gt;</span><span class="pre">::</span><span class="pre">max</span><span class="pre">(</span><span class="pre">)</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base4findEPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Finds an object with the given name. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>the object, or an invalid <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">stored::Variant</span></a> if not found. </p>
@@ -1055,19 +1062,19 @@ public:
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored16ExampleFpga2Base14implementationEv">
-<span id="_CPPv3NK6stored16ExampleFpga2Base14implementationEv"></span><span id="_CPPv2NK6stored16ExampleFpga2Base14implementationEv"></span><span id="stored::ExampleFpga2Base::implementationC"></span><span class="target" id="classstored_1_1_example_fpga2_base_1af7599c6bab1f6d33a860fa005e9d2bd5"></span><a class="reference internal" href="#_CPPv4N6stored16ExampleFpga2Base14ImplementationE" title="stored::ExampleFpga2Base::Implementation">Implementation</a> <em class="property">const</em> &amp;<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleFpga2Base14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored16ExampleFpga2Base14implementationEv"></span><span id="_CPPv2NK6stored16ExampleFpga2Base14implementationEv"></span><span id="stored::ExampleFpga2Base::implementationC"></span><span class="target" id="classstored_1_1_example_fpga2_base_1af7599c6bab1f6d33a860fa005e9d2bd5"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="#_CPPv4N6stored16ExampleFpga2Base14ImplementationE" title="stored::ExampleFpga2Base::Implementation"><span class="pre">Implementation</span></a> <em class="property"><span class="pre">const</span></em> <span class="pre">&amp;</span><code class="sig-name descname"><span class="pre">implementation</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored16ExampleFpga2Base14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored16ExampleFpga2Base14implementationEv">
-<span id="_CPPv3N6stored16ExampleFpga2Base14implementationEv"></span><span id="_CPPv2N6stored16ExampleFpga2Base14implementationEv"></span><span id="stored::ExampleFpga2Base::implementation"></span><span class="target" id="classstored_1_1_example_fpga2_base_1ae8f1bb12ff73d06b56e7018c5cf8e78d"></span><a class="reference internal" href="#_CPPv4N6stored16ExampleFpga2Base14ImplementationE" title="stored::ExampleFpga2Base::Implementation">Implementation</a> &amp;<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored16ExampleFpga2Base14implementationEv"></span><span id="_CPPv2N6stored16ExampleFpga2Base14implementationEv"></span><span id="stored::ExampleFpga2Base::implementation"></span><span class="target" id="classstored_1_1_example_fpga2_base_1ae8f1bb12ff73d06b56e7018c5cf8e78d"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="#_CPPv4N6stored16ExampleFpga2Base14ImplementationE" title="stored::ExampleFpga2Base::Implementation"><span class="pre">Implementation</span></a> <span class="pre">&amp;</span><code class="sig-name descname"><span class="pre">implementation</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base14implementationEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4I0EN6stored16ExampleFpga2Base4listEv1FPvPKc">
-<span id="_CPPv3I0EN6stored16ExampleFpga2Base4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored16ExampleFpga2Base4listE1FPvPKc"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_example_fpga2_base_1ac09c5b64798529dad1a81240c3a99562"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2Base4listEv1FPvPKc" title="stored::ExampleFpga2Base::list::F">F</a> <em>f</em>, void *<em>arg</em>, char <em class="property">const</em> *<em>prefix</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleFpga2Base4listEv1FPvPKc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I0EN6stored16ExampleFpga2Base4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored16ExampleFpga2Base4listE1FPvPKc"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">F</span></code><span class="pre">&gt;</span><br /><span class="target" id="classstored_1_1_example_fpga2_base_1ac09c5b64798529dad1a81240c3a99562"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">list</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2Base4listEv1FPvPKc" title="stored::ExampleFpga2Base::list::F"><span class="pre">F</span></a> <em><span class="pre">f</span></em>, <span class="pre">void</span> <span class="pre">*</span><em><span class="pre">arg</span></em>, <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">prefix</span></em> <span class="pre">=</span> <span class="pre">nullptr</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleFpga2Base4listEv1FPvPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_fpga2_base_1a011e45b9d74907e0808279246952d0b1"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><dl class="simple">
 <dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
@@ -1078,7 +1085,7 @@ public:
 
 <dl class="cpp function">
 <dt id="_CPPv4I0EN6stored16ExampleFpga2Base4listEvRR1F">
-<span id="_CPPv3I0EN6stored16ExampleFpga2Base4listERR1F"></span><span id="_CPPv2I0EN6stored16ExampleFpga2Base4listERR1F"></span>template&lt;typename <code class="sig-name descname">F</code>&gt;<br /><span class="target" id="classstored_1_1_example_fpga2_base_1a38f7313ddebf754aacf5ba4d9b578103"></span>void <code class="sig-name descname">list</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2Base4listEvRR1F" title="stored::ExampleFpga2Base::list::F">F</a> &amp;&amp;<em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleFpga2Base4listEvRR1F" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I0EN6stored16ExampleFpga2Base4listERR1F"></span><span id="_CPPv2I0EN6stored16ExampleFpga2Base4listERR1F"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">F</span></code><span class="pre">&gt;</span><br /><span class="target" id="classstored_1_1_example_fpga2_base_1a38f7313ddebf754aacf5ba4d9b578103"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">list</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2Base4listEvRR1F" title="stored::ExampleFpga2Base::list::F"><span class="pre">F</span></a> <span class="pre">&amp;</span><span class="pre">&amp;</span><em><span class="pre">f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleFpga2Base4listEvRR1F" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_fpga2_base_1a011e45b9d74907e0808279246952d0b1"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><dl class="simple">
 <dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
@@ -1089,39 +1096,39 @@ public:
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored16ExampleFpga2Base13longDirectoryEv">
-<span id="_CPPv3NK6stored16ExampleFpga2Base13longDirectoryEv"></span><span id="_CPPv2NK6stored16ExampleFpga2Base13longDirectoryEv"></span><span id="stored::ExampleFpga2Base::longDirectoryC"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a011e45b9d74907e0808279246952d0b1"></span>uint8_t <em class="property">const</em> *<code class="sig-name descname">longDirectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleFpga2Base13longDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored16ExampleFpga2Base13longDirectoryEv"></span><span id="_CPPv2NK6stored16ExampleFpga2Base13longDirectoryEv"></span><span id="stored::ExampleFpga2Base::longDirectoryC"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a011e45b9d74907e0808279246952d0b1"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">uint8_t</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><code class="sig-name descname"><span class="pre">longDirectory</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored16ExampleFpga2Base13longDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Retuns the long directory. </p>
 <p>When not available, the short directory is returned. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored16ExampleFpga2Base3mapEPKc">
-<span id="_CPPv3N6stored16ExampleFpga2Base3mapEPKc"></span><span id="_CPPv2N6stored16ExampleFpga2Base3mapEPKc"></span><span id="stored::ExampleFpga2Base::map__cCP"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a279a7d3f995542a3be2c4a65555a768a"></span><a class="reference internal" href="#_CPPv4N6stored16ExampleFpga2Base9ObjectMapE" title="stored::ExampleFpga2Base::ObjectMap">ObjectMap</a> <code class="sig-name descname">map</code><span class="sig-paren">(</span>char <em class="property">const</em> *<em>prefix</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base3mapEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored16ExampleFpga2Base3mapEPKc"></span><span id="_CPPv2N6stored16ExampleFpga2Base3mapEPKc"></span><span id="stored::ExampleFpga2Base::map__cCP"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a279a7d3f995542a3be2c4a65555a768a"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="#_CPPv4N6stored16ExampleFpga2Base9ObjectMapE" title="stored::ExampleFpga2Base::ObjectMap"><span class="pre">ObjectMap</span></a> <code class="sig-name descname"><span class="pre">map</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">prefix</span></em> <span class="pre">=</span> <span class="pre">nullptr</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base3mapEPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Create a name to <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> map for the store. </p>
 <p>Generating the map may be expensive and the result is not cached. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored16ExampleFpga2Base4nameEv">
-<span id="_CPPv3NK6stored16ExampleFpga2Base4nameEv"></span><span id="_CPPv2NK6stored16ExampleFpga2Base4nameEv"></span><span id="stored::ExampleFpga2Base::nameC"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a2595b9e70c919a6999ae4945a4919a75"></span>char <em class="property">const</em> *<code class="sig-name descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleFpga2Base4nameEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored16ExampleFpga2Base4nameEv"></span><span id="_CPPv2NK6stored16ExampleFpga2Base4nameEv"></span><span id="stored::ExampleFpga2Base::nameC"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a2595b9e70c919a6999ae4945a4919a75"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><code class="sig-name descname"><span class="pre">name</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored16ExampleFpga2Base4nameEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored16ExampleFpga2BaseaSERK16ExampleFpga2Base">
-<span id="_CPPv3N6stored16ExampleFpga2BaseaSERK16ExampleFpga2Base"></span><span id="_CPPv2N6stored16ExampleFpga2BaseaSERK16ExampleFpga2Base"></span><span id="stored::ExampleFpga2Base::assign-operator__ExampleFpga2BaseCR"></span><span class="target" id="classstored_1_1_example_fpga2_base_1ae1ccfd54b7e3fa840ba33f2b5aca9846"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base">ExampleFpga2Base</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2BaseaSERK16ExampleFpga2Base" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored16ExampleFpga2BaseaSERK16ExampleFpga2Base"></span><span id="_CPPv2N6stored16ExampleFpga2BaseaSERK16ExampleFpga2Base"></span><span id="stored::ExampleFpga2Base::assign-operator__ExampleFpga2BaseCR"></span><span class="target" id="classstored_1_1_example_fpga2_base_1ae1ccfd54b7e3fa840ba33f2b5aca9846"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base"><span class="pre">ExampleFpga2Base</span></a> <em class="property"><span class="pre">const</span></em><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2BaseaSERK16ExampleFpga2Base" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored16ExampleFpga2BaseaSERR16ExampleFpga2Base">
-<span id="_CPPv3N6stored16ExampleFpga2BaseaSERR16ExampleFpga2Base"></span><span id="_CPPv2N6stored16ExampleFpga2BaseaSERR16ExampleFpga2Base"></span><span id="stored::ExampleFpga2Base::assign-operator__ExampleFpga2BaseRR"></span><span class="target" id="classstored_1_1_example_fpga2_base_1acc6e04036295a3326c6ef9739e7aee89"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base">ExampleFpga2Base</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2BaseaSERR16ExampleFpga2Base" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored16ExampleFpga2BaseaSERR16ExampleFpga2Base"></span><span id="_CPPv2N6stored16ExampleFpga2BaseaSERR16ExampleFpga2Base"></span><span id="stored::ExampleFpga2Base::assign-operator__ExampleFpga2BaseRR"></span><span class="target" id="classstored_1_1_example_fpga2_base_1acc6e04036295a3326c6ef9739e7aee89"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base"><span class="pre">ExampleFpga2Base</span></a><span class="pre">&amp;</span><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2BaseaSERR16ExampleFpga2Base" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6stored16ExampleFpga2Base14shortDirectoryEv">
-<span id="_CPPv3NK6stored16ExampleFpga2Base14shortDirectoryEv"></span><span id="_CPPv2NK6stored16ExampleFpga2Base14shortDirectoryEv"></span><span id="stored::ExampleFpga2Base::shortDirectoryC"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a3fa7f7231e39566a70290b54dfe6e38c"></span>uint8_t <em class="property">const</em> *<code class="sig-name descname">shortDirectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6stored16ExampleFpga2Base14shortDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK6stored16ExampleFpga2Base14shortDirectoryEv"></span><span id="_CPPv2NK6stored16ExampleFpga2Base14shortDirectoryEv"></span><span id="stored::ExampleFpga2Base::shortDirectoryC"></span><span class="target" id="classstored_1_1_example_fpga2_base_1a3fa7f7231e39566a70290b54dfe6e38c"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">uint8_t</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><code class="sig-name descname"><span class="pre">shortDirectory</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored16ExampleFpga2Base14shortDirectoryEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the short directory. </p>
 </dd></dl>
 
@@ -1130,7 +1137,7 @@ public:
 <p class="breathe-sectiondef-title rubric">Public Static Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N6stored16ExampleFpga2Base4hashEv">
-<span id="_CPPv3N6stored16ExampleFpga2Base4hashEv"></span><span id="_CPPv2N6stored16ExampleFpga2Base4hashEv"></span><span id="stored::ExampleFpga2Base::hash"></span><span class="target" id="classstored_1_1_example_fpga2_base_1abe78b3007c307b1beb7eeca4b229d48e"></span>char <em class="property">const</em> *<code class="sig-name descname">hash</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base4hashEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored16ExampleFpga2Base4hashEv"></span><span id="_CPPv2N6stored16ExampleFpga2Base4hashEv"></span><span id="stored::ExampleFpga2Base::hash"></span><span class="target" id="classstored_1_1_example_fpga2_base_1abe78b3007c307b1beb7eeca4b229d48e"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><code class="sig-name descname"><span class="pre">hash</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleFpga2Base4hashEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns a unique hash of the store. </p>
 </dd></dl>
 
@@ -1139,22 +1146,22 @@ public:
 <p class="breathe-sectiondef-title rubric">Friends</p>
 <dl class="friendclass">
 <dt>
-<em class="property">friend class</em> impl::StoreFunction</dt>
+<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">impl::StoreFunction</span></dt>
 </dl>
 
 <dl class="friendclass">
 <dt>
-<em class="property">friend class</em> impl::StoreVariable</dt>
+<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">impl::StoreVariable</span></dt>
 </dl>
 
 <dl class="friendclass">
 <dt>
-<em class="property">friend class</em> impl::StoreVariantF</dt>
+<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">impl::StoreVariantF</span></dt>
 </dl>
 
 <dl class="friendclass">
 <dt>
-<em class="property">friend class</em> impl::StoreVariantV</dt>
+<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">impl::StoreVariantV</span></dt>
 </dl>
 
 </div>
@@ -1162,18 +1169,18 @@ public:
 
 <dl class="cpp class">
 <dt id="_CPPv4N6stored12ExampleFpga2E">
-<span id="_CPPv3N6stored12ExampleFpga2E"></span><span id="_CPPv2N6stored12ExampleFpga2E"></span><span id="stored::ExampleFpga2"></span><span class="target" id="classstored_1_1_example_fpga2"></span><em class="property">class </em><code class="sig-prename descclassname">stored<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ExampleFpga2</code> : <em class="property">public</em> stored::<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base">ExampleFpga2Base</a>&lt;<a class="reference internal" href="#_CPPv4N6stored12ExampleFpga2E" title="stored::ExampleFpga2">ExampleFpga2</a>&gt;<a class="headerlink" href="#_CPPv4N6stored12ExampleFpga2E" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored12ExampleFpga2E"></span><span id="_CPPv2N6stored12ExampleFpga2E"></span><span id="stored::ExampleFpga2"></span><span class="target" id="classstored_1_1_example_fpga2"></span><em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">stored</span><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">ExampleFpga2</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <span class="pre">stored</span><span class="pre">::</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base"><span class="pre">ExampleFpga2Base</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored12ExampleFpga2E" title="stored::ExampleFpga2"><span class="pre">ExampleFpga2</span></a><span class="pre">&gt;</span><a class="headerlink" href="#_CPPv4N6stored12ExampleFpga2E" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Default <a class="reference internal" href="#classstored_1_1_example_fpga2_base"><span class="std std-ref">ExampleFpga2Base</span></a> implementation. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N6stored12ExampleFpga24baseE">
-<span id="_CPPv3N6stored12ExampleFpga24baseE"></span><span id="_CPPv2N6stored12ExampleFpga24baseE"></span><span id="stored::ExampleFpga2::base"></span><span class="target" id="classstored_1_1_example_fpga2_1a8199387c5d2dbb4789d43962617d95f2"></span><em class="property">typedef </em>stored::<a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base">ExampleFpga2Base</a>&lt;<a class="reference internal" href="#_CPPv4N6stored12ExampleFpga2E" title="stored::ExampleFpga2">ExampleFpga2</a>&gt; <code class="sig-name descname">base</code><a class="headerlink" href="#_CPPv4N6stored12ExampleFpga24baseE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored12ExampleFpga24baseE"></span><span id="_CPPv2N6stored12ExampleFpga24baseE"></span><span id="stored::ExampleFpga2::base"></span><span class="target" id="classstored_1_1_example_fpga2_1a8199387c5d2dbb4789d43962617d95f2"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">stored</span><span class="pre">::</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base"><span class="pre">ExampleFpga2Base</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored12ExampleFpga2E" title="stored::ExampleFpga2"><span class="pre">ExampleFpga2</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">base</span></code><a class="headerlink" href="#_CPPv4N6stored12ExampleFpga24baseE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv4N6stored12ExampleFpga214ImplementationE">
-<span id="_CPPv3N6stored12ExampleFpga214ImplementationE"></span><span id="_CPPv2N6stored12ExampleFpga214ImplementationE"></span><span id="stored::ExampleFpga2::Implementation"></span><span class="target" id="classstored_1_1_example_fpga2_1a75de4b4061f58cfbc20015983c87603f"></span><em class="property">typedef </em>Implementation_ <code class="sig-name descname">Implementation</code><a class="headerlink" href="#_CPPv4N6stored12ExampleFpga214ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored12ExampleFpga214ImplementationE"></span><span id="_CPPv2N6stored12ExampleFpga214ImplementationE"></span><span id="stored::ExampleFpga2::Implementation"></span><span class="target" id="classstored_1_1_example_fpga2_1a75de4b4061f58cfbc20015983c87603f"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">Implementation_</span> <code class="sig-name descname"><span class="pre">Implementation</span></code><a class="headerlink" href="#_CPPv4N6stored12ExampleFpga214ImplementationE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Type of the actual implementation, which is the (lowest) subclass. </p>
 </dd></dl>
 
@@ -1182,31 +1189,31 @@ public:
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N6stored12ExampleFpga212ExampleFpga2ERK12ExampleFpga2">
-<span id="_CPPv3N6stored12ExampleFpga212ExampleFpga2ERK12ExampleFpga2"></span><span id="_CPPv2N6stored12ExampleFpga212ExampleFpga2ERK12ExampleFpga2"></span><span id="stored::ExampleFpga2::ExampleFpga2__ExampleFpga2CR"></span><span class="target" id="classstored_1_1_example_fpga2_1ac44b428165ff86cb2a24d5a890fdfcdf"></span><code class="sig-name descname">ExampleFpga2</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleFpga212ExampleFpga2ERK12ExampleFpga2" title="stored::ExampleFpga2::ExampleFpga2">ExampleFpga2</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12ExampleFpga212ExampleFpga2ERK12ExampleFpga2" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored12ExampleFpga212ExampleFpga2ERK12ExampleFpga2"></span><span id="_CPPv2N6stored12ExampleFpga212ExampleFpga2ERK12ExampleFpga2"></span><span id="stored::ExampleFpga2::ExampleFpga2__ExampleFpga2CR"></span><span class="target" id="classstored_1_1_example_fpga2_1ac44b428165ff86cb2a24d5a890fdfcdf"></span><code class="sig-name descname"><span class="pre">ExampleFpga2</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleFpga212ExampleFpga2ERK12ExampleFpga2" title="stored::ExampleFpga2::ExampleFpga2"><span class="pre">ExampleFpga2</span></a> <em class="property"><span class="pre">const</span></em><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored12ExampleFpga212ExampleFpga2ERK12ExampleFpga2" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted copy constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored12ExampleFpga212ExampleFpga2ERR12ExampleFpga2">
-<span id="_CPPv3N6stored12ExampleFpga212ExampleFpga2ERR12ExampleFpga2"></span><span id="_CPPv2N6stored12ExampleFpga212ExampleFpga2ERR12ExampleFpga2"></span><span id="stored::ExampleFpga2::ExampleFpga2__ExampleFpga2RR"></span><span class="target" id="classstored_1_1_example_fpga2_1a4c6782cd2001bc36efcb2a3aab02beaf"></span><code class="sig-name descname">ExampleFpga2</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleFpga212ExampleFpga2ERR12ExampleFpga2" title="stored::ExampleFpga2::ExampleFpga2">ExampleFpga2</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12ExampleFpga212ExampleFpga2ERR12ExampleFpga2" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored12ExampleFpga212ExampleFpga2ERR12ExampleFpga2"></span><span id="_CPPv2N6stored12ExampleFpga212ExampleFpga2ERR12ExampleFpga2"></span><span id="stored::ExampleFpga2::ExampleFpga2__ExampleFpga2RR"></span><span class="target" id="classstored_1_1_example_fpga2_1a4c6782cd2001bc36efcb2a3aab02beaf"></span><code class="sig-name descname"><span class="pre">ExampleFpga2</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleFpga212ExampleFpga2ERR12ExampleFpga2" title="stored::ExampleFpga2::ExampleFpga2"><span class="pre">ExampleFpga2</span></a><span class="pre">&amp;</span><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored12ExampleFpga212ExampleFpga2ERR12ExampleFpga2" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored12ExampleFpga212ExampleFpga2Ev">
-<span id="_CPPv3N6stored12ExampleFpga212ExampleFpga2Ev"></span><span id="_CPPv2N6stored12ExampleFpga212ExampleFpga2Ev"></span><span id="stored::ExampleFpga2::ExampleFpga2"></span><span class="target" id="classstored_1_1_example_fpga2_1a1673d53641a1d936af28964b75953ebc"></span><code class="sig-name descname">ExampleFpga2</code><span class="sig-paren">(</span><span class="sig-paren">)</span> = default<a class="headerlink" href="#_CPPv4N6stored12ExampleFpga212ExampleFpga2Ev" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored12ExampleFpga212ExampleFpga2Ev"></span><span id="_CPPv2N6stored12ExampleFpga212ExampleFpga2Ev"></span><span id="stored::ExampleFpga2::ExampleFpga2"></span><span class="target" id="classstored_1_1_example_fpga2_1a1673d53641a1d936af28964b75953ebc"></span><code class="sig-name descname"><span class="pre">ExampleFpga2</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">default</span><a class="headerlink" href="#_CPPv4N6stored12ExampleFpga212ExampleFpga2Ev" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Default constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored12ExampleFpga2aSERK12ExampleFpga2">
-<span id="_CPPv3N6stored12ExampleFpga2aSERK12ExampleFpga2"></span><span id="_CPPv2N6stored12ExampleFpga2aSERK12ExampleFpga2"></span><span id="stored::ExampleFpga2::assign-operator__ExampleFpga2CR"></span><span class="target" id="classstored_1_1_example_fpga2_1a5564a16ab9855b66e9386df31f773721"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleFpga2E" title="stored::ExampleFpga2">ExampleFpga2</a> <em class="property">const</em>&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12ExampleFpga2aSERK12ExampleFpga2" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored12ExampleFpga2aSERK12ExampleFpga2"></span><span id="_CPPv2N6stored12ExampleFpga2aSERK12ExampleFpga2"></span><span id="stored::ExampleFpga2::assign-operator__ExampleFpga2CR"></span><span class="target" id="classstored_1_1_example_fpga2_1a5564a16ab9855b66e9386df31f773721"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleFpga2E" title="stored::ExampleFpga2"><span class="pre">ExampleFpga2</span></a> <em class="property"><span class="pre">const</span></em><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored12ExampleFpga2aSERK12ExampleFpga2" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored12ExampleFpga2aSERR12ExampleFpga2">
-<span id="_CPPv3N6stored12ExampleFpga2aSERR12ExampleFpga2"></span><span id="_CPPv2N6stored12ExampleFpga2aSERR12ExampleFpga2"></span><span id="stored::ExampleFpga2::assign-operator__ExampleFpga2RR"></span><span class="target" id="classstored_1_1_example_fpga2_1afaecc404e196ee1e1e806aa03983297d"></span>void <code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleFpga2E" title="stored::ExampleFpga2">ExampleFpga2</a>&amp;&amp;<span class="sig-paren">)</span> = delete<a class="headerlink" href="#_CPPv4N6stored12ExampleFpga2aSERR12ExampleFpga2" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored12ExampleFpga2aSERR12ExampleFpga2"></span><span id="_CPPv2N6stored12ExampleFpga2aSERR12ExampleFpga2"></span><span id="stored::ExampleFpga2::assign-operator__ExampleFpga2RR"></span><span class="target" id="classstored_1_1_example_fpga2_1afaecc404e196ee1e1e806aa03983297d"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleFpga2E" title="stored::ExampleFpga2"><span class="pre">ExampleFpga2</span></a><span class="pre">&amp;</span><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored12ExampleFpga2aSERR12ExampleFpga2" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 
@@ -1215,7 +1222,7 @@ public:
 <p class="breathe-sectiondef-title rubric">Friends</p>
 <dl class="friendclass">
 <dt>
-<em class="property">friend class</em> stored::ExampleFpga2Base&lt; ExampleFpga2 &gt;</dt>
+<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">stored::ExampleFpga2Base&lt;</span> <span class="pre">ExampleFpga2</span> <span class="pre">&gt;</span></dt>
 </dl>
 
 </div>
@@ -1229,37 +1236,29 @@ public:
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="example_terminal.html" class="btn btn-neutral float-right" title="terminal" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="example_8_sync.html" class="btn btn-neutral float-left" title="8_sync" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="example_terminal.html" class="btn btn-neutral float-right" title="terminal" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="example_8_sync.html" class="btn btn-neutral float-left" title="8_sync" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, Jochem Rutgers
+        &#169; Copyright 2020, Jochem Rutgers.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
