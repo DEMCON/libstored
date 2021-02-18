@@ -47,11 +47,13 @@ namespace stored {
 		template <typename B, typename pointer, bool trivial = std::is_trivially_copyable<typename B::value_type>::value>
 		struct buffer_ops {
 			static void set(B& buffer, pointer p, typename B::value_type const* x, size_t len) noexcept {
-				memcpy(&buffer[p], x, len);
+				if(len)
+					memcpy(&buffer[p], x, len);
 			}
 
 			static void move(B& buffer, pointer dst, pointer src, size_t len) noexcept {
-				memmove(&buffer[dst], &buffer[src], len);
+				if(len)
+					memmove(&buffer[dst], &buffer[src], len);
 			}
 		};
 
