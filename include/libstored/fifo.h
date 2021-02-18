@@ -36,6 +36,7 @@
 #include <vector>
 #include <utility>
 #include <string>
+#include <functional>
 #if STORED_cplusplus >= 201703L
 #  include <string_view>
 #endif
@@ -660,49 +661,107 @@ namespace stored {
 	 * Do not mix or have multiple encoding/decoding contexts.
 	 */
 	template <size_t Capacity, size_t Messages = impl::defaultMessages(Capacity)>
-	class FifoLoopback : public PolledLayer {
-		CLASS_NOCOPY(FifoLoopback)
+	class FifoLoopback1 : public PolledLayer {
+		CLASS_NOCOPY(FifoLoopback1)
 	public:
 		static_assert(Capacity > 0, "Only bounded fifos are supported");
 
 		typedef PolledLayer base;
 		typedef MessageFifo<Capacity, Messages, true> Fifo_type;
 
-		explicit FifoLoopback(ProtocolLayer* up = nullptr)
-			: base(up)
+		explicit FifoLoopback1(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
+			: base(up, down)
 		{}
 
-		virtual ~FifoLoopback() override = default;
+		virtual ~FifoLoopback1() override = default;
 
+		/*!
+		 * \brief Pass all messages in the FIFO to #decode().
+		 *
+		 * \p timeout_us is here for compatibility with the ProtocolLayer
+		 * interface, but must be 0. Actual blocking is not supported.
+		 *
+		 * The return value is either 0 on success or \c EAGAIN in case the
+		 * FIFO is empty.  This value is not saved in #lastError(), as that
+		 * field is only used by #encode() and is not thread-safe.
+		 */
 		virtual int recv(long UNUSED_PAR(timeout_us) = 0) override {
 			assert(timeout_us == 0);
 
 			if(m_fifo.empty())
-				return setLastError(EAGAIN);
+				return EAGAIN;
 
 			for(auto m : m_fifo)
 				decode(m.data(), m.size());
 
-			return setLastError(0);
+			return 0;
 		}
 
+		/*!
+		 * \copydoc stored::PolledLayer::encode(void const*, size_t, bool)
+		 *
+		 * When the FIFO is full and new messages are dropped, the #overflow() is
+		 * invoked. As long as it returns \c true, the FIFO push is retried.
+		 *
+		 * \see #setOverflowHandler()
+		 */
 		virtual void encode(void const* buffer, size_t len, bool last = true) override {
 			bool res = false;
 
-			if(last)
-				res = m_fifo.push_back((char const*)buffer, len);
-			else
-				res = m_fifo.append_back((char const*)buffer, len);
-
-			if(!res)
-				setLastError(ENOMEM);
+			do {
+				if(last)
+					res = m_fifo.push_back((char const*)buffer, len);
+				else
+					res = m_fifo.append_back((char const*)buffer, len);
+			} while(!res && overflow());
 
 			base::encode(buffer, len, last);
+		}
+
+		/*!
+		 * \brief Invoke overflow handler.
+		 *
+		 * If no callback is set, #lastError() is set to \c ENOMEM, and \c
+		 * false is returned. This flag is only reset by #reset().
+		 *
+		 * \return \c true if the overflow situation might be resolved, \c
+		 *         false when no other fifo push is to be attempted and the
+		 *         data is to be dropped.
+		 *
+		 * \see #setOverflowHandler()
+		 */
+		virtual bool overflow() {
+			if(m_overflowCallback) {
+				return m_overflowCallback();
+			} else {
+				setLastError(ENOMEM);
+				return false;
+			}
+		}
+
+		using OverflowCallback = bool();
+
+		/*!
+		 * \brief Set the handler to be called by #overflow().
+		 */
+		template <typename F = std::nullptr_t, SFINAE_IS_FUNCTION(F, OverflowCallback, int) = 0>
+		void setOverflowHandler(F&& cb = nullptr) {
+			m_overflowCallback = std::forward<F>(cb);
 		}
 
 #ifndef DOXYGEN
 		using base::encode;
 #endif
+
+		virtual void reset() override {
+			base::reset();
+			setLastError(0);
+		}
+
+		virtual size_t mtu() const override {
+			size_t res = base::mtu();
+			return res ? std::min(Capacity, res) : Capacity;
+		}
 
 		constexpr bool bounded() const noexcept { return m_fifo.bounded(); }
 		bool empty() const noexcept { return m_fifo.empty(); }
@@ -711,6 +770,73 @@ namespace stored {
 
 	private:
 		Fifo_type m_fifo;
+		std::function<OverflowCallback> m_overflowCallback;
+	};
+
+	/*!
+	 * \brief Bidirectional loopback for two protocol stacks with thread-safe FIFOs.
+	 *
+	 * The loopback has an \c a and \c b side, which are symmetrical.  Both
+	 * sides can be used to connect to a #stored::Synchronizer, for example.
+	 */
+	template <size_t Capacity, size_t Messages = impl::defaultMessages(Capacity)>
+	class FifoLoopback {
+		CLASS_NOCOPY(FifoLoopback)
+	public:
+		using FifoLoopback1_type = FifoLoopback1<Capacity, Messages>;
+
+		FifoLoopback()
+			: m_a(nullptr, &m_a2b)
+			, m_b(nullptr, &m_b2a)
+			, m_a2b(&m_b)
+			, m_b2a(&m_a)
+		{
+		}
+
+		FifoLoopback(ProtocolLayer& a, ProtocolLayer& b)
+			: FifoLoopback()
+		{
+			this->a().setUp(&a);
+			a.setDown(&this->a());
+			this->b().setUp(&b);
+			b.setDown(&this->b());
+		}
+
+		/*!
+		 * \brief \c a endpoint.
+		 *
+		 * Use this layer to register in a #stored::Synchronizer, for example,
+		 * or to wrap another stack.
+		 */
+		ProtocolLayer& a() { return m_a; }
+
+		/*!
+		 * \brief \c b endpoint.
+		 *
+		 * Use this layer to register in a #stored::Synchronizer, for example,
+		 * or to wrap another stack.
+		 */
+		ProtocolLayer& b() { return m_b; }
+
+		/*!
+		 * \brief The \c a to \c b FIFO.
+		 *
+		 * Use this FIFO to call \c recv() on at the \c b side of the loopback.
+		 */
+		FifoLoopback1_type& a2b() { return m_a2b; }
+
+		/*!
+		 * \brief The \c b to \c a FIFO.
+		 *
+		 * Use this FIFO to call \c recv() on at the \c a side of the loopback.
+		 */
+		FifoLoopback1_type& b2a() { return m_b2a; }
+
+	private:
+		ProtocolLayer m_a;
+		ProtocolLayer m_b;
+		FifoLoopback1_type m_a2b;
+		FifoLoopback1_type m_b2a;
 	};
 
 } // namespace
