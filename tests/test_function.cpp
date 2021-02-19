@@ -21,13 +21,10 @@
 
 namespace {
 
-class FunctionTestStore : public stored::TestStoreBase<FunctionTestStore> {
-	friend class stored::TestStoreBase<FunctionTestStore>;
-
+class FunctionTestStore : public STORE_BASE_CLASS(TestStoreBase, FunctionTestStore) {
+	STORE_CLASS_BODY(TestStoreBase, FunctionTestStore)
 public:
 	FunctionTestStore() : m_f_read__write(4) {}
-
-protected:
 
 	void __f_read__write(bool set, double& value) {
 		if(set)

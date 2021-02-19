@@ -10,13 +10,13 @@
 #include "ExampleFpga.h"
 #include "ExampleFpga2.h"
 
-class ExampleFpga : public STORE_SYNC_BASECLASS(ExampleFpgaBase, ExampleFpga) {
+class ExampleFpga : public STORE_SYNC_BASE_CLASS(ExampleFpgaBase, ExampleFpga) {
 	STORE_SYNC_CLASS_BODY(ExampleFpgaBase, ExampleFpga)
 public:
 	ExampleFpga() is_default
 };
 
-class ExampleFpga2 : public STORE_SYNC_BASECLASS(ExampleFpga2Base, ExampleFpga2) {
+class ExampleFpga2 : public STORE_SYNC_BASE_CLASS(ExampleFpga2Base, ExampleFpga2) {
 	STORE_SYNC_CLASS_BODY(ExampleFpga2Base, ExampleFpga2)
 public:
 	ExampleFpga2() is_default

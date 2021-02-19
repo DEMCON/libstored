@@ -16,12 +16,11 @@
 #endif
 
 // Create a subclass of stored::ExampleFunctionBase to define the side effects of the functions.
-class MyExample : public STORE_BASECLASS(ExampleFunctionBase, MyExample) {
+class MyExample : public STORE_BASE_CLASS(ExampleFunctionBase, MyExample) {
 	STORE_CLASS_BODY(ExampleFunctionBase, MyExample)
 public:
 	MyExample() : m_echo() {}
 
-protected:
 	// Override the default functions from base. Even though they are not
 	// virtual, these are called as expected.  To do this, you had to specify
 	// the class as the template parameter of ExampleFunctionBase :)

@@ -1221,10 +1221,13 @@ namespace stored {
 		 *
 		 * Do not use. Only the *Objects class is allowed to use it.
 		 */
-		template <typename Store, typename Implementation, typename T, unsigned int F>
+		template <
+			typename Store, typename Implementation,
+			template <typename, unsigned int> class FunctionMap,
+			unsigned int F>
 		class StoreFunction {
 		public:
-			typedef T type;
+			typedef typename FunctionMap<Implementation,F>::type type;
 			typedef Function<type,Implementation> Function_type;
 			typedef Variant<Implementation> Variant_type;
 
@@ -1238,7 +1241,12 @@ namespace stored {
 			// NOLINTNEXTLINE(hicpp-explicit-conversions)
 			operator Variant_type() const { return variant(); }
 
-			type get() const { return function().get(); }
+			type get() const {
+				type v;
+				call(false, v);
+				return v;
+			}
+
 #if STORED_cplusplus >= 201103L
 			explicit
 #endif
@@ -1248,22 +1256,41 @@ namespace stored {
 			U as() const { return saturated_cast<U>(get()); }
 
 			size_t get(void* dst, size_t len) const {
-				return function().get(dst, len);
+				stored_assert(len == sizeof(type));
+				stored_assert(dst);
+				call(false, *static_cast<type*>(dst));
+				return sizeof(type);
 			}
 			type operator()() const { return get(); }
 
-			void set(type value) { function().set(value); }
-			size_t set(void* src, size_t len) { return function().set(src, len); }
+			void set(type value) {
+				call(true, value);
+			}
+
+			size_t set(void* src, size_t len) {
+				stored_assert(len == sizeof(type));
+				stored_assert(src);
+				call(true, *static_cast<type*>(src));
+				return sizeof(type);
+			}
+
 			void operator()(type value) { function()(value); }
 
-			// NOLINTNEXTLINE(cppcoreguidelines-c-copy-assignment-signature,misc-unconventional-assign-operator)
-			Function_type operator=(type value) {
-				Function_type f = function();
-				f.set(value);
-				return f;
+			StoreFunction& operator=(type value) {
+				set(value);
+				return *this;
 			}
 
 			static size_t size() { return sizeof(type); }
+
+		protected:
+			Implementation& implementation() const {
+				return static_cast<Implementation&>(objectToStore<Store>(*this));
+			}
+
+			void call(bool set, type& value) const {
+				FunctionMap<Implementation,F>::call(implementation(), set, value);
+			}
 		};
 
 		/*!
