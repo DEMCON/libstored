@@ -485,6 +485,26 @@ namespace stored {
 		bool empty() const noexcept { return m_msg.empty(); }
 		size_t available() const noexcept { return m_msg.available(); }
 		constexpr size_t size() const noexcept { return m_buffer.size(); }
+		bool full() const noexcept { return m_msg.full() || space() == 0; }
+
+		size_t space() const noexcept {
+			if(!bounded())
+				return std::numeric_limits<size_t>::max();
+			if(m_msg.full())
+				return 0;
+
+			size_t rp = m_rp.load(std::memory_order_relaxed);
+			size_t wp = m_wp.load(std::memory_order_relaxed);
+			size_t partial = m_wp_partial - wp;
+			size_t capacity = size();
+
+			if(wp + partial == rp)
+				return empty() ? capacity : 0;
+			else if(wp < rp)
+				return rp - wp - partial;
+			else
+				return std::max(capacity - wp, rp) - partial;
+		};
 
 		const_type front() const noexcept {
 			Msg const& msg = m_msg.front();
@@ -676,7 +696,7 @@ namespace stored {
 		virtual ~FifoLoopback1() override = default;
 
 		/*!
-		 * \brief Pass all messages in the FIFO to #decode().
+		 * \brief Pass at most one message in the FIFO to #decode().
 		 *
 		 * \p timeout_us is here for compatibility with the ProtocolLayer
 		 * interface, but must be 0. Actual blocking is not supported.
@@ -691,10 +711,19 @@ namespace stored {
 			if(m_fifo.empty())
 				return EAGAIN;
 
-			for(auto m : m_fifo)
-				decode(m.data(), m.size());
+			auto m = m_fifo.front();
+			decode(m.data(), m.size());
+			m_fifo.pop_front();
 
 			return 0;
+		}
+
+		/*!
+		 * \brief Pass all available messages int he FIFO to #decode().
+		 */
+		virtual void recvAll() {
+			for(auto m : m_fifo)
+				decode(m.data(), m.size());
 		}
 
 		/*!
@@ -767,6 +796,8 @@ namespace stored {
 		bool empty() const noexcept { return m_fifo.empty(); }
 		size_t available() const noexcept { return m_fifo.available(); }
 		constexpr size_t size() const noexcept { return m_fifo.size(); }
+		bool full() const noexcept { return m_fifo.full(); }
+		size_t space() const noexcept { return m_fifo.space(); }
 
 	private:
 		Fifo_type m_fifo;
