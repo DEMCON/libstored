@@ -954,6 +954,7 @@ TEST(FifoLoopback1, FifoLoopback1) {
 
 	EXPECT_EQ(top.decoded().size(), 1);
 	EXPECT_EQ(l.recv(), 0);
+	EXPECT_EQ(l.recv(), 0);
 	EXPECT_EQ(l.recv(), EAGAIN);
 	EXPECT_EQ(top.decoded().size(), 3);
 }
