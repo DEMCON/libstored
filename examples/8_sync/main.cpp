@@ -37,7 +37,6 @@ class ExampleSync1 : public STORE_SYNC_BASE_CLASS(ExampleSync1Base, ExampleSync1
 public:
 	ExampleSync1() is_default
 
-protected:
 	void __sync_ExampleSync2(bool set, bool& value) {
 		if(set) {
 			printf("Triggered synchronization of store2\n");
