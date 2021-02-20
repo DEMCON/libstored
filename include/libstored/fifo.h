@@ -70,10 +70,10 @@ namespace stored {
 					;
 				else if(dst < src)
 					for(pointer i = 0; i < (pointer)len; i++)
-						buffer[dst + i] = buffer[src + i];
+						buffer[(size_t)(dst + i)] = buffer[(size_t)(src + i)];
 				else
 					for(pointer i = 1; i <= (pointer)len; i++)
-						buffer[dst + len - i] = buffer[src + len - i];
+						buffer[(size_t)(dst + len - i)] = buffer[(size_t)(src + len - i)];
 			}
 		};
 
@@ -382,13 +382,13 @@ namespace stored {
 				if(unlikely(rp > UnboundedMoveThreshold)) {
 					// Large part of the start of the buffer is empty.
 					// Move all data to prevent an infinitely growing FIFO, which is almost empty.
-					m_buffer.move(0, rp, wp - rp);
+					m_buffer.move(0, rp, (size_t)(wp - rp));
 					wp = (pointer)(wp - rp);
 					rp = 0;
 				}
 
 				// Make sure the buffer can contain the new item.
-				m_buffer.resize(wp + 1);
+				m_buffer.resize((size_t)(wp + 1));
 				wp_next = (pointer)(wp + 1);
 			}
 		}
@@ -551,7 +551,7 @@ namespace stored {
 			buffer_pointer wp = m_wp.load(std::memory_order_relaxed);
 			assert(m_wp_partial >= wp);
 			m_wp.store(m_wp_partial, std::memory_order_relaxed);
-			m_msg.emplace_back(wp, m_wp_partial - wp);
+			m_msg.emplace_back(wp, (buffer_pointer)(m_wp_partial - wp));
 		}
 
 	public:
