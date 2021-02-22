@@ -250,8 +250,8 @@ begin
 		\{{o|vhdlname}}/inst\ : entity work.libstored_variable
 			generic map (
 				SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ,
-				DATA_INIT => {{store.name}}_pkg.\{{o|vhdlname|upper}}/INIT\,
-				KEY => {{store.name}}_pkg.\{{o|vhdlname|upper}}/KEY\,
+				DATA_INIT => {{store.name}}_pkg.\{{o|vhdlname}}/INIT\,
+				KEY => {{store.name}}_pkg.\{{o|vhdlname}}/KEY\,
 				BUFFER_PADDING_BEFORE => {{o.offset - ns.offset_next}},
 				LITTLE_ENDIAN => {% if store.littleEndian %}true{% else %}false{% endif %},
 				BLOB => {% if o is blob %}true{% else %}false{% endif %},
@@ -312,7 +312,7 @@ begin
 		axi_data_rd(AXI_REG) <= (31 downto 8 => '0') & data_out_i;
 {%       endif %}
 {%     else %}
-		var_out.\{{o|vhdlname}}\.value <= {{store.name}}_pkg.\{{o|vhdlname}}__type\(data_out_i);
+		var_out.\{{o|vhdlname}}\.value <= {{store.name}}_pkg.\{{o|vhdlname}}/type\(data_out_i);
 
 		data_in_i <=
 {%       if o.axi != None %}

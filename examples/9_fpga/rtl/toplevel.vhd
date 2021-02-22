@@ -48,9 +48,9 @@ architecture rtl of example_9_fpga is
 		v := ExampleFpga_pkg.VAR_ACCESS_RW;
 
 		-- Save some LUTs by limiting how we are going to access these variables.
-		v.\t_clk\ := ACCESS_WO;
-		v.\default_register_write_count\ := ACCESS_WO;
-		v.\read_only_register\ := ACCESS_RO;
+		v.\t (clk)\ := ACCESS_WO;
+		v.\default register write count\ := ACCESS_WO;
+		v.\read-only register\ := ACCESS_RO;
 		return v;
 	end function;
 
@@ -177,35 +177,35 @@ begin
 
 
 			-- implementation of ExampleFpga/t (clk)
-			var_in.\t_clk\.value <= resize(clk_cnt, var_in.\t_clk\.value'length);
-			var_in.\t_clk\.we <= '1';
+			var_in.\t (clk)\.value <= resize(clk_cnt, var_in.\t (clk)\.value'length);
+			var_in.\t (clk)\.we <= '1';
 			clk_cnt <= clk_cnt + 1;
 
 			if rstn /= '1' then
-				var_in.\t_clk\.we <= '0';
+				var_in.\t (clk)\.we <= '0';
 				clk_cnt <= (others => '0');
 			end if;
 
 
 
 			-- writes to ExampleFpga/read-only register should be ignored
-			var_in.\read_only_register\.value <= x"abcd";
-			var_in.\read_only_register\.we <= '1';
+			var_in.\read-only register\.value <= x"abcd";
+			var_in.\read-only register\.we <= '1';
 
 
 
 			-- implementation of ExampleFpga/default register write count
-			if var_out.\default_register\.updated = '1' then
+			if var_out.\default register\.updated = '1' then
 				write_cnt <= write_cnt + 1;
 			end if;
 
-			var_in.\default_register_write_count\.value <=
-				resize(write_cnt, var_in.\default_register_write_count\.value'length);
-			var_in.\default_register_write_count\.we <= '1';
+			var_in.\default register write count\.value <=
+				resize(write_cnt, var_in.\default register write count\.value'length);
+			var_in.\default register write count\.we <= '1';
 
 			if rstn /= '1' then
 				write_cnt <= (others => '0');
-				var_in.\default_register_write_count\.we <= '0';
+				var_in.\default register write count\.we <= '0';
 			end if;
 		end if;
 	end process;

@@ -38,17 +38,17 @@ package {{store.name}}_pkg is
 {% for o in store.objects|select('variable') %}
 	-- {{o}}
 {%   if o|vhdltype == 'std_logic' %}
-	constant \{{o|vhdlname|upper}}/LENGTH\ : natural := 1;
-	constant \{{o|vhdlname|upper}}/INIT\ : std_logic_vector(7 downto 0) := {{o|vhdlinit}};
+	constant \{{o|vhdlname}}/LENGTH\ : natural := 1;
+	constant \{{o|vhdlname}}/INIT\ : std_logic_vector(7 downto 0) := {{o|vhdlinit}};
 {%   else %}
-	constant \{{o|vhdlname|upper}}/LENGTH\ : natural := {{o.size * 8}};
-	constant \{{o|vhdlname|upper}}/INIT\ : std_logic_vector(\{{o|vhdlname|upper}}/LENGTH\ - 1 downto 0) := {{o|vhdlinit}};
+	constant \{{o|vhdlname}}/LENGTH\ : natural := {{o.size * 8}};
+	constant \{{o|vhdlname}}/INIT\ : std_logic_vector(\{{o|vhdlname}}/LENGTH\ - 1 downto 0) := {{o|vhdlinit}};
 {%   endif %}
 	subtype \{{o|vhdlname}}/type\ is {{o|vhdltype}};
 {%   if o.axi != None %}
-	constant \{{o|vhdlname|upper}}/ADDR\ : natural := 16#{{'%x'|format(o.axi)}}#;
+	constant \{{o|vhdlname}}/ADDR\ : natural := 16#{{'%x'|format(o.axi)}}#;
 {%   endif %}
-	constant \{{o|vhdlname|upper}}/KEY\ : std_logic_vector(KEY_LENGTH - 1 downto 0) := {{o|vhdlkey(store=store, littleEndian=False)}};
+	constant \{{o|vhdlname}}/KEY\ : std_logic_vector(KEY_LENGTH - 1 downto 0) := {{o|vhdlkey(store=store, littleEndian=False)}};
 
 	type \{{o|vhdlname}}/out_t\ is record
 		value : \{{o|vhdlname}}/type\;

@@ -47,9 +47,9 @@ architecture behav of test_fpga is
 		variable v : TestStore_pkg.var_access_t;
 	begin
 		v := TestStore_pkg.VAR_ACCESS_RW;
-		v.\default_uint16\ := ACCESS_RO;
-		v.\default_uint32\ := ACCESS_WO;
-		v.\default_uint64\ := ACCESS_NA;
+		v.\default uint16\ := ACCESS_RO;
+		v.\default uint32\ := ACCESS_WO;
+		v.\default uint64\ := ACCESS_NA;
 		return v;
 	end function;
 
@@ -208,34 +208,34 @@ begin
 		procedure do_test_initial is
 		begin
 			test_start(test, "Initial");
-			test_expect_eq(test, var_out.\default_int8\.value, 0);
-			test_expect_eq(test, var_out.\default_int16\.value, 0);
-			test_expect_eq(test, var_out.\default_int32\.value, 0);
-			test_expect_eq(test, var_out.\init_decimal\.value, 42);
-			test_expect_eq(test, var_out.\array_bool_0\.value, '1');
-			test_expect_eq(test, var_out.\array_string_0\.value, x"00000000");
+			test_expect_eq(test, var_out.\default int8\.value, 0);
+			test_expect_eq(test, var_out.\default int16\.value, 0);
+			test_expect_eq(test, var_out.\default int32\.value, 0);
+			test_expect_eq(test, var_out.\init decimal\.value, 42);
+			test_expect_eq(test, var_out.\array bool[0]\.value, '1');
+			test_expect_eq(test, var_out.\array string[0]\.value, x"00000000");
 		end procedure;
 
 		procedure do_test_set is
 		begin
 			test_start(test, "Set");
-			var_in.\default_int8\.value <= x"12";
-			var_in.\default_int8\.we <= '1';
+			var_in.\default int8\.value <= x"12";
+			var_in.\default int8\.we <= '1';
 			wait until rising_edge(clk);
-			var_in.\default_int8\.we <= '0';
-			wait until rising_edge(clk) and var_out.\default_int8\.updated = '1' for 1 ms;
-			test_expect_eq(test, var_out.\default_int8\.value, 18);
+			var_in.\default int8\.we <= '0';
+			wait until rising_edge(clk) and var_out.\default int8\.updated = '1' for 1 ms;
+			test_expect_eq(test, var_out.\default int8\.value, 18);
 		end procedure;
 
 		procedure do_test_axi is
 			variable data : std_logic_vector(31 downto 0);
 		begin
 			test_start(test, "AXI");
-			axi_read(clk, axi_m2s, axi_s2m, TestStore_pkg.\DEFAULT_INT8__ADDR\, data);
+			axi_read(clk, axi_m2s, axi_s2m, TestStore_pkg.\default int8/ADDR\, data);
 			test_expect_eq(test, data, x"00000012");
 
-			axi_write(clk, axi_m2s, axi_s2m, TestStore_pkg.\DEFAULT_INT16__ADDR\, x"abcd1122");
-			test_expect_eq(test, var_out.\default_int16\.value, 16#1122#);
+			axi_write(clk, axi_m2s, axi_s2m, TestStore_pkg.\default int16/ADDR\, x"abcd1122");
+			test_expect_eq(test, var_out.\default int16\.value, 16#1122#);
 		end procedure;
 
 		procedure do_test_hello is
@@ -253,39 +253,39 @@ begin
 		procedure do_test_update_single is
 		begin
 			test_start(test, "UpdateSingle");
-			sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\DEFAULT_INT8__KEY\,
+			sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\default int8/KEY\,
 				to_buffer(x"24"), TestStore_pkg.LITTLE_ENDIAN);
 			sync_wait(clk, sync_in_busy);
-			test_expect_eq(test, var_out.\default_int8\.value, 16#24#);
+			test_expect_eq(test, var_out.\default int8\.value, 16#24#);
 		end procedure;
 
 		procedure do_test_update_multi is
 		begin
 			test_start(test, "UpdateMulti");
 			sync_update_start(clk, sync_in, sync_out, id_in, TestStore_pkg.LITTLE_ENDIAN);
-			sync_update_var(clk, sync_in, sync_out, TestStore_pkg.\DEFAULT_INT8__KEY\,
+			sync_update_var(clk, sync_in, sync_out, TestStore_pkg.\default int8/KEY\,
 				to_buffer(x"25"), false, TestStore_pkg.LITTLE_ENDIAN);
-			sync_update_var(clk, sync_in, sync_out, TestStore_pkg.\DEFAULT_INT32__KEY\,
+			sync_update_var(clk, sync_in, sync_out, TestStore_pkg.\default int32/KEY\,
 				to_buffer(101, 4), false, TestStore_pkg.LITTLE_ENDIAN);
-			sync_update_var(clk, sync_in, sync_out, TestStore_pkg.\SOME_OTHER_SCOPE__SOME_OTHER_INNER_BOOL__KEY\,
+			sync_update_var(clk, sync_in, sync_out, TestStore_pkg.\some other scope/some other inner bool/KEY\,
 				to_buffer('0'), true, TestStore_pkg.LITTLE_ENDIAN);
 			sync_wait(clk, sync_in_busy);
-			test_expect_eq(test, var_out.\default_int8\.value, 16#25#);
-			test_expect_eq(test, var_out.\default_int32\.value, 101);
-			test_expect_eq(test, var_out.\some_other_scope__some_other_inner_bool\.value, '0');
+			test_expect_eq(test, var_out.\default int8\.value, 16#25#);
+			test_expect_eq(test, var_out.\default int32\.value, 101);
+			test_expect_eq(test, var_out.\some other scope/some other inner bool\.value, '0');
 		end procedure;
 
 		procedure do_test_update_burst is
 		begin
 			test_start(test, "UpdateBurst");
-			sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\DEFAULT_INT8__KEY\,
+			sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\default int8/KEY\,
 				to_buffer(x"26"), TestStore_pkg.LITTLE_ENDIAN);
-			sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\DEFAULT_INT8__KEY\,
+			sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\default int8/KEY\,
 				to_buffer(x"27"), TestStore_pkg.LITTLE_ENDIAN);
-			sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\DEFAULT_INT8__KEY\,
+			sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\default int8/KEY\,
 				to_buffer(x"28"), TestStore_pkg.LITTLE_ENDIAN);
 			sync_wait(clk, sync_in_busy);
-			test_expect_eq(test, var_out.\default_int8\.value, 16#28#);
+			test_expect_eq(test, var_out.\default int8\.value, 16#28#);
 		end procedure;
 
 		procedure do_test_update_out is
@@ -294,14 +294,14 @@ begin
 			variable last : boolean;
 		begin
 			test_start(test, "UpdateOut");
-			var_in.\default_int8\.value <= x"45";
-			var_in.\default_int8\.we <= '1';
+			var_in.\default int8\.value <= x"45";
+			var_in.\default int8\.we <= '1';
 			wait until rising_edge(clk);
-			var_in.\default_int8\.we <= '0';
+			var_in.\default int8\.we <= '0';
 
 			sync_accept_update_start(clk, sync_in, sync_out, id_out, TestStore_pkg.LITTLE_ENDIAN);
 			sync_accept_update_var(clk, sync_in, sync_out, key, buf, last, TestStore_pkg.LITTLE_ENDIAN);
-			test_expect_eq(test, key, TestStore_pkg.\DEFAULT_INT8__KEY\);
+			test_expect_eq(test, key, TestStore_pkg.\default int8/KEY\);
 			test_expect_eq(test, buf(0), x"45");
 			test_expect_true(test, last);
 		end procedure;
@@ -309,51 +309,51 @@ begin
 		procedure do_test_access_ro is
 		begin
 			test_start(test, "AccessRO");
-			sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\DEFAULT_UINT16__KEY\,
+			sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\default uint16/KEY\,
 				to_buffer(16#2345#, 2, TestStore_pkg.LITTLE_ENDIAN), TestStore_pkg.LITTLE_ENDIAN);
 			sync_wait(clk, sync_in_busy);
-			test_expect_eq(test, var_out.\default_uint16\.value, 16#2345#);
+			test_expect_eq(test, var_out.\default uint16\.value, 16#2345#);
 
-			var_in.\default_uint16\.value <= x"1234";
-			var_in.\default_uint16\.we <= '1';
+			var_in.\default uint16\.value <= x"1234";
+			var_in.\default uint16\.we <= '1';
 			wait until rising_edge(clk);
-			var_in.\default_uint16\.we <= '0';
-			wait until rising_edge(clk) and var_out.\default_int32\.updated = '1' for 1 us;
+			var_in.\default uint16\.we <= '0';
+			wait until rising_edge(clk) and var_out.\default int32\.updated = '1' for 1 us;
 			wait until rising_edge(clk);
-			test_expect_eq(test, var_out.\default_uint16\.value, 16#2345#);
+			test_expect_eq(test, var_out.\default uint16\.value, 16#2345#);
 		end procedure;
 
 		procedure do_test_access_wo is
 		begin
 			test_start(test, "AccessWO");
-			var_in.\default_uint32\.value <= x"11223344";
-			var_in.\default_uint32\.we <= '1';
+			var_in.\default uint32\.value <= x"11223344";
+			var_in.\default uint32\.we <= '1';
 			wait until rising_edge(clk);
-			var_in.\default_uint32\.we <= '0';
-			wait until rising_edge(clk) and var_out.\default_uint32\.updated = '1' for 1 ms;
-			test_expect_eq(test, var_out.\default_uint32\.value, 16#11223344#);
+			var_in.\default uint32\.we <= '0';
+			wait until rising_edge(clk) and var_out.\default uint32\.updated = '1' for 1 ms;
+			test_expect_eq(test, var_out.\default uint32\.value, 16#11223344#);
 
-			sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\DEFAULT_UINT32__KEY\,
+			sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\default uint32/KEY\,
 				to_buffer(16#22334455#, 4, TestStore_pkg.LITTLE_ENDIAN), TestStore_pkg.LITTLE_ENDIAN);
 			sync_wait(clk, sync_in_busy);
-			test_expect_eq(test, var_out.\default_uint32\.value, 16#11223344#);
+			test_expect_eq(test, var_out.\default uint32\.value, 16#11223344#);
 		end procedure;
 
 		procedure do_test_access_na is
 		begin
 			test_start(test, "AccessNA");
-			var_in.\default_uint64\.value <= x"1122334455667788";
-			var_in.\default_uint64\.we <= '1';
+			var_in.\default uint64\.value <= x"1122334455667788";
+			var_in.\default uint64\.we <= '1';
 			wait until rising_edge(clk);
-			var_in.\default_uint64\.we <= '0';
-			wait until rising_edge(clk) and var_out.\default_uint64\.updated = '1' for 1 us;
+			var_in.\default uint64\.we <= '0';
+			wait until rising_edge(clk) and var_out.\default uint64\.updated = '1' for 1 us;
 			wait until rising_edge(clk);
-			test_expect_eq(test, var_out.\default_uint64\.value, 0);
+			test_expect_eq(test, var_out.\default uint64\.value, 0);
 
-			sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\DEFAULT_UINT64__KEY\,
+			sync_update(clk, sync_in, sync_out, id_in, TestStore_pkg.\default uint64/KEY\,
 				to_buffer(x"2233445566778899"), TestStore_pkg.LITTLE_ENDIAN);
 			sync_wait(clk, sync_in_busy);
-			test_expect_eq(test, var_out.\default_uint64\.value, 0);
+			test_expect_eq(test, var_out.\default uint64\.value, 0);
 		end procedure;
 
 		procedure do_test_chained_hello is
@@ -372,18 +372,18 @@ begin
 		procedure do_test_chained_update is
 		begin
 			test_start(test, "ChainedUpdate");
-			var_in.\default_int8\.value <= x"80";
-			var_in.\default_int8\.we <= '1';
+			var_in.\default int8\.value <= x"80";
+			var_in.\default int8\.we <= '1';
 			wait until rising_edge(clk);
-			var_in.\default_int8\.we <= '0';
-			wait until rising_edge(clk) and var_out.\default_int8\.updated = '1' for 1 ms;
-			test_expect_eq(test, var_out.\default_int8\.value, 16#80#);
+			var_in.\default int8\.we <= '0';
+			wait until rising_edge(clk) and var_out.\default int8\.updated = '1' for 1 ms;
+			test_expect_eq(test, var_out.\default int8\.value, 16#80#);
 
-			sync_update(clk, sync_in, sync_out, id_in2, TestStore_pkg.\DEFAULT_INT8__KEY\,
+			sync_update(clk, sync_in, sync_out, id_in2, TestStore_pkg.\default int8/KEY\,
 				to_buffer(x"81"), TestStore_pkg.LITTLE_ENDIAN);
-			wait until rising_edge(clk) and var_out2.\default_int8\.updated = '1' for 1 ms;
-			test_expect_eq(test, var_out.\default_int8\.value, 16#80#);
-			test_expect_eq(test, var_out2.\default_int8\.value, 16#81#);
+			wait until rising_edge(clk) and var_out2.\default int8\.updated = '1' for 1 ms;
+			test_expect_eq(test, var_out.\default int8\.value, 16#80#);
+			test_expect_eq(test, var_out2.\default int8\.value, 16#81#);
 		end procedure;
 
 		procedure do_test_chained_update_out is
@@ -392,18 +392,18 @@ begin
 			variable last : boolean;
 		begin
 			test_start(test, "ChainedUpdateOut");
-			var_in2.\default_int8\.value <= x"82";
-			var_in2.\default_int8\.we <= '1';
+			var_in2.\default int8\.value <= x"82";
+			var_in2.\default int8\.we <= '1';
 			wait until rising_edge(clk);
-			var_in2.\default_int8\.we <= '0';
+			var_in2.\default int8\.we <= '0';
 
 			sync_accept_update_start(clk, sync_in, sync_out, id_out2, TestStore_pkg.LITTLE_ENDIAN);
 			sync_accept_update_var(clk, sync_in, sync_out, key, buf, last, TestStore_pkg.LITTLE_ENDIAN);
-			test_expect_eq(test, key, TestStore_pkg.\DEFAULT_INT8__KEY\);
+			test_expect_eq(test, key, TestStore_pkg.\default int8/KEY\);
 			test_expect_eq(test, buf(0), x"82");
 			test_expect_true(test, last);
-			test_expect_eq(test, var_out.\default_int8\.value, 16#80#);
-			test_expect_eq(test, var_out2.\default_int8\.value, 16#82#);
+			test_expect_eq(test, var_out.\default int8\.value, 16#80#);
+			test_expect_eq(test, var_out2.\default int8\.value, 16#82#);
 		end procedure;
 
 		procedure do_test_uart_tx is
