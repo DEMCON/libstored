@@ -270,6 +270,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.filters['vhdlkey'] = vhdlkey
     jenv.filters['cname'] = types.cname
     jenv.filters['carray'] = carray
+    jenv.filters['vhdlname'] = types.vhdlname
     jenv.filters['len'] = len
     jenv.filters['hasfunction'] = has_function
     jenv.filters['rtfstring'] = rtfstring

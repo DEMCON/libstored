@@ -239,7 +239,7 @@ begin
 {% set ns = namespace(var_i=0, offset_next=0) %}
 {% for o in store.objects|sort(attribute='offset') %}
 {%   if o is variable %}
-	\{{o.cname}}__g\ : if true generate
+	\{{o|vhdlname}}/g\ : if true generate
 {%       if o.axi != None %}
 		constant AXI_REG : natural := {{(o.axi / 4)|int}};
 {%       endif %}
@@ -247,16 +247,16 @@ begin
 		signal data_in_i : std_logic_vector({{o.size * 8 - 1}} downto 0);
 		signal data_in_we_i : std_logic;
 	begin
-		\{{o.cname}}__inst\ : entity work.libstored_variable
+		\{{o|vhdlname}}/inst\ : entity work.libstored_variable
 			generic map (
 				SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ,
-				DATA_INIT => {{store.name}}_pkg.\{{o.cname|upper}}__INIT\,
-				KEY => {{store.name}}_pkg.\{{o.cname|upper}}__KEY\,
+				DATA_INIT => {{store.name}}_pkg.\{{o|vhdlname|upper}}/INIT\,
+				KEY => {{store.name}}_pkg.\{{o|vhdlname|upper}}/KEY\,
 				BUFFER_PADDING_BEFORE => {{o.offset - ns.offset_next}},
 				LITTLE_ENDIAN => {% if store.littleEndian %}true{% else %}false{% endif %},
 				BLOB => {% if o is blob %}true{% else %}false{% endif %},
 				BUFFER_CHAIN => {{ns.var_i}} mod BUFFER_AFTER_N_VARS = BUFFER_AFTER_N_VARS - 1,
-				VAR_ACCESS => VAR_ACCESS.\{{o.cname}}\,
+				VAR_ACCESS => VAR_ACCESS.\{{o|vhdlname}}\,
 				SIMULATION => SIMULATION
 			)
 			port map (
@@ -264,7 +264,7 @@ begin
 				rstn => rstn,
 
 				data_out => data_out_i,
-				data_out_updated => var_out.\{{o.cname}}\.updated,
+				data_out_updated => var_out.\{{o|vhdlname}}\.updated,
 				data_in => data_in_i,
 				data_in_we => data_in_we_i,
 
@@ -298,21 +298,21 @@ begin
 {%       if o.axi != None %}
 			axi_we(AXI_REG) or
 {%       endif %}
-			var_in.\{{o.cname}}\.we;
+			var_in.\{{o|vhdlname}}\.we;
 
 {%     if o|vhdltype == 'std_logic' %}
-		var_out.\{{o.cname}}\.value <=
+		var_out.\{{o|vhdlname}}\.value <=
 --pragma translate_off
 			'X' when is_x(data_out_i) else
 --pragma translate_on
 			'1' when data_out_i /= x"00" else
 			'0';
-		data_in_i <= "0000000" & var_in.\{{o.cname}}\.value;
+		data_in_i <= "0000000" & var_in.\{{o|vhdlname}}\.value;
 {%       if o.axi != None %}
 		axi_data_rd(AXI_REG) <= (31 downto 8 => '0') & data_out_i;
 {%       endif %}
 {%     else %}
-		var_out.\{{o.cname}}\.value <= {{store.name}}_pkg.\{{o.cname}}__type\(data_out_i);
+		var_out.\{{o|vhdlname}}\.value <= {{store.name}}_pkg.\{{o|vhdlname}}__type\(data_out_i);
 
 		data_in_i <=
 {%       if o.axi != None %}
@@ -321,9 +321,9 @@ begin
 {%         else %}
 			axi_data_wr(data_in_i'length - 1 downto 0)
 {%         endif %}
-				when var_in.\{{o.cname}}\.we = '0' and axi_we(AXI_REG) = '1' else
+				when var_in.\{{o|vhdlname}}\.we = '0' and axi_we(AXI_REG) = '1' else
 {%       endif %}
-			std_logic_vector(var_in.\{{o.cname}}\.value);
+			std_logic_vector(var_in.\{{o|vhdlname}}\.value);
 
 {%       if o.axi != None %}
 		process(data_out_i)

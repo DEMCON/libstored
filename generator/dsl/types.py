@@ -77,6 +77,27 @@ def cname(s):
     cnames[s] = u
     return u
 
+vhdlnames = {}
+
+def vhdlname(s):
+    s = str(s)
+    if s in vhdlnames:
+        return vhdlnames[s]
+    c = s
+    c = re.sub(r'\\', '\\\\', c)
+
+    if s == '':
+        c = 'obj'
+
+    u = c
+    i = 2
+    while u in vhdlnames.values():
+        u = c + f' {i}'
+        i += 1
+
+    vhdlnames[s] = u
+    return u
+
 def csize(o):
     return {
             'bool': 1,

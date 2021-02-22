@@ -16,14 +16,14 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#}
 
+#}
 # In Vivado, create a new project and source this script.  All relevant
 # libstored files will be added to your project.  Afterwards, this script is
 # not required anymore; just use your project file.
 
-set libstored_dir [ file normalize "{{libstored_dir|escapebs}}" ]
 set script_path [ file dirname [ file normalize [ info script ] ] ]
+set libstored_dir [ file normalize "{{libstored_dir|escapebs}}" ]
 set store_dir [ file normalize "$script_path/.." ]
 
 # Create 'sources_1' fileset (if not found)
