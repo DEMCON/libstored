@@ -53,10 +53,17 @@ add_custom_target(ed2-dist ALL
 	DEPENDS ${ed2_wheel}
 )
 
-add_custom_target(ed2-install
-	DEPENDS ${ed2_wheel}
-	COMMAND ${PYTHON_EXECUTABLE} -m pip install --upgrade --no-deps --force-reinstall ${ed2_wheel}
-)
+if(LIBSTORED_PIP_INSTALL_USER)
+	add_custom_target(ed2-install
+		DEPENDS ${ed2_wheel}
+		COMMAND ${PYTHON_EXECUTABLE} -m pip install --user --upgrade --no-deps --force-reinstall ${ed2_wheel}
+	)
+else()
+	add_custom_target(ed2-install
+		DEPENDS ${ed2_wheel}
+		COMMAND ${PYTHON_EXECUTABLE} -m pip install --upgrade --no-deps --force-reinstall ${ed2_wheel}
+	)
+endif()
 
 install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ed2-install)")
 
