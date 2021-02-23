@@ -1262,6 +1262,22 @@ public:
 
 #endif // !STORED_OS_WINDOWS
 
+#if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX)
+	/*!
+	 * \brief A serial port layer.
+	 *
+	 * This is just a FileLayer, but initializes the serial port communication
+	 * parameters during construction.
+	 */
+	class SerialLayer : public FileLayer {
+		CLASS_NOCOPY(SerialLayer)
+	public:
+		typedef FileLayer base;
+		explicit SerialLayer(char const* name, unsigned long baud, bool rtscts = false, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~SerialLayer() override is_default
+	};
+#endif // STORED_OS_WINDOWS || STORED_OS_POSIX
+
 } // namespace
 #endif // __cplusplus
 

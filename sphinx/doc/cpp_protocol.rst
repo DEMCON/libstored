@@ -101,6 +101,7 @@ The inheritance of the layers is shown below.
    FileLayer <|-- StdioLayer : POSIX
    ProtocolLayer <|-- CompressLayer
    PolledLayer <|-- FifoLoopback1
+   FileLayer <|-- SerialLayer
 
    ProtocolLayer <|-- Stream
    Debugger --> Stream
@@ -197,6 +198,11 @@ stored::SegmentationLayer
 -------------------------
 
 .. doxygenclass:: stored::SegmentationLayer
+
+stored::SerialLayer
+-------------------------
+
+.. doxygenclass:: stored::SerialLayer
 
 stored::StdioLayer
 ------------------

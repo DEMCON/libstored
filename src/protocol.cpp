@@ -28,6 +28,10 @@
 #  include <fcntl.h>
 #endif
 
+#if defined(STORED_OS_POSIX)
+#  include <termios.h>
+#endif
+
 #if defined(STORED_OS_WINDOWS)
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #  define write(fd, buffer, count) _write(fd, buffer, (unsigned int)(count))
@@ -1915,12 +1919,15 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 {
 	setLastError(EBADF);
 
+	bool isCOM_r = name_r && ::strncmp(name_r, "\\\\.\\COM", 7) == 0;
+	bool isCOM_w = name_w && ::strncmp(name_w, "\\\\.\\COM", 7) == 0;
+
 	if(!name_w || strcmp(name_r, name_w) == 0) {
 		HANDLE h = INVALID_HANDLE_VALUE; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
 		if(!isValidHandle((h = CreateFile(name_r,
 			GENERIC_READ | GENERIC_WRITE,					// NOLINT(hicpp-signed-bitwise)
 			FILE_SHARE_READ | FILE_SHARE_WRITE,				// NOLINT(hicpp-signed-bitwise)
-			NULL, OPEN_ALWAYS,
+			NULL, isCOM_r ? OPEN_EXISTING : OPEN_ALWAYS,
 			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,	// NOLINT(hicpp-signed-bitwise)
 			NULL))))
 		{
@@ -1934,7 +1941,7 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 		if(!isValidHandle((h_r = CreateFile(name_r,
 			GENERIC_READ,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,				// NOLINT(hicpp-signed-bitwise)
-			NULL, OPEN_ALWAYS,
+			NULL, isCOM_r ? OPEN_EXISTING : OPEN_ALWAYS,
 			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,	// NOLINT(hicpp-signed-bitwise)
 			NULL))))
 		{
@@ -1946,7 +1953,7 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 		if(!isValidHandle((h_w = CreateFile(name_w,
 			GENERIC_WRITE,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,				// NOLINT(hicpp-signed-bitwise)
-			NULL, OPEN_ALWAYS,
+			NULL, isCOM_w ? OPEN_EXISTING : OPEN_ALWAYS,
 			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,	// NOLINT(hicpp-signed-bitwise)
 			NULL))))
 		{
@@ -2941,6 +2948,96 @@ StdioLayer::StdioLayer(ProtocolLayer* up, ProtocolLayer* down)
 
 #endif // !STORED_OS_WINDOWS
 
+
+
+
+//////////////////////////////
+// SerialLayer
+//
+
+#ifdef STORED_OS_WINDOWS
+SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, ProtocolLayer* up, ProtocolLayer* down)
+	: base(name, nullptr, up, down)
+{
+	stored_assert(fd_r() == fd_w());
+
+	HANDLE h = fd_r();
+	if(h == INVALID_HANDLE_VALUE)
+		return;
+
+	DCB dcb;
+	memset(&dcb, 0, sizeof(DCB));
+	dcb.DCBlength = sizeof(dcb);
+
+	if(!GetCommState(h, &dcb)) {
+		setLastError(EIO);
+		return;
+	}
+
+	dcb.BaudRate = (DWORD)baud;
+	dcb.ByteSize = 8;
+	dcb.Parity = NOPARITY;
+	dcb.StopBits = ONESTOPBIT;
+	dcb.fOutxCtsFlow = rtscts;
+	dcb.fOutxDsrFlow = FALSE;
+	dcb.fDtrControl = DTR_CONTROL_DISABLE;
+	dcb.fNull = FALSE;
+	dcb.fRtsControl = rtscts ? RTS_CONTROL_ENABLE : RTS_CONTROL_DISABLE;
+	dcb.fAbortOnError = FALSE;
+	dcb.fOutX = FALSE;
+	dcb.fInX = FALSE;
+
+	if(!SetCommState(h, &dcb)) {
+		setLastError(EIO);
+		return;
+	}
+}
+
+#elif defined(STORED_OS_POSIX)
+SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, ProtocolLayer* up, ProtocolLayer* down)
+	: base(name, nullptr, up, down)
+{
+	stored_assert(fd_r() == fd_w());
+
+	int fd = fd_r();
+	if(fd == -1 || !isatty(fd))
+		return;
+
+	struct termios config;
+	if(tcgetattr(fd, &config) < 0) {
+		setLastError(errno);
+		return;
+	}
+
+	config.c_iflag &= ~(BRKINT | ICRNL | INLCR | PARMRK | INPCK | ISTRIP | IXON);
+	config.c_oflag = 0;
+	config.c_lflag &= ~(ECHO | ECHONL | ICANON | IEXTEN | ISIG);
+	config.c_cflag &= ~(CSIZE | PARENB | CSTOPB);
+	config.c_cflag |= CS8;
+	if(rtscts) {
+#ifdef CNEW_RTSCTS
+		config.c_cflag |= CNEW_RTSCTS;
+#elif defined(CRTSCTS)
+		config.c_cflag |= CRTSCTS;
+#else
+		setLastError(EINVAL);
+		return;
+#endif
+	}
+	config.c_cc[VMIN]  = 0;
+	config.c_cc[VTIME] = 0;
+
+	if(cfsetispeed(&config, (speed_t)baud) < 0 || cfsetospeed(&config, (speed_t)baud) < 0) {
+		setLastError(errno);
+		return;
+	}
+
+	if(tcsetattr(fd, TCSANOW, &config) < 0) {
+		setLastError(errno);
+		return;
+	}
+}
+#endif // STORED_OS_POSIX
 
 } // namespace
 
