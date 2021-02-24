@@ -277,6 +277,8 @@ namespace stored {
 
 		StoreJournal const& journal() const { return m_journal; }
 		StoreJournal& journal() { return m_journal; }
+		operator StoreJournal const&() const { return journal(); }
+		operator StoreJournal&() { return journal(); }
 
 		/*!
 		 * \brief Reserve worst-case heap usage.
@@ -478,7 +480,7 @@ private:
 
 		StoreJournal* toJournal(char const* hash) const;
 
-		void connect(ProtocolLayer& connection);
+		SyncConnection const& connect(ProtocolLayer& connection);
 		void disconnect(ProtocolLayer& connection);
 
 		/*!
