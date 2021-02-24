@@ -28,7 +28,7 @@ set libstored_dir [ file normalize "{{libstored_dir|escapebs}}" ]
 set libstored_fpga_dir [ file normalize "$libstored_dir/fpga" ]
 
 # You may configure_file() this script to override libstored_fpga_dir.
-if {[string equal "@RELOCATE_LIBSTORED@" "1"} {
+if {[string equal "@RELOCATE_LIBSTORED@" "1"]} {
 	set libstored_fpga_dir [ file normalize "@RELOCATED_LIBSTORED@" ]
 }
 
