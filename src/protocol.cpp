@@ -2055,6 +2055,11 @@ void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w) {
 	//
 	// NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
 	startRead();
+
+	// EAGAIN is what you may expect by startRead().
+	if(lastError() == EAGAIN)
+		setLastError(0);
+
 	return;
 
 error:
@@ -2515,6 +2520,13 @@ void NamedPipeLayer::close_() {
  * \brief Resets the connection to accept a new incoming one.
  */
 void NamedPipeLayer::close() {
+	reopen();
+}
+
+/*!
+ * \brief Resets the connection to accept a new incoming one.
+ */
+void NamedPipeLayer::reopen() {
 	if(isValidHandle(handle()) && m_state > StateConnecting) {
 		// Don't really close, just reconnect.
 		FlushFileBuffers(handle());
@@ -2706,6 +2718,21 @@ bool DoublePipeLayer::isConnected() const {
 	return m_r.isConnected() && m_w.isConnected();
 }
 
+void DoublePipeLayer::close() {
+	reopen();
+}
+
+void DoublePipeLayer::reopen() {
+	m_r.reopen();
+	m_w.reopen();
+}
+
+void DoublePipeLayer::reset() {
+	m_r.reset();
+	m_w.reset();
+	base::reset();
+}
+
 
 
 
@@ -2745,6 +2772,7 @@ NamedPipeLayer& XsimLayer::req() {
 
 void XsimLayer::reset() {
 	m_inFlight = 0;
+	m_req.reset();
 	base::reset();
 	keepAlive();
 }
@@ -2769,14 +2797,40 @@ void XsimLayer::decoded(size_t len) {
 }
 
 int XsimLayer::recv(long timeout_us) {
-	int res = m_req.recv();
+	int resReq = m_req.recv();
+	int resBase = base::recv(timeout_us);
 
-	if(base::recv(timeout_us))
-		return lastError();
-	else
-		return setLastError(res);
+	switch(resBase) {
+	case EAGAIN:
+	case EINTR:
+	case 0:
+		switch(resReq) {
+		case EAGAIN:
+		case EINTR:
+		case 0:
+			return resBase;
+		case EIO:
+			// Try to recover all channels.
+			reopen();
+			// fall-through
+		default:
+			return setLastError(resReq);
+		}
+	case EIO:
+		// Try to recover all channels.
+		reopen();
+		// fall-through
+	default:
+		return resBase;
+	}
 }
 
+void XsimLayer::reopen() {
+	m_inFlight = 0;
+	m_req.reopen();
+	base::reopen();
+	keepAlive();
+}
 
 #endif // STORED_OS_WINDOWS
 

@@ -1090,6 +1090,8 @@ public:
 		using base::encode;
 #endif
 
+		virtual void reopen();
+
 	protected:
 		void close() final;
 		void close_();
@@ -1130,6 +1132,11 @@ public:
 		virtual int recv(long timeout_us = 0) override;
 		virtual fd_type fd() const override;
 		bool isConnected() const;
+		virtual void reset() override;
+		virtual void reopen();
+
+	protected:
+		virtual void close() override;
 
 	private:
 		NamedPipeLayer m_r;
@@ -1167,6 +1174,7 @@ public:
 		virtual int recv(long timeout_us = 0) override;
 		virtual void reset() override;
 		void keepAlive();
+		virtual void reopen() override;
 
 		NamedPipeLayer& req();
 	protected:
