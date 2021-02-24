@@ -255,7 +255,7 @@ begin
 				BUFFER_PADDING_BEFORE => {{o.offset - ns.offset_next}},
 				LITTLE_ENDIAN => {% if store.littleEndian %}true{% else %}false{% endif %},
 				BLOB => {% if o is blob %}true{% else %}false{% endif %},
-				BUFFER_CHAIN => {{ns.var_i}} mod BUFFER_AFTER_N_VARS = BUFFER_AFTER_N_VARS - 1,
+				BUFFER_CHAIN => {% if loop.last %}true{% else %}{{ns.var_i}} mod BUFFER_AFTER_N_VARS = BUFFER_AFTER_N_VARS - 1{% endif %},
 				VAR_ACCESS => VAR_ACCESS.\{{o|vhdlname}}\,
 				SIMULATION => SIMULATION
 			)
@@ -375,7 +375,7 @@ begin
 				v_dt_s := v_dt_s / SIMULATION_SPEEDUP;
 			end if;
 
-			return ceil(v_dt_s * real(SYSTEM_CLK_FREQ));
+			return integer(v_dt_s * real(SYSTEM_CLK_FREQ));
 		end function;
 
 		constant SYNC_OUT_INTERVAL_clk : natural := compute_interval_clk(SYNC_OUT_INTERVAL_s);
