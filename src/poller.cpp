@@ -568,6 +568,7 @@ Poller::Result const& Poller::poll(long timeout_us, bool suspend) {
 		}
 	}
 
+	int timeout_ms = (int)(timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us);
 retry:
 	int res = 0;
 
@@ -575,17 +576,17 @@ retry:
 		// Just suspend; not fiber-aware.
 		res =
 #if defined(STORED_POLL_ZTH) && defined(ZTH_HAVE_LIBZMQ)
-			::zmq_poll
+			::zmq_poll(&m_lastEventsFd[0], (int)m_lastEventsFd.size(), timeout_ms);
 #else
-			::poll
+			::poll(&m_lastEventsFd[0], (nfds_t)m_lastEventsFd.size(), timeout_ms);
 #endif
-				(&m_lastEventsFd[0], (nfds_t)m_lastEventsFd.size(), (int)(timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us));
 	} else {
 		res =
 #ifdef STORED_POLL_ZTH
-			zth::io
+			zth::io::poll(&m_lastEventsFd[0], (int)m_lastEventsFd.size(), timeout_ms);
+#else
+			::poll(&m_lastEventsFd[0], (nfds_t)m_lastEventsFd.size(), timeout_ms);
 #endif
-			::poll(&m_lastEventsFd[0], (nfds_t)m_lastEventsFd.size(), (int)(timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us));
 	}
 
 	switch(res) {

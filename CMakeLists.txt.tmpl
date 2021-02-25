@@ -77,6 +77,8 @@ if(LIBSTORED_HAVE_VALGRIND)
 endif()
 
 if(TARGET libzth)
+	message(STATUS "Enable Zth integration for {{libprefix}}libstored")
+	target_compile_definitions({{libprefix}}libstored PUBLIC -DSTORED_HAVE_ZTH)
 	target_link_libraries({{libprefix}}libstored PUBLIC libzth)
 endif()
 
