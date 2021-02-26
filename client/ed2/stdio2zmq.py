@@ -18,6 +18,7 @@ import sys
 import subprocess
 import threading
 import zmq
+import os
 
 from .stream2zmq import Stream2Zmq
 
@@ -47,7 +48,10 @@ class Stdio2Zmq(Stream2Zmq):
 
     def __init__(self, args, stack='ascii,term', listen='*', port=Stream2Zmq.default_port, **kwargs):
         super().__init__(stack=stack, listen=listen, port=port)
-        self.process = subprocess.Popen(args=args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn = set_pdeathsig(), **kwargs)
+        self.process = subprocess.Popen(
+            args=args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            preexec_fn = set_pdeathsig() if os.name == 'posix' else None,
+            **kwargs)
         self.stdout_socket = self.registerStream(self.process.stdout)
         self.stdin_socket = self.registerStream(sys.stdin)
         self.rep_queue = []
