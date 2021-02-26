@@ -52,13 +52,12 @@ CLASS_NO_WEAK_VTABLE_DEF(DebugStoreBase)
 struct ListCmdCallbackArg {
 	Debugger* that;
 	ProtocolLayer* response;
-	unsigned int callbacks;
+	size_t callbacks;
 
 	/*! \brief Invoke the callback. */
 	void operator()(void const* buf, size_t len) {
 		response->encode(buf, len, false);
-		if(++callbacks % 0x80)
-			stored_yield();
+		++callbacks;
 	}
 };
 
@@ -264,10 +263,8 @@ void Debugger::list(ListCallbackArg* f, void* arg) const {
 	if(m_map.size() == 1)
 		m_map.begin()->second->list(f, arg);
 	else
-		for(StoreMap::const_iterator it = m_map.begin(); it != m_map.end(); ++it) {
+		for(StoreMap::const_iterator it = m_map.begin(); it != m_map.end(); ++it)
 			it->second->list(f, arg, it->first);
-			stored_yield();
-		}
 }
 
 /*!
