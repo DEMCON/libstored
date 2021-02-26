@@ -3063,10 +3063,10 @@ SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, Prot
 		return;
 	}
 
-	config.c_iflag &= ~(BRKINT | ICRNL | INLCR | PARMRK | INPCK | ISTRIP | IXON);
+	config.c_iflag = (tcflag_t)(config.c_iflag & ~(BRKINT | ICRNL | INLCR | PARMRK | INPCK | ISTRIP | IXON));
 	config.c_oflag = 0;
-	config.c_lflag &= ~(ECHO | ECHONL | ICANON | IEXTEN | ISIG);
-	config.c_cflag &= ~(CSIZE | PARENB | CSTOPB);
+	config.c_lflag = (tcflag_t)(config.c_lflag & ~(ECHO | ECHONL | ICANON | IEXTEN | ISIG));
+	config.c_cflag = (tcflag_t)(config.c_cflag & ~(CSIZE | PARENB | CSTOPB));
 	config.c_cflag |= CS8;
 	if(rtscts) {
 #ifdef CNEW_RTSCTS
