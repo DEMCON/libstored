@@ -24,6 +24,18 @@ import threading
 from .zmq_server import ZmqServer
 from . import protocol
 
+try:
+    import fcntl, os
+    def set_blocking(stdout):
+        fileno = stdout.fileno()
+        fl = fcntl.fcntl(fileno, fcntl.F_GETFL)
+        fcntl.fcntl(fileno, fcntl.F_SETFL, fl & ~os.O_NONBLOCK)
+except:
+    # Not supported
+    def set_blocking(stdout):
+        pass
+
+
 class InfiniteStdoutBuffer:
     def __init__(self, stdout=sys.__stdout__, cleanup=None):
         self.stdout = stdout
@@ -79,6 +91,7 @@ def setInfiniteStdout():
         return
     sys.stdout.flush()
     old_stdout = sys.stdout
+    set_blocking(old_stdout)
     sys.stdout = InfiniteStdoutBuffer(old_stdout, lambda: resetStdout(old_stdout))
 
 class Stream2Zmq(protocol.ProtocolLayer):
