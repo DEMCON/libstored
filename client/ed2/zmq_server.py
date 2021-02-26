@@ -86,7 +86,10 @@ class ZmqServer(protocol.ProtocolLayer):
                 r = lambda: stream.readline().encode()
             elif isinstance(stream, serial.Serial):
                 r = lambda: stream.read(max(1, stream.inWaiting()))
+            elif isinstance(stream, io.BufferedIOBase):
+                r = lambda: stream.read1(4096)
             else:
+                self.logger.warn(f'Stream type "{type(stream)}" will be read byte-by-byte')
                 r = lambda: stream.read(1)
 
             data = r()
