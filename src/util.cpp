@@ -18,6 +18,7 @@
 
 #include <libstored/util.h>
 #include <libstored/poller.h>
+#include <libstored/version.h>
 
 #include <cstring>
 #include <cinttypes>
@@ -26,7 +27,6 @@ namespace stored {
 
 /*!
  * \brief Like \c ::strncpy(), but without padding and returning the length of the string.
- * \ingroup libstored_util
  */
 size_t strncpy(char* __restrict__ dst, char const* __restrict__ src, size_t len) {
 	if(len == 0)
@@ -44,7 +44,6 @@ size_t strncpy(char* __restrict__ dst, char const* __restrict__ src, size_t len)
 
 /*!
  * \brief Like \c ::strncmp(), but handles non zero-terminated strings.
- * \ingroup libstored_util
  */
 int strncmp(char const* __restrict__ str1, size_t len1, char const* __restrict__ str2, size_t len2) {
 	stored_assert(str1);
@@ -77,7 +76,6 @@ int strncmp(char const* __restrict__ str1, size_t len1, char const* __restrict__
 
 /*!
  * \brief Swap endianness of the given buffer.
- * \ingroup libstored_util
  */
 void swap_endian(void* buffer, size_t len) {
 	char* buffer_ = static_cast<char*>(buffer);
@@ -90,7 +88,6 @@ void swap_endian(void* buffer, size_t len) {
 
 /*!
  * \brief \c memcpy() with endianness swapping.
- * \ingroup libstored_util
  */
 void memcpy_swap(void* __restrict__ dst, void const* __restrict__ src, size_t len) {
 	char* dst_ = static_cast<char*>(dst);
@@ -102,7 +99,6 @@ void memcpy_swap(void* __restrict__ dst, void const* __restrict__ src, size_t le
 
 /*!
  * \brief memcmp() with endianness swapping.
- * \ingroup libstored_util
  */
 int memcmp_swap(void const* a, void const* b, size_t len) {
 	unsigned char const* a_ = static_cast<unsigned char const*>(a);
@@ -123,8 +119,6 @@ diff:
  * \brief Converts the given buffer to a string literal.
  *
  * This comes in handy for verbose output of binary data, like protocol messages.
- *
- * \ingroup libstored_util
  */
 std::string string_literal(void const* buffer, size_t len, char const* prefix) {
 	std::string s;
@@ -156,11 +150,10 @@ std::string string_literal(void const* buffer, size_t len, char const* prefix) {
 
 /*!
  * \brief Return a single-line string that contains relevant configuration information of libstored.
- * \ingroup libstored_util
  */
 char const* banner() {
 	return
-		"libstored"
+		"libstored " STORED_VERSION
 #if STORED_cplusplus < 201103L
 		" C++98"
 #elif STORED_cplusplus == 201103L

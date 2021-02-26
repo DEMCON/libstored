@@ -1,5 +1,5 @@
-#ifndef LIBSTORED_H
-#define LIBSTORED_H
+#ifndef LIBSTORED_VERSION_H
+#define LIBSTORED_VERSION_H
 /*
  * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2021  Jochem Rutgers
@@ -18,16 +18,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <libstored/macros.h>
-#include <libstored/config.h>
 #include <libstored/util.h>
-#include <libstored/debugger.h>
-#include <libstored/protocol.h>
-#include <libstored/zmq.h>
-#include <libstored/synchronizer.h>
-#include <libstored/poller.h>
-#include <libstored/compress.h>
-#include <libstored/fifo.h>
-#include <libstored/version.h>
 
-#endif // LIBSTORED_H
+#define STORED_VERSION_MAJOR	@LIBSTORED_VERSION_MAJOR@
+#define STORED_VERSION_MINOR	@LIBSTORED_VERSION_MINOR@
+#define STORED_VERSION_PATCH	@LIBSTORED_VERSION_PATCH@
+#define STORED_VERSION_SUFFIX	"@LIBSTORED_VERSION_SUFFIX@"
+
+#define STORED_VERSION \
+	STORED_STRINGIFY(STORED_VERSION_MAJOR) "." \
+	STORED_STRINGIFY(STORED_VERSION_MINOR) "." \
+	STORED_STRINGIFY(STORED_VERSION_PATCH) \
+	STORED_VERSION_SUFFIX
+
+#ifdef __cplusplus
+namespace stored {
+	/*!
+	 * \brief Returns the version of libstored.
+	 */
+	constexpr inline char const* version() {
+		return STORED_VERSION;
+	}
+}
+#endif // __cplusplus
+#endif // LIBSTORED_VERSION_H

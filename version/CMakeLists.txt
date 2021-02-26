@@ -1,0 +1,31 @@
+file(STRINGS "version.txt" LIBSTORED_VERSION LIMIT_COUNT 1)
+
+message(STATUS "libstored version ${LIBSTORED_VERSION}")
+
+string(REGEX REPLACE "^([0-9.]+).*$" "\\1" LIBSTORED_VERSION_BASE ${LIBSTORED_VERSION})
+string(REPLACE "." ";" LIBSTORED_VERSION_LIST ${LIBSTORED_VERSION_BASE})
+list(GET LIBSTORED_VERSION_LIST 0 LIBSTORED_VERSION_MAJOR)
+list(GET LIBSTORED_VERSION_LIST 1 LIBSTORED_VERSION_MINOR)
+list(GET LIBSTORED_VERSION_LIST 2 LIBSTORED_VERSION_PATCH)
+
+string(REGEX REPLACE "^[0-9.]+(.*)$" "\\1" LIBSTORED_VERSION_SUFFIX ${LIBSTORED_VERSION})
+
+set(LIBSTORED_VERSION_PYTHON ${LIBSTORED_VERSION_BASE})
+
+if(NOT LIBSTORED_VERSION_SUFFIX STREQUAL "")
+	string(APPEND LIBSTORED_VERSION_PYTHON ".dev0")
+endif()
+
+# Force reconfigure when version.txt is changed.
+configure_file(version.txt version.txt COPYONLY)
+
+configure_file(
+	${PROJECT_SOURCE_DIR}/include/libstored/version.h.in
+	${PROJECT_SOURCE_DIR}/include/libstored/version.h
+	@ONLY ESCAPE_QUOTES)
+
+configure_file(
+	${PROJECT_SOURCE_DIR}/client/ed2/version.py.in
+	${PROJECT_SOURCE_DIR}/client/ed2/version.py
+	@ONLY ESCAPE_QUOTES)
+

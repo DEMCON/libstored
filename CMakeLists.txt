@@ -17,6 +17,8 @@ if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
       cmake ..")
 endif()
 
+add_subdirectory(version)
+
 option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" ON)
 
 if(LIBSTORED_DOCUMENTATION)

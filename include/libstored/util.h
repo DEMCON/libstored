@@ -82,6 +82,10 @@
 #  endif
 #endif
 
+#define STORED_STRINGIFY_(x) #x
+#define STORED_STRINGIFY(x) STORED_STRINGIFY_(x)
+
+
 #ifdef __cplusplus
 #include <cassert>
 #include <cmath>
