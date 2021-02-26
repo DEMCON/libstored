@@ -277,7 +277,9 @@ namespace stored {
 
 		StoreJournal const& journal() const { return m_journal; }
 		StoreJournal& journal() { return m_journal; }
+		// NOLINTNEXTLINE(hicpp-explicit-conversions)
 		operator StoreJournal const&() const { return journal(); }
+		// NOLINTNEXTLINE(hicpp-explicit-conversions)
 		operator StoreJournal&() { return journal(); }
 
 		/*!

@@ -42,6 +42,8 @@ def is_reserved_name(s):
         'throw', 'true', 'try', 'typedef', 'typeid', 'typename', 'union',
         'unsigned', 'using', 'virtual', 'void', 'volatile', 'wchar_t', 'while',
         'xor', 'xor_eq',
+        # C++ non-keywords, but still tricky to use
+        'override', 'final',
         # C
         'auto', 'break', 'case', 'char', 'const', 'continue', 'default', 'do',
         'double', 'else', 'enum', 'extern', 'float', 'for', 'goto', 'if',

@@ -96,8 +96,8 @@ static void control(ControlStore& controlStore, stored::Synchronizer& synchroniz
 
 		// This 'control loop' allows you to override the actual value.
 		// Otherwise, it steps towards the setpoint.
-		if(controlStore.override >= 0)
-			controlStore.actual = (uint32_t)controlStore.override;
+		if(controlStore.override_obj >= 0)
+			controlStore.actual = (uint32_t)controlStore.override_obj;
 		else if(controlStore.actual < controlStore.setpoint)
 			controlStore.actual = controlStore.actual + 1;
 		else if(controlStore.actual > controlStore.setpoint)

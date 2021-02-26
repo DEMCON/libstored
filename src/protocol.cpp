@@ -3011,12 +3011,23 @@ StdioLayer::StdioLayer(ProtocolLayer* up, ProtocolLayer* down)
 
 #ifdef STORED_OS_WINDOWS
 SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, ProtocolLayer* up, ProtocolLayer* down)
-	: base(name, nullptr, up, down)
+	: base(up, down)
 {
-	stored_assert(fd_r() == fd_w());
+	HANDLE h = INVALID_HANDLE_VALUE; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+	if(!isValidHandle((h = CreateFile(name,
+		GENERIC_READ | GENERIC_WRITE,					// NOLINT(hicpp-signed-bitwise)
+		FILE_SHARE_READ | FILE_SHARE_WRITE,				// NOLINT(hicpp-signed-bitwise)
+		NULL, OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,	// NOLINT(hicpp-signed-bitwise)
+		NULL))))
+	{
+		setLastError(EINVAL);
+		return;
+	}
 
-	HANDLE h = fd_r();
-	if(h == INVALID_HANDLE_VALUE)
+	init(h, h);
+
+	if(lastError())
 		return;
 
 	DCB dcb;
@@ -3049,23 +3060,33 @@ SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, Prot
 
 #elif defined(STORED_OS_POSIX)
 SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, ProtocolLayer* up, ProtocolLayer* down)
-	: base(name, nullptr, up, down)
+	: base(up, down)
 {
-	stored_assert(fd_r() == fd_w());
+	int fd = -1;
 
-	int fd = fd_r();
-	if(fd == -1 || !isatty(fd))
+	// NOLINTNEXTLINE(hicpp-signed-bitwise)
+	if((fd = open(name, O_RDWR | O_APPEND | O_CREAT | O_NONBLOCK, 0666)) == -1) {
+		setLastError(errno ? errno : EBADF);
+		return;
+	}
+
+	init(fd, fd);
+
+	if(lastError() || !isatty(fd))
 		return;
 
-	struct termios config;
+	struct termios config = {};
 	if(tcgetattr(fd, &config) < 0) {
 		setLastError(errno);
 		return;
 	}
 
+	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	config.c_iflag &= (tcflag_t)~(BRKINT | ICRNL | INLCR | PARMRK | INPCK | ISTRIP | IXON);
 	config.c_oflag = 0;
+	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	config.c_lflag &= (tcflag_t)~(ECHO | ECHONL | ICANON | IEXTEN | ISIG);
+	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	config.c_cflag &= (tcflag_t)~(CSIZE | PARENB | CSTOPB);
 	config.c_cflag |= CS8;
 	if(rtscts) {

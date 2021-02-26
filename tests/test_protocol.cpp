@@ -859,7 +859,7 @@ TEST(FileLayer, NamedPipe) {
 	stored::NamedPipeLayer l("test");
 	l.wrap(top);
 
-	EXPECT_EQ(l.lastError(), EAGAIN);
+	EXPECT_EQ(l.lastError(), 0);
 
 	int fd = open("\\\\.\\pipe\\test", O_RDWR);
 	ASSERT_NE(fd, -1);
