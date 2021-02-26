@@ -1927,7 +1927,7 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 		if(!isValidHandle((h = CreateFile(name_r,
 			GENERIC_READ | GENERIC_WRITE,					// NOLINT(hicpp-signed-bitwise)
 			FILE_SHARE_READ | FILE_SHARE_WRITE,				// NOLINT(hicpp-signed-bitwise)
-			NULL, isCOM_r ? OPEN_EXISTING : OPEN_ALWAYS,
+			NULL, (DWORD)(isCOM_r ? OPEN_EXISTING : OPEN_ALWAYS),
 			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,	// NOLINT(hicpp-signed-bitwise)
 			NULL))))
 		{
@@ -1941,7 +1941,7 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 		if(!isValidHandle((h_r = CreateFile(name_r,
 			GENERIC_READ,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,				// NOLINT(hicpp-signed-bitwise)
-			NULL, isCOM_r ? OPEN_EXISTING : OPEN_ALWAYS,
+			NULL, (DWORD)(isCOM_r ? OPEN_EXISTING : OPEN_ALWAYS),
 			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,	// NOLINT(hicpp-signed-bitwise)
 			NULL))))
 		{
@@ -1953,7 +1953,7 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 		if(!isValidHandle((h_w = CreateFile(name_w,
 			GENERIC_WRITE,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,				// NOLINT(hicpp-signed-bitwise)
-			NULL, isCOM_w ? OPEN_EXISTING : OPEN_ALWAYS,
+			NULL, (DWORD)(isCOM_w ? OPEN_EXISTING : OPEN_ALWAYS),
 			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,	// NOLINT(hicpp-signed-bitwise)
 			NULL))))
 		{
@@ -3036,7 +3036,7 @@ SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, Prot
 	dcb.fOutxDsrFlow = FALSE;
 	dcb.fDtrControl = DTR_CONTROL_DISABLE;
 	dcb.fNull = FALSE;
-	dcb.fRtsControl = rtscts ? RTS_CONTROL_ENABLE : RTS_CONTROL_DISABLE;
+	dcb.fRtsControl = (DWORD)(rtscts ? RTS_CONTROL_ENABLE : RTS_CONTROL_DISABLE);
 	dcb.fAbortOnError = FALSE;
 	dcb.fOutX = FALSE;
 	dcb.fInX = FALSE;
@@ -3063,10 +3063,10 @@ SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, Prot
 		return;
 	}
 
-	config.c_iflag = (tcflag_t)(config.c_iflag & ~(BRKINT | ICRNL | INLCR | PARMRK | INPCK | ISTRIP | IXON));
+	config.c_iflag &= (tcflag_t)~(BRKINT | ICRNL | INLCR | PARMRK | INPCK | ISTRIP | IXON);
 	config.c_oflag = 0;
-	config.c_lflag = (tcflag_t)(config.c_lflag & ~(ECHO | ECHONL | ICANON | IEXTEN | ISIG));
-	config.c_cflag = (tcflag_t)(config.c_cflag & ~(CSIZE | PARENB | CSTOPB));
+	config.c_lflag &= (tcflag_t)~(ECHO | ECHONL | ICANON | IEXTEN | ISIG);
+	config.c_cflag &= (tcflag_t)~(CSIZE | PARENB | CSTOPB);
 	config.c_cflag |= CS8;
 	if(rtscts) {
 #ifdef CNEW_RTSCTS
