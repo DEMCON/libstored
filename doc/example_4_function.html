@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>4_function &mdash; libstored  documentation</title>
+  <title>4_function &mdash; libstored 1.0.0-rc documentation</title>
   
 
   
@@ -62,6 +62,10 @@
           
             
             
+              <div class="version">
+                1.0.0.dev0
+              </div>
+            
           
 
           
@@ -87,6 +91,7 @@
               <p class="caption"><span class="caption-text">Content</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">CHANGELOG</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cpp.html">C++</a></li>
@@ -108,6 +113,7 @@
 <li class="toctree-l2"><a class="reference internal" href="example_7_protocol.html">7_protocol</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_8_sync.html">8_sync</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_9_fpga.html">9_fpga</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_concurrency.html">concurrency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_zmqserver.html">zmqserver</a></li>
 </ul>
@@ -220,12 +226,11 @@
 <span class="cp">#endif</span>
 
 <span class="c1">// Create a subclass of stored::ExampleFunctionBase to define the side effects of the functions.</span>
-<span class="k">class</span> <span class="nc">MyExample</span> <span class="o">:</span> <span class="k">public</span> <span class="n">STORE_BASECLASS</span><span class="p">(</span><span class="n">ExampleFunctionBase</span><span class="p">,</span> <span class="n">MyExample</span><span class="p">)</span> <span class="p">{</span>
+<span class="k">class</span> <span class="nc">MyExample</span> <span class="o">:</span> <span class="k">public</span> <span class="n">STORE_BASE_CLASS</span><span class="p">(</span><span class="n">ExampleFunctionBase</span><span class="p">,</span> <span class="n">MyExample</span><span class="p">)</span> <span class="p">{</span>
 	<span class="n">STORE_CLASS_BODY</span><span class="p">(</span><span class="n">ExampleFunctionBase</span><span class="p">,</span> <span class="n">MyExample</span><span class="p">)</span>
 <span class="k">public</span><span class="o">:</span>
 	<span class="n">MyExample</span><span class="p">()</span> <span class="o">:</span> <span class="n">m_echo</span><span class="p">()</span> <span class="p">{}</span>
 
-<span class="k">protected</span><span class="o">:</span>
 	<span class="c1">// Override the default functions from base. Even though they are not</span>
 	<span class="c1">// virtual, these are called as expected.  To do this, you had to specify</span>
 	<span class="c1">// the class as the template parameter of ExampleFunctionBase :)</span>
@@ -325,25 +330,25 @@ echo[1] returned 11
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N6stored22ExampleFunctionObjects6echo_0E">
-<span id="_CPPv3N6stored22ExampleFunctionObjects6echo_0E"></span><span id="_CPPv2N6stored22ExampleFunctionObjects6echo_0E"></span><span id="stored::ExampleFunctionObjects::echo_0__impl::StoreFunction:Base.Implementation.int32_t.3u:"></span><span class="target" id="classstored_1_1_example_function_objects_1ace7f4b3642d55a4c6dad350321a085ef"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreFunction</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored22ExampleFunctionObjects4BaseE" title="stored::ExampleFunctionObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored22ExampleFunctionObjects14ImplementationE" title="stored::ExampleFunctionObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">int32_t</span><span class="pre">,</span> <span class="pre">3u</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">echo_0</span></code><a class="headerlink" href="#_CPPv4N6stored22ExampleFunctionObjects6echo_0E" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored22ExampleFunctionObjects6echo_0E"></span><span id="_CPPv2N6stored22ExampleFunctionObjects6echo_0E"></span><span id="stored::ExampleFunctionObjects::echo_0__impl::StoreFunction:Base.Implementation.ExampleFunctionFunctionMap.3u:"></span><span class="target" id="classstored_1_1_example_function_objects_1aca2416f892b9629ff9735683880775c4"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreFunction</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored22ExampleFunctionObjects4BaseE" title="stored::ExampleFunctionObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored22ExampleFunctionObjects14ImplementationE" title="stored::ExampleFunctionObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">ExampleFunctionFunctionMap</span><span class="pre">,</span> <span class="pre">3u</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">echo_0</span></code><a class="headerlink" href="#_CPPv4N6stored22ExampleFunctionObjects6echo_0E" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>echo[0] </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored22ExampleFunctionObjects6echo_1E">
-<span id="_CPPv3N6stored22ExampleFunctionObjects6echo_1E"></span><span id="_CPPv2N6stored22ExampleFunctionObjects6echo_1E"></span><span id="stored::ExampleFunctionObjects::echo_1__impl::StoreFunction:Base.Implementation.int32_t.4u:"></span><span class="target" id="classstored_1_1_example_function_objects_1a49e7ba7cce80b1dcf1c1e4d7c9fe14a3"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreFunction</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored22ExampleFunctionObjects4BaseE" title="stored::ExampleFunctionObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored22ExampleFunctionObjects14ImplementationE" title="stored::ExampleFunctionObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">int32_t</span><span class="pre">,</span> <span class="pre">4u</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">echo_1</span></code><a class="headerlink" href="#_CPPv4N6stored22ExampleFunctionObjects6echo_1E" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored22ExampleFunctionObjects6echo_1E"></span><span id="_CPPv2N6stored22ExampleFunctionObjects6echo_1E"></span><span id="stored::ExampleFunctionObjects::echo_1__impl::StoreFunction:Base.Implementation.ExampleFunctionFunctionMap.4u:"></span><span class="target" id="classstored_1_1_example_function_objects_1a482d108d0069b60de7b532dd85a0df8d"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreFunction</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored22ExampleFunctionObjects4BaseE" title="stored::ExampleFunctionObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored22ExampleFunctionObjects14ImplementationE" title="stored::ExampleFunctionObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">ExampleFunctionFunctionMap</span><span class="pre">,</span> <span class="pre">4u</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">echo_1</span></code><a class="headerlink" href="#_CPPv4N6stored22ExampleFunctionObjects6echo_1E" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>echo[1] </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored22ExampleFunctionObjects4randE">
-<span id="_CPPv3N6stored22ExampleFunctionObjects4randE"></span><span id="_CPPv2N6stored22ExampleFunctionObjects4randE"></span><span id="stored::ExampleFunctionObjects::rand__impl::StoreFunction:Base.Implementation.int32_t.2u:"></span><span class="target" id="classstored_1_1_example_function_objects_1a4f15254aa861b08e438f913647bb4cea"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreFunction</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored22ExampleFunctionObjects4BaseE" title="stored::ExampleFunctionObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored22ExampleFunctionObjects14ImplementationE" title="stored::ExampleFunctionObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">int32_t</span><span class="pre">,</span> <span class="pre">2u</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">rand</span></code><a class="headerlink" href="#_CPPv4N6stored22ExampleFunctionObjects4randE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored22ExampleFunctionObjects4randE"></span><span id="_CPPv2N6stored22ExampleFunctionObjects4randE"></span><span id="stored::ExampleFunctionObjects::rand__impl::StoreFunction:Base.Implementation.ExampleFunctionFunctionMap.2u:"></span><span class="target" id="classstored_1_1_example_function_objects_1a5b115ade67198d322054eb798385382b"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreFunction</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored22ExampleFunctionObjects4BaseE" title="stored::ExampleFunctionObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored22ExampleFunctionObjects14ImplementationE" title="stored::ExampleFunctionObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">ExampleFunctionFunctionMap</span><span class="pre">,</span> <span class="pre">2u</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">rand</span></code><a class="headerlink" href="#_CPPv4N6stored22ExampleFunctionObjects4randE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>rand </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored22ExampleFunctionObjects6time_sE">
-<span id="_CPPv3N6stored22ExampleFunctionObjects6time_sE"></span><span id="_CPPv2N6stored22ExampleFunctionObjects6time_sE"></span><span id="stored::ExampleFunctionObjects::time_s__impl::StoreFunction:Base.Implementation.uint64_t.1u:"></span><span class="target" id="classstored_1_1_example_function_objects_1a498ba2a000734240cbc28347793dbb58"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreFunction</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored22ExampleFunctionObjects4BaseE" title="stored::ExampleFunctionObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored22ExampleFunctionObjects14ImplementationE" title="stored::ExampleFunctionObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">uint64_t</span><span class="pre">,</span> <span class="pre">1u</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">time_s</span></code><a class="headerlink" href="#_CPPv4N6stored22ExampleFunctionObjects6time_sE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored22ExampleFunctionObjects6time_sE"></span><span id="_CPPv2N6stored22ExampleFunctionObjects6time_sE"></span><span id="stored::ExampleFunctionObjects::time_s__impl::StoreFunction:Base.Implementation.ExampleFunctionFunctionMap.1u:"></span><span class="target" id="classstored_1_1_example_function_objects_1ad70a584066adf7b4e77eb95a21b90f4a"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreFunction</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored22ExampleFunctionObjects4BaseE" title="stored::ExampleFunctionObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored22ExampleFunctionObjects14ImplementationE" title="stored::ExampleFunctionObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">ExampleFunctionFunctionMap</span><span class="pre">,</span> <span class="pre">1u</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">time_s</span></code><a class="headerlink" href="#_CPPv4N6stored22ExampleFunctionObjects6time_sE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>time (s) </p>
 </dd></dl>
 
@@ -357,7 +362,7 @@ echo[1] returned 11
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_function"><span class="std std-ref">stored::ExampleFunction</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleFunction : public STORE_BASECLASS(ExampleFunctionBase, ExampleFunction) {
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleFunction : public STORE_BASE_CLASS(ExampleFunctionBase, ExampleFunction) {
     STORE_CLASS_BODY(ExampleFunctionBase, ExampleFunction)
 public:
     // Your class implementation, such as:
@@ -450,6 +455,30 @@ public:
 </dd></dl>
 
 <dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleFunctionBase8__echo_0EbR7int32_t">
+<span id="_CPPv3N6stored19ExampleFunctionBase8__echo_0EbR7int32_t"></span><span id="_CPPv2N6stored19ExampleFunctionBase8__echo_0EbR7int32_t"></span><span id="stored::ExampleFunctionBase::__echo_0__b.int32_tR"></span><span class="target" id="classstored_1_1_example_function_base_1a9ec235b9545cae4a43122b3b3c84db83"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">__echo_0</span></code><span class="sig-paren">(</span><span class="pre">bool</span> <em><span class="pre">set</span></em>, <span class="pre">int32_t</span> <span class="pre">&amp;</span><em><span class="pre">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBase8__echo_0EbR7int32_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Callback for echo[0]. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleFunctionBase8__echo_1EbR7int32_t">
+<span id="_CPPv3N6stored19ExampleFunctionBase8__echo_1EbR7int32_t"></span><span id="_CPPv2N6stored19ExampleFunctionBase8__echo_1EbR7int32_t"></span><span id="stored::ExampleFunctionBase::__echo_1__b.int32_tR"></span><span class="target" id="classstored_1_1_example_function_base_1aef006d8f1c277bdaf06951516fb0eb25"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">__echo_1</span></code><span class="sig-paren">(</span><span class="pre">bool</span> <em><span class="pre">set</span></em>, <span class="pre">int32_t</span> <span class="pre">&amp;</span><em><span class="pre">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBase8__echo_1EbR7int32_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Callback for echo[1]. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleFunctionBase6__randEbR7int32_t">
+<span id="_CPPv3N6stored19ExampleFunctionBase6__randEbR7int32_t"></span><span id="_CPPv2N6stored19ExampleFunctionBase6__randEbR7int32_t"></span><span id="stored::ExampleFunctionBase::__rand__b.int32_tR"></span><span class="target" id="classstored_1_1_example_function_base_1a1cdadf5ec483e2defa95cf9a31d5e102"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">__rand</span></code><span class="sig-paren">(</span><span class="pre">bool</span> <em><span class="pre">set</span></em>, <span class="pre">int32_t</span> <span class="pre">&amp;</span><em><span class="pre">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBase6__randEbR7int32_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Callback for rand. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleFunctionBase8__time_sEbR8uint64_t">
+<span id="_CPPv3N6stored19ExampleFunctionBase8__time_sEbR8uint64_t"></span><span id="_CPPv2N6stored19ExampleFunctionBase8__time_sEbR8uint64_t"></span><span id="stored::ExampleFunctionBase::__time_s__b.uint64_tR"></span><span class="target" id="classstored_1_1_example_function_base_1a8f717fd78e1d67496a9d3245e7e0fa28"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">__time_s</span></code><span class="sig-paren">(</span><span class="pre">bool</span> <em><span class="pre">set</span></em>, <span class="pre">uint64_t</span> <span class="pre">&amp;</span><em><span class="pre">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBase8__time_sEbR8uint64_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Callback for time (s) </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt id="_CPPv4NK6stored19ExampleFunctionBase11bufferToKeyEPKv">
 <span id="_CPPv3NK6stored19ExampleFunctionBase11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored19ExampleFunctionBase11bufferToKeyEPKv"></span><span id="stored::ExampleFunctionBase::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_function_base_1ae560f5ac871702a933c56fbd68a60276"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="#_CPPv4N6stored19ExampleFunctionBase3KeyE" title="stored::ExampleFunctionBase::Key"><span class="pre">Key</span></a> <code class="sig-name descname"><span class="pre">bufferToKey</span></code><span class="sig-paren">(</span><span class="pre">void</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">buffer</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored19ExampleFunctionBase11bufferToKeyEPKv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Converts a variable’s buffer to a key. </p>
@@ -530,15 +559,15 @@ public:
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N6stored19ExampleFunctionBaseaSERK19ExampleFunctionBase">
-<span id="_CPPv3N6stored19ExampleFunctionBaseaSERK19ExampleFunctionBase"></span><span id="_CPPv2N6stored19ExampleFunctionBaseaSERK19ExampleFunctionBase"></span><span id="stored::ExampleFunctionBase::assign-operator__ExampleFunctionBaseCR"></span><span class="target" id="classstored_1_1_example_function_base_1a44474c2bb48bf72654ea59c600ad3e8e"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleFunctionBaseE" title="stored::ExampleFunctionBase"><span class="pre">ExampleFunctionBase</span></a> <em class="property"><span class="pre">const</span></em><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBaseaSERK19ExampleFunctionBase" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt id="_CPPv4N6stored19ExampleFunctionBaseaSERR19ExampleFunctionBase">
 <span id="_CPPv3N6stored19ExampleFunctionBaseaSERR19ExampleFunctionBase"></span><span id="_CPPv2N6stored19ExampleFunctionBaseaSERR19ExampleFunctionBase"></span><span id="stored::ExampleFunctionBase::assign-operator__ExampleFunctionBaseRR"></span><span class="target" id="classstored_1_1_example_function_base_1af904a798354c43f5eeb2e647a11bfd1d"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleFunctionBaseE" title="stored::ExampleFunctionBase"><span class="pre">ExampleFunctionBase</span></a><span class="pre">&amp;</span><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBaseaSERR19ExampleFunctionBase" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored19ExampleFunctionBaseaSERK19ExampleFunctionBase">
+<span id="_CPPv3N6stored19ExampleFunctionBaseaSERK19ExampleFunctionBase"></span><span id="_CPPv2N6stored19ExampleFunctionBaseaSERK19ExampleFunctionBase"></span><span id="stored::ExampleFunctionBase::assign-operator__ExampleFunctionBaseCR"></span><span class="target" id="classstored_1_1_example_function_base_1a44474c2bb48bf72654ea59c600ad3e8e"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleFunctionBaseE" title="stored::ExampleFunctionBase"><span class="pre">ExampleFunctionBase</span></a> <em class="property"><span class="pre">const</span></em><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBaseaSERK19ExampleFunctionBase" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -590,7 +619,7 @@ public:
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N6stored15ExampleFunction4baseE">
-<span id="_CPPv3N6stored15ExampleFunction4baseE"></span><span id="_CPPv2N6stored15ExampleFunction4baseE"></span><span id="stored::ExampleFunction::base"></span><span class="target" id="classstored_1_1_example_function_1a65f373720b0fc1297ba6038cf34786fa"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">stored</span><span class="pre">::</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleFunctionBaseE" title="stored::ExampleFunctionBase"><span class="pre">ExampleFunctionBase</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored15ExampleFunctionE" title="stored::ExampleFunction"><span class="pre">ExampleFunction</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">base</span></code><a class="headerlink" href="#_CPPv4N6stored15ExampleFunction4baseE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored15ExampleFunction4baseE"></span><span id="_CPPv2N6stored15ExampleFunction4baseE"></span><span id="stored::ExampleFunction::base"></span><span class="target" id="classstored_1_1_example_function_1ad74b6029f09e541cd30b7315bf598d3a"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">::</span><span class="pre">stored</span><span class="pre">::</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleFunctionBaseE" title="stored::ExampleFunctionBase"><span class="pre">ExampleFunctionBase</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored15ExampleFunctionE" title="stored::ExampleFunction"><span class="pre">ExampleFunction</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">base</span></code><a class="headerlink" href="#_CPPv4N6stored15ExampleFunction4baseE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp type">
@@ -637,7 +666,7 @@ public:
 <p class="breathe-sectiondef-title rubric">Friends</p>
 <dl class="friendclass">
 <dt>
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">stored::ExampleFunctionBase&lt;</span> <span class="pre">ExampleFunction</span> <span class="pre">&gt;</span></dt>
+<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">::stored::ExampleFunctionBase&lt;</span> <span class="pre">ExampleFunction</span> <span class="pre">&gt;</span></dt>
 </dl>
 
 </div>
@@ -660,7 +689,7 @@ public:
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2020, Jochem Rutgers.
+        &#169; Copyright 2020-2021, Jochem Rutgers.
 
     </p>
   </div>

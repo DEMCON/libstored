@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>libstored &mdash; libstored  documentation</title>
+  <title>libstored &mdash; libstored 1.0.0-rc documentation</title>
   
 
   
@@ -61,6 +61,10 @@
           
             
             
+              <div class="version">
+                1.0.0.dev0
+              </div>
+            
           
 
           
@@ -86,6 +90,7 @@
               <p class="caption"><span class="caption-text">Content</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="doc/intro.html">libstored</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc/changelog.html">CHANGELOG</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/workflow.html">Workflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/cpp.html">C++</a></li>
@@ -192,6 +197,10 @@ debug it remotely.</p>
 <li class="toctree-l2"><a class="reference internal" href="doc/intro.html#license">License</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="doc/changelog.html">CHANGELOG</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="doc/changelog.html#id1">1.0.0</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/workflow.html">Workflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/cpp.html">C++</a><ul>
@@ -238,12 +247,14 @@ debug it remotely.</p>
 <li class="toctree-l3"><a class="reference internal" href="doc/cpp_protocol.html#stored-debugzmqlayer">stored::DebugZmqLayer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="doc/cpp_protocol.html#stored-doublepipelayer">stored::DoublePipeLayer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="doc/cpp_protocol.html#stored-fifoloopback">stored::FifoLoopback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc/cpp_protocol.html#stored-fifoloopback1">stored::FifoLoopback1</a></li>
 <li class="toctree-l3"><a class="reference internal" href="doc/cpp_protocol.html#stored-filelayer">stored::FileLayer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="doc/cpp_protocol.html#stored-loopback">stored::Loopback</a></li>
 <li class="toctree-l3"><a class="reference internal" href="doc/cpp_protocol.html#stored-namedpipelayer">stored::NamedPipeLayer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="doc/cpp_protocol.html#stored-poller">stored::Poller</a></li>
 <li class="toctree-l3"><a class="reference internal" href="doc/cpp_protocol.html#stored-printlayer">stored::PrintLayer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="doc/cpp_protocol.html#stored-segmentationlayer">stored::SegmentationLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc/cpp_protocol.html#stored-seriallayer">stored::SerialLayer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="doc/cpp_protocol.html#stored-stdiolayer">stored::StdioLayer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="doc/cpp_protocol.html#stored-synczmqlayer">stored::SyncZmqLayer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="doc/cpp_protocol.html#stored-terminallayer">stored::TerminalLayer</a></li>
@@ -414,6 +425,17 @@ debug it remotely.</p>
 <li class="toctree-l3"><a class="reference internal" href="doc/example_9_fpga.html#store-reference">Store reference</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="doc/example_concurrency.html">concurrency</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="doc/example_concurrency.html#store-definition">Store definition</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="doc/example_concurrency.html#exampleconcurrencymain">ExampleConcurrencyMain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="doc/example_concurrency.html#exampleconcurrencycontrol">ExampleConcurrencyControl</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="doc/example_concurrency.html#application">Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc/example_concurrency.html#output">Output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc/example_concurrency.html#store-reference">Store reference</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="doc/example_terminal.html">terminal</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="doc/example_terminal.html#store-definition">Store definition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="doc/example_terminal.html#application">Application</a></li>
@@ -454,7 +476,7 @@ debug it remotely.</p>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2020, Jochem Rutgers.
+        &#169; Copyright 2020-2021, Jochem Rutgers.
 
     </p>
   </div>

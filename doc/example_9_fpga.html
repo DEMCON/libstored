@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>9_fpga &mdash; libstored  documentation</title>
+  <title>9_fpga &mdash; libstored 1.0.0-rc documentation</title>
   
 
   
@@ -38,7 +38,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="terminal" href="example_terminal.html" />
+    <link rel="next" title="concurrency" href="example_concurrency.html" />
     <link rel="prev" title="8_sync" href="example_8_sync.html" /> 
 </head>
 
@@ -61,6 +61,10 @@
 
           
             
+            
+              <div class="version">
+                1.0.0.dev0
+              </div>
             
           
 
@@ -87,6 +91,7 @@
               <p class="caption"><span class="caption-text">Content</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">CHANGELOG</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cpp.html">C++</a></li>
@@ -112,6 +117,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#store-reference">Store reference</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="example_concurrency.html">concurrency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_zmqserver.html">zmqserver</a></li>
 </ul>
@@ -245,13 +251,13 @@ int8 other store&#39;s int8
 <span class="cp">#include</span> <span class="cpf">&quot;ExampleFpga.h&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;ExampleFpga2.h&quot;</span><span class="cp"></span>
 
-<span class="k">class</span> <span class="nc">ExampleFpga</span> <span class="o">:</span> <span class="k">public</span> <span class="n">STORE_SYNC_BASECLASS</span><span class="p">(</span><span class="n">ExampleFpgaBase</span><span class="p">,</span> <span class="n">ExampleFpga</span><span class="p">)</span> <span class="p">{</span>
+<span class="k">class</span> <span class="nc">ExampleFpga</span> <span class="o">:</span> <span class="k">public</span> <span class="n">STORE_SYNC_BASE_CLASS</span><span class="p">(</span><span class="n">ExampleFpgaBase</span><span class="p">,</span> <span class="n">ExampleFpga</span><span class="p">)</span> <span class="p">{</span>
 	<span class="n">STORE_SYNC_CLASS_BODY</span><span class="p">(</span><span class="n">ExampleFpgaBase</span><span class="p">,</span> <span class="n">ExampleFpga</span><span class="p">)</span>
 <span class="k">public</span><span class="o">:</span>
 	<span class="n">ExampleFpga</span><span class="p">()</span> <span class="n">is_default</span>
 <span class="p">};</span>
 
-<span class="k">class</span> <span class="nc">ExampleFpga2</span> <span class="o">:</span> <span class="k">public</span> <span class="n">STORE_SYNC_BASECLASS</span><span class="p">(</span><span class="n">ExampleFpga2Base</span><span class="p">,</span> <span class="n">ExampleFpga2</span><span class="p">)</span> <span class="p">{</span>
+<span class="k">class</span> <span class="nc">ExampleFpga2</span> <span class="o">:</span> <span class="k">public</span> <span class="n">STORE_SYNC_BASE_CLASS</span><span class="p">(</span><span class="n">ExampleFpga2Base</span><span class="p">,</span> <span class="n">ExampleFpga2</span><span class="p">)</span> <span class="p">{</span>
 	<span class="n">STORE_SYNC_CLASS_BODY</span><span class="p">(</span><span class="n">ExampleFpga2Base</span><span class="p">,</span> <span class="n">ExampleFpga2</span><span class="p">)</span>
 <span class="k">public</span><span class="o">:</span>
 	<span class="n">ExampleFpga2</span><span class="p">()</span> <span class="n">is_default</span>
@@ -382,9 +388,9 @@ architecture rtl of example_9_fpga is
 		v := ExampleFpga_pkg.VAR_ACCESS_RW;
 
 		-- Save some LUTs by limiting how we are going to access these variables.
-		v.\t_clk\ := ACCESS_WO;
-		v.\default_register_write_count\ := ACCESS_WO;
-		v.\read_only_register\ := ACCESS_RO;
+		v.\t (clk)\ := ACCESS_WO;
+		v.\default register write count\ := ACCESS_WO;
+		v.\read-only register\ := ACCESS_RO;
 		return v;
 	end function;
 
@@ -511,35 +517,35 @@ begin
 
 
 			-- implementation of ExampleFpga/t (clk)
-			var_in.\t_clk\.value &lt;= resize(clk_cnt, var_in.\t_clk\.value&#39;length);
-			var_in.\t_clk\.we &lt;= &#39;1&#39;;
+			var_in.\t (clk)\.value &lt;= resize(clk_cnt, var_in.\t (clk)\.value&#39;length);
+			var_in.\t (clk)\.we &lt;= &#39;1&#39;;
 			clk_cnt &lt;= clk_cnt + 1;
 
 			if rstn /= &#39;1&#39; then
-				var_in.\t_clk\.we &lt;= &#39;0&#39;;
+				var_in.\t (clk)\.we &lt;= &#39;0&#39;;
 				clk_cnt &lt;= (others =&gt; &#39;0&#39;);
 			end if;
 
 
 
 			-- writes to ExampleFpga/read-only register should be ignored
-			var_in.\read_only_register\.value &lt;= x&quot;abcd&quot;;
-			var_in.\read_only_register\.we &lt;= &#39;1&#39;;
+			var_in.\read-only register\.value &lt;= x&quot;abcd&quot;;
+			var_in.\read-only register\.we &lt;= &#39;1&#39;;
 
 
 
 			-- implementation of ExampleFpga/default register write count
-			if var_out.\default_register\.updated = &#39;1&#39; then
+			if var_out.\default register\.updated = &#39;1&#39; then
 				write_cnt &lt;= write_cnt + 1;
 			end if;
 
-			var_in.\default_register_write_count\.value &lt;=
-				resize(write_cnt, var_in.\default_register_write_count\.value&#39;length);
-			var_in.\default_register_write_count\.we &lt;= &#39;1&#39;;
+			var_in.\default register write count\.value &lt;=
+				resize(write_cnt, var_in.\default register write count\.value&#39;length);
+			var_in.\default register write count\.we &lt;= &#39;1&#39;;
 
 			if rstn /= &#39;1&#39; then
 				write_cnt &lt;= (others =&gt; &#39;0&#39;);
-				var_in.\default_register_write_count\.we &lt;= &#39;0&#39;;
+				var_in.\default register write count\.we &lt;= &#39;0&#39;;
 			end if;
 		end if;
 	end process;
@@ -595,7 +601,7 @@ end rtl;
 
 <dl class="cpp var">
 <dt id="_CPPv4N6stored18ExampleFpgaObjects16ignored_functionE">
-<span id="_CPPv3N6stored18ExampleFpgaObjects16ignored_functionE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects16ignored_functionE"></span><span id="stored::ExampleFpgaObjects::ignored_function__impl::StoreFunction:Base.Implementation.int32_t.1u:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a98a493fc6bf9afa3470c0711ae929b5f"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreFunction</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">int32_t</span><span class="pre">,</span> <span class="pre">1u</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">ignored_function</span></code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects16ignored_functionE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored18ExampleFpgaObjects16ignored_functionE"></span><span id="_CPPv2N6stored18ExampleFpgaObjects16ignored_functionE"></span><span id="stored::ExampleFpgaObjects::ignored_function__impl::StoreFunction:Base.Implementation.ExampleFpgaFunctionMap.1u:"></span><span class="target" id="classstored_1_1_example_fpga_objects_1a09dbc434e9682e113b60991e359d366e"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreFunction</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects4BaseE" title="stored::ExampleFpgaObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored18ExampleFpgaObjects14ImplementationE" title="stored::ExampleFpgaObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">ExampleFpgaFunctionMap</span><span class="pre">,</span> <span class="pre">1u</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">ignored_function</span></code><a class="headerlink" href="#_CPPv4N6stored18ExampleFpgaObjects16ignored_functionE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>ignored function </p>
 </dd></dl>
 
@@ -633,7 +639,7 @@ end rtl;
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_fpga"><span class="std std-ref">stored::ExampleFpga</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleFpga : public STORE_BASECLASS(ExampleFpgaBase, ExampleFpga) {
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleFpga : public STORE_BASE_CLASS(ExampleFpgaBase, ExampleFpga) {
     STORE_CLASS_BODY(ExampleFpgaBase, ExampleFpga)
 public:
     // Your class implementation, such as:
@@ -650,6 +656,7 @@ public:
 </dd>
 </dl>
 </p>
+<p>Subclassed by <a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_synchronizable"><span class="std std-ref">stored::Synchronizable&lt; ::stored::ExampleFpgaBase&lt; ExampleFpga &gt; &gt;</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp enum">
@@ -723,6 +730,12 @@ public:
 <dt id="_CPPv4N6stored15ExampleFpgaBase15ExampleFpgaBaseERR15ExampleFpgaBase">
 <span id="_CPPv3N6stored15ExampleFpgaBase15ExampleFpgaBaseERR15ExampleFpgaBase"></span><span id="_CPPv2N6stored15ExampleFpgaBase15ExampleFpgaBaseERR15ExampleFpgaBase"></span><span id="stored::ExampleFpgaBase::ExampleFpgaBase__ExampleFpgaBaseRR"></span><span class="target" id="classstored_1_1_example_fpga_base_1a2cffaee26fd065dcc752e68b810e2a99"></span><code class="sig-name descname"><span class="pre">ExampleFpgaBase</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleFpgaBase15ExampleFpgaBaseERR15ExampleFpgaBase" title="stored::ExampleFpgaBase::ExampleFpgaBase"><span class="pre">ExampleFpgaBase</span></a><span class="pre">&amp;</span><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase15ExampleFpgaBaseERR15ExampleFpgaBase" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored15ExampleFpgaBase18__ignored_functionEbR7int32_t">
+<span id="_CPPv3N6stored15ExampleFpgaBase18__ignored_functionEbR7int32_t"></span><span id="_CPPv2N6stored15ExampleFpgaBase18__ignored_functionEbR7int32_t"></span><span id="stored::ExampleFpgaBase::__ignored_function__b.int32_tR"></span><span class="target" id="classstored_1_1_example_fpga_base_1a2be133b7fa09900eff48c803fa14a080"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">__ignored_function</span></code><span class="sig-paren">(</span><span class="pre">bool</span> <em><span class="pre">set</span></em>, <span class="pre">int32_t</span> <span class="pre">&amp;</span><em><span class="pre">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored15ExampleFpgaBase18__ignored_functionEbR7int32_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Callback for ignored function. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -860,7 +873,7 @@ public:
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N6stored11ExampleFpga4baseE">
-<span id="_CPPv3N6stored11ExampleFpga4baseE"></span><span id="_CPPv2N6stored11ExampleFpga4baseE"></span><span id="stored::ExampleFpga::base"></span><span class="target" id="classstored_1_1_example_fpga_1a9b05e8367b7e53564ef87cfbae8445ac"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">stored</span><span class="pre">::</span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase"><span class="pre">ExampleFpgaBase</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored11ExampleFpgaE" title="stored::ExampleFpga"><span class="pre">ExampleFpga</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">base</span></code><a class="headerlink" href="#_CPPv4N6stored11ExampleFpga4baseE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored11ExampleFpga4baseE"></span><span id="_CPPv2N6stored11ExampleFpga4baseE"></span><span id="stored::ExampleFpga::base"></span><span class="target" id="classstored_1_1_example_fpga_1a2e51b4afd2aba5de962b01f2238f170a"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">::</span><span class="pre">stored</span><span class="pre">::</span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase"><span class="pre">ExampleFpgaBase</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored11ExampleFpgaE" title="stored::ExampleFpga"><span class="pre">ExampleFpga</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">base</span></code><a class="headerlink" href="#_CPPv4N6stored11ExampleFpga4baseE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp type">
@@ -907,7 +920,7 @@ public:
 <p class="breathe-sectiondef-title rubric">Friends</p>
 <dl class="friendclass">
 <dt>
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">stored::ExampleFpgaBase&lt;</span> <span class="pre">ExampleFpga</span> <span class="pre">&gt;</span></dt>
+<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">::stored::ExampleFpgaBase&lt;</span> <span class="pre">ExampleFpga</span> <span class="pre">&gt;</span></dt>
 </dl>
 
 </div>
@@ -948,7 +961,7 @@ public:
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_fpga2"><span class="std std-ref">stored::ExampleFpga2</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleFpga2 : public STORE_BASECLASS(ExampleFpga2Base, ExampleFpga2) {
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleFpga2 : public STORE_BASE_CLASS(ExampleFpga2Base, ExampleFpga2) {
     STORE_CLASS_BODY(ExampleFpga2Base, ExampleFpga2)
 public:
     // Your class implementation, such as:
@@ -965,6 +978,7 @@ public:
 </dd>
 </dl>
 </p>
+<p>Subclassed by <a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_synchronizable"><span class="std std-ref">stored::Synchronizable&lt; ::stored::ExampleFpga2Base&lt; ExampleFpga2 &gt; &gt;</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp enum">
@@ -1175,7 +1189,7 @@ public:
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N6stored12ExampleFpga24baseE">
-<span id="_CPPv3N6stored12ExampleFpga24baseE"></span><span id="_CPPv2N6stored12ExampleFpga24baseE"></span><span id="stored::ExampleFpga2::base"></span><span class="target" id="classstored_1_1_example_fpga2_1a8199387c5d2dbb4789d43962617d95f2"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">stored</span><span class="pre">::</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base"><span class="pre">ExampleFpga2Base</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored12ExampleFpga2E" title="stored::ExampleFpga2"><span class="pre">ExampleFpga2</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">base</span></code><a class="headerlink" href="#_CPPv4N6stored12ExampleFpga24baseE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored12ExampleFpga24baseE"></span><span id="_CPPv2N6stored12ExampleFpga24baseE"></span><span id="stored::ExampleFpga2::base"></span><span class="target" id="classstored_1_1_example_fpga2_1a88d04e2bbf2d78baec887a4fb63e4a64"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">::</span><span class="pre">stored</span><span class="pre">::</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base"><span class="pre">ExampleFpga2Base</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored12ExampleFpga2E" title="stored::ExampleFpga2"><span class="pre">ExampleFpga2</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">base</span></code><a class="headerlink" href="#_CPPv4N6stored12ExampleFpga24baseE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp type">
@@ -1222,7 +1236,7 @@ public:
 <p class="breathe-sectiondef-title rubric">Friends</p>
 <dl class="friendclass">
 <dt>
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">stored::ExampleFpga2Base&lt;</span> <span class="pre">ExampleFpga2</span> <span class="pre">&gt;</span></dt>
+<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">::stored::ExampleFpga2Base&lt;</span> <span class="pre">ExampleFpga2</span> <span class="pre">&gt;</span></dt>
 </dl>
 
 </div>
@@ -1237,7 +1251,7 @@ public:
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="example_terminal.html" class="btn btn-neutral float-right" title="terminal" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="example_concurrency.html" class="btn btn-neutral float-right" title="concurrency" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="example_8_sync.html" class="btn btn-neutral float-left" title="8_sync" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
@@ -1245,7 +1259,7 @@ public:
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2020, Jochem Rutgers.
+        &#169; Copyright 2020-2021, Jochem Rutgers.
 
     </p>
   </div>

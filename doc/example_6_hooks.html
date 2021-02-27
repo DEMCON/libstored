@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>6_hooks &mdash; libstored  documentation</title>
+  <title>6_hooks &mdash; libstored 1.0.0-rc documentation</title>
   
 
   
@@ -62,6 +62,10 @@
           
             
             
+              <div class="version">
+                1.0.0.dev0
+              </div>
+            
           
 
           
@@ -87,6 +91,7 @@
               <p class="caption"><span class="caption-text">Content</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">CHANGELOG</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cpp.html">C++</a></li>
@@ -107,6 +112,7 @@
 <li class="toctree-l2"><a class="reference internal" href="example_7_protocol.html">7_protocol</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_8_sync.html">8_sync</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_9_fpga.html">9_fpga</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_concurrency.html">concurrency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_zmqserver.html">zmqserver</a></li>
 </ul>
@@ -235,12 +241,11 @@ int32=3 variable 2
 
 <span class="cp">#include</span> <span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
 
-<span class="k">class</span> <span class="nc">SyncedExampleHooks</span> <span class="o">:</span> <span class="k">public</span> <span class="n">STORE_BASECLASS</span><span class="p">(</span><span class="n">ExampleHooksBase</span><span class="p">,</span> <span class="n">SyncedExampleHooks</span><span class="p">)</span> <span class="p">{</span>
+<span class="k">class</span> <span class="nc">SyncedExampleHooks</span> <span class="o">:</span> <span class="k">public</span> <span class="n">STORE_BASE_CLASS</span><span class="p">(</span><span class="n">ExampleHooksBase</span><span class="p">,</span> <span class="n">SyncedExampleHooks</span><span class="p">)</span> <span class="p">{</span>
 	<span class="n">STORE_CLASS_BODY</span><span class="p">(</span><span class="n">ExampleHooksBase</span><span class="p">,</span> <span class="n">SyncedExampleHooks</span><span class="p">)</span>
 <span class="k">public</span><span class="o">:</span>
 	<span class="n">SyncedExampleHooks</span><span class="p">()</span> <span class="p">{}</span>
 
-<span class="k">protected</span><span class="o">:</span>
 	<span class="kt">void</span> <span class="n">__function</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">int32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span> <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span> <span class="p">}</span>
 
 	<span class="kt">void</span> <span class="n">__hookEntryX</span><span class="p">(</span><span class="n">stored</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">type</span> <span class="n">type</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">)</span> <span class="p">{</span>
@@ -311,7 +316,7 @@ int32=3 variable 2
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N6stored19ExampleHooksObjects8functionE">
-<span id="_CPPv3N6stored19ExampleHooksObjects8functionE"></span><span id="_CPPv2N6stored19ExampleHooksObjects8functionE"></span><span id="stored::ExampleHooksObjects::function__impl::StoreFunction:Base.Implementation.int32_t.1u:"></span><span class="target" id="classstored_1_1_example_hooks_objects_1a982fa8db0e4738c71a197f278f3faab6"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreFunction</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored19ExampleHooksObjects4BaseE" title="stored::ExampleHooksObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored19ExampleHooksObjects14ImplementationE" title="stored::ExampleHooksObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">int32_t</span><span class="pre">,</span> <span class="pre">1u</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">function</span></code><a class="headerlink" href="#_CPPv4N6stored19ExampleHooksObjects8functionE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored19ExampleHooksObjects8functionE"></span><span id="_CPPv2N6stored19ExampleHooksObjects8functionE"></span><span id="stored::ExampleHooksObjects::function__impl::StoreFunction:Base.Implementation.ExampleHooksFunctionMap.1u:"></span><span class="target" id="classstored_1_1_example_hooks_objects_1aea07f1fdb6bba0cdc60324e3d1ca9f61"></span><span class="pre">impl</span><span class="pre">::</span><span class="pre">StoreFunction</span><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored19ExampleHooksObjects4BaseE" title="stored::ExampleHooksObjects::Base"><span class="pre">Base</span></a><span class="pre">,</span> <a class="reference internal" href="#_CPPv4N6stored19ExampleHooksObjects14ImplementationE" title="stored::ExampleHooksObjects::Implementation"><span class="pre">Implementation</span></a><span class="pre">,</span> <span class="pre">ExampleHooksFunctionMap</span><span class="pre">,</span> <span class="pre">1u</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">function</span></code><a class="headerlink" href="#_CPPv4N6stored19ExampleHooksObjects8functionE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>function </p>
 </dd></dl>
 
@@ -337,7 +342,7 @@ int32=3 variable 2
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_hooks"><span class="std std-ref">stored::ExampleHooks</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleHooks : public STORE_BASECLASS(ExampleHooksBase, ExampleHooks) {
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleHooks : public STORE_BASE_CLASS(ExampleHooksBase, ExampleHooks) {
     STORE_CLASS_BODY(ExampleHooksBase, ExampleHooks)
 public:
     // Your class implementation, such as:
@@ -354,6 +359,7 @@ public:
 </dd>
 </dl>
 </p>
+<p>Subclassed by SyncedExampleHooks</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp enum">
@@ -427,6 +433,12 @@ public:
 <dt id="_CPPv4N6stored16ExampleHooksBase16ExampleHooksBaseERR16ExampleHooksBase">
 <span id="_CPPv3N6stored16ExampleHooksBase16ExampleHooksBaseERR16ExampleHooksBase"></span><span id="_CPPv2N6stored16ExampleHooksBase16ExampleHooksBaseERR16ExampleHooksBase"></span><span id="stored::ExampleHooksBase::ExampleHooksBase__ExampleHooksBaseRR"></span><span class="target" id="classstored_1_1_example_hooks_base_1a403765bb2cf3c63a50959ffe4d3fb61d"></span><code class="sig-name descname"><span class="pre">ExampleHooksBase</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16ExampleHooksBase16ExampleHooksBaseERR16ExampleHooksBase" title="stored::ExampleHooksBase::ExampleHooksBase"><span class="pre">ExampleHooksBase</span></a><span class="pre">&amp;</span><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBase16ExampleHooksBaseERR16ExampleHooksBase" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted move constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored16ExampleHooksBase10__functionEbR7int32_t">
+<span id="_CPPv3N6stored16ExampleHooksBase10__functionEbR7int32_t"></span><span id="_CPPv2N6stored16ExampleHooksBase10__functionEbR7int32_t"></span><span id="stored::ExampleHooksBase::__function__b.int32_tR"></span><span class="target" id="classstored_1_1_example_hooks_base_1a6b08de9d9070366394b9710ffde27074"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">__function</span></code><span class="sig-paren">(</span><span class="pre">bool</span> <em><span class="pre">set</span></em>, <span class="pre">int32_t</span> <span class="pre">&amp;</span><em><span class="pre">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBase10__functionEbR7int32_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Callback for function. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -564,7 +576,7 @@ public:
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N6stored12ExampleHooks4baseE">
-<span id="_CPPv3N6stored12ExampleHooks4baseE"></span><span id="_CPPv2N6stored12ExampleHooks4baseE"></span><span id="stored::ExampleHooks::base"></span><span class="target" id="classstored_1_1_example_hooks_1a0dab28d7728cb7c8f853035c7461bed0"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">stored</span><span class="pre">::</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleHooksBaseE" title="stored::ExampleHooksBase"><span class="pre">ExampleHooksBase</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored12ExampleHooksE" title="stored::ExampleHooks"><span class="pre">ExampleHooks</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">base</span></code><a class="headerlink" href="#_CPPv4N6stored12ExampleHooks4baseE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored12ExampleHooks4baseE"></span><span id="_CPPv2N6stored12ExampleHooks4baseE"></span><span id="stored::ExampleHooks::base"></span><span class="target" id="classstored_1_1_example_hooks_1ab0ee3ef68e437ff250e1805333998d2f"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">::</span><span class="pre">stored</span><span class="pre">::</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleHooksBaseE" title="stored::ExampleHooksBase"><span class="pre">ExampleHooksBase</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored12ExampleHooksE" title="stored::ExampleHooks"><span class="pre">ExampleHooks</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">base</span></code><a class="headerlink" href="#_CPPv4N6stored12ExampleHooks4baseE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp type">
@@ -611,7 +623,7 @@ public:
 <p class="breathe-sectiondef-title rubric">Friends</p>
 <dl class="friendclass">
 <dt>
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">stored::ExampleHooksBase&lt;</span> <span class="pre">ExampleHooks</span> <span class="pre">&gt;</span></dt>
+<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">::stored::ExampleHooksBase&lt;</span> <span class="pre">ExampleHooks</span> <span class="pre">&gt;</span></dt>
 </dl>
 
 </div>
@@ -634,7 +646,7 @@ public:
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2020, Jochem Rutgers.
+        &#169; Copyright 2020-2021, Jochem Rutgers.
 
     </p>
   </div>

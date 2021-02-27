@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>7_protocol &mdash; libstored  documentation</title>
+  <title>7_protocol &mdash; libstored 1.0.0-rc documentation</title>
   
 
   
@@ -62,6 +62,10 @@
           
             
             
+              <div class="version">
+                1.0.0.dev0
+              </div>
+            
           
 
           
@@ -87,6 +91,7 @@
               <p class="caption"><span class="caption-text">Content</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">CHANGELOG</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cpp.html">C++</a></li>
@@ -107,6 +112,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="example_8_sync.html">8_sync</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_9_fpga.html">9_fpga</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_concurrency.html">concurrency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_zmqserver.html">zmqserver</a></li>
 </ul>
@@ -467,7 +473,7 @@ uint32 injected errors
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_protocol"><span class="std std-ref">stored::ExampleProtocol</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleProtocol : public STORE_BASECLASS(ExampleProtocolBase, ExampleProtocol) {
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleProtocol : public STORE_BASE_CLASS(ExampleProtocolBase, ExampleProtocol) {
     STORE_CLASS_BODY(ExampleProtocolBase, ExampleProtocol)
 public:
     // Your class implementation, such as:
@@ -694,7 +700,7 @@ public:
 <p class="breathe-sectiondef-title rubric">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N6stored15ExampleProtocol4baseE">
-<span id="_CPPv3N6stored15ExampleProtocol4baseE"></span><span id="_CPPv2N6stored15ExampleProtocol4baseE"></span><span id="stored::ExampleProtocol::base"></span><span class="target" id="classstored_1_1_example_protocol_1a2dfaf65f4fe39c8c48d105f5313b93a8"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">stored</span><span class="pre">::</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleProtocolBaseE" title="stored::ExampleProtocolBase"><span class="pre">ExampleProtocolBase</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored15ExampleProtocolE" title="stored::ExampleProtocol"><span class="pre">ExampleProtocol</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">base</span></code><a class="headerlink" href="#_CPPv4N6stored15ExampleProtocol4baseE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored15ExampleProtocol4baseE"></span><span id="_CPPv2N6stored15ExampleProtocol4baseE"></span><span id="stored::ExampleProtocol::base"></span><span class="target" id="classstored_1_1_example_protocol_1ac6442cd716342403be7cf0d8eb45aee4"></span><em class="property"><span class="pre">typedef</span> </em><span class="pre">::</span><span class="pre">stored</span><span class="pre">::</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleProtocolBaseE" title="stored::ExampleProtocolBase"><span class="pre">ExampleProtocolBase</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4N6stored15ExampleProtocolE" title="stored::ExampleProtocol"><span class="pre">ExampleProtocol</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">base</span></code><a class="headerlink" href="#_CPPv4N6stored15ExampleProtocol4baseE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp type">
@@ -741,7 +747,7 @@ public:
 <p class="breathe-sectiondef-title rubric">Friends</p>
 <dl class="friendclass">
 <dt>
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">stored::ExampleProtocolBase&lt;</span> <span class="pre">ExampleProtocol</span> <span class="pre">&gt;</span></dt>
+<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">::stored::ExampleProtocolBase&lt;</span> <span class="pre">ExampleProtocol</span> <span class="pre">&gt;</span></dt>
 </dl>
 
 </div>
@@ -764,7 +770,7 @@ public:
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2020, Jochem Rutgers.
+        &#169; Copyright 2020-2021, Jochem Rutgers.
 
     </p>
   </div>

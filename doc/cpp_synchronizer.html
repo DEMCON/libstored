@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Synchronizer &mdash; libstored  documentation</title>
+  <title>Synchronizer &mdash; libstored 1.0.0-rc documentation</title>
   
 
   
@@ -62,6 +62,10 @@
           
             
             
+              <div class="version">
+                1.0.0.dev0
+              </div>
+            
           
 
           
@@ -87,6 +91,7 @@
               <p class="caption"><span class="caption-text">Content</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">CHANGELOG</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="cpp.html">C++</a><ul class="current">
@@ -760,7 +765,7 @@ public:
 </div>
 </p>
 <p>Or with a few macros:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ActualStore: public STORE_SYNC_BASECLASS(MyStoreBase, ActualStore) {
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ActualStore: public STORE_SYNC_BASE_CLASS(MyStoreBase, ActualStore) {
     STORE_SYNC_CLASS_BODY(MyStoreBase, ActualStore)
 public:
     ActualStore() is_default
@@ -834,15 +839,25 @@ public:
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N6stored14SynchronizableaSERR14SynchronizableI4BaseE">
-<span id="_CPPv3N6stored14SynchronizableaSERR14SynchronizableI4BaseE"></span><span id="_CPPv2N6stored14SynchronizableaSERR14SynchronizableI4BaseE"></span><span id="stored::Synchronizable::assign-operator__Synchronizable:Base:RR"></span><span class="target" id="classstored_1_1_synchronizable_1aee974db694832c9766912fb6d9412bd1"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable"><span class="pre">Synchronizable</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable::Base"><span class="pre">Base</span></a><span class="pre">&gt;</span><span class="pre">&amp;</span><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored14SynchronizableaSERR14SynchronizableI4BaseE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
+<dt id="_CPPv4N6stored14SynchronizablecvR12StoreJournalEv">
+<span id="_CPPv3N6stored14SynchronizablecvR12StoreJournalEv"></span><span id="_CPPv2N6stored14SynchronizablecvR12StoreJournalEv"></span><span id="stored::Synchronizable::castto-StoreJournalR-operator"></span><span class="target" id="classstored_1_1_synchronizable_1ac27cee12007565c5be09981b9995bcb0"></span><em class="property"><span class="pre">inline</span></em> <code class="sig-name descname"><span class="pre">operator</span> <span class="pre">StoreJournal&amp;</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14SynchronizablecvR12StoreJournalEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK6stored14SynchronizablecvRK12StoreJournalEv">
+<span id="_CPPv3NK6stored14SynchronizablecvRK12StoreJournalEv"></span><span id="_CPPv2NK6stored14SynchronizablecvRK12StoreJournalEv"></span><span id="stored::Synchronizable::castto-StoreJournalCR-operatorC"></span><span class="target" id="classstored_1_1_synchronizable_1abdacd48ebe2e8f609684c3667bfa9157"></span><em class="property"><span class="pre">inline</span></em> <code class="sig-name descname"><span class="pre">operator</span> <span class="pre">StoreJournal</span> <span class="pre">const&amp;</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK6stored14SynchronizablecvRK12StoreJournalEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored14SynchronizableaSERK14SynchronizableI4BaseE">
 <span id="_CPPv3N6stored14SynchronizableaSERK14SynchronizableI4BaseE"></span><span id="_CPPv2N6stored14SynchronizableaSERK14SynchronizableI4BaseE"></span><span id="stored::Synchronizable::assign-operator__Synchronizable:Base:CR"></span><span class="target" id="classstored_1_1_synchronizable_1abeb440bc64f8144e8c9c8114c7743c0e"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable"><span class="pre">Synchronizable</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable::Base"><span class="pre">Base</span></a><span class="pre">&gt;</span> <em class="property"><span class="pre">const</span></em><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored14SynchronizableaSERK14SynchronizableI4BaseE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Deleted assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6stored14SynchronizableaSERR14SynchronizableI4BaseE">
+<span id="_CPPv3N6stored14SynchronizableaSERR14SynchronizableI4BaseE"></span><span id="_CPPv2N6stored14SynchronizableaSERR14SynchronizableI4BaseE"></span><span id="stored::Synchronizable::assign-operator__Synchronizable:Base:RR"></span><span class="target" id="classstored_1_1_synchronizable_1aee974db694832c9766912fb6d9412bd1"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable"><span class="pre">Synchronizable</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable::Base"><span class="pre">Base</span></a><span class="pre">&gt;</span><span class="pre">&amp;</span><span class="pre">&amp;</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><a class="headerlink" href="#_CPPv4N6stored14SynchronizableaSERR14SynchronizableI4BaseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -891,16 +906,21 @@ public:
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored12Synchronizer7connectER13ProtocolLayer">
-<span id="_CPPv3N6stored12Synchronizer7connectER13ProtocolLayer"></span><span id="_CPPv2N6stored12Synchronizer7connectER13ProtocolLayer"></span><span id="stored::Synchronizer::connect__ProtocolLayerR"></span><span class="target" id="classstored_1_1_synchronizer_1a77e661d364e06752cda6b162414ef74c"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">connect</span></code><span class="sig-paren">(</span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="pre">ProtocolLayer</span></a> <span class="pre">&amp;</span><em><span class="pre">connection</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12Synchronizer7connectER13ProtocolLayer" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored12Synchronizer7connectER13ProtocolLayer"></span><span id="_CPPv2N6stored12Synchronizer7connectER13ProtocolLayer"></span><span id="stored::Synchronizer::connect__ProtocolLayerR"></span><span class="target" id="classstored_1_1_synchronizer_1a5063688c2d1641b4a49cc59efb8486da"></span><a class="reference internal" href="#_CPPv4N6stored14SyncConnectionE" title="stored::SyncConnection"><span class="pre">SyncConnection</span></a> <em class="property"><span class="pre">const</span></em> <span class="pre">&amp;</span><code class="sig-name descname"><span class="pre">connect</span></code><span class="sig-paren">(</span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="pre">ProtocolLayer</span></a> <span class="pre">&amp;</span><em><span class="pre">connection</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12Synchronizer7connectER13ProtocolLayer" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Connect the given connection to this <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a>. </p>
-<p>A <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">stored::SyncConnection</span></a> is instantiated on top of the given protocol stack. This <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">SyncConnection</span></a> is the OSI Application layer of the synchronization prococol. </p>
+<p>A <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">stored::SyncConnection</span></a> is instantiated on top of the given protocol stack. This <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">SyncConnection</span></a> is the OSI Application layer of the synchronization prococol.</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>the <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">stored::SyncConnection</span></a>, which is valid until <a class="reference internal" href="#classstored_1_1_synchronizer_1a5c8a59faccb30c08910551500d08ad75"><span class="std std-ref">disconnect()</span></a> is called </p>
+</dd>
+</dl>
+</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6stored12Synchronizer10disconnectER13ProtocolLayer">
 <span id="_CPPv3N6stored12Synchronizer10disconnectER13ProtocolLayer"></span><span id="_CPPv2N6stored12Synchronizer10disconnectER13ProtocolLayer"></span><span id="stored::Synchronizer::disconnect__ProtocolLayerR"></span><span class="target" id="classstored_1_1_synchronizer_1a5c8a59faccb30c08910551500d08ad75"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">disconnect</span></code><span class="sig-paren">(</span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="pre">ProtocolLayer</span></a> <span class="pre">&amp;</span><em><span class="pre">connection</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12Synchronizer10disconnectER13ProtocolLayer" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Disconnect the given connection from this <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a>. </p>
-<p>Provide the connection as given to <a class="reference internal" href="#classstored_1_1_synchronizer_1a77e661d364e06752cda6b162414ef74c"><span class="std std-ref">connect()</span></a> before. </p>
+<p>Provide the connection as given to <a class="reference internal" href="#classstored_1_1_synchronizer_1a5063688c2d1641b4a49cc59efb8486da"><span class="std std-ref">connect()</span></a> before. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1011,7 +1031,7 @@ public:
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2020, Jochem Rutgers.
+        &#169; Copyright 2020-2021, Jochem Rutgers.
 
     </p>
   </div>
