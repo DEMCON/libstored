@@ -256,7 +256,7 @@ int ZmqLayer::recv(long timeout_us) {
 				// We already got something, so don't make this an error.
 				return setLastError(0);
 			}
-			// fall-through
+			STORED_FALLTHROUGH
 		default:
 			return res;
 		}

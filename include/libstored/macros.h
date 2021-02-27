@@ -77,12 +77,23 @@
 #    define GCC_VERSION (__GNUC__ * 10000L + __GNUC_MINOR__ * 100L + __GNUC_PATCHLEVEL__)
 #  endif
 #  ifndef UNUSED_PAR
-#    define UNUSED_PAR(name)	name __attribute__((unused))
+#    if STORED_cplusplus >= 201703L
+#      define UNUSED_PAR(name)	name [[maybe_unused]]
+#    else
+#      define UNUSED_PAR(name)	name __attribute__((unused))
+#    endif
 #  endif
 #elif defined(_MSC_VER)
 #  define STORED_COMPILER_MSVC
+// MSVC always defines __cplusplus as 199711L, even though it actually compiles a different language version.
+#  ifdef __cplusplus
+#    undef STORED_cplusplus
+#    define STORED_cplusplus _MSVC_LANG
+#  endif
 #  ifndef UNUSED_PAR
-#    ifdef __clang__
+#    if STORED_cplusplus >= 201703L
+#      define UNUSED_PAR(name)	name [[maybe_unused]]
+#    elif defined(__clang__)
 // That's odd. Probably clang-tidy.
 #      define UNUSED_PAR(name)	name /* NOLINT(clang-diagnostic-unused-parameter,misc-unused-parameters) */
 #    else
@@ -100,11 +111,6 @@ typedef SSIZE_T ssize_t;
 #  define __attribute__(...)
 #  ifndef __restrict__
 #    define __restrict__ __restrict
-#  endif
-// MSVC always defines __cplusplus as 199711L, even though it actually compiles a different language version.
-#  ifdef __cplusplus
-#    undef STORED_cplusplus
-#    define STORED_cplusplus _MSVC_LANG
 #  endif
 #else
 #  error Unsupported compiler.

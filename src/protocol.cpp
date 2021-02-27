@@ -855,7 +855,7 @@ void DebugArqLayer::decode(void* buffer, size_t len) {
 			m_encodeBufferSize = 0;
 			setPurgeableResponse(false);
 		} else
-			// fall-through
+			STORED_FALLTHROUGH
 	case DecodeStateRetransmit:
 		if(seq == m_decodeSeqStart) {
 			// This seems to be a retransmit of the current command.
@@ -891,7 +891,7 @@ void DebugArqLayer::decode(void* buffer, size_t len) {
 	case DecodeStateIdle:
 		m_decodeSeqStart = m_decodeSeq;
 		m_decodeState = DecodeStateDecoding;
-		// fall-through
+		STORED_FALLTHROUGH
 	case DecodeStateDecoding:
 		if(likely(seq == m_decodeSeq)) {
 			// Properly in sequence.
@@ -947,7 +947,7 @@ void DebugArqLayer::encode(void const* buffer, size_t len, bool last) {
 	case EncodeStateUnbufferedIdle:
 		base::encode(seq, seqlen, false);
 		m_encodeState = EncodeStateUnbufferedEncoding;
-		// fall-through
+		STORED_FALLTHROUGH
 	case EncodeStateUnbufferedEncoding:
 		base::encode(buffer, len, last);
 		if(last)
@@ -964,7 +964,7 @@ void DebugArqLayer::encode(void const* buffer, size_t len, bool last) {
 #endif
 		m_encodeState = EncodeStateEncoding;
 		m_encodeBufferSize += seqlen;
-		// fall-through
+		STORED_FALLTHROUGH
 	case EncodeStateEncoding:
 		stored_assert(!m_encodeBuffer.empty());
 		m_encodeBufferSize += len;
@@ -2817,14 +2817,14 @@ int XsimLayer::recv(long timeout_us) {
 		case EIO:
 			// Try to recover all channels.
 			reopen();
-			// fall-through
+			STORED_FALLTHROUGH
 		default:
 			return setLastError(resReq);
 		}
 	case EIO:
 		// Try to recover all channels.
 		reopen();
-		// fall-through
+		STORED_FALLTHROUGH
 	default:
 		return resBase;
 	}

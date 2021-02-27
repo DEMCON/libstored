@@ -839,7 +839,7 @@ static int recvAll(L& l) {
 		case 0:
 			first = false;
 			idle = 0;
-			// fall-through
+			STORED_FALLTHROUGH
 		case EINTR:
 			break;
 		case EAGAIN:
