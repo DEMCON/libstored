@@ -1025,11 +1025,14 @@ StoreJournal* Synchronizer::toJournal(char const* hash) const {
  *
  * A #stored::SyncConnection is instantiated on top of the given protocol stack.
  * This SyncConnection is the OSI Application layer of the synchronization prococol.
+ *
+ * \return the #stored::SyncConnection, which is valid until #disconnect() is called
  */
-void Synchronizer::connect(ProtocolLayer& connection) {
+SyncConnection const& Synchronizer::connect(ProtocolLayer& connection) {
 	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 	SyncConnection* c = new SyncConnection(*this, connection);
 	m_connections.insert(c);
+	return *c;
 }
 
 /*!

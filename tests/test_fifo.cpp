@@ -184,22 +184,30 @@ TEST(Fifo, BoundedMessageFifo) {
 	stored::MessageFifo<16, 4> f;
 
 	EXPECT_TRUE(f.bounded());
+	EXPECT_EQ(f.space(), 16u);
+	EXPECT_FALSE(f.full());
 	EXPECT_EQ(f.push_back({{"abc", 3}, {"defg", 4}, {"ghijk", 5}, {"lmno", 4}}), 4u);
+	EXPECT_EQ(f.space(), 0u);
 	// Does not fit
 	EXPECT_FALSE(f.push_back({"h", 1}));
 
 	EXPECT_EQ_MSG(f.front(), "abc");
 	f.pop_front();
+	EXPECT_EQ(f.space(), 3u);
 
 	// Too long message.
 	EXPECT_FALSE(f.push_back({"hijl", 4}));
 
 	// Fits.
 	EXPECT_TRUE(f.push_back({"h", 1}));
+	EXPECT_EQ(f.space(), 0u); // 0 as the fifo is full
+	EXPECT_TRUE(f.full());
 
 	// Buffer fits, message queue not.
 	EXPECT_FALSE(f.push_back({"i", 1}));
 	EXPECT_TRUE(f.append_back({"i", 1}));
+	EXPECT_EQ(f.space(), 0u); // 0 as fhte fifo is full
+	EXPECT_TRUE(f.full());
 	EXPECT_FALSE(f.push_back());
 
 	// Buffer is full.
@@ -208,6 +216,7 @@ TEST(Fifo, BoundedMessageFifo) {
 
 	// Not anymore.
 	EXPECT_TRUE(f.append_back({"jk", 2}));
+	EXPECT_EQ(f.space(), 0u);
 
 	f.clear();
 	EXPECT_TRUE(f.empty());
@@ -216,14 +225,17 @@ TEST(Fifo, BoundedMessageFifo) {
 
 	// No room in buffer.
 	EXPECT_FALSE(f.push_back({"ab", 2}));
+	EXPECT_EQ(f.space(), 1u);
 
 	f.pop_front();
 	// Put at start of buffer, leaving the last byte unused.
+	EXPECT_EQ(f.space(), 4u);
 	EXPECT_TRUE(f.push_back({"abcd", 4}));
 	EXPECT_EQ_MSG(f.front(), "456789abcde");
 
 	// There is one unusable byte at the end, so this won't fit.
 	EXPECT_FALSE(f.push_back({"e", 1}));
+	EXPECT_EQ(f.space(), 0u);
 }
 
 TEST(Fifo, IterateMessageFifo) {
@@ -236,6 +248,9 @@ TEST(Fifo, IterateMessageFifo) {
 
 	EXPECT_TRUE(f.empty());
 }
+
+#ifndef STORED_COMPILER_MINGW
+// MinGW does not implement std::thread.
 
 TEST(Fifo, ProducerConsumer) {
 	stored::MessageFifo<16, 4> f;
@@ -272,6 +287,7 @@ TEST(Fifo, ProducerConsumer) {
 
 	EXPECT_EQ(pcs, ccs);
 }
+#endif // STORED_COMPILER_MINGW
 
 } // namespace
 

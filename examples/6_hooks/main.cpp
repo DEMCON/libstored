@@ -9,12 +9,11 @@
 
 #include <cstdio>
 
-class SyncedExampleHooks : public STORE_BASECLASS(ExampleHooksBase, SyncedExampleHooks) {
+class SyncedExampleHooks : public STORE_BASE_CLASS(ExampleHooksBase, SyncedExampleHooks) {
 	STORE_CLASS_BODY(ExampleHooksBase, SyncedExampleHooks)
 public:
 	SyncedExampleHooks() {}
 
-protected:
 	void __function(bool set, int32_t& value) { if(!set) value = 42; }
 
 	void __hookEntryX(stored::Type::type type, void* buffer, size_t len) {

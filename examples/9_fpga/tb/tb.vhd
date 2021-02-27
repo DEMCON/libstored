@@ -19,7 +19,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.ExampleFpga_pkg;
-use work.ExampleFpga_pkg;
+use work.ExampleFpga2_pkg;
 
 use work.libstored_tb_pkg.all;
 

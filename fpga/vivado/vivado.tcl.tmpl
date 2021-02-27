@@ -16,15 +16,21 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#}
 
+#}
 # In Vivado, create a new project and source this script.  All relevant
 # libstored files will be added to your project.  Afterwards, this script is
 # not required anymore; just use your project file.
 
-set libstored_dir [ file normalize "{{libstored_dir|escapebs}}" ]
 set script_path [ file dirname [ file normalize [ info script ] ] ]
 set store_dir [ file normalize "$script_path/.." ]
+set libstored_dir [ file normalize "{{libstored_dir|escapebs}}" ]
+set libstored_fpga_dir [ file normalize "$libstored_dir/fpga" ]
+
+# You may configure_file() this script to override libstored_fpga_dir.
+if {[string equal "@RELOCATE_LIBSTORED@" "1"]} {
+	set libstored_fpga_dir [ file normalize "@RELOCATED_LIBSTORED@" ]
+}
 
 # Create 'sources_1' fileset (if not found)
 if {[string equal [get_filesets -quiet sources_1] ""]} {
@@ -34,10 +40,10 @@ if {[string equal [get_filesets -quiet sources_1] ""]} {
 # Set 'sources_1' fileset object
 set obj [get_filesets sources_1]
 set files [list \
- "[file normalize "$libstored_dir/fpga/rtl/pkg.vhd"]"\
- "[file normalize "$libstored_dir/fpga/rtl/util.vhd"]"\
- "[file normalize "$libstored_dir/fpga/rtl/variable.vhd"]"\
- "[file normalize "$libstored_dir/fpga/rtl/protocol.vhd"]"\
+ "[file normalize "$libstored_fpga_dir/rtl/pkg.vhd"]"\
+ "[file normalize "$libstored_fpga_dir/rtl/util.vhd"]"\
+ "[file normalize "$libstored_fpga_dir/rtl/variable.vhd"]"\
+ "[file normalize "$libstored_fpga_dir/rtl/protocol.vhd"]"\
 {% for m in models %}
  "[file normalize "$store_dir/rtl/{{m}}.vhd"]"\
  "[file normalize "$store_dir/rtl/{{m}}_pkg.vhd"]"\
@@ -80,7 +86,7 @@ if {[string equal [get_filesets -quiet sim_1] ""]} {
 # Set 'sim_1' fileset object
 set obj [get_filesets sim_1]
 set files [list \
- "[file normalize "$libstored_dir/fpga/tb/tb_pkg.vhd"]"\
+ "[file normalize "$libstored_fpga_dir/tb/tb_pkg.vhd"]"\
 ]
 add_files -norecurse -fileset $obj $files
 

@@ -38,29 +38,29 @@ package {{store.name}}_pkg is
 {% for o in store.objects|select('variable') %}
 	-- {{o}}
 {%   if o|vhdltype == 'std_logic' %}
-	constant \{{o.cname|upper}}__LENGTH\ : natural := 1;
-	constant \{{o.cname|upper}}__INIT\ : std_logic_vector(7 downto 0) := {{o|vhdlinit}};
+	constant \{{o|vhdlname}}/LENGTH\ : natural := 1;
+	constant \{{o|vhdlname}}/INIT\ : std_logic_vector(7 downto 0) := {{o|vhdlinit}};
 {%   else %}
-	constant \{{o.cname|upper}}__LENGTH\ : natural := {{o.size * 8}};
-	constant \{{o.cname|upper}}__INIT\ : std_logic_vector(\{{o.cname|upper}}__LENGTH\ - 1 downto 0) := {{o|vhdlinit}};
+	constant \{{o|vhdlname}}/LENGTH\ : natural := {{o.size * 8}};
+	constant \{{o|vhdlname}}/INIT\ : std_logic_vector(\{{o|vhdlname}}/LENGTH\ - 1 downto 0) := {{o|vhdlinit}};
 {%   endif %}
-	subtype \{{o.cname}}__type\ is {{o|vhdltype}};
+	subtype \{{o|vhdlname}}/type\ is {{o|vhdltype}};
 {%   if o.axi != None %}
-	constant \{{o.cname|upper}}__ADDR\ : natural := 16#{{'%x'|format(o.axi)}}#;
+	constant \{{o|vhdlname}}/ADDR\ : natural := 16#{{'%x'|format(o.axi)}}#;
 {%   endif %}
-	constant \{{o.cname|upper}}__KEY\ : std_logic_vector(KEY_LENGTH - 1 downto 0) := {{o|vhdlkey(store=store, littleEndian=False)}};
+	constant \{{o|vhdlname}}/KEY\ : std_logic_vector(KEY_LENGTH - 1 downto 0) := {{o|vhdlkey(store=store, littleEndian=False)}};
 
-	type \{{o.cname}}__out_t\ is record
-		value : \{{o.cname}}__type\;
+	type \{{o|vhdlname}}/out_t\ is record
+		value : \{{o|vhdlname}}/type\;
 		updated : std_logic;
 	end record;
 
-	type \{{o.cname}}__in_t\ is record
-		value : \{{o.cname}}__type\;
+	type \{{o|vhdlname}}/in_t\ is record
+		value : \{{o|vhdlname}}/type\;
 		we : std_logic;
 	end record;
 
-	constant \{{o.cname}}__in_default\ : \{{o.cname}}__in_t\ := (
+	constant \{{o|vhdlname}}/in_default\ : \{{o|vhdlname}}/in_t\ := (
 {%   if o|vhdltype == 'std_logic' %}
 		value => '-',
 {%   else %}
@@ -74,19 +74,19 @@ package {{store.name}}_pkg is
 
 	type var_out_t is record
 {% for o in store.objects|select('variable') %}
-		\{{o.cname}}\ : \{{o.cname}}__out_t\;
+		\{{o|vhdlname}}\ : \{{o|vhdlname}}/out_t\;
 {% endfor %}
 	end record;
 
 	type var_in_t is record
 {% for o in store.objects|select('variable') %}
-		\{{o.cname}}\ : \{{o.cname}}__in_t\;
+		\{{o|vhdlname}}\ : \{{o|vhdlname}}/in_t\;
 {% endfor %}
 	end record;
 
 	constant var_in_default : var_in_t := (
 {% for o in store.objects|select('variable') %}
-		\{{o.cname}}\ => \{{o.cname}}__in_default\{% if not loop.last %},{% endif %}
+		\{{o|vhdlname}}\ => \{{o|vhdlname}}/in_default\{% if not loop.last %},{% endif %}
 
 {% endfor %}
 	);
@@ -95,34 +95,34 @@ package {{store.name}}_pkg is
 
 	type var_access_t is record
 {% for o in store.objects|select('variable') %}
-		\{{o.cname}}\ : libstored_pkg.access_t;
+		\{{o|vhdlname}}\ : libstored_pkg.access_t;
 {% endfor %}
 	end record;
 
 	constant VAR_ACCESS_RW : var_access_t := (
 {% for o in store.objects|select('variable') %}
-		\{{o.cname}}\ => libstored_pkg.ACCESS_RW{% if not loop.last %},{% endif %}
+		\{{o|vhdlname}}\ => libstored_pkg.ACCESS_RW{% if not loop.last %},{% endif %}
 
 {% endfor %}
 	);
 
 	constant VAR_ACCESS_RO : var_access_t := (
 {% for o in store.objects|select('variable') %}
-		\{{o.cname}}\ => libstored_pkg.ACCESS_RO{% if not loop.last %},{% endif %}
+		\{{o|vhdlname}}\ => libstored_pkg.ACCESS_RO{% if not loop.last %},{% endif %}
 
 {% endfor %}
 	);
 
 	constant VAR_ACCESS_WO : var_access_t := (
 {% for o in store.objects|select('variable') %}
-		\{{o.cname}}\ => libstored_pkg.ACCESS_WO{% if not loop.last %},{% endif %}
+		\{{o|vhdlname}}\ => libstored_pkg.ACCESS_WO{% if not loop.last %},{% endif %}
 
 {% endfor %}
 	);
 
 	constant VAR_ACCESS_NA : var_access_t := (
 {% for o in store.objects|select('variable') %}
-		\{{o.cname}}\ => libstored_pkg.ACCESS_NA{% if not loop.last %},{% endif %}
+		\{{o|vhdlname}}\ => libstored_pkg.ACCESS_NA{% if not loop.last %},{% endif %}
 
 {% endfor %}
 	);
@@ -134,12 +134,12 @@ package body {{store.name}}_pkg is
 	begin
 		v := b;
 {% for o in store.objects|select('variable') %}
-		if a.\{{o.cname}}\.we = '1' then v.\{{o.cname}}\ := a.\{{o.cname}}\; end if;
+		if a.\{{o|vhdlname}}\.we = '1' then v.\{{o|vhdlname}}\ := a.\{{o|vhdlname}}\; end if;
 {% endfor %}
 
 --pragma translate_off
 {% for o in store.objects|select('variable') %}
-		if is_x(a.\{{o.cname}}\.we) then v.\{{o.cname}}\.we := 'X'; end if;
+		if is_x(a.\{{o|vhdlname}}\.we) then v.\{{o|vhdlname}}\.we := 'X'; end if;
 {% endfor %}
 --pragma translate_on
 

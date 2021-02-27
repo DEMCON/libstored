@@ -17,6 +17,8 @@ if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
       cmake ..")
 endif()
 
+add_subdirectory(version)
+
 option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" ON)
 
 if(LIBSTORED_DOCUMENTATION)
@@ -151,6 +153,7 @@ if(LIBSTORED_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
+option(LIBSTORED_PIP_INSTALL_USER "Run pip install --user when installing wheel files" OFF)
 add_subdirectory(client)
 
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0")
@@ -181,6 +184,7 @@ if(CPPCHECK_CMD)
 			-I examples/7_protocol/libstored/include
 			-I examples/8_sync/libstored/include
 			-I examples/9_fpga/libstored/include
+			-I examples/concurrency/libstored/include
 			-I examples/terminal/libstored/include
 			-I examples/zmqserver/libstored/include
 			examples

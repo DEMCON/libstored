@@ -241,7 +241,7 @@ namespace stored {
 	 * Or with a few macros:
 	 *
 	 * \code
-	 * class ActualStore: public STORE_SYNC_BASECLASS(MyStoreBase, ActualStore) {
+	 * class ActualStore: public STORE_SYNC_BASE_CLASS(MyStoreBase, ActualStore) {
 	 *     STORE_SYNC_CLASS_BODY(MyStoreBase, ActualStore)
 	 * public:
 	 *     ActualStore() is_default
@@ -277,6 +277,10 @@ namespace stored {
 
 		StoreJournal const& journal() const { return m_journal; }
 		StoreJournal& journal() { return m_journal; }
+		// NOLINTNEXTLINE(hicpp-explicit-conversions)
+		operator StoreJournal const&() const { return journal(); }
+		// NOLINTNEXTLINE(hicpp-explicit-conversions)
+		operator StoreJournal&() { return journal(); }
 
 		/*!
 		 * \brief Reserve worst-case heap usage.
@@ -333,14 +337,14 @@ namespace stored {
 		StoreJournal m_journal;
 	};
 
-#define STORE_SYNC_BASECLASS(Base, Impl) stored::Synchronizable<stored::Base<Impl > >
+#define STORE_SYNC_BASE_CLASS(Base, Impl) ::stored::Synchronizable< ::stored::Base< Impl > >
 
 #define STORE_SYNC_CLASS_BODY(Base, Impl) \
 	CLASS_NOCOPY(Impl) \
 public: \
-	typedef STORE_SYNC_BASECLASS(Base, Impl) base; \
+	typedef STORE_SYNC_BASE_CLASS(Base, Impl) base; \
 	using typename base::Implementation; \
-	friend class STORE_BASECLASS(Base, Impl); \
+	friend class STORE_BASE_CLASS(Base, Impl); \
 private:
 
 
@@ -478,7 +482,7 @@ private:
 
 		StoreJournal* toJournal(char const* hash) const;
 
-		void connect(ProtocolLayer& connection);
+		SyncConnection const& connect(ProtocolLayer& connection);
 		void disconnect(ProtocolLayer& connection);
 
 		/*!

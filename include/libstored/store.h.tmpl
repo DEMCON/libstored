@@ -59,6 +59,29 @@ namespace stored {
 	;
 
 	/*!
+	 * \brief Helper to call store functions given the id.
+	 *
+	 * Used by stored::impl::StoreFunction to bypass run-time overhead of calling the Store's \c callback().
+	 */
+	template <typename Implementation, unsigned int F>
+	struct {{store.name}}FunctionMap {};
+{%   for o in store.objects %}
+{%     if o is function %}
+{%       if not o is blob %}
+
+	// {{o}}
+	template <typename Implementation>
+	struct {{store.name}}FunctionMap<Implementation,{{o.f}}> {
+		typedef {{o|ctype}} type;
+		static inline void call(Implementation& store, bool set, type& value) {
+			store.__{{o.cname}}(set, value);
+		}
+	};
+{%       endif %}
+{%     endif %}
+{%   endfor %}
+
+	/*!
 	 * \brief All {{store.name}}Base's objects.
 	 */
 	/*
@@ -107,7 +130,7 @@ namespace stored {
 			impl::StoreVariable<Base,Implementation,{{o|ctype}},{{o.offset}}u,{{o.size}}> {{o.cname}};
 {%     elif o is function %}
 			/*! \brief {{o}} */
-			impl::StoreFunction<Base,Implementation,{{o|ctype}},{{o.f}}u> {{o.cname}};
+			impl::StoreFunction<Base,Implementation,{{store.name}}FunctionMap,{{o.f}}u> {{o.cname}};
 {%     endif %}
 {%   endif %}
 {% endfor %}
@@ -134,7 +157,7 @@ namespace stored {
 	 * To inherit the base class, you can use the following template:
 	 *
 	 * \code
-	 * class {{store.name}} : public STORE_BASECLASS({{store.name}}Base, {{store.name}}) {
+	 * class {{store.name}} : public STORE_BASE_CLASS({{store.name}}Base, {{store.name}}) {
 	 *     STORE_CLASS_BODY({{store.name}}Base, {{store.name}})
 	 * public:
 	 *     // Your class implementation, such as:
@@ -222,7 +245,10 @@ namespace stored {
 			return Function<T,Implementation>(implementation(), f);
 		}
 
-		template <typename Store, typename Implementation, typename T, unsigned int F>
+		template <
+			typename Store, typename Implementation,
+			template <typename, unsigned int> class FunctionMap,
+			unsigned int F>
 		friend class impl::StoreFunction;
 
 		/*!
@@ -287,19 +313,22 @@ namespace stored {
 {% endif %}
 		}
 
+{% if store.objects|hasfunction %}
+	public:
 		// Default function callback. Override in subclass.
 
-{% for o in store.objects %}
-{%   if o is function %}
-{%     if o is blob %}
+{%   for o in store.objects %}
+{%     if o is function %}
+{%       if o is blob %}
 		/*! \brief Callback for {{o}} */
 		size_t __{{o.cname}}(bool UNUSED_PAR(set), {{o|ctype}}* UNUSED_PAR(value), size_t UNUSED_PAR(len)) { return 0; }
-{%     else %}
+{%       else %}
 		/*! \brief Callback for {{o}} */
 		void __{{o.cname}}(bool set, {{o|ctype}}& value) { if(!set) value = ({{o|ctype}})0; }
+{%       endif %}
 {%     endif %}
-{%   endif %}
-{% endfor %}
+{%   endfor %}
+{% endif %}
 
 	public:
 		/*!
@@ -467,7 +496,7 @@ namespace stored {
 	/*!
 	 * \brief Default {{store.name}}Base implementation.
 	 */
-	class {{store.name}} : public STORE_BASECLASS({{store.name}}Base, {{store.name}}) {
+	class {{store.name}} : public STORE_BASE_CLASS({{store.name}}Base, {{store.name}}) {
 		STORE_CLASS_BODY({{store.name}}Base, {{store.name}})
 	public:
 		/*! \copydoc stored::{{store.name}}Base::{{store.name}}Base() */

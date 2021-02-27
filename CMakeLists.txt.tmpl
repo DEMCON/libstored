@@ -37,6 +37,7 @@ add_library({{libprefix}}libstored
 	${libstored_dir}/include/libstored/synchronizer.h
 	${libstored_dir}/include/libstored/types.h
 	${libstored_dir}/include/libstored/util.h
+	${libstored_dir}/include/libstored/version.h
 	${libstored_dir}/include/libstored/zmq.h
 	${libstored_dir}/src/compress.cpp
 	${libstored_dir}/src/directory.cpp
@@ -77,6 +78,8 @@ if(LIBSTORED_HAVE_VALGRIND)
 endif()
 
 if(TARGET libzth)
+	message(STATUS "Enable Zth integration for {{libprefix}}libstored")
+	target_compile_definitions({{libprefix}}libstored PUBLIC -DSTORED_HAVE_ZTH)
 	target_link_libraries({{libprefix}}libstored PUBLIC libzth)
 endif()
 

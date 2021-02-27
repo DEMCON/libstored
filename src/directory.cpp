@@ -1,17 +1,17 @@
 /*
  * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2021  Jochem Rutgers
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -48,7 +48,7 @@ namespace impl {
 
 /*!
  * \brief Finds an object in a directory.
- * 
+ *
  * Don't call this function, use stored::find() instead.
  *
  * \param buffer the buffer with variable's data
@@ -56,7 +56,6 @@ namespace impl {
  * \param name the name to find, can be abbreviated as long as it is unambiguous
  * \param len the maximum length of \p name to parse
  * \return a container-independent variant, which is not valid when not found
- * \ingroup libstored_directory
  * \see #stored::find()
  * \private
  */
@@ -195,7 +194,6 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
  * \param f the callback function
  * \param arg an arbitrary argument to be passed to \p f
  * \param prefix when not \c nullptr, a string that is prepended for the name that is supplied to \p f
- * \ingroup libstored_directory
  */
 void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg, char const* prefix) {
 	std::string name;

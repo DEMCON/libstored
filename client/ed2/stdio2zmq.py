@@ -18,15 +18,40 @@ import sys
 import subprocess
 import threading
 import zmq
+import os
 
 from .stream2zmq import Stream2Zmq
+
+import signal
+import ctypes
+
+libc = None
+
+# Helper to clean up the child when python crashes.
+def set_pdeathsig(sig = signal.SIGTERM):
+    global libc
+
+    if libc is None:
+        try:
+            libc = ctypes.CDLL("libc.so.6")
+        except:
+            # Failed. Not on Linux?
+            libc = False
+
+    if libc == False:
+        return lambda: None
+
+    return lambda: libc.prctl(1, sig)
 
 class Stdio2Zmq(Stream2Zmq):
     """A stdin/stdout frame grabber to ZmqServer bridge."""
 
     def __init__(self, args, stack='ascii,term', listen='*', port=Stream2Zmq.default_port, **kwargs):
         super().__init__(stack=stack, listen=listen, port=port)
-        self.process = subprocess.Popen(args=args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, **kwargs)
+        self.process = subprocess.Popen(
+            args=args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            preexec_fn = set_pdeathsig() if os.name == 'posix' else None,
+            **kwargs)
         self.stdout_socket = self.registerStream(self.process.stdout)
         self.stdin_socket = self.registerStream(sys.stdin)
         self.rep_queue = []

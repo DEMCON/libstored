@@ -100,7 +100,8 @@ The inheritance of the layers is shown below.
    PolledFileLayer <|-- StdioLayer : Windows
    FileLayer <|-- StdioLayer : POSIX
    ProtocolLayer <|-- CompressLayer
-   PolledLayer <|-- FifoLoopback
+   PolledLayer <|-- FifoLoopback1
+   FileLayer <|-- SerialLayer
 
    ProtocolLayer <|-- Stream
    Debugger --> Stream
@@ -115,6 +116,7 @@ The inheritance of the layers is shown below.
 
    class Loopback
    class Poller
+   FifoLoopback --> FifoLoopback1
 
 
 stored::AsciiEscapeLayer
@@ -162,6 +164,11 @@ stored::FifoLoopback
 
 .. doxygenclass:: stored::FifoLoopback
 
+stored::FifoLoopback1
+---------------------
+
+.. doxygenclass:: stored::FifoLoopback1
+
 stored::FileLayer
 -----------------
 
@@ -191,6 +198,11 @@ stored::SegmentationLayer
 -------------------------
 
 .. doxygenclass:: stored::SegmentationLayer
+
+stored::SerialLayer
+-------------------------
+
+.. doxygenclass:: stored::SerialLayer
 
 stored::StdioLayer
 ------------------

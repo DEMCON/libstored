@@ -71,15 +71,15 @@ if(LIBSTORED_EXAMPLES)
 	macro(libstored_example_test EXAMPLE)
 		if(HAVE_VALGRIND)
 			add_test(NAME ${EXAMPLE}-valgrind
-				COMMAND valgrind --error-exitcode=1 --leak-check=full $<TARGET_FILE:${EXAMPLE}>)
+				COMMAND valgrind --error-exitcode=1 --leak-check=full $<TARGET_FILE:${EXAMPLE}> ${ARGN})
 		endif()
 
 		if(WIN32)
 			add_test(NAME ${EXAMPLE}-run
-				COMMAND ${CMAKE_COMMAND} -E chdir $<TARGET_FILE_DIR:${EXAMPLE}> $ENV{ComSpec} /C "$<SHELL_PATH:$<TARGET_FILE:${EXAMPLE}>> > $<SHELL_PATH:${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt>")
+				COMMAND ${CMAKE_COMMAND} -E chdir $<TARGET_FILE_DIR:${EXAMPLE}> $ENV{ComSpec} /C "$<SHELL_PATH:$<TARGET_FILE:${EXAMPLE}>> ${ARGN} > $<SHELL_PATH:${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt>")
 		else()
 			add_test(NAME ${EXAMPLE}-run
-				COMMAND sh -c "$<TARGET_FILE:${EXAMPLE}> > ${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt")
+				COMMAND sh -c "$<TARGET_FILE:${EXAMPLE}> ${ARGN} > ${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt")
 		endif()
 
 		if(EXISTS ${PROJECT_SOURCE_DIR}/examples/${EXAMPLE}/output.txt)
@@ -94,6 +94,9 @@ if(LIBSTORED_EXAMPLES)
 	libstored_example_test(4_function)
 	libstored_example_test(5_debug)
 	libstored_example_test(6_hooks)
+	if(NOT MINGW)
+		libstored_example_test(concurrency 3)
+	endif()
 endif()
 
 find_program(SPIN_EXECUTABLE spin)

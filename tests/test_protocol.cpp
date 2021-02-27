@@ -845,7 +845,11 @@ static int recvAll(L& l) {
 		case EAGAIN:
 			if(!first && ++idle > 5)
 				return 0;
+#ifdef STORED_COMPILER_MINGW
+			Sleep(100);
+#else
 			std::this_thread::sleep_for(100ms);
+#endif
 			break;
 		default:
 			return res;
@@ -859,7 +863,7 @@ TEST(FileLayer, NamedPipe) {
 	stored::NamedPipeLayer l("test");
 	l.wrap(top);
 
-	EXPECT_EQ(l.lastError(), EAGAIN);
+	EXPECT_EQ(l.lastError(), 0);
 
 	int fd = open("\\\\.\\pipe\\test", O_RDWR);
 	ASSERT_NE(fd, -1);
@@ -933,9 +937,9 @@ TEST(FileLayer, DoublePipe) {
 	EXPECT_EQ(top1.allDecoded(), "Beautiful Tomorrow");
 }
 
-TEST(FifoLoopback, FifoLoopback) {
+TEST(FifoLoopback1, FifoLoopback1) {
 	LoggingLayer top;
-	stored::FifoLoopback<128> l;
+	stored::FifoLoopback1<128> l;
 	l.wrap(top);
 
 	l.encode("This ", 5, false);
@@ -954,8 +958,51 @@ TEST(FifoLoopback, FifoLoopback) {
 
 	EXPECT_EQ(top.decoded().size(), 1);
 	EXPECT_EQ(l.recv(), 0);
+	EXPECT_EQ(l.recv(), 0);
 	EXPECT_EQ(l.recv(), EAGAIN);
 	EXPECT_EQ(top.decoded().size(), 3);
+}
+
+TEST(FifoLoopback, FifoLoopback) {
+	LoggingLayer a;
+	LoggingLayer b;
+	stored::FifoLoopback<10> l(a, b);
+
+	a.encode("Look ", 5, false);
+	b.encode("at ", 3, false);
+	a.encode("the ", 4);
+	EXPECT_EQ(l.b2a().recv(), EAGAIN);
+	b.encode("skies", 5);
+	EXPECT_EQ(a.decoded().size(), 0);
+	EXPECT_EQ(b.decoded().size(), 0);
+
+	EXPECT_EQ(l.a2b().recv(), 0);
+	EXPECT_EQ(b.decoded().size(), 1);
+	EXPECT_EQ(b.decoded().at(0), "Look the ");
+
+	EXPECT_EQ(l.b2a().recv(), 0);
+	EXPECT_EQ(a.decoded().size(), 1);
+	EXPECT_EQ(a.decoded().at(0), "at skies");
+
+	EXPECT_EQ(l.a2b().lastError(), 0);
+	a.encode("They ", 5);
+	a.encode("have ", 5);
+	a.encode("stars ", 6);
+	EXPECT_EQ(l.a2b().lastError(), ENOMEM);
+
+	a.reset();
+	EXPECT_EQ(l.a2b().lastError(), 0);
+
+	bool overflow = false;
+	l.a2b().setOverflowHandler([&](){ overflow = true; return false; });
+	a.encode("in ", 3);
+	a.encode("their ", 6);
+	a.encode("eyes", 4);
+	EXPECT_TRUE(overflow);
+
+	l.a2b().setOverflowHandler();
+	l.a2b().overflow();
+	EXPECT_EQ(l.a2b().lastError(), ENOMEM);
 }
 
 } // namespace

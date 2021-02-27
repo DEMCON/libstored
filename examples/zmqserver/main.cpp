@@ -12,9 +12,8 @@
 #  include <chrono>
 #endif
 
-class ZmqServerStore : public stored::ZmqServerStoreBase<ZmqServerStore> {
-	friend class stored::ZmqServerStoreBase<ZmqServerStore>;
-
+class ZmqServerStore : public STORE_BASE_CLASS(ZmqServerStoreBase, ZmqServerStore) {
+	STORE_CLASS_BODY(ZmqServerStoreBase, ZmqServerStore)
 public:
 	ZmqServerStore() : m_messages(), m_writes() {}
 

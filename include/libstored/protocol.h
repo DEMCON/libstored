@@ -1090,6 +1090,8 @@ public:
 		using base::encode;
 #endif
 
+		virtual void reopen();
+
 	protected:
 		void close() final;
 		void close_();
@@ -1130,6 +1132,11 @@ public:
 		virtual int recv(long timeout_us = 0) override;
 		virtual fd_type fd() const override;
 		bool isConnected() const;
+		virtual void reset() override;
+		virtual void reopen();
+
+	protected:
+		virtual void close() override;
 
 	private:
 		NamedPipeLayer m_r;
@@ -1167,6 +1174,7 @@ public:
 		virtual int recv(long timeout_us = 0) override;
 		virtual void reset() override;
 		void keepAlive();
+		virtual void reopen() override;
 
 		NamedPipeLayer& req();
 	protected:
@@ -1261,6 +1269,22 @@ public:
 	};
 
 #endif // !STORED_OS_WINDOWS
+
+#if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX)
+	/*!
+	 * \brief A serial port layer.
+	 *
+	 * This is just a FileLayer, but initializes the serial port communication
+	 * parameters during construction.
+	 */
+	class SerialLayer : public FileLayer {
+		CLASS_NOCOPY(SerialLayer)
+	public:
+		typedef FileLayer base;
+		explicit SerialLayer(char const* name, unsigned long baud, bool rtscts = false, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		virtual ~SerialLayer() override is_default
+	};
+#endif // STORED_OS_WINDOWS || STORED_OS_POSIX
 
 } // namespace
 #endif // __cplusplus

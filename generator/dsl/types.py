@@ -42,6 +42,8 @@ def is_reserved_name(s):
         'throw', 'true', 'try', 'typedef', 'typeid', 'typename', 'union',
         'unsigned', 'using', 'virtual', 'void', 'volatile', 'wchar_t', 'while',
         'xor', 'xor_eq',
+        # C++ non-keywords, but still tricky to use
+        'override', 'final',
         # C
         'auto', 'break', 'case', 'char', 'const', 'continue', 'default', 'do',
         'double', 'else', 'enum', 'extern', 'float', 'for', 'goto', 'if',
@@ -75,6 +77,27 @@ def cname(s):
         i += 1
 
     cnames[s] = u
+    return u
+
+vhdlnames = {}
+
+def vhdlname(s):
+    s = str(s)
+    if s in vhdlnames:
+        return vhdlnames[s]
+    c = s
+    c = re.sub(r'\\', '\\\\', c)
+
+    if s == '':
+        c = 'obj'
+
+    u = c
+    i = 2
+    while u in vhdlnames.values():
+        u = c + f' {i}'
+        i += 1
+
+    vhdlnames[s] = u
     return u
 
 def csize(o):

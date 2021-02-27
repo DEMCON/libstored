@@ -19,6 +19,11 @@ add_subdirectory(8_sync)
 add_subdirectory(9_fpga)
 add_subdirectory(terminal)
 
+if(NOT MINGW)
+	# std::thread is not supported by MinGW.
+	add_subdirectory(concurrency)
+endif()
+
 if(LIBSTORED_HAVE_LIBZMQ)
 	add_subdirectory(zmqserver)
 endif()

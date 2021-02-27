@@ -24,7 +24,7 @@
 
 static stored::Synchronizer synchronizer;
 
-class ExampleSync2 : public STORE_SYNC_BASECLASS(ExampleSync2Base, ExampleSync2) {
+class ExampleSync2 : public STORE_SYNC_BASE_CLASS(ExampleSync2Base, ExampleSync2) {
 	STORE_SYNC_CLASS_BODY(ExampleSync2Base, ExampleSync2)
 public:
 	ExampleSync2() is_default
@@ -32,12 +32,11 @@ public:
 
 static ExampleSync2 store2;
 
-class ExampleSync1 : public STORE_SYNC_BASECLASS(ExampleSync1Base, ExampleSync1) {
+class ExampleSync1 : public STORE_SYNC_BASE_CLASS(ExampleSync1Base, ExampleSync1) {
 	STORE_SYNC_CLASS_BODY(ExampleSync1Base, ExampleSync1)
 public:
 	ExampleSync1() is_default
 
-protected:
 	void __sync_ExampleSync2(bool set, bool& value) {
 		if(set) {
 			printf("Triggered synchronization of store2\n");

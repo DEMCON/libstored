@@ -401,7 +401,7 @@ Poller::Event* Poller::find(Poller::Event const& e) {
 #endif // !STORED_POLL_ZMQ
 
 #ifdef STORED_POLL_ZTH_WFMO
-Poller::Result const& Poller::poll(long timeout_us, bool suspend) {
+Poller::Result const& Poller::poll(long UNUSED_PAR(timeout_us), bool UNUSED_PAR(suspend)) {
 	// TODO
 	errno = EAGAIN;
 	return m_lastEvents;
@@ -568,6 +568,7 @@ Poller::Result const& Poller::poll(long timeout_us, bool suspend) {
 		}
 	}
 
+	int timeout_ms = (int)(timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us);
 retry:
 	int res = 0;
 
@@ -575,17 +576,17 @@ retry:
 		// Just suspend; not fiber-aware.
 		res =
 #if defined(STORED_POLL_ZTH) && defined(ZTH_HAVE_LIBZMQ)
-			::zmq_poll
+			::zmq_poll(&m_lastEventsFd[0], (int)m_lastEventsFd.size(), timeout_ms);
 #else
-			::poll
+			::poll(&m_lastEventsFd[0], (nfds_t)m_lastEventsFd.size(), timeout_ms);
 #endif
-				(&m_lastEventsFd[0], (nfds_t)m_lastEventsFd.size(), (int)(timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us));
 	} else {
 		res =
 #ifdef STORED_POLL_ZTH
-			zth::io
+			zth::io::poll(&m_lastEventsFd[0], (int)m_lastEventsFd.size(), timeout_ms);
+#else
+			::poll(&m_lastEventsFd[0], (nfds_t)m_lastEventsFd.size(), timeout_ms);
 #endif
-			::poll(&m_lastEventsFd[0], (nfds_t)m_lastEventsFd.size(), (int)(timeout_us > 0 ? (timeout_us + 999L) / 1000L : timeout_us));
 	}
 
 	switch(res) {
@@ -677,7 +678,7 @@ Poller::Result const& Poller::poll(long timeout_us, bool suspend) {
 			// Do not allow context switching. Just do busy-wait.
 			while(!poll_once());
 		else
-			zth::waitUntil(*this, &Poller::poll_once);
+			zth::waitUntil(*this, &Poller::poll_once, 0);
 
 		stored_assert(!m_lastEvents.empty());
 	} else {
@@ -686,11 +687,11 @@ Poller::Result const& Poller::poll(long timeout_us, bool suspend) {
 			(time_t)(timeout_us / 1000000l),
 			(timeout_us % 1000000l) * 1000l);
 
-		if(suspend) {
+		if(suspend)
 			// Do not allow context switching. Just do busy-wait.
 			while(!zth_poll_once());
 		else
-			zth::waitUntil(*this, &Poller::zth_poll_once);
+			zth::waitUntil(*this, &Poller::zth_poll_once, 0);
 
 		if(m_lastEvents.empty())
 			errno = EAGAIN;

@@ -81,7 +81,7 @@
 #  endif
 #endif // auto-detect
 
-#if defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH) || defined(STORED_POLL_ZTH_WFMO) || defined(STORED_POLL_ZMQ)
+#if defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH) || defined(STORED_POLL_ZMQ)
 #  include <poll.h>
 #endif
 #ifdef STORED_POLL_ZMQ

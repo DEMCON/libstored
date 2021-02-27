@@ -61,6 +61,9 @@
 #  else
 #    define STORED_COMPILER_GCC
 // This is gcc
+#    if defined(__MINGW32__) || defined(__MINGW64__)
+#      define STORED_COMPILER_MINGW
+#    endif
 #  endif
 #  ifdef __cplusplus
 #    if __cplusplus < 201103L && !defined(decltype)
@@ -143,7 +146,7 @@ typedef SSIZE_T ssize_t;
 #    pragma warning(disable: 4668)
 #  endif
 #  include <winsock2.h>
-#  include <Windows.h>
+#  include <windows.h>
 #  ifdef STORED_COMPILER_MSVC
 #    pragma warning(pop)
 #  endif
