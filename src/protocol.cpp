@@ -1919,7 +1919,12 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 {
 	setLastError(EBADF);
 
-	bool isCOM_r = name_r && ::strncmp(name_r, "\\\\.\\COM", 7) == 0;
+	if(!name_r) {
+		setLastError(EINVAL);
+		return;
+	}
+
+	bool isCOM_r =           ::strncmp(name_r, "\\\\.\\COM", 7) == 0;
 	bool isCOM_w = name_w && ::strncmp(name_w, "\\\\.\\COM", 7) == 0;
 
 	if(!name_w || strcmp(name_r, name_w) == 0) {

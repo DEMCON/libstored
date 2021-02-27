@@ -845,7 +845,11 @@ static int recvAll(L& l) {
 		case EAGAIN:
 			if(!first && ++idle > 5)
 				return 0;
+#ifdef STORED_COMPILER_MINGW
+			Sleep(100);
+#else
 			std::this_thread::sleep_for(100ms);
+#endif
 			break;
 		default:
 			return res;

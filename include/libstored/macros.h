@@ -61,6 +61,9 @@
 #  else
 #    define STORED_COMPILER_GCC
 // This is gcc
+#    if defined(__MINGW32__) || defined(__MINGW64__)
+#      define STORED_COMPILER_MINGW
+#    endif
 #  endif
 #  ifdef __cplusplus
 #    if __cplusplus < 201103L && !defined(decltype)

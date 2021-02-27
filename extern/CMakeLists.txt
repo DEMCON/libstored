@@ -1,4 +1,9 @@
 if(LIBSTORED_HAVE_LIBZMQ)
+	if(MINGW)
+		# See https://github.com/zeromq/libzmq/issues/3859
+		set(ZMQ_CV_IMPL "win32api" CACHE STRING "Override auto-detect" FORCE)
+	endif()
+
 	# If Zth includes libzmq or there already exists a libzmq target, skip including our external.
 	if(NOT ZTH_HAVE_LIBZMQ AND NOT libzmq)
 		if(APPLE)
