@@ -249,6 +249,9 @@ TEST(Fifo, IterateMessageFifo) {
 	EXPECT_TRUE(f.empty());
 }
 
+#ifndef STORED_COMPILER_MINGW
+// MinGW does not implement std::thread.
+
 TEST(Fifo, ProducerConsumer) {
 	stored::MessageFifo<16, 4> f;
 	char const msg[17] = "abcdefghijklmnop";
@@ -284,6 +287,7 @@ TEST(Fifo, ProducerConsumer) {
 
 	EXPECT_EQ(pcs, ccs);
 }
+#endif // STORED_COMPILER_MINGW
 
 } // namespace
 
