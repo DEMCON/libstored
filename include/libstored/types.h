@@ -1255,7 +1255,7 @@ namespace stored {
 			template <typename U>
 			U as() const { return saturated_cast<U>(get()); }
 
-			size_t get(void* dst, size_t len) const {
+			size_t get(void* dst, size_t UNUSED_PAR(len)) const {
 				stored_assert(len == sizeof(type));
 				stored_assert(dst);
 				call(false, *static_cast<type*>(dst));
@@ -1267,7 +1267,7 @@ namespace stored {
 				call(true, value);
 			}
 
-			size_t set(void* src, size_t len) {
+			size_t set(void* src, size_t UNUSED_PAR(len)) {
 				stored_assert(len == sizeof(type));
 				stored_assert(src);
 				call(true, *static_cast<type*>(src));
