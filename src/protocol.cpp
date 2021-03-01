@@ -854,8 +854,9 @@ void DebugArqLayer::decode(void* buffer, size_t len) {
 			m_encodeBuffer.clear();
 			m_encodeBufferSize = 0;
 			setPurgeableResponse(false);
-		} else
-			STORED_FALLTHROUGH
+			break;
+		}
+		STORED_FALLTHROUGH
 	case DecodeStateRetransmit:
 		if(seq == m_decodeSeqStart) {
 			// This seems to be a retransmit of the current command.
