@@ -260,7 +260,7 @@ Debugger::MacroMap& Debugger::macros() {
  * \param arg an arbitrary argument to be passed to \p f
  */
 void Debugger::list(ListCallbackArg* f, void* arg) const {
-	if(m_map.size() == 1)
+	if(!Config::DebuggerListPrefixAlways && m_map.size() == 1)
 		m_map.begin()->second->list(f, arg);
 	else
 		for(StoreMap::const_iterator it = m_map.begin(); it != m_map.end(); ++it)

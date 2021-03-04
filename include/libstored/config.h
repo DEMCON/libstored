@@ -98,6 +98,9 @@ namespace stored {
 		static bool const DebuggerEcho = true;
 		/*! \brief When \c true, stored::Debugger implements the list capability. */
 		static bool const DebuggerList = true;
+		/*! \brief When \c true, stored::Debugger always lists the store prefix,
+		 *         even if there is only one store mapped. */
+		static bool const DebuggerListPrefixAlways = false;
 		/*!
 		 * \brief When not 0, stored::Debugger implements the alias capability.
 		 *
