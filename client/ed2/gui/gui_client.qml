@@ -1,5 +1,3 @@
-// vim:et
-
 /*
  * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2021  Jochem Rutgers
@@ -19,7 +17,7 @@
  */
 
 import QtQuick 2.12
-import QtQuick.Layouts 1.15
+import QtQuick.Layouts 1.12
 import QtQuick.Window 2.2
 import QtQuick.Controls 2.5
 
@@ -46,7 +44,7 @@ Window {
         root.title = text
     }
 
-    readonly property int fontSize: 10
+    property real fontSize: 10
 
     Component {
         id: objectRow
@@ -398,5 +396,24 @@ Window {
 
             visible: req.activeFocus || rep.activeFocus
         }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        propagateComposedEvents: true
+
+        onWheel: {
+            if(wheel.modifiers & Qt.ControlModifier)
+                root.fontSize = root.fontSize * (1 + wheel.angleDelta.y * 0.0002)
+            else
+                wheel.accepted = false
+        }
+
+        onClicked: mouse.accepted = false
+        onDoubleClicked: mouse.accepted = false
+        onPositionChanged: mouse.accepted = false
+        onPressAndHold: mouse.accepted = false
+        onPressed: mouse.accepted = false
+        onReleased: mouse.accepted = false
     }
 }
