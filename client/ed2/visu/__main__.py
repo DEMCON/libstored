@@ -22,13 +22,29 @@ import importlib.util
 
 from PySide2.QtGui import QGuiApplication
 from PySide2.QtQml import QQmlApplicationEngine
-from PySide2.QtCore import QUrl, QAbstractListModel, QModelIndex, Qt, Slot, QSortFilterProxyModel, QCoreApplication
+from PySide2.QtCore import Qt, QCoreApplication, qInstallMessageHandler, QtMsgType
 
 from ..zmq_client import ZmqClient
 from ..zmq_server import ZmqServer
 from ..csv import generateFilename
 
+def msgHandler(msgType, context, msg):
+    global logger
+    if msgType == QtMsgType.QtDebugMsg:
+        logger.debug(msg)
+    elif msgType == QtMsgType.QtInfoMsg:
+        logger.info(msg)
+    elif msgType == QtMsgType.QtWarningMsg:
+        logger.warning(msg)
+    elif msgType == QtMsgType.QtCriticalMsg:
+        logger.error(msg)
+    else:
+        logger.critical(msg)
+
 if __name__ == '__main__':
+    logger = logging.getLogger('visu')
+    qInstallMessageHandler(msgHandler)
+
     QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     QCoreApplication.setApplicationName("Embedded Debugger visu")
