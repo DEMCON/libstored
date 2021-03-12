@@ -191,7 +191,7 @@ if(CPPCHECK_CMD)
 		)
 	endif()
 
-	add_custom_target(cppcheck
+	add_custom_target(libstored-cppcheck
 		COMMAND
 			${CPPCHECK_CMD}
 			--enable=warning,style,information
@@ -211,7 +211,7 @@ if(CPPCHECK_CMD)
 
 	option(LIBSTORED_CPPCHECK "Run cppcheck by default" ON)
 	if(LIBSTORED_CPPCHECK)
-		add_custom_target(cppcheck-all ALL DEPENDS cppcheck)
+		add_custom_target(libstored-cppcheck-all ALL DEPENDS libstored-cppcheck)
 	endif()
 endif()
 
