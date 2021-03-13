@@ -419,7 +419,7 @@ namespace stored {
 		/*! \copydoc stored::Variable::container() */
 		Container& container() const {
 			stored_assert(this->valid());
-			return *m_container;
+			return *m_container; // NOLINT(clang-analyzer-core.uninitialized.UndefReturn)
 		}
 
 		/*!
@@ -781,6 +781,7 @@ namespace stored {
 			stored_assert(sizeof(T) == size());
 			T data;
 			size_t len = get(&data, sizeof(T));
+			// NOLINTNEXTLINE(clang-analyzer-core.uninitialized.UndefReturn)
 			return len == sizeof(T) ? data : T();
 		}
 
