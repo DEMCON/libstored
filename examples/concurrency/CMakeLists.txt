@@ -6,3 +6,7 @@ set_target_properties(concurrency
 		CXX_STANDARD 14
 		CXX_STANDARD_REQUIRED YES
 )
+
+find_package(Threads)
+target_link_libraries(concurrency PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+

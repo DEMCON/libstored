@@ -18,7 +18,12 @@ if(LIBSTORED_HAVE_LIBZMQ)
 			add_compile_options(-Wno-unused-parameter -Wno-inconsistent-missing-override -Wno-unused-const-variable -Wno-missing-field-initializers -Wno-unused-variable)
 		endif()
 
+		set(CMAKE_CXX_STANDARD_prev ${CMAKE_CXX_STANDARD})
+		if(CMAKE_CXX_STANDARD EQUAL 98)
+			set(CMAKE_CXX_STANDARD 11)
+		endif()
 		add_subdirectory(libzmq)
+		set(CMAKE_CXX_STANDARD ${CMAKE_CXX_STANDARD_prev})
 	endif()
 endif()
 

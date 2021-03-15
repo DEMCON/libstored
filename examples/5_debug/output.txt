@@ -4,7 +4,7 @@
 /ExampleDebugAnotherStore/j = 101
 i2 = 5
 >>   ?
-<<   ?rwelamivRWstf
+<<   ?rwelamivRWst
 >>   i
 <<   5_debug
 >>   r/ExampleDebugAnotherStore/j
@@ -36,16 +36,16 @@ mem = 0xfeca
 >>   s
 <<   A
 >>   sA
-<<   
+<<   Hello
 >>   sA
-<<   
+<<   stream!!1
 >>   s
-<<   A
+<<   ?
 >>   sA/
 <<   /
 >>   sB/
 <<   ?
 >>   ?
-<<   ?rwelamvRWstfz
+<<   ?rwelamvRWstz
 >>   z
 <<   Zzzz

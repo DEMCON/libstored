@@ -29,7 +29,12 @@
 
 #  include <cerrno>
 #  include <cstdlib>
-#  include <cinttypes>
+
+#  if STORED_cplusplus < 201103L
+#    include <inttypes.h>
+#  else
+#    include <cinttypes>
+#  endif
 
 namespace stored {
 
