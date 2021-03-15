@@ -344,9 +344,9 @@ void Debugger::setIdentification(char const* identification) {
  * \see #setVersions()
  */
 bool Debugger::version(ProtocolLayer& response) {
-	char* buffer = nullptr;
-	size_t len = encodeHex(Config::DebuggerVersion, buffer);
-	response.encode(buffer, len, false);
+	char* buf = nullptr;
+	size_t len = encodeHex(Config::DebuggerVersion, buf);
+	response.encode(buf, len, false);
 
 	if(m_versions && *m_versions) {
 		response.encode(" ", 1, false);
@@ -620,28 +620,28 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		char const* addrhex = ++p;
 
 		// Find end of address
-		size_t bufferlen = 1;
+		size_t buflen = 1;
 		p++;
 		len -= 2;
-		for(; len > 0 && *p != ' '; bufferlen++, p++, len--);
+		for(; len > 0 && *p != ' '; buflen++, p++, len--);
 
-		void const* buffer = addrhex;
-		if(!decodeHex(Type::Pointer, buffer, bufferlen))
+		void const* buf = addrhex;
+		if(!decodeHex(Type::Pointer, buf, buflen))
 			goto error;
 
-		stored_assert(bufferlen == sizeof(void*));
+		stored_assert(buflen == sizeof(void*));
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-		char* addr = *reinterpret_cast<char* const*>(buffer);
+		char* addr = *reinterpret_cast<char* const*>(buf);
 		size_t datalen = sizeof(void*);
 
 		if(len > 1) {
-			buffer = p + 1;
-			bufferlen = len - 1;
-			if(!decodeHex(Type::Uint, buffer, bufferlen))
+			buf = p + 1;
+			buflen = len - 1;
+			if(!decodeHex(Type::Uint, buf, buflen))
 				goto error;
 
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-			datalen = (size_t)*reinterpret_cast<unsigned int const*>(buffer);
+			datalen = (size_t)*reinterpret_cast<unsigned int const*>(buf);
 		}
 
 		if(datalen == 0)
@@ -679,18 +679,18 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		char const* addrhex = ++p;
 
 		// Find length of address
-		size_t bufferlen = 1;
+		size_t buflen = 1;
 		p++;
 		len -= 2;
-		for(; len > 0 && *p != ' '; bufferlen++, p++, len--);
+		for(; len > 0 && *p != ' '; buflen++, p++, len--);
 
-		void const* buffer = addrhex;
-		if(!decodeHex(Type::Pointer, buffer, bufferlen))
+		void const* buf = addrhex;
+		if(!decodeHex(Type::Pointer, buf, buflen))
 			goto error;
 
-		stored_assert(bufferlen == sizeof(void*));
+		stored_assert(buflen == sizeof(void*));
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-		char* addr = *reinterpret_cast<char* const*>(buffer);
+		char* addr = *reinterpret_cast<char* const*>(buf);
 
 		// p should point to the ' ' before the data
 		if(len < 3) // ' ' and two hex chars of the first byte
@@ -733,13 +733,13 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 			goto error;
 
 		if(len == 1) {
-			void const* buffer = nullptr;
-			size_t bufferlen = 0;
-			streams(buffer, bufferlen);
-			if(bufferlen == 0)
+			void const* buf = nullptr;
+			size_t buflen = 0;
+			streams(buf, buflen);
+			if(buflen == 0)
 				goto error;
 
-			response.encode(buffer, bufferlen);
+			response.encode(buf, buflen);
 			return;
 		}
 

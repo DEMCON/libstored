@@ -431,7 +431,7 @@ __attribute__((pure)) R saturated_cast(T value) { return stored::impl::saturated
 public: \
 	typedef STORE_BASE_CLASS(Base, Impl) base; \
 	using typename base::Implementation; \
-	friend class STORE_BASE_CLASS(Base, Impl); \
+	friend class ::stored::Base< Impl >; \
 private:
 
 #endif // __cplusplus

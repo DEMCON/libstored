@@ -150,7 +150,8 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 				"--extra-arg=-I${libstored_dir}/extern/libzmq/include"
 				"--extra-arg=-I${libstored_dir}/extern/heatshrink"
 				"--extra-arg=-I${CMAKE_CURRENT_SOURCE_DIR}/include"
-				"-header-filter=.*include/libstored.*")
+				"-header-filter=.*include/libstored.*"
+				"--warnings-as-errors=*")
 		endif()
 
 		set_target_properties({{libprefix}}libstored
