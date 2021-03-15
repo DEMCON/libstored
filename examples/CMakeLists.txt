@@ -19,7 +19,7 @@ add_subdirectory(8_sync)
 add_subdirectory(9_fpga)
 add_subdirectory(terminal)
 
-if(NOT MINGW)
+if(NOT MINGW AND NOT CMAKE_CXX_STANDARD EQUAL 98)
 	# std::thread is not supported by MinGW.
 	add_subdirectory(concurrency)
 endif()

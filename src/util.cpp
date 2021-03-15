@@ -21,7 +21,12 @@
 #include <libstored/version.h>
 
 #include <cstring>
-#include <cinttypes>
+
+#if STORED_cplusplus < 201103L
+#  include <inttypes.h>
+#else
+#  include <cinttypes>
+#endif
 
 namespace stored {
 

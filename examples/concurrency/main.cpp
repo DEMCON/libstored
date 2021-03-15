@@ -127,9 +127,11 @@ int main(int argc, char** argv)
 	debug.map(mainStore);
 	debug.map(controlStore);
 
+#ifdef STORED_HAVE_ZMQ
 	// Create a ZeroMQ connection for the debugger.
 	stored::DebugZmqLayer zmq;
 	zmq.wrap(debug);
+#endif
 
 	// This is the Synchronizer for this thread.
 	stored::Synchronizer synchronizer;
@@ -162,10 +164,12 @@ int main(int argc, char** argv)
 
 	// We need a poller to check for ZeroMQ (debugger) messages.
 	stored::Poller poller;
+#ifdef STORED_HAVE_ZMQ
 	if(poller.add(zmq, nullptr, stored::Poller::PollIn)) {
 		perror("Cannot register zmq to poller");
 		return 1;
 	}
+#endif
 
 	// When actual value changes, it is printed to the console.
 	auto prevActual = controlStore.actual.get();
@@ -195,8 +199,10 @@ int main(int argc, char** argv)
 			if(errno != EAGAIN)
 				perror("Cannot poll");
 		} else {
+#ifdef STORED_HAVE_ZMQ
 			if(zmq.recv())
 				perror("Cannot recv");
+#endif
 		}
 
 		// Check for Synchronizer messages from the other thread.
