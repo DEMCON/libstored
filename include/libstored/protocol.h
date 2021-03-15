@@ -809,7 +809,7 @@ namespace stored {
 	};
 
 	namespace impl {
-		class Loopback1 : public ProtocolLayer {
+		class Loopback1 final : public ProtocolLayer {
 			CLASS_NOCOPY(Loopback1)
 		public:
 			typedef ProtocolLayer base;

@@ -42,7 +42,7 @@
 namespace stored {
 
 	template <bool Compress = Config::CompressStreams>
-	class Stream : public ProtocolLayer {
+	class Stream final : public ProtocolLayer {
 		CLASS_NOCOPY(Stream)
 		friend class Stream<true>;
 	public:
@@ -102,7 +102,7 @@ namespace stored {
 	};
 
 	template<>
-	class Stream<true> : public ProtocolLayer {
+	class Stream<true> final : public ProtocolLayer {
 		CLASS_NOCOPY(Stream)
 	public:
 		typedef ProtocolLayer base;

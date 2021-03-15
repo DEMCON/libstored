@@ -130,11 +130,11 @@
 		/*! \brief Deleted copy constructor. */ \
 		Class(Class const&) = delete; \
 		/*! \brief Deleted move constructor. */ \
-		Class(Class&&) = delete; /* NOLINT(misc-macro-parentheses) */ \
+		Class(Class&&) = delete; /* NOLINT(misc-macro-parentheses,bugprone-macro-parentheses) */ \
 		/*! \brief Deleted assignment operator. */ \
 		void operator=(Class const&) = delete; \
 		/*! \brief Deleted move assignment operator. */ \
-		void operator=(Class&&) = delete; /* NOLINT(misc-macro-parentheses) */
+		void operator=(Class&&) = delete; /* NOLINT(misc-macro-parentheses,bugprone-macro-parentheses) */
 #  else
 #    define CLASS_NOCOPY(Class) \
 	private: \

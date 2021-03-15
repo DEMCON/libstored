@@ -187,7 +187,7 @@ namespace stored {
 		 * \brief Let this Variable point to the same buffer as the given Variable.
 		 */
 		// cppcheck-suppress operatorEqVarError
-		Variable& operator=(Variable const& v) {
+		Variable& operator=(Variable const& v) { // NOLINT(bugprone-unhandled-self-assignment)
 			m_buffer = v.m_buffer;
 			return *this;
 		}
@@ -337,7 +337,7 @@ namespace stored {
 
 		/*! \copydoc stored::Variable::operator=(Variable const&) */
 		// cppcheck-suppress operatorEqVarError
-		Variable& operator=(Variable const& v) {
+		Variable& operator=(Variable const& v) { // NOLINT(bugprone-unhandled-self-assignment)
 #ifdef _DEBUG
 			stored_assert(m_entry == EntryNone);
 #endif
@@ -396,7 +396,7 @@ namespace stored {
 		void set(type v) {
 			entryX();
 
-			bool changed;
+			bool changed = false;
 			if(Type::isStoreSwapped(toType<type>::type))
 				changed = memcmp_swap(&v, &this->buffer(), sizeof(v)) != 0;
 			else
@@ -698,7 +698,7 @@ namespace stored {
 #ifdef _DEBUG
 			, m_entry()
 #endif
-		{
+		{ // NOLINT(clang-analyzer-optin.cplusplus.UninitializedObject)
 		}
 
 		/*!

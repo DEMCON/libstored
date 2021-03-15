@@ -52,3 +52,4 @@ pushd build > /dev/null
 cmake --build . -- -j`numproc` all
 popd > /dev/null
 
+popd > /dev/null

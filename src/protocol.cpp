@@ -1665,7 +1665,7 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 		if((w = r = open(name_r, O_RDWR | O_APPEND | O_CREAT | O_NONBLOCK, 0666)) == -1)
 			goto error;
 
-	// NOLINTNEXTLINE(hicpp-signed-bitwise)
+	// NOLINTNEXTLINE(hicpp-signed-bitwise,bugprone-branch-clone)
 	} else if((r = open(name_r, O_RDONLY | O_CREAT | O_NONBLOCK, 0666)) == -1) {
 		goto error;
 
@@ -3094,6 +3094,7 @@ SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, Prot
 	config.c_lflag &= (tcflag_t)~(ECHO | ECHONL | ICANON | IEXTEN | ISIG);
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	config.c_cflag &= (tcflag_t)~(CSIZE | PARENB | CSTOPB);
+	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	config.c_cflag |= CS8;
 	if(rtscts) {
 #ifdef CNEW_RTSCTS
