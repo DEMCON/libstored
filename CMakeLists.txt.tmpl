@@ -101,7 +101,7 @@ endif()
 
 if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 	find_program(CLANG_TIDY_EXE NAMES "clang-tidy" DOC "Path to clang-tidy executable")
-	if(CLANG_TIDY_EXE AND NOT CMAKE_CROSSCOMPILING AND (NOT CMAKE_CXX_STANDARD OR CMAKE_CXX_STANDARD EQUAL 14))
+	if(CLANG_TIDY_EXE AND (NOT CMAKE_CXX_STANDARD OR NOT CMAKE_CXX_STANDARD EQUAL 98))
 		option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ON)
 		if(LIBSTORED_CLANG_TIDY)
 			string(CONCAT CLANG_TIDY_CHECKS "-checks="
@@ -151,12 +151,14 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 				"--extra-arg=-I${libstored_dir}/extern/libzmq/include"
 				"--extra-arg=-I${libstored_dir}/extern/heatshrink"
 				"--extra-arg=-I${CMAKE_CURRENT_SOURCE_DIR}/include"
-				"-header-filter=.*include/libstored.*"
-				"--warnings-as-errors=*")
-		endif()
+				"--header-filter=.*include/libstored.*"
+				"--warnings-as-errors=*"
+				"--extra-arg=-Wno-unknown-warning-option"
+			)
 
-		set_target_properties({{libprefix}}libstored
-			PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}" )
+			set_target_properties({{libprefix}}libstored
+				PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}" )
+		endif()
 	endif()
 endif()
 

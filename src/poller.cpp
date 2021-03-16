@@ -572,6 +572,7 @@ Poller::Result const& Poller::poll(long timeout_us, bool suspend) {
 retry:
 	int res = 0;
 
+	// NOLINTNEXTLINE(bugprone-branch-clone)
 	if(suspend) {
 		// Just suspend; not fiber-aware.
 		res =
