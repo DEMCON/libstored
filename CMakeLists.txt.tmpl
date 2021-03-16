@@ -158,6 +158,9 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 
 			set_target_properties({{libprefix}}libstored
 				PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}" )
+		else()
+			set_target_properties({{libprefix}}libstored
+				PROPERTIES CXX_CLANG_TIDY "")
 		endif()
 	endif()
 endif()
