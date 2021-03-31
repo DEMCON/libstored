@@ -1330,11 +1330,12 @@ PrintLayer::PrintLayer(FILE* f, char const* name, ProtocolLayer* up, ProtocolLay
 	: base(up, down)
 	, m_f(f)
 	, m_name(name)
+	, m_enable(true)
 {
 }
 
 void PrintLayer::decode(void* buffer, size_t len) {
-	if(m_f) {
+	if(m_f && enabled()) {
 		std::string prefix;
 		if(m_name)
 			prefix += m_name;
@@ -1349,7 +1350,7 @@ void PrintLayer::decode(void* buffer, size_t len) {
 }
 
 void PrintLayer::encode(void const* buffer, size_t len, bool last) {
-	if(m_f) {
+	if(m_f && enabled()) {
 		std::string prefix;
 		if(m_name)
 			prefix += m_name;
@@ -1373,6 +1374,36 @@ void PrintLayer::encode(void const* buffer, size_t len, bool last) {
  */
 void PrintLayer::setFile(FILE* f) {
 	m_f = f;
+}
+
+/*!
+ * \brief Return the \c FILE that is written to.
+ */
+FILE* PrintLayer::file() const {
+	return m_f;
+}
+
+/*!
+ * \brief Enable printing all messages.
+ */
+void PrintLayer::enable(bool enable) {
+	m_enable = enable;
+}
+
+/*!
+ * \brief Disable printing all messages.
+ *
+ * This is equivalent to calling \c enable(false).
+ */
+void PrintLayer::disable() {
+	enable(false);
+}
+
+/*!
+ * \brief Returns if printing is currently enabled.
+ */
+bool PrintLayer::enabled() const {
+	return m_enable;
 }
 
 

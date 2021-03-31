@@ -785,6 +785,9 @@ namespace stored {
 	 * Messages are printed on a line.
 	 * Decoded message start with &lt;, encoded messages with &gt;, partial encoded messages with *.
 	 *
+	 * Printing can be suspended and resumed by calling #enable() or #disable().
+	 * The default state is enabled.
+	 *
 	 * Mainly for debugging purposes.
 	 */
 	class PrintLayer : public ProtocolLayer {
@@ -802,10 +805,15 @@ namespace stored {
 #endif
 
 		void setFile(FILE* f);
+		FILE* file() const;
+		void enable(bool enable = true);
+		void disable();
+		bool enabled() const;
 
 	private:
 		FILE* m_f;
 		char const* const m_name;
+		bool m_enable;
 	};
 
 	namespace impl {
