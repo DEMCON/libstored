@@ -689,7 +689,7 @@ void SyncConnection::erase(char const* hash) {
 void SyncConnection::bye(SyncConnection::Id id) {
 	eraseIn(id);
 	encodeCmd(Bye);
-	encodeId(id);
+	encodeId(id, true);
 }
 
 /*!
