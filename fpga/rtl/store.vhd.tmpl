@@ -657,7 +657,7 @@ begin
 
 		signal r, r_in : r_t;
 	begin
-		process(r, rstn, sync_in.valid, sync_in.last, sync_in.data, sync_chained_out_accept_i)
+		process(r, rstn, sync_in.valid, sync_in.last, sync_in.data, sync_chained_out_accept_i, id_in)
 			variable v : r_t;
 		begin
 			v := r;

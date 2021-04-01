@@ -339,16 +339,16 @@ begin
 			end procedure;
 --pragma translate_on
 		begin
-			rp_v := rp_tmp;
-
 			if rising_edge(clk) then
+				rp_v := rp_tmp;
+
 				if empty_i = '0' and o_accept = '1' and o_rollback = '0' then
 					rp_tmp <= rp_tmp_next;
 					rp_v := rp_tmp_next;
 					if i_commit = '1' then
 						rp <= rp_tmp_next;
 --pragma translate_off
-						erase_fifo(rp, rp_tmp_next);
+				 		erase_fifo(rp, rp_tmp_next);
 --pragma translate_on
 					end if;
 				elsif o_rollback = '1' then

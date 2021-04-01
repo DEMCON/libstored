@@ -74,7 +74,7 @@ package libstored_tb_pkg is
 	procedure test_expect_true(variable test : inout test_t; constant x : in boolean; constant ref : string := "");
 	procedure test_expect_false(variable test : inout test_t; constant x : in boolean; constant ref : string := "");
 	procedure test_expect_eq(variable test : inout test_t; constant x : in unsigned; constant expect : in natural; constant ref : string := "");
-	procedure test_expect_eq(variable test : inout test_t; constant x: in signed; constant expect : in natural; constant ref : string := "");
+	procedure test_expect_eq(variable test : inout test_t; constant x: in signed; constant expect : in integer; constant ref : string := "");
 	procedure test_expect_eq(variable test : inout test_t; constant x, expect : in std_logic; constant ref : string := "");
 	procedure test_expect_eq(variable test : inout test_t; constant x, expect : in std_logic_vector; constant ref : string := "");
 	procedure test_expect_eq(variable test : inout test_t;
@@ -149,7 +149,7 @@ package libstored_tb_pkg is
 	procedure axi_write(signal clk : in std_logic; signal m2s : inout axi_m2s_t; signal s2m : in axi_s2m_t;
 		constant addr : in natural; constant data : in std_logic_vector(31 downto 0);
 		constant timeout : in time := 1 ms);
-	procedure axi_read(signal clk : std_logic; signal m2s : inout axi_m2s_t; signal s2m : in axi_s2m_t;
+	procedure axi_read(signal clk : in std_logic; signal m2s : inout axi_m2s_t; signal s2m : in axi_s2m_t;
 		constant addr : in natural; variable data : out std_logic_vector(31 downto 0);
 		constant timeout : in time := 1 ms);
 
@@ -632,15 +632,15 @@ package body libstored_tb_pkg is
 			str_set(res, "");
 			for i in v'range loop
 				case v(i) is
-				when '0' => res := res & "0";
-				when '1' => res := res & "1";
-				when 'L' => res := res & "L";
-				when 'H' => res := res & "H";
-				when 'W' => res := res & "W";
-				when 'Z' => res := res & "Z";
-				when '-' => res := res & "-";
-				when 'U' => res := res & "U";
-				when 'X' => res := res & "X";
+				when '0' => res := res & to_string("0");
+				when '1' => res := res & to_string("1");
+				when 'L' => res := res & to_string("L");
+				when 'H' => res := res & to_string("H");
+				when 'W' => res := res & to_string("W");
+				when 'Z' => res := res & to_string("Z");
+				when '-' => res := res & to_string("-");
+				when 'U' => res := res & to_string("U");
+				when 'X' => res := res & to_string("X");
 				end case;
 			end loop;
 		else
@@ -648,36 +648,36 @@ package body libstored_tb_pkg is
 
 			for i in v'length / 4 - 1 downto 0 loop
 				case v(i * 4 + 3 downto i * 4) is
-				when "0000" => res := res & "0";
-				when "0001" => res := res & "1";
-				when "0010" => res := res & "2";
-				when "0011" => res := res & "3";
-				when "0100" => res := res & "4";
-				when "0101" => res := res & "5";
-				when "0110" => res := res & "6";
-				when "0111" => res := res & "7";
-				when "1000" => res := res & "8";
-				when "1001" => res := res & "9";
-				when "1010" => res := res & "a";
-				when "1011" => res := res & "b";
-				when "1100" => res := res & "c";
-				when "1101" => res := res & "d";
-				when "1110" => res := res & "e";
-				when "1111" => res := res & "f";
-				when "----" => res := res & "-";
-				when "LLLL" => res := res & "L";
-				when "HHHH" => res := res & "H";
-				when "WWWW" => res := res & "W";
-				when "ZZZZ" => res := res & "Z";
-				when "UUUU" => res := res & "U";
-				when "XXXX" => res := res & "X";
-				when others => res := res & "?";
+				when "0000" => res := res & to_string("0");
+				when "0001" => res := res & to_string("1");
+				when "0010" => res := res & to_string("2");
+				when "0011" => res := res & to_string("3");
+				when "0100" => res := res & to_string("4");
+				when "0101" => res := res & to_string("5");
+				when "0110" => res := res & to_string("6");
+				when "0111" => res := res & to_string("7");
+				when "1000" => res := res & to_string("8");
+				when "1001" => res := res & to_string("9");
+				when "1010" => res := res & to_string("a");
+				when "1011" => res := res & to_string("b");
+				when "1100" => res := res & to_string("c");
+				when "1101" => res := res & to_string("d");
+				when "1110" => res := res & to_string("e");
+				when "1111" => res := res & to_string("f");
+				when "----" => res := res & to_string("-");
+				when "LLLL" => res := res & to_string("L");
+				when "HHHH" => res := res & to_string("H");
+				when "WWWW" => res := res & to_string("W");
+				when "ZZZZ" => res := res & to_string("Z");
+				when "UUUU" => res := res & to_string("U");
+				when "XXXX" => res := res & to_string("X");
+				when others => res := res & to_string("?");
 				end case;
 			end loop;
 		end if;
 
 		if x'length > v'length then
-			res := res & "...";
+			res := res & to_string("...");
 		end if;
 
 		return to_string(res);
