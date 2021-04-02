@@ -1591,5 +1591,125 @@ begin
 	idle <= idle_pipe and idle_tee;
 
 end behav;
+
+
+
+
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.math_real.all;
+use work.libstored_pkg;
+use work.libstored_tb_pkg;
+
+entity RandomDelayLayer is
+	generic (
+		SYSTEM_CLK_FREQ : integer := 100e6;
+		MIN_DELAY_s : real := 0.0;
+		MAX_DELAY_s : real := 1.0e-6;
+		SEED : positive := 42
+	);
+	port (
+		clk : in std_logic;
+		rstn : in std_logic;
+
+		encode_in : in libstored_pkg.msg_t;
+		encode_out : out libstored_pkg.msg_t;
+
+		decode_in : in libstored_pkg.msg_t;
+		decode_out : out libstored_pkg.msg_t
+	);
+end RandomDelayLayer;
+
+architecture behav of RandomDelayLayer is
+	constant MIN_DELAY : natural := integer(MIN_DELAY_s * real(SYSTEM_CLK_FREQ));
+	constant MAX_DELAY : natural := libstored_pkg.maximum(MIN_DELAY + 1, integer(MAX_DELAY_s * real(SYSTEM_CLK_FREQ)));
+
+	shared variable seed1, seed2 : integer := SEED;
+
+	impure function rand_duration return natural is
+		variable r : real;
+	begin
+		uniform(seed1, seed2, r);
+		return natural(round(r * real(MAX_DELAY - MIN_DELAY + 1) + real(MIN_DELAY) - 0.5));
+	end function;
+
+	procedure accept_delay(
+		signal valid_in : in std_logic; signal accept_in : std_logic;
+		signal valid_out : out std_logic; signal accept_out : out std_logic) is
+		variable delay : natural;
+	begin
+		accept_out <= '0';
+		valid_out <= '0';
+		wait until rising_edge(clk) and rstn = '1';
+
+		while true loop
+			accept_out <= '0';
+			valid_out <= '0';
+
+			delay := rand_duration;
+
+			while delay > 0 and not valid_in = '1' loop
+				delay := delay - 1;
+--				report "wait " & integer'image(delay) severity note;
+				wait until rising_edge(clk);
+			end loop;
+
+			if delay = 0 then
+				-- delay is 0, so pass through
+				accept_out <= accept_in;
+				valid_out <= valid_in;
+				while not (rising_edge(clk) and valid_in = '1') loop
+					wait until rising_edge(clk) or accept_in'event or valid_in'event;
+					accept_out <= accept_in;
+					valid_out <= valid_in;
+--					report "pass through " severity note;
+				end loop;
+			else
+				-- is valid, but wait a bit longer
+				for n in delay - 1 downto 0 loop
+--					report "delay " & integer'image(n) severity note;
+					wait until rising_edge(clk);
+				end loop;
+
+				wait for 0 ns;
+				valid_out <= '1';
+				accept_out <= accept_in;
+			end if;
+
+			while not (rising_edge(clk) and accept_in = '1') loop
+				accept_out <= accept_in;
+				wait until rising_edge(clk) or accept_in'event;
+			end loop;
+		end loop;
+	end procedure;
+
+	signal encode_out_accept_i, decode_out_accept_i : std_logic;
+	signal encode_out_valid_i, decode_out_valid_i : std_logic;
+begin
+
+	process
+	begin
+		accept_delay(encode_in.valid, decode_in.accept, encode_out_valid_i, decode_out_accept_i);
+	end process;
+
+	encode_out.valid <= encode_out_valid_i;
+	encode_out.data <= encode_in.data when encode_out_valid_i = '1' else (others => '-');
+	encode_out.last <= encode_in.last when encode_out_valid_i = '1' else '-';
+	decode_out.accept <= decode_out_accept_i;
+
+	process
+	begin
+		accept_delay(decode_in.valid, encode_in.accept, decode_out_valid_i, encode_out_accept_i);
+	end process;
+
+	decode_out.valid <= decode_out_valid_i;
+	decode_out.data <= decode_in.data when decode_out_valid_i = '1' else (others => '-');
+	decode_out.last <= decode_in.last when decode_out_valid_i = '1' else '-';
+	encode_out.accept <= encode_out_accept_i;
+
+end behav;
+
 --pragma translate_on
 
