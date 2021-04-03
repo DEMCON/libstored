@@ -392,7 +392,7 @@ begin
 
 			case r.state is
 			when STATE_DATA =>
-				if encode_in.valid = '1' and encode_out_accept = '1' then
+				if encode_in.valid = '1' then
 					if ESCAPE_ALL then
 						if unsigned(encode_in.data) < 32 then
 							v.state := STATE_ESC;
@@ -420,17 +420,12 @@ begin
 
 				if v.state = STATE_ESC then
 					v.postpone_last := encode_in.last;
+				else
+					v.postpone_last := '0';
 				end if;
 			when STATE_ESC =>
-				if encode_out_accept = '1' then
-					v.state := STATE_DATA;
-				end if;
-			end case;
-
-			if rstn /= '1' then
 				v.state := STATE_DATA;
-				v.postpone_last := '0';
-			end if;
+			end case;
 
 			r_in <= v;
 		end process;
@@ -438,14 +433,19 @@ begin
 		process(clk)
 		begin
 			if rising_edge(clk) then
-				r <= r_in;
+				if rstn /= '1' then
+					r.state <= STATE_DATA;
+					r.postpone_last <= '0';
+				elsif encode_out_accept = '1' then
+					r <= r_in;
+				end if;
 			end if;
 		end process;
 
 		encode_out_data <=
 			encode_in.data when r.state = STATE_DATA and r_in.state = STATE_DATA else
-			x"7f" when r.state = STATE_DATA else
-			r.esc_data;
+			x"7f" when r.state = STATE_DATA else -- switching to STATE_ESC
+			r.esc_data; -- in STATE_ESC
 
 		with r.state select
 			encode_out_last <=
@@ -536,7 +536,7 @@ begin
 			decode_in.data;
 
 		decode_out_valid <=
-			decode_in.valid and decode_in.last when decode_in.data = x"0d" else -- is valid, but will be dropped
+			decode_in.valid and decode_in.last when decode_in.data = x"0d" else -- the last is valid, but will be dropped
 			'0' when r.state = STATE_DATA and decode_in_is_esc and decode_in.last = '0' else
 			decode_in.valid;
 
