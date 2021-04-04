@@ -1010,7 +1010,8 @@ entity UARTLayer is
 	generic (
 		SYSTEM_CLK_FREQ : integer := 100e6;
 		BAUD : integer := 115200;
-		DECODE_OUT_FIFO_DEPTH : natural := 0
+		DECODE_OUT_FIFO_DEPTH : natural := 0;
+		XON_XOFF : boolean := false
 	);
 	port (
 		clk : in std_logic;
@@ -1030,10 +1031,41 @@ end UARTLayer;
 
 architecture rtl of UARTLayer is
 	constant BIT_DURATION : integer := libstored_pkg.maximum(1, integer(real(SYSTEM_CLK_FREQ) / real(BAUD)));
+	constant XON : std_logic_vector(7 downto 0) := x"11";
+	constant XOFF : std_logic_vector(7 downto 0) := x"13";
+
+	impure function calc_decode_out_fifo_depth return natural is
+	begin
+		if XON_XOFF then
+			-- XON/XOFF is slow and possibly expensive. So, a large
+			-- buffer would be nice.
+			return libstored_pkg.maximum(DECODE_OUT_FIFO_DEPTH, 12);
+		else
+			return libstored_pkg.maximum(DECODE_OUT_FIFO_DEPTH, 4);
+		end if;
+	end function;
+
+	impure function calc_decode_out_fifo_almost_full return natural is
+	begin
+		if XON_XOFF then
+			-- When this threshold is hit, we should finish the current TX,
+			-- send XOFF, which should be received, but the other party might
+			-- be currently sending a byte when it parses the XOFF.
+			-- So, we need at least 3, but allow for a bit more.
+			return 6;
+		else
+			-- In case of RTS/CTS, hardware flow control is supposed to
+			-- react immediately. So, it only finishes the current byte
+			-- that is in transmission. Just add room for one more.
+			return 2;
+		end if;
+	end function;
+
 	signal rx_i, cts_i : std_logic;
 	signal rx_valid, rx_accept, rx_almost_full, rx_empty : std_logic;
 	signal rx_data : std_logic_vector(7 downto 0);
 	signal rx_idle, tx_idle : std_logic;
+	signal rx_pause, tx_pause, tx_xon : std_logic;
 begin
 
 	rx_meta_inst : entity work.libstored_metastabilize
@@ -1056,8 +1088,8 @@ begin
 	decode_out_fifo_inst : entity work.libstored_fifo
 		generic map (
 			WIDTH => 8,
-			DEPTH => libstored_pkg.maximum(DECODE_OUT_FIFO_DEPTH, 4),
-			ALMOST_FULL_REMAINING => 2
+			DEPTH => calc_decode_out_fifo_depth,
+			ALMOST_FULL_REMAINING => calc_decode_out_fifo_almost_full
 		)
 		port map (
 			clk => clk,
@@ -1072,6 +1104,7 @@ begin
 			empty => rx_empty
 		);
 
+	rx_pause <= rx_almost_full;
 	decode_out.last <= '0';
 	idle <= rx_idle and tx_idle and rx_empty;
 
@@ -1085,10 +1118,13 @@ begin
 			accept : std_logic;
 			tx : std_logic;
 			idle : std_logic;
+			rx_paused : std_logic;
+			tx_paused : std_logic;
+			tx_xon : std_logic;
 		end record;
 		signal r, r_in : r_t;
 	begin
-		process(r, rstn, encode_in.data, encode_in.valid, encode_in.last, cts_i)
+		process(r, rstn, encode_in.data, encode_in.valid, encode_in.last, cts_i, rx_pause, tx_pause, tx_xon)
 			variable v : r_t;
 		begin
 			v := r;
@@ -1098,19 +1134,36 @@ begin
 			end if;
 
 			v.accept := '0';
+			v.tx_xon := r.tx_xon or tx_xon;
 
 			case r.state is
 			when STATE_RESET =>
 				v.state := STATE_IDLE;
 			when STATE_IDLE =>
-				if encode_in.valid = '1' and cts_i = '0' then
-					v.cnt := BIT_DURATION;
-					v.data := encode_in.data;
-					v.len := 7;
-					v.accept := '1';
-					v.state := STATE_START;
-					v.idle := '0';
-					v.tx := '0';
+				if cts_i = '0' and tx_pause = '0' then
+					if XON_XOFF and r.rx_paused = '0' and rx_pause = '1' then
+						-- Need to send XOFF now
+						v.rx_paused := '1';
+						v.data := XOFF;
+						v.state := STATE_START;
+					elsif XON_XOFF and (r.rx_paused = '1' or v.tx_xon = '1') and rx_pause = '0' then
+						-- Let's send XON first
+						v.rx_paused := '0';
+						v.tx_xon := '0';
+						v.data := XON;
+						v.state := STATE_START;
+					elsif encode_in.valid = '1' then
+						v.data := encode_in.data;
+						v.accept := '1';
+						v.state := STATE_START;
+					end if;
+
+					if v.state = STATE_START then
+						v.cnt := BIT_DURATION;
+						v.len := 7;
+						v.idle := '0';
+						v.tx := '0';
+					end if;
 				end if;
 			when STATE_START =>
 				if v.cnt = 0 then
@@ -1136,7 +1189,7 @@ begin
 				end if;
 			end case;
 
-			if encode_in.last = '1' and encode_in.valid = '1' then
+			if encode_in.last = '1' and encode_in.valid = '1' and v.accept = '1' then
 				v.idle := '1';
 			end if;
 
@@ -1144,6 +1197,9 @@ begin
 				v.state := STATE_RESET;
 				v.tx := '1';
 				v.idle := '1';
+				v.rx_paused := '0';
+				v.tx_paused := '0';
+				v.tx_xon := '0';
 			end if;
 
 			r_in <= v;
@@ -1163,14 +1219,18 @@ begin
 	end generate;
 
 	rx_g : if true generate
-		type state_t is (STATE_RESET, STATE_IDLE, STATE_START, STATE_DATA, STATE_STOP);
+		constant SYNC_DURATION : natural := BIT_DURATION * 10;
+		type state_t is (STATE_RESET, STATE_SYNC, STATE_IDLE, STATE_START, STATE_DATA, STATE_STOP);
 		type r_t is record
 			state : state_t;
-			cnt : natural range 0 to BIT_DURATION;
+			cnt : natural range 0 to SYNC_DURATION;
 			len : natural range 0 to 7;
 			data : std_logic_vector(7 downto 0);
 			valid : std_logic;
 			rts : std_logic;
+			tx_paused : std_logic;
+			tx_xon : std_logic;
+			tx_xon_suppress : std_logic;
 		end record;
 		signal r, r_in : r_t;
 	begin
@@ -1185,10 +1245,21 @@ begin
 
 			v.valid := '0';
 			v.rts := rx_almost_full;
+			v.tx_xon := '0';
 
 			case r.state is
 			when STATE_RESET =>
-				v.state := STATE_IDLE;
+				v.state := STATE_SYNC;
+				v.cnt := SYNC_DURATION;
+				v.tx_paused := '0';
+				v.tx_xon_suppress := '0';
+			when STATE_SYNC =>
+				if rx_i /= '1' then
+					-- Must be high for a while.
+					v.state := STATE_RESET;
+				elsif r.cnt = 0 then
+					v.state := STATE_IDLE;
+				end if;
 			when STATE_IDLE =>
 				if rx_i = '0' then
 					v.cnt := libstored_pkg.maximum(0, (BIT_DURATION) / 2 - 2);
@@ -1207,24 +1278,44 @@ begin
 					v.data := rx_i & v.data(7 downto 1);
 					if r.len = 0 then
 						v.state := STATE_STOP;
-						v.valid := '1';
 					else
 						v.len := r.len - 1;
 					end if;
 				end if;
 			when STATE_STOP =>
 				if v.cnt = 0 then
+					if rx_i = '1' then
+						v.state := STATE_IDLE;
+
+						if XON_XOFF and r.data = XON then
+							if r.tx_paused = '0' and rx_pause = '0' and r.tx_xon_suppress = '0' then
+								-- Not paused, just send an XON to make sure that
+								-- we did not send an XOFF by accident (e.g., due to bit flips).
+								v.tx_xon := '1';
+								v.tx_xon_suppress := '1';
+							end if;
+
+							v.tx_paused := '0';
+						elsif XON_XOFF and r.data = XOFF then
+							v.tx_paused := '1';
+							v.tx_xon_suppress := '0';
+						else
+							v.valid := '1';
+						end if;
+					else
 --pragma translate_off
-					assert rx_i = '1' report "Invalid stop bit" severity warning;
-					v.data := (others => '-');
+						report "Invalid stop bit" severity warning;
+						v.data := (others => '-');
 --pragma translate_on
-					v.state := STATE_IDLE;
+						v.state := STATE_RESET;
+					end if;
 				end if;
 			end case;
 
 			if rstn /= '1' then
 				v.state := STATE_RESET;
 				v.rts := '1';
+				v.tx_xon_suppress := '0';
 			end if;
 
 			r_in <= v;
@@ -1235,6 +1326,8 @@ begin
 		rts <= r.rts;
 
 		tx_idle <= '1' when r.state = STATE_IDLE else '0';
+		tx_pause <= r.tx_paused;
+		tx_xon <= r.tx_xon;
 
 --pragma translate_off
 		assert not (rising_edge(clk) and rx_valid = '1' and rx_accept = '0')

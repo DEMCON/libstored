@@ -124,7 +124,8 @@ begin
 	UARTLayer_inst : entity work.UARTLayer
 		generic map (
 			SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ,
-			BAUD => BAUD
+			BAUD => BAUD,
+			XON_XOFF => true
 		)
 		port map (
 			clk => clk,
@@ -456,26 +457,36 @@ begin
 		end procedure;
 
 		procedure do_test_uart_rx_fc is
+			variable buf : buffer_t(0 to 0);
 		begin
 			test_start(test, "UartRxFlowControl");
-			-- FIFO has as size of 8 and will be almost empty at 5.
+			-- FIFO has as size of 16 and will be almost full at 11.
 			uart_do_rx(BAUD, uart_rx, uart_rts,
-				(x"01", x"02", x"03", x"04", x"05"));
+				(x"01", x"02", x"03", x"04", x"05", x"06", x"07", x"08", x"09", x"0a", x"0b"));
 			wait until rising_edge(clk);
 			test_expect_eq(test, uart_rts, '1');
+			uart_do_tx(BAUD, uart_tx, buf);
+			wait until rising_edge(clk);
+			test_expect_eq(test, buf(0), x"13"); -- XOFF
+
 			uart_encode_in.accept <= '1';
-			for i in 1 to 5 loop
+			for i in 1 to 11 loop
 				wait until rising_edge(clk);
 				test_expect_eq(test, uart_decode_out.valid, '1');
 				test_expect_eq(test, unsigned(uart_decode_out.data), i);
 			end loop;
 			uart_encode_in.accept <= '0';
-			uart_do_rx(BAUD, uart_rx, uart_rts, to_buffer(x"06"));
+
+			uart_do_tx(BAUD, uart_tx, buf);
+			wait until rising_edge(clk);
+			test_expect_eq(test, buf(0), x"11"); -- XON
+
+			uart_do_rx(BAUD, uart_rx, uart_rts, to_buffer(x"0c"));
 			wait until rising_edge(clk);
 			uart_encode_in.accept <= '1';
 			wait until rising_edge(clk);
 			test_expect_eq(test, uart_decode_out.valid, '1');
-			test_expect_eq(test, unsigned(uart_decode_out.data), 6);
+			test_expect_eq(test, unsigned(uart_decode_out.data), 12);
 			uart_encode_in.accept <= '0';
 		end procedure;
 
