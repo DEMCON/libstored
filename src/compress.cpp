@@ -199,5 +199,5 @@ bool CompressLayer::idle() const {
 
 } // namespace
 #else // !STORED_HAVE_HEATSHRINK
-char dummy_char_to_make_compress_cpp_non_empty;
+char dummy_char_to_make_compress_cpp_non_empty; // NOLINT
 #endif // STORED_HAVE_HEATSHRINK
