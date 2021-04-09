@@ -1011,6 +1011,11 @@ entity UARTLayer is
 		SYSTEM_CLK_FREQ : integer := 100e6;
 		BAUD : integer := 115200;
 		DECODE_OUT_FIFO_DEPTH : natural := 0;
+		-- Only enable XON/XOFF when there are no bit flips possible.
+		-- Otherwise, one could falsely see XOFF and suspend transmission.
+		-- The UARTLayer sends an XON when receiving the XOFF-XON-XON sequence,
+		-- which may solve the deadlock, but this mechanism may not be fool proof.
+		-- Moreover, always use the AsciiEscapeLayer to escape XON/XOFF in the data.
 		XON_XOFF : boolean := false
 	);
 	port (
@@ -1220,7 +1225,7 @@ begin
 
 	rx_g : if true generate
 		constant SYNC_DURATION : natural := BIT_DURATION * 10;
-		type state_t is (STATE_RESET, STATE_SYNC, STATE_IDLE, STATE_START, STATE_DATA, STATE_STOP);
+		type state_t is (STATE_RESET, STATE_SYNC, STATE_IDLE, STATE_EDGE, STATE_START, STATE_DATA, STATE_STOP);
 		type r_t is record
 			state : state_t;
 			cnt : natural range 0 to SYNC_DURATION;
@@ -1262,9 +1267,22 @@ begin
 				end if;
 			when STATE_IDLE =>
 				if rx_i = '0' then
-					v.cnt := libstored_pkg.maximum(0, (BIT_DURATION) / 2 - 2);
-						-- -2 is for meta stability delay
+					-- rx must be low for a quarter of a bit, otherwise
+					-- it is discarded as a glitch.
+					v.cnt := libstored_pkg.maximum(0, BIT_DURATION / 4);
+					v.state := STATE_EDGE;
+				end if;
+			when STATE_EDGE =>
+				if v.cnt = 0 then
+					-- On a perfect edge, we sync at sampling the bit exactly
+					-- halve way. If there is some noise at the edge,
+					-- this should be solved after a quarter of a bit, otherwise
+					-- the sample time gets close to the edge of the next bit.
+					v.cnt := libstored_pkg.maximum(0, integer(real(BIT_DURATION) / 2.0 - real(BIT_DURATION / 4)));
 					v.state := STATE_START;
+				elsif rx_i = '1' then
+					-- Was probably just a glitch.
+					v.state := STATE_IDLE;
 				end if;
 			when STATE_START =>
 				if v.cnt = 0 then
