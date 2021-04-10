@@ -1289,7 +1289,7 @@ public:
 		CLASS_NOCOPY(SerialLayer)
 	public:
 		typedef FileLayer base;
-		explicit SerialLayer(char const* name, unsigned long baud, bool rtscts = false, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit SerialLayer(char const* name, unsigned long baud, bool rtscts = false, bool xonxoff = false, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~SerialLayer() override is_default
 	};
 #endif // STORED_OS_WINDOWS || STORED_OS_POSIX

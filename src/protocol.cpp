@@ -3047,7 +3047,7 @@ StdioLayer::StdioLayer(ProtocolLayer* up, ProtocolLayer* down)
 //
 
 #ifdef STORED_OS_WINDOWS
-SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, ProtocolLayer* up, ProtocolLayer* down)
+SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, bool xonxoff, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 {
 	HANDLE h = INVALID_HANDLE_VALUE; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
@@ -3084,10 +3084,12 @@ SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, Prot
 	dcb.fOutxDsrFlow = FALSE;
 	dcb.fDtrControl = DTR_CONTROL_DISABLE;
 	dcb.fNull = FALSE;
-	dcb.fRtsControl = (DWORD)(rtscts ? RTS_CONTROL_ENABLE : RTS_CONTROL_DISABLE);
+	dcb.fRtsControl = (DWORD)(rtscts ? RTS_CONTROL_HANDSHAKE : RTS_CONTROL_DISABLE);
 	dcb.fAbortOnError = FALSE;
-	dcb.fOutX = FALSE;
-	dcb.fInX = FALSE;
+	dcb.fOutX = xonxoff;
+	dcb.fInX = xonxoff;
+	dcb.XonChar = '\x11';
+	dcb.XoffChar = '\x13';
 
 	if(!SetCommState(h, &dcb)) {
 		setLastError(EIO);
@@ -3096,7 +3098,7 @@ SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, Prot
 }
 
 #elif defined(STORED_OS_POSIX)
-SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, ProtocolLayer* up, ProtocolLayer* down)
+SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, bool xonxoff, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 {
 	int fd = -1;
@@ -3119,7 +3121,11 @@ SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, Prot
 	}
 
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
-	config.c_iflag &= (tcflag_t)~(BRKINT | ICRNL | INLCR | PARMRK | INPCK | ISTRIP | IXON);
+	config.c_iflag &= (tcflag_t)~(BRKINT | ICRNL | INLCR | PARMRK | INPCK | ISTRIP | IXON | IXOFF);
+	if(xonxoff) {
+		// NOLINTNEXTLINE(hicpp-signed-bitwise)
+		config.c_iflag |= (tcflag_t)(IXON | IXOFF);
+	}
 	config.c_oflag = 0;
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	config.c_lflag &= (tcflag_t)~(ECHO | ECHONL | ICANON | IEXTEN | ISIG);

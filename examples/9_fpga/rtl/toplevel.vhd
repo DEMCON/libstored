@@ -133,7 +133,8 @@ begin
 	begin
 		UARTLayer_inst : entity work.UARTLayer
 			generic map (
-				SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ
+				SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ,
+				XON_XOFF => true
 			)
 			port map (
 				clk => clk,
