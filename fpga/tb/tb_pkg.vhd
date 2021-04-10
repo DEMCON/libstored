@@ -73,6 +73,7 @@ package libstored_tb_pkg is
 
 	procedure test_expect_true(variable test : inout test_t; constant x : in boolean; constant ref : string := "");
 	procedure test_expect_false(variable test : inout test_t; constant x : in boolean; constant ref : string := "");
+	procedure test_expect_eq(variable test : inout test_t; constant x : in integer; constant expect : in integer; constant ref : string := "");
 	procedure test_expect_eq(variable test : inout test_t; constant x : in unsigned; constant expect : in natural; constant ref : string := "");
 	procedure test_expect_eq(variable test : inout test_t; constant x: in signed; constant expect : in integer; constant ref : string := "");
 	procedure test_expect_eq(variable test : inout test_t; constant x, expect : in std_logic; constant ref : string := "");
@@ -493,6 +494,11 @@ package body libstored_tb_pkg is
 		if x then
 			test_error(test, "Got " & test_string(x) & ", expected " & test_string(false), ref);
 		end if;
+	end procedure;
+
+	procedure test_expect_eq(variable test : inout test_t; constant x : in integer; constant expect : in integer; constant ref : string := "") is
+	begin
+		test_expect_eq(test, to_signed(x, 32), expect, ref);
 	end procedure;
 
 	procedure test_expect_eq(variable test : inout test_t; constant x : in unsigned; constant expect : in natural; constant ref : string := "") is

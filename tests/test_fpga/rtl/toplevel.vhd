@@ -56,6 +56,7 @@ architecture behav of test_fpga is
 	constant BAUD : natural := 11000000;
 	signal uart_encode_in, uart_decode_out : msg_t := msg_term;
 	signal uart_rx, uart_tx, uart_cts, uart_rts : std_logic := '1';
+	signal uart_bit_clk : natural;
 
 	signal term_encode_in, term_encode_out, term_decode_in, term_decode_out : msg_t := msg_term;
 	signal term_terminal_out, term_terminal_in : msg_t := msg_term;
@@ -124,7 +125,8 @@ begin
 	UARTLayer_inst : entity work.UARTLayer
 		generic map (
 			SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ,
-			BAUD => BAUD,
+			BAUD => 0, --BAUD,
+			AUTO_BAUD_MINIMUM => 960000,
 			XON_XOFF => true
 		)
 		port map (
@@ -135,7 +137,8 @@ begin
 			rx => uart_rx,
 			tx => uart_tx,
 			cts => uart_cts,
-			rts => uart_rts
+			rts => uart_rts,
+			bit_clk => uart_bit_clk
 		);
 
 	TerminalLayer_inst : entity work.TerminalLayer
@@ -405,6 +408,37 @@ begin
 			test_expect_true(test, last);
 			test_expect_eq(test, var_out.\default int8\.value, 16#80#);
 			test_expect_eq(test, var_out2.\default int8\.value, 16#82#);
+		end procedure;
+
+		procedure reset_auto_baud is
+		begin
+			wait until rising_edge(clk);
+			uart_rx <= '0';
+			wait for 1000 ms / SYSTEM_CLK_FREQ * uart_bit_clk * 11;
+			wait until rising_edge(clk);
+			uart_rx <= '1';
+			-- Wait for UART SYNC_DURATION.
+			wait for 0.021 ms;
+			wait until rising_edge(clk);
+		end procedure;
+
+		procedure do_test_uart_auto_baud is
+		begin
+			test_start(test, "UartAutoBaud");
+			-- SYNC_DURATION is two bytes at minimum baud rate, which is set
+			-- at 9600 * 100.
+			wait for 0.021 ms;
+
+			uart_do_rx(BAUD / 3, uart_rx, uart_rts, to_buffer(x"11")); -- XON
+			test_expect_eq(test, uart_bit_clk, integer(real(SYSTEM_CLK_FREQ) / real(BAUD / 3)));
+			reset_auto_baud;
+
+			uart_do_rx(BAUD / 2, uart_rx, uart_rts, to_buffer(x"13")); -- XOFF
+			test_expect_eq(test, uart_bit_clk, integer(real(SYSTEM_CLK_FREQ) / real(BAUD / 2)));
+			reset_auto_baud;
+
+			uart_do_rx(BAUD, uart_rx, uart_rts, to_buffer(x"1b")); -- ESC
+			test_expect_eq(test, uart_bit_clk, integer(real(SYSTEM_CLK_FREQ) / real(BAUD)));
 		end procedure;
 
 		procedure do_test_uart_tx is
@@ -677,6 +711,7 @@ begin
 		do_test_chained_update;
 		do_test_chained_update_out;
 
+		do_test_uart_auto_baud;
 		do_test_uart_tx;
 		do_test_uart_tx_fc;
 		do_test_uart_rx;
