@@ -3200,6 +3200,7 @@ int SerialLayer::resetAutoBaud()
 
 	setLastError(0);
 
+	int res = 0;
 	if(tcsendbreak(fd_r(), 0))
 		res = errno;
 
