@@ -3095,6 +3095,40 @@ SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, bool
 		setLastError(EIO);
 		return;
 	}
+
+	resetAutoBaud();
+}
+
+int SerialLayer::resetAutoBaud()
+{
+	if(!isOpen())
+		return setLastError(EAGAIN);
+
+	setLastError(0);
+
+	HANDLE h = fd_r();
+	int res = 0;
+	if(!SetCommBreak(h))
+		res = EIO;
+
+	// Kind of arbitrary sleep. And Windows does not really guarantee how much
+	// we will sleep actually. Could be improved.
+	Sleep(125);
+
+	if(!ClearCommBreak(h))
+		res = EIO;
+
+	// Some sleep is required here. It seems that when sending data immediately
+	// after ClearCommBreak(), it gets lost somehow (at least in the setup I
+	// tested).
+	Sleep(125);
+
+	encode("\x11", 1);
+
+	if(res)
+		setLastError(res);
+
+	return lastError();
 }
 
 #elif defined(STORED_OS_POSIX)
@@ -3155,6 +3189,26 @@ SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, bool
 		setLastError(errno);
 		return;
 	}
+
+	resetAutoBaud();
+}
+
+int SerialLayer::resetAutoBaud()
+{
+	if(!isOpen())
+		return setLastError(EAGAIN);
+
+	setLastError(0);
+
+	if(tcsendbreak(fd_r(), 0))
+		res = errno;
+
+	encode("\x11", 1);
+
+	if(res)
+		setLastError(res);
+
+	return lastError();
 }
 #endif // STORED_OS_POSIX
 
