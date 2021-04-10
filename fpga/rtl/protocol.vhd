@@ -1016,7 +1016,9 @@ entity UARTLayer is
 		-- The UARTLayer sends an XON when receiving the XOFF-XON-XON sequence,
 		-- which may solve the deadlock, but this mechanism may not be fool proof.
 		-- Moreover, always use the AsciiEscapeLayer to escape XON/XOFF in the data.
-		XON_XOFF : boolean := false
+		XON_XOFF : boolean := false;
+		-- Minimum number of bytes that can be received after sending XOFF.
+		XOFF_SPARE : natural := 0
 	);
 	port (
 		clk : in std_logic;
@@ -1039,17 +1041,6 @@ architecture rtl of UARTLayer is
 	constant XON : std_logic_vector(7 downto 0) := x"11";
 	constant XOFF : std_logic_vector(7 downto 0) := x"13";
 
-	impure function calc_decode_out_fifo_depth return natural is
-	begin
-		if XON_XOFF then
-			-- XON/XOFF is slow and possibly expensive. So, a large
-			-- buffer would be nice.
-			return libstored_pkg.maximum(DECODE_OUT_FIFO_DEPTH, 12);
-		else
-			return libstored_pkg.maximum(DECODE_OUT_FIFO_DEPTH, 4);
-		end if;
-	end function;
-
 	impure function calc_decode_out_fifo_almost_full return natural is
 	begin
 		if XON_XOFF then
@@ -1057,12 +1048,23 @@ architecture rtl of UARTLayer is
 			-- send XOFF, which should be received, but the other party might
 			-- be currently sending a byte when it parses the XOFF.
 			-- So, we need at least 3, but allow for a bit more.
-			return 6;
+			return 6 + XOFF_SPARE;
 		else
 			-- In case of RTS/CTS, hardware flow control is supposed to
 			-- react immediately. So, it only finishes the current byte
 			-- that is in transmission. Just add room for one more.
 			return 2;
+		end if;
+	end function;
+
+	impure function calc_decode_out_fifo_depth return natural is
+	begin
+		if XON_XOFF then
+			-- XON/XOFF is slow and possibly expensive. So, a large
+			-- buffer would be nice.
+			return libstored_pkg.maximum(DECODE_OUT_FIFO_DEPTH, calc_decode_out_fifo_almost_full + 6);
+		else
+			return libstored_pkg.maximum(DECODE_OUT_FIFO_DEPTH, 4);
 		end if;
 	end function;
 
