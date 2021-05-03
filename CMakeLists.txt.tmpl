@@ -69,7 +69,7 @@ endif()
 if(MSVC)
 	target_compile_options({{libprefix}}libstored PRIVATE /Wall /WX)
 else()
-	target_compile_options({{libprefix}}libstored PRIVATE -Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion -ffunction-sections -fdata-sections)
+	target_compile_options({{libprefix}}libstored PRIVATE -Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion -Wshadow -ffunction-sections -fdata-sections)
 endif()
 
 CHECK_INCLUDE_FILE_CXX("valgrind/memcheck.h" LIBSTORED_HAVE_VALGRIND)
@@ -105,6 +105,10 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 		option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ON)
 		if(LIBSTORED_CLANG_TIDY)
 			string(CONCAT CLANG_TIDY_CHECKS "-checks="
+				"bugprone-*,"
+				"clang-analyzer-*,"
+				"concurrency-*,"
+
 				"cppcoreguidelines-*,"
 				"-cppcoreguidelines-avoid-c-arrays,"
 				"-cppcoreguidelines-avoid-goto,"
@@ -120,18 +124,14 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 				"-hicpp-avoid-c-arrays,"
 				"-hicpp-avoid-goto,"
 				"-hicpp-braces-around-statements,"
+				"-hicpp-member-init,"
 				"-hicpp-no-array-decay,"
 				"-hicpp-no-malloc,"
-				"-hicpp-member-init,"
 				"-hicpp-uppercase-literal-suffix,"
 				"-hicpp-use-auto,"
 				"-hicpp-use-override,"
 				"-hicpp-vararg,"
 
-				"performance-*,"
-				"clang-analyzer-*,"
-				"bugprone-*,"
-				"portability-*,"
 				"misc-*,"
 				"-misc-no-recursion,"
 				"-misc-non-private-member-variables-in-classes,"
@@ -145,6 +145,9 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 				"-readability-make-member-function-const,"
 				"-readability-uppercase-literal-suffix,"
 				"-readability-redundant-access-specifiers,"
+
+				"performance-*,"
+				"portability-*,"
 			)
 			set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
 				"--extra-arg=-I${libstored_dir}/include"
@@ -162,6 +165,39 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 			set_target_properties({{libprefix}}libstored
 				PROPERTIES CXX_CLANG_TIDY "")
 		endif()
+	endif()
+endif()
+
+if(LIBSTORED_ENABLE_ASAN)
+	target_compile_options({{libprefix}}libstored PRIVATE -fsanitize=address -fno-omit-frame-pointer)
+	target_compile_definitions({{libprefix}}libstored PRIVATE -DSTORED_ENABLE_ASAN)
+	if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
+		target_link_options({{libprefix}}libstored INTERFACE -fsanitize=address)
+	else()
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
+		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=address")
+	endif()
+endif()
+
+if(LIBSTORED_ENABLE_LSAN)
+	target_compile_options({{libprefix}}libstored PRIVATE -fsanitize=leak -fno-omit-frame-pointer)
+	target_compile_definitions({{libprefix}}libstored PRIVATE -DSTORED_ENABLE_LSAN)
+	if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
+		target_link_options({{libprefix}}libstored INTERFACE -fsanitize=leak)
+	else()
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=leak")
+		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=leak")
+	endif()
+endif()
+
+if(LIBSTORED_ENABLE_UBSAN)
+	target_compile_options({{libprefix}}libstored PRIVATE -fsanitize=undefined -fno-omit-frame-pointer)
+	target_compile_definitions({{libprefix}}libstored PRIVATE -DSTORED_ENABLE_UBSAN)
+	if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
+		target_link_options({{libprefix}}libstored INTERFACE -fsanitize=undefined)
+	else()
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=undefined")
+		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=undefined")
 	endif()
 endif()
 

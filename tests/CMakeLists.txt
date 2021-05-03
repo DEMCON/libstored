@@ -13,6 +13,11 @@ if(MSVC)
 	endif()
 else()
 	add_compile_options(-Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wconversion -ffunction-sections -fdata-sections)
+	if(UNIX)
+		set(LIBSTORED_ENABLE_ASAN ON)
+		set(LIBSTORED_ENABLE_LSAN ON)
+		set(LIBSTORED_ENABLE_UBSAN ON)
+	endif()
 endif()
 
 set(CMAKE_CXX_STANDARD 14)
@@ -69,10 +74,12 @@ endif()
 
 if(LIBSTORED_EXAMPLES)
 	macro(libstored_example_test EXAMPLE)
-		if(HAVE_VALGRIND)
-			add_test(NAME ${EXAMPLE}-valgrind
-				COMMAND valgrind --error-exitcode=1 --leak-check=full $<TARGET_FILE:${EXAMPLE}> ${ARGN})
-		endif()
+
+		# Disabled in favor of sanitizers.
+#		if(HAVE_VALGRIND)
+#			add_test(NAME ${EXAMPLE}-valgrind
+#				COMMAND valgrind --error-exitcode=1 --leak-check=full $<TARGET_FILE:${EXAMPLE}> ${ARGN})
+#		endif()
 
 		if(WIN32)
 			add_test(NAME ${EXAMPLE}-run

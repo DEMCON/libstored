@@ -78,11 +78,11 @@ public:
 
 	virtual ~ExtendedDebugger() override is_default;
 
-	virtual void capabilities(char*& list, size_t& len, size_t reserve = 0) override {
+	virtual void capabilities(char*& caps, size_t& len, size_t reserve = 0) override {
 		// Get the default capabilities.
-		base::capabilities(list, len, reserve + 1 /* add room for our 'z' cmd */);
+		base::capabilities(caps, len, reserve + 1 /* add room for our 'z' cmd */);
 		// Add our 'z' cmd.
-		list[len++] = 'z';
+		caps[len++] = 'z';
 	}
 
 	virtual void process(void const* frame, size_t len, ProtocolLayer& response) override {

@@ -669,7 +669,7 @@ namespace stored {
 		static char const Nack = '?';
 
 	public:
-		virtual void capabilities(char*& list, size_t& len, size_t reserve = 0);
+		virtual void capabilities(char*& caps, size_t& len, size_t reserve = 0);
 		virtual char const* identification();
 		void setIdentification(char const* identification = nullptr);
 		virtual bool version(ProtocolLayer& response);

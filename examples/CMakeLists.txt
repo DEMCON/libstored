@@ -1,7 +1,12 @@
 if(MSVC)
 	add_compile_options(/Wall /WX)
 else()
-	add_compile_options(-Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion -ffunction-sections -fdata-sections)
+	add_compile_options(-Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion -Wshadow -ffunction-sections -fdata-sections)
+	if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND UNIX)
+		set(LIBSTORED_ENABLE_ASAN ON)
+		set(LIBSTORED_ENABLE_LSAN ON)
+		set(LIBSTORED_ENABLE_UBSAN ON)
+	endif()
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

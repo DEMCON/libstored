@@ -14,6 +14,10 @@ if(LIBSTORED_HAVE_LIBZMQ)
 		set(BUILD_TESTS OFF CACHE BOOL "Disabling building tests")
 		set(BUILD_STATIC OFF CACHE BOOL "Don't build static library" FORCE)
 
+		if(LIBSTORED_ENABLE_ASAN)
+			set(ENABLE_ASAN ON)
+		endif()
+
 		if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 			add_compile_options(-Wno-unused-parameter -Wno-inconsistent-missing-override -Wno-unused-const-variable -Wno-missing-field-initializers -Wno-unused-variable)
 		endif()

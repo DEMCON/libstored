@@ -6,5 +6,6 @@ cstyleCast:*
 constParameter:*
 unmatchedSuppression:*
 unmatchedSuppression:examples/1_hello/main.cpp
+unmatchedSuppression:examples/7_protocol/main.cpp
 unmatchedSuppression:src/debugger.cpp
 unmatchedSuppression:src/protocol.cpp

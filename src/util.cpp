@@ -231,6 +231,15 @@ char const* banner() {
 #ifdef STORED_POLL_POLL
 		" poll=poll"
 #endif
+#ifdef STORED_ENABLE_ASAN
+		" asan"
+#endif
+#ifdef STORED_ENABLE_LSAN
+		" lsan"
+#endif
+#ifdef STORED_ENABLE_UBSAN
+		" ubsan"
+#endif
 #ifdef _DEBUG
 		" debug"
 #endif

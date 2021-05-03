@@ -156,8 +156,8 @@ namespace stored {
 		 * \brief Element in the \c m_changes administration.
 		 */
 		struct ObjectInfo {
-			ObjectInfo(StoreJournal::Key key, StoreJournal::Size len, StoreJournal::ShortSeq seq)
-				: key(key), len(len), seq(seq), highest(seq)
+			ObjectInfo(StoreJournal::Key key_, StoreJournal::Size len_, StoreJournal::ShortSeq seq_)
+				: key(key_), len(len_), seq(seq_), highest(seq_)
 			{}
 
 			StoreJournal::Key key;

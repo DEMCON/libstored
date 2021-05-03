@@ -273,48 +273,48 @@ void Debugger::list(ListCallbackArg* f, void* arg) const {
  * The \p list is allocated on the #spm().
  * The pointer and the length are returned through the \p list and \p len arguments.
  *
- * \param list the list of capabilities
+ * \param caps the list of capabilities
  * \param len the size of the buffer of \p list
  * \param reserve when allocating memory for \p list, add this number of bytes
  */
-void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
+void Debugger::capabilities(char*& caps, size_t& len, size_t reserve) {
 	size_t const maxlen = 16;
-	list = spm().alloc<char>(maxlen + reserve);
+	caps = spm().alloc<char>(maxlen + reserve);
 	len = 0;
 
-	list[len++] = CmdCapabilities;
+	caps[len++] = CmdCapabilities;
 	if(Config::DebuggerRead)
-		list[len++] = CmdRead;
+		caps[len++] = CmdRead;
 	if(Config::DebuggerWrite)
-		list[len++] = CmdWrite;
+		caps[len++] = CmdWrite;
 	if(Config::DebuggerEcho)
-		list[len++] = CmdEcho;
+		caps[len++] = CmdEcho;
 	if(Config::DebuggerList)
-		list[len++] = CmdList;
+		caps[len++] = CmdList;
 	if(Config::DebuggerAlias > 0)
-		list[len++] = CmdAlias;
+		caps[len++] = CmdAlias;
 	if(Config::DebuggerMacro > 0)
-		list[len++] = CmdMacro;
+		caps[len++] = CmdMacro;
 	if(Config::DebuggerIdentification) {
 		char const* id = identification();
 		if(id && *id)
-			list[len++] = CmdIdentification;
+			caps[len++] = CmdIdentification;
 	}
 	if(Config::DebuggerVersion > 0)
-		list[len++] = CmdVersion;
+		caps[len++] = CmdVersion;
 	if(Config::DebuggerReadMem)
-		list[len++] = CmdReadMem;
+		caps[len++] = CmdReadMem;
 	if(Config::DebuggerWriteMem)
-		list[len++] = CmdWriteMem;
+		caps[len++] = CmdWriteMem;
 	if(Config::DebuggerStreams > 0 && Config::DebuggerStreamBuffer > 0)
-		list[len++] = CmdStream;
+		caps[len++] = CmdStream;
 	if(Config::DebuggerTrace)
-		list[len++] = CmdTrace;
+		caps[len++] = CmdTrace;
 	if(Config::CompressStreams)
-		list[len++] = CmdFlush;
+		caps[len++] = CmdFlush;
 
 	stored_assert(len < maxlen);
-	list[len] = 0;
+	caps[len] = 0;
 }
 
 /*!

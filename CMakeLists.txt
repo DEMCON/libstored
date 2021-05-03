@@ -17,6 +17,10 @@ if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
       cmake ..")
 endif()
 
+option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" OFF)
+option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" OFF)
+option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" OFF)
+
 add_subdirectory(version)
 
 option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" ON)
@@ -157,7 +161,14 @@ option(LIBSTORED_PIP_INSTALL_USER "Run pip install --user when installing wheel 
 add_subdirectory(client)
 
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0")
-	option(LIBSTORED_TESTS "Build the tests" ON)
+	if(CMAKE_CROSSCOMPILING)
+		set(LIBSTORED_TESTS_DEFAULT OFF)
+	else()
+		set(LIBSTORED_TESTS_DEFAULT ON)
+	endif()
+
+	option(LIBSTORED_TESTS "Build the tests" ${LIBSTORED_TESTS_DEFAULT})
+
 	if(LIBSTORED_TESTS)
 		enable_testing()
 
