@@ -222,6 +222,9 @@ typedef SSIZE_T ssize_t;
 #    ifndef nullptr
 #      define nullptr NULL
 #    endif
+#    ifndef noexcept
+#      define noexcept throw()
+#    endif
 #  endif
 #endif
 

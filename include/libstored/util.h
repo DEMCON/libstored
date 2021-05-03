@@ -165,7 +165,7 @@
 #  if STORED_cplusplus >= 201103L
 #    define is_default = default;
 #  else
-#    define is_default {}
+#    define is_default noexcept {}
 #  endif
 #endif
 
@@ -180,30 +180,30 @@ namespace stored {
 #  define stored_assert(expr)	do { if(::stored::Config::EnableAssert) { assert(expr); } } while(false)
 #endif
 
-	void swap_endian(void* buffer, size_t len);
-	void memcpy_swap(void* __restrict__ dst, void const* __restrict__ src, size_t len);
-	int memcmp_swap(void const* a, void const* b, size_t len);
+	void swap_endian(void* buffer, size_t len) noexcept;
+	void memcpy_swap(void* __restrict__ dst, void const* __restrict__ src, size_t len) noexcept;
+	int memcmp_swap(void const* a, void const* b, size_t len) noexcept;
 
 	template <size_t S>
-	static inline void swap_endian_(void* buffer) {
+	static inline void swap_endian_(void* buffer) noexcept {
 		swap_endian(buffer, S);
 	}
 
 #ifdef STORED_COMPILER_GCC
 	template <>
-	inline void swap_endian_<2>(void* buffer) {
+	inline void swap_endian_<2>(void* buffer) noexcept {
 		uint16_t* x = static_cast<uint16_t*>(buffer);
 		*x = __builtin_bswap16(*x);
 	}
 
 	template <>
-	inline void swap_endian_<4>(void* buffer) {
+	inline void swap_endian_<4>(void* buffer) noexcept {
 		uint32_t* x = static_cast<uint32_t*>(buffer);
 		*x = __builtin_bswap32(*x);
 	}
 
 	template <>
-	inline void swap_endian_<8>(void* buffer) {
+	inline void swap_endian_<8>(void* buffer) noexcept {
 		uint64_t* x = static_cast<uint64_t*>(buffer);
 		*x = __builtin_bswap64(*x);
 	}
@@ -211,19 +211,19 @@ namespace stored {
 
 #ifdef STORED_COMPILER_MSVC
 	template <>
-	inline void swap_endian_<sizeof(unsigned short)>(void* buffer) {
+	inline void swap_endian_<sizeof(unsigned short)>(void* buffer) noexcept {
 		unsigned short* x = static_cast<unsigned short*>(buffer);
 		*x = _byteswap_ushort(*x);
 	}
 
 	template <>
-	inline void swap_endian_<sizeof(unsigned long)>(void* buffer) {
+	inline void swap_endian_<sizeof(unsigned long)>(void* buffer) noexcept {
 		unsigned long* x = static_cast<unsigned long*>(buffer);
 		*x = _byteswap_ulong(*x);
 	}
 
 	template <>
-	inline void swap_endian_<sizeof(unsigned __int64)>(void* buffer) {
+	inline void swap_endian_<sizeof(unsigned __int64)>(void* buffer) noexcept {
 		unsigned __int64* x = static_cast<unsigned __int64*>(buffer);
 		*x = _byteswap_uint64(*x);
 	}
@@ -233,7 +233,7 @@ namespace stored {
 	 * \brief Swap endianness of the given value.
 	 */
 	template <typename T>
-	static inline T swap_endian(T value) {
+	static inline T swap_endian(T value) noexcept {
 		swap_endian_<sizeof(T)>(&value);
 		return value;
 	}
@@ -242,7 +242,7 @@ namespace stored {
 	 * \brief Swap host to big endianness.
 	 */
 	template <typename T>
-	static inline T endian_h2b(T value) {
+	static inline T endian_h2b(T value) noexcept {
 #ifdef STORED_LITTLE_ENDIAN
 		swap_endian_<sizeof(T)>(&value);
 #endif
@@ -253,7 +253,7 @@ namespace stored {
 	 * \brief Swap host to network (big) endianness.
 	 */
 	template <typename T>
-	static inline T endian_h2n(T value) {
+	static inline T endian_h2n(T value) noexcept {
 		return endian_h2b<T>(value);
 	}
 
@@ -261,7 +261,7 @@ namespace stored {
 	 * \brief Swap host to little endianness.
 	 */
 	template <typename T>
-	static inline T endian_h2l(T value) {
+	static inline T endian_h2l(T value) noexcept {
 #ifdef STORED_BIG_ENDIAN
 		swap_endian_<sizeof(T)>(&value);
 #endif
@@ -272,7 +272,7 @@ namespace stored {
 	 * \brief Swap host to store endianness.
 	 */
 	template <typename T>
-	static inline T endian_h2s(T value) {
+	static inline T endian_h2s(T value) noexcept {
 		if(Config::StoreInLittleEndian)
 			return endian_h2l<T>(value);
 		else
@@ -283,7 +283,7 @@ namespace stored {
 	 * \brief Swap big to host endianness.
 	 */
 	template <typename T>
-	static inline T endian_b2h(T value) {
+	static inline T endian_b2h(T value) noexcept {
 #ifdef STORED_LITTLE_ENDIAN
 		swap_endian_<sizeof(T)>(&value);
 #endif
@@ -294,7 +294,7 @@ namespace stored {
 	 * \brief Swap network (big) to host endianness.
 	 */
 	template <typename T>
-	static inline T endian_n2h(T value) {
+	static inline T endian_n2h(T value) noexcept {
 		return endian_b2h<T>(value);
 	}
 
@@ -302,7 +302,7 @@ namespace stored {
 	 * \brief Swap little to host endianness.
 	 */
 	template <typename T>
-	static inline T endian_l2h(T value) {
+	static inline T endian_l2h(T value) noexcept {
 #ifdef STORED_BIG_ENDIAN
 		swap_endian_<sizeof(T)>(&value);
 #endif
@@ -313,14 +313,14 @@ namespace stored {
 	 * \brief Swap store to host endianness.
 	 */
 	template <typename T>
-	static inline T endian_s2h(T value) {
+	static inline T endian_s2h(T value) noexcept {
 		if(Config::StoreInLittleEndian)
 			return endian_l2h<T>(value);
 		else
 			return endian_b2h<T>(value);
 	}
 
-	std::string string_literal(void const* buffer, size_t len, char const* prefix = nullptr);
+	std::string string_literal(void const* buffer, size_t len, char const* prefix = nullptr) noexcept;
 
 	/*!
 	 * \brief Determine the number of bytes to save the given unsigned value.
@@ -359,7 +359,7 @@ namespace stored {
 
 		template <typename R> struct saturated_cast_helper
 		{
-			template <typename T> __attribute__((pure)) static R cast(T value)
+			template <typename T> __attribute__((pure)) static R cast(T value) noexcept
 			{
 				// Lower bound check
 				if(std::numeric_limits<R>::is_integer) {
@@ -399,30 +399,30 @@ namespace stored {
 				return static_cast<R>(value);
 			}
 
-			__attribute__((pure)) static R cast(float value) { return cast(llroundf(value)); }
-			__attribute__((pure)) static R cast(double value) { return cast(llround(value)); }
-			__attribute__((pure)) static R cast(long double value) { return cast(llroundl(value)); }
-			__attribute__((pure)) static R cast(bool value) { return static_cast<R>(value); }
-			__attribute__((pure)) static R cast(R value) { return value; }
+			__attribute__((pure)) static R cast(float value) noexcept { return cast(llroundf(value)); }
+			__attribute__((pure)) static R cast(double value) noexcept { return cast(llround(value)); }
+			__attribute__((pure)) static R cast(long double value) noexcept { return cast(llroundl(value)); }
+			__attribute__((pure)) static R cast(bool value) noexcept { return static_cast<R>(value); }
+			__attribute__((pure)) static R cast(R value) noexcept { return value; }
 		};
 
-		template <> struct saturated_cast_helper<float>  { template <typename T> constexpr static float cast(T value) { return static_cast<float>(value); } };
-		template <> struct saturated_cast_helper<double> { template <typename T> constexpr static double cast(T value) { return static_cast<double>(value); } };
-		template <> struct saturated_cast_helper<long double> { template <typename T> constexpr static long double cast(T value) { return static_cast<long double>(value); } };
-		template <> struct saturated_cast_helper<bool>   { template <typename T> __attribute__((pure)) static bool cast(T value) { return static_cast<bool>(saturated_cast_helper<int>::cast(value)); } };
+		template <> struct saturated_cast_helper<float>  { template <typename T> constexpr static float cast(T value) noexcept { return static_cast<float>(value); } };
+		template <> struct saturated_cast_helper<double> { template <typename T> constexpr static double cast(T value) noexcept { return static_cast<double>(value); } };
+		template <> struct saturated_cast_helper<long double> { template <typename T> constexpr static long double cast(T value) noexcept { return static_cast<long double>(value); } };
+		template <> struct saturated_cast_helper<bool>   { template <typename T> __attribute__((pure)) static bool cast(T value) noexcept { return static_cast<bool>(saturated_cast_helper<int>::cast(value)); } };
 	}
 
-	size_t strncpy(char* __restrict__ dst, char const* __restrict__ src, size_t len);
-	int strncmp(char const* __restrict__ str1, size_t len1, char const* __restrict__ str2, size_t len2 = std::numeric_limits<size_t>::max());
+	size_t strncpy(char* __restrict__ dst, char const* __restrict__ src, size_t len) noexcept;
+	int strncmp(char const* __restrict__ str1, size_t len1, char const* __restrict__ str2, size_t len2 = std::numeric_limits<size_t>::max()) noexcept;
 
-	char const* banner();
+	char const* banner() noexcept;
 } // namespace
 
 /*!
  * \brief Converts a number type to another one, with proper rounding and saturation.
  */
 template <typename R, typename T>
-__attribute__((pure)) R saturated_cast(T value) { return stored::impl::saturated_cast_helper<R>::cast(value); }
+__attribute__((pure)) R saturated_cast(T value) noexcept { return stored::impl::saturated_cast_helper<R>::cast(value); }
 
 #define STORE_BASE_CLASS(Base, Impl) ::stored::Base< Impl >
 

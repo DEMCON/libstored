@@ -81,19 +81,19 @@ namespace stored {
 		};
 
 		/*! \brief Checks if the given type is a function. */
-		static bool isFunction(type t) { return t & FlagFunction; }
+		constexpr static bool isFunction(type t) noexcept { return t & FlagFunction; }
 		/*! \brief Checks if the given type has a fixed length, or is a function with such an argument. */
-		static bool isFixed(type t) { return t & FlagFixed; }
+		constexpr static bool isFixed(type t) noexcept { return t & FlagFixed; }
 		/*! \brief Checks if the given type is an integer, or is a function with such an argument. */
-		static bool isInt(type t) { return isFixed(t) && (t & FlagInt); }
+		constexpr static bool isInt(type t) noexcept { return isFixed(t) && (t & FlagInt); }
 		/*! \brief Checks if the given type is signed number, or is a function with such an argument. */
-		static bool isSigned(type t) { return isFixed(t) && (t & FlagSigned); }
+		constexpr static bool isSigned(type t) noexcept { return isFixed(t) && (t & FlagSigned); }
 		/*! \brief Checks if the given type is special (non-fixed size) type, or is a function with such an argument. */
-		static bool isSpecial(type t) { return (t & MaskFlags) == 0; }
+		constexpr static bool isSpecial(type t) noexcept { return (t & MaskFlags) == 0; }
 		/*! \brief Returns the size of the (function argument) type, or 0 when it is not fixed. */
-		static size_t size(type t) { return !isFixed(t) ? 0u : (size_t)(t & MaskSize) + 1u; }
+		constexpr static size_t size(type t) noexcept { return !isFixed(t) ? 0u : (size_t)(t & MaskSize) + 1u; }
 		/*! \brief Checks if endianness of given type is swapped in the store's buffer. */
-		static bool isStoreSwapped(type t) {
+		constexpr static bool isStoreSwapped(type t) noexcept {
 			return
 #ifdef STORED_LITTLE_ENDIAN
 				!
@@ -103,7 +103,7 @@ namespace stored {
 		}
 	};
 
-	constexpr static inline Type::type operator|(Type::type a, Type::type b) { return (Type::type)((uint8_t)a | (uint8_t)b); }
+	constexpr static inline Type::type operator|(Type::type a, Type::type b) noexcept { return (Type::type)((uint8_t)a | (uint8_t)b); }
 
 	namespace impl {
 		/*! \brief Returns the #stored::Type::type of the given \c int type. */
@@ -165,8 +165,11 @@ namespace stored {
 		 * \param container the Container this Variable belongs to
 		 * \param buffer the reference to this Variable's buffer inside container's buffer
 		 */
+#ifndef _DEBUG
+		constexpr
+#endif
 		// cppcheck-suppress uninitMemberVar
-		Variable(Container& UNUSED_PAR(container), type& buffer)
+		Variable(Container& UNUSED_PAR(container), type& buffer) noexcept
 			: m_buffer(&buffer)
 		{
 			stored_assert(((uintptr_t)&buffer & (sizeof(type) - 1)) == 0);
@@ -176,18 +179,18 @@ namespace stored {
 		 * \brief Constructor for an invalid Variable.
 		 */
 		// cppcheck-suppress uninitMemberVar
-		Variable() : m_buffer() {}
+		constexpr Variable() noexcept : m_buffer() {}
 
 		/*!
 		 * \brief Copy construct, such that this Variable points to the same buffer the given Variable does.
 		 */
-		Variable(Variable const& v) { (*this) = v; }
+		Variable(Variable const& v) noexcept { (*this) = v; }
 
 		/*!
 		 * \brief Let this Variable point to the same buffer as the given Variable.
 		 */
 		// cppcheck-suppress operatorEqVarError
-		Variable& operator=(Variable const& v) { // NOLINT(bugprone-unhandled-self-assignment)
+		Variable& operator=(Variable const& v) noexcept { // NOLINT(bugprone-unhandled-self-assignment)
 			m_buffer = v.m_buffer;
 			return *this;
 		}
@@ -204,19 +207,19 @@ namespace stored {
 		/*!
 		 * \brief Dtor.
 		 */
-		~Variable() = default;
+		~Variable() noexcept = default;
 #else
 		/*!
 		 * \brief Dtor.
 		 */
-		~Variable() {}
+		~Variable() noexcept {}
 #endif
 
 		/*!
 		 * \brief Returns the value.
 		 * \details Only call this function when it is #valid().
 		 */
-		type get() const {
+		type get() const noexcept {
 			stored_assert(valid());
 			return endian_s2h(buffer());
 		}
@@ -226,7 +229,7 @@ namespace stored {
 		 * \details Only call this function when it is #valid().
 		 */
 		template <typename U>
-		U as() const { return saturated_cast<U>(get()); }
+		U as() const noexcept { return saturated_cast<U>(get()); }
 
 		/*!
 		 * \brief Returns the value, which is identical to #get().
@@ -234,13 +237,13 @@ namespace stored {
 #if STORED_cplusplus >= 201103L
 		explicit
 #endif
-		operator type() const { return get(); } // NOLINT(hicpp-explicit-conversions)
+		operator type() const noexcept { return get(); } // NOLINT(hicpp-explicit-conversions)
 
 		/*!
 		 * \brief Sets the value.
 		 * \details Only call this function when it is #valid().
 		 */
-		void set(type v) {
+		void set(type v) noexcept {
 			stored_assert(valid());
 			buffer() = endian_h2s(v);
 		}
@@ -248,12 +251,12 @@ namespace stored {
 		/*!
 		 * \brief Sets the value, which is identical to #set().
 		 */
-		Variable& operator=(type v) { set(v); return *this; }
+		Variable& operator=(type v) noexcept { set(v); return *this; }
 
 		/*!
 		 * \brief Checks if this Variable points to a valid buffer.
 		 */
-		bool valid() const { return m_buffer != nullptr; }
+		constexpr bool valid() const noexcept { return m_buffer != nullptr; }
 
 		/*!
 		 * \brief Returns the container this Variable belongs to.
@@ -263,17 +266,17 @@ namespace stored {
 		/*!
 		 * \brief Checks if two Variables point to the same buffer, or are both invalid.
 		 */
-		bool operator==(Variable const& rhs) const { return m_buffer == rhs.m_buffer; }
+		constexpr bool operator==(Variable const& rhs) const noexcept { return m_buffer == rhs.m_buffer; }
 
 		/*!
 		 * \brief Checks if two Variables do not point to the same buffer.
 		 */
-		bool operator!=(Variable const& rhs) const { return !(*this == rhs); }
+		constexpr bool operator!=(Variable const& rhs) const noexcept { return !(*this == rhs); }
 
 		/*!
 		 * \brief Returns the size of the data.
 		 */
-		static size_t size() { return sizeof(type); }
+		constexpr static size_t size() noexcept { return sizeof(type); }
 
 	protected:
 		/*!
@@ -310,7 +313,7 @@ namespace stored {
 		typedef typename base::type type;
 
 		/*! \copydoc stored::Variable::Variable(Container&, type&) */
-		Variable(Container& container, type& buffer)
+		constexpr Variable(Container& container, type& buffer) noexcept
 			: base(container, buffer)
 			, m_container(&container)
 #ifdef _DEBUG
@@ -319,7 +322,7 @@ namespace stored {
 		{}
 
 		/*! \copydoc stored::Variable::Variable() */
-		Variable()
+		constexpr Variable() noexcept
 			: m_container()
 #ifdef _DEBUG
 			, m_entry()
@@ -327,7 +330,7 @@ namespace stored {
 		{}
 
 		/*! \copydoc stored::Variable::Variable(Variable const&) */
-		Variable(Variable const& v)
+		Variable(Variable const& v) noexcept
 			: base()
 			, m_container()
 #ifdef _DEBUG
@@ -337,7 +340,7 @@ namespace stored {
 
 		/*! \copydoc stored::Variable::operator=(Variable const&) */
 		// cppcheck-suppress operatorEqVarError
-		Variable& operator=(Variable const& v) { // NOLINT(bugprone-unhandled-self-assignment)
+		Variable& operator=(Variable const& v) noexcept { // NOLINT(bugprone-unhandled-self-assignment)
 #ifdef _DEBUG
 			stored_assert(m_entry == EntryNone);
 #endif
@@ -356,7 +359,7 @@ namespace stored {
 		/*! \copydoc stored::Variable::operator=(Variable&&) */
 		Variable& operator=(Variable&& v) noexcept { this->operator=((Variable const&)v); return *this; }
 		/*! \copydoc stored::Variable::~Variable() */
-		~Variable()
+		~Variable() noexcept
 #  ifdef _DEBUG
 		{ stored_assert(m_entry == EntryNone); }
 #  else
@@ -364,13 +367,13 @@ namespace stored {
 #  endif
 #else
 		/*! \copydoc stored::Variable::~Variable() */
-		~Variable() { stored_assert(m_entry == EntryNone); }
+		~Variable() noexcept { stored_assert(m_entry == EntryNone); }
 #endif
 		/*!
 		 * \copydoc stored::Variable::get()
 		 * \details #entryRO()/#exitRO() are called around the actual data retrieval.
 		 */
-		type get() const {
+		type get() const noexcept {
 			entryRO();
 			type res = base::get();
 			exitRO();
@@ -379,7 +382,7 @@ namespace stored {
 
 		/*! \copydoc stored::Variable::as() */
 		template <typename U>
-		U as() const { return saturated_cast<U>(get()); }
+		U as() const noexcept { return saturated_cast<U>(get()); }
 
 		/*!
 		 * \brief Returns the value, which is identical to #get().
@@ -387,13 +390,13 @@ namespace stored {
 #if STORED_cplusplus >= 201103L
 		explicit
 #endif
-		operator type() const { return get(); } // NOLINT(hicpp-explicit-conversions)
+		operator type() const noexcept { return get(); } // NOLINT(hicpp-explicit-conversions)
 
 		/*!
 		 * \copydoc stored::Variable::set()
 		 * \details #entryX()/#exitX() are called around the actual data retrieval.
 		 */
-		void set(type v) {
+		void set(type v) noexcept {
 			entryX();
 
 			bool changed = false;
@@ -408,16 +411,16 @@ namespace stored {
 		}
 
 		/*! \copydoc stored::Variable::operator=(type) */
-		Variable& operator=(type v) {
+		Variable& operator=(type v) noexcept {
 			set(v);
 			return *this;
 		}
 
 		/*! \copydoc stored::Variable::size() */
-		static size_t size() { return sizeof(type); }
+		constexpr static size_t size() noexcept { return sizeof(type); }
 
 		/*! \copydoc stored::Variable::container() */
-		Container& container() const {
+		Container& container() const noexcept {
 			stored_assert(this->valid());
 			return *m_container; // NOLINT(clang-analyzer-core.uninitialized.UndefReturn)
 		}
@@ -426,13 +429,13 @@ namespace stored {
 		 * \brief Returns the key that belongs to this Variable.
 		 * \see your store's bufferToKey()
 		 */
-		typename Container::Key key() const { return container().bufferToKey(&this->buffer()); }
+		typename Container::Key key() const noexcept { return container().bufferToKey(&this->buffer()); }
 
 		/*!
 		 * \brief Calls the \c entryX() hook of the container.
 		 * \see your store's \c hookEntryX()
 		 */
-		void entryX() const {
+		void entryX() const noexcept {
 #ifdef _DEBUG
 			stored_assert(m_entry == EntryNone);
 			m_entry = EntryX;
@@ -444,7 +447,7 @@ namespace stored {
 		 * \brief Calls the \c exitX() hook of the container.
 		 * \see your store's \c hookExitX()
 		 */
-		void exitX(bool changed) const {
+		void exitX(bool changed) const noexcept {
 			container().hookExitX(toType<T>::type, &this->buffer(), sizeof(type), changed);
 #ifdef _DEBUG
 			stored_assert(m_entry == EntryX);
@@ -456,7 +459,7 @@ namespace stored {
 		 * \brief Calls the \c entryRO() hook of the container.
 		 * \see your store's \c hookEntryRO()
 		 */
-		void entryRO() const {
+		void entryRO() const noexcept {
 #ifdef _DEBUG
 			stored_assert(m_entry == EntryNone);
 			m_entry = EntryRO;
@@ -468,7 +471,7 @@ namespace stored {
 		 * \brief Calls the \c exitRO() hook of the container.
 		 * \see your store's \c hookExitRO()
 		 */
-		void exitRO() const {
+		void exitRO() const noexcept {
 			container().hookExitRO(toType<T>::type, &this->buffer(), sizeof(type));
 #ifdef _DEBUG
 			stored_assert(m_entry == EntryRO);
@@ -504,13 +507,16 @@ namespace stored {
 		/*!
 		 * \brief Constructor for a valid Function.
 		 */
-		Function(Container& container, unsigned int f) : m_container(&container), m_f(f) {}
+		constexpr Function(Container& container, unsigned int f) noexcept
+			: m_container(&container), m_f(f)
+		{}
 
 		/*!
 		 * \brief Constructor for an invalid Function.
 		 */
-		// cppcheck-suppress uninitMemberVar
-		Function() : m_f() {}
+		constexpr Function() noexcept
+			: m_container(), m_f()
+		{}
 
 		/*!
 		 * \brief Calls the function and return its value.
@@ -575,20 +581,20 @@ namespace stored {
 		/*!
 		 * \brief Call the function, like #set().
 		 */
-		void operator()(type value) const { set(value); }
+		void operator()(type value) { set(value); }
 		/*! \copydoc Variable::operator=(type) */
 		Function& operator=(type v) { set(v); return *this; }
 
 		/*!
 		 * \brief Checks if this Function is valid.
 		 */
-		bool valid() const { return m_f > 0; }
+		constexpr bool valid() const noexcept { return m_f > 0; }
 
 		/*!
 		 * \brief Returns the container this Function belongs to.
 		 * \details Only call this function when it is #valid().
 		 */
-		Container& container() const {
+		Container& container() const noexcept {
 			stored_assert(valid());
 			return *m_container;
 		}
@@ -613,7 +619,7 @@ namespace stored {
 		 * \brief Returns the function ID.
 		 * \details Only call this function when it is #valid().
 		 */
-		unsigned int id() const {
+		unsigned int id() const noexcept {
 			stored_assert(valid());
 			return m_f;
 		}
@@ -621,7 +627,7 @@ namespace stored {
 		/*!
 		 * \brief Checks if this Function points to the same Function as the given one.
 		 */
-		bool operator==(Function const& rhs) const {
+		bool operator==(Function const& rhs) const noexcept {
 			if(valid() != rhs.valid())
 				return false;
 			if(!valid())
@@ -632,12 +638,12 @@ namespace stored {
 		/*!
 		 * \brief Checks if this Function points to the same Function as the given one.
 		 */
-		bool operator!=(Function const& rhs) const { return !(*this == rhs); }
+		bool operator!=(Function const& rhs) const noexcept { return !(*this == rhs); }
 
 		/*!
 		 * \brief Returns the size of the function's argument.
 		 */
-		static size_t size() { return sizeof(type); }
+		constexpr static size_t size() noexcept { return sizeof(type); }
 
 	private:
 		/*! \brief The container this Function belongs to. */
@@ -662,8 +668,11 @@ namespace stored {
 		/*!
 		 * \brief Constructor for a variable.
 		 */
+#ifndef _DEBUG
+		constexpr
+#endif
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		Variant(Container& container, Type::type type, void* buffer, size_t len)
+		Variant(Container& container, Type::type type, void* buffer, size_t len) noexcept
 			: m_container(&container), m_buffer(buffer), m_len(len), m_type((uint8_t)type)
 #ifdef _DEBUG
 			, m_entry()
@@ -678,8 +687,11 @@ namespace stored {
 		/*!
 		 * \brief Constructor for a function.
 		 */
+#ifndef _DEBUG
+		constexpr
+#endif
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		Variant(Container& container, Type::type type, unsigned int f, size_t len)
+		Variant(Container& container, Type::type type, unsigned int f, size_t len) noexcept
 			: m_container(&container), m_f((uintptr_t)f), m_len(len), m_type((uint8_t)type)
 #ifdef _DEBUG
 			, m_entry()
@@ -693,12 +705,12 @@ namespace stored {
 		 * \brief Constructor for an invalid Variant.
 		 */
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		Variant()
-			: m_buffer()
+		constexpr Variant() noexcept
+			: m_container(), m_buffer(), m_len(), m_type()
 #ifdef _DEBUG
 			, m_entry()
 #endif
-		{ // NOLINT(clang-analyzer-optin.cplusplus.UninitializedObject)
+		{
 		}
 
 		/*!
@@ -706,7 +718,7 @@ namespace stored {
 		 */
 		template <typename T>
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		explicit Variant(Variable<T,Container> const& v)
+		constexpr explicit Variant(Variable<T,Container> const& v) noexcept
 			: m_container(v.valid() ? &v.container() : nullptr)
 			, m_buffer(v.valid() ? &v.buffer() : nullptr)
 			, m_len(sizeof(T))
@@ -721,7 +733,7 @@ namespace stored {
 		 */
 		template <typename T>
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		explicit Variant(Function<T,Container> const& f)
+		constexpr explicit Variant(Function<T,Container> const& f) noexcept
 			: m_container(f.valid() ? &f.container() : nullptr)
 			, m_f(f.valid() ? f.id() : 0)
 			, m_len(sizeof(T))
@@ -867,9 +879,9 @@ namespace stored {
 		/*!
 		 * \brief Invokes \c hookEntryX() on the #container().
 		 */
-		void entryX() const { entryX(size()); }
+		void entryX() const noexcept { entryX(size()); }
 		/*! \copydoc entryX() */
-		void entryX(size_t len) const {
+		void entryX(size_t len) const noexcept {
 			if(Config::EnableHooks) {
 #ifdef _DEBUG
 				stored_assert(m_entry == EntryNone);
@@ -882,9 +894,9 @@ namespace stored {
 		/*!
 		 * \brief Invokes \c hookExitX() on the #container().
 		 */
-		void exitX(bool changed) const { exitX(changed, size()); }
+		void exitX(bool changed) const noexcept { exitX(changed, size()); }
 		/*! \copydoc exitX() */
-		void exitX(bool changed, size_t len) const {
+		void exitX(bool changed, size_t len) const noexcept {
 			if(Config::EnableHooks) {
 				container().hookExitX(type(), m_buffer, len, changed);
 #ifdef _DEBUG
@@ -897,9 +909,9 @@ namespace stored {
 		/*!
 		 * \brief Invokes \c hookEntryRO() on the #container().
 		 */
-		void entryRO() const { entryRO(size()); }
+		void entryRO() const noexcept { entryRO(size()); }
 		/*! \copydoc entryRO() */
-		void entryRO(size_t len) const {
+		void entryRO(size_t len) const noexcept {
 			if(Config::EnableHooks) {
 #ifdef _DEBUG
 				stored_assert(m_entry == EntryNone);
@@ -912,9 +924,9 @@ namespace stored {
 		/*!
 		 * \brief Invokes \c hookExitRO() on the #container().
 		 */
-		void exitRO() const { exitRO(size()); }
+		void exitRO() const noexcept { exitRO(size()); }
 		/*! \copydoc exitRO() */
-		void exitRO(size_t len) const {
+		void exitRO(size_t len) const noexcept {
 			if(Config::EnableHooks) {
 				container().hookExitRO(type(), m_buffer, len);
 #ifdef _DEBUG
@@ -928,43 +940,43 @@ namespace stored {
 		 * \brief Returns the type.
 		 * \details Only call this function when it is #valid().
 		 */
-		Type::type type() const { stored_assert(valid()); return (Type::type)m_type; }
+		Type::type type() const noexcept { stored_assert(valid()); return (Type::type)m_type; }
 		/*!
 		 * \brief Returns the size.
 		 * \details In case #type() is Type::String, this returns the maximum size of the string, excluding null terminator.
 		 * \details Only call this function when it is #valid().
 		 */
-		size_t size() const { stored_assert(valid()); return Type::isFixed(type()) ? Type::size(type()) : m_len; }
+		size_t size() const noexcept { stored_assert(valid()); return Type::isFixed(type()) ? Type::size(type()) : m_len; }
 		/*!
 		 * \brief Returns the buffer.
 		 * \details Only call this function when it is #valid().
 		 */
-		void* buffer() const { stored_assert(isVariable()); return m_buffer; }
+		void* buffer() const noexcept { stored_assert(isVariable()); return m_buffer; }
 		/*!
 		 * \brief Checks if this Variant is valid.
 		 */
-		bool valid() const { return m_buffer != nullptr; }
+		constexpr bool valid() const noexcept { return m_buffer != nullptr; }
 		/*!
 		 * \brief Checks if the #type() is a function.
 		 * \details Only call this function when it is #valid().
 		 */
-		bool isFunction() const { stored_assert(valid()); return Type::isFunction(type()); }
+		bool isFunction() const noexcept { stored_assert(valid()); return Type::isFunction(type()); }
 		/*!
 		 * \brief Checks if the #type() is a variable.
 		 * \details Only call this function when it is #valid().
 		 */
-		bool isVariable() const { stored_assert(valid()); return !isFunction(); }
+		bool isVariable() const noexcept { stored_assert(valid()); return !isFunction(); }
 		/*!
 		 * \brief Returns the container.
 		 * \details Only call this function when it is #valid().
 		 */
-		Container& container() const { stored_assert(valid()); return *m_container; }
+		Container& container() const noexcept { stored_assert(valid()); return *m_container; }
 
 		/*!
 		 * \brief Returns a #stored::Variable that corresponds to this Variant.
 		 * \details Only call this function when it #isVariable() and the #type() matches \p T.
 		 */
-		template <typename T> Variable<T,Container> variable() const {
+		template <typename T> Variable<T,Container> variable() const noexcept {
 			if(unlikely(!valid()))
 				return Variable<T,Container>();
 
@@ -980,7 +992,7 @@ namespace stored {
 		 * \brief Returns a #stored::Function that corresponds to this Variant.
 		 * \details Only call this function when it #isFunction() and the #type() matches \p T.
 		 */
-		template <typename T> Function<T,Container> function() const {
+		template <typename T> Function<T,Container> function() const noexcept {
 			if(unlikely(!valid()))
 				return Function<T,Container>();
 
@@ -996,7 +1008,7 @@ namespace stored {
 		 * \details Only call this function when it #isVariable().
 		 * \see your store's \c bufferToKey()
 		 */
-		typename Container::Key key() const {
+		typename Container::Key key() const noexcept {
 			stored_assert(isVariable());
 			return container()->bufferToKey(m_buffer);
 		}
@@ -1004,7 +1016,7 @@ namespace stored {
 		/*!
 		 * \brief Checks if this Variant points to the same object as the given one.
 		 */
-		bool operator==(Variant const& rhs) const {
+		bool operator==(Variant const& rhs) const noexcept {
 			if(valid() != rhs.valid())
 				return false;
 			if(!valid())
@@ -1016,7 +1028,7 @@ namespace stored {
 		/*!
 		 * \brief Checks if this Variant points to the same object as the given one.
 		 */
-		bool operator!=(Variant const& rhs) const { return !(*this == rhs); }
+		bool operator!=(Variant const& rhs) const noexcept { return !(*this == rhs); }
 
 	private:
 		/*! \brief The container. */
@@ -1055,8 +1067,11 @@ namespace stored {
 		 * \brief Constructor for a variable.
 		 */
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		Variant(Type::type type, void* buffer, size_t len)
-			: m_buffer(buffer), m_len(len), m_type((uint8_t)type)
+		constexpr Variant(Type::type type, void* buffer, size_t len) noexcept
+			: m_dummy(), m_buffer(buffer), m_len(len), m_type((uint8_t)type)
+#ifdef _DEBUG
+			, m_entry()
+#endif
 		{
 		}
 
@@ -1064,8 +1079,11 @@ namespace stored {
 		 * \brief Constructor for a function.
 		 */
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		Variant(Type::type type, unsigned int f, size_t len)
-			: m_f((uintptr_t)f), m_len(len), m_type((uint8_t)type)
+		constexpr Variant(Type::type type, unsigned int f, size_t len) noexcept
+			: m_dummy(), m_f((uintptr_t)f), m_len(len), m_type((uint8_t)type)
+#ifdef _DEBUG
+			, m_entry()
+#endif
 		{
 			static_assert(sizeof(uintptr_t) >= sizeof(unsigned int), "");
 		}
@@ -1074,15 +1092,18 @@ namespace stored {
 		 * \brief Constructor for an invalid Variant.
 		 */
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		Variant()
-			: m_type((uint8_t)Type::Invalid)
+		constexpr Variant() noexcept
+			: m_dummy(), m_buffer(), m_len(), m_type((uint8_t)Type::Invalid)
+#ifdef _DEBUG
+			, m_entry()
+#endif
 		{}
 
 		/*!
 		 * \brief Apply the stored object properties to a container.
 		 */
 		template <typename Container>
-		Variant<Container> apply(Container& container) const {
+		Variant<Container> apply(Container& container) const noexcept {
 			static_assert(sizeof(Variant<Container>) == sizeof(Variant<>), "");
 
 			if(!valid())
@@ -1097,36 +1118,36 @@ namespace stored {
 		}
 
 		/*! \brief Don't use. */
-		size_t get(void* UNUSED_PAR(dst), size_t UNUSED_PAR(len) = 0) const { stored_assert(valid()); return 0; }
+		size_t get(void* UNUSED_PAR(dst), size_t UNUSED_PAR(len) = 0) const noexcept { stored_assert(valid()); return 0; }
 		/*! \brief Don't use. */
-		template <typename T> T get() const { stored_assert(valid()); return T(); }
+		template <typename T> T get() const noexcept { stored_assert(valid()); return T(); }
 		/*! \brief Don't use. */
-		size_t set(void const* UNUSED_PAR(src), size_t UNUSED_PAR(len) = 0) { stored_assert(valid()); return 0; }
+		size_t set(void const* UNUSED_PAR(src), size_t UNUSED_PAR(len) = 0) noexcept { stored_assert(valid()); return 0; }
 		/*! \brief Don't use. */
-		template <typename T> void set(T UNUSED_PAR(value)) { stored_assert(valid()); }
+		template <typename T> void set(T UNUSED_PAR(value)) noexcept { stored_assert(valid()); }
 		/*! \brief Don't use. */
-		void entryX(size_t UNUSED_PAR(len) = 0) const {}
+		void entryX(size_t UNUSED_PAR(len) = 0) const noexcept {}
 		/*! \brief Don't use. */
-		void exitX(bool UNUSED_PAR(changed), size_t UNUSED_PAR(len) = 0) const {}
+		void exitX(bool UNUSED_PAR(changed), size_t UNUSED_PAR(len) = 0) const noexcept {}
 		/*! \brief Don't use. */
-		void entryRO(size_t UNUSED_PAR(len) = 0) const {}
+		void entryRO(size_t UNUSED_PAR(len) = 0) const noexcept {}
 		/*! \brief Don't use. */
-		void exitRO(size_t UNUSED_PAR(len) = 0) const {}
+		void exitRO(size_t UNUSED_PAR(len) = 0) const noexcept {}
 		/*! \copybrief Variant::type() */
-		Type::type type() const { return (Type::type)m_type; }
+		constexpr Type::type type() const noexcept { return (Type::type)m_type; }
 		/*! \copybrief Variant::size() */
-		size_t size() const { stored_assert(valid()); return Type::isFixed(type()) ? Type::size(type()) : m_len; }
+		size_t size() const noexcept { stored_assert(valid()); return Type::isFixed(type()) ? Type::size(type()) : m_len; }
 		/*! \copybrief Variant::valid() */
-		bool valid() const { return type() != Type::Invalid; }
+		constexpr bool valid() const noexcept { return type() != Type::Invalid; }
 		/*! \copybrief Variant::isFunction() */
-		bool isFunction() const { stored_assert(valid()); return Type::isFunction(type()); }
+		bool isFunction() const noexcept { stored_assert(valid()); return Type::isFunction(type()); }
 		/*! \copybrief Variant::isVariable() */
-		bool isVariable() const { stored_assert(valid()); return !isFunction(); }
+		bool isVariable() const noexcept { stored_assert(valid()); return !isFunction(); }
 		/*! \brief Don't use. */
-		int& container() const { stored_assert(valid()); std::abort(); }
+		int& container() const noexcept { stored_assert(valid()); std::abort(); }
 
 		/*! \copybrief Variant::operator==() */
-		bool operator==(Variant const& rhs) const {
+		bool operator==(Variant const& rhs) const noexcept {
 			if(valid() != rhs.valid())
 				return false;
 			if(!valid())
@@ -1136,7 +1157,7 @@ namespace stored {
 		}
 
 		/*! \copybrief Variant::operator!=() */
-		bool operator!=(Variant const& rhs) const { return !(*this == rhs); }
+		bool operator!=(Variant const& rhs) const noexcept { return !(*this == rhs); }
 
 	private:
 		// Make this class the same size as a non-void container.
@@ -1169,11 +1190,16 @@ namespace stored {
 
 	namespace impl {
 		template <typename StoreBase, typename T>
-		static inline StoreBase& objectToStore(T& o) {
+		constexpr static inline void* objectToVoidPtr(T& o) noexcept {
 			static_assert(sizeof(T) == sizeof(typename StoreBase::Objects), "");
-			void* o_ = (void*)&o;
+			return (void*)&o;
+		}
+
+		template <typename StoreBase, typename T>
+		constexpr static inline StoreBase& objectToStore(T& o) noexcept {
+			static_assert(sizeof(T) == sizeof(typename StoreBase::Objects), "");
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-			return *static_cast<StoreBase*>(reinterpret_cast<typename StoreBase::Objects*>(o_));
+			return *static_cast<StoreBase*>(reinterpret_cast<typename StoreBase::Objects*>(objectToVoidPtr<StoreBase,T>(o)));
 		}
 
 		/*!
@@ -1188,33 +1214,33 @@ namespace stored {
 			typedef Variable<type,Implementation> Variable_type;
 			typedef Variant<Implementation> Variant_type;
 
-			Variable_type variable() const {
+			constexpr Variable_type variable() const noexcept {
 				static_assert(size_ == sizeof(type), "");
 				return objectToStore<Store>(*this).template _variable<type>(offset);
 			}
 			// NOLINTNEXTLINE(hicpp-explicit-conversions)
-			operator Variable_type() const { return variable(); }
+			constexpr operator Variable_type() const noexcept { return variable(); }
 
-			Variant_type variant() const { return Variant_type(variable()); }
+			constexpr Variant_type variant() const noexcept { return Variant_type(variable()); }
 			// NOLINTNEXTLINE(hicpp-explicit-conversions)
-			operator Variant_type() const { return variant(); }
+			constexpr operator Variant_type() const noexcept { return variant(); }
 
-			type get() const { return variable().get(); }
+			type get() const noexcept { return variable().get(); }
 			// NOLINTNEXTLINE(hicpp-explicit-conversions)
-			operator type() const { return get(); }
+			operator type() const noexcept { return get(); }
 
 			template <typename U>
-			U as() const { return saturated_cast<U>(get()); }
+			U as() const noexcept { return saturated_cast<U>(get()); }
 
-			void set(type value) { variable().set(value); }
+			void set(type value) noexcept { variable().set(value); }
 			// NOLINTNEXTLINE(cppcoreguidelines-c-copy-assignment-signature,misc-unconventional-assign-operator)
-			Variable_type operator=(type value) {
+			Variable_type operator=(type value) noexcept {
 				Variable_type v = variable();
 				v.set(value);
 				return v;
 			}
 
-			static size_t size() { return sizeof(type); }
+			constexpr static size_t size() { return sizeof(type); }
 		};
 
 		/*!
@@ -1232,15 +1258,15 @@ namespace stored {
 			typedef Function<type,Implementation> Function_type;
 			typedef Variant<Implementation> Variant_type;
 
-			Function_type function() const {
+			constexpr Function_type function() const noexcept {
 				return objectToStore<Store>(*this).template _function<type>(F);
 			}
 			// NOLINTNEXTLINE(hicpp-explicit-conversions)
-			operator Function_type() const { return function(); }
+			constexpr operator Function_type() const noexcept { return function(); }
 
-			Variant_type variant() const { return Variant_type(function()); }
+			constexpr Variant_type variant() const noexcept { return Variant_type(function()); }
 			// NOLINTNEXTLINE(hicpp-explicit-conversions)
-			operator Variant_type() const { return variant(); }
+			constexpr operator Variant_type() const noexcept { return variant(); }
 
 			type get() const {
 				type v;
@@ -1282,10 +1308,10 @@ namespace stored {
 				return *this;
 			}
 
-			static size_t size() { return sizeof(type); }
+			constexpr static size_t size() noexcept { return sizeof(type); }
 
 		protected:
-			Implementation& implementation() const {
+			constexpr Implementation& implementation() const noexcept {
 				return static_cast<Implementation&>(objectToStore<Store>(*this));
 			}
 
@@ -1304,21 +1330,21 @@ namespace stored {
 		public:
 			typedef Variant<Implementation> Variant_type;
 
-			Variant_type variant() const {
+			constexpr Variant_type variant() const noexcept {
 				return objectToStore<Store>(*this)._variantv(type_, offset, size_);
 			}
 			// NOLINTNEXTLINE(hicpp-explicit-conversions)
-			operator Variant_type() const { return variant(); }
+			constexpr operator Variant_type() const noexcept { return variant(); }
 
-			size_t get(void* dst, size_t len = 0) const { return variant().get(dst, len); }
-			template <typename T> T get() const { return variant().template get<T>(); }
+			size_t get(void* dst, size_t len = 0) const noexcept { return variant().get(dst, len); }
+			template <typename T> T get() const noexcept { return variant().template get<T>(); }
 
-			size_t set(void const* src, size_t len = 0) { return variant().set(src, len); }
-			template <typename T> void set(T value) { variant().template set<T>(value); }
+			size_t set(void const* src, size_t len = 0) noexcept { return variant().set(src, len); }
+			template <typename T> void set(T value) noexcept { variant().template set<T>(value); }
 
-			static Type::type type() { return type_; }
-			static size_t size() { return size_; }
-			void* buffer() const { return variant().buffer(); }
+			constexpr static Type::type type() noexcept { return type_; }
+			constexpr static size_t size() noexcept { return size_; }
+			void* buffer() const noexcept { return variant().buffer(); }
 		};
 
 		/*!
@@ -1331,11 +1357,11 @@ namespace stored {
 		public:
 			typedef Variant<Implementation> Variant_type;
 
-			Variant_type variant() const {
+			constexpr Variant_type variant() const noexcept {
 				return objectToStore<Store>(*this)._variantf(type_, F, size_);
 			}
 			// NOLINTNEXTLINE(hicpp-explicit-conversions)
-			operator Variant_type() const { return variant(); }
+			constexpr operator Variant_type() const noexcept { return variant(); }
 
 			size_t get(void* dst, size_t len = 0) const { return variant().get(dst, len); }
 			template <typename T> T get() const { return variant().template get<T>(); }
@@ -1343,8 +1369,8 @@ namespace stored {
 			size_t set(void const* src, size_t len = 0) { return variant().set(src, len); }
 			template <typename T> void set(T value) { variant().template set<T>(value); }
 
-			static Type::type type() { return type_; }
-			static size_t size() { return size_; }
+			constexpr static Type::type type() noexcept { return type_; }
+			constexpr static size_t size() noexcept { return size_; }
 		};
 	}
 

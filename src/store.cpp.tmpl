@@ -77,14 +77,14 @@ static uint8_t const {{store.name}}Data_directory[{{store.directory.data|len}}] 
  * \brief Retuns the long directory.
  * \details When not available, the short directory is returned.
  */
-uint8_t const* {{store.name}}Data::longDirectory() {
+uint8_t const* {{store.name}}Data::longDirectory() noexcept {
     return Config::FullNames ? (uint8_t const*){{store.name}}Data_directory_full : (uint8_t const*){{store.name}}Data_directory;
 }
 
 /*!
  * \brief Returns the short directory.
  */
-uint8_t const* {{store.name}}Data::shortDirectory() {
+uint8_t const* {{store.name}}Data::shortDirectory() noexcept {
     return (uint8_t const*){{store.name}}Data_directory;
 }
 
