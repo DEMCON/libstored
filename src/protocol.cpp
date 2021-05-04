@@ -464,10 +464,10 @@ ArqLayer::ArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* dow
  * \brief Dtor.
  */
 ArqLayer::~ArqLayer() {
-	for(std::deque<std::string*>::iterator it = m_encodeQueue.begin(); it != m_encodeQueue.end(); ++it)
-		delete *it; // NOLINT(cppcoreguidelines-owning-memory)
-	for(std::deque<std::string*>::iterator it = m_spare.begin(); it != m_spare.end(); ++it)
-		delete *it; // NOLINT(cppcoreguidelines-owning-memory)
+	for(Deque<String::type*>::type::iterator it = m_encodeQueue.begin(); it != m_encodeQueue.end(); ++it)
+		cleanup(*it);
+	for(Deque<String::type*>::type::iterator it = m_spare.begin(); it != m_spare.end(); ++it)
+		cleanup(*it);
 }
 
 void ArqLayer::reset() {
@@ -727,7 +727,7 @@ void ArqLayer::popEncodeQueue() {
  * \brief Push the given buffer into the encode queue.
  */
 void ArqLayer::pushEncodeQueue(void const* buffer, size_t len) {
-	std::string& s = pushEncodeQueueRaw();
+	String::type& s = pushEncodeQueueRaw();
 	s.push_back((char)m_sendSeq);
 	s.append(static_cast<char const*>(buffer), len);
 	m_sendSeq = nextSeq(m_sendSeq);
@@ -740,12 +740,11 @@ void ArqLayer::pushEncodeQueue(void const* buffer, size_t len) {
  * The returned buffer can be used to put the message in. This should include
  * the sequence number as the first byte.
  */
-std::string& ArqLayer::pushEncodeQueueRaw() {
-	std::string* s = nullptr;
+String::type& ArqLayer::pushEncodeQueueRaw() {
+	String::type* s = nullptr;
 
 	if(m_spare.empty()) {
-		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-		s = new std::string;
+		s = new(allocate<String::type>()) String::type;
 
 		m_encodeQueue.
 #if STORED_cplusplus >= 201103L
@@ -773,15 +772,15 @@ std::string& ArqLayer::pushEncodeQueueRaw() {
  * \brief Free all unused memory.
  */
 void ArqLayer::shrink_to_fit() {
-	for(std::deque<std::string*>::iterator it = m_encodeQueue.begin(); it != m_encodeQueue.end(); ++it)
+	for(Deque<String::type*>::type::iterator it = m_encodeQueue.begin(); it != m_encodeQueue.end(); ++it)
 #if STORED_cplusplus >= 201103L
 		(*it)->shrink_to_fit();
 #else
 		(*it)->reserve((*it)->size());
 #endif
 
-	for(std::deque<std::string*>::iterator it = m_spare.begin(); it != m_spare.end(); ++it)
-		delete *it; // NOLINT(cppcoreguidelines-owning-memory)
+	for(Deque<String::type*>::type::iterator it = m_spare.begin(); it != m_spare.end(); ++it)
+		cleanup(*it);
 
 	m_spare.clear();
 #if STORED_cplusplus >= 201103L
@@ -884,7 +883,7 @@ void DebugArqLayer::decode(void* buffer, size_t len) {
 	case DecodeStateRetransmit:
 		if(nextSeq(seq) == m_decodeSeq) {
 			// Got the last part of the command. Retransmit the response buffer.
-			for(std::vector<std::string>::const_iterator it = m_encodeBuffer.begin(); it != m_encodeBuffer.end(); ++it)
+			for(Vector<String::type>::type::const_iterator it = m_encodeBuffer.begin(); it != m_encodeBuffer.end(); ++it)
 				base::encode(it->data(), it->size(), true);
 			m_decodeState = DecodeStateDecoded;
 		}
@@ -961,7 +960,7 @@ void DebugArqLayer::encode(void const* buffer, size_t len, bool last) {
 		m_encodeBuffer.emplace_back(reinterpret_cast<char*>(seq), seqlen);
 #else
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-		m_encodeBuffer.push_back(std::string(reinterpret_cast<char*>(seq), seqlen));
+		m_encodeBuffer.push_back(String::type(reinterpret_cast<char*>(seq), seqlen));
 #endif
 		m_encodeState = EncodeStateEncoding;
 		m_encodeBufferSize += seqlen;
@@ -990,7 +989,7 @@ void DebugArqLayer::setPurgeableResponse(bool purgeable) {
 
 		switch(m_encodeState) {
 		case EncodeStateEncoding: {
-			std::string const& s = m_encodeBuffer.back();
+			String::type const& s = m_encodeBuffer.back();
 			base::encode(s.data(), s.size(), false);
 			m_encodeState = EncodeStateUnbufferedEncoding;
 			break; }
@@ -1336,12 +1335,12 @@ PrintLayer::PrintLayer(FILE* f, char const* name, ProtocolLayer* up, ProtocolLay
 
 void PrintLayer::decode(void* buffer, size_t len) {
 	if(m_f && enabled()) {
-		std::string prefix;
+		String::type prefix;
 		if(m_name)
 			prefix += m_name;
 		prefix += " < ";
 
-		std::string s = string_literal(buffer, len, prefix.c_str());
+		String::type s = string_literal(buffer, len, prefix.c_str());
 		s += "\n";
 		fputs(s.c_str(), m_f);
 	}
@@ -1351,7 +1350,7 @@ void PrintLayer::decode(void* buffer, size_t len) {
 
 void PrintLayer::encode(void const* buffer, size_t len, bool last) {
 	if(m_f && enabled()) {
-		std::string prefix;
+		String::type prefix;
 		if(m_name)
 			prefix += m_name;
 
@@ -1360,7 +1359,7 @@ void PrintLayer::encode(void const* buffer, size_t len, bool last) {
 		else
 			prefix += " * ";
 
-		std::string s = string_literal(buffer, len, prefix.c_str());
+		String::type s = string_literal(buffer, len, prefix.c_str());
 		s += "\n";
 		fputs(s.c_str(), m_f);
 	}
@@ -1508,7 +1507,7 @@ PolledLayer::~PolledLayer() {
 	// in your subclass dtor.
 	//close();
 
-	delete m_poller;
+	cleanup(m_poller);
 }
 
 /*!
@@ -1518,7 +1517,7 @@ PolledLayer::~PolledLayer() {
  */
 Poller& PolledLayer::poller() {
 	if(!m_poller)
-		m_poller = new Poller(); // NOLINT(cppcoreguidelines-owning-memory)
+		m_poller = new(allocate<Poller>()) Poller();
 
 	return *m_poller;
 }
@@ -2692,7 +2691,7 @@ void NamedPipeLayer::encode(void const* buffer, size_t len, bool last) {
  *
  * This name can be used to open it elsewhere as a normal file.
  */
-std::string const& NamedPipeLayer::name() const {
+String::type const& NamedPipeLayer::name() const {
 	return m_name;
 }
 
@@ -2778,11 +2777,11 @@ void DoublePipeLayer::reset() {
 //
 
 XsimLayer::XsimLayer(char const* pipe_prefix, ProtocolLayer* up, ProtocolLayer* down)
-	: base(	(std::string(pipe_prefix) += "_from_xsim").c_str(),
-			(std::string(pipe_prefix) += "_to_xsim").c_str(),
+	: base(	(String::type(pipe_prefix) += "_from_xsim").c_str(),
+			(String::type(pipe_prefix) += "_to_xsim").c_str(),
 			up, down)
 	, m_callback(*this)
-	, m_req((std::string(pipe_prefix) += "_req_xsim").c_str(), PIPE_ACCESS_INBOUND)
+	, m_req((String::type(pipe_prefix) += "_req_xsim").c_str(), PIPE_ACCESS_INBOUND)
 	, m_inFlight()
 {
 	m_req.wrap(m_callback);

@@ -20,6 +20,7 @@
 
 #include <libstored/macros.h>
 #include <libstored/config.h>
+#include <libstored/allocator.h>
 
 #if STORED_cplusplus < 201103L
 #  include <stdint.h>
@@ -35,8 +36,6 @@
 #ifdef STORED_COMPILER_MSVC
 #  include <stdlib.h>
 #endif
-
-#include <string>
 
 /*!
  * \def likely(expr)
@@ -360,7 +359,7 @@ namespace stored {
 		return endian_s2h(x);
 	}
 
-	std::string string_literal(void const* buffer, size_t len, char const* prefix = nullptr) noexcept;
+	String::type string_literal(void const* buffer, size_t len, char const* prefix = nullptr);
 
 	/*!
 	 * \brief Determine the number of bytes to save the given unsigned value.

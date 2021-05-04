@@ -19,25 +19,9 @@
 #include <libstored/debugger.h>
 
 #include <cstring>
-#include <string>
 
 #ifdef STORED_COMPILER_ARMCC
 #  pragma clang diagnostic ignored "-Wweak-vtables"
-#endif
-
-/*!
- * \brief Cleanup of a given object.
- */
-#if STORED_cplusplus < 201103L
-template <typename T>
-static void cleanup(T* t) {
-	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-	delete t;
-}
-#else
-template <typename T>
-static void cleanup(std::unique_ptr<T>& UNUSED_PAR(t)) {
-}
 #endif
 
 namespace stored {
@@ -82,17 +66,13 @@ Debugger::Debugger(char const* identification, char const* versions)
 /*!
  * \brief Destructor.
  */
-Debugger::~Debugger()
-#if STORED_cplusplus < 201103L
+Debugger::~Debugger() noexcept
 {
 	for(StoreMap::iterator it = m_map.begin(); it != m_map.end(); ++it)
 		cleanup(it->second);
 	for(StreamMap::iterator it = m_streams.begin(); it != m_streams.end(); ++it)
 		cleanup(it->second);
 }
-#else
-	= default;
-#endif
 
 /*! \copydoc stored::DebugStoreBase::find() */
 DebugVariant Debugger::find(char const* name, size_t len) const {
@@ -178,7 +158,7 @@ void Debugger::map(DebugStoreBase* store, char const* name) {
 
 	if(!name || name[0] != '/' || strchr(name + 1, '/') || !store) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-		delete store;
+		cleanup(store);
 		return;
 	}
 
@@ -186,19 +166,11 @@ void Debugger::map(DebugStoreBase* store, char const* name) {
 
 	if(it == m_map.end()) {
 		// New; insert.
-#if STORED_cplusplus >= 201103L
-		m_map.insert(StoreMap::value_type(name, std::unique_ptr<DebugStoreBase>(store)));
-#else
 		m_map.insert(StoreMap::value_type(name, store));
-#endif
 	} else {
 		// Replace previous mapping.
-#if STORED_cplusplus >= 201103L
-		it->second.reset(store);
-#else
 		cleanup(it->second);
 		it->second = store;
-#endif
 	}
 }
 
@@ -560,7 +532,8 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 			if(newlen > Config::DebuggerMacro)
 				goto error;
 
-			macros().insert(MacroMap::value_type(m, std::string(p, len)));
+			std::pair<MacroMap::iterator,bool> inserted = macros().insert(MacroMap::value_type(m, String::type()));
+			inserted.first->second.append(p, len);
 			m_macroSize = newlen;
 		} else {
 			// Update existing macro.
@@ -568,7 +541,8 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 			if(newlen > Config::DebuggerMacro)
 				goto error;
 
-			it->second = std::string(p, len);
+			it->second.clear();
+			it->second.append(p, len);
 			m_macroSize = newlen;
 		}
 		break;
@@ -754,7 +728,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		if(tracing() && s == m_traceStream)
 			response.setPurgeableResponse();
 
-		std::string const& strstr = str->buffer();
+		String::type const& strstr = str->buffer();
 		response.encode(strstr.data(), strstr.size(), false);
 		str->clear();
 
@@ -876,7 +850,7 @@ bool Debugger::runMacro(char m, ProtocolLayer& response) {
 		return false;
 
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-	std::string const& definition = const_cast<std::string const&>(it->second);
+	String::type const& definition = const_cast<String::type const&>(it->second);
 
 	// Expect the separator and at least one char to execute.
 	if(definition.size() < 2)
@@ -891,13 +865,13 @@ bool Debugger::runMacro(char m, ProtocolLayer& response) {
 	do {
 		size_t nextpos = definition.find(sep, ++pos);
 		size_t len = 0;
-		if(nextpos == std::string::npos)
+		if(nextpos == String::type::npos)
 			len = definition.size() - pos;
 		else
 			len = nextpos - pos;
 		process(&definition[pos], len, merger);
 		pos = nextpos;
-	} while(pos != std::string::npos);
+	} while(pos != String::type::npos);
 
 	response.encode();
 	return true;
@@ -1130,11 +1104,7 @@ Stream<> const* Debugger::stream(char s) const {
 	if(it == m_streams.end())
 		return nullptr;
 
-#if STORED_cplusplus < 201103L
 	return it->second;
-#else
-	return it->second.get();
-#endif
 }
 
 /*!
@@ -1146,11 +1116,7 @@ Stream<>* Debugger::stream(char s, bool alloc) {
 	StreamMap::iterator it = m_streams.find(s);
 
 	if(it != m_streams.end()) {
-#if STORED_cplusplus < 201103L
 		return it->second;
-#else
-		return it->second.get();
-#endif
 	} else if(alloc) {
 		StreamMap::mapped_type recycle = nullptr;
 
@@ -1161,13 +1127,9 @@ Stream<>* Debugger::stream(char s, bool alloc) {
 			for(StreamMap::iterator it2 = m_streams.begin(); it2 != m_streams.end(); ++it2)
 				if(it2->second->empty()) {
 					// Got one.
-					if(!recycle) {
-#if STORED_cplusplus < 201103L
+					if(!recycle)
 						recycle = it2->second;
-#else
-						recycle = std::move(it2->second);
-#endif
-					} else
+					else
 						cleanup(it2->second);
 
 					m_streams.erase(it2);
@@ -1178,15 +1140,9 @@ Stream<>* Debugger::stream(char s, bool alloc) {
 
 		if(m_streams.size() < Config::DebuggerStreams) {
 			// Add a new stream.
-#if STORED_cplusplus < 201103L
 			return m_streams.insert(std::make_pair(s,
-				recycle ? recycle :	new Stream<>() // NOLINT(cppcoreguidelines-owning-memory)
+				recycle ? recycle :	new(allocate<Stream<> >()) Stream<>()
 				)).first->second;
-#else
-			if(!recycle)
-				recycle.reset(new Stream<>()); // NOLINT(cppcoreguidelines-owning-memory)
-			return m_streams.emplace(s,std::move(recycle)).first->second.get();
-#endif
 		} else {
 			// Out of buffers.
 			stored_assert(!recycle);

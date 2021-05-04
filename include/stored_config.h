@@ -22,6 +22,13 @@ namespace stored {
 	struct Config : public DefaultConfig {
 		// Override defaults from DefaultConfig here for your local setup.
 		//static bool const HookSetOnChangeOnly = true;
+
+		//template <typename T>
+		//struct Allocator {
+		//	typedef MyAllocator<T> type;
+		//};
+
+		// ...
 	};
 } // namespace
 #endif // __cplusplus

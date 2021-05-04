@@ -32,7 +32,6 @@
 #include <utility>
 #include <map>
 #include <vector>
-#include <string>
 #include <memory>
 
 #if STORED_cplusplus >= 201103L
@@ -48,7 +47,13 @@ namespace stored {
 	public:
 		typedef ProtocolLayer base;
 
-		Stream() : m_block() {}
+		Stream()
+			: m_block()
+		{
+			if(Config::AvoidDynamicMemory)
+				m_buffer.reserve(Config::DebuggerStreamBuffer);
+		}
+
 		~Stream() final is_default
 
 		void decode(void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) final {}
@@ -66,7 +71,7 @@ namespace stored {
 			return 0;
 		}
 
-		std::string const& buffer() const {
+		String::type const& buffer() const noexcept {
 			return m_buffer;
 		}
 
@@ -75,29 +80,29 @@ namespace stored {
 			return true;
 		}
 
-		void clear() {
+		void clear() noexcept {
 			m_buffer.clear();
 			unblock();
 		}
 
-		bool empty() const {
+		bool empty() const noexcept {
 			return m_buffer.empty();
 		}
 
-		void block() {
+		void block() noexcept {
 			m_block = true;
 		}
 
-		void unblock() {
+		void unblock() noexcept {
 			m_block = false;
 		}
 
-		bool blocked() const {
+		bool blocked() const noexcept {
 			return m_block;
 		}
 
 	private:
-		std::string m_buffer;
+		String::type m_buffer;
 		bool m_block;
 	};
 
@@ -135,11 +140,11 @@ namespace stored {
 			return m_compress.flush();
 		}
 
-		void clear() {
+		void clear() noexcept {
 			m_string.clear();
 		}
 
-		bool empty() const {
+		bool empty() const noexcept {
 			return
 #ifdef STORED_HAVE_HEATSHRINK
 				m_compress.idle() &&
@@ -147,19 +152,19 @@ namespace stored {
 				m_string.empty();
 		}
 
-		std::string const& buffer() const {
+		String::type const& buffer() const noexcept {
 			return m_string.buffer();
 		}
 
-		void block() {
+		void block() noexcept {
 			m_string.block();
 		}
 
-		void unblock() {
+		void unblock() noexcept {
 			m_string.unblock();
 		}
 
-		bool blocked() const {
+		bool blocked() const noexcept {
 			return m_string.blocked();
 		}
 
@@ -430,7 +435,7 @@ namespace stored {
 		 * \brief Returns the name of this store.
 		 * \return the name, which cannot be \c nullptr
 		 */
-		virtual char const* name() const = 0;
+		virtual char const* name() const noexcept = 0;
 
 		/*!
 		 * \brief Performs a lookup of the given object name.
@@ -438,7 +443,7 @@ namespace stored {
 		 * \param len the maximum length of \p name to check
 		 * \return a #stored::DebugVariant, which is invalid when the object was not found.
 		 */
-		virtual DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) = 0;
+		virtual DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept = 0;
 
 		/*!
 		 * \brief Callback function prototype as supplied to \c list().
@@ -476,7 +481,7 @@ namespace stored {
 		 * \brief Constuctor.
 		 * \param store the store to be wrapped
 		 */
-		explicit DebugStore(Store& store)
+		explicit DebugStore(Store& store) noexcept
 			: m_store(store)
 		{}
 
@@ -485,9 +490,9 @@ namespace stored {
 		 */
 		virtual ~DebugStore() override is_default
 
-		char const* name() const final { return store().name(); }
+		char const* name() const noexcept final { return store().name(); }
 
-		DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) final {
+		DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept final {
 			return DebugVariant(store().find(name, len));
 		}
 
@@ -527,7 +532,7 @@ namespace stored {
 		/*!
 		 * \brief Returns the store that is wrapped.
 		 */
-		typename Store::Implementation& store() const { return m_store.implementation(); }
+		typename Store::Implementation& store() const noexcept { return m_store.implementation(); }
 
 	private:
 		/*! \brief The wrapped store. */
@@ -551,7 +556,7 @@ namespace stored {
 		CLASS_NOCOPY(Debugger)
 	public:
 		explicit Debugger(char const* identification = nullptr, char const* versions = nullptr);
-		virtual ~Debugger() override;
+		virtual ~Debugger() noexcept override;
 
 	public:
 		////////////////////////////
@@ -561,7 +566,7 @@ namespace stored {
 		 * Helper class to sort #StoreMap based on name.
 		 */
 		struct StorePrefixComparator {
-			bool operator()(char const* lhs, char const* rhs) const {
+			bool operator()(char const* lhs, char const* rhs) const noexcept {
 				stored_assert(lhs && rhs);
 				return strcmp(lhs, rhs) < 0;
 			}
@@ -570,13 +575,7 @@ namespace stored {
 		/*!
 		 * \brief The map to used by #map(), which maps names to stores.
 		 */
-		typedef std::map<char const*,
-#if STORED_cplusplus >= 201103L
-			std::unique_ptr<DebugStoreBase>
-#else
-			DebugStoreBase*
-#endif
-			, StorePrefixComparator> StoreMap;
+		typedef Map<char const*, DebugStoreBase*, StorePrefixComparator>::type StoreMap;
 
 		/*!
 		 * \brief Register a store to this Debugger.
@@ -588,7 +587,7 @@ namespace stored {
 		 */
 		template <typename Store>
 		void map(Store& store, char const* name = nullptr) {
-			map(new DebugStore<Store>(store), name);
+			map(new(allocate<DebugStore<Store> >()) DebugStore<Store>(store), name);
 		}
 
 		void unmap(char const* name);
@@ -635,11 +634,10 @@ namespace stored {
 		template <typename F>
 		SFINAE_IS_FUNCTION(F, ListCallback, void)
 		list(F&& f) const {
-			std::function<ListCallback> f_ = f;
-			auto cb = [](char const* name, DebugVariant& variant, void* f__) {
-				(*static_cast<std::function<ListCallback>*>(f__))(name, variant);
+			auto cb = [](char const* name, DebugVariant& variant, void* f_) {
+				(*static_cast<typename std::decay<F>::type*>(f_))(name, variant);
 			};
-			list(static_cast<ListCallbackArg*>(cb), &f_);
+			list(static_cast<ListCallbackArg*>(cb), &f);
 		}
 #endif
 	private:
@@ -691,12 +689,12 @@ namespace stored {
 		ScratchPad<>& spm() const;
 
 		/*! \brief Type of alias map. */
-		typedef std::map<char, DebugVariant> AliasMap;
+		typedef Map<char, DebugVariant>::type AliasMap;
 		AliasMap& aliases();
 		AliasMap const& aliases() const;
 
 		/*! \brief Type of macro map. */
-		typedef std::map<char, std::string> MacroMap;
+		typedef Map<char, String::type>::type MacroMap;
 		MacroMap& macros();
 		MacroMap const& macros() const;
 		virtual bool runMacro(char m, ProtocolLayer& response);
@@ -734,13 +732,7 @@ namespace stored {
 		size_t m_macroSize;
 
 		/*! \brief The streams map type. */
-		typedef std::map<char,
-#if STORED_cplusplus >= 201103L
-			std::unique_ptr<Stream<>>
-#else
-			Stream<>*
-#endif
-			> StreamMap;
+		typedef Map<char, Stream<>*>::type StreamMap;
 		/*! \brief The streams. */
 		StreamMap m_streams;
 

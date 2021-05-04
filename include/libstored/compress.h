@@ -19,6 +19,7 @@
  */
 
 #include <libstored/macros.h>
+#include <libstored/config.h>
 #include <libstored/protocol.h>
 
 #ifdef __cplusplus
@@ -102,7 +103,7 @@ namespace stored {
 		 * \details This is used to pass a buffer upstream.
 		 *          The buffer is only allocated, not released.
 		 */
-		std::vector<uint8_t> m_decodeBuffer;
+		Vector<uint8_t>::type m_decodeBuffer;
 		/*!
 		 * \brief Actual data in #m_decodeBuffer.
 		 */

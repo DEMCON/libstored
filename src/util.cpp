@@ -125,8 +125,11 @@ diff:
  *
  * This comes in handy for verbose output of binary data, like protocol messages.
  */
-std::string string_literal(void const* buffer, size_t len, char const* prefix) noexcept {
-	std::string s;
+String::type string_literal(void const* buffer, size_t len, char const* prefix) {
+	String::type s;
+	if(Config::AvoidDynamicMemory)
+		s.reserve((prefix ? strlen(prefix) : 0U) + len * 4U);
+
 	if(prefix)
 		s += prefix;
 

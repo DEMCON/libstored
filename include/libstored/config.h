@@ -22,6 +22,7 @@
 
 #ifdef __cplusplus
 #include <cstddef>
+#include <memory>
 
 namespace stored {
 	/*!
@@ -143,6 +144,33 @@ namespace stored {
 			false;
 #endif
 
+		/*!
+		 * \brief When \c true, avoid dynamic memory reallocation where possible.
+		 *
+		 * The Allocator will still be used, but reallocation to dynamically
+		 * sized buffers is avoided.  This implies that worst-case allocation
+		 * may be done at startup.
+		 */
+		static bool const AvoidDynamicMemory =
+#if defined(STORED_OS_BAREMETAL) || defined(STORED_OS_GENERIC)
+			true;
+#else
+			false;
+#endif
+
+		/*!
+		 * \brief Allocator to be used for all dynamic memory allocations.
+		 *
+		 * Define a similar struct with \c type member to override the default
+		 * allocator.
+		 *
+		 * C++11's <tt>template &lt;typename T&gt; using Allocator = std::allocator&lt;T&gt;;</tt>
+		 * would be nicer, but this construct works for all versions of C++.
+		 */
+		template <typename T>
+		struct Allocator {
+			typedef std::allocator<T> type;
+		};
 	};
 } // namespace
 #endif // __cplusplus

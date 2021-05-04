@@ -26,7 +26,7 @@
  * \return the decoded value
  */
 template <typename T>
-static T decodeInt(uint8_t const*& p) {
+static T decodeInt(uint8_t const*& p) noexcept {
 	T v = 0;
 	while(*p & 0x80u) {
 		v = (v | (T)(*p & 0x7fu)) << 7u;
@@ -39,7 +39,7 @@ static T decodeInt(uint8_t const*& p) {
  * \brief Skips an Unsigned VLQ number, which encodes a buffer offset.
  * \param p a pointer to the offset to be skipped, which is increment till after the offset
  */
-static void skipOffset(uint8_t const*& p) {
+static void skipOffset(uint8_t const*& p) noexcept {
 	while(*p++ & 0x80u);
 }
 
@@ -59,7 +59,7 @@ namespace impl {
  * \see #stored::find()
  * \private
  */
-Variant<> find(void* buffer, uint8_t const* directory, char const* name, size_t len) {
+Variant<> find(void* buffer, uint8_t const* directory, char const* name, size_t len) noexcept {
 	if(unlikely(!directory || !name)) {
 notfound:
 		return Variant<>();
@@ -196,9 +196,13 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
  * \param prefix when not \c nullptr, a string that is prepended for the name that is supplied to \p f
  */
 void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg, char const* prefix) {
-	std::string name;
+	static String::type name;
+	if(Config::AvoidDynamicMemory)
+		name.reserve((prefix ? strlen(prefix) * 2U : 0U) + 128U); // Some arbitrary buffer, which should usually be sufficient.
+
 	if(prefix)
 		name = prefix;
+
 	list(container, buffer, directory, f, arg, name);
 }
 

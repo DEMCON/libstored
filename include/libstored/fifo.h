@@ -33,7 +33,6 @@
 #include <new>
 #include <iterator>
 #include <array>
-#include <vector>
 #include <utility>
 #include <string>
 #include <functional>
@@ -168,7 +167,7 @@ namespace stored {
 		}
 
 	private:
-		std::vector<type> m_buffer;
+		typename Vector<type>::type m_buffer;
 	};
 
 	/*!

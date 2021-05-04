@@ -20,6 +20,7 @@
 
 #include <libstored/macros.h>
 #include <libstored/config.h>
+#include <libstored/allocator.h>
 #include <libstored/util.h>
 #include <libstored/debugger.h>
 #include <libstored/protocol.h>

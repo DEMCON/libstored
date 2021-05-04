@@ -25,7 +25,7 @@
 namespace stored {
 
 	namespace impl {
-		Variant<> find(void* buffer, uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max());
+		Variant<> find(void* buffer, uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept;
 	}
 
 	/*!
@@ -38,7 +38,7 @@ namespace stored {
 	 * \return a variant, which is not valid when not found
 	 */
 	template <typename Container>
-	Variant<Container> find(Container& container, void* buffer, uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max()) {
+	Variant<Container> find(Container& container, void* buffer, uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
 		return impl::find(buffer, directory, name, len).apply<Container>(container);
 	}
 
@@ -64,12 +64,10 @@ namespace stored {
 	template <typename Container, typename F>
 	SFINAE_IS_FUNCTION(F, void(Container*, char const*, Type::type, void*, size_t), void)
 	list(Container* container, void* buffer, uint8_t const* directory, F&& f) {
-		typedef void(ListCallback)(Container*, char const*, Type::type, void*, size_t);
-		std::function<ListCallback> f_ = f;
-		auto cb = [](void* container_, char const* name, Type::type type, void* buffer_, size_t len, void* f__) {
-			(*(std::function<ListCallback>*)f__)((Container*)container_, name, type, buffer_, len);
+		auto cb = [](void* container_, char const* name, Type::type type, void* buffer_, size_t len, void* f_) {
+			(*static_cast<typename std::decay<F>::type*>(f_))((Container*)container_, name, type, buffer_, len);
 		};
-		list(container, buffer, directory, static_cast<ListCallbackArg*>(cb), &f_);
+		list(container, buffer, directory, static_cast<ListCallbackArg*>(cb), &f);
 	}
 #endif
 

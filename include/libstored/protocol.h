@@ -323,7 +323,7 @@ namespace stored {
 		/*! \brief State of frame extraction. */
 		State m_decodeState;
 		/*! \brief Buffer of to-be-decoded data. */
-		std::vector<char> m_buffer;
+		Vector<char>::type m_buffer;
 
 		/*! \brief State of frame injection. */
 		bool m_encodeState;
@@ -366,7 +366,7 @@ namespace stored {
 
 	private:
 		size_t m_mtu;
-		std::vector<char> m_decode;
+		Vector<char>::type m_decode;
 		size_t m_encoded;
 	};
 
@@ -530,7 +530,7 @@ namespace stored {
 
 		void popEncodeQueue();
 		void pushEncodeQueue(void const* buffer, size_t len);
-		std::string& pushEncodeQueueRaw();
+		String::type& pushEncodeQueueRaw();
 
 	private:
 #if STORED_cplusplus < 201103L
@@ -541,8 +541,8 @@ namespace stored {
 #endif
 
 		size_t const m_maxEncodeBuffer;
-		std::deque<std::string*> m_encodeQueue;
-		std::deque<std::string*> m_spare;
+		Deque<String::type*>::type m_encodeQueue;
+		Deque<String::type*>::type m_spare;
 		size_t m_encodeQueueSize;
 		EncodeState m_encodeState;
 		bool m_didTransmit;
@@ -670,7 +670,7 @@ namespace stored {
 		bool m_encodeSeqReset;
 
 		size_t const m_maxEncodeBuffer;
-		std::vector<std::string> m_encodeBuffer;
+		Vector<String::type>::type m_encodeBuffer;
 		size_t m_encodeBufferSize;
 	};
 
@@ -776,7 +776,7 @@ namespace stored {
 
 	private:
 		size_t const m_size;
-		std::string m_buffer;
+		String::type m_buffer;
 	};
 
 	/*!
@@ -1055,7 +1055,7 @@ public:
 	private:
 		fd_type m_fd_r;
 		fd_type m_fd_w;
-		std::vector<char> m_bufferRead;
+		Vector<char>::type m_bufferRead;
 
 #ifdef STORED_OS_WINDOWS
 		OVERLAPPED m_overlappedRead;
@@ -1066,7 +1066,7 @@ public:
 			FileLayer* const m_this;
 		};
 
-		std::vector<char> m_bufferWrite;
+		Vector<char>::type m_bufferWrite;
 		size_t m_writeLen;
 #endif
 	};
@@ -1088,7 +1088,7 @@ public:
 
 		NamedPipeLayer(char const* name, DWORD openMode = PIPE_ACCESS_DUPLEX, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~NamedPipeLayer() override;
-		std::string const& name() const;
+		String::type const& name() const;
 		int recv(long timeout_us = 0) final;
 		HANDLE handle() const;
 		bool isConnected() const;
@@ -1113,7 +1113,7 @@ public:
 
 	private:
 		State m_state;
-		std::string m_name;
+		String::type m_name;
 		DWORD m_openMode;
 	};
 
@@ -1254,7 +1254,7 @@ public:
 		fd_type m_fd_w;
 		bool m_pipe_r;
 		bool m_pipe_w;
-		std::vector<char> m_bufferRead;
+		Vector<char>::type m_bufferRead;
 	};
 
 #else // !STORED_OS_WINDOWS
