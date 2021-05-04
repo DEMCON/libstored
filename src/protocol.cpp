@@ -744,7 +744,7 @@ String::type& ArqLayer::pushEncodeQueueRaw() {
 	String::type* s = nullptr;
 
 	if(m_spare.empty()) {
-		s = new(allocate<String::type>()) String::type;
+		s = new(allocate<String::type>()) String::type; // NOLINT(cppcoreguidelines-owning-memory)
 
 		m_encodeQueue.
 #if STORED_cplusplus >= 201103L
@@ -1517,7 +1517,7 @@ PolledLayer::~PolledLayer() {
  */
 Poller& PolledLayer::poller() {
 	if(!m_poller)
-		m_poller = new(allocate<Poller>()) Poller();
+		m_poller = new(allocate<Poller>()) Poller(); // NOLINT(cppcoreguidelines-owning-memory)
 
 	return *m_poller;
 }

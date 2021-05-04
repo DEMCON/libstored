@@ -431,7 +431,8 @@ namespace stored {
 			: m_message(message), m_length(length)
 		{}
 
-		MessageView(std::string const& str) noexcept
+		template <typename Traits, typename Allocator>
+		MessageView(std::basic_string<char,Traits,Allocator> const& str) noexcept
 			: m_message(str.data()), m_length(str.size())
 		{}
 

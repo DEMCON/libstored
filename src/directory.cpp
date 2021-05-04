@@ -134,7 +134,7 @@ notfound:
  * \brief Implementation for stored::list().
  * \private
  */
-static void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg, std::string& name)
+static void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg, String::type& name)
 {
 	if(unlikely(!buffer || !directory))
 		return;
@@ -194,6 +194,8 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
  * \param f the callback function
  * \param arg an arbitrary argument to be passed to \p f
  * \param prefix when not \c nullptr, a string that is prepended for the name that is supplied to \p f
+ *
+ * This function is not reentrant. Do not call it recursively.
  */
 void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg, char const* prefix) {
 	static String::type name;

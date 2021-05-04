@@ -82,11 +82,10 @@ namespace stored {
 		 * \brief Dtor.
 		 */
 		~ScratchPad() {
-			// NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc)
-			free(chunk());
+			deallocate<char>((char*)chunk(), bufferSize() + chunkHeader);
 
 			for(std::list<char*>::iterator it = m_old.begin(); it != m_old.end(); ++it)
-				free(chunk(*it)); // NOLINT(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc)
+				deallocate<char>((char*)chunk(*it), bufferSize(*it) + chunkHeader);
 		}
 
 		/*!
@@ -102,7 +101,7 @@ namespace stored {
 			if(unlikely(!m_old.empty())) {
 				// Coalesce chunks.
 				for(std::list<char*>::iterator it = m_old.begin(); it != m_old.end(); ++it)
-					free(chunk(*it)); // NOLINT(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc)
+					deallocate<char>((char*)chunk(*it), bufferSize(*it) + chunkHeader);
 
 				m_old.clear();
 				reserve(m_max);
@@ -290,17 +289,7 @@ private:
 			if(m_buffer)
 				m_old.push_back(m_buffer);
 
-			// NOLINTNEXTLINE(cppcoreguidelines-no-malloc,cppcoreguidelines-owning-memory)
-			void* p = malloc(size + chunkHeader);
-			if(!p) {
-#ifdef __cpp_exceptions
-				throw std::bad_alloc();
-#else
-				abort();
-#endif
-			}
-
-			m_buffer = buffer(p);
+			m_buffer = buffer(allocate<char>(size + chunkHeader));
 			setBufferSize(size);
 			m_size = 0;
 
@@ -317,7 +306,7 @@ private:
 			stored_assert(m_buffer || m_old.empty());
 
 			if(m_buffer) {
-				free(chunk(m_buffer)); // NOLINT(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc)
+				deallocate<char>((char*)chunk(), bufferSize() + chunkHeader);
 				m_buffer = nullptr;
 			}
 
@@ -339,23 +328,16 @@ private:
 		}
 
 		/*!
-		 * \brief Try to grow (\c realloc()) the current buffer.
-		 * \details The current buffer may be moved, which invalidates all allocations within the buffer.
+		 * \brief Replace current buffer by a bigger one.
+		 * \details Contents of the current buffer may be lost.
 		 */
 		void bufferGrow(size_t size) {
 			stored_assert(size > bufferSize());
-			// clang-analyzer-unix.API: clang-tidy thinks new_cap can be 0, but that's not true.
-			// NOLINTNEXTLINE(cppcoreguidelines-no-malloc,cppcoreguidelines-owning-memory,clang-analyzer-unix.API)
-			void* p = realloc(chunk(m_buffer), size + chunkHeader);
-			if(!p) {
-#ifdef __cpp_exceptions
-				throw std::bad_alloc();
-#else
-				abort();
-#endif
-			}
 
-			m_buffer = buffer(p);
+			// Standard allocators don't have realloc. So, deallocate first,
+			// and then allocate a new one.
+			deallocate<char>((char*)chunk(), bufferSize() + chunkHeader);
+			m_buffer = buffer(allocate<char>(size + chunkHeader));
 			setBufferSize(size);
 
 #ifdef STORED_HAVE_VALGRIND
@@ -365,14 +347,21 @@ private:
 		}
 
 		/*!
-		 * \brief Returns the size of the current buffer.
+		 * \brief Returns the size of the given buffer.
 		 */
-		size_t bufferSize() const {
-			return likely(m_buffer) ? *(size_t*)(chunk(m_buffer)) : 0;
+		static size_t bufferSize(char* buffer) {
+			return likely(buffer) ? *(size_t*)(chunk(buffer)) : 0;
 		}
 
 		/*!
-		 * \brief Saves the malloc()ed size of the curretn buffer.
+		 * \brief Returns the size of the current buffer.
+		 */
+		size_t bufferSize() const {
+			return bufferSize(m_buffer);
+		}
+
+		/*!
+		 * \brief Saves the malloc()ed size of the current buffer.
 		 */
 		void setBufferSize(size_t size) {
 			stored_assert(m_buffer);
