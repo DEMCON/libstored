@@ -69,7 +69,7 @@ endif()
 if(MSVC)
 	target_compile_options({{libprefix}}libstored PRIVATE /Wall /WX)
 else()
-	target_compile_options({{libprefix}}libstored PRIVATE -Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion -Wshadow -ffunction-sections -fdata-sections)
+	target_compile_options({{libprefix}}libstored PRIVATE -Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion -ffunction-sections -fdata-sections)
 endif()
 
 CHECK_INCLUDE_FILE_CXX("valgrind/memcheck.h" LIBSTORED_HAVE_VALGRIND)
