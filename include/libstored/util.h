@@ -320,6 +320,46 @@ namespace stored {
 			return endian_b2h<T>(value);
 	}
 
+	/*!
+	 * \brief Load from (possibly unaligned) buffer and swap little to host endianness.
+	 */
+	template <typename T, typename P>
+	static inline T endian_l2h(P const* p) noexcept {
+		T x;
+		memcpy(&x, p, sizeof(T));
+		return endian_l2h(x);
+	}
+
+	/*!
+	 * \brief Load from (possibly unaligned) buffer and swap big to host endianness.
+	 */
+	template <typename T, typename P>
+	static inline T endian_b2h(P const* p) noexcept {
+		T x;
+		memcpy(&x, p, sizeof(T));
+		return endian_b2h(x);
+	}
+
+	/*!
+	 * \brief Load from (possibly unaligned) buffer and swap network (big) to host endianness.
+	 */
+	template <typename T, typename P>
+	static inline T endian_n2h(P const* p) noexcept {
+		T x;
+		memcpy(&x, p, sizeof(T));
+		return endian_n2h(x);
+	}
+
+	/*!
+	 * \brief Load from (possibly unaligned) buffer and swap store to host endianness.
+	 */
+	template <typename T, typename P>
+	static inline T endian_s2h(P const* p) noexcept {
+		T x;
+		memcpy(&x, p, sizeof(T));
+		return endian_s2h(x);
+	}
+
 	std::string string_literal(void const* buffer, size_t len, char const* prefix = nullptr) noexcept;
 
 	/*!
