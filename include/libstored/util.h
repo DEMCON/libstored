@@ -20,7 +20,6 @@
 
 #include <libstored/macros.h>
 #include <libstored/config.h>
-#include <libstored/allocator.h>
 
 #if STORED_cplusplus < 201103L
 #  include <stdint.h>
@@ -359,8 +358,6 @@ namespace stored {
 		return endian_s2h(x);
 	}
 
-	String::type string_literal(void const* buffer, size_t len, char const* prefix = nullptr);
-
 	/*!
 	 * \brief Determine the number of bytes to save the given unsigned value.
 	 */
@@ -455,6 +452,12 @@ namespace stored {
 	int strncmp(char const* __restrict__ str1, size_t len1, char const* __restrict__ str2, size_t len2 = std::numeric_limits<size_t>::max()) noexcept;
 
 	char const* banner() noexcept;
+} // namespace
+
+#include <libstored/allocator.h>
+
+namespace stored {
+	String::type string_literal(void const* buffer, size_t len, char const* prefix = nullptr);
 } // namespace
 
 /*!

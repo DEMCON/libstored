@@ -261,7 +261,7 @@ namespace stored {
 		/*!
 		 * \brief Returns the container this Variable belongs to.
 		 */
-		Container& container() const;// { std::abort(); }
+		Container& container() const;// { std::terminate(); }
 
 		/*!
 		 * \brief Checks if two Variables point to the same buffer, or are both invalid.
@@ -801,8 +801,8 @@ namespace stored {
 		 * \brief Gets the value.
 		 * \see #get(void*, size_t) const
 		 */
-		std::vector<char> get() const {
-			std::vector<char> buf(size());
+		Vector<char>::type get() const {
+			Vector<char>::type buf(size());
 			get(&buf[0], buf.size());
 			return buf;
 		}
@@ -1144,7 +1144,7 @@ namespace stored {
 		/*! \copybrief Variant::isVariable() */
 		bool isVariable() const noexcept { stored_assert(valid()); return !isFunction(); }
 		/*! \brief Don't use. */
-		int& container() const noexcept { stored_assert(valid()); std::abort(); }
+		int& container() const noexcept { stored_assert(valid()); std::terminate(); }
 
 		/*! \copybrief Variant::operator==() */
 		bool operator==(Variant const& rhs) const noexcept {

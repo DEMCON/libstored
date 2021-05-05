@@ -1,3 +1,5 @@
+#include <libstored/util.h>
+
 #ifndef LIBSTORED_ALLOCATOR_H
 #define LIBSTORED_ALLOCATOR_H
 /*
@@ -22,10 +24,16 @@
 
 #ifdef __cplusplus
 #include <deque>
+#include <list>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
+
+#if STORED_cplusplus >= 201103L
+#  include <utility>
+#endif
 
 namespace stored {
 
@@ -79,11 +87,185 @@ namespace stored {
 	}
 
 	/*!
+	 * \brief libstored-allocator-aware \c std::function.
+	 */
+#if STORED_cplusplus < 201103L
+	template <typename F>
+	struct Callable {
+		typedef F* type;
+	};
+#else
+
+	namespace impl {
+		template <typename R, typename... Args>
+		class Callable {
+		protected:
+			class Base {
+			public:
+				virtual ~Base() = default;
+				virtual R operator()(Args... args) const = 0;
+				virtual operator bool() const { return true; }
+			};
+
+			class Reset : public Base {
+			public:
+				~Reset() final = default;
+
+				R operator()(Args... args) const final {
+					return R();
+				}
+
+				operator bool() const final { return false; }
+			};
+
+			template <typename F, bool Dummy = false>
+			class Wrapper : public Base {
+			public:
+				~Wrapper() final = default;
+
+				template <typename F_>
+				Wrapper(F_&& f) : m_f{std::forward<F_>(f)} {}
+
+				R operator()(Args... args) const final {
+					return m_f(args...);
+				}
+			private:
+				F m_f;
+			};
+
+			template <bool Dummy>
+			class Wrapper<R(Args...), Dummy> : public Base {
+			public:
+				~Wrapper() final = default;
+
+				template <typename F_>
+				Wrapper(R(*f)(Args...)) : m_f{f} {}
+
+				R operator()(Args... args) const final {
+					return m_f(args...);
+				}
+			private:
+				R(*m_f)(Args...);
+			};
+
+			template <typename F>
+			class Forwarder : public Base {
+			public:
+				template <typename F_>
+				__attribute__((nonnull)) explicit Forwarder(F_&& f)
+					: m_w{new(allocate<Wrapper<F>>()) Wrapper<F>(std::forward<F_>(f))}
+				{}
+
+				~Forwarder() noexcept final {
+					cleanup<Wrapper<F>>(m_w);
+				}
+
+				R operator()(Args... args) const final {
+					return (*m_w)(args...);
+				}
+			private:
+				Wrapper<F>* m_w;
+			};
+
+		public:
+			explicit Callable(std::nullptr_t = nullptr) {
+				construct<Reset>();
+			}
+
+			template <typename G>
+			explicit Callable(G&& g) {
+				assign(std::forward<G>(g));
+			}
+
+			~Callable() noexcept {
+				get().~Base();
+			}
+
+			R operator()(Args... args) const {
+				return (get())(args...);
+			}
+
+			operator bool() const {
+				return get();
+			}
+
+			Callable& operator=(std::nullptr_t) {
+				if(*this) {
+					destroy();
+					construct<Reset>();
+				}
+
+				return *this;
+			}
+
+			template <typename G>
+			Callable& operator=(G&& g) {
+				replace(std::forward<G>(g));
+				return *this;
+			}
+
+		protected:
+			Base const& get() const {
+				return *reinterpret_cast<Base const*>(m_buffer);
+			}
+
+			Base& get() {
+				return *reinterpret_cast<Base*>(m_buffer);
+			}
+
+			template <typename G>
+			void assign(G&& g) {
+				using F_ = typename std::decay<G>::type;
+				if(sizeof(Wrapper<F_>) > sizeof(m_buffer))
+					construct<Forwarder<F_>>(std::forward<G>(g));
+				else
+					construct<Wrapper<F_>>(std::forward<G>(g));
+			}
+
+			template <typename T, typename... TArgs>
+			void construct(TArgs&&... args) {
+				static_assert(sizeof(T) <= sizeof(m_buffer), "");
+				new(m_buffer) T{std::forward<TArgs>(args)...};
+			}
+
+			void destroy() {
+				get().~Base();
+			}
+
+			template <typename G>
+			void replace(G&& g) {
+				destroy();
+				assign(std::forward<G>(g));
+			}
+
+		private:
+			char m_buffer[std::max(sizeof(Reset), sizeof(Forwarder<R(*)(Args...)>) + sizeof(void*))];
+		};
+	}
+
+	template <typename F>
+	struct Callable {
+		template <typename R, typename... Args>
+		static impl::Callable<R,typename std::remove_reference<Args>::type...> callable_impl(R(Args...));
+		using type = decltype(callable_impl(std::declval<F>()));
+	};
+#endif
+
+	/*!
 	 * \brief libstored-allocator-aware \c std::deque.
 	 */
 	template <typename T>
 	struct Deque {
 		typedef typename std::deque<T, typename Config::Allocator<T>::type> type;
+	};
+
+
+	/*!
+	 * \brief libstored-allocator-aware \c std::list.
+	 */
+	template <typename T>
+	struct List {
+		typedef typename std::list<T, typename Config::Allocator<T>::type> type;
 	};
 
 	/*!
@@ -92,6 +274,14 @@ namespace stored {
 	template <typename Key, typename T, typename Compare = std::less<Key> >
 	struct Map {
 		typedef typename std::map<Key, T, Compare, typename Config::Allocator<std::pair<Key const, T> >::type> type;
+	};
+
+	/*!
+	 * \brief libstored-allocator-aware \c std::set.
+	 */
+	template <typename Key, typename Compare = std::less<Key> >
+	struct Set {
+		typedef typename std::set<Key, Compare, typename Config::Allocator<Key>::type> type;
 	};
 
 	/*!

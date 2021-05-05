@@ -23,7 +23,6 @@
 #include <libstored/macros.h>
 #include <libstored/util.h>
 
-#include <list>
 #include <new>
 
 #ifdef STORED_HAVE_VALGRIND
@@ -84,7 +83,7 @@ namespace stored {
 		~ScratchPad() {
 			deallocate<char>((char*)chunk(), bufferSize() + chunkHeader);
 
-			for(std::list<char*>::iterator it = m_old.begin(); it != m_old.end(); ++it)
+			for(List<char*>::type::iterator it = m_old.begin(); it != m_old.end(); ++it)
 				deallocate<char>((char*)chunk(*it), bufferSize(*it) + chunkHeader);
 		}
 
@@ -100,7 +99,7 @@ namespace stored {
 
 			if(unlikely(!m_old.empty())) {
 				// Coalesce chunks.
-				for(std::list<char*>::iterator it = m_old.begin(); it != m_old.end(); ++it)
+				for(List<char*>::type::iterator it = m_old.begin(); it != m_old.end(); ++it)
 					deallocate<char>((char*)chunk(*it), bufferSize(*it) + chunkHeader);
 
 				m_old.clear();
@@ -519,7 +518,7 @@ public:
 		/*! \brief Current buffer chunk. If it gets full, it is pushed onto #m_old and a new one is allocated. */
 		char* m_buffer;
 		/*! \brief Previous buffer chunks. */
-		std::list<char*> m_old;
+		List<char*>::type m_old;
 		/*! \brief Used offset within #m_buffer. */
 		size_type m_size;
 		/*! \brief Total memory usage of all chunks. */

@@ -132,11 +132,10 @@ namespace stored {
 		template <typename F>
 		SFINAE_IS_FUNCTION(F, void(Key), void)
 		iterateChanged(Seq since, F&& cb) const {
-			std::function<void(Key)> f = cb;
 			iterateChanged(since,
-				[](Key key, void* f_) {
-					(*static_cast<std::function<void(Key)>*>(f_))(key); },
-				&f);
+				[](Key key, void* cb_) {
+					(*static_cast<typename std::decay<F>::type*>(cb_))(key); },
+				&cb);
 		}
 #endif
 
@@ -212,7 +211,7 @@ namespace stored {
 		//      if new, full tree regeneration required (only startup effect)
 		// iterate with lower bound on seq: DFS through tree, stop at highest_seq < given seq
 		// no auto-remove objects (manual cleanup call required)
-		typedef std::vector<ObjectInfo> Changes;
+		typedef Vector<ObjectInfo>::type Changes;
 		Changes m_changes;
 	};
 
@@ -435,11 +434,11 @@ private:
 			bool source;
 		};
 
-		typedef std::map<StoreJournal*, StoreInfo> StoreMap;
+		typedef Map<StoreJournal*, StoreInfo>::type StoreMap;
 		StoreMap m_store;
 
 		// Id determined by this class (set in Hello message)
-		typedef std::map<Id, StoreJournal*> IdInMap;
+		typedef Map<Id, StoreJournal*>::type IdInMap;
 		IdInMap m_idIn;
 
 		Id m_idInNext;
@@ -537,10 +536,10 @@ private:
 			}
 		};
 
-		typedef std::map<char const*, StoreJournal*, HashComparator> StoreMap;
+		typedef Map<char const*, StoreJournal*, HashComparator>::type StoreMap;
 		StoreMap m_storeMap;
 
-		typedef std::set<ProtocolLayer*> Connections;
+		typedef Set<ProtocolLayer*>::type Connections;
 		Connections m_connections;
 	};
 
