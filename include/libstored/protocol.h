@@ -312,11 +312,7 @@ namespace stored {
 
 	private:
 		/*! \brief The callback to write non-debug decoded data to. */
-#if STORED_cplusplus >= 201103L
-		std::function<NonDebugDecodeCallback> m_nonDebugDecodeCallback;
-#else
-		NonDebugDecodeCallback* m_nonDebugDecodeCallback;
-#endif
+		Callable<NonDebugDecodeCallback>::type m_nonDebugDecodeCallback;
 
 		/*! \brief States of frame extraction. */
 		enum State { StateNormal, StateNormalEsc, StateDebug, StateDebugEsc };
@@ -537,7 +533,7 @@ namespace stored {
 		EventCallbackArg* m_cb;
 		void* m_cbArg;
 #else
-		std::function<EventCallback> m_cb;
+		Callable<EventCallback>::type m_cb;
 #endif
 
 		size_t const m_maxEncodeBuffer;

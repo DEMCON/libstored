@@ -23,6 +23,8 @@
 #include <libstored/config.h>
 
 #ifdef __cplusplus
+#include <algorithm>
+#include <array>
 #include <deque>
 #include <list>
 #include <map>
@@ -87,169 +89,317 @@ namespace stored {
 	}
 
 	/*!
-	 * \brief libstored-allocator-aware \c std::function.
+	 * \brief libstored-allocator-aware \c std::function-like type.
 	 */
 #if STORED_cplusplus < 201103L
 	template <typename F>
 	struct Callable {
 		typedef F* type;
 	};
-#else
-
+#else // STORED_cplusplus >= 201103L
 	namespace impl {
+		template <typename T> struct CallableType { using type = typename std::decay<T>::type; };
+		template <typename T> struct CallableType<T&> { using type = T&; };
+
+		template <typename T> struct CallableArgType { using type = typename std::remove_reference<T>::type const&; };
+		template <typename T> struct CallableArgType<T&> { using type = T&; };
+		template <typename T> struct CallableArgType<T&&> { using type = T&&; };
+
 		template <typename R, typename... Args>
 		class Callable {
 		protected:
+			// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
 			class Base {
 			public:
-				virtual ~Base() = default;
-				virtual R operator()(Args... args) const = 0;
+				virtual ~Base() noexcept = default;
+				virtual R operator()(typename CallableArgType<Args>::type... args) const = 0;
+				// NOLINTNEXTLINE(hicpp-explicit-conversions)
 				virtual operator bool() const { return true; }
+				virtual void clone(void* buffer) const = 0;
+				virtual void move(void* buffer) { clone(buffer); }
 			};
 
+			// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
 			class Reset : public Base {
 			public:
-				~Reset() final = default;
+				// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
+				~Reset() noexcept final = default;
 
-				R operator()(Args... args) const final {
+				R operator()(typename CallableArgType<Args>::type... UNUSED_PAR(args)) const final {
 					return R();
 				}
 
+				// NOLINTNEXTLINE(hicpp-explicit-conversions)
 				operator bool() const final { return false; }
+
+				void clone(void* buffer) const final {
+					new(buffer) Reset;
+				}
 			};
 
 			template <typename F, bool Dummy = false>
+			// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
 			class Wrapper : public Base {
 			public:
-				~Wrapper() final = default;
+				~Wrapper() noexcept final = default;
 
-				template <typename F_>
-				Wrapper(F_&& f) : m_f{std::forward<F_>(f)} {}
+				template <typename F_, typename std::enable_if<!std::is_same<typename std::decay<F_>::type, Wrapper>::value, int>::type = 0>
+				// NOLINTNEXTLINE(misc-forwarding-reference-overload)
+				explicit Wrapper(F_&& f) : m_f{std::forward<F_>(f)} {}
 
-				R operator()(Args... args) const final {
-					return m_f(args...);
+				R operator()(typename CallableArgType<Args>::type... args) const final {
+					return m_f(std::forward<typename CallableArgType<Args>::type>(args)...);
 				}
+
+				void clone(void* buffer) const final {
+					new(buffer) Wrapper(m_f);
+				}
+
+				void move(void* buffer) final {
+					new(buffer) Wrapper(std::move(m_f));
+				}
+
 			private:
 				F m_f;
 			};
 
 			template <bool Dummy>
+			// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
 			class Wrapper<R(Args...), Dummy> : public Base {
 			public:
-				~Wrapper() final = default;
+				~Wrapper() noexcept final = default;
 
 				template <typename F_>
-				Wrapper(R(*f)(Args...)) : m_f{f} {}
+				explicit Wrapper(R(*f)(Args...)) noexcept : m_f{f} {}
 
-				R operator()(Args... args) const final {
-					return m_f(args...);
+				R operator()(typename CallableArgType<Args>::type... args) const final {
+					return m_f(std::forward<typename CallableArgType<Args>::type>(args)...);
 				}
+
+				void clone(void* buffer) const final {
+					new(buffer) Wrapper(m_f);
+				}
+
 			private:
 				R(*m_f)(Args...);
+			};
+
+			template <typename T, bool Dummy>
+			// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
+			class Wrapper<T&, Dummy> : public Base {
+			public:
+				~Wrapper() noexcept final = default;
+
+				explicit Wrapper(T& obj) noexcept : m_obj{&obj} {}
+
+				R operator()(typename CallableArgType<Args>::type... args) const final {
+					return (*m_obj)(std::forward<typename CallableArgType<Args>::type>(args)...);
+				}
+
+				void clone(void* buffer) const final {
+					new(buffer) Wrapper(*m_obj);
+				}
+
+			private:
+				T* m_obj;
 			};
 
 			template <typename F>
 			class Forwarder : public Base {
 			public:
-				template <typename F_>
-				__attribute__((nonnull)) explicit Forwarder(F_&& f)
+				template <typename F_, typename std::enable_if<!std::is_same<typename std::decay<F_>::type, Forwarder>::value, int>::type = 0>
+				// NOLINTNEXTLINE(misc-forwarding-reference-overload)
+				explicit Forwarder(F_&& f)
 					: m_w{new(allocate<Wrapper<F>>()) Wrapper<F>(std::forward<F_>(f))}
 				{}
 
-				~Forwarder() noexcept final {
-					cleanup<Wrapper<F>>(m_w);
+				explicit Forwarder(Wrapper<F>& w) noexcept
+					: m_w{&w}
+				{}
+
+				Forwarder(Forwarder&& f) noexcept
+					: m_w{}
+				{
+					(*this) = std::move(f);
 				}
 
-				R operator()(Args... args) const final {
-					return (*m_w)(args...);
+				Forwarder& operator=(Forwarder&& f) noexcept {
+					cleanup(m_w);
+					m_w = f.m_w;
+					f.m_w = nullptr;
+					return *this;
+				}
+
+				Forwarder(Forwarder const& f)
+					: m_w{}
+				{
+					(*this) = f;
+				}
+
+				Forwarder& operator=(Forwarder const& f) {
+					auto w = allocate<Wrapper<F>>();
+					try {
+						f.m_w->clone(w);
+						m_w = w;
+					} catch(...) {
+						cleanup(w);
+						throw;
+					}
+					return *this;
+				}
+
+				~Forwarder() noexcept final {
+					cleanup(m_w);
+				}
+
+				R operator()(typename CallableArgType<Args>::type... args) const final {
+					return (*m_w)(std::forward<typename CallableArgType<Args>::type>(args)...);
+				}
+
+				void clone(void* buffer) const final {
+					new(buffer) Forwarder(*this);
+				}
+
+				void move(void* buffer) final {
+					new(buffer) Forwarder(std::move(*this));
 				}
 			private:
 				Wrapper<F>* m_w;
 			};
 
+			using Buffer = std::array<char, std::max({
+				sizeof(Reset),
+				sizeof(Forwarder<R(*)(Args...)>),
+				sizeof(Wrapper<R(*)(Args...)>) + sizeof(void*)
+			})>;
+
 		public:
-			explicit Callable(std::nullptr_t = nullptr) {
+			explicit Callable() {
 				construct<Reset>();
 			}
 
-			template <typename G>
+			template <typename G, typename std::enable_if<!std::is_same<typename std::decay<G>::type, Callable>::value, int>::type = 0>
+			// NOLINTNEXTLINE(misc-forwarding-reference-overload)
 			explicit Callable(G&& g) {
 				assign(std::forward<G>(g));
+			}
+
+			Callable(Callable const& c) {
+				c.get().clone(m_buffer.data());
+			}
+
+			Callable(Callable&& c) noexcept {
+				c.get().move(m_buffer.data());
+				c = nullptr;
 			}
 
 			~Callable() noexcept {
 				get().~Base();
 			}
 
-			R operator()(Args... args) const {
-				return (get())(args...);
+			R operator()(typename CallableArgType<Args>::type... args) const {
+				return get()(std::forward<typename CallableArgType<Args>::type>(args)...);
 			}
 
-			operator bool() const {
+			// NOLINTNEXTLINE(hicpp-explicit-conversions)
+			operator bool() const noexcept {
 				return get();
 			}
 
-			Callable& operator=(std::nullptr_t) {
-				if(*this) {
-					destroy();
-					construct<Reset>();
-				}
-
-				return *this;
-			}
-
-			template <typename G>
+			template <typename G, typename std::enable_if<!std::is_same<typename std::decay<G>::type, Callable>::value, int>::type = 0>
 			Callable& operator=(G&& g) {
 				replace(std::forward<G>(g));
 				return *this;
 			}
 
+			Callable& operator=(Callable const& c) {
+				destroy();
+				try {
+					c.get().clone(m_buffer.data());
+				} catch(...) {
+					construct<Reset>();
+					throw;
+				}
+				return *this;
+			}
+
+			Callable& operator=(Callable&& c) noexcept {
+				destroy();
+				c.get().move(m_buffer.data());
+				c = nullptr;
+				return *this;
+			}
+
 		protected:
-			Base const& get() const {
-				return *reinterpret_cast<Base const*>(m_buffer);
+			Base const& get() const noexcept {
+				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+				return *reinterpret_cast<Base const*>(m_buffer.data());
 			}
 
-			Base& get() {
-				return *reinterpret_cast<Base*>(m_buffer);
+			Base& get() noexcept {
+				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+				return *reinterpret_cast<Base*>(m_buffer.data());
 			}
 
-			template <typename G>
+			template <typename G,
+				typename F_ = typename CallableType<G>::type,
+				typename std::enable_if<(sizeof(Wrapper<F_>) > std::tuple_size<Buffer>::value), int>::type = 0>
 			void assign(G&& g) {
-				using F_ = typename std::decay<G>::type;
-				if(sizeof(Wrapper<F_>) > sizeof(m_buffer))
-					construct<Forwarder<F_>>(std::forward<G>(g));
+				construct<Forwarder<F_>>(std::forward<G>(g));
+			}
+
+			template <typename G,
+				typename F_ = typename CallableType<G>::type,
+				typename std::enable_if<(sizeof(Wrapper<F_>) <= std::tuple_size<Buffer>::value), int>::type = 0>
+			void assign(G&& g) {
+				construct<Wrapper<F_>>(std::forward<G>(g));
+			}
+
+			void assign(R(*g)(Args...)) {
+				if(g)
+					construct<Wrapper<R(*)(Args...)>>(g);
 				else
-					construct<Wrapper<F_>>(std::forward<G>(g));
+					construct<Reset>();
+			}
+
+			void assign(std::nullptr_t) {
+				construct<Reset>();
 			}
 
 			template <typename T, typename... TArgs>
 			void construct(TArgs&&... args) {
-				static_assert(sizeof(T) <= sizeof(m_buffer), "");
-				new(m_buffer) T{std::forward<TArgs>(args)...};
+				static_assert(sizeof(T) <= std::tuple_size<Buffer>::value, "");
+				new(m_buffer.data()) T{std::forward<TArgs>(args)...};
 			}
 
-			void destroy() {
+			void destroy() noexcept {
 				get().~Base();
 			}
 
 			template <typename G>
 			void replace(G&& g) {
 				destroy();
-				assign(std::forward<G>(g));
+				try {
+					assign(std::forward<G>(g));
+				} catch(...) {
+					// Make sure we always have a valid instance in the buffer.
+					construct<Reset>();
+					throw;
+				}
 			}
 
 		private:
-			char m_buffer[std::max(sizeof(Reset), sizeof(Forwarder<R(*)(Args...)>) + sizeof(void*))];
+			Buffer m_buffer;
 		};
 	}
 
 	template <typename F>
 	struct Callable {
 		template <typename R, typename... Args>
-		static impl::Callable<R,typename std::remove_reference<Args>::type...> callable_impl(R(Args...));
+		static impl::Callable<R,Args...> callable_impl(R(Args...));
 		using type = decltype(callable_impl(std::declval<F>()));
 	};
-#endif
+#endif // STORED_cplusplus >= 201103L
 
 	/*!
 	 * \brief libstored-allocator-aware \c std::deque.
@@ -258,7 +408,6 @@ namespace stored {
 	struct Deque {
 		typedef typename std::deque<T, typename Config::Allocator<T>::type> type;
 	};
-
 
 	/*!
 	 * \brief libstored-allocator-aware \c std::list.

@@ -801,7 +801,7 @@ namespace stored {
 
 	private:
 		Fifo_type m_fifo;
-		std::function<OverflowCallback> m_overflowCallback;
+		Callable<OverflowCallback>::type m_overflowCallback;
 	};
 
 	/*!
