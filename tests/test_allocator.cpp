@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "TestStore.h"
 #include "libstored/allocator.h"
 #include "gtest/gtest.h"
 
@@ -40,7 +41,7 @@ TEST(Callable, FunctionPointer) {
 	callable_flag = false;
 	f = nullptr;
 	EXPECT_FALSE((bool)f);
-	f();
+	EXPECT_THROW(f(), std::bad_function_call);
 	EXPECT_FALSE(callable_flag);
 
 	stored::Callable<void()>::type g{&callable};
@@ -116,14 +117,14 @@ TEST(Callable, Move) {
 
 	stored::Callable<void()>::type g{std::move(f)};
 	flag = false;
-	f();
+	EXPECT_THROW(f(), std::bad_function_call);
 	EXPECT_FALSE(flag);
 	g();
 	EXPECT_TRUE(flag);
 
 	flag = false;
 	f = std::move(g);
-	g();
+	EXPECT_THROW(g(), std::bad_function_call);
 	EXPECT_FALSE(flag);
 	f();
 	EXPECT_TRUE(flag);
@@ -139,7 +140,7 @@ TEST(Callable, Move) {
 	f = lambda;
 	g = std::move(f);
 
-	f();
+	EXPECT_THROW(f(), std::bad_function_call);
 	EXPECT_FALSE(flag0);
 	g();
 	EXPECT_TRUE(flag0);
@@ -246,6 +247,27 @@ TEST(Callable, Return) {
 
 	int i = 4;
 	EXPECT_EQ(f(&i), 4);
+}
+
+class Allocator : public ::testing::Test {
+protected:
+	void SetUp() override {
+		TestAllocatorBase::allocate_cb = TestAllocatorBase::allocate_report;
+		TestAllocatorBase::deallocate_cb = TestAllocatorBase::deallocate_report;
+	}
+
+	void TearDown() override {
+		TestAllocatorBase::allocate_cb = nullptr;
+		TestAllocatorBase::deallocate_cb = nullptr;
+	}
+};
+
+TEST_F(Allocator, Store) {
+	stored::TestStore s;
+	EXPECT_EQ(TestAllocatorBase::allocate_stats.calls, 0u);
+
+	stored::String::type str(128, '*');
+	EXPECT_EQ(TestAllocatorBase::allocate_stats.calls, 1u);
 }
 
 } // namespace

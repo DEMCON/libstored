@@ -126,7 +126,7 @@ namespace stored {
 				~Reset() noexcept final = default;
 
 				R operator()(typename CallableArgType<Args>::type... UNUSED_PAR(args)) const final {
-					return R();
+					throw std::bad_function_call();
 				}
 
 				// NOLINTNEXTLINE(hicpp-explicit-conversions)
