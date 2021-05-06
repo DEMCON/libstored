@@ -20,6 +20,32 @@
 #include "libstored/allocator.h"
 #include "gtest/gtest.h"
 
+#include <new>
+
+static bool verbose_new;
+static size_t new_count;
+
+void* operator new(std::size_t count) {
+	void* ptr = malloc(count);
+	if(verbose_new)
+		printf("new %zu -> %p\n", count, ptr);
+	new_count++;
+	return ptr;
+}
+
+void operator delete(void* ptr) noexcept {
+	if(verbose_new)
+		printf("delete %p\n", ptr);
+	free(ptr);
+}
+
+void operator delete(void* ptr, std::size_t) noexcept {
+	if(verbose_new)
+		printf("delete %p\n", ptr);
+	free(ptr);
+}
+
+
 namespace {
 
 static bool callable_flag;
@@ -254,20 +280,28 @@ protected:
 	void SetUp() override {
 		TestAllocatorBase::allocate_cb = TestAllocatorBase::allocate_report;
 		TestAllocatorBase::deallocate_cb = TestAllocatorBase::deallocate_report;
+		verbose_new = true;
+		new_count = 0;
 	}
 
 	void TearDown() override {
+		verbose_new = false;
 		TestAllocatorBase::allocate_cb = nullptr;
 		TestAllocatorBase::deallocate_cb = nullptr;
 	}
 };
 
 TEST_F(Allocator, Store) {
+	new_count = 0;
+
 	stored::TestStore s;
 	EXPECT_EQ(TestAllocatorBase::allocate_stats.calls, 0u);
 
 	stored::String::type str(128, '*');
 	EXPECT_EQ(TestAllocatorBase::allocate_stats.calls, 1u);
+
+	// No non-allocator allocations are expected.
+	EXPECT_EQ(new_count, 0u);
 }
 
 } // namespace

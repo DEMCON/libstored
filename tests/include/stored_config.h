@@ -12,6 +12,7 @@
 
 #ifdef __cplusplus
 #include <cstdio>
+#include <cstdlib>
 #include <functional>
 #include <typeinfo>
 
@@ -67,7 +68,9 @@ public:
 	TestAllocator(TestAllocator<A>&&) noexcept {}
 
 	value_type* allocate(size_t n) {
-		value_type* p = std::allocator<value_type>().allocate(n);
+		value_type* p = (value_type*)malloc(sizeof(value_type) * n);
+		if(!p)
+			throw std::bad_alloc();
 
 		if(allocate_cb)
 			allocate_cb(typeid(value_type), p, sizeof(value_type), n);
@@ -79,7 +82,7 @@ public:
 		if(deallocate_cb)
 			deallocate_cb(typeid(value_type), p, sizeof(value_type), n);
 
-		std::allocator<value_type>().deallocate(p, n);
+		free(p);
 	}
 
 	constexpr bool operator==(TestAllocator& a) noexcept { return true; }
