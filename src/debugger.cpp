@@ -109,7 +109,7 @@ notfound:
 	// a store.
 
 	size_t prefix_len = 1;
-	for(; prefix_len <= len && name[prefix_len] && name[prefix_len] != '/'; prefix_len++);
+	for(; prefix_len < len && name[prefix_len] && name[prefix_len] != '/'; prefix_len++);
 	if(prefix_len == len)
 		goto notfound;
 
