@@ -85,7 +85,7 @@ private:
 };
 
 void printBuffer(void const* buffer, size_t len, char const* prefix = nullptr, FILE* f = stdout) {
-	std::string s = stored::string_literal(buffer, len, prefix);
+	auto s = stored::string_literal(buffer, len, prefix);
 	s += "\n";
 	fputs(s.c_str(), f);
 }
