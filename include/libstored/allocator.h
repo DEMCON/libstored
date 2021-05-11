@@ -389,7 +389,7 @@ namespace stored {
 			}
 
 		private:
-			Buffer m_buffer;
+			alignas(sizeof(void*)) Buffer m_buffer;
 		};
 	}
 
