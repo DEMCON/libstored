@@ -3096,6 +3096,8 @@ SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, bool
 	}
 
 	resetAutoBaud();
+	// Ignore auto baud errors, as it is an optional feature.
+	setLastError(0);
 }
 
 int SerialLayer::resetAutoBaud()
@@ -3190,6 +3192,7 @@ SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, bool
 	}
 
 	resetAutoBaud();
+	setLastError(0);
 }
 
 int SerialLayer::resetAutoBaud()
