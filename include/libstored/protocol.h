@@ -30,6 +30,7 @@
 
 #if STORED_cplusplus >= 201103L
 #  include <functional>
+#  include <utility>
 #endif
 
 #ifdef STORED_COMPILER_MSVC
@@ -811,6 +812,168 @@ namespace stored {
 		char const* const m_name;
 		bool m_enable;
 	};
+
+	/*!
+	 * \brief A layer that tracks if it sees communication through the stack.
+	 *
+	 * This may be used to check of long inactivity on stalled or disconnected
+	 * communication channels.
+	 */
+	class IdleCheckLayer : public ProtocolLayer {
+		CLASS_NOCOPY(IdleCheckLayer)
+	public:
+		typedef ProtocolLayer base;
+
+		explicit IdleCheckLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
+			: base(up, down)
+			, m_idleUp(true)
+			, m_idleDown(true)
+		{}
+
+		virtual ~IdleCheckLayer() override is_default
+
+		virtual void decode(void* buffer, size_t len) override
+		{
+			m_idleUp = false;
+			base::decode(buffer, len);
+		}
+
+		virtual void encode(void const* buffer, size_t len, bool last = true) override
+		{
+			m_idleDown = false;
+			base::encode(buffer, len, last);
+		}
+
+#ifndef DOXYGEN
+		using base::encode;
+#endif
+
+		/*!
+		 * \brief Checks if both up and down the stack was idle since the last call to #setIdle().
+		 */
+		bool idle() const
+		{
+			return idleUp() && idleDown();
+		}
+
+		/*!
+		 * \brief Checks if upstream was idle since the last call to #setIdle().
+		 */
+		bool idleUp() const
+		{
+			return m_idleUp;
+		}
+
+		/*!
+		 * \brief Checks if downstream was idle since the last call to #setIdle().
+		 */
+		bool idleDown() const
+		{
+			return m_idleDown;
+		}
+
+		/*!
+		 * \brief Resets idle flags.
+		 */
+		void setIdle()
+		{
+			m_idleUp = true;
+			m_idleDown = true;
+		}
+
+	private:
+		bool m_idleUp;
+		bool m_idleDown;
+	};
+
+#if STORED_cplusplus >= 201103L
+	template <typename Up, typename Down>
+	class CallbackLayer;
+
+	template <typename Up, typename Down>
+	static inline CallbackLayer<typename std::decay<Up>::type, typename std::decay<Down>::type>
+		make_callback(Up&& up, Down&& down);
+
+	/*!
+	 * \brief Callback class that invokes a callback for every messages through the stack.
+	 *
+	 * \copydetails #stored::make_callback()
+	 */
+	template <typename Up, typename Down>
+	class CallbackLayer : public ProtocolLayer {
+	public:
+		typedef ProtocolLayer base;
+
+	protected:
+		template <typename U, typename D>
+		CallbackLayer(U&& u, D&& d)
+			: m_up{std::forward<U>(u)}
+			, m_down{std::forward<D>(d)}
+		{}
+
+		template <typename U, typename D>
+		friend CallbackLayer<typename std::decay<U>::type, typename std::decay<D>::type>
+			make_callback(U&& up, D&& down);
+
+	public:
+
+		CallbackLayer(CallbackLayer&& l) noexcept
+			: m_up{std::move(l.m_up)}
+			, m_down{std::move(l.m_down)}
+		{
+		}
+
+		CallbackLayer(CallbackLayer const&) = delete;
+
+		void operator=(CallbackLayer const&) = delete;
+		void operator=(CallbackLayer&&) = delete;
+
+		virtual ~CallbackLayer() override = default;
+
+		virtual void decode(void* buffer, size_t len) override
+		{
+			m_up(buffer, len);
+			base::decode(buffer, len);
+		}
+
+		virtual void encode(void const* buffer, size_t len, bool last = true) override
+		{
+			m_down(buffer, len, last);
+			base::encode(buffer, len, last);
+		}
+
+#ifndef DOXYGEN
+		using base::encode;
+#endif
+
+	private:
+		Up m_up;
+		Down m_down;
+	};
+
+	/*!
+	 * \brief Creates a ProtocolLayer that invokes a given callback on every messages through the layer.
+	 *
+	 * Use as follows:
+	 *
+	 * \code
+	 * auto cb = stored::make_callback(
+	 *               [&](void*, size_t){ ... },
+	 *               [&](void const&, size_t, bool){ ... });
+	 * \endcode
+	 *
+	 * The first argument (a lambda in the example above), gets the parameters
+	 * as passed to \c decode().  The second argument get the parameters as
+	 * passed to \c encode().
+	 */
+	template <typename Up, typename Down>
+	static inline CallbackLayer<typename std::decay<Up>::type, typename std::decay<Down>::type>
+		make_callback(Up&& up, Down&& down)
+	{
+		return CallbackLayer<typename std::decay<Up>::type, typename std::decay<Down>::type>{
+			std::forward<Up>(up), std::forward<Down>(down)};
+	}
+#endif // C++11
 
 	namespace impl {
 		class Loopback1 final : public ProtocolLayer {

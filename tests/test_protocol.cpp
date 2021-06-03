@@ -1005,4 +1005,35 @@ TEST(FifoLoopback, FifoLoopback) {
 	EXPECT_EQ(l.a2b().lastError(), ENOMEM);
 }
 
+TEST(IdleLayer, IdleLayer) {
+	stored::IdleCheckLayer idle;
+	EXPECT_TRUE(idle.idle());
+
+	idle.encode("down", 4);
+	EXPECT_FALSE(idle.idle());
+	EXPECT_TRUE(idle.idleUp());
+	EXPECT_FALSE(idle.idleDown());
+
+	DECODE(idle, "up");
+	EXPECT_FALSE(idle.idleUp());
+
+	idle.setIdle();
+	EXPECT_TRUE(idle.idle());
+}
+
+TEST(CallbackLayer, CallbackLayer) {
+	bool up = false;
+	bool down = false;
+
+	auto cb = ::stored::make_callback(
+			[&](void*,size_t){ up = true; },
+			[&](void const*,size_t,bool){ down = true; });
+
+	cb.encode("down", 4);
+	EXPECT_TRUE(down);
+
+	DECODE(cb, "up");
+	EXPECT_TRUE(up);
+}
+
 } // namespace

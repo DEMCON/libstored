@@ -79,6 +79,8 @@ The inheritance of the layers is shown below.
    Crc8Layer -[hidden]--> Crc16Layer
    ProtocolLayer <|-- BufferLayer
    ProtocolLayer <|-- PrintLayer
+   ProtocolLayer <|-- IdleCheckLayer
+   ProtocolLayer <|-- CallbackLayer
 
    abstract ArqLayer
    SegmentationLayer -[hidden]--> ArqLayer
@@ -129,6 +131,11 @@ stored::BufferLayer
 
 .. doxygenclass:: stored::BufferLayer
 
+stored::CallbackLayer
+---------------------
+
+.. doxygenclass:: stored::CallbackLayer
+
 stored::CompressLayer
 ---------------------
 
@@ -173,6 +180,11 @@ stored::FileLayer
 -----------------
 
 .. doxygenclass:: stored::FileLayer
+
+stored::IdleCheckLayer
+----------------------
+
+.. doxygenclass:: stored::IdleCheckLayer
 
 stored::Loopback
 ----------------
