@@ -159,16 +159,18 @@ class CsvExport(QObject):
             self._queue.put(data)
 
     def close(self):
-        if self._queue is None:
-            return
+        if not self._queue is None:
+            self._queue.put(None)
+            self._thread.join()
+            if not self._file is None:
+                self._file.flush()
 
-        self._queue.put(None)
-        self._thread.join()
+            self._queue = None
+            self._thread = None
+
         if not self._file is None:
-            self._file.flush()
-
-        self._queue = None
-        self._thread = None
+            self._file.close()
+            self._file = None
 
     def _write(self, data):
         if self._file is None:

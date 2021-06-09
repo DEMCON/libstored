@@ -1291,6 +1291,10 @@ class ZmqClient(QObject):
 
             self._objects = None
 
+        if not self.csv is None:
+            self.csv.close()
+            self.csv = None
+
     def __enter__(self):
         return self
 
@@ -1305,6 +1309,7 @@ class ZmqClient(QObject):
             s.close(0)
         if not self.csv is None:
             self.csv.close()
+            self.csv = None
 
     @Slot(result=str)
     def capabilities(self):
