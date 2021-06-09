@@ -24,7 +24,7 @@ import os
 from PySide2.QtCore import QObject, Signal, Slot, Property
 
 def generateFilename(filename=None, base=None, addTimestamp=False, ext='.csv', now=None):
-    if filename == None and base == None:
+    if filename is None and base is None:
         raise ValueError('Specify filename and/or base')
 
     returnList = False
@@ -62,7 +62,7 @@ def generateFilename(filename=None, base=None, addTimestamp=False, ext='.csv', n
         for b in base:
             names.append((b, e))
 
-    if now == None:
+    if now is None:
         now = time.localtime()
 
     if addTimestamp:
@@ -105,8 +105,11 @@ class CsvExport(QObject):
             self._thread.daemon = True
             self._thread.start()
 
+    def __del__(self):
+        self.close()
+
     def _clear(self):
-        if self._queue == None:
+        if self._queue is None:
             return
 
         try:
@@ -133,7 +136,7 @@ class CsvExport(QObject):
     def restart(self):
         self._lock.acquire()
         objList = sorted(self._objects, key=lambda x: x.name)
-        if self._file != None:
+        if not self._file is None:
             self._file.close()
         self._file = open(self._filename, 'w', newline='')
         self._csv = csv.writer(self._file, **self._fmtparams)
@@ -144,24 +147,36 @@ class CsvExport(QObject):
 
     def write(self, t=None):
         now = time.time()
-        if t == None:
+        if t is None:
             t = now
 
         data = [t]
         data.extend(map(lambda x: x(), self._objValues))
 
-        if self._queue == None:
+        if self._queue is None:
             self._write(data)
         else:
             self._queue.put(data)
 
+    def close(self):
+        if self._queue is None:
+            return
+
+        self._queue.put(None)
+        self._thread.join()
+        if not self._file is None:
+            self._file.flush()
+
+        self._queue = None
+        self._thread = None
+
     def _write(self, data):
-        if self._file == None:
+        if self._file is None:
             return
 
         self._csv.writerow(data)
 
-        if self._autoFlushInterval != None:
+        if not self._autoFlushInterval is None:
             now = time.time()
             if self._autoFlushed + self._autoFlushInterval <= now:
                 self._file.flush()
@@ -170,6 +185,8 @@ class CsvExport(QObject):
     def _worker(self):
         while True:
             d = self._queue.get()
+            if d is None:
+                return
             self._lock.acquire()
             if self._dropNext:
                 self._dropNext = False

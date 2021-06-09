@@ -1303,6 +1303,8 @@ class ZmqClient(QObject):
         self._socket = None
         if not s is None:
             s.close(0)
+        if not self.csv is None:
+            self.csv.close()
 
     @Slot(result=str)
     def capabilities(self):
@@ -1755,7 +1757,7 @@ class ZmqClient(QObject):
 
         if self._tracingTimer is None:
             self._tracingTimer = QTimer(parent=self)
-            self._tracingTimer.timeout.connect(self._tracing.process)
+            self._tracingTimer.timeout.connect(self.traceProcess)
             self._tracingTimer.setInterval(self.traceThreshold_s * 1000)
             self._tracingTimer.setSingleShot(False)
             self._tracingTimer.setTimerType(Qt.PreciseTimer)
@@ -1769,6 +1771,16 @@ class ZmqClient(QObject):
 
         if self._tracing.enabled:
             self._tracingTimer.start()
+
+    def traceProcess(self):
+        """
+        In case there is no Qt event loop running, call this function to poll
+        and process data that is expected via the trace stream.
+        """
+        if self._tracing is None:
+            return
+
+        self._tracing.process()
 
     @Slot(int)
     def traceDecimate(self, decimate):
