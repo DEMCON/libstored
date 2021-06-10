@@ -440,6 +440,10 @@ class Object(QObject):
                 self._tUpdatedChangedRateLimiter.receive()
             updated = True
 
+        if not self.isFixed():
+            if isinstance(value, str) or isinstance(value, bytes):
+                value = value[0:self.size]
+
         if isinstance(value, float) and math.isnan(value) and isinstance(self._value, float) and math.isnan(self._value):
             # Not updated, even though value != self._value would be True
             pass
