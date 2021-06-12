@@ -220,7 +220,8 @@ class Object(QObject):
         self._alias = a
         self.aliasChanged.emit()
 
-    alias = _Property(str, _alias_get, _alias_set, notify=aliasChanged)
+    # alias is read-only as there may exist macros that use them too.
+    alias = _Property(str, _alias_get, notify=aliasChanged)
 
     # Return the alias or the normal name, if no alias was set.
     def shortName(self, tryToGetAlias = True):
@@ -232,10 +233,10 @@ class Object(QObject):
             self._client.acquireAlias(self)
 
             if not self._alias is None:
-                # We may have got one. Use it.
+                # We have got one. Use it.
                 return self._alias
 
-        # Still not alias, return name instead.
+        # Still no alias, return name instead.
         return self._name
 
     @staticmethod
@@ -1510,12 +1511,14 @@ class ZmqClient(QObject):
 
     defaultPollInterval = _Property(float, _defaultPollInterval_get, _defaultPollInterval_set, notify=defaultPollIntervalChanged)
 
-    def acquireAlias(self, obj, prefer=None, temporary=True):
+    def acquireAlias(self, obj, prefer=None, temporary=True, permanentRef=None):
         if prefer is None and not obj.alias is None:
             if temporary != self._isTemporaryAlias(obj.alias):
                 # Switch type
-                return self._reassignAlias(obj.alias, obj, temporary)
+                return self._reassignAlias(obj.alias, obj, temporary, permanentRef)
             else:
+                if not temporary:
+                    self._incPermanentAlias(obj.alias, permanentRef)
                 # Already assigned one.
                 return obj.alias
         if not prefer is None:
@@ -1524,8 +1527,10 @@ class ZmqClient(QObject):
                 pass
             elif temporary != self._isTemporaryAlias(prefer):
                 # Switch type
-                return self._reassignAlias(prefer, obj, temporary)
+                return self._reassignAlias(prefer, obj, temporary, permanentRef)
             else:
+                if not temporary:
+                    self._incPermanentAlias(prefer, permanentRef)
                 # Already assigned preferred one.
                 return prefer
 
@@ -1539,9 +1544,9 @@ class ZmqClient(QObject):
 
         if not prefer is None:
             if self._isAliasAvailable(prefer):
-                return self._acquireAlias(prefer, obj, temporary)
+                return self._acquireAlias(prefer, obj, temporary, permanentRef)
             elif self._isTemporaryAlias(prefer):
-                return self._reassignAlias(prefer, obj, temporary)
+                return self._reassignAlias(prefer, obj, temporary, permanentRef)
             else:
                 # Cannot reassign permanent alias.
                 return None
@@ -1552,7 +1557,7 @@ class ZmqClient(QObject):
             if a is None:
                 # Nothing free.
                 return None
-            return self._acquireAlias(a, obj, temporary)
+            return self._acquireAlias(a, obj, temporary, permanentRef)
 
     def _isAliasAvailable(self, a):
         return a in self._availableAliases
@@ -1561,19 +1566,47 @@ class ZmqClient(QObject):
         return a in self._temporaryAliases
 
     def _isAliasInUse(self, a):
-        return a in self._temporaryAliases or a  in self._permanentAliases
+        return a in self._temporaryAliases or a in self._permanentAliases
 
-    def _acquireAlias(self, a, obj, temporary):
+    def _incPermanentAlias(self, a, permanentRef):
+        assert a in self._permanentAliases
+        self.logger.debug(f'increment permanent alias {a} use')
+        self._permanentAliases[a][1].append(permanentRef)
+
+    def _decPermanentAlias(self, a, permanentRef):
+        assert a in self._permanentAliases
+        if permanentRef is None:
+            self.logger.debug(f'ignored decrement permanent alias {a} use')
+            return False
+
+        try:
+            self._permanentAliases[a][1].remove(permanentRef)
+            self.logger.debug(f'decrement permanent alias {a} use')
+        except ValueError:
+            # Unknown ref.
+            pass
+
+        return self._permanentAliases[a][1] == []
+
+    def _acquireAlias(self, a, obj, temporary, permanentRef):
         assert not self._isAliasInUse(a)
 
         if not (isinstance(a, str) and len(a) == 1):
             raise ValueError('Invalid alias ' + a)
+
+        availableUponRollback = False
+        if a in self._availableAliases:
+            self.logger.debug('available: ' + ''.join(self._availableAliases))
+            self._availableAliases.remove(a)
+            availableUponRollback = True
 
         if not self._setAlias(a, obj.name):
             # Too many aliases, apparently. Drop a temporary one.
             tmp = self._getTemporaryAlias()
             if tmp is None:
                 # Nothing to drop.
+                if availableUponRollback:
+                    self._availableAliases.append(a)
                 return None
 
             self.releaseAlias(tmp)
@@ -1581,15 +1614,17 @@ class ZmqClient(QObject):
             # OK, we should have some more space now. Retry.
             if not self._setAlias(a, obj.name):
                 # Still failing, give up.
+                if availableUponRollback:
+                    self._availableAliases.append(a)
                 return None
 
         # Success!
-        if a in self._availableAliases:
-            self._availableAliases.remove(a)
         if temporary:
+            self.logger.debug(f'new temporary alias {a} for {obj.name}')
             self._temporaryAliases[a] = obj
         else:
-            self._permanentAliases[a] = obj
+            self.logger.debug(f'new permanent alias {a} for {obj.name}')
+            self._permanentAliases[a] = (obj, [permanentRef])
         obj._alias_set(a)
         return a
 
@@ -1597,37 +1632,51 @@ class ZmqClient(QObject):
         rep = self.req(b'a' + a.encode() + name.encode())
         return rep == b'!'
 
-    def _reassignAlias(self, a, obj, temporary):
+    def _reassignAlias(self, a, obj, temporary, permanentRef):
         assert a in self._temporaryAliases or a in self._permanentAliases
         assert not self._isAliasAvailable(a)
 
         if not self._setAlias(a, obj.name):
             return None
 
-        self._releaseAlias(a)
-        if a in self._availableAliases:
-            self._availableAliases.remove(a)
-        if temporary:
-            self._temporaryAliases[a] = obj
+        if not self._releaseAlias(a, permanentRef):
+            # Not allowed, still is use as permanent alias.
+            self.logger.debug(f'cannot release alias {a}; still in use')
+            pass
         else:
-            self._permanentAliases[a] = obj
+            if a in self._availableAliases:
+                self._availableAliases.remove(a)
+            if temporary:
+                self.logger.debug(f'reassigned temporary alias {a} to {obj.name}')
+                self._temporaryAliases[a] = obj
+            else:
+                self.logger.debug(f'reassigned permanent alias {a} to {obj.name}')
+                self._permanentAliases[a] = (obj, [permanentRef])
+
         obj._alias_set(a)
         return a
 
-    def _releaseAlias(self, alias):
+    def _releaseAlias(self, alias, permanentRef=None):
         obj = None
         if alias in self._temporaryAliases:
             obj = self._temporaryAliases[alias]
             del self._temporaryAliases[alias]
+            self.logger.debug(f'released temporary alias {alias}')
         elif alias in self._permanentAliases:
-            obj = self._permanentAliases[alias]
+            if not self._decPermanentAlias(a, permanentRef):
+                # Do not release (yet).
+                return False
+            obj = self._permanentAliases[alias][0]
             del self._permanentAliases[alias]
+            self.logger.debug(f'released permanent alias {alias}')
+        else:
+            self.logger.debug(f'released unused alias {alias}')
 
         if not obj is None:
             obj._alias_set(None)
             self._availableAliases.append(alias)
 
-        return obj
+        return True
 
     def _getFreeAlias(self):
         if self._availableAliases == []:
@@ -1640,12 +1689,13 @@ class ZmqClient(QObject):
         if keys == []:
             return None
         a = keys[0] # pick oldest one
+        self.logger.debug(f'stealing temporary alias {a}')
         self._releaseAlias(a)
         return a
 
-    def releaseAlias(self, alias):
-        self._releaseAlias(alias)
-        self.req(b'a' + alias.encode())
+    def releaseAlias(self, alias, permanentRef=None):
+        if self._releaseAlias(alias, permanentRef):
+            self.req(b'a' + alias.encode())
 
     def _printAliasMap(self):
         if self._availableAliases is None:
@@ -1661,7 +1711,7 @@ class ZmqClient(QObject):
             if len(self._permanentAliases) == 0:
                 print("No permanent aliases")
             else:
-                print("Permanent aliases: \n\t" + '\n\t'.join([f'{a}: {o.name}' for a,o in self._permanentAliases.items()]))
+                print("Permanent aliases: \n\t" + '\n\t'.join([f'{a}: {o[0].name} ({len(o[1])})' for a,o in self._permanentAliases.items()]))
 
     def acquireMacro(self, cmds = None, sep='\n'):
         if self._availableMacros is None:
@@ -1739,6 +1789,11 @@ class ZmqClient(QObject):
         if not self._fastPollMacro.add(b'r' + obj.shortName().encode(), obj.decodeReadRep, obj):
             self._pollSlow(obj, interval_s)
         else:
+            a = obj.alias
+            if not a is None:
+                # Make alias permanent.
+                self.acquireAlias(obj, a, False, self._fastPollMacro)
+
             obj._pollFast(interval_s)
             self._fastPollTimer.setInterval(min(self._fastPollTimer.interval(), interval_s * 1000))
             self._fastPollTimer.start()
@@ -1748,14 +1803,20 @@ class ZmqClient(QObject):
 
     def _pollStop(self, obj):
         if not self._fastPollMacro is None:
-            self._fastPollMacro.remove(obj)
-            if len(self._fastPollMacro) == 0:
-                self._fastPollTimer.stop()
-                self._fastPollTimer.setInterval(self.fastPollThreshold_s * 1000)
+            if self._fastPollMacro.remove(obj):
+                # Did remove, so release permanent alias.
+                self.releaseAlias(obj.alias, self._fastPollMacro)
+
+                if len(self._fastPollMacro) == 0:
+                    self._fastPollTimer.stop()
+                    self._fastPollTimer.setInterval(self.fastPollThreshold_s * 1000)
 
         if not self._tracing is None:
-            if self._tracing.remove(obj) and not self._tracing.enabled:
-                self._tracingTimer.stop()
+            if self._tracing.remove(obj):
+                self.releaseAlias(obj.alias, self._tracing)
+
+                if not self._tracing.enabled:
+                    self._tracingTimer.stop()
 
         obj._pollStop()
 
@@ -1775,6 +1836,11 @@ class ZmqClient(QObject):
             self.logger.debug('Cannot add %s for tracing, use polling instead', obj.name)
             self._pollFast(obj, interval_s)
             return
+        else:
+            a = obj.alias
+            if not a is None:
+                # Make alias permanent.
+                self.acquireAlias(obj, a, False, self._tracing)
 
         obj._pollFast(interval_s)
 
