@@ -372,7 +372,7 @@ class Object(QObject):
         if data is None:
             return False
 
-        req = b'w' + data + self.shortName().encode()
+        req = b'w' + data + self.shortName(asyncCallback is None).encode()
 
         if not asyncCallback is None:
             self._client.reqAsync(req, asyncCallback)
