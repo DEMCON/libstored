@@ -19,6 +19,7 @@ import crcmod
 import sys
 import time
 import struct
+import zmq
 
 class ProtocolLayer:
     name = 'layer'
@@ -224,6 +225,25 @@ class TerminalLayer(ProtocolLayer):
         if m == 0:
             return 0
         return max(1, m - len(start) - len(end))
+
+class PubTerminalLayer(TerminalLayer):
+    """
+    A TerminalLayer (term), that also forwards all non-debug data over a PUB socket.
+    """
+
+    name = 'pubterm'
+    default_port = 19027 # This is the ZmqServer.default port + 1.
+
+    def __init__(self, bind=f'*:{default_port}', **kwargs):
+        super().__init__(**kwargs)
+        self.context = zmq.Context()
+        self.socket = self.context.socket(zmq.PUB)
+        self.socket.bind(f'tcp://{bind}')
+
+    def nonDebugData(self, data):
+        super().nonDebugData(data)
+        if len(data) > 0:
+            self.socket.send(data)
 
 class SegmentationLayer(ProtocolLayer):
     name = 'segment'
@@ -560,6 +580,7 @@ class RawLayer(ProtocolLayer):
 layer_types = [
     AsciiEscapeLayer,
     TerminalLayer,
+    PubTerminalLayer,
     SegmentationLayer,
     DebugArqLayer,
     Crc8Layer,
