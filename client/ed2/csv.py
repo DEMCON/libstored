@@ -86,6 +86,8 @@ class CsvExport(QObject):
         super().__init__(parent=parent)
         self.logger = logging.getLogger(__name__)
         self._fmtparams = fmtparams
+        if not isinstance(filename, str):
+            filename = None
         self._filename = filename
         self._objects = set()
         self._csv = None
@@ -95,10 +97,15 @@ class CsvExport(QObject):
         self._thread = None
         self._queue = None
         self._dropNext = False
-
-        self.logger.info('Writing samples to %s...', self._filename)
         self._lock = threading.RLock()
-        self.restart()
+        self._paused = False
+
+        if filename is None:
+            self.pause()
+        else:
+            self.logger.info('Writing samples to %s...', self._filename)
+            self.restart()
+
         if threaded:
             self._queue = queue.Queue()
             self._thread = threading.Thread(target=self._worker)
@@ -133,19 +140,61 @@ class CsvExport(QObject):
         self._objects.remove(o)
         self.restart()
 
-    def restart(self):
+    def restart(self, filename=None):
         self._lock.acquire()
-        objList = sorted(self._objects, key=lambda x: x.name)
+
         if not self._file is None:
             self._file.close()
-        self._file = open(self._filename, 'w', newline='')
-        self._csv = csv.writer(self._file, **self._fmtparams)
+
+        if not filename is None:
+            self._filename = filename
+            self.logger.info('Writing samples to %s...', self._filename)
+            self._paused = False
+        elif self._filename is None:
+            self.pause()
+        elif self._paused:
+            self.unpause()
+
+        objList = sorted(self._objects, key=lambda x: x.name)
         self._objValues = [lambda x=x: x._value for x in objList]
-        self._csv.writerow(['t'] + [x.name for x in objList])
         self._clear()
+
+        if not self._filename is None:
+            self._file = open(self._filename, 'w', newline='')
+            self._csv = csv.writer(self._file, **self._fmtparams)
+            self._csv.writerow(['t'] + [x.name for x in objList])
+
         self._lock.release()
 
+    def pause(self):
+        if self._paused:
+            return
+
+        self.logger.info('Paused')
+        self._paused = True
+
+    def unpause(self):
+        if not self._paused or self._file is None:
+            return
+
+        self.logger.info('Continue')
+        self._paused = False
+
+    @property
+    def paused(self):
+        return self._paused
+
+    @paused.setter
+    def paused(self, value):
+        if value:
+            self.pause()
+        else:
+            self.unpause()
+
     def write(self, t=None):
+        if self._paused:
+            return
+
         now = time.time()
         if t is None:
             t = now
