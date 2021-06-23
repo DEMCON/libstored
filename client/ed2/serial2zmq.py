@@ -25,8 +25,8 @@ from .stream2zmq import Stream2Zmq
 class Serial2Zmq(Stream2Zmq):
     """Serial port frame grabber to ZmqServer bridge."""
 
-    def __init__(self, stack='ascii,term', zmqlisten='*', zmqport=Stream2Zmq.default_port, drop_s=1, **kwargs):
-        super().__init__(stack, listen=zmqlisten, port=zmqport)
+    def __init__(self, stack='ascii,term', zmqlisten='*', zmqport=Stream2Zmq.default_port, drop_s=1, printStdout=True, **kwargs):
+        super().__init__(stack, listen=zmqlisten, port=zmqport, printStdout=printStdout)
         self.serial = serial.Serial(**kwargs)
         self.serial_socket = self.registerStream(self.serial)
         self.stdin_socket = self.registerStream(sys.stdin)
@@ -64,7 +64,7 @@ class Serial2Zmq(Stream2Zmq):
         if len(data) > 0:
             self.serial.write(data)
             self.serial.flush()
-            self.logger.info('sent %s', data)
+            self.logger.debug('sent %s', data)
 
     def encode(self, data):
         if len(data) > 0:

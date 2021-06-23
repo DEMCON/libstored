@@ -15,8 +15,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import argparse
-import serial
 import logging
+import re
+import serial
 
 from ...zmq_server import ZmqServer
 from ...serial2zmq import Serial2Zmq
@@ -38,7 +39,7 @@ if __name__ == '__main__':
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
 
-    stack = re.sub(r'\bpubterm\b(,|$)', f'pubterm={args.listen}:{args.port+1}\\1', args.stack)
+    stack = re.sub(r'\bpubterm\b(,|$)', f'pubterm={args.zmqlisten}:{args.zmqport+1}\\1', args.stack)
     bridge = Serial2Zmq(stack=stack, zmqlisten=args.zmqlisten, zmqport=args.zmqport, port=args.port, baudrate=args.baud, rtscts=args.rtscts, xonxoff=args.xonxoff)
 
     try:
