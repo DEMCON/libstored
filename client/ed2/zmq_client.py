@@ -589,6 +589,14 @@ class Object(QObject):
 
     polling = _Property(bool, _polling_get, _polling_set, notify=pollingChanged)
 
+    def _pollInterval_get(self):
+        if self._polling:
+            return self._pollInterval_s
+        else:
+            return 0
+
+    pollIntervalChanged = Signal()
+
     @Slot(float)
     def poll(self, interval_s=0):
         if not self._client is None:
@@ -603,6 +611,7 @@ class Object(QObject):
         self._pollSetFlag(True)
         self._autoCsv = True
         self._pollInterval_s = interval_s
+        self.pollIntervalChanged.emit()
 
         self._read()
 
@@ -640,6 +649,7 @@ class Object(QObject):
         self._pollSetFlag(True)
         self._autoCsv = False
         self._pollInterval_s = interval_s
+        self.pollIntervalChanged.emit()
         if not self._pollTimer is None:
             self._pollTimer.stop()
 
@@ -654,6 +664,8 @@ class Object(QObject):
                     self._client.csv.add(self)
                 else:
                     self._client.csv.remove(self)
+
+    pollInterval = _Property(float, _pollInterval_get, poll, notify=pollIntervalChanged)
 
     def _state(self):
         res = ''
@@ -845,7 +857,7 @@ class Macro(object):
             if not cb[i + skip] is None:
                 cb[i + skip](values[i], t)
 
-        if not self._client.csv is None:
+        if self._client.csv is not None and (t is not None or self._client._tracing is None or not self._client._tracing.enabled):
             self._client.csv.write(t)
 
         return True
