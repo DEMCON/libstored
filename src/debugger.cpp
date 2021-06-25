@@ -1088,7 +1088,7 @@ size_t Debugger::stream(char s, char const* data, size_t len) {
 	if(!str)
 		return 0;
 
-	len = std::min(len, std::max(str->buffer().capacity(), Config::DebuggerStreamBuffer) - str->buffer().size());
+	len = std::min(len, std::max(str->buffer().capacity(), (size_t)Config::DebuggerStreamBuffer) - str->buffer().size());
 
 	str->encode(data, len);
 
