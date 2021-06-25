@@ -51,7 +51,7 @@ namespace stored {
 			: m_block()
 		{
 			if(Config::AvoidDynamicMemory)
-				m_buffer.reserve(Config::DebuggerStreamBuffer);
+				m_buffer.reserve(Config::DebuggerStreamBuffer + Config::DebuggerStreamBufferOverflow);
 		}
 
 		~Stream() final is_default

@@ -91,6 +91,20 @@ namespace stored {
 		 */
 		static bool const EnableHooks = true;
 
+		/*!
+		 * \brief When \c true, avoid dynamic memory reallocation where possible.
+		 *
+		 * The Allocator will still be used, but reallocation to dynamically
+		 * sized buffers is avoided.  This implies that worst-case allocation
+		 * may be done at startup.
+		 */
+		static bool const AvoidDynamicMemory =
+#if defined(STORED_OS_BAREMETAL) || defined(STORED_OS_GENERIC)
+			true;
+#else
+			false;
+#endif
+
 		/*! \brief When \c true, stored::Debugger implements the read capability. */
 		static bool const DebuggerRead = true;
 		/*! \brief When \c true, stored::Debugger implements the write capability. */
@@ -132,6 +146,19 @@ namespace stored {
 		static int const DebuggerStreams = 2; // by default two: one for the application, one for tracing
 		/*! \brief Size of one stream buffer in bytes. */
 		static size_t const DebuggerStreamBuffer = 1024;
+		/*!
+		 * \brief The maximum (expected) size the stream buffer may overflow.
+		 *
+		 * The trace uses a stream buffer. As long the buffer contents are
+		 * below DebuggerStreamBuffer, another sample may be added. This may
+		 * make the buffer overflow, resulting in a dynamic reallocation. To
+		 * avoid realloc, a trace sample (after compression) should fit in
+		 * DebuggerStreamBufferOverflow, which is a preallocated space on top
+		 * of DebuggerStreamBuffer. As the trace sample size is application-
+		 * dependent, this should be set appropriately. When set to small,
+		 * realloc will happen anyway.
+		 */
+		static size_t const DebuggerStreamBufferOverflow = AvoidDynamicMemory ? DebuggerStreamBuffer / 8 : 0;
 
 		/*! \brief When \c true, stored::Debugger implements the trace capability. */
 		static bool const DebuggerTrace = DebuggerStreams > 0 && DebuggerMacro > 0;
@@ -139,20 +166,6 @@ namespace stored {
 		/*! \brief When \c true, all streams (including) trace are compressed using stored::CompressLayer. */
 		static bool const CompressStreams =
 #ifdef STORED_HAVE_HEATSHRINK
-			true;
-#else
-			false;
-#endif
-
-		/*!
-		 * \brief When \c true, avoid dynamic memory reallocation where possible.
-		 *
-		 * The Allocator will still be used, but reallocation to dynamically
-		 * sized buffers is avoided.  This implies that worst-case allocation
-		 * may be done at startup.
-		 */
-		static bool const AvoidDynamicMemory =
-#if defined(STORED_OS_BAREMETAL) || defined(STORED_OS_GENERIC)
 			true;
 #else
 			false;
