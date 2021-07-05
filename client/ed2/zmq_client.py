@@ -1707,7 +1707,8 @@ class ZmqClient(QObject):
 
     def releaseAlias(self, alias, permanentRef=None):
         if self._releaseAlias(alias, permanentRef):
-            self.req(b'a' + alias.encode())
+            if alias is not None:
+                self.req(b'a' + alias.encode())
 
     def _printAliasMap(self):
         if self._availableAliases is None:
