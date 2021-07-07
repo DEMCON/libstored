@@ -158,7 +158,13 @@ namespace stored {
 		 * dependent, this should be set appropriately. When set to small,
 		 * realloc will happen anyway.
 		 */
-		static size_t const DebuggerStreamBufferOverflow = AvoidDynamicMemory ? DebuggerStreamBuffer / 8 : 0;
+		static size_t const DebuggerStreamBufferOverflow =
+#ifndef DOXYGEN
+			// Seems to be to hard to parse by doxygen/sphinx.
+			AvoidDynamicMemory ? DebuggerStreamBuffer / 8 : 0;
+#else
+			0;
+#endif
 
 		/*! \brief When \c true, stored::Debugger implements the trace capability. */
 		static bool const DebuggerTrace = DebuggerStreams > 0 && DebuggerMacro > 0;
