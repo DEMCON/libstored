@@ -847,9 +847,9 @@ namespace stored {
 				} else {
 					if(Config::EnableHooks) {
 						if(Type::isStoreSwapped(type()))
-							changed = memcmp(src, m_buffer, len) != 0;
-						else
 							changed = memcmp_swap(src, m_buffer, len) != 0;
+						else
+							changed = memcmp(src, m_buffer, len) != 0;
 					}
 
 					if(changed) {
