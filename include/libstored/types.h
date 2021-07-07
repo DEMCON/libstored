@@ -24,9 +24,10 @@
 #include <libstored/config.h>
 #include <libstored/util.h>
 
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
-#include <algorithm>
+#include <limits>
 #include <vector>
 
 #if STORED_cplusplus >= 201103L
@@ -402,7 +403,14 @@ namespace stored {
 			bool changed = false;
 			if(Type::isStoreSwapped(toType<type>::type))
 				changed = memcmp_swap(&v, &this->buffer(), sizeof(v)) != 0;
-			else
+			else if(std::numeric_limits<type>::is_integer)
+				changed = v != this->buffer();
+			else if(sizeof(v) == sizeof(float)) {
+				void const* v_ = (void const*)&v;
+				void const* b_ = (void const*)&this->buffer();
+				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+				changed = *reinterpret_cast<uint32_t const*>(v_) != *reinterpret_cast<uint32_t const*>(b_);
+			} else
 				changed = memcmp(&v, &this->buffer(), sizeof(v)) != 0;
 
 			if(changed)
