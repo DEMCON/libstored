@@ -593,13 +593,15 @@ class Object(QObject):
         if self._polling:
             return self._pollInterval_s
         else:
-            return 0
+            return float('nan')
 
     pollIntervalChanged = Signal()
 
     @Slot(float)
     def poll(self, interval_s=0):
         if not self._client is None:
+            if interval_s is not None and math.isnan(interval_s):
+                interval_s = None
             self._client.poll(self, interval_s)
 
     def _pollStop(self):
@@ -1085,9 +1087,8 @@ class ZmqClient(QObject):
         if message == b'':
             return b''
 
-        while self._reqQueue != []:
-            # Wait for all outstanding requests first.
-            QCoreApplication.processEvents(QEventLoop.AllEvents, 100)
+        # Wait for all outstanding requests first.
+        self._reqAsyncFlush()
 
         if self._socket is None:
             return None
@@ -1691,7 +1692,7 @@ class ZmqClient(QObject):
             del self._temporaryAliases[alias]
             self.logger.debug(f'released temporary alias {alias}')
         elif alias in self._permanentAliases:
-            if not self._decPermanentAlias(a, permanentRef):
+            if not self._decPermanentAlias(alias, permanentRef):
                 # Do not release (yet).
                 return False
             obj = self._permanentAliases[alias][0]
@@ -1789,8 +1790,9 @@ class ZmqClient(QObject):
             self.req(b'm' + m.encode())
 
     def poll(self, obj, interval_s=0):
+        self._pollStop(obj)
+
         if interval_s is None:
-            self._pollStop(obj)
             self._autoSaveStateNow()
             return
 
