@@ -143,28 +143,32 @@ class CsvExport(QObject):
     def restart(self, filename=None):
         self._lock.acquire()
 
-        if not self._file is None:
-            self._file.close()
+        try:
+            if not self._file is None:
+                self._file.close()
+                self._file = None
 
-        if not filename is None:
-            self._filename = filename
-            self.logger.info('Writing samples to %s...', self._filename)
-            self._paused = False
-        elif self._filename is None:
-            self.pause()
-        elif self._paused:
-            self.unpause()
+            if not filename is None:
+                self._filename = filename
+                self.logger.info('Writing samples to %s...', self._filename)
+                self._paused = False
+            elif self._filename is None:
+                self.pause()
+            elif self._paused:
+                self.unpause()
 
-        objList = sorted(self._objects, key=lambda x: x.name)
-        self._objValues = [lambda x=x: x._value for x in objList]
-        self._clear()
+            objList = sorted(self._objects, key=lambda x: x.name)
+            self._objValues = [lambda x=x: x._value for x in objList]
+            self._clear()
 
-        if not self._filename is None:
-            self._file = open(self._filename, 'w', newline='')
-            self._csv = csv.writer(self._file, **self._fmtparams)
-            self._csv.writerow(['t'] + [x.name for x in objList])
+            if not self._filename is None:
+                f = open(self._filename, 'w', newline='')
+                self._csv = csv.writer(f, **self._fmtparams)
+                self._csv.writerow(['t'] + [x.name for x in objList])
+                self._file = f
 
-        self._lock.release()
+        finally:
+            self._lock.release()
 
     def pause(self):
         if self._paused:
@@ -239,9 +243,11 @@ class CsvExport(QObject):
             if d is None:
                 return
             self._lock.acquire()
-            if self._dropNext:
-                self._dropNext = False
-            else:
-                self._write(d)
-            self._lock.release()
+            try:
+                if self._dropNext:
+                    self._dropNext = False
+                else:
+                    self._write(d)
+            finally:
+                self._lock.release()
 
