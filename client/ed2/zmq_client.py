@@ -1407,6 +1407,7 @@ class ZmqClient(QObject):
                 # Assume abbreviated names.
                 if ochunks[i] != chunks[i]:
                     match = False
+                    break
             if match:
                 obj1.add(o)
 
@@ -1415,29 +1416,44 @@ class ZmqClient(QObject):
             for i in range(0, len(ochunks)):
                 if re.fullmatch(re.sub(r'\\\?', '.', re.escape(ochunks[i])) + r'.*', chunks[i]) is None:
                     match = False
+                    break
                 # It seems to match. Additional check: the object's chunk should not be longer, as it makes name ambiguous.
                 elif len(ochunks[i]) > len(chunks[i]):
                     match = False
+                    break
             if match:
                 obj2.add(o)
 
             # Case 3.
+            # Prefer names that have an exact prefix, even when ambiguous.
             match = True
+            exact = True
+            exactLen = 0
             for i in range(0, len(ochunks)):
                 if not ochunks[i].startswith(chunks[i]):
                     match = False
+                    break
+                if exact:
+                    if ochunks[i] == chunks[i]:
+                        exactLen += 1
+                    else:
+                        exact = False
             if match:
-                obj3.add(o)
+                obj3 = {(x,e) for x,e in obj3 if e >= exactLen}
+                best = max(obj3, key=lambda x: x[1], default=(None,0))[1]
+                if exactLen >= best:
+                    obj3.add((o,exactLen))
 
             # Case 4.
             match = True
             for i in range(0, len(ochunks)):
                 if re.fullmatch(re.sub(r'\\\?', '.', re.escape(ochunks[i])) + r'.*', chunks[i]) is None:
                     match = False
+                    break
             if match:
                 obj4.add(o)
 
-        obj = obj1 | obj2 | obj3 | obj4
+        obj = obj1 | obj2 | {x for x,e in obj3} | obj4
         if all:
             return obj
         if len(obj1) == 1:
