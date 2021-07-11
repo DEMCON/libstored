@@ -24,7 +24,7 @@ Item {
     required property var ref
     property var obj: null
     property string name: obj ? obj.name : ""
-    property real pollInterval: 1
+    property real pollInterval: 2
 
     onRefChanged: {
         if(typeof(ref) != "string") {

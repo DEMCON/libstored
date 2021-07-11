@@ -1004,7 +1004,7 @@ class ZmqClient(QObject):
 
     traceThreshold_s = 0.1
     fastPollThreshold_s = 0.9
-    slowPollInterval_s = 2.0
+    slowPollInterval_s = 1.0
     defaultPollIntervalChanged = Signal()
 
     def __init__(self, address='localhost', port=ZmqServer.default_port, csv=None, multi=False, parent=None, t=None):
