@@ -142,6 +142,7 @@ if __name__ == '__main__':
     parser.add_argument('-m', dest='multi', default=False,
         help='Enable multi-mode; allow multiple simultaneous connections to the same target, ' +
             'but it is less efficient.', action='store_true')
+    parser.add_argument('-c', dest='clearState', default=False, help='Clear previously saved state', action='store_true')
 
     args = parser.parse_args()
 
@@ -189,7 +190,10 @@ if __name__ == '__main__':
     if not engine.rootObjects():
         sys.exit(-1)
 
-    client.restoreState()
+    if not args.clearState:
+        # We are not really clearing the state; we won't load it, but we still
+        # do overwrite it afterwards.
+        client.restoreState()
 
     res = app.exec_()
 
