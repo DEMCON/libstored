@@ -45,6 +45,9 @@ Item {
                     obj.poll(pollInterval)
                 else
                     obj.asyncRead()
+            } else if(pollInterval > 0 && obj.pollInterval > pollInterval) {
+                // Prefer the faster setting, if there are multiple.
+                obj.poll(pollInterval)
             }
         } else {
             value = null
