@@ -1036,4 +1036,31 @@ TEST(CallbackLayer, CallbackLayer) {
 	EXPECT_TRUE(up);
 }
 
+TEST(TerminalLayer, Encode) {
+	stored::TerminalLayer l;
+	LoggingLayer ll;
+	ll.wrap(l);
+
+	ll.encoded().clear();
+	l.encode("You can learn a lot", 19);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "\x1b_You can learn a lot\x1b\\");
+
+	l.nonDebugEncode("of things", 9);
+	EXPECT_EQ(ll.encoded().size(), 2);
+	EXPECT_EQ(ll.encoded().at(1), "of things");
+}
+
+TEST(TerminalLayer, Decode) {
+	std::string nonDebug;
+	stored::TerminalLayer l([&](void* buf, size_t len){ nonDebug.append((char const*)buf, len); });
+	LoggingLayer ll;
+	l.wrap(ll);
+
+	DECODE(l, "from the \x1b_flowers\x1b\\...");
+	EXPECT_EQ(nonDebug, "from the ...");
+	EXPECT_EQ(ll.decoded().size(), 1);
+	EXPECT_EQ(ll.decoded().at(0), "flowers");
+}
+
 } // namespace

@@ -304,7 +304,7 @@ namespace stored {
 		virtual size_t mtu() const override;
 		virtual void reset() override;
 
-		virtual void nonDebugEncode(void* buffer, size_t len);
+		virtual void nonDebugEncode(void const* buffer, size_t len);
 
 	protected:
 		virtual void nonDebugDecode(void* buffer, size_t len);

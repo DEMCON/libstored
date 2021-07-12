@@ -267,9 +267,9 @@ void TerminalLayer::decode(void* buffer, size_t len) {
 		nonDebugDecode(static_cast<char*>(buffer) + nonDebugOffset, len - nonDebugOffset);
 }
 
-void TerminalLayer::nonDebugEncode(void* buffer, size_t len) {
+void TerminalLayer::nonDebugEncode(void const* buffer, size_t len) {
 	stored_assert(!m_encodeState);
-	encode(buffer, len, true);
+	base::encode(buffer, len, true);
 }
 
 /*!
