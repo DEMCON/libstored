@@ -62,7 +62,8 @@ class Serial2Zmq(Stream2Zmq):
 
     def _sendToApp(self, data):
         if len(data) > 0:
-            self.serial.write(data)
+            cnt = self.serial.write(data)
+            assert cnt == len(data)
             self.serial.flush()
             self.logger.debug('sent %s', data)
 

@@ -119,11 +119,11 @@ class Stream2Zmq(protocol.ProtocolLayer):
         self._zmq = None
 
     def encode(self, data):
-        self.logger.debug('encode ' + str(bytes(data)))
+        self.logger.debug('encode %s', bytes(data))
         super().encode(data)
 
     def decode(self, data):
-        self.logger.debug('decode ' + str(bytes(data)))
+        self.logger.debug('decode %s', bytes(data))
         super().decode(data)
 
     def timeout(self):
