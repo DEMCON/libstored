@@ -269,7 +269,9 @@ void TerminalLayer::decode(void* buffer, size_t len) {
 
 void TerminalLayer::nonDebugEncode(void const* buffer, size_t len) {
 	stored_assert(!m_encodeState);
-	base::encode(buffer, len, true);
+	stored_assert(buffer || len == 0);
+	if(len)
+		base::encode(buffer, len, true);
 }
 
 /*!
@@ -310,9 +312,9 @@ void TerminalLayer::encodeEnd() {
 	if(!m_encodeState)
 		return;
 
+	m_encodeState = false;
 	char end[2] = {Esc, EscEnd};
 	base::encode((void*)end, sizeof(end), true);
-	m_encodeState = false;
 }
 
 size_t TerminalLayer::mtu() const {
