@@ -99,6 +99,7 @@ class CsvExport(QObject):
         self._dropNext = False
         self._lock = threading.RLock()
         self._paused = False
+        self._postponedAutoRestart = False
 
         if filename is None:
             self.pause()
@@ -131,16 +132,23 @@ class CsvExport(QObject):
             return
 
         self._objects.add(o)
-        self.restart()
+        if self._paused:
+            self._postponedAutoRestart = True
+        else:
+            self.restart()
 
     def remove(self, o):
         if not o in self._objects:
             return
 
         self._objects.remove(o)
-        self.restart()
+        if self._paused:
+            self._postponedAutoRestart = True
+        else:
+            self.restart()
 
     def restart(self, filename=None):
+        self._postponedAutoRestart = False
         self._lock.acquire()
 
         try:
@@ -183,6 +191,8 @@ class CsvExport(QObject):
 
         self.logger.info('Continue')
         self._paused = False
+        if self._postponedAutoRestart:
+            self.restart()
 
     @property
     def paused(self):
