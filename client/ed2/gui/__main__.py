@@ -29,6 +29,7 @@ from lognplot.client import LognplotTcpClient
 from ..zmq_client import ZmqClient
 from ..zmq_server import ZmqServer
 from ..csv import generateFilename
+from ..version import __version__
 
 def msgHandler(msgType, context, msg):
     global logger
@@ -127,6 +128,12 @@ if __name__ == '__main__':
     QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     QCoreApplication.setApplicationName("Embedded Debugger")
+    QCoreApplication.setApplicationVersion(__version__)
+    try:
+        QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+    except:
+        pass
+    app = QGuiApplication(sys.argv)
 
     parser = argparse.ArgumentParser(description='ZMQ GUI client', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
@@ -144,12 +151,11 @@ if __name__ == '__main__':
             'but it is less efficient.', action='store_true')
     parser.add_argument('-c', dest='clearState', default=False, help='Clear previously saved state', action='store_true')
 
-    args = parser.parse_args()
+    args = parser.parse_args(app.arguments()[1:])
 
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
 
-    app = QGuiApplication(sys.argv)
     app.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "twotone_bug_report_black_48dp.png")))
     engine = QQmlApplicationEngine(parent=app)
 

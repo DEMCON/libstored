@@ -18,12 +18,24 @@
 
 import QtQuick 2.12
 import QtQuick.Layouts 1.12
-import QtQuick.Window 2.2
-import QtQuick.Controls 2.5
+import QtQuick.Window 2.12
+import QtQuick.Controls 2.12
 
 Window {
-
     id: root
+
+    readonly property real uiScale: {
+        var s = screen
+        if(!s)
+            s = Qt.application.screens[0]
+        if(!s)
+            return 1
+
+        if(s.logicalPixelDensity !== undefined)
+            return (s.logicalPixelDensity * 25.4) / 72
+
+        return s.devicePixelRatio
+    }
     visible: true
     width: 800
     height: 600
@@ -44,7 +56,7 @@ Window {
         root.title = text
     }
 
-    property real fontSize: 10
+    property real fontSize: 9 * uiScale
 
     Component {
         id: objectRow
