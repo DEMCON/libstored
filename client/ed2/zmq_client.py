@@ -1006,13 +1006,22 @@ class ZmqClient(QObject):
     fastPollThreshold_s = 0.9
     slowPollInterval_s = 1.0
     defaultPollIntervalChanged = Signal()
+    closed = Signal()
 
-    def __init__(self, address='localhost', port=ZmqServer.default_port, csv=None, multi=False, parent=None, t=None):
+    def __init__(self, address='localhost', port=ZmqServer.default_port, csv=None, multi=False, parent=None, t=None, timeout=None):
         super().__init__(parent=parent)
         self.logger = logging.getLogger(__name__)
         self._multi = multi
         self._context = zmq.Context()
         self._socket = self._context.socket(zmq.REQ)
+        if timeout is not None and timeout <= 0:
+            timeout = None
+        self._timeout = timeout
+        if timeout is not None:
+            self.logger.debug(f'Using a timeout of {timeout} s')
+            self._socket.setsockopt(zmq.CONNECT_TIMEOUT, int(timeout * 1000))
+            self._socket.setsockopt(zmq.RCVTIMEO, int(timeout * 1000))
+            self._socket.setsockopt(zmq.SNDTIMEO, int(timeout * 1000))
         self.logger.debug('Connecting to %s:%d...', address, port)
         self._socket.connect(f'tcp://{address}:{port}')
         self.logger.debug('Connected')
@@ -1097,7 +1106,13 @@ class ZmqClient(QObject):
         self._socket.send(message)
 
         # Block till we have some message.
+        start = time.time()
         while True:
+            if self._timeout is not None and time.time() - start > self._timeout:
+                self.logger.error('Closing because of communication timeout')
+                self.close()
+                raise TimeoutError()
+
             try:
                 rep = b''.join(self._socket.recv_multipart(zmq.NOBLOCK))
                 break
@@ -1174,8 +1189,10 @@ class ZmqClient(QObject):
 
     def _reqAsyncFlush(self, timeout=None):
         start = time.time()
+        lastMsg = start
+
         pollInterval = 1000
-        if not timeout is None:
+        if timeout is not None:
             pollInterval = min(timeout, pollInterval)
 
         while self._reqQueue != []:
@@ -1188,10 +1205,16 @@ class ZmqClient(QObject):
 
             try:
                 self._reqAsyncHandleResponse(b''.join(self._socket.recv_multipart(zmq.NOBLOCK)))
+                lastMsg = time.time()
             except zmq.ZMQError as e:
                 if e.errno != zmq.EAGAIN:
                     raise
                 else:
+                    if self._timeout is not None and time.time() - lastMsg > self._timeout:
+                        self.logger.error('Closing because of communication timeout')
+                        self.close()
+                        raise TimeoutError()
+
                     self._socket.poll(pollInterval)
 
     @Slot()
@@ -1312,6 +1335,8 @@ class ZmqClient(QObject):
         if not self.csv is None:
             self.csv.close()
             self.csv = None
+
+        self.closed.emit()
 
     def __enter__(self):
         return self
