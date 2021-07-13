@@ -173,3 +173,7 @@ class Stream2Zmq(protocol.ProtocolLayer):
 
     def close(self):
         self.zmq.close()
+        for s in self._stack:
+            s.close()
+        self._stack = None
+

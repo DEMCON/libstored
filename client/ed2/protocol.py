@@ -85,6 +85,12 @@ class ProtocolLayer:
 
         return max(a, self._activity)
 
+    def __del__(self):
+        self.close()
+
+    def close(self):
+        pass
+
 class AsciiEscapeLayer(ProtocolLayer):
     name = 'ascii'
 
@@ -240,6 +246,14 @@ class PubTerminalLayer(TerminalLayer):
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PUB)
         self.socket.bind(f'tcp://{bind}')
+
+    def __del__(self):
+        self.close()
+
+    def close(self):
+        if self.socket is not None:
+            self.socket.close()
+            self.socket = None
 
     def nonDebugData(self, data):
         super().nonDebugData(data)
