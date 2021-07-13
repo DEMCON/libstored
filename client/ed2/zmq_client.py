@@ -544,7 +544,7 @@ class Object(QObject):
             self._formatter = bin
         elif f == 'bytes':
             self._formatter = self._formatBytes
-        elif self._type == self.Float:
+        elif self._type & ~self.FlagFunction == self.Float:
             self._formatter = lambda x: f'{x:.6g}'
         else:
             self._formatter = str
