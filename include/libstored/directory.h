@@ -25,21 +25,133 @@
 namespace stored {
 
 	namespace impl {
-		Variant<> find(void* buffer, uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept;
+		/*!
+		 * \brief Decodes an Unsigned VLQ number.
+		 * \param p a pointer to the buffer to decode, which is incremented till after the decoded value
+		 * \return the decoded value
+		 * \private
+		 */
+		template <typename T>
+		constexpr14 T decodeInt(uint8_t const*& p) noexcept {
+			T v = 0;
+			while(*p & 0x80u) {
+				v = (v | (T)(*p & 0x7fu)) << 7u;
+				p++;
+			}
+			return v | (T)*p++;
+		}
+
+		/*!
+		 * \brief Skips an Unsigned VLQ number, which encodes a buffer offset.
+		 * \param p a pointer to the offset to be skipped, which is increment till after the offset
+		 * \private
+		 */
+		constexpr14 void skipOffset(uint8_t const*& p) noexcept {
+			while(*p++ & 0x80u);
+		}
+
+		/*!
+		 * \brief Finds an object in a directory.
+		 *
+		 * Don't call this function, use stored::find() instead.
+		 *
+		 * \param directory the binary directory description
+		 * \param name the name to find, can be abbreviated as long as it is unambiguous
+		 * \param len the maximum length of \p name to parse
+		 * \return a container-independent variant, which is not valid when not found
+		 * \see #stored::find()
+		 * \private
+		 */
+#if defined(STORED_ENABLE_UBSAN) && (defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG))
+		// Somehow, ubsan thinks that we are working outside of the directory definition.
+		__attribute__((no_sanitize("pointer-overflow")))
+#endif
+		constexpr14 Variant<> find(uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
+			if(unlikely(!directory || !name))
+				return Variant<>();
+
+			uint8_t const* p = directory;
+			while(true) {
+				bool nameEnd = !*name || len == 0;
+				if(*p == 0) {
+					// end
+					return Variant<>();
+				} else if(*p >= 0x80u) {
+					// var
+					Type::type type = (Type::type)(*p++ ^ 0x80u);
+					size_t datalen = !Type::isFixed(type) ? decodeInt<size_t>(p) : Type::size(type);
+					size_t offset = decodeInt<size_t>(p);
+					return Variant<>(type, (uintptr_t)offset, datalen);
+				} else if(*p <= 0x1f) {
+					// skip
+					if(nameEnd)
+						return Variant<>();
+
+					uint8_t skip = 0;
+					for(skip = *p++; skip > 0 && len > 0 && *name; skip--, name++, len--) {
+						switch(*name) {
+						case '/':
+							return Variant<>();
+						default:;
+						}
+					}
+
+					if(skip > 0)
+						// Premature end of name
+						return Variant<>();
+				} else if(*p == '/') {
+					// Skip till next /
+					if(nameEnd)
+						return Variant<>();
+
+					while(len-- > 0 && *name++ != '/')
+						if(!*name)
+							return Variant<>();
+					p++;
+				} else {
+					// match char
+					int c = (nameEnd ? 0 : (int)*name) - (int)*p++;
+					if(c < 0) {
+						// take jmp_l
+#ifdef STORED_COMPILER_CLANG
+						// clang seems to have issues in evaluating constexpr,
+						// specifically when evaluating the end marker.
+						if(*p == 0)
+							return Variant<>();
+#endif
+						p += decodeInt<uintptr_t>(p) - 1;
+					} else {
+						skipOffset(p);
+						if(c > 0) {
+							// take jmp_g
+#ifdef STORED_COMPILER_CLANG
+							if(*p == 0)
+								return Variant<>();
+#endif
+							p += decodeInt<uintptr_t>(p) - 1;
+						} else {
+							// equal
+							skipOffset(p);
+							name++;
+							len--;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/*!
 	 * \brief Finds an object in a directory.
 	 * \param container the container that has the \p buffer and \p directory. Specify the actual (lowest) subclass of the store.
-	 * \param buffer the buffer with variable's data
 	 * \param directory the binary directory description
 	 * \param name the name to find, can be abbreviated as long as it is unambiguous
 	 * \param len the maximum length of \p name to parse
 	 * \return a variant, which is not valid when not found
 	 */
 	template <typename Container>
-	Variant<Container> find(Container& container, void* buffer, uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
-		return impl::find(buffer, directory, name, len).apply<Container>(container);
+	constexpr14 Variant<Container> find(Container& container, uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
+		return impl::find(directory, name, len).apply<Container>(container);
 	}
 
 	/*!

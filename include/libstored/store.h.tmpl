@@ -229,6 +229,8 @@ public:
 		/*! \copydoc stored::{{store.name}}Base::buffer() const */
 		constexpr char* buffer() noexcept { return data().buffer; }
 
+		friend class stored::Variant<void>;
+
 	private:
 		/*! \brief The store's data. */
 		Data m_data;
@@ -462,7 +464,7 @@ public:
 		 * \return the object, or an invalid #stored::Variant if not found.
 		 */
 		Variant<Implementation> find(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
-			return stored::find(implementation(), buffer(), shortDirectory(), name, len);
+			return stored::find(implementation(), shortDirectory(), name, len);
 		}
 
 		/*!

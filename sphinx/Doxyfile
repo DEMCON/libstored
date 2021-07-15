@@ -2079,6 +2079,7 @@ EXPAND_AS_DEFINED      = \
 						STORE_SYNC_CLASS_BODY \
 						STORE_BASE_CLASS \
 						STORE_CLASS_BODY \
+						constexpr14 \
 
 
 # If the SKIP_FUNCTION_MACROS tag is set to YES then doxygen's preprocessor will

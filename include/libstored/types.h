@@ -1072,23 +1072,10 @@ namespace stored {
 	class Variant<void> {
 	public:
 		/*!
-		 * \brief Constructor for a variable.
+		 * \brief Constructor for a variable or function.
 		 */
-		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		constexpr Variant(Type::type type, void* buffer, size_t len) noexcept
-			: m_dummy(), m_buffer(buffer), m_len(len), m_type((uint8_t)type)
-#ifdef _DEBUG
-			, m_entry()
-#endif
-		{
-		}
-
-		/*!
-		 * \brief Constructor for a function.
-		 */
-		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		constexpr Variant(Type::type type, unsigned int f, size_t len) noexcept
-			: m_dummy(), m_f((uintptr_t)f), m_len(len), m_type((uint8_t)type)
+		constexpr Variant(Type::type type, uintptr_t buffer_offset_or_f, size_t len) noexcept
+			: m_dummy(), m_offset(buffer_offset_or_f), m_len(len), m_type((uint8_t)type)
 #ifdef _DEBUG
 			, m_entry()
 #endif
@@ -1101,7 +1088,7 @@ namespace stored {
 		 */
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		constexpr Variant() noexcept
-			: m_dummy(), m_buffer(), m_len(), m_type((uint8_t)Type::Invalid)
+			: m_dummy(), m_offset(), m_len(), m_type((uint8_t)Type::Invalid)
 #ifdef _DEBUG
 			, m_entry()
 #endif
@@ -1117,11 +1104,11 @@ namespace stored {
 			if(!valid())
 				return Variant<Container>();
 			else if(isFunction())
-				return Variant<Container>(container, (Type::type)m_type, (unsigned int)m_f, m_len);
+				return Variant<Container>(container, (Type::type)m_type, (unsigned int)m_offset, m_len);
 			else {
-				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
-				stored_assert((uintptr_t)m_buffer >= (uintptr_t)&container && (uintptr_t)m_buffer + m_len <= (uintptr_t)&container + sizeof(Container));
-				return Variant<Container>(container, (Type::type)m_type, m_buffer, m_len);
+				char* buffer = container.buffer();
+				stored_assert(m_offset + m_len < sizeof(typename Container::Data));
+				return Variant<Container>(container, (Type::type)m_type, buffer + m_offset, m_len);
 			}
 		}
 
@@ -1160,8 +1147,7 @@ namespace stored {
 				return false;
 			if(!valid())
 				return true;
-			return m_type == rhs.m_type &&
-				(isFunction() ? m_f == rhs.m_f : m_buffer == rhs.m_buffer && m_len == rhs.m_len);
+			return m_type == rhs.m_type && m_offset == rhs.m_offset && m_len == rhs.m_len;
 		}
 
 		/*! \copybrief Variant::operator!=() */
@@ -1175,12 +1161,10 @@ namespace stored {
 		void* m_dummy;
 #endif
 
-		union {
-			/*! \copydoc Variant::m_buffer */
-			void* m_buffer;
-			/*! \copydoc Variant::m_f */
-			uintptr_t m_f;
-		};
+		/*!
+		 * \brief Encodes either the store's buffer offset or function.
+		 */
+		uintptr_t m_offset;
 		/*! \copydoc Variant::m_len */
 		size_t m_len;
 		/*! \copydoc Variant::m_type */

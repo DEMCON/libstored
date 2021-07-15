@@ -118,6 +118,14 @@ TEST(Directory, List) {
 
 TEST(Directory, Constexpr) {
 	static_assert(stored::TestStoreData::shortDirectory() != nullptr, "");
+
+	constexpr auto v = stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int8");
+	static_assert(v.valid(), "");
+	EXPECT_TRUE(v.valid());
+
+	static_assert(!stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int7").valid(), "");
+	static_assert(!stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int9").valid(), "");
+	static_assert(!stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int8", 1).valid(), "");
 }
 
 } // namespace
