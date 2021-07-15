@@ -76,7 +76,7 @@ public:
 		: base(identification)
 	{}
 
-	virtual ~ExtendedDebugger() override is_default;
+	virtual ~ExtendedDebugger() noexcept override is_default;
 
 	virtual void capabilities(char*& caps, size_t& len, size_t reserve = 0) override {
 		// Get the default capabilities.

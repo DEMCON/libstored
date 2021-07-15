@@ -49,7 +49,7 @@ namespace stored {
 		Allocator a;
 		return std::allocator_traits<Allocator>::allocate(a, n);
 #else
-		Config::Allocator<T>::type allocator;
+		typename Config::Allocator<T>::type allocator;
 		return allocator.allocate(n);
 #endif
 	}
@@ -64,8 +64,8 @@ namespace stored {
 		Allocator a;
 		std::allocator_traits<Allocator>::deallocate(a, p, n);
 #else
-		Config::Allocator<T>::type allocator;
-		allocator.deallocate(n);
+		typename Config::Allocator<T>::type allocator;
+		allocator.deallocate(p, n);
 #endif
 	}
 
@@ -83,8 +83,8 @@ namespace stored {
 		std::allocator_traits<Allocator>::destroy(a, p);
 		std::allocator_traits<Allocator>::deallocate(a, p, 1U);
 #else
-		x.~T();
-		deallocate<T>(&x);
+		p->~T();
+		deallocate<T>(p);
 #endif
 	}
 

@@ -85,8 +85,8 @@ public:
 		free(p);
 	}
 
-	constexpr bool operator==(TestAllocator& a) noexcept { return true; }
-	constexpr bool operator!=(TestAllocator& a) noexcept { return false; }
+	constexpr bool operator==(TestAllocator&) noexcept { return true; }
+	constexpr bool operator!=(TestAllocator&) noexcept { return false; }
 };
 
 namespace stored {

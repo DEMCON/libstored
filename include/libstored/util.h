@@ -163,7 +163,7 @@
 #  if STORED_cplusplus >= 201103L
 #    define is_default = default;
 #  else
-#    define is_default noexcept {}
+#    define is_default {}
 #  endif
 #endif
 
