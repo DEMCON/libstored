@@ -228,4 +228,12 @@ typedef SSIZE_T ssize_t;
 #  endif
 #endif
 
+#ifndef constexpr14
+#  if STORED_cplusplus >= 201402L
+#    define constexpr14 constexpr
+#  else
+#    define constexpr14 inline
+#  endif
+#endif
+
 #endif // LIBSTORED_MACROS_H

@@ -59,6 +59,10 @@ namespace impl {
  * \see #stored::find()
  * \private
  */
+#if defined(STORED_ENABLE_UBSAN) && (defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG))
+// Somehow, ubsan thinks that we are working outside of the directory definition.
+__attribute__((no_sanitize("pointer-overflow")))
+#endif
 Variant<> find(void* buffer, uint8_t const* directory, char const* name, size_t len) noexcept {
 	if(unlikely(!directory || !name)) {
 notfound:
@@ -151,8 +155,8 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
 			Type::type type = (Type::type)(*p++ ^ 0x80u);
 			size_t len = !Type::isFixed(type) ? decodeInt<size_t>(p) : Type::size(type);
 			size_t offset = decodeInt<size_t>(p);
-			char* b = Type::isFunction(type) ? nullptr : static_cast<char*>(buffer);
-			f(container, name.c_str(), type, b + offset, len, arg);
+			char* b = Type::isFunction(type) ? (char*)offset : static_cast<char*>(buffer) + offset;
+			f(container, name.c_str(), type, b, len, arg);
 			break;
 		} else if(*p <= 0x1f) {
 			// skip

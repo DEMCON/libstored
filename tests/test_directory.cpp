@@ -116,5 +116,9 @@ TEST(Directory, List) {
 		EXPECT_TRUE(std::find(names.begin(), names.end(), n.c_str()) != names.end());
 }
 
+TEST(Directory, Constexpr) {
+	static_assert(stored::TestStoreData::shortDirectory() != nullptr, "");
+}
+
 } // namespace
 

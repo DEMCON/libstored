@@ -50,7 +50,23 @@ namespace stored {
 		/*! \brief Data buffer for all variables. */
 		char buffer[{{store.buffer.size}}];
 
+#if STORED_cplusplus >= 201402L
+private:
+		static constexpr uint8_t directory[{{store.directory.data|len}}] = {
+			{{store.directory.data|carray|indent('\t\t\t')}}
+		};
+
+public:
+		/*!
+		 * \brief Returns the short directory.
+		 */
+		static constexpr uint8_t const* shortDirectory() noexcept {
+			return (uint8_t const*)directory;
+		}
+#else
 		static uint8_t const* shortDirectory() noexcept;
+#endif
+
 		static uint8_t const* longDirectory() noexcept;
 	}
 #ifndef STORED_COMPILER_MSVC
@@ -183,7 +199,7 @@ namespace stored {
 		/*! \brief Returns the name of store, which can be used as prefix for #stored::Debugger. */
 		char const* name() const noexcept { return "/{{store.name}}"; }
 		/*! \brief Returns a unique hash of the store. */
-		constexpr static char const* hash() noexcept { return "{{store.hash}}"; }
+		static constexpr char const* hash() noexcept { return "{{store.hash}}"; }
 
 		enum {
 			/*! \brief Number of objects in the store. */
