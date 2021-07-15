@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.1)
 project(libstored)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -81,6 +81,7 @@ function(libstored_generate target) # add all other models as varargs
         # Execute right away, such that the CMakeLists.txt exists.
         execute_process(
             COMMAND ${PYTHON_EXECUTABLE} ${LIBSTORED_SOURCE_DIR}/generator/generate.py -p ${target}- ${models} ${CMAKE_CURRENT_SOURCE_DIR}/libstored
+			COMMAND ${CMAKE_COMMAND} -E touch ${target}-libstored.timestamp
         )
     endif()
 
@@ -114,6 +115,11 @@ function(libstored_generate target) # add all other models as varargs
 	    target_link_libraries(${target} PUBLIC ${target}-libstored)
 	else()
 		add_dependencies(${target} ${target}-libstored)
+	endif()
+
+	get_target_property(target_cxx_standard ${target} CXX_STANDARD)
+	if(NOT target_cxx_standard STREQUAL "target_cxx_standard-NOTFOUND")
+		set_target_properties(${target}-libstored PROPERTIES CXX_STANDARD ${target_cxx_standard})
 	endif()
 
     if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
