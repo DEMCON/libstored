@@ -9,12 +9,12 @@ message(STATUS "CMAKE_BUILD_TYPE is ${CMAKE_BUILD_TYPE}")
 
 if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
   message(FATAL_ERROR "CMake generation is not allowed within the source directory! \
-    Remove the CMakeCache.txt file and try again from another folder, e.g.: \
-    \
-      rm CMakeCache.txt \
-      mkdir build \
-      cd build \
-      cmake ..")
+	Remove the CMakeCache.txt file and try again from another folder, e.g.: \
+	\
+	  rm CMakeCache.txt \
+	  mkdir build \
+	  cd build \
+	  cmake ..")
 endif()
 
 option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" OFF)
@@ -73,46 +73,46 @@ function(libstored_copy_dlls target)
 endfunction()
 
 function(libstored_generate target) # add all other models as varargs
-    foreach(model IN ITEMS ${ARGN})
-        list(APPEND models ${CMAKE_CURRENT_SOURCE_DIR}/${model})
-    endforeach()
+	foreach(model IN ITEMS ${ARGN})
+		list(APPEND models ${CMAKE_CURRENT_SOURCE_DIR}/${model})
+	endforeach()
 
-    if(NOT EXISTS libstored)
-        # Execute right away, such that the CMakeLists.txt exists.
-        execute_process(
-            COMMAND ${PYTHON_EXECUTABLE} ${LIBSTORED_SOURCE_DIR}/generator/generate.py -p ${target}- ${models} ${CMAKE_CURRENT_SOURCE_DIR}/libstored
+	if(NOT EXISTS libstored)
+		# Execute right away, such that the CMakeLists.txt exists.
+		execute_process(
+			COMMAND ${PYTHON_EXECUTABLE} ${LIBSTORED_SOURCE_DIR}/generator/generate.py -p ${target}- ${models} ${CMAKE_CURRENT_SOURCE_DIR}/libstored
 			COMMAND ${CMAKE_COMMAND} -E touch ${target}-libstored.timestamp
-        )
-    endif()
+		)
+	endif()
 
-    add_subdirectory(libstored)
+	add_subdirectory(libstored)
 
-    add_custom_command(
-        OUTPUT ${target}-libstored.timestamp
-        DEPENDS ${LIBSTORED_SOURCE_DIR}/include/libstored/store.h.tmpl
-        DEPENDS ${LIBSTORED_SOURCE_DIR}/src/store.cpp.tmpl
-        DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.rtf.tmpl
-        DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.csv.tmpl
-        DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store.vhd.tmpl
-        DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store_pkg.vhd.tmpl
-        DEPENDS ${LIBSTORED_SOURCE_DIR}/CMakeLists.txt.tmpl
+	add_custom_command(
+		OUTPUT ${target}-libstored.timestamp
+		DEPENDS ${LIBSTORED_SOURCE_DIR}/include/libstored/store.h.tmpl
+		DEPENDS ${LIBSTORED_SOURCE_DIR}/src/store.cpp.tmpl
+		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.rtf.tmpl
+		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.csv.tmpl
+		DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store.vhd.tmpl
+		DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store_pkg.vhd.tmpl
+		DEPENDS ${LIBSTORED_SOURCE_DIR}/CMakeLists.txt.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/generate.py
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/dsl/grammar.tx
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/dsl/types.py
-        DEPENDS ${models}
-        COMMAND ${PYTHON_EXECUTABLE} ${LIBSTORED_SOURCE_DIR}/generator/generate.py -p ${target}- ${models} ${CMAKE_CURRENT_SOURCE_DIR}/libstored
-        COMMAND ${CMAKE_COMMAND} -E touch ${target}-libstored.timestamp
-        COMMENT "Generate store from ${ARGN}"
-        VERBATIM
-    )
-    add_custom_target(${target}-libstored-generate
-        DEPENDS ${target}-libstored.timestamp
-    )
-    add_dependencies(${target}-libstored ${target}-libstored-generate)
+		DEPENDS ${models}
+		COMMAND ${PYTHON_EXECUTABLE} ${LIBSTORED_SOURCE_DIR}/generator/generate.py -p ${target}- ${models} ${CMAKE_CURRENT_SOURCE_DIR}/libstored
+		COMMAND ${CMAKE_COMMAND} -E touch ${target}-libstored.timestamp
+		COMMENT "Generate store from ${ARGN}"
+		VERBATIM
+	)
+	add_custom_target(${target}-libstored-generate
+		DEPENDS ${target}-libstored.timestamp
+	)
+	add_dependencies(${target}-libstored ${target}-libstored-generate)
 
 	get_target_property(target_type ${target} TYPE)
 	if(target_type MATCHES "^(STATIC_LIBRARY|MODULE_LIBRARY|SHARED_LIBRARY|EXECUTABLE)$")
-	    target_link_libraries(${target} PUBLIC ${target}-libstored)
+		target_link_libraries(${target} PUBLIC ${target}-libstored)
 	else()
 		add_dependencies(${target} ${target}-libstored)
 	endif()
@@ -122,17 +122,17 @@ function(libstored_generate target) # add all other models as varargs
 		set_target_properties(${target}-libstored PROPERTIES CXX_STANDARD ${target_cxx_standard})
 	endif()
 
-    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
+	if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
 		if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 			if(target_type STREQUAL "EXECUTABLE")
 				target_link_options(${target} PUBLIC -Wl,--gc-sections)
 			endif()
 		endif()
-    endif()
+	endif()
 
-    if(LIBSTORED_DOCUMENTATION)
-        add_dependencies(doc ${target}-libstored-generate)
-    endif()
+	if(LIBSTORED_DOCUMENTATION)
+		add_dependencies(doc ${target}-libstored-generate)
+	endif()
 
 	libstored_copy_dlls(${target})
 endfunction()
@@ -160,7 +160,7 @@ endif()
 
 option(LIBSTORED_EXAMPLES "Build examples" ON)
 if(LIBSTORED_EXAMPLES)
-    add_subdirectory(examples)
+	add_subdirectory(examples)
 endif()
 
 option(LIBSTORED_PIP_INSTALL_USER "Run pip install --user when installing wheel files" OFF)
