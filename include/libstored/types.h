@@ -82,19 +82,19 @@ namespace stored {
 		};
 
 		/*! \brief Checks if the given type is a function. */
-		constexpr static bool isFunction(type t) noexcept { return t & FlagFunction; }
+		static constexpr bool isFunction(type t) noexcept { return t & FlagFunction; }
 		/*! \brief Checks if the given type has a fixed length, or is a function with such an argument. */
-		constexpr static bool isFixed(type t) noexcept { return t & FlagFixed; }
+		static constexpr bool isFixed(type t) noexcept { return t & FlagFixed; }
 		/*! \brief Checks if the given type is an integer, or is a function with such an argument. */
-		constexpr static bool isInt(type t) noexcept { return isFixed(t) && (t & FlagInt); }
+		static constexpr bool isInt(type t) noexcept { return isFixed(t) && (t & FlagInt); }
 		/*! \brief Checks if the given type is signed number, or is a function with such an argument. */
-		constexpr static bool isSigned(type t) noexcept { return isFixed(t) && (t & FlagSigned); }
+		static constexpr bool isSigned(type t) noexcept { return isFixed(t) && (t & FlagSigned); }
 		/*! \brief Checks if the given type is special (non-fixed size) type, or is a function with such an argument. */
-		constexpr static bool isSpecial(type t) noexcept { return (t & MaskFlags) == 0; }
+		static constexpr bool isSpecial(type t) noexcept { return (t & MaskFlags) == 0; }
 		/*! \brief Returns the size of the (function argument) type, or 0 when it is not fixed. */
-		constexpr static size_t size(type t) noexcept { return !isFixed(t) ? 0u : (size_t)(t & MaskSize) + 1u; }
+		static constexpr size_t size(type t) noexcept { return !isFixed(t) ? 0u : (size_t)(t & MaskSize) + 1u; }
 		/*! \brief Checks if endianness of given type is swapped in the store's buffer. */
-		constexpr static bool isStoreSwapped(type t) noexcept {
+		static constexpr bool isStoreSwapped(type t) noexcept {
 			return
 #ifdef STORED_LITTLE_ENDIAN
 				!
@@ -104,7 +104,7 @@ namespace stored {
 		}
 	};
 
-	constexpr static inline Type::type operator|(Type::type a, Type::type b) noexcept { return (Type::type)((uint8_t)a | (uint8_t)b); }
+	static constexpr inline Type::type operator|(Type::type a, Type::type b) noexcept { return (Type::type)((uint8_t)a | (uint8_t)b); }
 
 	namespace impl {
 		/*! \brief Returns the #stored::Type::type of the given \c int type. */
@@ -277,7 +277,7 @@ namespace stored {
 		/*!
 		 * \brief Returns the size of the data.
 		 */
-		constexpr static size_t size() noexcept { return sizeof(type); }
+		static constexpr size_t size() noexcept { return sizeof(type); }
 
 	protected:
 		/*!
@@ -425,7 +425,7 @@ namespace stored {
 		}
 
 		/*! \copydoc stored::Variable::size() */
-		constexpr static size_t size() noexcept { return sizeof(type); }
+		static constexpr size_t size() noexcept { return sizeof(type); }
 
 		/*! \copydoc stored::Variable::container() */
 		Container& container() const noexcept {
@@ -651,7 +651,7 @@ namespace stored {
 		/*!
 		 * \brief Returns the size of the function's argument.
 		 */
-		constexpr static size_t size() noexcept { return sizeof(type); }
+		static constexpr size_t size() noexcept { return sizeof(type); }
 
 	private:
 		/*! \brief The container this Function belongs to. */
@@ -1198,13 +1198,13 @@ namespace stored {
 
 	namespace impl {
 		template <typename StoreBase, typename T>
-		constexpr static inline void* objectToVoidPtr(T& o) noexcept {
+		static constexpr inline void* objectToVoidPtr(T& o) noexcept {
 			static_assert(sizeof(T) == sizeof(typename StoreBase::Objects), "");
 			return (void*)&o;
 		}
 
 		template <typename StoreBase, typename T>
-		constexpr static inline StoreBase& objectToStore(T& o) noexcept {
+		static constexpr inline StoreBase& objectToStore(T& o) noexcept {
 			static_assert(sizeof(T) == sizeof(typename StoreBase::Objects), "");
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return *static_cast<StoreBase*>(reinterpret_cast<typename StoreBase::Objects*>(objectToVoidPtr<StoreBase,T>(o)));
@@ -1248,7 +1248,7 @@ namespace stored {
 				return v;
 			}
 
-			constexpr static size_t size() { return sizeof(type); }
+			static constexpr size_t size() { return sizeof(type); }
 		};
 
 		/*!
@@ -1316,7 +1316,7 @@ namespace stored {
 				return *this;
 			}
 
-			constexpr static size_t size() noexcept { return sizeof(type); }
+			static constexpr size_t size() noexcept { return sizeof(type); }
 
 		protected:
 			constexpr Implementation& implementation() const noexcept {
@@ -1350,8 +1350,8 @@ namespace stored {
 			size_t set(void const* src, size_t len = 0) noexcept { return variant().set(src, len); }
 			template <typename T> void set(T value) noexcept { variant().template set<T>(value); }
 
-			constexpr static Type::type type() noexcept { return type_; }
-			constexpr static size_t size() noexcept { return size_; }
+			static constexpr Type::type type() noexcept { return type_; }
+			static constexpr size_t size() noexcept { return size_; }
 			void* buffer() const noexcept { return variant().buffer(); }
 		};
 
@@ -1377,8 +1377,8 @@ namespace stored {
 			size_t set(void const* src, size_t len = 0) { return variant().set(src, len); }
 			template <typename T> void set(T value) { variant().template set<T>(value); }
 
-			constexpr static Type::type type() noexcept { return type_; }
-			constexpr static size_t size() noexcept { return size_; }
+			static constexpr Type::type type() noexcept { return type_; }
+			static constexpr size_t size() noexcept { return size_; }
 		};
 	}
 
