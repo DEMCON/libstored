@@ -39,7 +39,6 @@ except:
 
 class InfiniteStdoutBuffer:
     def __init__(self, stdout=sys.__stdout__, cleanup=None):
-        self.logger = logging.getLogger(__name__)
         self.stdout = stdout
         self._queue = queue.Queue()
         self._closed = False
