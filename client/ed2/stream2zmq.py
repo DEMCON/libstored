@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import atexit
 import sys
 import zmq
 import logging
@@ -38,12 +39,14 @@ except:
 
 class InfiniteStdoutBuffer:
     def __init__(self, stdout=sys.__stdout__, cleanup=None):
+        self.logger = logging.getLogger(__name__)
         self.stdout = stdout
         self._queue = queue.Queue()
         self._closed = False
         self._cleanup = cleanup
         self._thread = threading.Thread(target=self._worker)
         self._thread.daemon = True
+        atexit.register(self.close)
         self._thread.start()
 
     def write(self, data):
@@ -63,13 +66,20 @@ class InfiniteStdoutBuffer:
         if self._closed:
             return
 
-        self.flush()
         self._closed = True
         # Force wakeup
         self._queue.put('')
         self._thread.join()
-        self._queue = None
 
+        # Drain queue
+        try:
+            while True:
+                self._write(self._queue.get_nowait())
+                self._queue.task_done()
+        except:
+            pass
+
+        self._queue = None
         self.stdout.flush()
 
         if self._cleanup is not None:
@@ -80,8 +90,11 @@ class InfiniteStdoutBuffer:
 
     def _worker(self):
         while not self._closed:
-            self._write(self._queue.get())
-            self._queue.task_done()
+            x = self._queue.get()
+            try:
+                self._write(x)
+            finally:
+                self._queue.task_done()
 
 def resetStdout(old_stdout):
     sys.stdout = old_stdout
@@ -173,7 +186,8 @@ class Stream2Zmq(protocol.ProtocolLayer):
 
     def close(self):
         self.zmq.close()
-        for s in self._stack:
-            s.close()
-        self._stack = None
+        if self._stack is not None:
+            for s in self._stack:
+                s.close()
+            self._stack = None
 
