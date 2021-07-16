@@ -64,6 +64,10 @@ namespace stored {
 		 */
 #if defined(STORED_ENABLE_UBSAN) && (defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG))
 		// Somehow, ubsan thinks that we are working outside of the directory definition.
+#  if GCC_VERSION < 80000L
+#    pragma GCC diagnostic push
+#    pragma GCC diagnostic ignored "-Wattributes"
+#  endif
 		__attribute__((no_sanitize("pointer-overflow")))
 #endif
 		constexpr14 Variant<> find(uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
@@ -139,6 +143,11 @@ namespace stored {
 				}
 			}
 		}
+#if defined(STORED_ENABLE_UBSAN) && (defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG))
+#  if GCC_VERSION < 80000L
+#    pragma GCC diagnostic pop
+#  endif
+#endif
 	}
 
 	/*!
