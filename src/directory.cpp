@@ -21,7 +21,6 @@
 #include <string>
 
 using stored::impl::decodeInt;
-using stored::impl::skipOffset;
 
 namespace stored {
 
@@ -46,7 +45,8 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
 			Type::type type = (Type::type)(*p++ ^ 0x80u);
 			size_t len = !Type::isFixed(type) ? decodeInt<size_t>(p) : Type::size(type);
 			size_t offset = decodeInt<size_t>(p);
-			char* b = Type::isFunction(type) ? (char*)offset : static_cast<char*>(buffer) + offset;
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+			char* b = Type::isFunction(type) ? reinterpret_cast<char*>(offset) : static_cast<char*>(buffer) + offset;
 			f(container, name.c_str(), type, b, len, arg);
 			break;
 		} else if(*p <= 0x1f) {
