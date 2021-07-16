@@ -167,5 +167,19 @@ TEST(Types, String) {
 	EXPECT_EQ(store.default_string.get(buffer2, s), 1);
 }
 
+TEST(Types, FreeVariable) {
+	stored::TestStore store;
+
+	constexpr auto f = stored::TestStore::freeVariable<uint8_t>("/default uint8");
+	static_assert(f.valid(), "");
+
+	auto v = f.apply(store);
+	v = 10;
+	EXPECT_EQ(store.default_uint8.get(), 10);
+
+	store.default_uint8 = 11;
+	EXPECT_EQ(v.get(), 11);
+}
+
 } // namespace
 

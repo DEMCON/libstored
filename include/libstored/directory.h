@@ -71,15 +71,17 @@ namespace stored {
 		__attribute__((no_sanitize("pointer-overflow")))
 #endif
 		constexpr14 Variant<> find(uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
+			Variant<> const notfound;
+
 			if(unlikely(!directory || !name))
-				return Variant<>();
+				return notfound;
 
 			uint8_t const* p = directory;
 			while(true) {
 				bool nameEnd = !*name || len == 0;
 				if(*p == 0) {
 					// end
-					return Variant<>();
+					break;
 				} else if(*p >= 0x80u) {
 					// var
 					Type::type type = (Type::type)(*p++ ^ 0x80u);
@@ -89,28 +91,22 @@ namespace stored {
 				} else if(*p <= 0x1f) {
 					// skip
 					if(nameEnd)
-						return Variant<>();
+						break;
 
 					uint8_t skip = 0;
-					for(skip = *p++; skip > 0 && len > 0 && *name; skip--, name++, len--) {
-						switch(*name) {
-						case '/':
-							return Variant<>();
-						default:;
-						}
-					}
+					for(skip = *p++; skip > 0 && len > 0 && *name && *name != '/'; skip--, name++, len--);
 
 					if(skip > 0)
 						// Premature end of name
-						return Variant<>();
+						break;
 				} else if(*p == '/') {
 					// Skip till next /
-					if(nameEnd)
-						return Variant<>();
+					while(len > 0 && *name) {
+						len--;
+						if(*name++ == '/')
+							break;
+					}
 
-					while(len-- > 0 && *name++ != '/')
-						if(!*name)
-							return Variant<>();
 					p++;
 				} else {
 					// match char
@@ -121,7 +117,7 @@ namespace stored {
 						// clang seems to have issues in evaluating constexpr,
 						// specifically when evaluating the end marker.
 						if(*p == 0)
-							return Variant<>();
+							break;
 #endif
 						p += decodeInt<uintptr_t>(p) - 1;
 					} else {
@@ -130,7 +126,7 @@ namespace stored {
 							// take jmp_g
 #ifdef STORED_COMPILER_CLANG
 							if(*p == 0)
-								return Variant<>();
+								break;
 #endif
 							p += decodeInt<uintptr_t>(p) - 1;
 						} else {
@@ -142,6 +138,8 @@ namespace stored {
 					}
 				}
 			}
+
+			return Variant<>();
 		}
 #if defined(STORED_ENABLE_UBSAN) && (defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG))
 #  if GCC_VERSION < 80000L

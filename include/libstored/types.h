@@ -661,6 +661,108 @@ namespace stored {
 	};
 
 	/*!
+	 * \brief A typed variable, which is not yet bound to a store.
+	 *
+	 * For C++14, you can construct this object as constexpr via
+	 * #stored::find(), resulting in a #stored::Variant<void>, which is applied
+	 * to a Container type. From this object, the conversion to a Variable is
+	 * very cheap.
+	 */
+	template <typename T, typename Container>
+	class FreeVariable {
+	public:
+		/*! \brief The type of the variable. */
+		typedef T type;
+		/*! \brief The full Variable type. */
+		typedef Variable<type,Container> Variable_type;
+
+	protected:
+		/*! \brief Constructor for an invalid variable. */
+		constexpr FreeVariable() noexcept
+			: m_offset(~(size_t)0)
+		{}
+
+		/*!
+		 * \brief Constructor for a valid variable.
+		 * \details This can only be called by #stored::Variant<void>::variable().
+		 */
+		constexpr FreeVariable(size_t offset) noexcept
+			: m_offset(offset)
+		{}
+
+		friend class Variant<void>;
+
+	public:
+		/*! \brief Returns if this variable is valid. */
+		constexpr bool valid() const noexcept {
+			return ~m_offset;
+		}
+
+		/*! \brief Convert this free variable into a bound one. */
+		Variable_type apply(Container& container) const noexcept {
+			if(valid())
+				return Variable_type(container, *reinterpret_cast<type*>(static_cast<char*>(container.buffer()) + m_offset));
+			else
+				return Variable_type();
+		}
+
+	private:
+		/*! \brief The offset within the buffer of a store. */
+		size_t m_offset;
+	};
+
+	/*!
+	 * \brief A typed function, which is not yet bound to a store.
+	 *
+	 * For C++14, you can construct this object as constexpr via
+	 * #stored::find(), resulting in a #stored::Variant<void>, which is applied
+	 * to a Container type. From this object, the conversion to a Function is
+	 * very cheap.
+	 */
+	template <typename T, typename Container>
+	class FreeFunction {
+	public:
+		/*! \brief The type of the function argument. */
+		typedef T type;
+		/*! \brief The full Function type. */
+		typedef Function<type,Container> Function_type;
+
+	protected:
+		/*! \brief Constructor for an invalid variable. */
+		constexpr FreeFunction() noexcept
+			: m_f()
+		{}
+
+		/*!
+		 * \brief Constructor for a valid variable.
+		 * \details This can only be called by #stored::Variant<void>::variable().
+		 */
+		constexpr FreeFunction(unsigned int f) noexcept
+			: m_f(f)
+		{}
+
+		friend class Variant<void>;
+
+	public:
+		/*! \brief Returns if this function is valid. */
+		constexpr bool valid() const noexcept {
+			return m_f;
+		}
+
+		/*! \brief Convert this free function into a bound one. */
+		Function_type apply(Container& container) const noexcept {
+			if(valid())
+				return Function_type(container, m_f);
+			else
+				return Function_type();
+		}
+
+	private:
+		/*! \brief The function ID. */
+		unsigned int m_f;
+	};
+
+	/*!
 	 * \brief A untyped interface to an object in a store.
 	 *
 	 * This class works for all variables and functions of all types.
@@ -1106,10 +1208,57 @@ namespace stored {
 			else if(isFunction())
 				return Variant<Container>(container, (Type::type)m_type, (unsigned int)m_offset, m_len);
 			else {
+				stored_assert(m_offset + m_len <= sizeof(typename Container::Data));
 				char* buffer = container.buffer();
-				stored_assert(m_offset + m_len < sizeof(typename Container::Data));
 				return Variant<Container>(container, (Type::type)m_type, buffer + m_offset, m_len);
 			}
+		}
+
+		/*!
+		 * \brief Get the typed variable corresponding to this variant.
+		 */
+		template <typename T, typename Container>
+		Variable<T,Container> variable(Container& container) const noexcept {
+			return apply<Container>(container).template variable<T>();
+		}
+
+		/*!
+		 * \brief Get the typed variable corresponding to this variant, which is not bound to a specific store yet.
+		 */
+		template <typename T, typename Container>
+		constexpr14 FreeVariable<T,Container> variable() const noexcept {
+			if(!valid())
+				return FreeVariable<T,Container>();
+
+			stored_assert(isVariable());
+			stored_assert(Type::isFixed(type()));
+			stored_assert(toType<T>::type == type());
+			stored_assert(sizeof(T) == size());
+			stored_assert(m_offset + m_len <= sizeof(typename Container::Data));
+			return FreeVariable<T,Container>(m_offset);
+		}
+
+		/*!
+		 * \brief Get the typed function corresponding to this variant.
+		 */
+		template <typename T, typename Container>
+		Variable<T,Container> function(Container& container) const noexcept {
+			return apply<Container>(container).template function<T>();
+		}
+
+		/*!
+		 * \brief Get the typed function corresponding to this variant, which is not bound to a specific store yet.
+		 */
+		template <typename T, typename Container>
+		constexpr14 FreeFunction<T,Container> function() const noexcept {
+			if(!valid())
+				return FreeFunction<T,Container>();
+
+			stored_assert(isFunction());
+			stored_assert(Type::isFixed(type()));
+			stored_assert(toType<T>::type == (type() & ~Type::FlagFunction));
+			stored_assert(sizeof(T) == size());
+			return FreeFunction<T,Container>((unsigned int)m_offset);
 		}
 
 		/*! \brief Don't use. */
@@ -1131,13 +1280,13 @@ namespace stored {
 		/*! \copybrief Variant::type() */
 		constexpr Type::type type() const noexcept { return (Type::type)m_type; }
 		/*! \copybrief Variant::size() */
-		size_t size() const noexcept { stored_assert(valid()); return Type::isFixed(type()) ? Type::size(type()) : m_len; }
+		constexpr14 size_t size() const noexcept { stored_assert(valid()); return Type::isFixed(type()) ? Type::size(type()) : m_len; }
 		/*! \copybrief Variant::valid() */
 		constexpr bool valid() const noexcept { return type() != Type::Invalid; }
 		/*! \copybrief Variant::isFunction() */
-		bool isFunction() const noexcept { stored_assert(valid()); return Type::isFunction(type()); }
+		constexpr14 bool isFunction() const noexcept { stored_assert(valid()); return Type::isFunction(type()); }
 		/*! \copybrief Variant::isVariable() */
-		bool isVariable() const noexcept { stored_assert(valid()); return !isFunction(); }
+		constexpr14 bool isVariable() const noexcept { stored_assert(valid()); return !isFunction(); }
 		/*! \brief Don't use. */
 		int& container() const noexcept { stored_assert(valid()); std::terminate(); }
 

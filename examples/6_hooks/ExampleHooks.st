@@ -31,5 +31,5 @@
 
 int32 variable 1
 int32=3 variable 2
-(int32) function
+(int32) some function
 

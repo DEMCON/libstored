@@ -231,6 +231,9 @@ public:
 
 		friend class stored::Variant<void>;
 
+		template <typename T_, typename Container_>
+		friend class stored::FreeVariable;
+
 	private:
 		/*! \brief The store's data. */
 		Data m_data;
@@ -465,6 +468,50 @@ public:
 		 */
 		Variant<Implementation> find(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
 			return stored::find(implementation(), shortDirectory(), name, len);
+		}
+
+		/*!
+		 * \brief Finds a variable with the given name.
+		 *
+		 * The variable, when it exists, must have the given (fixed) type.  It
+		 * is returned as a free variable; it is not bound yet to a specific
+		 * store instance. This function is constexpr for C++14.
+		 */
+		template <typename T>
+		static constexpr14 FreeVariable<T,Implementation> freeVariable(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
+			return stored::impl::find({{store.name}}Data::shortDirectory(), name, len).template variable<T,Implementation>();
+		}
+
+		/*!
+		 * \brief Finds a variable with the given name.
+		 *
+		 * The variable, when it exists, must have the given (fixed) type.
+		 */
+		template <typename T>
+		Variable<T,Implementation> variable(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
+			return freeVariable(name, len).apply(*this);
+		}
+
+		/*!
+		 * \brief Finds a function with the given name.
+		 *
+		 * The function, when it exists, must have the given (fixed) type.  It
+		 * is returned as a free function; it is not bound yet to a specific
+		 * store instance. This function is constexpr for C++14.
+		 */
+		template <typename T>
+		static constexpr14 FreeFunction<T,Implementation> freeFunction(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
+			return stored::impl::find({{store.name}}Data::shortDirectory(), name, len).template function<T,Implementation>();
+		}
+
+		/*!
+		 * \brief Finds a function with the given name.
+		 *
+		 * The function, when it exists, must have the given (fixed) type.
+		 */
+		template <typename T>
+		Function<T,Implementation> function(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
+			return freeFunction(name, len).apply(*this);
 		}
 
 		/*!
