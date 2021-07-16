@@ -27,6 +27,7 @@ class Serial2Zmq(Stream2Zmq):
 
     def __init__(self, stack='ascii,term', zmqlisten='*', zmqport=Stream2Zmq.default_port, drop_s=1, printStdout=True, **kwargs):
         super().__init__(stack, listen=zmqlisten, port=zmqport, printStdout=printStdout)
+        self.serial = None
         self.serial = serial.Serial(**kwargs)
         self.serial_socket = self.registerStream(self.serial)
         self.stdin_socket = self.registerStream(sys.stdin)
@@ -74,7 +75,9 @@ class Serial2Zmq(Stream2Zmq):
 
     def close(self):
         super().close()
-        self.serial.close()
+        if self.serial is not None:
+            self.serial.close()
+            self.serial = None
 
     def drop(self, data):
         # First drop_s seconds of data is dropped to get rid of
