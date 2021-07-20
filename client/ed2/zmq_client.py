@@ -649,7 +649,7 @@ class Object(QObject):
         else:
             self._suppressSetSignals = False
         self._pollSetFlag(True)
-        self._autoCsv = False
+        self._autoCsv = interval_s > 0.01
         self._pollInterval_s = interval_s
         self.pollIntervalChanged.emit()
         if not self._pollTimer is None:
