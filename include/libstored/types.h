@@ -686,7 +686,7 @@ namespace stored {
 		 * \brief Constructor for a valid variable.
 		 * \details This can only be called by #stored::Variant<void>::variable().
 		 */
-		constexpr FreeVariable(size_t offset) noexcept
+		explicit constexpr FreeVariable(size_t offset) noexcept
 			: m_offset(offset)
 		{}
 
@@ -737,7 +737,7 @@ namespace stored {
 		 * \brief Constructor for a valid variable.
 		 * \details This can only be called by #stored::Variant<void>::variable().
 		 */
-		constexpr FreeFunction(unsigned int f) noexcept
+		explicit constexpr FreeFunction(unsigned int f) noexcept
 			: m_f(f)
 		{}
 
