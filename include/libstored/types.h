@@ -668,20 +668,24 @@ namespace stored {
 	 * to a Container type. From this object, the conversion to a Variable is
 	 * very cheap.
 	 */
-	template <typename T, typename Container>
+	template <typename T, typename Container_>
 	class FreeVariable {
 	public:
 		/*! \brief The type of the variable. */
 		typedef T type;
+		/*! \brief The container type that holds this variable. */
+		typedef Container_ Container;
 		/*! \brief The full Variable type. */
 		typedef Variable<type,Container> Variable_type;
+		/*! \brief The full (bound) Variable type. */
+		typedef Variable_type Bound_type;
 
-	protected:
 		/*! \brief Constructor for an invalid variable. */
 		constexpr FreeVariable() noexcept
 			: m_offset(~(size_t)0)
 		{}
 
+	protected:
 		/*!
 		 * \brief Constructor for a valid variable.
 		 * \details This can only be called by #stored::Variant<void>::variable().
@@ -706,6 +710,16 @@ namespace stored {
 				return Variable_type();
 		}
 
+		/*! \brief Check if two free variables are identical. */
+		constexpr bool operator==(FreeVariable const& other) const {
+			return m_offset == other.m_offset;
+		}
+
+		/*! \brief Check if two free variables are different. */
+		constexpr bool operator!=(FreeVariable const& other) const {
+			return !((*this) == other);
+		}
+
 	private:
 		/*! \brief The offset within the buffer of a store. */
 		size_t m_offset;
@@ -719,20 +733,24 @@ namespace stored {
 	 * to a Container type. From this object, the conversion to a Function is
 	 * very cheap.
 	 */
-	template <typename T, typename Container>
+	template <typename T, typename Container_>
 	class FreeFunction {
 	public:
 		/*! \brief The type of the function argument. */
 		typedef T type;
+		/*! \brief The container type that holds this variable. */
+		typedef Container_ Container;
 		/*! \brief The full Function type. */
 		typedef Function<type,Container> Function_type;
+		/*! \brief The full (bound) Function type. */
+		typedef Function_type Bound_type;
 
-	protected:
 		/*! \brief Constructor for an invalid variable. */
 		constexpr FreeFunction() noexcept
 			: m_f()
 		{}
 
+	protected:
 		/*!
 		 * \brief Constructor for a valid variable.
 		 * \details This can only be called by #stored::Variant<void>::variable().
@@ -755,6 +773,16 @@ namespace stored {
 				return Function_type(container, m_f);
 			else
 				return Function_type();
+		}
+
+		/*! \brief Check if two free functions are identical. */
+		constexpr bool operator==(FreeFunction const& other) const {
+			return m_f == other.m_f;
+		}
+
+		/*! \brief Check if two free functions are different. */
+		constexpr bool operator!=(FreeFunction const& other) const {
+			return !((*this) == other);
 		}
 
 	private:

@@ -49,3 +49,4 @@ float[1]=3		array single
 	bool some other inner bool
 } some other scope
 
+float value with unit (km/s)

@@ -42,6 +42,7 @@ TEST(Directory, ShortMatch) {
 	EXPECT_TRUE(store.find("/init float 3").valid());
 	EXPECT_TRUE(store.find("/sc/i.....b").valid());
 	EXPECT_TRUE(store.find("/so/s").valid());
+	EXPECT_TRUE(store.find("/value with unit").valid());
 }
 
 TEST(Directory, Ambiguous) {
