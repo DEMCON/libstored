@@ -49,12 +49,38 @@ struct is_unique_ids {};
 template <char... Id>
 struct is_unique_ids<ids<Id...>> { enum { value = is_unique<Id...>::value }; };
 
+template <typename Subset, typename Set>
+struct is_subset {};
+
+template <char... Set>
+struct is_subset<ids<>, ids<Set...>> { enum { value = 1 }; };
+
+template <char S0, char... Subset, char... Set>
+struct is_subset<ids<S0, Subset...>, ids<Set...>> {
+	enum { value = has_id<S0, Set...>::value && is_subset<ids<Subset...>, ids<Set...>>::value };
+};
+
+template <typename Select, typename All>
+struct optional_subset {};
+
+template <char S0, char... Select, char... All>
+struct optional_subset<ids<S0, Select...>, ids<All...>> {
+	static_assert(is_subset<ids<S0, Select...>, ids<All...>>::value, "");
+	using type = ids<S0, Select...>;
+};
+
+template <char... All>
+struct optional_subset<ids<>, ids<All...>> {
+	using type = ids<All...>;
+};
+
 template <typename FreeObjects_, typename FreeObjects_::Flags Flags_>
 class BoundObjects;
 
 template <typename ObjectType, char... Id>
 class FreeObjects {
 public:
+	using This = FreeObjects;
 	using FreeObject = ObjectType;
 	using type = typename ObjectType::type;
 	using Container = typename ObjectType::Container;
@@ -69,12 +95,12 @@ public:
 private:
 	FreeObject m_objects[sizeof...(Id) == 0 ? 1 : sizeof...(Id)];
 
-	template <char Id_, typename... Args, std::enable_if_t<!(has_id<Id_, Id...>::value), int> = 0>
+	template <char Id_, typename... Args, std::enable_if_t<!has_id<Id_, Id...>::value, int> = 0>
 	constexpr size_t init(Args&&...) noexcept {
 		return 0;
 	}
 
-	template <char Id_, size_t PN, size_t NN, std::enable_if_t<(has_id<Id_, Id...>::value), int> = 0>
+	template <char Id_, size_t PN, size_t NN, std::enable_if_t<has_id<Id_, Id...>::value, int> = 0>
 	constexpr size_t init(char const (&prefix)[PN], char const (&name)[NN]) noexcept {
 		char buf[PN + NN] = {};
 		size_t len = 0;
@@ -88,9 +114,10 @@ private:
 		auto o = find(buf, FreeObject());
 
 		if(stored::Config::EnableAssert)
-			for(size_t i = 0; i < sizeof...(Id); i++)
+			for(size_t i = 0; i < sizeof...(Id); i++) {
 				// Check if name resolution is unique.
 				stored_assert(!o.valid() || m_objects[i] != o);
+			}
 
 		constexpr size_t ix = index<Id_>();
 		m_objects[ix] = o;
@@ -109,7 +136,7 @@ private:
 
 public:
 	template <size_t N, char... OnlyId, char... IdMap, typename... LongNames,
-		std::enable_if_t<(sizeof...(IdMap) == sizeof...(LongNames)), int> = 0>
+		std::enable_if_t<sizeof...(IdMap) == sizeof...(LongNames), int> = 0>
 	static constexpr FreeObjects create(char const (&prefix)[N], ids<OnlyId...>, ids<IdMap...>, LongNames&&... longNames) noexcept {
 		static_assert(is_unique<OnlyId...>::value, "");
 		static_assert(is_unique<IdMap...>::value, "");
@@ -119,27 +146,16 @@ public:
 		return fo;
 	}
 
-	template <char... OnlyId, size_t N, std::enable_if_t<(sizeof...(OnlyId) > 0), int> = 0>
+	template <char... OnlyId, size_t N>
 	static constexpr FreeObjects create(char const (&prefix)[N]) noexcept {
 		using Name = char[2];
-		return create(prefix, ids<OnlyId...>(), ids<Id...>(), Name{Id}...);
-	}
-
-	template <size_t N>
-	static constexpr FreeObjects create(char const (&prefix)[N]) noexcept {
-		return create<Id...>(prefix);
+		return create(prefix, typename optional_subset<ids<OnlyId...>, ids<Id...>>::type(), ids<Id...>(), Name{Id}...);
 	}
 
 	template <char... OnlyId, size_t N, typename... LongNames,
-		std::enable_if_t<(sizeof...(LongNames) > 0 && sizeof...(LongNames) == sizeof...(Id) && sizeof...(OnlyId) > 0), int> = 0>
-	static constexpr FreeObjects create(char const (&prefix)[N], LongNames&&... longNames) noexcept {
-		return create(prefix, ids<OnlyId...>(), ids<Id...>(), std::forward<LongNames>(longNames)...);
-	}
-
-	template <size_t N, typename... LongNames,
 		std::enable_if_t<(sizeof...(LongNames) > 0 && sizeof...(LongNames) == sizeof...(Id)), int> = 0>
 	static constexpr FreeObjects create(char const (&prefix)[N], LongNames&&... longNames) noexcept {
-		return create<Id...>(prefix, std::forward<LongNames>(longNames)...);
+		return create(prefix, typename optional_subset<ids<OnlyId...>, ids<Id...>>::type(), ids<Id...>(), std::forward<LongNames>(longNames)...);
 	}
 
 	static constexpr size_t size() noexcept {
@@ -172,12 +188,12 @@ public:
 		return m_objects[index<Id_>()].valid();
 	}
 
-	template <char Id_, std::enable_if_t<(has<Id_>()), int> = 0>
+	template <char Id_, std::enable_if_t<has<Id_>(), int> = 0>
 	static constexpr bool valid(Flags flags) noexcept {
 		return flags & (1ULL << index<Id_>());
 	}
 
-	template <char Id_, std::enable_if_t<!(has<Id_>()), int> = 0>
+	template <char Id_, std::enable_if_t<!has<Id_>(), int> = 0>
 	static constexpr bool valid(Flags) noexcept {
 		return false;
 	}
@@ -213,18 +229,18 @@ public:
 		return vi;
 	}
 
-	template <char Id_, std::enable_if_t<(has<Id_>()), int> = 0>
+	template <char Id_, std::enable_if_t<has<Id_>(), int> = 0>
 	static constexpr size_t validIndex(Flags flags) noexcept {
 		size_t count = 0;
 
-		for(size_t i = 0; i < index<Id_>(flags); i++)
+		for(size_t i = 0; i < index<Id_>(); i++)
 			if((flags & (1ULL << i)))
 				count++;
 
 		return count;
 	}
 
-	template <char Id_, std::enable_if_t<!(has<Id_>()), int> = 0>
+	template <char Id_, std::enable_if_t<!has<Id_>(), int> = 0>
 	static constexpr size_t validIndex(Flags) noexcept {
 		return 0;
 	}
@@ -257,6 +273,16 @@ class FreeObjectsList<F0> : public F0 {
 public:
 	using Head = F0;
 	using Tail = void;
+
+	constexpr FreeObjectsList() noexcept = default;
+
+	constexpr FreeObjectsList(Head&& head) noexcept
+		: Head(std::move(head))
+	{}
+
+	constexpr FreeObjectsList(Head const& head) noexcept
+		: Head(head)
+	{}
 };
 
 template <typename F0, typename... F>
@@ -289,7 +315,7 @@ public:
 	}
 
 	template <size_t N, char... OnlyId, char... IdMap, typename... LongNames,
-		std::enable_if_t<(sizeof...(IdMap) == sizeof...(LongNames)), int> = 0>
+		std::enable_if_t<sizeof...(IdMap) == sizeof...(LongNames), int> = 0>
 	static constexpr FreeObjectsList create(char const (&prefix)[N], ids<OnlyId...>, ids<IdMap...>, LongNames&&... longNames) noexcept {
 		static_assert(is_unique<OnlyId...>::value, "");
 		static_assert(is_unique<IdMap...>::value, "");
@@ -313,8 +339,8 @@ public:
 	static constexpr FreeObjectsList create(char const (&prefix)[N], LongNames&&... longNames) noexcept {
 		static_assert(is_unique<OnlyId...>::value, "");
 		return FreeObjectsList{
-			Head::create(prefix, ids<OnlyId...>(), Ids(), longNames...),
-			Tail::template create<OnlyId...>(prefix, longNames...)
+			Head::create(prefix, typename optional_subset<ids<OnlyId...>, Ids>::type(), Ids(), longNames...),
+			Tail::create(prefix, typename optional_subset<ids<OnlyId...>, Ids>::type(), Ids(), longNames...)
 		};
 	}
 
@@ -324,13 +350,13 @@ public:
 	}
 
 	template <char Id,
-		std::enable_if_t<(Head::template has<Id>()), int> = 0>
+		std::enable_if_t<Head::template has<Id>(), int> = 0>
 	static constexpr size_t index() noexcept {
 		return Head::template index<Id>();
 	}
 
 	template <char Id,
-		std::enable_if_t<!(Head::template has<Id>()), int> = 0>
+		std::enable_if_t<!Head::template has<Id>(), int> = 0>
 	static constexpr size_t index() noexcept {
 		return Tail::template index<Id>();
 	}
@@ -341,13 +367,13 @@ public:
 	}
 
 	template <char Id,
-		std::enable_if_t<(Head::template has<Id>()), int> = 0>
+		std::enable_if_t<Head::template has<Id>(), int> = 0>
 	static constexpr bool valid(Flags flags) noexcept {
 		return Head::template valid<Id>(flags);
 	}
 
 	template <char Id,
-		std::enable_if_t<!(Head::template has<Id>()), int> = 0>
+		std::enable_if_t<!Head::template has<Id>(), int> = 0>
 	static constexpr bool valid(Flags flags) noexcept {
 		return Tail::template valid<Id>(flags >> Head::size());
 	}
@@ -361,49 +387,49 @@ public:
 	}
 
 	template <char Id,
-		std::enable_if_t<(Head::template has<Id>()), int> = 0>
+		std::enable_if_t<Head::template has<Id>(), int> = 0>
 	constexpr size_t validIndex() const noexcept {
 		return m_head.template validIndex<Id>();
 	}
 
 	template <char Id,
-		std::enable_if_t<!(Head::template has<Id>()), int> = 0>
+		std::enable_if_t<!Head::template has<Id>(), int> = 0>
 	constexpr size_t validIndex() const noexcept {
 		return m_tail.template validIndex<Id>() + m_head.validSize();
 	}
 
 	template <char Id,
-		std::enable_if_t<(Head::template has<Id>()), int> = 0>
+		std::enable_if_t<Head::template has<Id>(), int> = 0>
 	static constexpr size_t validIndex(Flags flags) noexcept {
 		return Head::template validIndex<Id>(flags);
 	}
 
 	template <char Id,
-		std::enable_if_t<!(Head::template has<Id>()), int> = 0>
+		std::enable_if_t<!Head::template has<Id>(), int> = 0>
 	static constexpr size_t validIndex(Flags flags) noexcept {
 		return Tail::template validIndex<Id>(flags >> Head::size()) + Head::validSize(flags);
 	}
 
 	template <char Id,
-		std::enable_if_t<(Head::template has<Id>()), int> = 0>
+		std::enable_if_t<Head::template has<Id>(), int> = 0>
 	constexpr auto object() const noexcept {
 		return m_head.template object<Id>();
 	}
 
 	template <char Id,
-		std::enable_if_t<!(Head::template has<Id>()), int> = 0>
+		std::enable_if_t<!Head::template has<Id>(), int> = 0>
 	constexpr auto object() const noexcept {
 		return m_tail.template object<Id>();
 	}
 
 	template <char Id,
-		std::enable_if_t<(Head::template has<Id>()), int> = 0>
+		std::enable_if_t<Head::template has<Id>(), int> = 0>
 	constexpr auto object(Container& container) const noexcept {
 		return m_head.template object<Id>(container);
 	}
 
 	template <char Id,
-		std::enable_if_t<!(Head::template has<Id>()), int> = 0>
+		std::enable_if_t<!Head::template has<Id>(), int> = 0>
 	constexpr auto object(Container& container) const noexcept {
 		return m_tail.template object<Id>(container);
 	}
@@ -428,7 +454,7 @@ public:
 	enum { flags = flags_ };
 
 private:
-	BoundObject m_objects[std::max(1, FreeObjects::validSize(flags))];
+	BoundObject m_objects[std::max<size_t>(1, FreeObjects::validSize(flags))];
 
 	template <char Id>
 	static size_t init(Container& container, FreeObjects const& fo, BoundObjects& bo) {
@@ -436,13 +462,13 @@ private:
 		if(fo.template valid<Id>()) {
 			stored_assert(ix < sizeof(m_objects) / sizeof(m_objects[0]));
 			bo.m_objects[ix] = fo.template object<Id>(container);
-			stored_assert(bo.m_objecs[ix].valid());
+			stored_assert(bo.m_objects[ix].valid());
 		}
 		return ix;
 	}
 
 	template <char... Id>
-	static BoundObjects create(Container& container, FreeObjects const& fo, ids<Id...>) noexcept {
+	static BoundObjects create(FreeObjects const& fo, Container& container, ids<Id...>) noexcept {
 		BoundObjects bo;
 		size_t dummy[] = {0, init<Id>(container, fo, bo)...};
 		(void)dummy;
@@ -450,8 +476,13 @@ private:
 	}
 
 public:
-	static BoundObjects create(Container& container, FreeObjects const& fo) noexcept {
-		return create(container, fo, Ids());
+	static BoundObjects create(FreeObjects const& fo, Container& container) noexcept {
+		return create(fo, container, Ids());
+	}
+
+	template <char Id>
+	static constexpr bool has() noexcept {
+		return FreeObjects::template has<Id>();
 	}
 
 	bool valid() const noexcept {
@@ -464,19 +495,19 @@ public:
 	}
 
 	template <char Id,
-		std::enable_if_t<(valid<Id>()), int> = 0>
+		std::enable_if_t<valid<Id>(), int> = 0>
 	auto& get() noexcept {
 		return m_objects[FreeObjects::template validIndex<Id>(flags)];
 	}
 
 	template <char Id,
-		std::enable_if_t<(valid<Id>()), int> = 0>
+		std::enable_if_t<valid<Id>(), int> = 0>
 	auto const& get() const noexcept {
 		return m_objects[FreeObjects::template validIndex<Id>(flags)];
 	}
 
 	template <char Id,
-		std::enable_if_t<!(valid<Id>()), int> = 0>
+		std::enable_if_t<!valid<Id>(), int> = 0>
 	auto get() const noexcept {
 		return BoundObject{};
 	}
@@ -490,6 +521,16 @@ class BoundObjectsList<B0> : public B0 {
 public:
 	using Head = B0;
 	using Tail = void;
+
+	constexpr BoundObjectsList() noexcept = default;
+
+	constexpr BoundObjectsList(Head&& head) noexcept
+		: Head(std::move(head))
+	{}
+
+	constexpr BoundObjectsList(Head const& head) noexcept
+		: Head(head)
+	{}
 };
 
 template <typename B0, typename... B>
@@ -515,11 +556,16 @@ public:
 
 	template <typename FreeObjectsList,
 		std::enable_if_t<std::is_same<BoundObjectsList, typename FreeObjectsList::template Bound<flags>>::value, int> = 0>
-	static BoundObjectsList create(Container& container, FreeObjectsList const& fo) noexcept {
+	static BoundObjectsList create(FreeObjectsList const& fo, Container& container) noexcept {
 		return BoundObjectsList{
-			Head::create(container, fo.head()),
-			Tail::create(container, fo.tail())
+			Head::create(fo.head(), container),
+			Tail::create(fo.tail(), container)
 		};
+	}
+
+	template <char Id>
+	static constexpr bool has() noexcept {
+		return Head::template has<Id>() || Tail::template has<Id>();
 	}
 
 	bool valid() const noexcept {
@@ -532,13 +578,19 @@ public:
 	}
 
 	template <char Id,
-		std::enable_if_t<Head::template valid<Id>(), int> = 0>
+		std::enable_if_t<Head::template has<Id>(), int> = 0>
 	decltype(auto) get() const noexcept {
 		return m_head.template get<Id>();
 	}
 
 	template <char Id,
-		std::enable_if_t<!Head::template valid<Id>(), int> = 0>
+		std::enable_if_t<Head::template has<Id>(), int> = 0>
+	decltype(auto) get() noexcept {
+		return m_head.template get<Id>();
+	}
+
+	template <char Id,
+		std::enable_if_t<!Head::template has<Id>(), int> = 0>
 	decltype(auto) get() const noexcept {
 		return m_tail.template get<Id>();
 	}
@@ -546,23 +598,25 @@ public:
 
 template <typename Container, typename T = float>
 using AmplifierObjects = FreeObjectsList<
-	FreeVariables<T, Container, 'I', 'g', 'o', 'f', 'O'>,
+	FreeVariables<T, Container, 'I', 'g', 'o', 'l', 'h', 'f', 'O'>,
 	FreeVariables<bool, Container, 'e'>>;
 
 template <typename Container, unsigned long long flags = 0, typename T = float>
 class Amplifier {
 public:
 	using type = T;
+	using Bound = typename AmplifierObjects<Container, type>::template Bound<flags>;
 
 	constexpr Amplifier() noexcept = default;
 
-	Amplifier(AmplifierObjects<type> const& o, Container& container)
-		: m_o{o, container}
+	Amplifier(AmplifierObjects<Container,type> const& o, Container& container)
+		: m_o{Bound::create(o, container)}
 	{}
 
 	template <char... OnlyId, size_t N>
 	static constexpr auto objects(char const(&prefix)[N]) noexcept {
-		return AmplifierObjects<Container, type>::template create<OnlyId...>(prefix, "input", "gain", "offset", "override", "output", "enable");
+		return AmplifierObjects<Container, type>::template create<OnlyId...>(prefix,
+			"input", "gain", "offset", "low", "high", "override", "output", "enable");
 	}
 
 	decltype(auto) inputObject() const noexcept { return m_o.template get<'I'>(); }
@@ -577,6 +631,28 @@ public:
 	decltype(auto) offsetObject() noexcept { return m_o.template get<'o'>(); }
 	type offset() const noexcept { decltype(auto) o = offsetObject(); return o.valid() ? o.get() : type(); }
 
+	decltype(auto) lowObject() const noexcept { return m_o.template get<'l'>(); }
+	decltype(auto) lowObject() noexcept { return m_o.template get<'l'>(); }
+	type low() const noexcept {
+		decltype(auto) o = lowObject();
+		if(o.valid())
+			return o.get();
+		if(std::numeric_limits<type>::has_infinity)
+			return -std::numeric_limits<type>::infinity();
+		return std::numeric_limits<type>::lowest();
+	}
+
+	decltype(auto) highObject() const noexcept { return m_o.template get<'h'>(); }
+	decltype(auto) highObject() noexcept { return m_o.template get<'h'>(); }
+	type high() const noexcept {
+		decltype(auto) o = highObject();
+		if(o.valid())
+			return o.get();
+		if(std::numeric_limits<type>::has_infinity)
+			return std::numeric_limits<type>::infinity();
+		return std::numeric_limits<type>::max();
+	}
+
 	decltype(auto) overrideObject() const noexcept { return m_o.template get<'f'>(); }
 	decltype(auto) overrideObject() noexcept { return m_o.template get<'f'>(); }
 	type override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : std::numeric_limits<type>::quiet_NaN(); }
@@ -585,8 +661,8 @@ public:
 	decltype(auto) outputObject() noexcept { return m_o.template get<'O'>(); }
 	type output() const noexcept { decltype(auto) o = outputObject(); return o.valid() ? o.get() : type(); }
 
-	decltype(auto) enableObject() const noexcept { return m_o.template get<'I'>(); }
-	decltype(auto) enableObject() noexcept { return m_o.template get<'I'>(); }
+	decltype(auto) enableObject() const noexcept { return m_o.template get<'e'>(); }
+	decltype(auto) enableObject() noexcept { return m_o.template get<'e'>(); }
 	bool enabled() const noexcept { decltype(auto) o = enableObject(); return !o.valid() || o.get(); }
 	void enable(bool value) noexcept { decltype(auto) o = enableObject(); if(o.valid()) o = value; }
 	void disable() noexcept { enable(false); }
@@ -607,10 +683,16 @@ protected:
 	type run(type input) noexcept {
 		type output = override_();
 
-		if(!enabled())
-			output = input;
-		else if(std::isnan(output))
-			output = input * gain() + offset();
+		if(!std::isnan(output)) {
+			// Keep override value.
+		} else {
+			if(!enabled())
+				output = input;
+			else if(std::isnan(output))
+				output = input * gain() + offset();
+
+			output = std::min(std::max(low(), output), high());
+		}
 
 		decltype(auto) oo = outputObject();
 		if(oo.valid())
@@ -620,7 +702,7 @@ protected:
 	}
 
 private:
-	typename AmplifierObjects<Container, type>::template Bound<flags> m_o;
+	Bound m_o;
 };
 
 int main()
@@ -657,8 +739,8 @@ int main()
 	>::create("/amp/");
 	static_assert(n6.size() == 3, "");
 	static_assert(n6.flags() == 7ULL, "");
-	static_assert(n6.isValid<'i'>(n6.flags()), "");
-	static_assert(n6.isValid<'e'>(n6.flags()), "");
+	static_assert(n6.valid<'i'>(n6.flags()), "");
+	static_assert(n6.valid<'e'>(n6.flags()), "");
 
 
 	stored::ExampleComponents store;
@@ -666,6 +748,14 @@ int main()
 	Amplifier<stored::ExampleComponents, amp_o.flags()> amp{amp_o, store};
 
 	std::cout << amp(3) << std::endl;
+	std::cout << amp(5) << std::endl;
+	std::cout << amp(-2) << std::endl;
+	std::cout << sizeof(amp) << std::endl;
+
+	constexpr auto amp_o2 = Amplifier<stored::ExampleComponents>::objects<'g','O'>("/simple amp/");
+	Amplifier<stored::ExampleComponents, amp_o2.flags()> amp2{amp_o2, store};
+	std::cout << amp2(3) << std::endl;
+	std::cout << sizeof(amp2) << std::endl;
 }
 
 
