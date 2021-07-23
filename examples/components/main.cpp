@@ -74,7 +74,7 @@ struct optional_subset<ids<>, ids<All...>> {
 	using type = ids<All...>;
 };
 
-template <typename FreeObjects_, typename FreeObjects_::Flags Flags_>
+template <typename FreeObjects_, typename FreeObjects_::Flags flags_, bool PostponedBind = true>
 class BoundObjects;
 
 template <typename ObjectType, char... Id>
@@ -87,8 +87,8 @@ public:
 	using Ids = ids<Id...>;
 	using Flags = unsigned long long;
 
-	template <Flags flags>
-	using Bound = BoundObjects<FreeObjects, flags>;
+	template <Flags flags, bool PostponedBind = sizeof(FreeObject) < sizeof(typename FreeObject::Bound_type)>
+	using Bound = BoundObjects<FreeObjects, flags, PostponedBind>;
 
 	static_assert(is_unique<Id...>::value, "");
 
@@ -443,7 +443,7 @@ public:
 	}
 };
 
-template <typename FreeObjects_, typename FreeObjects_::Flags flags_>
+template <typename FreeObjects_, typename FreeObjects_::Flags flags_, bool PostponedBind>
 class BoundObjects {
 public:
 	using FreeObjects = FreeObjects_;
@@ -457,11 +457,11 @@ private:
 	BoundObject m_objects[std::max<size_t>(1, FreeObjects::validSize(flags))];
 
 	template <char Id>
-	static size_t init(Container& container, FreeObjects const& fo, BoundObjects& bo) {
+	static size_t init(Container& container, FreeObjects const& fo, BoundObjects& bo) noexcept {
 		size_t ix = fo.template validIndex<Id>(flags);
 		if(fo.template valid<Id>()) {
 			stored_assert(ix < sizeof(m_objects) / sizeof(m_objects[0]));
-			bo.m_objects[ix] = fo.template object<Id>(container);
+			bo.m_objects[ix] = fo.template object<Id>().apply_(container);
 			stored_assert(bo.m_objects[ix].valid());
 		}
 		return ix;
@@ -513,6 +513,74 @@ public:
 	}
 };
 
+template <typename FreeObjects_, typename FreeObjects_::Flags flags_>
+class BoundObjects<FreeObjects_, flags_, true> {
+public:
+	using FreeObjects = FreeObjects_;
+	using Container = typename FreeObjects::Container;
+	using FreeObject = typename FreeObjects::FreeObject;
+	using BoundObject = typename FreeObjects::FreeObject::Bound_type;
+	using type = typename BoundObject::type;
+	using Ids = typename FreeObjects::Ids;
+	enum { flags = flags_ };
+
+private:
+	Container* m_container{};
+	FreeObject m_objects[std::max<size_t>(1, FreeObjects::validSize(flags))];
+
+	template <char Id>
+	static constexpr size_t init(FreeObjects const& fo, BoundObjects& bo) noexcept {
+		size_t ix = fo.template validIndex<Id>(flags);
+		if(fo.template valid<Id>()) {
+			stored_assert(ix < sizeof(m_objects) / sizeof(m_objects[0]));
+			bo.m_objects[ix] = fo.template object<Id>();
+			stored_assert(bo.m_objects[ix].valid());
+		}
+		return ix;
+	}
+
+	template <char... Id>
+	static constexpr BoundObjects create(FreeObjects const& fo, Container& container, ids<Id...>) noexcept {
+		BoundObjects bo;
+		bo.m_container = &container;
+		size_t dummy[] = {0, init<Id>(fo, bo)...};
+		(void)dummy;
+		return bo;
+	}
+
+public:
+	static constexpr BoundObjects create(FreeObjects const& fo, Container& container) noexcept {
+		return create(fo, container, Ids());
+	}
+
+	template <char Id>
+	static constexpr bool has() noexcept {
+		return FreeObjects::template has<Id>();
+	}
+
+	constexpr bool valid() const noexcept {
+		return m_container;
+	}
+
+	template <char Id>
+	static constexpr bool valid() noexcept {
+		return FreeObjects::template valid<Id>(flags);
+	}
+
+	template <char Id,
+		std::enable_if_t<valid<Id>(), int> = 0>
+	auto get() const noexcept {
+		stored_assert(m_container);
+		return m_objects[FreeObjects::template validIndex<Id>(flags)].apply_(*m_container);
+	}
+
+	template <char Id,
+		std::enable_if_t<!valid<Id>(), int> = 0>
+	auto get() const noexcept {
+		return BoundObject{};
+	}
+};
+
 template <typename... B>
 class BoundObjectsList {};
 
@@ -547,7 +615,7 @@ private:
 	Head m_head;
 	Tail m_tail;
 
-	BoundObjectsList(Head&& head, Tail&& tail) noexcept
+	constexpr BoundObjectsList(Head&& head, Tail&& tail) noexcept
 		: m_head{std::move(head)}, m_tail{std::move(tail)}
 	{}
 
@@ -556,7 +624,7 @@ public:
 
 	template <typename FreeObjectsList,
 		std::enable_if_t<std::is_same<BoundObjectsList, typename FreeObjectsList::template Bound<flags>>::value, int> = 0>
-	static BoundObjectsList create(FreeObjectsList const& fo, Container& container) noexcept {
+	static constexpr BoundObjectsList create(FreeObjectsList const& fo, Container& container) noexcept {
 		return BoundObjectsList{
 			Head::create(fo.head(), container),
 			Tail::create(fo.tail(), container)
@@ -609,7 +677,7 @@ public:
 
 	constexpr Amplifier() noexcept = default;
 
-	Amplifier(AmplifierObjects<Container,type> const& o, Container& container)
+	constexpr Amplifier(AmplifierObjects<Container,type> const& o, Container& container)
 		: m_o{Bound::create(o, container)}
 	{}
 
@@ -743,7 +811,7 @@ int main()
 	static_assert(n6.valid<'e'>(n6.flags()), "");
 
 
-	stored::ExampleComponents store;
+	static stored::ExampleComponents store;
 	constexpr auto amp_o = Amplifier<stored::ExampleComponents>::objects("/amp/");
 	Amplifier<stored::ExampleComponents, amp_o.flags()> amp{amp_o, store};
 

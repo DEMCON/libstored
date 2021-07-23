@@ -705,9 +705,15 @@ namespace stored {
 		/*! \brief Convert this free variable into a bound one. */
 		Variable_type apply(Container& container) const noexcept {
 			if(valid())
-				return Variable_type(container, *reinterpret_cast<type*>(static_cast<char*>(container.buffer()) + m_offset));
+				return apply_(container);
 			else
 				return Variable_type();
+		}
+
+		/*! \brief Convert this free variable into a bound one, without validity checking. */
+		Variable_type apply_(Container& container) const noexcept {
+			stored_assert(valid());
+			return Variable_type(container, *reinterpret_cast<type*>(static_cast<char*>(container.buffer()) + m_offset));
 		}
 
 		/*! \brief Check if two free variables are identical. */
@@ -770,9 +776,15 @@ namespace stored {
 		/*! \brief Convert this free function into a bound one. */
 		Function_type apply(Container& container) const noexcept {
 			if(valid())
-				return Function_type(container, m_f);
+				return apply_(container);
 			else
 				return Function_type();
+		}
+
+		/*! \brief Convert this free function into a bound one, without validity checking. */
+		Function_type apply_(Container& container) const noexcept {
+			stored_assert(valid());
+			return Function_type(container, m_f);
 		}
 
 		/*! \brief Check if two free functions are identical. */
