@@ -29,6 +29,7 @@
 #include <libstored/poller.h>
 #include <libstored/compress.h>
 #include <libstored/fifo.h>
+#include <libstored/components.h>
 #include <libstored/version.h>
 
 #endif // LIBSTORED_H
