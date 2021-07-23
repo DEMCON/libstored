@@ -713,6 +713,7 @@ namespace stored {
 		/*! \brief Convert this free variable into a bound one, without validity checking. */
 		Variable_type apply_(Container& container) const noexcept {
 			stored_assert(valid());
+			// cppcheck-suppress invalidPointerCast
 			return Variable_type(container, *reinterpret_cast<type*>(static_cast<char*>(container.buffer()) + m_offset));
 		}
 
@@ -1249,8 +1250,8 @@ namespace stored {
 				return Variant<Container>(container, (Type::type)m_type, (unsigned int)m_offset, m_len);
 			else {
 				stored_assert(m_offset + m_len <= sizeof(typename Container::Data));
-				char* buffer = container.buffer();
-				return Variant<Container>(container, (Type::type)m_type, buffer + m_offset, m_len);
+				char* buf = container.buffer();
+				return Variant<Container>(container, (Type::type)m_type, buf + m_offset, m_len);
 			}
 		}
 

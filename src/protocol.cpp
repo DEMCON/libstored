@@ -641,6 +641,7 @@ void ArqLayer::event(ArqLayer::Event e) {
  */
 uint8_t ArqLayer::nextSeq(uint8_t seq) {
 	seq = (uint8_t)((seq + 1u) & SeqMask);
+	// cppcheck-suppress knownConditionTrueFalse
 	return seq ? seq : 1u;
 }
 
@@ -1035,6 +1036,7 @@ size_t DebugArqLayer::mtu() const {
  */
 uint32_t DebugArqLayer::nextSeq(uint32_t seq) {
 	seq = (uint32_t)((seq + 1u) % 0x8000000);
+	// cppcheck-suppress knownConditionTrueFalse
 	return seq ? seq : 1u;
 }
 

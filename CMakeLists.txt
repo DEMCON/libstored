@@ -201,6 +201,7 @@ if(CPPCHECK_CMD)
 			-I examples/7_protocol/libstored/include
 			-I examples/8_sync/libstored/include
 			-I examples/9_fpga/libstored/include
+			-I examples/components/libstored/include
 			-I examples/concurrency/libstored/include
 			-I examples/terminal/libstored/include
 			-I examples/zmqserver/libstored/include
