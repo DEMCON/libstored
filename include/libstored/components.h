@@ -872,8 +872,9 @@ namespace stored {
 	 * \verbatim
 	 * {
 	 *     (bool) pin
-	 *     unt8=-1 override
+	 *     int8=-1 override
 	 *     bool input
+	 *     (bool) get
 	 * } pin
 	 * \endverbatim
 	 *
@@ -903,6 +904,11 @@ namespace stored {
 	 *
 	 * When \c pin() is called, it will invoke the \c pin function to get the
 	 * actual hardware pin status.  Then, it will set the \c input variable.
+	 *
+	 * The \c get function is not used/provided by this \c PinIn. Implement
+	 * this store function such that it calls and returns \c pin(). When
+	 * applications read the \c get function, they will always get the actual
+	 * pin value.
 	 */
 	template <typename Container, unsigned long long flags = 0>
 	class PinIn {
@@ -960,7 +966,6 @@ namespace stored {
 	template <typename Container>
 	using PinOutObjects = FreeObjectsList<
 		FreeVariables<bool, Container, 'o'>,
-		FreeVariables<int8_t, Container, 'F'>,
 		FreeFunctions<bool, Container, 'p'>>;
 
 	/*!
@@ -974,15 +979,17 @@ namespace stored {
 	 *
 	 * \verbatim
 	 * {
+	 *     (bool) set
 	 *     bool output
-	 *     unt8=-1 override
+	 *     (int8) override
 	 *     (bool) pin
 	 * } pin
 	 * \endverbatim
 	 *
-	 * All fields are optional. You can implement the store's \c pin function,
-	 * override the virtual \c pin() function of the PinOut class, or forward
-	 * the return value of PinOut::operator() to the hardware pin.
+	 * All fields are optional, except \c output. You can implement the store's
+	 * \c pin function, override the virtual \c pin() function of the PinOut
+	 * class, or forward the return value of PinOut::operator() to the hardware
+	 * pin.
 	 *
 	 * The pin basically does:
 	 *
@@ -1003,6 +1010,15 @@ namespace stored {
 	 * // Instantiate an PinOut, tailored to the available fields in the store.
 	 * stored::PinOut<stored::YourStore, pin_o.flags()> pin{pin_o, yourStore};
 	 * \endcode
+	 *
+	 * The \c set function is not used/provided by this \c PinOut. Implement
+	 * this store function such that it calls \c pin() with the provided value.
+	 * When applications write the \c set function, they will immediately
+	 * control the hardware pin.
+	 *
+	 * Similar holds for the \c override function; implement it to call the
+	 * #override_() of PinOut. This way, if one sets the override value, the
+	 * hardware pin is updated accordingly.
 	 */
 	template <typename Container, unsigned long long flags = 0>
 	class PinOut {
@@ -1013,21 +1029,22 @@ namespace stored {
 
 		constexpr PinOut(PinOutObjects<Container> const& o, Container& container)
 			: m_o{Bound::create(o, container)}
-		{}
+		{
+			static_assert(Bound::template valid<'o'>(), "'output' variable is mandatory");
+		}
 
 		template <char... OnlyId, size_t N>
 		static constexpr auto objects(char const(&prefix)[N]) noexcept {
 			return PinOutObjects<Container>::template create<OnlyId...>(prefix,
-				"output", "override", "pin");
+				"output", "pin");
 		}
 
 		decltype(auto) outputObject() const noexcept { return m_o.template get<'o'>(); }
 		decltype(auto) outputObject() noexcept { return m_o.template get<'o'>(); }
-		bool output() const noexcept { decltype(auto) o = outputObject(); return o.valid() ? o.get() : false; }
+		bool output() const noexcept { return outputObject().get(); }
 
-		decltype(auto) overrideObject() const noexcept { return m_o.template get<'F'>(); }
-		decltype(auto) overrideObject() noexcept { return m_o.template get<'F'>(); }
-		int8_t override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : -1; }
+		int8_t override_() const noexcept { return m_override; }
+		void override_(int8_t x) noexcept { m_override = x; (*this)(); }
 
 		decltype(auto) pinObject() noexcept { return m_o.template get<'p'>(); }
 		virtual void pin(bool value) noexcept { decltype(auto) o = pinObject(); if(o.valid()) o(value); }
@@ -1037,10 +1054,7 @@ namespace stored {
 		}
 
 		bool operator()(bool output) noexcept {
-			decltype(auto) oo = outputObject();
-			if(oo.valid())
-				oo = output;
-
+			outputObject() = output;
 			return run(output);
 		}
 
@@ -1061,6 +1075,7 @@ namespace stored {
 
 	private:
 		Bound m_o;
+		int8_t m_override{-1};
 	};
 
 } // namespace

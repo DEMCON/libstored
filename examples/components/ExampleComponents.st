@@ -22,7 +22,7 @@
 
 {
 	bool output
-	int8=-1 override
+	(int8) override
 	(bool) pin
 } gpio out
 

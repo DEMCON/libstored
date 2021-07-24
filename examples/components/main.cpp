@@ -69,8 +69,7 @@ int main()
 	stored::PinOut<stored::ExampleComponents, gpio_out_o.flags()> gpio_out{gpio_out_o, store};
 
 	std::cout << gpio_out() << std::endl;
-	store.gpio_out__output = true;
-	std::cout << gpio_out() << std::endl;
-	store.gpio_out__override = false;
+	std::cout << gpio_out(true) << std::endl;
+	gpio_out.override_(0);
 	std::cout << gpio_out() << std::endl;
 }
