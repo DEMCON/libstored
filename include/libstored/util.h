@@ -369,12 +369,18 @@ namespace stored {
 	 * \brief Determines a type that can hold the given unsigned value.
 	 */
 	template <uintmax_t N, int bytes = value_bytes<N>::value>
-	struct value_type { typedef uintmax_t type; };
-	template <uintmax_t N> struct value_type<N, 4> { typedef uint32_t type; };
-	template <uintmax_t N> struct value_type<N, 3> { typedef uint32_t type; };
-	template <uintmax_t N> struct value_type<N, 2> { typedef uint16_t type; };
-	template <uintmax_t N> struct value_type<N, 1> { typedef uint8_t type; };
-	template <uintmax_t N> struct value_type<N, 0> { typedef uint8_t type; };
+	struct value_type { typedef uintmax_t type; typedef uintmax_t fast_type; };
+#ifdef UINT_LEAST64_MAX
+	template <uintmax_t N> struct value_type<N, 8> { typedef uint_least64_t type; typedef uint_fast64_t fast_type; };
+	template <uintmax_t N> struct value_type<N, 7> { typedef uint_least64_t type; typedef uint_fast64_t fast_type; };
+	template <uintmax_t N> struct value_type<N, 6> { typedef uint_least64_t type; typedef uint_fast64_t fast_type; };
+	template <uintmax_t N> struct value_type<N, 5> { typedef uint_least64_t type; typedef uint_fast64_t fast_type; };
+#endif
+	template <uintmax_t N> struct value_type<N, 4> { typedef uint_least32_t type; typedef uint_fast32_t fast_type; };
+	template <uintmax_t N> struct value_type<N, 3> { typedef uint_least32_t type; typedef uint_fast32_t fast_type; };
+	template <uintmax_t N> struct value_type<N, 2> { typedef uint_least16_t type; typedef uint_fast16_t fast_type; };
+	template <uintmax_t N> struct value_type<N, 1> { typedef uint_least8_t type; typedef uint_fast8_t fast_type; };
+	template <uintmax_t N> struct value_type<N, 0> { typedef uint8_t type; typedef uint8_t fast_type; };
 
 	/*!
 	 * \private

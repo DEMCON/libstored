@@ -679,10 +679,12 @@ namespace stored {
 		typedef Variable<type,Container> Variable_type;
 		/*! \brief The full (bound) Variable type. */
 		typedef Variable_type Bound_type;
+		/*! \brief A type that is able to store the store's buffer offset. */
+		typedef typename value_type<static_cast<uintmax_t>(Container::BufferSize)>::fast_type offset_type;
 
 		/*! \brief Constructor for an invalid variable. */
 		constexpr FreeVariable() noexcept
-			: m_offset(~(size_t)0)
+			: m_offset((offset_type)Container::BufferSize)
 		{}
 
 	protected:
@@ -691,15 +693,17 @@ namespace stored {
 		 * \details This can only be called by #stored::Variant<void>::variable().
 		 */
 		explicit constexpr FreeVariable(size_t offset) noexcept
-			: m_offset(offset)
-		{}
+			: m_offset(static_cast<offset_type>(offset))
+		{
+			stored_assert(offset < std::numeric_limits<offset_type>::max());
+		}
 
 		friend class Variant<void>;
 
 	public:
 		/*! \brief Returns if this variable is valid. */
 		constexpr bool valid() const noexcept {
-			return ~m_offset;
+			return m_offset != (offset_type)Container::BufferSize;
 		}
 
 		/*! \brief Convert this free variable into a bound one. */
@@ -729,7 +733,7 @@ namespace stored {
 
 	private:
 		/*! \brief The offset within the buffer of a store. */
-		size_t m_offset;
+		offset_type m_offset;
 	};
 
 	/*!
@@ -751,6 +755,8 @@ namespace stored {
 		typedef Function<type,Container> Function_type;
 		/*! \brief The full (bound) Function type. */
 		typedef Function_type Bound_type;
+		/*! \brief A type that is able to store the store's buffer offset. */
+		typedef typename value_type<static_cast<uintmax_t>(Container::FunctionCount > 0 ? Container::FunctionCount - 1 : 0)>::type f_type;
 
 		/*! \brief Constructor for an invalid variable. */
 		constexpr FreeFunction() noexcept
@@ -763,8 +769,10 @@ namespace stored {
 		 * \details This can only be called by #stored::Variant<void>::variable().
 		 */
 		explicit constexpr FreeFunction(unsigned int f) noexcept
-			: m_f(f)
-		{}
+			: m_f(static_cast<f_type>(f))
+		{
+			stored_assert(f < std::numeric_limits<f_type>::max());
+		}
 
 		friend class Variant<void>;
 
@@ -800,7 +808,7 @@ namespace stored {
 
 	private:
 		/*! \brief The function ID. */
-		unsigned int m_f;
+		f_type m_f;
 	};
 
 	/*!

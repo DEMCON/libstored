@@ -14,3 +14,15 @@
 	float output
 } simple amp
 
+{
+	(bool) pin
+	int8=-1 override
+	bool input
+} gpio in
+
+{
+	bool output
+	int8=-1 override
+	(bool) pin
+} gpio out
+

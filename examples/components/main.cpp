@@ -57,4 +57,20 @@ int main()
 	amp2 = Amp2{amp_o2, store};
 	std::cout << amp2(3) << std::endl;
 	std::cout << sizeof(amp2) << std::endl;
+
+	constexpr auto gpio_in_o = stored::PinIn<stored::ExampleComponents>::objects("/gpio in/");
+	stored::PinIn<stored::ExampleComponents, gpio_in_o.flags()> gpio_in{gpio_in_o, store};
+
+	std::cout << gpio_in() << std::endl;
+	store.gpio_in__override = 1;
+	std::cout << gpio_in() << std::endl;
+
+	constexpr auto gpio_out_o = stored::PinOut<stored::ExampleComponents>::objects("/gpio out/");
+	stored::PinOut<stored::ExampleComponents, gpio_out_o.flags()> gpio_out{gpio_out_o, store};
+
+	std::cout << gpio_out() << std::endl;
+	store.gpio_out__output = true;
+	std::cout << gpio_out() << std::endl;
+	store.gpio_out__override = false;
+	std::cout << gpio_out() << std::endl;
 }

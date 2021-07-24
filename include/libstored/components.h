@@ -330,7 +330,7 @@ namespace stored {
 		using Container = typename Head::Container;
 
 		template <Flags flags>
-		using Bound = BoundObjectsList<typename Head::template Bound<flags>, typename Tail::template Bound<(flags >> Ids::size)>>;
+		using Bound = BoundObjectsList<typename Head::template Bound<flags>, typename Tail::template Bound<(flags >> Head::Ids::size)>>;
 
 		static_assert(impl::is_unique_ids<Ids>::value, "");
 
@@ -675,7 +675,7 @@ namespace stored {
 			return m_head.valid();
 		}
 
-		template <typename Id>
+		template <char Id>
 		static constexpr bool valid() noexcept {
 			return Head::template valid<Id>() || Tail::template valid<Id>();
 		}
@@ -701,9 +701,55 @@ namespace stored {
 
 	template <typename Container, typename T = float>
 	using AmplifierObjects = FreeObjectsList<
-		FreeVariables<T, Container, 'I', 'g', 'o', 'l', 'h', 'f', 'O'>,
+		FreeVariables<T, Container, 'I', 'g', 'o', 'l', 'h', 'F', 'O'>,
 		FreeVariables<bool, Container, 'e'>>;
 
+	/*!
+	 * \brief An offset/gain amplifier, based on store variables.
+	 *
+	 * This class comes in very handy when converting ADC inputs to some
+	 * SI-value. It includes an override field to force inputs to some test
+	 * value.
+	 *
+	 * To use this class, add a scope to your store, like:
+	 *
+	 * \verbatim
+	 * {
+	 *     float input
+	 *     bool=true enable
+	 *     float=2 gain
+	 *     float=0.5 offset
+	 *     float=-1 low
+	 *     float=10 high
+	 *     float=nan override
+	 *     float output
+	 * } amp
+	 * \endverbatim
+	 *
+	 * All fields are optional.
+	 *
+	 * The amplifier basically does:
+	 *
+	 * \verbatim
+	 * if(override is nan)
+	 *     output = min(high, max(low, input * gain + offset))
+	 * else
+	 *     output = override
+	 * \endcode
+	 *
+	 * Then, instantiate the amplifier like this:
+	 *
+	 * \code
+	 * // Construct a compile-time object, which resolves all fields in your store.
+	 * constexpr auto amp_o = stored::Amplifier<stored::YourStore>::objects("/amp/");
+	 * // Instantiate an Amplifier, tailored to the available fields in the store.
+	 * stored::Amplifier<stored::YourStore, amp_o.flags()> amp{amp_o, yourStore};
+	 * \endcode
+	 *
+	 * Calling \c amp() now uses the \c input and produces the a value in \c
+	 * output.  Alternatively, or when the \c input field is absent in the
+	 * store, call \c amp(x), where \c x is the input.
+	 */
 	template <typename Container, unsigned long long flags = 0, typename T = float>
 	class Amplifier {
 	public:
@@ -756,8 +802,8 @@ namespace stored {
 			return std::numeric_limits<type>::max();
 		}
 
-		decltype(auto) overrideObject() const noexcept { return m_o.template get<'f'>(); }
-		decltype(auto) overrideObject() noexcept { return m_o.template get<'f'>(); }
+		decltype(auto) overrideObject() const noexcept { return m_o.template get<'F'>(); }
+		decltype(auto) overrideObject() noexcept { return m_o.template get<'F'>(); }
 		type override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : std::numeric_limits<type>::quiet_NaN(); }
 
 		decltype(auto) outputObject() const noexcept { return m_o.template get<'O'>(); }
@@ -802,6 +848,215 @@ namespace stored {
 				oo = output;
 
 			return output;
+		}
+
+	private:
+		Bound m_o;
+	};
+
+	template <typename Container>
+	using PinInObjects = FreeObjectsList<
+		FreeFunctions<bool, Container, 'p'>,
+		FreeVariables<int8_t, Container, 'F'>,
+		FreeVariables<bool, Container, 'i'>>;
+
+	/*!
+	 * \brief An GPIO input pin, based on store variables.
+	 *
+	 * This class comes in very handy when a GPIO input should be observed and
+	 * overridden while debugging.  It gives some interface between the
+	 * hardware pin and the input that the application sees.
+	 *
+	 * To use this class, add a scope to your store, like:
+	 *
+	 * \verbatim
+	 * {
+	 *     (bool) pin
+	 *     unt8=-1 override
+	 *     bool input
+	 * } pin
+	 * \endverbatim
+	 *
+	 * All fields are optional. You can implement the store's \c pin function,
+	 * override the virtual \c pin() function of the PinIn class, or pass the
+	 * hardware pin value as an argument to the PinIn::operator().
+	 *
+	 * The pin basically does:
+	 *
+	 * \verbatim
+	 * switch(override) {
+	 * case -1: input = pin; break;
+	 * case  0: input = false; break;
+	 * case  1: input = true; break;
+	 * case  2: input = !pin; break;
+	 * }
+	 * \endcode
+	 *
+	 * Then, instantiate the pin like this:
+	 *
+	 * \code
+	 * // Construct a compile-time object, which resolves all fields in your store.
+	 * constexpr auto pin_o = stored::PinIn<stored::YourStore>::objects("/pin/");
+	 * // Instantiate an PinIn, tailored to the available fields in the store.
+	 * stored::PinIn<stored::YourStore, pin_o.flags()> pin{pin_o, yourStore};
+	 * \endcode
+	 *
+	 * When \c pin() is called, it will invoke the \c pin function to get the
+	 * actual hardware pin status.  Then, it will set the \c input variable.
+	 */
+	template <typename Container, unsigned long long flags = 0>
+	class PinIn {
+	public:
+		using Bound = typename PinInObjects<Container>::template Bound<flags>;
+
+		constexpr PinIn() noexcept = default;
+
+		constexpr PinIn(PinInObjects<Container> const& o, Container& container)
+			: m_o{Bound::create(o, container)}
+		{}
+
+		template <char... OnlyId, size_t N>
+		static constexpr auto objects(char const(&prefix)[N]) noexcept {
+			return PinInObjects<Container>::template create<OnlyId...>(prefix,
+				"pin", "override", "input");
+		}
+
+		decltype(auto) pinObject() const noexcept { return m_o.template get<'p'>(); }
+		virtual bool pin() const noexcept { decltype(auto) o = pinObject(); return o.valid() ? o() : false; }
+
+		decltype(auto) overrideObject() const noexcept { return m_o.template get<'F'>(); }
+		decltype(auto) overrideObject() noexcept { return m_o.template get<'F'>(); }
+		int8_t override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : -1; }
+
+		decltype(auto) inputObject() const noexcept { return m_o.template get<'i'>(); }
+		decltype(auto) inputObject() noexcept { return m_o.template get<'i'>(); }
+		bool input() const noexcept { decltype(auto) o = inputObject(); return o.valid() ? o.get() : (*this)(); }
+
+		bool operator()() noexcept {
+			return (*this)(pin());
+		}
+
+		bool operator()(bool pin) noexcept {
+			bool i;
+			switch(override_()) {
+			default:
+			case -1: i = pin; break;
+			case 0: i = false; break;
+			case 1: i = true; break;
+			case 2: i = !pin; break;
+			}
+
+			decltype(auto) io = inputObject();
+			if(io.valid())
+				io = i;
+
+			return i;
+		}
+
+	private:
+		Bound m_o;
+	};
+
+	template <typename Container>
+	using PinOutObjects = FreeObjectsList<
+		FreeVariables<bool, Container, 'o'>,
+		FreeVariables<int8_t, Container, 'F'>,
+		FreeFunctions<bool, Container, 'p'>>;
+
+	/*!
+	 * \brief An GPIO output pin, based on store variables.
+	 *
+	 * This class comes in very handy when a GPIO output should be observed and
+	 * overridden while debugging.  It gives some interface between the
+	 * hardware pin and the output that the application wants.
+	 *
+	 * To use this class, add a scope to your store, like:
+	 *
+	 * \verbatim
+	 * {
+	 *     bool output
+	 *     unt8=-1 override
+	 *     (bool) pin
+	 * } pin
+	 * \endverbatim
+	 *
+	 * All fields are optional. You can implement the store's \c pin function,
+	 * override the virtual \c pin() function of the PinOut class, or forward
+	 * the return value of PinOut::operator() to the hardware pin.
+	 *
+	 * The pin basically does:
+	 *
+	 * \verbatim
+	 * switch(override) {
+	 * case -1: pin = output; break;
+	 * case  0: pin = false; break;
+	 * case  1: pin = true; break;
+	 * case  2: pin = !output; break;
+	 * }
+	 * \endcode
+	 *
+	 * Then, instantiate the pin like this:
+	 *
+	 * \code
+	 * // Construct a compile-time object, which resolves all fields in your store.
+	 * constexpr auto pin_o = stored::PinOut<stored::YourStore>::objects("/pin/");
+	 * // Instantiate an PinOut, tailored to the available fields in the store.
+	 * stored::PinOut<stored::YourStore, pin_o.flags()> pin{pin_o, yourStore};
+	 * \endcode
+	 */
+	template <typename Container, unsigned long long flags = 0>
+	class PinOut {
+	public:
+		using Bound = typename PinOutObjects<Container>::template Bound<flags>;
+
+		constexpr PinOut() noexcept = default;
+
+		constexpr PinOut(PinOutObjects<Container> const& o, Container& container)
+			: m_o{Bound::create(o, container)}
+		{}
+
+		template <char... OnlyId, size_t N>
+		static constexpr auto objects(char const(&prefix)[N]) noexcept {
+			return PinOutObjects<Container>::template create<OnlyId...>(prefix,
+				"output", "override", "pin");
+		}
+
+		decltype(auto) outputObject() const noexcept { return m_o.template get<'o'>(); }
+		decltype(auto) outputObject() noexcept { return m_o.template get<'o'>(); }
+		bool output() const noexcept { decltype(auto) o = outputObject(); return o.valid() ? o.get() : false; }
+
+		decltype(auto) overrideObject() const noexcept { return m_o.template get<'F'>(); }
+		decltype(auto) overrideObject() noexcept { return m_o.template get<'F'>(); }
+		int8_t override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : -1; }
+
+		decltype(auto) pinObject() noexcept { return m_o.template get<'p'>(); }
+		virtual void pin(bool value) noexcept { decltype(auto) o = pinObject(); if(o.valid()) o(value); }
+
+		bool operator()() noexcept {
+			return (*this)(output());
+		}
+
+		bool operator()(bool output) noexcept {
+			decltype(auto) oo = outputObject();
+			if(oo.valid())
+				oo = output;
+
+			return run(output);
+		}
+
+	protected:
+		bool run(bool output) noexcept {
+			bool p;
+			switch(override_()) {
+			default:
+			case -1: p = output; break;
+			case 0: p = false; break;
+			case 1: p = true; break;
+			case 2: p = !output; break;
+			}
+
+			pin(p);
+			return p;
 		}
 
 	private:
