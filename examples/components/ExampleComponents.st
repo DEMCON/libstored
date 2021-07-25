@@ -26,3 +26,22 @@
 	(bool) pin
 } gpio out
 
+{
+	(float) frequency (Hz)
+	float y
+	float setpoint
+	bool=true enable
+	float=1 Kp
+	float=inf Ti (s)
+	float=0 Td (s)
+	float=0 Kff
+	float int
+	float=-inf int low
+	float=inf int high
+	float=-inf low
+	float=inf high
+	bool reset
+	float=nan override
+	float u
+} pid
+

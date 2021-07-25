@@ -1078,6 +1078,201 @@ namespace stored {
 		int8_t m_override{-1};
 	};
 
+	template <typename Container, typename T=float>
+	using PIDObjects = FreeObjectsList<
+		FreeFunctions<float, Container, 'f'>,
+		FreeVariables<T, Container, 'y', 's', 'p', 'i', 'd', 'k', 'I', 'L', 'H', 'l', 'h', 'D', 'F', 'u'>,
+		FreeVariables<bool, Container, 'e', 'r'>>;
+
+	/*!
+	 * \brief PID controller, based on store variables.
+	 *
+	 * To use this class, add a scope to your store, like:
+	 *
+	 * \verbatim
+	 * {
+	 *     (float) frequency (Hz)
+	 *     float y
+	 *     float setpoint
+	 *     bool=true enable
+	 *     float=1 Kp
+	 *     float=inf Ti (s)
+	 *     float=0 Td (s)
+	 *     float=0 Kff
+	 *     float int
+	 *     float=-inf int low
+	 *     float=inf int high
+	 *     float=-inf low
+	 *     float=inf high
+	 *     bool reset
+	 *     float=nan override
+	 *     float u
+	 * } pid
+	 * \endverbatim
+	 *
+	 * Only \c frequency, \c setpoint, and \c Kp are mandatory.
+	 * Then, instantiate the controller like this:
+	 *
+	 * \code
+	 * // Construct a compile-time object, which resolves all fields in your store.
+	 * constexpr auto pid_o = stored::PID<stored::YourStore>::objects("/pid/");
+	 * // Instantiate an PID, tailored to the available fields in the store.
+	 * stored::PID<stored::YourStore, pid_o.flags()> pin{pid_o, yourStore};
+	 * \endcode
+	 */
+	template <typename Container, unsigned long long flags = 0, typename T = float>
+	class PID {
+	public:
+		using type = T;
+		using Bound = typename PIDObjects<Container,type>::template Bound<flags>;
+
+		constexpr PID() noexcept = default;
+
+		constexpr PID(PIDObjects<Container,type> const& o, Container& container)
+			: m_o{Bound::create(o, container)}
+		{
+			static_assert(Bound::template valid<'f'>(), "'frequency' function is mandatory");
+			static_assert(Bound::template valid<'s'>(), "'setpoint' variable is mandatory");
+			static_assert(Bound::template valid<'p'>(), "'Kp' variable is mandatory");
+
+			decltype(auto) uo = uObject();
+			if(uo.valid())
+				m_u = uo;
+			else
+				m_u = std::max(low(), 0);
+		}
+
+		template <char... OnlyId, size_t N>
+		static constexpr auto objects(char const(&prefix)[N]) noexcept {
+			return PIDObjects<Container,type>::template create<OnlyId...>(prefix,
+				"frequency", "y", "setpoint", "Kp", "Ti", "Td", "Kff", "int",
+				"int low", "int high", "low", "high", "override", "u");
+		}
+
+		decltype(auto) frequencyObject() const noexcept { return m_o.template get<'f'>(); }
+		float frequency() const noexcept { return frequencyObject()(); }
+
+		decltype(auto) yObject() const noexcept { return m_o.template get<'y'>(); }
+		decltype(auto) yObject() noexcept { return m_o.template get<'y'>(); }
+		type y() const noexcept { decltype(auto) o = yObject(); return o.valid() ? o.get() : type(); }
+
+		decltype(auto) setpointObject() const noexcept { return m_o.template get<'s'>(); }
+		type setpoint() const noexcept { return setpointObject().get(); }
+
+		decltype(auto) KpObject() const noexcept { return m_o.template get<'p'>(); }
+		type Kp() const noexcept { return KpObject().get(); }
+
+		decltype(auto) TiObject() const noexcept { return m_o.template get<'i'>(); }
+		type Ti() const noexcept { decltype(auto) o = TiObject(); return o.valid() ? o.get() : std::numeric_limits<type>::infinity(); }
+		type Ki() const noexcept { return m_Ki; }
+
+		decltype(auto) TdObject() const noexcept { return m_o.template get<'d'>(); }
+		type Td() const noexcept { decltype(auto) o = TdObject(); return o.valid() ? o.get() : (type)0; }
+		type Kd() const noexcept { return m_Kd; }
+
+		decltype(auto) KffObject() const noexcept { return m_o.template get<'K'>(); }
+		type Kff() const noexcept { decltype(auto) o = KffObject(); return o.valid() ? o.get() : (type)0; }
+
+		decltype(auto) intObject() const noexcept { return m_o.template get<'i'>(); }
+		decltype(auto) intObject() noexcept { return m_o.template get<'i'>(); }
+		type int_() const noexcept { m_int; }
+
+		decltype(auto) intLowObject() const noexcept { return m_o.template get<'L'>(); }
+		type intLow() const noexcept { decltype(auto) o = intLowObject(); return o.valid() ? o.get() : -std::numeric_limits<type>::infinity(); }
+
+		decltype(auto) intHighObject() const noexcept { return m_o.template get<'H'>(); }
+		type intHigh() const noexcept { decltype(auto) o = intHighObject(); return o.valid() ? o.get() : std::numeric_limits<type>::infinity(); }
+
+		decltype(auto) lowObject() const noexcept { return m_o.template get<'l'>(); }
+		type low() const noexcept { decltype(auto) o = lowObject(); return o.valid() ? o.get() : -std::numeric_limits<type>::infinity(); }
+
+		decltype(auto) highObject() const noexcept { return m_o.template get<'h'>(); }
+		type high() const noexcept { decltype(auto) o = highObject(); return o.valid() ? o.get() : std::numeric_limits<type>::infinity(); }
+
+		decltype(auto) overrideObject() const noexcept { return m_o.template get<'F'>(); }
+		type override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : std::numeric_limits<type>::quiet_NaN(); }
+
+		decltype(auto) uObject() noexcept { return m_o.template get<'u'>(); }
+		type u() const noexcept { return m_u; }
+
+		decltype(auto) enableObject() const noexcept { return m_o.template get<'e'>(); }
+		bool enabled() const noexcept { decltype(auto) o = enableObject(); return !o.valid() || o.get(); }
+
+		decltype(auto) resetObject() const noexcept { return m_o.template get<'r'>(); }
+		decltype(auto) resetObject() noexcept { return m_o.template get<'r'>(); }
+		bool reset() const noexcept { decltype(auto) o = resetObject(); return !o.valid() || o.get(); }
+
+		type operator()(type y) {
+			decltype(auto) o = yObject();
+			if(o.valid())
+				o = y;
+
+			return run(y);
+		}
+
+		type operator()() {
+			return run(y());
+		}
+
+	protected:
+		type run(type y) {
+			if(!enabled())
+				return m_u;
+
+			bool doReset = false;
+			decltype(auto) reset_o = resetObject();
+			if(reset_o.valid()) {
+				if(unlikely(reset_o.get())) {
+					doReset = true;
+					reset_o = false;
+				}
+			} else if(unlikely(std::isnan(m_y_prev))) {
+				doReset = true;
+			}
+
+			type sp = setpoint();
+			type e = sp - y;
+
+			if(unlikely(doReset)) {
+				float dt = 1.0f / frequency();
+				m_Ki = Kp() / (Ti() * dt);
+				m_Kd = -Kp() * Td() * dt;
+				m_y_prev = y;
+			}
+
+			type u = Kp() * e + Kff() * sp;
+
+			type i = std::max(intLow(), std::min(intHigh(), m_int + Ki() * e));
+			if(u + std::max(i, m_int) >= low() && u + std::min(i, m_int) <= high()) {
+				// Anti-windup: only update m_int when we are within output
+				// bounds, or if we get back into those bounds.
+				m_int = i;
+				u += i;
+			}
+
+			if(Kd() > 0) {
+				u += Kd() * (y - m_y_prev);
+				m_y_prev = y;
+			}
+
+			u = std::max(low(), std::min(high(), u));
+
+			decltype(auto) uo = uObject();
+			if(uo.valid())
+				uo = u;
+
+			return u;
+		}
+
+	private:
+		Bound m_o;
+		type m_y_prev{std::numeric_limits<type>::quiet_NaN()};
+		type m_Ki{};
+		type m_Kd{};
+		type m_int{};
+		type m_u{};
+	};
+
 } // namespace
 #endif // C++14
 #endif // __cplusplus

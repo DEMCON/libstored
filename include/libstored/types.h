@@ -756,7 +756,11 @@ namespace stored {
 		/*! \brief The full (bound) Function type. */
 		typedef Function_type Bound_type;
 		/*! \brief A type that is able to store the store's buffer offset. */
+#ifdef DOXYGEN
+		typedef unsigned int f_type;
+#else
 		typedef typename value_type<static_cast<uintmax_t>(Container::FunctionCount > 0 ? Container::FunctionCount - 1 : 0)>::type f_type;
+#endif
 
 		/*! \brief Constructor for an invalid variable. */
 		constexpr FreeFunction() noexcept
