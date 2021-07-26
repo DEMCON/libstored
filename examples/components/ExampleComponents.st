@@ -27,6 +27,23 @@
 } gpio out
 
 {
+	float=3.721 G (m/s^2)
+	float=43.34e-3 air molar mass (kg/mol)
+	float=210 temperature (K)
+	float=600 surface air pressure (Pa)
+} environment
+
+{
+	float=0.85 motor constant
+	float=1.8 mass (kg)
+	float=0.4 lift coefficient
+	float=1e-3 drag coefficient
+
+	float=0 height (m)
+	float=0 speed (m/s)
+} helicopter
+
+{
 	(float) frequency (Hz)
 	float y
 	float setpoint
