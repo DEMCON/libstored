@@ -1081,7 +1081,7 @@ namespace stored {
 	template <typename Container, typename T=float>
 	using PIDObjects = FreeObjectsList<
 		FreeFunctions<float, Container, 'f'>,
-		FreeVariables<T, Container, 'y', 's', 'p', 'i', 'd', 'k', 'I', 'L', 'H', 'l', 'h', 'D', 'F', 'u'>,
+		FreeVariables<T, Container, 'y', 's', 'p', 'i', 'd', 'k', 'I', 'L', 'H', 'l', 'h', 'F', 'u'>,
 		FreeVariables<bool, Container, 'e', 'r'>>;
 
 	/*!
@@ -1117,7 +1117,7 @@ namespace stored {
 	 * // Construct a compile-time object, which resolves all fields in your store.
 	 * constexpr auto pid_o = stored::PID<stored::YourStore>::objects("/pid/");
 	 * // Instantiate an PID, tailored to the available fields in the store.
-	 * stored::PID<stored::YourStore, pid_o.flags()> pin{pid_o, yourStore};
+	 * stored::PID<stored::YourStore, pid_o.flags()> pid{pid_o, yourStore};
 	 * \endcode
 	 */
 	template <typename Container, unsigned long long flags = 0, typename T = float>
@@ -1137,16 +1137,16 @@ namespace stored {
 
 			decltype(auto) uo = uObject();
 			if(uo.valid())
-				m_u = uo;
+				m_u = uo.get();
 			else
-				m_u = std::max(low(), 0);
+				m_u = std::max<type>(low(), 0);
 		}
 
 		template <char... OnlyId, size_t N>
 		static constexpr auto objects(char const(&prefix)[N]) noexcept {
 			return PIDObjects<Container,type>::template create<OnlyId...>(prefix,
 				"frequency", "y", "setpoint", "Kp", "Ti", "Td", "Kff", "int",
-				"int low", "int high", "low", "high", "override", "u");
+				"int low", "int high", "low", "high", "override", "u", "enable", "reset");
 		}
 
 		decltype(auto) frequencyObject() const noexcept { return m_o.template get<'f'>(); }
@@ -1235,8 +1235,8 @@ namespace stored {
 
 			if(unlikely(doReset)) {
 				float dt = 1.0f / frequency();
-				m_Ki = Kp() / (Ti() * dt);
-				m_Kd = -Kp() * Td() * dt;
+				m_Ki = Kp() * dt / Ti();
+				m_Kd = -Kp() * Td() / dt;
 				m_y_prev = y;
 			}
 
@@ -1248,6 +1248,12 @@ namespace stored {
 				// bounds, or if we get back into those bounds.
 				m_int = i;
 				u += i;
+
+				decltype(auto) io = intObject();
+				if(io.valid())
+					io = m_int;
+			} else {
+				u += m_int;
 			}
 
 			if(Kd() > 0) {
