@@ -6,7 +6,7 @@ This let's you easily tune and debug an application.
 
 The instances of these classes are tuned at compile-time to reflect the objects in the store.
 Especially, no resources are used for (optional) fields that do not exist in the store, and
-all store lookups in the directory are done at compile-time. You need C++14 (or later), tough.
+all store lookups in the directory are done at compile-time. You need C++14 (or later), though.
 
 Check out the ``components`` example.
 
