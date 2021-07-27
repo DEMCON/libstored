@@ -1,3 +1,21 @@
+/*!
+ * \file
+ * \brief libstored's components example.
+ *
+ * When building some control application, e.g., one that drives a motor, you
+ * would like to have access to all hardware pins, all ADC conversion
+ * parameters, all controllers, etc. A common design pattern is to add these
+ * parameters to a store, and instantiate the corresponding components in C++.
+ * Then, you can access, override, and tune the application via the store.
+ *
+ * libstored provides several of such components, such as GPIO pins, Amplifier,
+ * and PID controller. This example shows how to instantiate and use such a
+ * component class and how it is coupled to your store. You will need at least
+ * C++14 for this.
+ *
+ * And don't crash the helicopter...
+ */
+
 #include "ExampleComponents.h"
 
 #include <stored>
@@ -10,16 +28,29 @@ class ExampleComponentsStore : public STORE_BASE_CLASS(ExampleComponentsBase, Ex
 public:
 	ExampleComponentsStore() = default;
 
+	// You can change the control frequency dynamically.
 	void __pid__frequency_Hz(bool set, float& value) {
-		if(!set)
-			value = 5.0f;
+		if(set) {
+			if(std::isnan(value) || value <= 0.1f)
+				value = 0.1f;
+
+			m_frequency_Hz = value;
+		} else {
+			value = m_frequency_Hz;
+		}
 	}
+private:
+	float m_frequency_Hz{5.0};
 };
 
 static ExampleComponentsStore store;
 
-float fly(float power)
+static float fly(float power)
 {
+	// Greatly simplified model of a helicopter. The power lets the blades
+	// spin. If you have enough lift, you can take off.
+
+	float dt = 1.0f / store.pid__frequency_Hz();
 	float G = store.environment__G_m__s_2;
 	float air_pressure = store.environment__surface_air_pressure_Pa;
 	float air_molar_mass = store.environment__air_molar_mass_kg__mol;
@@ -28,19 +59,30 @@ float fly(float power)
 	float height = store.helicopter__height_m;
 	float speed = store.helicopter__speed_m__s;
 
+	power = std::max(0.f, std::min(1.f, power));
+	if(std::isnan(power))
+		power = 0;
+
 	float air_density = air_pressure * std::exp(-(G * height * air_molar_mass) / (temperature * 8.314462618f)) / (air_molar_mass * temperature);
 
 	float lift = .5f * air_density * std::pow(power * store.helicopter__motor_constant, 2.0f) * store.helicopter__lift_coefficient;
 	float drag = .5f * air_density * std::pow(speed, 2.0f) * store.helicopter__drag_coefficient;
 	float weight = store.helicopter__mass_kg * G;
 
-	float F = lift - weight - drag;
+	float F = lift - weight;
+	if(speed > 0)
+		F -= drag;
+	else
+		F += drag;
+
 	float accelleration = F / store.helicopter__mass_kg;
 
-	speed += accelleration;
-	height += speed;
+	speed += accelleration * dt;
+	height += speed * dt;
 
 	if(height < 0) {
+		if(speed < -1)
+			std::cout << " ... Crash ... " << std::endl;
 		height = 0;
 		speed = 0;
 	}
@@ -49,96 +91,45 @@ float fly(float power)
 	store.helicopter__height_m = height;
 
 	std::cout
-		<< "height: " << height
-		<< "  speed: " << speed
-		<< "  lift: " << lift
-		<< "  acc: " << accelleration
-		<< "  density: " << air_density
+		<< "power throttle: " << power << "  "
+		<< "height: " << height << " m  "
+		<< "speed: " << speed << " m/s  "
+		<< "lift: " << lift << " N  "
+		<< "drag: " << drag << " N  "
+		<< "F: " << F << " N  "
+		<< "acc: " << accelleration << " m/s^2  "
+		<< "air density: " << air_density << " kg/m^3"
 		<< std::endl;
 	return height;
 }
 
 int main()
 {
-	constexpr auto n1 = stored::FreeObjects<stored::FreeVariable<float, ExampleComponentsStore>, 'i'>::create("/amp/");
-	static_assert(n1.size() == 1, "");
-	static_assert(n1.validSize() == 1, "");
+	std::cout << "Helicopter flight simulator" << std::endl << std::endl;
+	std::cout << "Try to fly this helicopter, using a poorly-tuned (PID) controller." << std::endl;
+	std::cout << "Connect via ZMQ and set /pid/setpoint to the desired height." << std::endl;
+	std::cout << "For example, set it to 1000, and see the heli take off." << std::endl;
+	std::cout << "Tune all parameters at will and see what happens." << std::endl << std::endl;
 
-	// j is not valid
-	constexpr auto n2 = stored::FreeObjects<stored::FreeVariable<float, ExampleComponentsStore>, 'i', 'j'>::create("/amp/");
-	static_assert(n2.size() == 2, "");
-	static_assert(n2.validSize() == 1, "");
-
-	// find by long name
-	constexpr auto n3 = stored::FreeObjects<stored::FreeVariable<float, ExampleComponentsStore>, 'i', 'o'>::create("/amp/", "input", "output");
-	static_assert(n3.size() == 2, "");
-	static_assert(n3.validSize() == 2, "");
-
-	// skip o
-	constexpr auto n4 = stored::FreeObjects<stored::FreeVariable<float, ExampleComponentsStore>, 'i', 'o'>::create<'i'>("/amp/", "input", "output");
-	static_assert(n4.size() == 2, "");
-	static_assert(n4.validSize() == 1, "");
-
-	// fix ambiguity
-	constexpr auto n5 = stored::FreeObjects<stored::FreeVariable<float, ExampleComponentsStore>, 'g', 'f', 'o'>::create<'g','o'>("/simple amp/", "gain", "override", "output");
-	static_assert(n5.size() == 3, "");
-	static_assert(n5.validSize() == 2, "");
-	static_assert(n5.template valid<'o'>(), "");
-	static_assert(!n5.template valid<'f'>(), "");
-
-	constexpr auto n6 = stored::FreeObjectsList<
-		stored::FreeVariables<float, ExampleComponentsStore, 'i', 'g'>,
-		stored::FreeVariables<bool, ExampleComponentsStore, 'e'>
-	>::create("/amp/");
-	static_assert(n6.size() == 3, "");
-	static_assert(n6.flags() == 7ULL, "");
-	static_assert(n6.valid<'i'>(n6.flags()), "");
-	static_assert(n6.valid<'e'>(n6.flags()), "");
-
-
-	constexpr auto amp_o = stored::Amplifier<ExampleComponentsStore>::objects("/amp/");
-	stored::Amplifier<ExampleComponentsStore, amp_o.flags()> amp{amp_o, store};
-
-	std::cout << amp(3) << std::endl;
-	std::cout << amp(5) << std::endl;
-	std::cout << amp(-2) << std::endl;
-	std::cout << sizeof(amp) << std::endl;
-
-	constexpr auto amp_o2 = stored::Amplifier<ExampleComponentsStore>::objects<'g','O'>("/simple amp/");
-	using Amp2 = stored::Amplifier<ExampleComponentsStore, amp_o2.flags()>;
-	Amp2 amp2;
-	amp2 = Amp2{amp_o2, store};
-	std::cout << amp2(3) << std::endl;
-	std::cout << sizeof(amp2) << std::endl;
-
-	constexpr auto gpio_in_o = stored::PinIn<ExampleComponentsStore>::objects("/gpio in/");
-	stored::PinIn<ExampleComponentsStore, gpio_in_o.flags()> gpio_in{gpio_in_o, store};
-
-	std::cout << gpio_in() << std::endl;
-	store.gpio_in__override = 1;
-	std::cout << gpio_in() << std::endl;
-
-	constexpr auto gpio_out_o = stored::PinOut<ExampleComponentsStore>::objects("/gpio out/");
-	stored::PinOut<ExampleComponentsStore, gpio_out_o.flags()> gpio_out{gpio_out_o, store};
-
-	std::cout << gpio_out() << std::endl;
-	std::cout << gpio_out(true) << std::endl;
-	gpio_out.override_(0);
-	std::cout << gpio_out() << std::endl;
+	// This is the PID controller.
+	// This line finds all variables within the /pid/ scope, that are to be
+	// used by the PID instance. All lookup is done at compile-time. pid_o
+	// holds a set of flags that can be used to leave out unused (optional)
+	// parameters.
 
 	constexpr auto pid_o = stored::PID<ExampleComponentsStore>::objects("/pid/");
+	// Now, instantiate the PID, tailored to the variables in your store.  The
+	// pid_o is also passed to the constructor to prove the addresses of the
+	// variables in the store, as found by (constexpr) find() in the store's
+	// directory.
 	stored::PID<ExampleComponentsStore, pid_o.flags()> pid{pid_o, store};
 
-
-
-
-	stored::Debugger debugger("components");
+	// Construct the protocol stack.
+	stored::Debugger debugger{"components"};
 	debugger.map(store);
 
 	stored::DebugZmqLayer zmqLayer;
 	zmqLayer.wrap(debugger);
-
-	printf("Connect via ZMQ to debug this application.\n");
 
 	stored::Poller poller;
 
@@ -147,6 +138,7 @@ int main()
 		exit(1);
 	}
 
+	// Determine polling/control interval.
 	auto dt = std::chrono::milliseconds((long long)(1.0e3f / store.pid__frequency_Hz()));
 	auto t = std::chrono::system_clock::now() + dt;
 
@@ -156,7 +148,8 @@ int main()
 		auto rem_us = rem.count();
 
 		if(rem_us <= 0) {
-			t += dt;
+			t += std::chrono::milliseconds((long long)(1.0e3f / store.pid__frequency_Hz()));
+			// This is where the magic takes place.
 			store.pid__y = fly(pid());
 			continue;
 		}

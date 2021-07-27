@@ -713,7 +713,7 @@ namespace stored {
 	 *
 	 * To use this class, add a scope to your store, like:
 	 *
-	 * \verbatim
+	 * \code
 	 * {
 	 *     float input
 	 *     bool=true enable
@@ -724,13 +724,13 @@ namespace stored {
 	 *     float=nan override
 	 *     float output
 	 * } amp
-	 * \endverbatim
+	 * \endcode
 	 *
 	 * All fields are optional.
 	 *
 	 * The amplifier basically does:
 	 *
-	 * \verbatim
+	 * \code
 	 * if(override is nan)
 	 *     output = min(high, max(low, input * gain + offset))
 	 * else
@@ -869,14 +869,14 @@ namespace stored {
 	 *
 	 * To use this class, add a scope to your store, like:
 	 *
-	 * \verbatim
+	 * \code
 	 * {
 	 *     (bool) pin
 	 *     int8=-1 override
 	 *     bool input
 	 *     (bool) get
 	 * } pin
-	 * \endverbatim
+	 * \endcode
 	 *
 	 * All fields are optional. You can implement the store's \c pin function,
 	 * override the virtual \c pin() function of the PinIn class, or pass the
@@ -884,7 +884,7 @@ namespace stored {
 	 *
 	 * The pin basically does:
 	 *
-	 * \verbatim
+	 * \code
 	 * switch(override) {
 	 * case -1: input = pin; break;
 	 * case  0: input = false; break;
@@ -977,14 +977,14 @@ namespace stored {
 	 *
 	 * To use this class, add a scope to your store, like:
 	 *
-	 * \verbatim
+	 * \code
 	 * {
 	 *     (bool) set
 	 *     bool output
 	 *     (int8) override
 	 *     (bool) pin
 	 * } pin
-	 * \endverbatim
+	 * \endcode
 	 *
 	 * All fields are optional, except \c output. You can implement the store's
 	 * \c pin function, override the virtual \c pin() function of the PinOut
@@ -993,7 +993,7 @@ namespace stored {
 	 *
 	 * The pin basically does:
 	 *
-	 * \verbatim
+	 * \code
 	 * switch(override) {
 	 * case -1: pin = output; break;
 	 * case  0: pin = false; break;
@@ -1089,7 +1089,7 @@ namespace stored {
 	 *
 	 * To use this class, add a scope to your store, like:
 	 *
-	 * \verbatim
+	 * \code
 	 * {
 	 *     (float) frequency (Hz)
 	 *     float y
@@ -1108,7 +1108,7 @@ namespace stored {
 	 *     float=nan override
 	 *     float u
 	 * } pid
-	 * \endverbatim
+	 * \endcode
 	 *
 	 * Only \c frequency, \c setpoint, and \c Kp are mandatory.
 	 * Then, instantiate the controller like this:
@@ -1173,8 +1173,8 @@ namespace stored {
 		decltype(auto) KffObject() const noexcept { return m_o.template get<'K'>(); }
 		type Kff() const noexcept { decltype(auto) o = KffObject(); return o.valid() ? o.get() : (type)0; }
 
-		decltype(auto) intObject() const noexcept { return m_o.template get<'i'>(); }
-		decltype(auto) intObject() noexcept { return m_o.template get<'i'>(); }
+		decltype(auto) intObject() const noexcept { return m_o.template get<'I'>(); }
+		decltype(auto) intObject() noexcept { return m_o.template get<'I'>(); }
 		type int_() const noexcept { m_int; }
 
 		decltype(auto) intLowObject() const noexcept { return m_o.template get<'L'>(); }
@@ -1219,49 +1219,59 @@ namespace stored {
 			if(!enabled())
 				return m_u;
 
-			bool doReset = false;
-			decltype(auto) reset_o = resetObject();
-			if(reset_o.valid()) {
-				if(unlikely(reset_o.get())) {
+			type u = override_();
+
+			if(likely(std::isnan(u))) {
+				bool doReset = false;
+				decltype(auto) reset_o = resetObject();
+				if(reset_o.valid()) {
+					if(unlikely(reset_o.get())) {
+						doReset = true;
+						reset_o = false;
+					}
+				} else if(unlikely(std::isnan(m_y_prev))) {
 					doReset = true;
-					reset_o = false;
 				}
-			} else if(unlikely(std::isnan(m_y_prev))) {
-				doReset = true;
+
+				type sp = setpoint();
+				type e = sp - y;
+
+				if(unlikely(doReset)) {
+					float f = frequency();
+					m_Ki = 0;
+					m_Kd = 0;
+					m_y_prev = y;
+
+					if(!std::isnan(f) && f > 0) {
+						float dt = 1.0f / frequency();
+						if(Ti() != 0)
+							m_Ki = Kp() * dt / Ti();
+						m_Kd = -Kp() * Td() / dt;
+					}
+				}
+
+				u = Kp() * e + m_int + Kff() * sp;
+
+				type di = Ki() * e;
+				if((u >= low() || di > 0) && (u <= high() || di < 0)) {
+					// Anti-windup: only update m_int when we are within output
+					// bounds, or if we get back into those bounds.
+					type i = std::max(intLow(), std::min(intHigh(), m_int + di));
+					u += i - m_int;
+					m_int = i;
+
+					decltype(auto) io = intObject();
+					if(io.valid())
+						io = m_int;
+				}
+
+				if(Kd() != 0) {
+					u += Kd() * (y - m_y_prev);
+					m_y_prev = y;
+				}
+
+				u = std::max(low(), std::min(high(), u));
 			}
-
-			type sp = setpoint();
-			type e = sp - y;
-
-			if(unlikely(doReset)) {
-				float dt = 1.0f / frequency();
-				m_Ki = Kp() * dt / Ti();
-				m_Kd = -Kp() * Td() / dt;
-				m_y_prev = y;
-			}
-
-			type u = Kp() * e + Kff() * sp;
-
-			type i = std::max(intLow(), std::min(intHigh(), m_int + Ki() * e));
-			if(u + std::max(i, m_int) >= low() && u + std::min(i, m_int) <= high()) {
-				// Anti-windup: only update m_int when we are within output
-				// bounds, or if we get back into those bounds.
-				m_int = i;
-				u += i;
-
-				decltype(auto) io = intObject();
-				if(io.valid())
-					io = m_int;
-			} else {
-				u += m_int;
-			}
-
-			if(Kd() > 0) {
-				u += Kd() * (y - m_y_prev);
-				m_y_prev = y;
-			}
-
-			u = std::max(low(), std::min(high(), u));
 
 			decltype(auto) uo = uObject();
 			if(uo.valid())
