@@ -178,12 +178,17 @@ class CsvExport(QObject):
         finally:
             self._lock.release()
 
-    def pause(self):
+    def pause(self, closeFile=False):
         if self._paused:
             return
 
         self.logger.info('Paused')
         self._paused = True
+        if closeFile:
+            self._postponedAutoRestart = True
+            if not self._file is None:
+                self._file.close()
+                self._file = None
 
     def unpause(self):
         if not self._paused or self._file is None:
