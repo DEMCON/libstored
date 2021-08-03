@@ -23,7 +23,15 @@ option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" OFF)
 
 add_subdirectory(version)
 
-option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" ON)
+if(WIN32)
+	# The documentation needs wavedrom (via sphinx), but sphinxcontrib-wavedrom
+	# needs cairo.  In turn, that package needs libcairo-2.dll (64-bit,
+	# matching python's word size), which cannot be installed automatically by
+	# bootstrap.cmd. So, by default, leave it out.
+	option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" OFF)
+else()
+	option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" ON)
+endif()
 
 if(LIBSTORED_DOCUMENTATION)
 	add_subdirectory(sphinx)
