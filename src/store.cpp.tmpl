@@ -33,7 +33,7 @@ namespace stored {
  */
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
 static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len}}] = {
-	{{store.buffer.init|carray|indent('\t')}}
+	{{store.buffer.init|carray|tab_indent(1)}}
 };
 
 {% endif %}
@@ -70,7 +70,7 @@ constexpr uint8_t {{store.name}}Data::directory[];
 #else
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
 static uint8_t const {{store.name}}Data_directory[{{store.directory.data|len}}] = {
-	{{store.directory.data|carray|indent('\t')}}
+	{{store.directory.data|carray|tab_indent(1)}}
 };
 
 /*!
@@ -88,7 +88,7 @@ uint8_t const* {{store.name}}Data::shortDirectory() noexcept {
  */
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
 static uint8_t const {{store.name}}Data_directory_full[{{store.directory.longdata|len}}] = {
-	{{store.directory.longdata|carray|indent('\t')}}
+	{{store.directory.longdata|carray|tab_indent(1)}}
 };
 
 /*!
