@@ -120,7 +120,7 @@ namespace stored {
 			};
 
 			// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
-			class Reset : public Base {
+			class Reset final : public Base {
 			public:
 				// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
 				~Reset() noexcept final = default;
@@ -139,12 +139,12 @@ namespace stored {
 
 			template <typename F, bool Dummy = false>
 			// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
-			class Wrapper : public Base {
+			class Wrapper final : public Base {
 			public:
 				~Wrapper() noexcept final = default;
 
 				template <typename F_, typename std::enable_if<!std::is_same<typename std::decay<F_>::type, Wrapper>::value, int>::type = 0>
-				// NOLINTNEXTLINE(misc-forwarding-reference-overload)
+				// NOLINTNEXTLINE(misc-forwarding-reference-overload,bugprone-forwarding-reference-overload)
 				explicit Wrapper(F_&& f) : m_f{std::forward<F_>(f)} {}
 
 				R operator()(typename CallableArgType<Args>::type... args) const final {
@@ -165,7 +165,7 @@ namespace stored {
 
 			template <bool Dummy>
 			// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
-			class Wrapper<R(Args...), Dummy> : public Base {
+			class Wrapper<R(Args...), Dummy> final : public Base {
 			public:
 				~Wrapper() noexcept final = default;
 
@@ -186,7 +186,7 @@ namespace stored {
 
 			template <typename T, bool Dummy>
 			// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
-			class Wrapper<T&, Dummy> : public Base {
+			class Wrapper<T&, Dummy> final : public Base {
 			public:
 				~Wrapper() noexcept final = default;
 
@@ -205,10 +205,10 @@ namespace stored {
 			};
 
 			template <typename F>
-			class Forwarder : public Base {
+			class Forwarder final : public Base {
 			public:
 				template <typename F_, typename std::enable_if<!std::is_same<typename std::decay<F_>::type, Forwarder>::value, int>::type = 0>
-				// NOLINTNEXTLINE(misc-forwarding-reference-overload)
+				// NOLINTNEXTLINE(misc-forwarding-reference-overload,bugprone-forwarding-reference-overload)
 				explicit Forwarder(F_&& f)
 					: m_w{new(allocate<Wrapper<F>>()) Wrapper<F>(std::forward<F_>(f))}
 				{}
@@ -279,7 +279,7 @@ namespace stored {
 			}
 
 			template <typename G, typename std::enable_if<!std::is_same<typename std::decay<G>::type, Callable>::value, int>::type = 0>
-			// NOLINTNEXTLINE(misc-forwarding-reference-overload)
+			// NOLINTNEXTLINE(misc-forwarding-reference-overload,bugprone-forwarding-reference-overload)
 			explicit Callable(G&& g) {
 				assign(std::forward<G>(g));
 			}

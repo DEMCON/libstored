@@ -154,7 +154,7 @@ int main()
 			continue;
 		}
 
-		if(poller.poll(rem_us).empty()) {
+		if(poller.poll((long)rem_us).empty()) {
 			switch(errno) {
 			case EINTR:
 			case EAGAIN:
