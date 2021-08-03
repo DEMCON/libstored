@@ -198,6 +198,9 @@ def csvstring(s):
 
     return '"' + re.sub(r'"', r'""', s) + '"'
 
+def tab_indent(s, num):
+    return ('\t' * num).join(s.splitlines(True))
+
 def model_name(model_file):
     return os.path.splitext(os.path.split(model_file)[1])[0]
 
@@ -275,6 +278,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.filters['hasfunction'] = has_function
     jenv.filters['rtfstring'] = rtfstring
     jenv.filters['csvstring'] = csvstring
+    jenv.filters['tab_indent'] = tab_indent
     jenv.tests['variable'] = is_variable
     jenv.tests['function'] = is_function
     jenv.tests['blob'] = is_blob

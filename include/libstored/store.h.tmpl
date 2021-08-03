@@ -53,7 +53,7 @@ namespace stored {
 #if STORED_cplusplus >= 201402L
 private:
 		static constexpr uint8_t directory[{{store.directory.data|len}}] = {
-			{{store.directory.data|carray|indent('\t\t\t')}}
+			{{store.directory.data|carray|tab_indent(3)}}
 		};
 
 public:
