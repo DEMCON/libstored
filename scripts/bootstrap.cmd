@@ -24,7 +24,7 @@ echo Chocolatey not installed. Install from here: https://chocolatey.org/docs/in
 goto error
 :have_choco
 
-choco install -y --no-progress python3 tortoisegit git cmake make pkgconfiglite mingw doxygen.install plantuml
+choco install -y --no-progress python3 tortoisegit git cmake make pkgconfiglite mingw doxygen.install plantuml gtk-runtime
 if errorlevel 1 goto error
 
 call refreshenv
