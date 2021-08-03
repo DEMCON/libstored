@@ -32,6 +32,9 @@ TEST(Directory, FullMatch) {
 	EXPECT_TRUE(store.find("/f read-only").valid());
 	EXPECT_TRUE(store.find("/array bool[1]").valid());
 	EXPECT_TRUE(store.find("/scope/inner bool").valid());
+	EXPECT_TRUE(store.find("/some other scope/some other inner bool").valid());
+	EXPECT_TRUE(store.find("/value with ambiguous unit (m/s)").valid());
+	EXPECT_TRUE(store.find("/value with ambiguous unit (m/h)").valid());
 }
 
 TEST(Directory, ShortMatch) {
@@ -43,12 +46,14 @@ TEST(Directory, ShortMatch) {
 	EXPECT_TRUE(store.find("/sc/i.....b").valid());
 	EXPECT_TRUE(store.find("/so/s").valid());
 	EXPECT_TRUE(store.find("/value with unit").valid());
+	EXPECT_TRUE(store.find("/value with complex").valid());
 }
 
 TEST(Directory, Ambiguous) {
 	stored::TestStore store;
 	EXPECT_FALSE(store.find("/default int").valid());
 	EXPECT_FALSE(store.find("/s/inner bool").valid());
+	EXPECT_FALSE(store.find("/value with ambiguous unit").valid());
 }
 
 TEST(Directory, Bogus) {
