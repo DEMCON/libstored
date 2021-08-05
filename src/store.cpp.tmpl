@@ -64,7 +64,7 @@ static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len
  */
 #if STORED_cplusplus >= 201402L
 #  if STORED_cplusplus < 201703L
-// NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,readability-redundant-declaration)
 constexpr uint8_t {{store.name}}Data::directory[];
 #  endif
 #else

@@ -298,7 +298,7 @@ TEST_F(Allocator, Store) {
 	EXPECT_EQ(TestAllocatorBase::allocate_stats.calls, 0u);
 
 	stored::String::type str(128, '*');
-	EXPECT_EQ(TestAllocatorBase::allocate_stats.calls, 1u);
+	EXPECT_GE(TestAllocatorBase::allocate_stats.calls, 1u);
 
 	// No non-allocator allocations are expected.
 	EXPECT_EQ(new_count, 0u);

@@ -100,6 +100,7 @@ namespace stored {
 	namespace impl {
 		template <typename T> struct CallableType { using type = typename std::decay<T>::type; };
 		template <typename T> struct CallableType<T&> { using type = T&; };
+		template <> struct CallableType<std::nullptr_t> {};
 
 		template <typename T> struct CallableArgType { using type = typename std::remove_reference<T>::type const&; };
 		template <typename T> struct CallableArgType<T&> { using type = T&; };
@@ -342,16 +343,16 @@ namespace stored {
 			}
 
 			template <typename G,
-				typename F_ = typename CallableType<G>::type,
-				typename std::enable_if<(sizeof(Wrapper<F_>) > std::tuple_size<Buffer>::value), int>::type = 0>
-			void assign(G&& g) {
+					typename F_ = typename CallableType<G>::type>
+			typename std::enable_if<(sizeof(Wrapper<F_>) > std::tuple_size<Buffer>::value)>::type
+			/* void */ assign(G&& g) {
 				construct<Forwarder<F_>>(std::forward<G>(g));
 			}
 
 			template <typename G,
-				typename F_ = typename CallableType<G>::type,
-				typename std::enable_if<(sizeof(Wrapper<F_>) <= std::tuple_size<Buffer>::value), int>::type = 0>
-			void assign(G&& g) {
+					typename F_ = typename CallableType<G>::type>
+			typename std::enable_if<(sizeof(Wrapper<F_>) <= std::tuple_size<Buffer>::value)>::type
+			/* void */ assign(G&& g) {
 				construct<Wrapper<F_>>(std::forward<G>(g));
 			}
 

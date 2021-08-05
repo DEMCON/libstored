@@ -128,7 +128,7 @@ namespace stored {
 		static_assert(impl::is_unique<Id...>::value, "");
 
 	private:
-		FreeObject m_objects[sizeof...(Id) == 0 ? 1 : sizeof...(Id)];
+		FreeObject m_objects[sizeof...(Id) == 0 ? 1 : sizeof...(Id)] {};
 
 		template <char Id_, typename... Args, std::enable_if_t<!impl::has_id<Id_, Id...>::value, int> = 0>
 		constexpr size_t init(Args&&...) noexcept {
@@ -199,7 +199,7 @@ namespace stored {
 
 		template <char Id_>
 		static constexpr bool has() noexcept {
-			return impl::has_id<Id_, Id...>::value;
+			return (bool)impl::has_id<Id_, Id...>::value;
 		}
 
 		template <char Id_>
@@ -223,12 +223,12 @@ namespace stored {
 			return m_objects[index<Id_>()].valid();
 		}
 
-		template <char Id_, std::enable_if_t<has<Id_>(), int> = 0>
+		template <char Id_, decltype(std::enable_if_t<has<Id_>(), int>()) = 0>
 		static constexpr bool valid(Flags flags) noexcept {
 			return flags & (1ULL << index<Id_>());
 		}
 
-		template <char Id_, std::enable_if_t<!has<Id_>(), int> = 0>
+		template <char Id_, decltype(std::enable_if_t<!has<Id_>(), int>()) = 0>
 		static constexpr bool valid(Flags) noexcept {
 			return false;
 		}
@@ -370,7 +370,7 @@ namespace stored {
 		}
 
 		template <char... OnlyId, size_t N, typename... LongNames,
-			std::enable_if_t<(sizeof...(LongNames) > 0 && sizeof...(LongNames) == size()), int> = 0>
+			std::enable_if_t<(sizeof...(LongNames) > 0 && sizeof...(LongNames) == Ids::size), int> = 0>
 		static constexpr FreeObjectsList create(char const (&prefix)[N], LongNames&&... longNames) noexcept {
 			static_assert(impl::is_unique<OnlyId...>::value, "");
 			return FreeObjectsList{
@@ -384,14 +384,16 @@ namespace stored {
 			return Head::template has<Id>() || Tail::template has<Id>();
 		}
 
+		// The decltype() around the enable_if is for MSVC which may not
+		// implement expression SFINAE correctly.
 		template <char Id,
-			std::enable_if_t<Head::template has<Id>(), int> = 0>
+			decltype(std::enable_if_t<Head::template has<Id>(), int>()) = 0>
 		static constexpr size_t index() noexcept {
 			return Head::template index<Id>();
 		}
 
 		template <char Id,
-			std::enable_if_t<!Head::template has<Id>(), int> = 0>
+			decltype(std::enable_if_t<!Head::template has<Id>(), int>()) = 0>
 		static constexpr size_t index() noexcept {
 			return Tail::template index<Id>();
 		}
@@ -402,13 +404,13 @@ namespace stored {
 		}
 
 		template <char Id,
-			std::enable_if_t<Head::template has<Id>(), int> = 0>
+			decltype(std::enable_if_t<Head::template has<Id>(), int>()) = 0>
 		static constexpr bool valid(Flags flags) noexcept {
 			return Head::template valid<Id>(flags);
 		}
 
 		template <char Id,
-			std::enable_if_t<!Head::template has<Id>(), int> = 0>
+			decltype(std::enable_if_t<!Head::template has<Id>(), int>()) = 0>
 		static constexpr bool valid(Flags flags) noexcept {
 			return Tail::template valid<Id>(flags >> Head::size());
 		}
@@ -422,49 +424,49 @@ namespace stored {
 		}
 
 		template <char Id,
-			std::enable_if_t<Head::template has<Id>(), int> = 0>
+			decltype(std::enable_if_t<Head::template has<Id>(), int>()) = 0>
 		constexpr size_t validIndex() const noexcept {
 			return m_head.template validIndex<Id>();
 		}
 
 		template <char Id,
-			std::enable_if_t<!Head::template has<Id>(), int> = 0>
+			decltype(std::enable_if_t<!Head::template has<Id>(), int>()) = 0>
 		constexpr size_t validIndex() const noexcept {
 			return m_tail.template validIndex<Id>() + m_head.validSize();
 		}
 
 		template <char Id,
-			std::enable_if_t<Head::template has<Id>(), int> = 0>
+			decltype(std::enable_if_t<Head::template has<Id>(), int>()) = 0>
 		static constexpr size_t validIndex(Flags flags) noexcept {
 			return Head::template validIndex<Id>(flags);
 		}
 
 		template <char Id,
-			std::enable_if_t<!Head::template has<Id>(), int> = 0>
+			decltype(std::enable_if_t<!Head::template has<Id>(), int>()) = 0>
 		static constexpr size_t validIndex(Flags flags) noexcept {
 			return Tail::template validIndex<Id>(flags >> Head::size()) + Head::validSize(flags);
 		}
 
 		template <char Id,
-			std::enable_if_t<Head::template has<Id>(), int> = 0>
+			decltype(std::enable_if_t<Head::template has<Id>(), int>()) = 0>
 		constexpr auto object() const noexcept {
 			return m_head.template object<Id>();
 		}
 
 		template <char Id,
-			std::enable_if_t<!Head::template has<Id>(), int> = 0>
+			decltype(std::enable_if_t<!Head::template has<Id>(), int>()) = 0>
 		constexpr auto object() const noexcept {
 			return m_tail.template object<Id>();
 		}
 
 		template <char Id,
-			std::enable_if_t<Head::template has<Id>(), int> = 0>
+			decltype(std::enable_if_t<Head::template has<Id>(), int>()) = 0>
 		constexpr auto object(Container& container) const noexcept {
 			return m_head.template object<Id>(container);
 		}
 
 		template <char Id,
-			std::enable_if_t<!Head::template has<Id>(), int> = 0>
+			decltype(std::enable_if_t<!Head::template has<Id>(), int>()) = 0>
 		constexpr auto object(Container& container) const noexcept {
 			return m_tail.template object<Id>(container);
 		}
@@ -489,7 +491,7 @@ namespace stored {
 		enum { flags = flags_ };
 
 	private:
-		BoundObject m_objects[std::max<size_t>(1, FreeObjects::validSize(flags))];
+		BoundObject m_objects[std::max<size_t>(1, FreeObjects::validSize(flags))] {};
 
 		template <char Id>
 		static size_t init(Container& container, FreeObjects const& fo, BoundObjects& bo) noexcept {
@@ -687,13 +689,13 @@ namespace stored {
 		}
 
 		template <char Id,
-			std::enable_if_t<Head::template has<Id>(), int> = 0>
+			decltype(std::enable_if_t<Head::template has<Id>(), int>()) = 0>
 		decltype(auto) get() noexcept {
 			return m_head.template get<Id>();
 		}
 
 		template <char Id,
-			std::enable_if_t<!Head::template has<Id>(), int> = 0>
+			decltype(std::enable_if_t<!Head::template has<Id>(), int>()) = 0>
 		decltype(auto) get() const noexcept {
 			return m_tail.template get<Id>();
 		}

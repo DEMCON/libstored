@@ -142,13 +142,16 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 				"-readability-braces-around-statements,"
 				"-readability-convert-member-functions-to-static,"
 				"-readability-else-after-return,"
+				"-readability-function-cognitive-complexity,"
 				"-readability-implicit-bool-conversion,"
 				"-readability-magic-numbers,"
 				"-readability-make-member-function-const,"
-				"-readability-uppercase-literal-suffix,"
 				"-readability-redundant-access-specifiers,"
+				"-readability-uppercase-literal-suffix,"
 
 				"performance-*,"
+				"-performance-no-int-to-ptr," # Especially on WIN32 HANDLEs.
+
 				"portability-*,"
 			)
 			set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"

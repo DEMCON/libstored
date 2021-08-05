@@ -113,21 +113,23 @@ namespace stored {
 					int c = (nameEnd ? 0 : (int)*name) - (int)*p++;
 					if(c < 0) {
 						// take jmp_l
-#ifdef STORED_COMPILER_CLANG
-						// clang seems to have issues in evaluating constexpr,
+
+						// This early-break is not required. However, clang and
+						// MSVC seems to have issues in evaluating constexpr,
 						// specifically when evaluating the end marker.
 						if(*p == 0)
 							break;
-#endif
+
 						p += decodeInt<uintptr_t>(p) - 1;
 					} else {
 						skipOffset(p);
 						if(c > 0) {
 							// take jmp_g
-#ifdef STORED_COMPILER_CLANG
+
+							// See above.
 							if(*p == 0)
 								break;
-#endif
+
 							p += decodeInt<uintptr_t>(p) - 1;
 						} else {
 							// equal
