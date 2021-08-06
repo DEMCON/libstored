@@ -26,6 +26,7 @@ import logging
 import heatshrink2
 import keyword
 import weakref
+import random
 
 from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, \
     QEvent, QCoreApplication, QStandardPaths, QSocketNotifier, QEventLoop, SIGNAL
@@ -93,6 +94,7 @@ class Object(QObject):
         self._alias = None
         self._polling = False
         self._pollTimer = None
+        self._pollTimerRunning = False
         self._pollInterval_s = None
         self._format = None
         self._format_set(self.formats[0])
@@ -607,7 +609,21 @@ class Object(QObject):
     def _pollStop(self):
         self._pollSetFlag(False)
         if not self._pollTimer is None:
+            self._pollTimerRunning = False
             self._pollTimer.stop()
+
+    def _pollTimerChangeOffset(self, offset, start, tries=10):
+        if not self._pollTimerRunning or self._pollTimer is None or tries < 1:
+            return
+
+        now = time.time()
+        precision = max(0.05, self._pollInterval_s / 20)
+        if abs(now - start - offset) < precision:
+            # Good enough. Restart to set the new offset.
+            self._pollTimer.start()
+        else:
+            # Timer overran quite a lot. Try again.
+            QTimer.singleShot(int(offset * 1000), lambda: self._pollTimerChangeOffset(offset, now, tries - 1))
 
     def _pollSlow(self, interval_s):
         self._pollSetFlag(True)
@@ -628,7 +644,11 @@ class Object(QObject):
         else:
             self._pollTimer.setTimerType(Qt.VeryCoarseTimer)
 
+        # Randomize start times of the timer to distribute multiple polling
+        # objects, which are initialized at the same times, somewhat over time.
+        self._pollTimerRunning = True
         self._pollTimer.start()
+        self._pollTimerChangeOffset(random.random() * interval_s, time.time())
 
     def _pollRead(self):
         try:
@@ -653,6 +673,7 @@ class Object(QObject):
         self._pollInterval_s = interval_s
         self.pollIntervalChanged.emit()
         if not self._pollTimer is None:
+            self._pollTimerRunning = False
             self._pollTimer.stop()
 
     def _pollSetFlag(self, enable):
