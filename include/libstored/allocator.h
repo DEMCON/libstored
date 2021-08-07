@@ -238,13 +238,15 @@ namespace stored {
 				}
 
 				Forwarder& operator=(Forwarder const& f) {
-					auto w = allocate<Wrapper<F>>();
-					try {
-						f.m_w->clone(w);
-						m_w = w;
-					} catch(...) {
-						cleanup(w);
-						throw;
+					if(&f != this) {
+						auto w = allocate<Wrapper<F>>();
+						try {
+							f.m_w->clone(w);
+							m_w = w;
+						} catch(...) {
+							cleanup(w);
+							throw;
+						}
 					}
 					return *this;
 				}
@@ -314,12 +316,14 @@ namespace stored {
 			}
 
 			Callable& operator=(Callable const& c) {
-				destroy();
-				try {
-					c.get().clone(m_buffer.data());
-				} catch(...) {
-					construct<Reset>();
-					throw;
+				if(&c != this) {
+					destroy();
+					try {
+						c.get().clone(m_buffer.data());
+					} catch(...) {
+						construct<Reset>();
+						throw;
+					}
 				}
 				return *this;
 			}

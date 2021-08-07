@@ -529,7 +529,7 @@ namespace stored {
 		 */
 		type get() const {
 			stored_assert(valid());
-			type value;
+			type value = type();
 			callback(false, value);
 			return value;
 		}
@@ -715,7 +715,7 @@ namespace stored {
 		Variable_type apply_(Container& container) const noexcept {
 			stored_assert(valid());
 			// cppcheck-suppress invalidPointerCast
-			return Variable_type(container, *reinterpret_cast<type*>(static_cast<char*>(container.buffer()) + m_offset));
+			return Variable_type(container, *reinterpret_cast<type*>(static_cast<char*>(container.buffer()) + m_offset)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 		}
 
 		/*! \brief Check if two free variables are identical. */
@@ -1300,7 +1300,7 @@ namespace stored {
 
 			stored_assert(isFunction());
 			stored_assert(Type::isFixed(type()));
-			stored_assert(toType<T>::type == (type() & ~Type::FlagFunction));
+			stored_assert(toType<T>::type == (Type::type)((unsigned int)type() & (unsigned int)~Type::FlagFunction));
 			stored_assert(sizeof(T) == size());
 			return FreeFunction<T,Container>((unsigned int)m_offset);
 		}
