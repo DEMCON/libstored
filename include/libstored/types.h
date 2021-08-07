@@ -780,7 +780,7 @@ namespace stored {
 	public:
 		/*! \brief Returns if this function is valid. */
 		constexpr bool valid() const noexcept {
-			return m_f;
+			return m_f != 0U;
 		}
 
 		/*! \brief Convert this free function into a bound one. */

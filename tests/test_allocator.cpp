@@ -46,8 +46,6 @@ void operator delete(void* ptr, std::size_t) noexcept {
 }
 
 
-namespace {
-
 static bool callable_flag;
 static void callable() {
 	callable_flag = true;
@@ -233,6 +231,12 @@ TEST(Callable, Copy) {
 	EXPECT_TRUE(flag0);
 }
 
+static int copies = 0;
+struct C {
+	C() = default;
+	C(C const&) { copies++; }
+};
+
 TEST(Callable, Args) {
 	int v = 0;
 	stored::Callable<void(int)>::type f{[&](int x){ v = x; }};
@@ -242,12 +246,6 @@ TEST(Callable, Args) {
 	stored::Callable<void(int,int)>::type g{[&](int a, int b){ v = a + b; }};
 	g(2, 3);
 	EXPECT_EQ(v, 5);
-
-	static int copies = 0;
-	struct C {
-		C() = default;
-		C(C const&) { copies++; }
-	};
 
 	stored::Callable<void(C)>::type h{[](C){}};
 	copies = 0;
@@ -303,6 +301,4 @@ TEST_F(Allocator, Store) {
 	// No non-allocator allocations are expected.
 	EXPECT_EQ(new_count, 0u);
 }
-
-} // namespace
 
