@@ -40,7 +40,7 @@ static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len
 /*!
  * \brief Constructor.
  */
-{{store.name}}Data::{{store.name}}Data()
+{{store.name}}Data::{{store.name}}Data() noexcept
     : buffer()
 {
 {% if store.buffer.init|len > 0 %}

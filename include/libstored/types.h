@@ -166,14 +166,11 @@ namespace stored {
 		 * \param container the Container this Variable belongs to
 		 * \param buffer the reference to this Variable's buffer inside container's buffer
 		 */
-#ifndef _DEBUG
-		constexpr
-#endif
 		// cppcheck-suppress uninitMemberVar
 		Variable(Container& UNUSED_PAR(container), type& buffer) noexcept
 			: m_buffer(&buffer)
 		{
-			stored_assert(((uintptr_t)&buffer & (sizeof(type) - 1)) == 0);
+			stored_assert(((uintptr_t)m_buffer & (sizeof(type) - 1U)) == 0U);
 		}
 
 		/*!
@@ -831,9 +828,6 @@ namespace stored {
 		/*!
 		 * \brief Constructor for a variable.
 		 */
-#ifndef _DEBUG
-		constexpr
-#endif
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant(Container& container, Type::type type, void* buffer, size_t len) noexcept
 			: m_container(&container), m_buffer(buffer), m_len(len), m_type((uint8_t)type)
@@ -850,9 +844,6 @@ namespace stored {
 		/*!
 		 * \brief Constructor for a function.
 		 */
-#ifndef _DEBUG
-		constexpr
-#endif
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 		Variant(Container& container, Type::type type, unsigned int f, size_t len) noexcept
 			: m_container(&container), m_f((uintptr_t)f), m_len(len), m_type((uint8_t)type)
