@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Base classes &mdash; libstored 1.0.0-rc documentation</title>
@@ -13,6 +14,8 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +32,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
@@ -179,357 +183,380 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="base-classes">
+  <section id="base-classes">
 <h1>Base classes<a class="headerlink" href="#base-classes" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="zmqclient">
+<section id="zmqclient">
 <h2>ZmqClient<a class="headerlink" href="#zmqclient" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="ed2.ZmqClient">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ed2.</span></code><code class="sig-name descname"><span class="pre">ZmqClient</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">19026</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ed2.</span></span><span class="sig-name descname"><span class="pre">ZmqClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">19026</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient" title="Permalink to this definition">¶</a></dt>
 <dd><p>A ZMQ client.</p>
 <p>This client can connect to either the ed2.zmq_server.ZmqServer and stored::DebugZmqLayer.</p>
 <p>Instantiate as ed2.ZmqClient().</p>
 <dl class="py method">
-<dt id="ed2.ZmqClient.acquireAlias">
-<code class="sig-name descname"><span class="pre">acquireAlias</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temporary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.acquireAlias" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.acquireAlias">
+<span class="sig-name descname"><span class="pre">acquireAlias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temporary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permanentRef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.acquireAlias" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.ZmqClient.acquireMacro">
-<code class="sig-name descname"><span class="pre">acquireMacro</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\n'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.acquireMacro" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.acquireMacro">
+<span class="sig-name descname"><span class="pre">acquireMacro</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\n'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.acquireMacro" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.ZmqClient.assignMacro">
-<code class="sig-name descname"><span class="pre">assignMacro</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">b'\n'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.assignMacro" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.assignMacro">
+<span class="sig-name descname"><span class="pre">assignMacro</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">b'\n'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.assignMacro" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.ZmqClient.autoSaveState">
-<code class="sig-name descname"><span class="pre">autoSaveState</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.autoSaveState" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.autoSaveState">
+<span class="sig-name descname"><span class="pre">autoSaveState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.autoSaveState" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.ZmqClient.capabilities">
-<code class="sig-name descname"><span class="pre">capabilities</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.capabilities" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.capabilities">
+<span class="sig-name descname"><span class="pre">capabilities</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.capabilities" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.ZmqClient.close">
-<code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.close" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.context">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">context</span></code><a class="headerlink" href="#ed2.ZmqClient.context" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.close" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="ed2.ZmqClient.defaultPollInterval">
-<code class="sig-name descname"><span class="pre">defaultPollInterval</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;ed2.zmq_client._Property</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#ed2.ZmqClient.defaultPollInterval" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.closed">
+<span class="sig-name descname"><span class="pre">closed</span></span><a class="headerlink" href="#ed2.ZmqClient.closed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ed2.ZmqClient.context">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">context</span></span><a class="headerlink" href="#ed2.ZmqClient.context" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="ed2.ZmqClient.defaultPollIntervalChanged">
-<code class="sig-name descname"><span class="pre">defaultPollIntervalChanged</span></code><a class="headerlink" href="#ed2.ZmqClient.defaultPollIntervalChanged" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.defaultStateFile">
-<code class="sig-name descname"><span class="pre">defaultStateFile</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.defaultStateFile" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.echo">
-<code class="sig-name descname"><span class="pre">echo</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.echo" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.defaultPollInterval">
+<span class="sig-name descname"><span class="pre">defaultPollInterval</span></span><em class="property"> <span class="pre">=</span> <span class="pre">&lt;ed2.zmq_client._Property</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#ed2.ZmqClient.defaultPollInterval" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="ed2.ZmqClient.fastPollThreshold_s">
-<code class="sig-name descname"><span class="pre">fastPollThreshold_s</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0.9</span></em><a class="headerlink" href="#ed2.ZmqClient.fastPollThreshold_s" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.defaultPollIntervalChanged">
+<span class="sig-name descname"><span class="pre">defaultPollIntervalChanged</span></span><a class="headerlink" href="#ed2.ZmqClient.defaultPollIntervalChanged" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.ZmqClient.find">
-<code class="sig-name descname"><span class="pre">find</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.find" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.defaultStateFile">
+<span class="sig-name descname"><span class="pre">defaultStateFile</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.defaultStateFile" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.ZmqClient.identification">
-<code class="sig-name descname"><span class="pre">identification</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.identification" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.list">
-<code class="sig-name descname"><span class="pre">list</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.obj">
-<code class="sig-name descname"><span class="pre">obj</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.obj" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.objects">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">objects</span></code><a class="headerlink" href="#ed2.ZmqClient.objects" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.poll">
-<code class="sig-name descname"><span class="pre">poll</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.poll" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.pyname">
-<code class="sig-name descname"><span class="pre">pyname</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.pyname" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.readMem">
-<code class="sig-name descname"><span class="pre">readMem</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pointer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.readMem" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.releaseAlias">
-<code class="sig-name descname"><span class="pre">releaseAlias</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alias</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.releaseAlias" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.releaseMacro">
-<code class="sig-name descname"><span class="pre">releaseMacro</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.releaseMacro" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.req">
-<code class="sig-name descname"><span class="pre">req</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.req" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.reqAsync">
-<code class="sig-name descname"><span class="pre">reqAsync</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.reqAsync" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.restoreState">
-<code class="sig-name descname"><span class="pre">restoreState</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.restoreState" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.saveState">
-<code class="sig-name descname"><span class="pre">saveState</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.saveState" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.echo">
+<span class="sig-name descname"><span class="pre">echo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.echo" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="ed2.ZmqClient.slowPollInterval_s">
-<code class="sig-name descname"><span class="pre">slowPollInterval_s</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2.0</span></em><a class="headerlink" href="#ed2.ZmqClient.slowPollInterval_s" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.fastPollThreshold_s">
+<span class="sig-name descname"><span class="pre">fastPollThreshold_s</span></span><em class="property"> <span class="pre">=</span> <span class="pre">0.9</span></em><a class="headerlink" href="#ed2.ZmqClient.fastPollThreshold_s" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.ZmqClient.socket">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">socket</span></code><a class="headerlink" href="#ed2.ZmqClient.socket" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.find">
+<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.find" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ed2.ZmqClient.identification">
+<span class="sig-name descname"><span class="pre">identification</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.identification" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ed2.ZmqClient.list">
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ed2.ZmqClient.obj">
+<span class="sig-name descname"><span class="pre">obj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.obj" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ed2.ZmqClient.objects">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">objects</span></span><a class="headerlink" href="#ed2.ZmqClient.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ed2.ZmqClient.poll">
+<span class="sig-name descname"><span class="pre">poll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.poll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ed2.ZmqClient.pyname">
+<span class="sig-name descname"><span class="pre">pyname</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.pyname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ed2.ZmqClient.readMem">
+<span class="sig-name descname"><span class="pre">readMem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pointer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.readMem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ed2.ZmqClient.releaseAlias">
+<span class="sig-name descname"><span class="pre">releaseAlias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permanentRef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.releaseAlias" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ed2.ZmqClient.releaseMacro">
+<span class="sig-name descname"><span class="pre">releaseMacro</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.releaseMacro" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ed2.ZmqClient.req">
+<span class="sig-name descname"><span class="pre">req</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.req" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ed2.ZmqClient.reqAsync">
+<span class="sig-name descname"><span class="pre">reqAsync</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.reqAsync" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ed2.ZmqClient.restoreState">
+<span class="sig-name descname"><span class="pre">restoreState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.restoreState" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ed2.ZmqClient.saveState">
+<span class="sig-name descname"><span class="pre">saveState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.saveState" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="ed2.ZmqClient.staticMetaObject">
-<code class="sig-name descname"><span class="pre">staticMetaObject</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;PySide2.QtCore.QMetaObject</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#ed2.ZmqClient.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.slowPollInterval_s">
+<span class="sig-name descname"><span class="pre">slowPollInterval_s</span></span><em class="property"> <span class="pre">=</span> <span class="pre">1.0</span></em><a class="headerlink" href="#ed2.ZmqClient.slowPollInterval_s" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="ed2.ZmqClient.stream">
-<code class="sig-name descname"><span class="pre">stream</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.stream" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.streams">
-<code class="sig-name descname"><span class="pre">streams</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.streams" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.time">
-<code class="sig-name descname"><span class="pre">time</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.time" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.timestampToTime">
-<code class="sig-name descname"><span class="pre">timestampToTime</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.timestampToTime" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.ZmqClient.traceDecimate">
-<code class="sig-name descname"><span class="pre">traceDecimate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">decimate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.traceDecimate" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="ed2.ZmqClient.socket">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">socket</span></span><a class="headerlink" href="#ed2.ZmqClient.socket" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="ed2.ZmqClient.traceThreshold_s">
-<code class="sig-name descname"><span class="pre">traceThreshold_s</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0.1</span></em><a class="headerlink" href="#ed2.ZmqClient.traceThreshold_s" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"> <span class="pre">=</span> <span class="pre">&lt;PySide2.QtCore.QMetaObject</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#ed2.ZmqClient.staticMetaObject" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.ZmqClient.useEventLoop">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">useEventLoop</span></code><a class="headerlink" href="#ed2.ZmqClient.useEventLoop" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.stream">
+<span class="sig-name descname"><span class="pre">stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.stream" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.ZmqClient.version">
-<code class="sig-name descname"><span class="pre">version</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.version" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.streams">
+<span class="sig-name descname"><span class="pre">streams</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.streams" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.ZmqClient.writeMem">
-<code class="sig-name descname"><span class="pre">writeMem</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pointer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.writeMem" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.ZmqClient.time">
+<span class="sig-name descname"><span class="pre">time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ed2.ZmqClient.timestampToTime">
+<span class="sig-name descname"><span class="pre">timestampToTime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.timestampToTime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ed2.ZmqClient.traceDecimate">
+<span class="sig-name descname"><span class="pre">traceDecimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">decimate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.traceDecimate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ed2.ZmqClient.traceProcess">
+<span class="sig-name descname"><span class="pre">traceProcess</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.traceProcess" title="Permalink to this definition">¶</a></dt>
+<dd><p>In case there is no Qt event loop running, call this function to poll
+and process data that is expected via the trace stream.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ed2.ZmqClient.traceThreshold_s">
+<span class="sig-name descname"><span class="pre">traceThreshold_s</span></span><em class="property"> <span class="pre">=</span> <span class="pre">0.1</span></em><a class="headerlink" href="#ed2.ZmqClient.traceThreshold_s" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ed2.ZmqClient.useEventLoop">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">useEventLoop</span></span><a class="headerlink" href="#ed2.ZmqClient.useEventLoop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ed2.ZmqClient.version">
+<span class="sig-name descname"><span class="pre">version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ed2.ZmqClient.writeMem">
+<span class="sig-name descname"><span class="pre">writeMem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pointer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.ZmqClient.writeMem" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-</div>
-<div class="section" id="protocol-layers">
+</section>
+<section id="protocol-layers">
 <h2>Protocol layers<a class="headerlink" href="#protocol-layers" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="ed2.protocol.ProtocolLayer">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></code><code class="sig-name descname"><span class="pre">ProtocolLayer</span></code><a class="headerlink" href="#ed2.protocol.ProtocolLayer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolLayer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></span><span class="sig-name descname"><span class="pre">ProtocolLayer</span></span><a class="headerlink" href="#ed2.protocol.ProtocolLayer" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py method">
-<dt id="ed2.protocol.ProtocolLayer.activity">
-<code class="sig-name descname"><span class="pre">activity</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolLayer.activity" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolLayer.activity">
+<span class="sig-name descname"><span class="pre">activity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolLayer.activity" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.protocol.ProtocolLayer.decode">
-<code class="sig-name descname"><span class="pre">decode</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolLayer.decode" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolLayer.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolLayer.close" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.protocol.ProtocolLayer.down">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">down</span></code><a class="headerlink" href="#ed2.protocol.ProtocolLayer.down" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolLayer.decode">
+<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolLayer.decode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolLayer.down">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">down</span></span><a class="headerlink" href="#ed2.protocol.ProtocolLayer.down" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.protocol.ProtocolLayer.encode">
-<code class="sig-name descname"><span class="pre">encode</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolLayer.encode" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolLayer.encode">
+<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolLayer.encode" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.protocol.ProtocolLayer.lastActivity">
-<code class="sig-name descname"><span class="pre">lastActivity</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolLayer.lastActivity" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolLayer.lastActivity">
+<span class="sig-name descname"><span class="pre">lastActivity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolLayer.lastActivity" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="ed2.protocol.ProtocolLayer.mtu">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">mtu</span></code><a class="headerlink" href="#ed2.protocol.ProtocolLayer.mtu" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolLayer.mtu">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">mtu</span></span><a class="headerlink" href="#ed2.protocol.ProtocolLayer.mtu" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="ed2.protocol.ProtocolLayer.name">
-<code class="sig-name descname"><span class="pre">name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'layer'</span></em><a class="headerlink" href="#ed2.protocol.ProtocolLayer.name" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolLayer.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'layer'</span></em><a class="headerlink" href="#ed2.protocol.ProtocolLayer.name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.protocol.ProtocolLayer.timeout">
-<code class="sig-name descname"><span class="pre">timeout</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolLayer.timeout" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolLayer.timeout">
+<span class="sig-name descname"><span class="pre">timeout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolLayer.timeout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolLayer.up">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">up</span></span><a class="headerlink" href="#ed2.protocol.ProtocolLayer.up" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.protocol.ProtocolLayer.up">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">up</span></code><a class="headerlink" href="#ed2.protocol.ProtocolLayer.up" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="ed2.protocol.ProtocolLayer.wrap">
-<code class="sig-name descname"><span class="pre">wrap</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolLayer.wrap" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolLayer.wrap">
+<span class="sig-name descname"><span class="pre">wrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolLayer.wrap" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="ed2.protocol.AsciiEscapeLayer">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></code><code class="sig-name descname"><span class="pre">AsciiEscapeLayer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.AsciiEscapeLayer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.AsciiEscapeLayer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></span><span class="sig-name descname"><span class="pre">AsciiEscapeLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.AsciiEscapeLayer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
-<dt id="ed2.protocol.TerminalLayer">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></code><code class="sig-name descname"><span class="pre">TerminalLayer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fdout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignoreEscapesTillFirstEncode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.TerminalLayer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.TerminalLayer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></span><span class="sig-name descname"><span class="pre">TerminalLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fdout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignoreEscapesTillFirstEncode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.TerminalLayer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
-<dt id="ed2.protocol.SegmentationLayer">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></code><code class="sig-name descname"><span class="pre">SegmentationLayer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.SegmentationLayer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.PubTerminalLayer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></span><span class="sig-name descname"><span class="pre">PubTerminalLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'*:19027'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.PubTerminalLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>A TerminalLayer (term), that also forwards all non-debug data over a PUB socket.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ed2.protocol.SegmentationLayer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></span><span class="sig-name descname"><span class="pre">SegmentationLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.SegmentationLayer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
-<dt id="ed2.protocol.DebugArqLayer">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></code><code class="sig-name descname"><span class="pre">DebugArqLayer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.DebugArqLayer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.DebugArqLayer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></span><span class="sig-name descname"><span class="pre">DebugArqLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.DebugArqLayer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
-<dt id="ed2.protocol.Crc8Layer">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></code><code class="sig-name descname"><span class="pre">Crc8Layer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.Crc8Layer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.Crc8Layer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></span><span class="sig-name descname"><span class="pre">Crc8Layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.Crc8Layer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
-<dt id="ed2.protocol.Crc16Layer">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></code><code class="sig-name descname"><span class="pre">Crc16Layer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.Crc16Layer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.Crc16Layer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></span><span class="sig-name descname"><span class="pre">Crc16Layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.Crc16Layer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
-<dt id="ed2.protocol.LoopbackLayer">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></code><code class="sig-name descname"><span class="pre">LoopbackLayer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.LoopbackLayer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.LoopbackLayer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></span><span class="sig-name descname"><span class="pre">LoopbackLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.LoopbackLayer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
-<dt id="ed2.protocol.RawLayer">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></code><code class="sig-name descname"><span class="pre">RawLayer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.RawLayer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.RawLayer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></span><span class="sig-name descname"><span class="pre">RawLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.RawLayer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</div>
-<div class="section" id="protocol-stack">
+</section>
+<section id="protocol-stack">
 <h2>Protocol stack<a class="headerlink" href="#protocol-stack" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="ed2.protocol.ProtocolStack">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></code><code class="sig-name descname"><span class="pre">ProtocolStack</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolStack" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolStack">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></span><span class="sig-name descname"><span class="pre">ProtocolStack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolStack" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py class">
-<dt id="ed2.protocol.ProtocolStack.Iterator">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Iterator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stack</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolStack.Iterator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolStack.Iterator">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Iterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stack</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolStack.Iterator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.protocol.ProtocolStack.decode">
-<code class="sig-name descname"><span class="pre">decode</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolStack.decode" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolStack.decode">
+<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolStack.decode" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.protocol.ProtocolStack.encode">
-<code class="sig-name descname"><span class="pre">encode</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolStack.encode" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolStack.encode">
+<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolStack.encode" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.protocol.ProtocolStack.lastActivity">
-<code class="sig-name descname"><span class="pre">lastActivity</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolStack.lastActivity" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolStack.lastActivity">
+<span class="sig-name descname"><span class="pre">lastActivity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolStack.lastActivity" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="ed2.protocol.ProtocolStack.mtu">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">mtu</span></code><a class="headerlink" href="#ed2.protocol.ProtocolStack.mtu" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolStack.mtu">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">mtu</span></span><a class="headerlink" href="#ed2.protocol.ProtocolStack.mtu" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="ed2.protocol.ProtocolStack.name">
-<code class="sig-name descname"><span class="pre">name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'stack'</span></em><a class="headerlink" href="#ed2.protocol.ProtocolStack.name" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolStack.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'stack'</span></em><a class="headerlink" href="#ed2.protocol.ProtocolStack.name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="ed2.protocol.ProtocolStack.timeout">
-<code class="sig-name descname"><span class="pre">timeout</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolStack.timeout" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.ProtocolStack.timeout">
+<span class="sig-name descname"><span class="pre">timeout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.ProtocolStack.timeout" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
-<dt id="ed2.protocol.registerLayerType">
-<code class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></code><code class="sig-name descname"><span class="pre">registerLayerType</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.registerLayerType" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.registerLayerType">
+<span class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></span><span class="sig-name descname"><span class="pre">registerLayerType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.registerLayerType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="ed2.protocol.buildStack">
-<code class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></code><code class="sig-name descname"><span class="pre">buildStack</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.buildStack" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ed2.protocol.buildStack">
+<span class="sig-prename descclassname"><span class="pre">ed2.protocol.</span></span><span class="sig-name descname"><span class="pre">buildStack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ed2.protocol.buildStack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct the protocol stack from a description.</p>
 <p>The description is a comma-separated string with layer ids.  If the layer has
 a parameter, it can be specified.  The stack is constructed top-down in order
@@ -537,8 +564,8 @@ of the specified layers.</p>
 <p>Grammar: ( &lt;name&gt; ( <code class="docutils literal notranslate"><span class="pre">=</span></code> &lt;value&gt; ) ? ) (<code class="docutils literal notranslate"><span class="pre">,</span></code> &lt;name&gt; ( <code class="docutils literal notranslate"><span class="pre">=</span></code> &lt;value&gt; ) ? ) *</p>
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

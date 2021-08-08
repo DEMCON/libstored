@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>libstored &mdash; libstored 1.0.0-rc documentation</title>
@@ -13,6 +14,8 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +32,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
@@ -190,37 +194,37 @@
            <div itemprop="articleBody">
             
   <a class="reference external image-reference" href="https://github.com/DEMCON/libstored/actions?query=workflow%3ACI"><img alt="CI" src="https://github.com/DEMCON/libstored/workflows/CI/badge.svg" /></a>
-<div class="section" id="libstored">
+<section id="libstored">
 <h1>libstored<a class="headerlink" href="#libstored" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="tl-dr">
+<section id="tl-dr">
 <h2>TL;DR<a class="headerlink" href="#tl-dr" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="what-is-it">
+<section id="what-is-it">
 <h3>What is it?<a class="headerlink" href="#what-is-it" title="Permalink to this headline">¶</a></h3>
 <p>A generator for a C++ class (store) with your application’s variables, and a
 tool set to synchronize updates between processes (including FPGA), and debug
 it remotely.  See also the
 <a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">presentation</a>.</p>
-</div>
-<div class="section" id="when-do-i-need-it">
+</section>
+<section id="when-do-i-need-it">
 <h3>When do I need it?<a class="headerlink" href="#when-do-i-need-it" title="Permalink to this headline">¶</a></h3>
 <p>When you have a distributed application in need of synchronization, and/or you
 want to be able to inspect and modify internal data of a running application.</p>
-</div>
-<div class="section" id="does-it-work-on-my-platform">
+</section>
+<section id="does-it-work-on-my-platform">
 <h3>Does it work on my platform?<a class="headerlink" href="#does-it-work-on-my-platform" title="Permalink to this headline">¶</a></h3>
 <p>Yes.</p>
-</div>
-<div class="section" id="huh-but-how-you-do-know-my-hardware-architecture">
+</section>
+<section id="huh-but-how-you-do-know-my-hardware-architecture">
 <h3>Huh? But how you do know my hardware architecture?<a class="headerlink" href="#huh-but-how-you-do-know-my-hardware-architecture" title="Permalink to this headline">¶</a></h3>
 <p>I don’t. You have to supply the drivers for your (hardware) communication
 interfaces, but everything else is ready to use.</p>
-</div>
-<div class="section" id="great-how-do-i-use-it">
+</section>
+<section id="great-how-do-i-use-it">
 <h3>Great! How do I use it?<a class="headerlink" href="#great-how-do-i-use-it" title="Permalink to this headline">¶</a></h3>
 <p>Have a look at the <a class="reference external" href="https://github.com/DEMCON/libstored/tree/master/examples">examples</a>.</p>
-</div>
-</div>
-<div class="section" id="table-of-contents">
+</section>
+</section>
+<section id="table-of-contents">
 <h2>Table of contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="#introduction">Introduction</a></p></li>
@@ -243,8 +247,8 @@ interfaces, but everything else is ready to use.</p>
 </li>
 <li><p><a class="reference internal" href="#license">License</a></p></li>
 </ul>
-</div>
-<div class="section" id="introduction">
+</section>
+<section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>Data is at the core of any application. And data is tricky, especially when it
 changes.  This library helps you managing data in three ways:</p>
@@ -279,8 +283,8 @@ Using threads is troubling anyway, use <a class="reference external" href="https
 <p>Have a look in the <a class="reference external" href="https://github.com/DEMCON/libstored/tree/master/examples">examples</a> directory for further in-depth reading.
 Refer to the <a class="reference external" href="https://demcon.github.io/libstored">documentation</a> for the C++ API.
 See also the <a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">presentation</a>.</p>
-</div>
-<div class="section" id="libstored-store-by-description">
+</section>
+<section id="libstored-store-by-description">
 <h2>libstored - Store by description<a class="headerlink" href="#libstored-store-by-description" title="Permalink to this headline">¶</a></h2>
 <p>The store is described in a simple grammar.  See the <a class="reference external" href="https://github.com/DEMCON/libstored/tree/master/examples">examples</a> directory for
 more explanation. This is just an impression of the syntax:</p>
@@ -320,8 +324,8 @@ types, and sizes can be queried dynamically.</p></li>
 <li><p>A store is not thread-safe. This seems a limitation, but really, applications
 without threads are way easier to build and debug.</p></li>
 </ul>
-</div>
-<div class="section" id="libstored-store-on-a-distributed-system">
+</section>
+<section id="libstored-store-on-a-distributed-system">
 <h2>libstored - Store on a distributed system<a class="headerlink" href="#libstored-store-on-a-distributed-system" title="Permalink to this headline">¶</a></h2>
 <p>Synchronization is tricky to manage. libstored helps you by providing a
 stored::Synchronizer class that manages connections to other Synchronizers.
@@ -367,8 +371,8 @@ can play with it to see the synchronization.</p>
 <p>The store implementation in VHDL integrates a Synchronizer instance.  However,
 it cannot be used as in intermediate node in the topology as described above;
 the FPGA has to be a leaf.</p>
-</div>
-<div class="section" id="libstored-store-for-embedded-debugger">
+</section>
+<section id="libstored-store-for-embedded-debugger">
 <h2>libstored - Store for Embedded Debugger<a class="headerlink" href="#libstored-store-for-embedded-debugger" title="Permalink to this headline">¶</a></h2>
 <p>If you have an embedded system, you probably want to debug it on-target.  One
 of the questions you often have, is what is the value of internal variables of
@@ -403,7 +407,7 @@ commands by adding another capability in a subclass of stored::Debugger.</p>
 FPGA, instantiate the store, which includes a Synchronizer, and use a bridge in
 C++ that has the same store, a Synchronizer connected to the FPGA, and a
 Debugger instance. The connect to this C++ bridge.</p>
-<div class="section" id="example">
+<section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
 <p>The host tools to debug your application are written in python, as the <code class="docutils literal notranslate"><span class="pre">ed2</span></code>
 package, and are located the <code class="docutils literal notranslate"><span class="pre">client</span></code> directory. You can run the example below
@@ -478,8 +482,8 @@ to a CSV file when the <code class="docutils literal notranslate"><span class="p
 </div>
 <p>There are some more ready-to-use clients, and a Python module in the
 <a class="reference external" href="https://github.com/DEMCON/libstored/tree/master/client">client</a> directory.</p>
-</div>
-<div class="section" id="embedded-debugger-protocol">
+</section>
+<section id="embedded-debugger-protocol">
 <h3>Embedded Debugger protocol<a class="headerlink" href="#embedded-debugger-protocol" title="Permalink to this headline">¶</a></h3>
 <p>Communication with the debugger implementation in the application follows a
 request-response pattern.  A full description of the commands can be found in
@@ -563,9 +567,9 @@ from the application.</p>
 &lt;  3fb7617168255e00
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="how-to-build">
+</section>
+</section>
+<section id="how-to-build">
 <h2>How to build<a class="headerlink" href="#how-to-build" title="Permalink to this headline">¶</a></h2>
 <p>Run <code class="docutils literal notranslate"><span class="pre">scripts/bootstrap</span></code> (as Administrator under Windows) once to install all
 build dependencies.  Then run <code class="docutils literal notranslate"><span class="pre">scripts/build</span></code> to build the project. This does
@@ -587,7 +591,7 @@ generated under <code class="docutils literal notranslate"><span class="pre">exa
 cmake --build . --target RUN_TESTS
 </pre></div>
 </div>
-<div class="section" id="how-to-integrate-in-your-build">
+<section id="how-to-integrate-in-your-build">
 <h3>How to integrate in your build<a class="headerlink" href="#how-to-integrate-in-your-build" title="Permalink to this headline">¶</a></h3>
 <p>Building libstored on itself is not too interesting, it is about how it can
 generate stuff for you.  This is how to integrate it in your project:</p>
@@ -624,9 +628,9 @@ usually; the <code class="docutils literal notranslate"><span class="pre">rtl/vi
 </ul>
 <p>Check out the examples of libstored, which are all independent applications
 with their own generated store.</p>
-</div>
-</div>
-<div class="section" id="license">
+</section>
+</section>
+<section id="license">
 <h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
 <p>The project license is specified in COPYING and COPYING.LESSER.</p>
 <p>This program is free software: you can redistribute it and/or modify
@@ -639,8 +643,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.</p>
 <p>You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <a class="reference external" href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

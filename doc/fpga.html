@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>VHDL &mdash; libstored 1.0.0-rc documentation</title>
@@ -13,6 +14,8 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +32,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
@@ -186,7 +190,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="vhdl">
+  <section id="vhdl">
 <h1>VHDL<a class="headerlink" href="#vhdl" title="Permalink to this headline">¶</a></h1>
 <p>The generated VHDL entity for a store contains the following:</p>
 <ul class="simple">
@@ -200,11 +204,11 @@ write-only, read-write, or not available.</p></li>
 <li><p>Multiple stores can be chained to pass Synchronizer messages over the same
 protocol stack.</p></li>
 </ul>
-<div class="section" id="store-entity">
+<section id="store-entity">
 <h2>Store entity<a class="headerlink" href="#store-entity" title="Permalink to this headline">¶</a></h2>
 <dl class="object">
-<dt>
-<code class="sig-name descname"><span class="pre">Store_hdl</span></code></dt>
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">Store_hdl</span></span></dt>
 <dd><p>The generated stores have the following entity definition (for the
 ExampleFpga store in this case):</p>
 <div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">ExampleFpga_hdl</span> <span class="k">is</span>
@@ -338,12 +342,12 @@ variables that are at most 32-bit in size.</p>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="store-package">
+</section>
+<section id="store-package">
 <h2>Store package<a class="headerlink" href="#store-package" title="Permalink to this headline">¶</a></h2>
 <dl class="object">
-<dt>
-<code class="sig-name descname"><span class="pre">Store_pkg</span></code></dt>
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">Store_pkg</span></span></dt>
 <dd><p>The generated package includes all store-specific settings, like initialization
 values, and types to make handling all store variables easier.
 The following items are most interesting:</p>
@@ -367,7 +371,7 @@ this:</p>
 </pre></div>
 </div>
 <p>The output timing is exemplified below.</p>
-<img alt="../_images/wavedrom-2c92f8e9-255d-4991-94e2-2bb48a522f77.svg" src="../_images/wavedrom-2c92f8e9-255d-4991-94e2-2bb48a522f77.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
+<img alt="../_images/wavedrom-722ce1a3-65a7-4029-9dbe-e19d808017d2.svg" src="../_images/wavedrom-722ce1a3-65a7-4029-9dbe-e19d808017d2.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
 When the value is written, via <code class="docutils literal notranslate"><span class="pre">var_in</span></code>, the AXI interface, or via the
 Synchronizer, <code class="docutils literal notranslate"><span class="pre">value</span></code> is updated and <code class="docutils literal notranslate"><span class="pre">updated</span></code> is flagged for one
 clock cycle.  The flag is set at every write, not only when the data
@@ -403,7 +407,7 @@ this:</p>
 </pre></div>
 </div>
 <p>When <code class="docutils literal notranslate"><span class="pre">we</span></code> is high, the <code class="docutils literal notranslate"><span class="pre">value</span></code> is written to the store.</p>
-<img alt="../_images/wavedrom-eb3e05d6-3334-4a8a-a64d-eb7d7a1b4fef.svg" src="../_images/wavedrom-eb3e05d6-3334-4a8a-a64d-eb7d7a1b4fef.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
+<img alt="../_images/wavedrom-82d5b3da-6671-43e1-a18d-bfc608d1b271.svg" src="../_images/wavedrom-82d5b3da-6671-43e1-a18d-bfc608d1b271.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
 the case that a microcontroller and the FPGA synchronize a store.  If a
 variable should be read-only for the microcontroller, <code class="docutils literal notranslate"><span class="pre">we</span></code> can be tied
 high by the FPGA, such that the FPGA updates the variable constantly.  In
@@ -439,12 +443,12 @@ is ignored (there is no backpressure in place).</p>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="common-package">
+</section>
+<section id="common-package">
 <h2>Common package<a class="headerlink" href="#common-package" title="Permalink to this headline">¶</a></h2>
 <dl class="object">
-<dt>
-<code class="sig-name descname"><span class="pre">libstored_pkg</span></code></dt>
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">libstored_pkg</span></span></dt>
 <dd><dl id="access-t">
 <dt>type access_t</dt><dd><p>This specifies the access type of a variable:</p>
 <div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">type</span> <span class="n">access_t</span> <span class="k">is</span> <span class="p">(</span><span class="n">ACCESS_RW</span><span class="p">,</span> <span class="n">ACCESS_RO</span><span class="p">,</span> <span class="n">ACCESS_WO</span><span class="p">,</span> <span class="n">ACCESS_NA</span><span class="p">);</span>
@@ -481,14 +485,14 @@ messages that reach the terminator, are accepted and dropped.</p>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="protocol">
+</section>
+<section id="protocol">
 <h2>Protocol<a class="headerlink" href="#protocol" title="Permalink to this headline">¶</a></h2>
 <p>The protocol stack can be built by chaining these components using two <code class="docutils literal notranslate"><span class="pre">msg_t</span></code> signals.
 All layers have a similar interface:</p>
 <dl class="object">
-<dt>
-<code class="sig-name descname"><span class="pre">Generic</span> <span class="pre">layer</span></code></dt>
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">Generic</span> <span class="pre">layer</span></span></dt>
 <dd><div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">SomeLayer</span> <span class="k">is</span>
    <span class="k">port</span> <span class="p">(</span>
       <span class="n">clk</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
@@ -521,7 +525,7 @@ layer in the stack.</p>
 </dd>
 </dl>
 <p>Passing messages follows this scheme, which is resembles the AXI4-Stream Protocol:</p>
-<img alt="../_images/wavedrom-2ed1c176-a682-42af-ad58-cb4763416662.svg" src="../_images/wavedrom-2ed1c176-a682-42af-ad58-cb4763416662.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
+<img alt="../_images/wavedrom-a6c67923-9ebf-4fbe-9354-55317af21cf1.svg" src="../_images/wavedrom-a6c67923-9ebf-4fbe-9354-55317af21cf1.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
 clock edge.  In the example above, this happens at edge 2, 3, 6, 9, and 10.
 There is no order or dependency in <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code>; both can be
 high while other is not, indicating ‘there is data’, or ‘the data can be
@@ -538,11 +542,11 @@ integration, <code class="docutils literal notranslate"><span class="pre">accept
 <code class="docutils literal notranslate"><span class="pre">decode_in</span></code>, the same applies.</p>
 </dd></dl>
 
-<div class="section" id="asciiescapelayer">
+<section id="asciiescapelayer">
 <h3>AsciiEscapeLayer<a class="headerlink" href="#asciiescapelayer" title="Permalink to this headline">¶</a></h3>
 <dl class="object">
-<dt>
-<code class="sig-name descname"><span class="pre">AsciiEscapeLayer</span></code></dt>
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">AsciiEscapeLayer</span></span></dt>
 <dd><p>VHDL counterpart of <a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored16AsciiEscapeLayerE" title="stored::AsciiEscapeLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::AsciiEscapeLayer</span></code></a>.</p>
 <div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">AsciiEscapeLayer</span> <span class="k">is</span>
    <span class="k">generic</span> <span class="p">(</span>
@@ -578,12 +582,12 @@ Set to 0 to allow pass-through.</p>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="bufferlayer">
+</section>
+<section id="bufferlayer">
 <h3>BufferLayer<a class="headerlink" href="#bufferlayer" title="Permalink to this headline">¶</a></h3>
 <dl class="object">
-<dt>
-<code class="sig-name descname"><span class="pre">BufferLayer</span></code></dt>
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">BufferLayer</span></span></dt>
 <dd><p>Buffer messages in a FIFO.</p>
 <div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">BufferLayer</span> <span class="k">is</span>
    <span class="k">generic</span> <span class="p">(</span>
@@ -613,12 +617,12 @@ Set to 0 to allow pass-through.</p>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="terminallayer">
+</section>
+<section id="terminallayer">
 <h3>TerminalLayer<a class="headerlink" href="#terminallayer" title="Permalink to this headline">¶</a></h3>
 <dl class="object">
-<dt>
-<code class="sig-name descname"><span class="pre">TerminalLayer</span></code></dt>
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">TerminalLayer</span></span></dt>
 <dd><p>VHDL counterpart of <a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13TerminalLayerE" title="stored::TerminalLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::TerminalLayer</span></code></a>.</p>
 <div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">TerminalLayer</span> <span class="k">is</span>
    <span class="k">generic</span> <span class="p">(</span>
@@ -661,12 +665,12 @@ Set to 0 to allow pass-through.</p>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="uartlayer">
+</section>
+<section id="uartlayer">
 <h3>UARTLayer<a class="headerlink" href="#uartlayer" title="Permalink to this headline">¶</a></h3>
 <dl class="object">
-<dt>
-<code class="sig-name descname"><span class="pre">UARTLayer</span></code></dt>
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">UARTLayer</span></span></dt>
 <dd><p>UART end of the protocol stack, with optional RTS/CTS hardware flow control.</p>
 <div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">UARTLayer</span> <span class="k">is</span>
    <span class="k">generic</span> <span class="p">(</span>
@@ -701,12 +705,12 @@ Set to 0 to allow pass-through.</p>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="filelayer">
+</section>
+<section id="filelayer">
 <h3>FileLayer<a class="headerlink" href="#filelayer" title="Permalink to this headline">¶</a></h3>
 <dl class="object">
-<dt>
-<code class="sig-name descname"><span class="pre">FileLayer</span></code></dt>
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">FileLayer</span></span></dt>
 <dd><p>File backend of the protocol stack.
 Only available for simulation.</p>
 <div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">FileLayer</span> <span class="k">is</span>
@@ -742,12 +746,12 @@ Some throttling can be implemented this way.</p>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="teelayer">
+</section>
+<section id="teelayer">
 <h3>TeeLayer<a class="headerlink" href="#teelayer" title="Permalink to this headline">¶</a></h3>
 <dl class="object">
-<dt>
-<code class="sig-name descname"><span class="pre">TeeLayer</span></code></dt>
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">TeeLayer</span></span></dt>
 <dd><p>Write all encoded and/or decoded data to a file, like the UNIX tool <code class="docutils literal notranslate"><span class="pre">tee</span></code>.
 Only available for simulation.</p>
 <div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">TeeLayer</span> <span class="k">is</span>
@@ -780,12 +784,12 @@ Only used when not empty.</p>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="xsimlayer">
+</section>
+<section id="xsimlayer">
 <h3>XsimLayer<a class="headerlink" href="#xsimlayer" title="Permalink to this headline">¶</a></h3>
 <dl class="object">
-<dt>
-<code class="sig-name descname"><span class="pre">XsimLayer</span></code></dt>
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">XsimLayer</span></span></dt>
 <dd><p>VHDL counterpart of <a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored9XsimLayerE" title="stored::XsimLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::XsimLayer</span></code></a>.
 Only available in simulation.</p>
 <div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">XsimLayer</span> <span class="k">is</span>
@@ -813,15 +817,15 @@ Only available in simulation.</p>
 </dl>
 </dd></dl>
 
-</div>
-</div>
-<div class="section" id="utilities">
+</section>
+</section>
+<section id="utilities">
 <h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="libstored-droptail">
+<section id="libstored-droptail">
 <h3>libstored_droptail<a class="headerlink" href="#libstored-droptail" title="Permalink to this headline">¶</a></h3>
 <dl class="object">
-<dt>
-<code class="sig-name descname"><span class="pre">libstored_droptail</span></code></dt>
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">libstored_droptail</span></span></dt>
 <dd><p>Drop the tail with a fixed length from a message.</p>
 <div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">libstored_droptail</span> <span class="k">is</span>
    <span class="k">generic</span> <span class="p">(</span>
@@ -847,7 +851,7 @@ Only available in simulation.</p>
 </pre></div>
 </div>
 <p>Example that drops a tail of length 1:</p>
-<img alt="../_images/wavedrom-a63fe8b8-614d-483d-9ce6-06ca7bd37d87.svg" src="../_images/wavedrom-a63fe8b8-614d-483d-9ce6-06ca7bd37d87.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
+<img alt="../_images/wavedrom-65da8d0e-00e5-4b50-8bd2-4accedebf5ae.svg" src="../_images/wavedrom-65da8d0e-00e5-4b50-8bd2-4accedebf5ae.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
 unspecified.</p>
 <dl class="simple">
 <dt>FIFO_DEPTH<span class="classifier">natural := 0</span></dt><dd><p>Minimum FIFO depth. Set to 0 to allow pass-through.</p>
@@ -861,12 +865,12 @@ So, <code class="docutils literal notranslate"><span class="pre">last_out</span>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="libstored-stream-buffer">
+</section>
+<section id="libstored-stream-buffer">
 <h3>libstored_stream_buffer<a class="headerlink" href="#libstored-stream-buffer" title="Permalink to this headline">¶</a></h3>
 <dl class="object">
-<dt>
-<code class="sig-name descname"><span class="pre">libstored_stream_buffer</span></code></dt>
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">libstored_stream_buffer</span></span></dt>
 <dd><p>Break long combinatorial path by inserting flipflops.
 This is effectively a FIFO of size 1.</p>
 <div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">libstored_stream_buffer</span> <span class="k">is</span>
@@ -890,12 +894,12 @@ This is effectively a FIFO of size 1.</p>
 </div>
 </dd></dl>
 
-</div>
-<div class="section" id="libstored-fifo">
+</section>
+<section id="libstored-fifo">
 <h3>libstored_fifo<a class="headerlink" href="#libstored-fifo" title="Permalink to this headline">¶</a></h3>
 <dl class="object">
-<dt>
-<code class="sig-name descname"><span class="pre">libstored_fifo</span></code></dt>
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">libstored_fifo</span></span></dt>
 <dd><p>FIFO with optional conditional push, and lookahead before actual pop.</p>
 <div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">libstored_fifo</span> <span class="k">is</span>
    <span class="k">generic</span> <span class="p">(</span>
@@ -929,8 +933,8 @@ This is effectively a FIFO of size 1.</p>
 </pre></div>
 </div>
 <p>Example to drop and commit pushed data:</p>
-<img alt="../_images/wavedrom-1d14d311-feae-4991-aec9-5cec95ec3bba.svg" src="../_images/wavedrom-1d14d311-feae-4991-aec9-5cec95ec3bba.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
-<img alt="../_images/wavedrom-16519c79-e8ed-4c3f-b5ea-4fa25033d170.svg" src="../_images/wavedrom-16519c79-e8ed-4c3f-b5ea-4fa25033d170.svg" /><dl class="simple">
+<img alt="../_images/wavedrom-5ac9fd4c-1ce8-4c72-95dd-28f5d29f36c4.svg" src="../_images/wavedrom-5ac9fd4c-1ce8-4c72-95dd-28f5d29f36c4.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
+<img alt="../_images/wavedrom-90330851-fc39-46d8-9c57-6b92e5311ede.svg" src="../_images/wavedrom-90330851-fc39-46d8-9c57-6b92e5311ede.svg" /><dl class="simple">
 <dt>WIDTH<span class="classifier">positive</span></dt><dd><p>Data width.</p>
 </dd>
 <dt>DEPTH<span class="classifier">natural := 1</span></dt><dd><p>Minimum FIFO depth.</p>
@@ -957,9 +961,9 @@ again.</p>
 </dl>
 </dd></dl>
 
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>

@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Directory &mdash; libstored 1.0.0-rc documentation</title>
@@ -13,6 +14,8 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +32,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
@@ -96,6 +100,7 @@
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="cpp.html">C++</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="cpp_config.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_components.html">Components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html">Debugger</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Directory</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#stored-find">stored::find()</a></li>
@@ -180,7 +185,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="directory">
+  <section id="directory">
 <h1>Directory<a class="headerlink" href="#directory" title="Permalink to this headline">¶</a></h1>
 <p>Directory with names, types and buffer offsets.</p>
 <p>The directory is a description in binary. While parsing the pointer starts at
@@ -228,50 +233,52 @@ offset ::= int
 skip ::= [1..0x1f]
 </pre></div>
 </div>
-<div class="section" id="stored-find">
+<section id="stored-find">
 <h2>stored::find()<a class="headerlink" href="#stored-find" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4I0EN6stored4findE7VariantI9ContainerER9ContainerPvPK7uint8_tPKc6size_t">
-<span id="_CPPv3I0EN6stored4findER9ContainerPvPK7uint8_tPKc6size_t"></span><span id="_CPPv2I0EN6stored4findER9ContainerPvPK7uint8_tPKc6size_t"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">Container</span></code><span class="pre">&gt;</span><br /><span class="target" id="namespacestored_1a67953f30ae4885d65748b0632189f0a8"></span><a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant"><span class="pre">Variant</span></a><span class="pre">&lt;</span><a class="reference internal" href="#_CPPv4I0EN6stored4findE7VariantI9ContainerER9ContainerPvPK7uint8_tPKc6size_t" title="stored::find::Container"><span class="pre">Container</span></a><span class="pre">&gt;</span> <code class="sig-prename descclassname"><span class="pre">stored</span><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">find</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored4findE7VariantI9ContainerER9ContainerPvPK7uint8_tPKc6size_t" title="stored::find::Container"><span class="pre">Container</span></a> <span class="pre">&amp;</span><em><span class="pre">container</span></em>, <span class="pre">void</span> <span class="pre">*</span><em><span class="pre">buffer</span></em>, <span class="pre">uint8_t</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">directory</span></em>, <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">name</span></em>, <span class="pre">size_t</span> <em><span class="pre">len</span></em> <span class="pre">=</span> <span class="pre">std</span><span class="pre">::</span><span class="pre">numeric_limits</span><span class="pre">&lt;</span><span class="pre">size_t</span><span class="pre">&gt;</span><span class="pre">::</span><span class="pre">max</span><span class="pre">(</span><span class="pre">)</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored4findE7VariantI9ContainerER9ContainerPvPK7uint8_tPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6stored4findE7VariantI9ContainerER9ContainerPK7uint8_tPKc6size_t">
+<span id="_CPPv3I0EN6stored4findER9ContainerPK7uint8_tPKc6size_t"></span><span id="_CPPv2I0EN6stored4findER9ContainerPK7uint8_tPKc6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Container</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacestored_1a4ddeeb4d2b9f0c64994baf44f3ba6f34"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant"><span class="n"><span class="pre">Variant</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored4findE7VariantI9ContainerER9ContainerPK7uint8_tPKc6size_t" title="stored::find::Container"><span class="n"><span class="pre">Container</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">find</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored4findE7VariantI9ContainerER9ContainerPK7uint8_tPKc6size_t" title="stored::find::Container"><span class="n"><span class="pre">Container</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">container</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">directory</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">numeric_limits</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored4findE7VariantI9ContainerER9ContainerPK7uint8_tPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Finds an object in a directory. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>a variant, which is not valid when not found </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">container</span></code>: the container that has the <code class="docutils literal notranslate"><span class="pre">buffer</span></code> and <code class="docutils literal notranslate"><span class="pre">directory</span></code>. Specify the actual (lowest) subclass of the store. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">buffer</span></code>: the buffer with variable’s data </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">directory</span></code>: the binary directory description </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: the name to find, can be abbreviated as long as it is unambiguous </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">len</span></code>: the maximum length of <code class="docutils literal notranslate"><span class="pre">name</span></code> to parse </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>container</strong> – the container that has the <code class="docutils literal notranslate"><span class="pre">buffer</span></code> and <code class="docutils literal notranslate"><span class="pre">directory</span></code>. Specify the actual (lowest) subclass of the store. </p></li>
+<li><p><strong>directory</strong> – the binary directory description </p></li>
+<li><p><strong>name</strong> – the name to find, can be abbreviated as long as it is unambiguous </p></li>
+<li><p><strong>len</strong> – the maximum length of <code class="docutils literal notranslate"><span class="pre">name</span></code> to parse </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a variant, which is not valid when not found </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
-</div>
-<div class="section" id="stored-list">
+</section>
+<section id="stored-list">
 <h2>stored::list()<a class="headerlink" href="#stored-list" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N6stored4listEPvPvPK7uint8_tP15ListCallbackArgPvPKc">
-<span id="_CPPv3N6stored4listEPvPvPK7uint8_tP15ListCallbackArgPvPKc"></span><span id="_CPPv2N6stored4listEPvPvPK7uint8_tP15ListCallbackArgPvPKc"></span><span id="stored::list__voidP.voidP.uint8_tCP.ListCallbackArgP.voidP.cCP"></span><span class="target" id="namespacestored_1a12a9855cf4121da642f3d961192c1758"></span><span class="pre">void</span> <code class="sig-prename descclassname"><span class="pre">stored</span><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">list</span></code><span class="sig-paren">(</span><span class="pre">void</span> <span class="pre">*</span><em><span class="pre">container</span></em>, <span class="pre">void</span> <span class="pre">*</span><em><span class="pre">buffer</span></em>, <span class="pre">uint8_t</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">directory</span></em>, <span class="pre">ListCallbackArg</span> <span class="pre">*</span><em><span class="pre">f</span></em>, <span class="pre">void</span> <span class="pre">*</span><em><span class="pre">arg</span></em>, <span class="pre">char</span> <em class="property"><span class="pre">const</span></em> <span class="pre">*</span><em><span class="pre">prefix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored4listEPvPvPK7uint8_tP15ListCallbackArgPvPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored4listEPvPvPK7uint8_tP15ListCallbackArgPvPKc">
+<span id="_CPPv3N6stored4listEPvPvPK7uint8_tP15ListCallbackArgPvPKc"></span><span id="_CPPv2N6stored4listEPvPvPK7uint8_tP15ListCallbackArgPvPKc"></span><span id="stored::list__voidP.voidP.uint8_tCP.ListCallbackArgP.voidP.cCP"></span><span class="target" id="namespacestored_1a12a9855cf4121da642f3d961192c1758"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">container</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">directory</span></span>, <span class="n"><span class="pre">ListCallbackArg</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">f</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">arg</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefix</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored4listEPvPvPK7uint8_tP15ListCallbackArgPvPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Iterates over all objects in the directory and invoke a callback for every object. </p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">container</span></code>: the container that contains <code class="docutils literal notranslate"><span class="pre">buffer</span></code> and <code class="docutils literal notranslate"><span class="pre">directory</span></code> </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">buffer</span></code>: the buffer that holds the data of all variables </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">directory</span></code>: the binary directory, to be parsed </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: the callback function </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">arg</span></code>: an arbitrary argument to be passed to <code class="docutils literal notranslate"><span class="pre">f</span></code> </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">prefix</span></code>: when not <code class="docutils literal notranslate"><span class="pre">nullptr</span></code>, a string that is prepended for the name that is supplied to <code class="docutils literal notranslate"><span class="pre">f</span></code> </p></li>
+<p>
+This function is not reentrant. Do not call it recursively. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>container</strong> – the container that contains <code class="docutils literal notranslate"><span class="pre">buffer</span></code> and <code class="docutils literal notranslate"><span class="pre">directory</span></code> </p></li>
+<li><p><strong>buffer</strong> – the buffer that holds the data of all variables </p></li>
+<li><p><strong>directory</strong> – the binary directory, to be parsed </p></li>
+<li><p><strong>f</strong> – the callback function </p></li>
+<li><p><strong>arg</strong> – an arbitrary argument to be passed to <code class="docutils literal notranslate"><span class="pre">f</span></code> </p></li>
+<li><p><strong>prefix</strong> – when not <code class="docutils literal notranslate"><span class="pre">nullptr</span></code>, a string that is prepended for the name that is supplied to <code class="docutils literal notranslate"><span class="pre">f</span></code> </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

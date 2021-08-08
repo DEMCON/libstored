@@ -9,6 +9,7 @@ your application.
 
 .. toctree::
    cpp_config
+   cpp_components
    cpp_debugger
    cpp_directory
    cpp_protocol

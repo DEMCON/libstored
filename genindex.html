@@ -13,6 +13,8 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
@@ -229,9 +232,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="doc/py_py.html#ed2.ZmqClient.capabilities">capabilities() (ed2.ZmqClient method)</a>
 </li>
-      <li><a href="doc/py_wrapper.html#ed2.Serial2Zmq.close">close() (ed2.Serial2Zmq method)</a>
+      <li><a href="doc/py_py.html#ed2.protocol.ProtocolLayer.close">close() (ed2.protocol.ProtocolLayer method)</a>
 
       <ul>
+        <li><a href="doc/py_wrapper.html#ed2.Serial2Zmq.close">(ed2.Serial2Zmq method)</a>
+</li>
         <li><a href="doc/py_wrapper.html#ed2.Stdio2Zmq.close">(ed2.Stdio2Zmq method)</a>
 </li>
         <li><a href="doc/py_wrapper.html#ed2.Stream2Zmq.close">(ed2.Stream2Zmq method)</a>
@@ -243,7 +248,9 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="doc/py_py.html#ed2.ZmqClient.context">context() (ed2.ZmqClient property)</a>
+      <li><a href="doc/py_py.html#ed2.ZmqClient.closed">closed (ed2.ZmqClient attribute)</a>
+</li>
+      <li><a href="doc/py_py.html#ed2.ZmqClient.context">context (ed2.ZmqClient property)</a>
 </li>
       <li><a href="doc/py_py.html#ed2.protocol.Crc16Layer">Crc16Layer (class in ed2.protocol)</a>
 </li>
@@ -289,7 +296,7 @@
 </li>
       <li><a href="doc/py_py.html#ed2.ZmqClient.defaultStateFile">defaultStateFile() (ed2.ZmqClient method)</a>
 </li>
-      <li><a href="doc/py_py.html#ed2.protocol.ProtocolLayer.down">down() (ed2.protocol.ProtocolLayer property)</a>
+      <li><a href="doc/py_py.html#ed2.protocol.ProtocolLayer.down">down (ed2.protocol.ProtocolLayer property)</a>
 
       <ul>
         <li><a href="doc/py_wrapper.html#ed2.Serial2Zmq.down">(ed2.Serial2Zmq property)</a>
@@ -389,7 +396,7 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="doc/py_py.html#ed2.protocol.ProtocolLayer.mtu">mtu() (ed2.protocol.ProtocolLayer property)</a>
+      <li><a href="doc/py_py.html#ed2.protocol.ProtocolLayer.mtu">mtu (ed2.protocol.ProtocolLayer property)</a>
 
       <ul>
         <li><a href="doc/py_py.html#ed2.protocol.ProtocolStack.mtu">(ed2.protocol.ProtocolStack property)</a>
@@ -433,7 +440,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="doc/py_py.html#ed2.ZmqClient.objects">objects() (ed2.ZmqClient property)</a>
+      <li><a href="doc/py_py.html#ed2.ZmqClient.objects">objects (ed2.ZmqClient property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -460,6 +467,8 @@
       <li><a href="doc/py_py.html#ed2.protocol.ProtocolStack">ProtocolStack (class in ed2.protocol)</a>
 </li>
       <li><a href="doc/py_py.html#ed2.protocol.ProtocolStack.Iterator">ProtocolStack.Iterator (class in ed2.protocol)</a>
+</li>
+      <li><a href="doc/py_py.html#ed2.protocol.PubTerminalLayer">PubTerminalLayer (class in ed2.protocol)</a>
 </li>
       <li><a href="doc/py_py.html#ed2.ZmqClient.pyname">pyname() (ed2.ZmqClient method)</a>
 </li>
@@ -541,7 +550,7 @@
 </li>
       <li><a href="doc/py_py.html#ed2.ZmqClient.slowPollInterval_s">slowPollInterval_s (ed2.ZmqClient attribute)</a>
 </li>
-      <li><a href="doc/py_py.html#ed2.ZmqClient.socket">socket() (ed2.ZmqClient property)</a>
+      <li><a href="doc/py_py.html#ed2.ZmqClient.socket">socket (ed2.ZmqClient property)</a>
 </li>
       <li><a href="doc/py_py.html#ed2.ZmqClient.staticMetaObject">staticMetaObject (ed2.ZmqClient attribute)</a>
 </li>
@@ -555,11 +564,59 @@
         <li><a href="doc/py_wrapper.html#ed2.Stream2Zmq.stdout">(ed2.Stream2Zmq method)</a>
 </li>
       </ul></li>
+      <li><a href="doc/cpp_components.html#_CPPv4I0_y0EN6stored9AmplifierE">stored::Amplifier (C++ class)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored9Amplifier9AmplifierERK16AmplifierObjectsI9Container4typeER9Container">stored::Amplifier::Amplifier (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4N6stored9Amplifier9AmplifierEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored9Amplifier5BoundE">stored::Amplifier::Bound (C++ type)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored9Amplifier7disableEv">stored::Amplifier::disable (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored9Amplifier6enableEb">stored::Amplifier::enable (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored9Amplifier7enabledEv">stored::Amplifier::enabled (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored9Amplifier12enableObjectEv">stored::Amplifier::enableObject (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored9Amplifier12enableObjectEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored9Amplifier4gainEv">stored::Amplifier::gain (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored9Amplifier10gainObjectEv">stored::Amplifier::gainObject (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored9Amplifier10gainObjectEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored9Amplifier4highEv">stored::Amplifier::high (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored9Amplifier10highObjectEv">stored::Amplifier::highObject (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored9Amplifier10highObjectEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored9Amplifier5inputEv">stored::Amplifier::input (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored9Amplifier11inputObjectEv">stored::Amplifier::inputObject (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored9Amplifier11inputObjectEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored9Amplifier3lowEv">stored::Amplifier::low (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored9Amplifier9lowObjectEv">stored::Amplifier::lowObject (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored9Amplifier9lowObjectEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4I_Dpc_6size_tEN6stored9Amplifier7objectsEDaRA1N_Kc">stored::Amplifier::objects (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored9Amplifier6offsetEv">stored::Amplifier::offset (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored9Amplifier12offsetObjectEv">stored::Amplifier::offsetObject (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored9Amplifier12offsetObjectEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored9AmplifierclE4type">stored::Amplifier::operator() (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4N6stored9AmplifierclEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored9Amplifier6outputEv">stored::Amplifier::output (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored9Amplifier12outputObjectEv">stored::Amplifier::outputObject (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored9Amplifier12outputObjectEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored9Amplifier9override_Ev">stored::Amplifier::override_ (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored9Amplifier14overrideObjectEv">stored::Amplifier::overrideObject (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored9Amplifier14overrideObjectEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored9Amplifier4typeE">stored::Amplifier::type (C++ type)</a>
+</li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored8ArqLayerE">stored::ArqLayer (C++ class)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored8ArqLayerUt1_5E">stored::ArqLayer::[anonymous] (C++ enum)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored8ArqLayerUt2_19E">stored::ArqLayer::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored8ArqLayerUt1_527RetransmitCallbackThresholdE">stored::ArqLayer::[anonymous]::RetransmitCallbackThreshold (C++ enumerator)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored8ArqLayerUt2_1927RetransmitCallbackThresholdE">stored::ArqLayer::[anonymous]::RetransmitCallbackThreshold (C++ enumerator)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored8ArqLayer7AckFlagE">stored::ArqLayer::AckFlag (C++ member)</a>
 </li>
@@ -649,19 +706,33 @@
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored11BufferLayerD0Ev">stored::BufferLayer::~BufferLayer (C++ function)</a>
 </li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4I00EN6stored13CallbackLayerE">stored::CallbackLayer (C++ class)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CallbackLayer4baseE">stored::CallbackLayer::base (C++ type)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CallbackLayer13CallbackLayerERK13CallbackLayer">stored::CallbackLayer::CallbackLayer (C++ function)</a>, <a href="doc/cpp_protocol.html#_CPPv4N6stored13CallbackLayer13CallbackLayerERR13CallbackLayer">[1]</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CallbackLayer6decodeEPv6size_t">stored::CallbackLayer::decode (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CallbackLayer6encodeEPKv6size_tb">stored::CallbackLayer::encode (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CallbackLayeraSERK13CallbackLayer">stored::CallbackLayer::operator= (C++ function)</a>, <a href="doc/cpp_protocol.html#_CPPv4N6stored13CallbackLayeraSERR13CallbackLayer">[1]</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CallbackLayerD0Ev">stored::CallbackLayer::~CallbackLayer (C++ function)</a>
+</li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CompressLayerE">stored::CompressLayer (C++ class)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CompressLayerUt1_0E">stored::CompressLayer::[anonymous] (C++ enum)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CompressLayerUt2_14E">stored::CompressLayer::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CompressLayerUt1_017DecodeInputBufferE">stored::CompressLayer::[anonymous]::DecodeInputBuffer (C++ enumerator)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CompressLayerUt2_1417DecodeInputBufferE">stored::CompressLayer::[anonymous]::DecodeInputBuffer (C++ enumerator)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CompressLayerUt1_012FlagDecodingE">stored::CompressLayer::[anonymous]::FlagDecoding (C++ enumerator)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CompressLayerUt2_1412FlagDecodingE">stored::CompressLayer::[anonymous]::FlagDecoding (C++ enumerator)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CompressLayerUt1_012FlagEncodingE">stored::CompressLayer::[anonymous]::FlagEncoding (C++ enumerator)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CompressLayerUt2_1412FlagEncodingE">stored::CompressLayer::[anonymous]::FlagEncoding (C++ enumerator)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CompressLayerUt1_09LookaheadE">stored::CompressLayer::[anonymous]::Lookahead (C++ enumerator)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CompressLayerUt2_149LookaheadE">stored::CompressLayer::[anonymous]::Lookahead (C++ enumerator)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CompressLayerUt1_06WindowE">stored::CompressLayer::[anonymous]::Window (C++ enumerator)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CompressLayerUt2_146WindowE">stored::CompressLayer::[anonymous]::Window (C++ enumerator)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CompressLayer4baseE">stored::CompressLayer::base (C++ type)</a>
 </li>
@@ -685,11 +756,11 @@
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10Crc16LayerE">stored::Crc16Layer (C++ class)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10Crc16LayerUt1_9E">stored::Crc16Layer::[anonymous] (C++ enum)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10Crc16LayerUt2_23E">stored::Crc16Layer::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10Crc16LayerUt1_94initE">stored::Crc16Layer::[anonymous]::init (C++ enumerator)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10Crc16LayerUt2_234initE">stored::Crc16Layer::[anonymous]::init (C++ enumerator)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10Crc16LayerUt1_910polynomialE">stored::Crc16Layer::[anonymous]::polynomial (C++ enumerator)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10Crc16LayerUt2_2310polynomialE">stored::Crc16Layer::[anonymous]::polynomial (C++ enumerator)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10Crc16Layer4baseE">stored::Crc16Layer::base (C++ type)</a>
 </li>
@@ -709,11 +780,11 @@
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9Crc8LayerE">stored::Crc8Layer (C++ class)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9Crc8LayerUt1_8E">stored::Crc8Layer::[anonymous] (C++ enum)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9Crc8LayerUt2_22E">stored::Crc8Layer::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9Crc8LayerUt1_84initE">stored::Crc8Layer::[anonymous]::init (C++ enumerator)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9Crc8LayerUt2_224initE">stored::Crc8Layer::[anonymous]::init (C++ enumerator)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9Crc8LayerUt1_810polynomialE">stored::Crc8Layer::[anonymous]::polynomial (C++ enumerator)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9Crc8LayerUt2_2210polynomialE">stored::Crc8Layer::[anonymous]::polynomial (C++ enumerator)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9Crc8Layer4baseE">stored::Crc8Layer::base (C++ type)</a>
 </li>
@@ -873,9 +944,9 @@
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13DebugZmqLayerE">stored::DebugZmqLayer (C++ class)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13DebugZmqLayerUt2_25E">stored::DebugZmqLayer::[anonymous] (C++ enum)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13DebugZmqLayerUt2_37E">stored::DebugZmqLayer::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13DebugZmqLayerUt2_2511DefaultPortE">stored::DebugZmqLayer::[anonymous]::DefaultPort (C++ enumerator)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13DebugZmqLayerUt2_3711DefaultPortE">stored::DebugZmqLayer::[anonymous]::DefaultPort (C++ enumerator)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13DebugZmqLayer4baseE">stored::DebugZmqLayer::base (C++ type)</a>
 </li>
@@ -889,6 +960,12 @@
 </li>
       <li><a href="doc/cpp_config.html#_CPPv4N6stored13DefaultConfigE">stored::DefaultConfig (C++ struct)</a>
 </li>
+      <li><a href="doc/cpp_config.html#_CPPv4I0EN6stored13DefaultConfig9AllocatorE">stored::DefaultConfig::Allocator (C++ struct)</a>
+</li>
+      <li><a href="doc/cpp_config.html#_CPPv4N6stored13DefaultConfig9Allocator4typeE">stored::DefaultConfig::Allocator::type (C++ type)</a>
+</li>
+      <li><a href="doc/cpp_config.html#_CPPv4N6stored13DefaultConfig18AvoidDynamicMemoryE">stored::DefaultConfig::AvoidDynamicMemory (C++ member)</a>
+</li>
       <li><a href="doc/cpp_config.html#_CPPv4N6stored13DefaultConfig15CompressStreamsE">stored::DefaultConfig::CompressStreams (C++ member)</a>
 </li>
       <li><a href="doc/cpp_config.html#_CPPv4N6stored13DefaultConfig5DebugE">stored::DefaultConfig::Debug (C++ member)</a>
@@ -901,6 +978,8 @@
 </li>
       <li><a href="doc/cpp_config.html#_CPPv4N6stored13DefaultConfig12DebuggerListE">stored::DefaultConfig::DebuggerList (C++ member)</a>
 </li>
+      <li><a href="doc/cpp_config.html#_CPPv4N6stored13DefaultConfig24DebuggerListPrefixAlwaysE">stored::DefaultConfig::DebuggerListPrefixAlways (C++ member)</a>
+</li>
       <li><a href="doc/cpp_config.html#_CPPv4N6stored13DefaultConfig13DebuggerMacroE">stored::DefaultConfig::DebuggerMacro (C++ member)</a>
 </li>
       <li><a href="doc/cpp_config.html#_CPPv4N6stored13DefaultConfig12DebuggerReadE">stored::DefaultConfig::DebuggerRead (C++ member)</a>
@@ -908,6 +987,8 @@
       <li><a href="doc/cpp_config.html#_CPPv4N6stored13DefaultConfig15DebuggerReadMemE">stored::DefaultConfig::DebuggerReadMem (C++ member)</a>
 </li>
       <li><a href="doc/cpp_config.html#_CPPv4N6stored13DefaultConfig20DebuggerStreamBufferE">stored::DefaultConfig::DebuggerStreamBuffer (C++ member)</a>
+</li>
+      <li><a href="doc/cpp_config.html#_CPPv4N6stored13DefaultConfig28DebuggerStreamBufferOverflowE">stored::DefaultConfig::DebuggerStreamBufferOverflow (C++ member)</a>
 </li>
       <li><a href="doc/cpp_config.html#_CPPv4N6stored13DefaultConfig15DebuggerStreamsE">stored::DefaultConfig::DebuggerStreams (C++ member)</a>
 </li>
@@ -957,21 +1038,19 @@
 </li>
       <li><a href="doc/example_2_basic.html#_CPPv4N6stored12ExampleBasic12ExampleBasicERK12ExampleBasic">stored::ExampleBasic::ExampleBasic (C++ function)</a>, <a href="doc/example_2_basic.html#_CPPv4N6stored12ExampleBasic12ExampleBasicERR12ExampleBasic">[1]</a>, <a href="doc/example_2_basic.html#_CPPv4N6stored12ExampleBasic12ExampleBasicEv">[2]</a>
 </li>
-      <li><a href="doc/example_2_basic.html#_CPPv4N6stored12ExampleBasic14ImplementationE">stored::ExampleBasic::Implementation (C++ type)</a>
-</li>
       <li><a href="doc/example_2_basic.html#_CPPv4N6stored12ExampleBasicaSERK12ExampleBasic">stored::ExampleBasic::operator= (C++ function)</a>, <a href="doc/example_2_basic.html#_CPPv4N6stored12ExampleBasicaSERR12ExampleBasic">[1]</a>
 </li>
       <li><a href="doc/example_2_basic.html#_CPPv4I0EN6stored16ExampleBasicBaseE">stored::ExampleBasicBase (C++ class)</a>
 </li>
-      <li><a href="doc/example_2_basic.html#_CPPv4N6stored16ExampleBasicBaseUt2_27E">stored::ExampleBasicBase::[anonymous] (C++ enum)</a>
+      <li><a href="doc/example_2_basic.html#_CPPv4N6stored16ExampleBasicBaseUt2_39E">stored::ExampleBasicBase::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/example_2_basic.html#_CPPv4N6stored16ExampleBasicBaseUt2_2710BufferSizeE">stored::ExampleBasicBase::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/example_2_basic.html#_CPPv4N6stored16ExampleBasicBaseUt2_3910BufferSizeE">stored::ExampleBasicBase::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_2_basic.html#_CPPv4N6stored16ExampleBasicBaseUt2_2713FunctionCountE">stored::ExampleBasicBase::[anonymous]::FunctionCount (C++ enumerator)</a>
+      <li><a href="doc/example_2_basic.html#_CPPv4N6stored16ExampleBasicBaseUt2_3913FunctionCountE">stored::ExampleBasicBase::[anonymous]::FunctionCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_2_basic.html#_CPPv4N6stored16ExampleBasicBaseUt2_2711ObjectCountE">stored::ExampleBasicBase::[anonymous]::ObjectCount (C++ enumerator)</a>
+      <li><a href="doc/example_2_basic.html#_CPPv4N6stored16ExampleBasicBaseUt2_3911ObjectCountE">stored::ExampleBasicBase::[anonymous]::ObjectCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_2_basic.html#_CPPv4N6stored16ExampleBasicBaseUt2_2713VariableCountE">stored::ExampleBasicBase::[anonymous]::VariableCount (C++ enumerator)</a>
+      <li><a href="doc/example_2_basic.html#_CPPv4N6stored16ExampleBasicBaseUt2_3913VariableCountE">stored::ExampleBasicBase::[anonymous]::VariableCount (C++ enumerator)</a>
 </li>
       <li><a href="doc/example_2_basic.html#_CPPv4NK6stored16ExampleBasicBase11bufferToKeyEPKv">stored::ExampleBasicBase::bufferToKey (C++ function)</a>
 </li>
@@ -980,6 +1059,12 @@
       <li><a href="doc/example_2_basic.html#_CPPv4N6stored16ExampleBasicBase4findEPKc6size_t">stored::ExampleBasicBase::find (C++ function)</a>
 </li>
       <li><a href="doc/example_2_basic.html#_CPPv4N6stored16ExampleBasicBase11four_ints_aEi">stored::ExampleBasicBase::four_ints_a (C++ function)</a>
+</li>
+      <li><a href="doc/example_2_basic.html#_CPPv4I0EN6stored16ExampleBasicBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ExampleBasicBase::freeFunction (C++ function)</a>
+</li>
+      <li><a href="doc/example_2_basic.html#_CPPv4I0EN6stored16ExampleBasicBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ExampleBasicBase::freeVariable (C++ function)</a>
+</li>
+      <li><a href="doc/example_2_basic.html#_CPPv4I0EN6stored16ExampleBasicBase8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ExampleBasicBase::function (C++ function)</a>
 </li>
       <li><a href="doc/example_2_basic.html#_CPPv4N6stored16ExampleBasicBase4hashEv">stored::ExampleBasicBase::hash (C++ function)</a>
 </li>
@@ -1008,6 +1093,8 @@
       <li><a href="doc/example_2_basic.html#_CPPv4N6stored16ExampleBasicBase12three_ints_aEi">stored::ExampleBasicBase::three_ints_a (C++ function)</a>
 </li>
       <li><a href="doc/example_2_basic.html#_CPPv4N6stored16ExampleBasicBase13two_strings_aEi">stored::ExampleBasicBase::two_strings_a (C++ function)</a>
+</li>
+      <li><a href="doc/example_2_basic.html#_CPPv4I0EN6stored16ExampleBasicBase8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ExampleBasicBase::variable (C++ function)</a>
 </li>
       <li><a href="doc/example_2_basic.html#_CPPv4I00EN6stored19ExampleBasicObjectsE">stored::ExampleBasicObjects (C++ class)</a>
 </li>
@@ -1067,33 +1154,155 @@
 </li>
       <li><a href="doc/example_2_basic.html#_CPPv4N6stored19ExampleBasicObjects2u8E">stored::ExampleBasicObjects::u8 (C++ member)</a>
 </li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored17ExampleComponentsE">stored::ExampleComponents (C++ class)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored17ExampleComponents4baseE">stored::ExampleComponents::base (C++ type)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored17ExampleComponents17ExampleComponentsERK17ExampleComponents">stored::ExampleComponents::ExampleComponents (C++ function)</a>, <a href="doc/example_components.html#_CPPv4N6stored17ExampleComponents17ExampleComponentsERR17ExampleComponents">[1]</a>, <a href="doc/example_components.html#_CPPv4N6stored17ExampleComponents17ExampleComponentsEv">[2]</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored17ExampleComponentsaSERK17ExampleComponents">stored::ExampleComponents::operator= (C++ function)</a>, <a href="doc/example_components.html#_CPPv4N6stored17ExampleComponentsaSERR17ExampleComponents">[1]</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4I0EN6stored21ExampleComponentsBaseE">stored::ExampleComponentsBase (C++ class)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBaseUt2_50E">stored::ExampleComponentsBase::[anonymous] (C++ enum)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBaseUt2_5010BufferSizeE">stored::ExampleComponentsBase::[anonymous]::BufferSize (C++ enumerator)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBaseUt2_5013FunctionCountE">stored::ExampleComponentsBase::[anonymous]::FunctionCount (C++ enumerator)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBaseUt2_5011ObjectCountE">stored::ExampleComponentsBase::[anonymous]::ObjectCount (C++ enumerator)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBaseUt2_5013VariableCountE">stored::ExampleComponentsBase::[anonymous]::VariableCount (C++ enumerator)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBase19__pid__frequency_HzEbRf">stored::ExampleComponentsBase::__pid__frequency_Hz (C++ function)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4NK6stored21ExampleComponentsBase11bufferToKeyEPKv">stored::ExampleComponentsBase::bufferToKey (C++ function)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBase21ExampleComponentsBaseERK21ExampleComponentsBase">stored::ExampleComponentsBase::ExampleComponentsBase (C++ function)</a>, <a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBase21ExampleComponentsBaseERR21ExampleComponentsBase">[1]</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBase4findEPKc6size_t">stored::ExampleComponentsBase::find (C++ function)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4I0EN6stored21ExampleComponentsBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ExampleComponentsBase::freeFunction (C++ function)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4I0EN6stored21ExampleComponentsBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ExampleComponentsBase::freeVariable (C++ function)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4I0EN6stored21ExampleComponentsBase8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ExampleComponentsBase::function (C++ function)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBase4hashEv">stored::ExampleComponentsBase::hash (C++ function)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBase14implementationEv">stored::ExampleComponentsBase::implementation (C++ function)</a>, <a href="doc/example_components.html#_CPPv4NK6stored21ExampleComponentsBase14implementationEv">[1]</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBase14ImplementationE">stored::ExampleComponentsBase::Implementation (C++ type)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBase3KeyE">stored::ExampleComponentsBase::Key (C++ type)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4I0EN6stored21ExampleComponentsBase4listEv1FPvPKc">stored::ExampleComponentsBase::list (C++ function)</a>, <a href="doc/example_components.html#_CPPv4I0EN6stored21ExampleComponentsBase4listEvRR1F">[1]</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4NK6stored21ExampleComponentsBase13longDirectoryEv">stored::ExampleComponentsBase::longDirectory (C++ function)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBase3mapEPKc">stored::ExampleComponentsBase::map (C++ function)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4NK6stored21ExampleComponentsBase4nameEv">stored::ExampleComponentsBase::name (C++ function)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBase9ObjectMapE">stored::ExampleComponentsBase::ObjectMap (C++ type)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBase7ObjectsE">stored::ExampleComponentsBase::Objects (C++ type)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBaseaSERK21ExampleComponentsBase">stored::ExampleComponentsBase::operator= (C++ function)</a>, <a href="doc/example_components.html#_CPPv4N6stored21ExampleComponentsBaseaSERR21ExampleComponentsBase">[1]</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4NK6stored21ExampleComponentsBase14shortDirectoryEv">stored::ExampleComponentsBase::shortDirectory (C++ function)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4I0EN6stored21ExampleComponentsBase8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ExampleComponentsBase::variable (C++ function)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4I00EN6stored24ExampleComponentsObjectsE">stored::ExampleComponentsObjects (C++ class)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects4BaseE">stored::ExampleComponentsObjects::Base (C++ type)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects35environment__air_molar_mass_kg__molE">stored::ExampleComponentsObjects::environment__air_molar_mass_kg__mol (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects21environment__G_m__s_2E">stored::ExampleComponentsObjects::environment__G_m__s_2 (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects36environment__surface_air_pressure_PaE">stored::ExampleComponentsObjects::environment__surface_air_pressure_Pa (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects26environment__temperature_KE">stored::ExampleComponentsObjects::environment__temperature_K (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects28helicopter__drag_coefficientE">stored::ExampleComponentsObjects::helicopter__drag_coefficient (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects20helicopter__height_mE">stored::ExampleComponentsObjects::helicopter__height_m (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects28helicopter__lift_coefficientE">stored::ExampleComponentsObjects::helicopter__lift_coefficient (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects19helicopter__mass_kgE">stored::ExampleComponentsObjects::helicopter__mass_kg (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects26helicopter__motor_constantE">stored::ExampleComponentsObjects::helicopter__motor_constant (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects22helicopter__speed_m__sE">stored::ExampleComponentsObjects::helicopter__speed_m__s (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects14ImplementationE">stored::ExampleComponentsObjects::Implementation (C++ type)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects11pid__enableE">stored::ExampleComponentsObjects::pid__enable (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects17pid__frequency_HzE">stored::ExampleComponentsObjects::pid__frequency_Hz (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects9pid__highE">stored::ExampleComponentsObjects::pid__high (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects8pid__intE">stored::ExampleComponentsObjects::pid__int (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects13pid__int_highE">stored::ExampleComponentsObjects::pid__int_high (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects12pid__int_lowE">stored::ExampleComponentsObjects::pid__int_low (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects8pid__KffE">stored::ExampleComponentsObjects::pid__Kff (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects7pid__KpE">stored::ExampleComponentsObjects::pid__Kp (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects8pid__lowE">stored::ExampleComponentsObjects::pid__low (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects13pid__overrideE">stored::ExampleComponentsObjects::pid__override (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects10pid__resetE">stored::ExampleComponentsObjects::pid__reset (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects13pid__setpointE">stored::ExampleComponentsObjects::pid__setpoint (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects9pid__Td_sE">stored::ExampleComponentsObjects::pid__Td_s (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects9pid__Ti_sE">stored::ExampleComponentsObjects::pid__Ti_s (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects6pid__uE">stored::ExampleComponentsObjects::pid__u (C++ member)</a>
+</li>
+      <li><a href="doc/example_components.html#_CPPv4N6stored24ExampleComponentsObjects6pid__yE">stored::ExampleComponentsObjects::pid__y (C++ member)</a>
+</li>
       <li><a href="doc/example_concurrency.html#_CPPv4N6stored25ExampleConcurrencyControlE">stored::ExampleConcurrencyControl (C++ class)</a>
 </li>
       <li><a href="doc/example_concurrency.html#_CPPv4N6stored25ExampleConcurrencyControl4baseE">stored::ExampleConcurrencyControl::base (C++ type)</a>
 </li>
       <li><a href="doc/example_concurrency.html#_CPPv4N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERK25ExampleConcurrencyControl">stored::ExampleConcurrencyControl::ExampleConcurrencyControl (C++ function)</a>, <a href="doc/example_concurrency.html#_CPPv4N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERR25ExampleConcurrencyControl">[1]</a>, <a href="doc/example_concurrency.html#_CPPv4N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlEv">[2]</a>
 </li>
-      <li><a href="doc/example_concurrency.html#_CPPv4N6stored25ExampleConcurrencyControl14ImplementationE">stored::ExampleConcurrencyControl::Implementation (C++ type)</a>
-</li>
       <li><a href="doc/example_concurrency.html#_CPPv4N6stored25ExampleConcurrencyControlaSERK25ExampleConcurrencyControl">stored::ExampleConcurrencyControl::operator= (C++ function)</a>, <a href="doc/example_concurrency.html#_CPPv4N6stored25ExampleConcurrencyControlaSERR25ExampleConcurrencyControl">[1]</a>
 </li>
       <li><a href="doc/example_concurrency.html#_CPPv4I0EN6stored29ExampleConcurrencyControlBaseE">stored::ExampleConcurrencyControlBase (C++ class)</a>
 </li>
-      <li><a href="doc/example_concurrency.html#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_38E">stored::ExampleConcurrencyControlBase::[anonymous] (C++ enum)</a>
+      <li><a href="doc/example_concurrency.html#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_51E">stored::ExampleConcurrencyControlBase::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/example_concurrency.html#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_3810BufferSizeE">stored::ExampleConcurrencyControlBase::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/example_concurrency.html#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5110BufferSizeE">stored::ExampleConcurrencyControlBase::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_concurrency.html#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_3813FunctionCountE">stored::ExampleConcurrencyControlBase::[anonymous]::FunctionCount (C++ enumerator)</a>
+      <li><a href="doc/example_concurrency.html#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5113FunctionCountE">stored::ExampleConcurrencyControlBase::[anonymous]::FunctionCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_concurrency.html#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_3811ObjectCountE">stored::ExampleConcurrencyControlBase::[anonymous]::ObjectCount (C++ enumerator)</a>
+      <li><a href="doc/example_concurrency.html#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5111ObjectCountE">stored::ExampleConcurrencyControlBase::[anonymous]::ObjectCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_concurrency.html#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_3813VariableCountE">stored::ExampleConcurrencyControlBase::[anonymous]::VariableCount (C++ enumerator)</a>
+      <li><a href="doc/example_concurrency.html#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5113VariableCountE">stored::ExampleConcurrencyControlBase::[anonymous]::VariableCount (C++ enumerator)</a>
 </li>
       <li><a href="doc/example_concurrency.html#_CPPv4NK6stored29ExampleConcurrencyControlBase11bufferToKeyEPKv">stored::ExampleConcurrencyControlBase::bufferToKey (C++ function)</a>
 </li>
       <li><a href="doc/example_concurrency.html#_CPPv4N6stored29ExampleConcurrencyControlBase29ExampleConcurrencyControlBaseERK29ExampleConcurrencyControlBase">stored::ExampleConcurrencyControlBase::ExampleConcurrencyControlBase (C++ function)</a>, <a href="doc/example_concurrency.html#_CPPv4N6stored29ExampleConcurrencyControlBase29ExampleConcurrencyControlBaseERR29ExampleConcurrencyControlBase">[1]</a>
 </li>
       <li><a href="doc/example_concurrency.html#_CPPv4N6stored29ExampleConcurrencyControlBase4findEPKc6size_t">stored::ExampleConcurrencyControlBase::find (C++ function)</a>
+</li>
+      <li><a href="doc/example_concurrency.html#_CPPv4I0EN6stored29ExampleConcurrencyControlBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ExampleConcurrencyControlBase::freeFunction (C++ function)</a>
+</li>
+      <li><a href="doc/example_concurrency.html#_CPPv4I0EN6stored29ExampleConcurrencyControlBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ExampleConcurrencyControlBase::freeVariable (C++ function)</a>
+</li>
+      <li><a href="doc/example_concurrency.html#_CPPv4I0EN6stored29ExampleConcurrencyControlBase8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ExampleConcurrencyControlBase::function (C++ function)</a>
 </li>
       <li><a href="doc/example_concurrency.html#_CPPv4N6stored29ExampleConcurrencyControlBase4hashEv">stored::ExampleConcurrencyControlBase::hash (C++ function)</a>
 </li>
@@ -1119,6 +1328,8 @@
 </li>
       <li><a href="doc/example_concurrency.html#_CPPv4NK6stored29ExampleConcurrencyControlBase14shortDirectoryEv">stored::ExampleConcurrencyControlBase::shortDirectory (C++ function)</a>
 </li>
+      <li><a href="doc/example_concurrency.html#_CPPv4I0EN6stored29ExampleConcurrencyControlBase8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ExampleConcurrencyControlBase::variable (C++ function)</a>
+</li>
       <li><a href="doc/example_concurrency.html#_CPPv4I00EN6stored32ExampleConcurrencyControlObjectsE">stored::ExampleConcurrencyControlObjects (C++ class)</a>
 </li>
       <li><a href="doc/example_concurrency.html#_CPPv4N6stored32ExampleConcurrencyControlObjects6actualE">stored::ExampleConcurrencyControlObjects::actual (C++ member)</a>
@@ -1139,27 +1350,31 @@
 </li>
       <li><a href="doc/example_concurrency.html#_CPPv4N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERK22ExampleConcurrencyMain">stored::ExampleConcurrencyMain::ExampleConcurrencyMain (C++ function)</a>, <a href="doc/example_concurrency.html#_CPPv4N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERR22ExampleConcurrencyMain">[1]</a>, <a href="doc/example_concurrency.html#_CPPv4N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainEv">[2]</a>
 </li>
-      <li><a href="doc/example_concurrency.html#_CPPv4N6stored22ExampleConcurrencyMain14ImplementationE">stored::ExampleConcurrencyMain::Implementation (C++ type)</a>
-</li>
       <li><a href="doc/example_concurrency.html#_CPPv4N6stored22ExampleConcurrencyMainaSERK22ExampleConcurrencyMain">stored::ExampleConcurrencyMain::operator= (C++ function)</a>, <a href="doc/example_concurrency.html#_CPPv4N6stored22ExampleConcurrencyMainaSERR22ExampleConcurrencyMain">[1]</a>
 </li>
       <li><a href="doc/example_concurrency.html#_CPPv4I0EN6stored26ExampleConcurrencyMainBaseE">stored::ExampleConcurrencyMainBase (C++ class)</a>
 </li>
-      <li><a href="doc/example_concurrency.html#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_39E">stored::ExampleConcurrencyMainBase::[anonymous] (C++ enum)</a>
+      <li><a href="doc/example_concurrency.html#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_52E">stored::ExampleConcurrencyMainBase::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/example_concurrency.html#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_3910BufferSizeE">stored::ExampleConcurrencyMainBase::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/example_concurrency.html#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5210BufferSizeE">stored::ExampleConcurrencyMainBase::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_concurrency.html#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_3913FunctionCountE">stored::ExampleConcurrencyMainBase::[anonymous]::FunctionCount (C++ enumerator)</a>
+      <li><a href="doc/example_concurrency.html#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5213FunctionCountE">stored::ExampleConcurrencyMainBase::[anonymous]::FunctionCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_concurrency.html#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_3911ObjectCountE">stored::ExampleConcurrencyMainBase::[anonymous]::ObjectCount (C++ enumerator)</a>
+      <li><a href="doc/example_concurrency.html#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5211ObjectCountE">stored::ExampleConcurrencyMainBase::[anonymous]::ObjectCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_concurrency.html#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_3913VariableCountE">stored::ExampleConcurrencyMainBase::[anonymous]::VariableCount (C++ enumerator)</a>
+      <li><a href="doc/example_concurrency.html#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5213VariableCountE">stored::ExampleConcurrencyMainBase::[anonymous]::VariableCount (C++ enumerator)</a>
 </li>
       <li><a href="doc/example_concurrency.html#_CPPv4NK6stored26ExampleConcurrencyMainBase11bufferToKeyEPKv">stored::ExampleConcurrencyMainBase::bufferToKey (C++ function)</a>
 </li>
       <li><a href="doc/example_concurrency.html#_CPPv4N6stored26ExampleConcurrencyMainBase26ExampleConcurrencyMainBaseERK26ExampleConcurrencyMainBase">stored::ExampleConcurrencyMainBase::ExampleConcurrencyMainBase (C++ function)</a>, <a href="doc/example_concurrency.html#_CPPv4N6stored26ExampleConcurrencyMainBase26ExampleConcurrencyMainBaseERR26ExampleConcurrencyMainBase">[1]</a>
 </li>
       <li><a href="doc/example_concurrency.html#_CPPv4N6stored26ExampleConcurrencyMainBase4findEPKc6size_t">stored::ExampleConcurrencyMainBase::find (C++ function)</a>
+</li>
+      <li><a href="doc/example_concurrency.html#_CPPv4I0EN6stored26ExampleConcurrencyMainBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ExampleConcurrencyMainBase::freeFunction (C++ function)</a>
+</li>
+      <li><a href="doc/example_concurrency.html#_CPPv4I0EN6stored26ExampleConcurrencyMainBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ExampleConcurrencyMainBase::freeVariable (C++ function)</a>
+</li>
+      <li><a href="doc/example_concurrency.html#_CPPv4I0EN6stored26ExampleConcurrencyMainBase8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ExampleConcurrencyMainBase::function (C++ function)</a>
 </li>
       <li><a href="doc/example_concurrency.html#_CPPv4N6stored26ExampleConcurrencyMainBase4hashEv">stored::ExampleConcurrencyMainBase::hash (C++ function)</a>
 </li>
@@ -1185,6 +1400,8 @@
 </li>
       <li><a href="doc/example_concurrency.html#_CPPv4NK6stored26ExampleConcurrencyMainBase14shortDirectoryEv">stored::ExampleConcurrencyMainBase::shortDirectory (C++ function)</a>
 </li>
+      <li><a href="doc/example_concurrency.html#_CPPv4I0EN6stored26ExampleConcurrencyMainBase8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ExampleConcurrencyMainBase::variable (C++ function)</a>
+</li>
       <li><a href="doc/example_concurrency.html#_CPPv4I00EN6stored29ExampleConcurrencyMainObjectsE">stored::ExampleConcurrencyMainObjects (C++ class)</a>
 </li>
       <li><a href="doc/example_concurrency.html#_CPPv4N6stored29ExampleConcurrencyMainObjects4BaseE">stored::ExampleConcurrencyMainObjects::Base (C++ type)</a>
@@ -1199,27 +1416,31 @@
 </li>
       <li><a href="doc/example_5_debug.html#_CPPv4N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERK24ExampleDebugAnotherStore">stored::ExampleDebugAnotherStore::ExampleDebugAnotherStore (C++ function)</a>, <a href="doc/example_5_debug.html#_CPPv4N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERR24ExampleDebugAnotherStore">[1]</a>, <a href="doc/example_5_debug.html#_CPPv4N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreEv">[2]</a>
 </li>
-      <li><a href="doc/example_5_debug.html#_CPPv4N6stored24ExampleDebugAnotherStore14ImplementationE">stored::ExampleDebugAnotherStore::Implementation (C++ type)</a>
-</li>
       <li><a href="doc/example_5_debug.html#_CPPv4N6stored24ExampleDebugAnotherStoreaSERK24ExampleDebugAnotherStore">stored::ExampleDebugAnotherStore::operator= (C++ function)</a>, <a href="doc/example_5_debug.html#_CPPv4N6stored24ExampleDebugAnotherStoreaSERR24ExampleDebugAnotherStore">[1]</a>
 </li>
       <li><a href="doc/example_5_debug.html#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBaseE">stored::ExampleDebugAnotherStoreBase (C++ class)</a>
 </li>
-      <li><a href="doc/example_5_debug.html#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_30E">stored::ExampleDebugAnotherStoreBase::[anonymous] (C++ enum)</a>
+      <li><a href="doc/example_5_debug.html#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_42E">stored::ExampleDebugAnotherStoreBase::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/example_5_debug.html#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_3010BufferSizeE">stored::ExampleDebugAnotherStoreBase::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/example_5_debug.html#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4210BufferSizeE">stored::ExampleDebugAnotherStoreBase::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_5_debug.html#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_3013FunctionCountE">stored::ExampleDebugAnotherStoreBase::[anonymous]::FunctionCount (C++ enumerator)</a>
+      <li><a href="doc/example_5_debug.html#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4213FunctionCountE">stored::ExampleDebugAnotherStoreBase::[anonymous]::FunctionCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_5_debug.html#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_3011ObjectCountE">stored::ExampleDebugAnotherStoreBase::[anonymous]::ObjectCount (C++ enumerator)</a>
+      <li><a href="doc/example_5_debug.html#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4211ObjectCountE">stored::ExampleDebugAnotherStoreBase::[anonymous]::ObjectCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_5_debug.html#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_3013VariableCountE">stored::ExampleDebugAnotherStoreBase::[anonymous]::VariableCount (C++ enumerator)</a>
+      <li><a href="doc/example_5_debug.html#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4213VariableCountE">stored::ExampleDebugAnotherStoreBase::[anonymous]::VariableCount (C++ enumerator)</a>
 </li>
       <li><a href="doc/example_5_debug.html#_CPPv4NK6stored28ExampleDebugAnotherStoreBase11bufferToKeyEPKv">stored::ExampleDebugAnotherStoreBase::bufferToKey (C++ function)</a>
 </li>
       <li><a href="doc/example_5_debug.html#_CPPv4N6stored28ExampleDebugAnotherStoreBase28ExampleDebugAnotherStoreBaseERK28ExampleDebugAnotherStoreBase">stored::ExampleDebugAnotherStoreBase::ExampleDebugAnotherStoreBase (C++ function)</a>, <a href="doc/example_5_debug.html#_CPPv4N6stored28ExampleDebugAnotherStoreBase28ExampleDebugAnotherStoreBaseERR28ExampleDebugAnotherStoreBase">[1]</a>
 </li>
       <li><a href="doc/example_5_debug.html#_CPPv4N6stored28ExampleDebugAnotherStoreBase4findEPKc6size_t">stored::ExampleDebugAnotherStoreBase::find (C++ function)</a>
+</li>
+      <li><a href="doc/example_5_debug.html#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ExampleDebugAnotherStoreBase::freeFunction (C++ function)</a>
+</li>
+      <li><a href="doc/example_5_debug.html#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ExampleDebugAnotherStoreBase::freeVariable (C++ function)</a>
+</li>
+      <li><a href="doc/example_5_debug.html#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBase8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ExampleDebugAnotherStoreBase::function (C++ function)</a>
 </li>
       <li><a href="doc/example_5_debug.html#_CPPv4N6stored28ExampleDebugAnotherStoreBase4hashEv">stored::ExampleDebugAnotherStoreBase::hash (C++ function)</a>
 </li>
@@ -1245,6 +1466,8 @@
 </li>
       <li><a href="doc/example_5_debug.html#_CPPv4NK6stored28ExampleDebugAnotherStoreBase14shortDirectoryEv">stored::ExampleDebugAnotherStoreBase::shortDirectory (C++ function)</a>
 </li>
+      <li><a href="doc/example_5_debug.html#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBase8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ExampleDebugAnotherStoreBase::variable (C++ function)</a>
+</li>
       <li><a href="doc/example_5_debug.html#_CPPv4I00EN6stored31ExampleDebugAnotherStoreObjectsE">stored::ExampleDebugAnotherStoreObjects (C++ class)</a>
 </li>
       <li><a href="doc/example_5_debug.html#_CPPv4N6stored31ExampleDebugAnotherStoreObjects4BaseE">stored::ExampleDebugAnotherStoreObjects::Base (C++ type)</a>
@@ -1259,27 +1482,31 @@
 </li>
       <li><a href="doc/example_5_debug.html#_CPPv4N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERK21ExampleDebugSomeStore">stored::ExampleDebugSomeStore::ExampleDebugSomeStore (C++ function)</a>, <a href="doc/example_5_debug.html#_CPPv4N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERR21ExampleDebugSomeStore">[1]</a>, <a href="doc/example_5_debug.html#_CPPv4N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreEv">[2]</a>
 </li>
-      <li><a href="doc/example_5_debug.html#_CPPv4N6stored21ExampleDebugSomeStore14ImplementationE">stored::ExampleDebugSomeStore::Implementation (C++ type)</a>
-</li>
       <li><a href="doc/example_5_debug.html#_CPPv4N6stored21ExampleDebugSomeStoreaSERK21ExampleDebugSomeStore">stored::ExampleDebugSomeStore::operator= (C++ function)</a>, <a href="doc/example_5_debug.html#_CPPv4N6stored21ExampleDebugSomeStoreaSERR21ExampleDebugSomeStore">[1]</a>
 </li>
       <li><a href="doc/example_5_debug.html#_CPPv4I0EN6stored25ExampleDebugSomeStoreBaseE">stored::ExampleDebugSomeStoreBase (C++ class)</a>
 </li>
-      <li><a href="doc/example_5_debug.html#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_31E">stored::ExampleDebugSomeStoreBase::[anonymous] (C++ enum)</a>
+      <li><a href="doc/example_5_debug.html#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_43E">stored::ExampleDebugSomeStoreBase::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/example_5_debug.html#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_3110BufferSizeE">stored::ExampleDebugSomeStoreBase::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/example_5_debug.html#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4310BufferSizeE">stored::ExampleDebugSomeStoreBase::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_5_debug.html#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_3113FunctionCountE">stored::ExampleDebugSomeStoreBase::[anonymous]::FunctionCount (C++ enumerator)</a>
+      <li><a href="doc/example_5_debug.html#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4313FunctionCountE">stored::ExampleDebugSomeStoreBase::[anonymous]::FunctionCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_5_debug.html#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_3111ObjectCountE">stored::ExampleDebugSomeStoreBase::[anonymous]::ObjectCount (C++ enumerator)</a>
+      <li><a href="doc/example_5_debug.html#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4311ObjectCountE">stored::ExampleDebugSomeStoreBase::[anonymous]::ObjectCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_5_debug.html#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_3113VariableCountE">stored::ExampleDebugSomeStoreBase::[anonymous]::VariableCount (C++ enumerator)</a>
+      <li><a href="doc/example_5_debug.html#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4313VariableCountE">stored::ExampleDebugSomeStoreBase::[anonymous]::VariableCount (C++ enumerator)</a>
 </li>
       <li><a href="doc/example_5_debug.html#_CPPv4NK6stored25ExampleDebugSomeStoreBase11bufferToKeyEPKv">stored::ExampleDebugSomeStoreBase::bufferToKey (C++ function)</a>
 </li>
       <li><a href="doc/example_5_debug.html#_CPPv4N6stored25ExampleDebugSomeStoreBase25ExampleDebugSomeStoreBaseERK25ExampleDebugSomeStoreBase">stored::ExampleDebugSomeStoreBase::ExampleDebugSomeStoreBase (C++ function)</a>, <a href="doc/example_5_debug.html#_CPPv4N6stored25ExampleDebugSomeStoreBase25ExampleDebugSomeStoreBaseERR25ExampleDebugSomeStoreBase">[1]</a>
 </li>
       <li><a href="doc/example_5_debug.html#_CPPv4N6stored25ExampleDebugSomeStoreBase4findEPKc6size_t">stored::ExampleDebugSomeStoreBase::find (C++ function)</a>
+</li>
+      <li><a href="doc/example_5_debug.html#_CPPv4I0EN6stored25ExampleDebugSomeStoreBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ExampleDebugSomeStoreBase::freeFunction (C++ function)</a>
+</li>
+      <li><a href="doc/example_5_debug.html#_CPPv4I0EN6stored25ExampleDebugSomeStoreBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ExampleDebugSomeStoreBase::freeVariable (C++ function)</a>
+</li>
+      <li><a href="doc/example_5_debug.html#_CPPv4I0EN6stored25ExampleDebugSomeStoreBase8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ExampleDebugSomeStoreBase::function (C++ function)</a>
 </li>
       <li><a href="doc/example_5_debug.html#_CPPv4N6stored25ExampleDebugSomeStoreBase4hashEv">stored::ExampleDebugSomeStoreBase::hash (C++ function)</a>
 </li>
@@ -1305,6 +1532,8 @@
 </li>
       <li><a href="doc/example_5_debug.html#_CPPv4NK6stored25ExampleDebugSomeStoreBase14shortDirectoryEv">stored::ExampleDebugSomeStoreBase::shortDirectory (C++ function)</a>
 </li>
+      <li><a href="doc/example_5_debug.html#_CPPv4I0EN6stored25ExampleDebugSomeStoreBase8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ExampleDebugSomeStoreBase::variable (C++ function)</a>
+</li>
       <li><a href="doc/example_5_debug.html#_CPPv4I00EN6stored28ExampleDebugSomeStoreObjectsE">stored::ExampleDebugSomeStoreObjects (C++ class)</a>
 </li>
       <li><a href="doc/example_5_debug.html#_CPPv4N6stored28ExampleDebugSomeStoreObjects4BaseE">stored::ExampleDebugSomeStoreObjects::Base (C++ type)</a>
@@ -1321,27 +1550,31 @@
 </li>
       <li><a href="doc/example_9_fpga.html#_CPPv4N6stored12ExampleFpga212ExampleFpga2ERK12ExampleFpga2">stored::ExampleFpga2::ExampleFpga2 (C++ function)</a>, <a href="doc/example_9_fpga.html#_CPPv4N6stored12ExampleFpga212ExampleFpga2ERR12ExampleFpga2">[1]</a>, <a href="doc/example_9_fpga.html#_CPPv4N6stored12ExampleFpga212ExampleFpga2Ev">[2]</a>
 </li>
-      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored12ExampleFpga214ImplementationE">stored::ExampleFpga2::Implementation (C++ type)</a>
-</li>
       <li><a href="doc/example_9_fpga.html#_CPPv4N6stored12ExampleFpga2aSERK12ExampleFpga2">stored::ExampleFpga2::operator= (C++ function)</a>, <a href="doc/example_9_fpga.html#_CPPv4N6stored12ExampleFpga2aSERR12ExampleFpga2">[1]</a>
 </li>
       <li><a href="doc/example_9_fpga.html#_CPPv4I0EN6stored16ExampleFpga2BaseE">stored::ExampleFpga2Base (C++ class)</a>
 </li>
-      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored16ExampleFpga2BaseUt2_37E">stored::ExampleFpga2Base::[anonymous] (C++ enum)</a>
+      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored16ExampleFpga2BaseUt2_49E">stored::ExampleFpga2Base::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored16ExampleFpga2BaseUt2_3710BufferSizeE">stored::ExampleFpga2Base::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored16ExampleFpga2BaseUt2_4910BufferSizeE">stored::ExampleFpga2Base::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored16ExampleFpga2BaseUt2_3713FunctionCountE">stored::ExampleFpga2Base::[anonymous]::FunctionCount (C++ enumerator)</a>
+      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored16ExampleFpga2BaseUt2_4913FunctionCountE">stored::ExampleFpga2Base::[anonymous]::FunctionCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored16ExampleFpga2BaseUt2_3711ObjectCountE">stored::ExampleFpga2Base::[anonymous]::ObjectCount (C++ enumerator)</a>
+      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored16ExampleFpga2BaseUt2_4911ObjectCountE">stored::ExampleFpga2Base::[anonymous]::ObjectCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored16ExampleFpga2BaseUt2_3713VariableCountE">stored::ExampleFpga2Base::[anonymous]::VariableCount (C++ enumerator)</a>
+      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored16ExampleFpga2BaseUt2_4913VariableCountE">stored::ExampleFpga2Base::[anonymous]::VariableCount (C++ enumerator)</a>
 </li>
       <li><a href="doc/example_9_fpga.html#_CPPv4NK6stored16ExampleFpga2Base11bufferToKeyEPKv">stored::ExampleFpga2Base::bufferToKey (C++ function)</a>
 </li>
       <li><a href="doc/example_9_fpga.html#_CPPv4N6stored16ExampleFpga2Base16ExampleFpga2BaseERK16ExampleFpga2Base">stored::ExampleFpga2Base::ExampleFpga2Base (C++ function)</a>, <a href="doc/example_9_fpga.html#_CPPv4N6stored16ExampleFpga2Base16ExampleFpga2BaseERR16ExampleFpga2Base">[1]</a>
 </li>
       <li><a href="doc/example_9_fpga.html#_CPPv4N6stored16ExampleFpga2Base4findEPKc6size_t">stored::ExampleFpga2Base::find (C++ function)</a>
+</li>
+      <li><a href="doc/example_9_fpga.html#_CPPv4I0EN6stored16ExampleFpga2Base12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ExampleFpga2Base::freeFunction (C++ function)</a>
+</li>
+      <li><a href="doc/example_9_fpga.html#_CPPv4I0EN6stored16ExampleFpga2Base12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ExampleFpga2Base::freeVariable (C++ function)</a>
+</li>
+      <li><a href="doc/example_9_fpga.html#_CPPv4I0EN6stored16ExampleFpga2Base8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ExampleFpga2Base::function (C++ function)</a>
 </li>
       <li><a href="doc/example_9_fpga.html#_CPPv4N6stored16ExampleFpga2Base4hashEv">stored::ExampleFpga2Base::hash (C++ function)</a>
 </li>
@@ -1367,6 +1600,8 @@
 </li>
       <li><a href="doc/example_9_fpga.html#_CPPv4NK6stored16ExampleFpga2Base14shortDirectoryEv">stored::ExampleFpga2Base::shortDirectory (C++ function)</a>
 </li>
+      <li><a href="doc/example_9_fpga.html#_CPPv4I0EN6stored16ExampleFpga2Base8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ExampleFpga2Base::variable (C++ function)</a>
+</li>
       <li><a href="doc/example_9_fpga.html#_CPPv4I00EN6stored19ExampleFpga2ObjectsE">stored::ExampleFpga2Objects (C++ class)</a>
 </li>
       <li><a href="doc/example_9_fpga.html#_CPPv4N6stored19ExampleFpga2Objects4BaseE">stored::ExampleFpga2Objects::Base (C++ type)</a>
@@ -1379,21 +1614,19 @@
 </li>
       <li><a href="doc/example_9_fpga.html#_CPPv4N6stored11ExampleFpga11ExampleFpgaERK11ExampleFpga">stored::ExampleFpga::ExampleFpga (C++ function)</a>, <a href="doc/example_9_fpga.html#_CPPv4N6stored11ExampleFpga11ExampleFpgaERR11ExampleFpga">[1]</a>, <a href="doc/example_9_fpga.html#_CPPv4N6stored11ExampleFpga11ExampleFpgaEv">[2]</a>
 </li>
-      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored11ExampleFpga14ImplementationE">stored::ExampleFpga::Implementation (C++ type)</a>
-</li>
       <li><a href="doc/example_9_fpga.html#_CPPv4N6stored11ExampleFpgaaSERK11ExampleFpga">stored::ExampleFpga::operator= (C++ function)</a>, <a href="doc/example_9_fpga.html#_CPPv4N6stored11ExampleFpgaaSERR11ExampleFpga">[1]</a>
 </li>
       <li><a href="doc/example_9_fpga.html#_CPPv4I0EN6stored15ExampleFpgaBaseE">stored::ExampleFpgaBase (C++ class)</a>
 </li>
-      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored15ExampleFpgaBaseUt2_36E">stored::ExampleFpgaBase::[anonymous] (C++ enum)</a>
+      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored15ExampleFpgaBaseUt2_48E">stored::ExampleFpgaBase::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored15ExampleFpgaBaseUt2_3610BufferSizeE">stored::ExampleFpgaBase::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored15ExampleFpgaBaseUt2_4810BufferSizeE">stored::ExampleFpgaBase::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored15ExampleFpgaBaseUt2_3613FunctionCountE">stored::ExampleFpgaBase::[anonymous]::FunctionCount (C++ enumerator)</a>
+      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored15ExampleFpgaBaseUt2_4813FunctionCountE">stored::ExampleFpgaBase::[anonymous]::FunctionCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored15ExampleFpgaBaseUt2_3611ObjectCountE">stored::ExampleFpgaBase::[anonymous]::ObjectCount (C++ enumerator)</a>
+      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored15ExampleFpgaBaseUt2_4811ObjectCountE">stored::ExampleFpgaBase::[anonymous]::ObjectCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored15ExampleFpgaBaseUt2_3613VariableCountE">stored::ExampleFpgaBase::[anonymous]::VariableCount (C++ enumerator)</a>
+      <li><a href="doc/example_9_fpga.html#_CPPv4N6stored15ExampleFpgaBaseUt2_4813VariableCountE">stored::ExampleFpgaBase::[anonymous]::VariableCount (C++ enumerator)</a>
 </li>
       <li><a href="doc/example_9_fpga.html#_CPPv4N6stored15ExampleFpgaBase18__ignored_functionEbR7int32_t">stored::ExampleFpgaBase::__ignored_function (C++ function)</a>
 </li>
@@ -1402,6 +1635,12 @@
       <li><a href="doc/example_9_fpga.html#_CPPv4N6stored15ExampleFpgaBase15ExampleFpgaBaseERK15ExampleFpgaBase">stored::ExampleFpgaBase::ExampleFpgaBase (C++ function)</a>, <a href="doc/example_9_fpga.html#_CPPv4N6stored15ExampleFpgaBase15ExampleFpgaBaseERR15ExampleFpgaBase">[1]</a>
 </li>
       <li><a href="doc/example_9_fpga.html#_CPPv4N6stored15ExampleFpgaBase4findEPKc6size_t">stored::ExampleFpgaBase::find (C++ function)</a>
+</li>
+      <li><a href="doc/example_9_fpga.html#_CPPv4I0EN6stored15ExampleFpgaBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ExampleFpgaBase::freeFunction (C++ function)</a>
+</li>
+      <li><a href="doc/example_9_fpga.html#_CPPv4I0EN6stored15ExampleFpgaBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ExampleFpgaBase::freeVariable (C++ function)</a>
+</li>
+      <li><a href="doc/example_9_fpga.html#_CPPv4I0EN6stored15ExampleFpgaBase8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ExampleFpgaBase::function (C++ function)</a>
 </li>
       <li><a href="doc/example_9_fpga.html#_CPPv4N6stored15ExampleFpgaBase4hashEv">stored::ExampleFpgaBase::hash (C++ function)</a>
 </li>
@@ -1426,6 +1665,8 @@
       <li><a href="doc/example_9_fpga.html#_CPPv4N6stored15ExampleFpgaBaseaSERK15ExampleFpgaBase">stored::ExampleFpgaBase::operator= (C++ function)</a>, <a href="doc/example_9_fpga.html#_CPPv4N6stored15ExampleFpgaBaseaSERR15ExampleFpgaBase">[1]</a>
 </li>
       <li><a href="doc/example_9_fpga.html#_CPPv4NK6stored15ExampleFpgaBase14shortDirectoryEv">stored::ExampleFpgaBase::shortDirectory (C++ function)</a>
+</li>
+      <li><a href="doc/example_9_fpga.html#_CPPv4I0EN6stored15ExampleFpgaBase8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ExampleFpgaBase::variable (C++ function)</a>
 </li>
       <li><a href="doc/example_9_fpga.html#_CPPv4I00EN6stored18ExampleFpgaObjectsE">stored::ExampleFpgaObjects (C++ class)</a>
 </li>
@@ -1457,21 +1698,19 @@
 </li>
       <li><a href="doc/example_4_function.html#_CPPv4N6stored15ExampleFunction15ExampleFunctionERK15ExampleFunction">stored::ExampleFunction::ExampleFunction (C++ function)</a>, <a href="doc/example_4_function.html#_CPPv4N6stored15ExampleFunction15ExampleFunctionERR15ExampleFunction">[1]</a>, <a href="doc/example_4_function.html#_CPPv4N6stored15ExampleFunction15ExampleFunctionEv">[2]</a>
 </li>
-      <li><a href="doc/example_4_function.html#_CPPv4N6stored15ExampleFunction14ImplementationE">stored::ExampleFunction::Implementation (C++ type)</a>
-</li>
       <li><a href="doc/example_4_function.html#_CPPv4N6stored15ExampleFunctionaSERK15ExampleFunction">stored::ExampleFunction::operator= (C++ function)</a>, <a href="doc/example_4_function.html#_CPPv4N6stored15ExampleFunctionaSERR15ExampleFunction">[1]</a>
 </li>
       <li><a href="doc/example_4_function.html#_CPPv4I0EN6stored19ExampleFunctionBaseE">stored::ExampleFunctionBase (C++ class)</a>
 </li>
-      <li><a href="doc/example_4_function.html#_CPPv4N6stored19ExampleFunctionBaseUt2_29E">stored::ExampleFunctionBase::[anonymous] (C++ enum)</a>
+      <li><a href="doc/example_4_function.html#_CPPv4N6stored19ExampleFunctionBaseUt2_41E">stored::ExampleFunctionBase::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/example_4_function.html#_CPPv4N6stored19ExampleFunctionBaseUt2_2910BufferSizeE">stored::ExampleFunctionBase::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/example_4_function.html#_CPPv4N6stored19ExampleFunctionBaseUt2_4110BufferSizeE">stored::ExampleFunctionBase::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_4_function.html#_CPPv4N6stored19ExampleFunctionBaseUt2_2913FunctionCountE">stored::ExampleFunctionBase::[anonymous]::FunctionCount (C++ enumerator)</a>
+      <li><a href="doc/example_4_function.html#_CPPv4N6stored19ExampleFunctionBaseUt2_4113FunctionCountE">stored::ExampleFunctionBase::[anonymous]::FunctionCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_4_function.html#_CPPv4N6stored19ExampleFunctionBaseUt2_2911ObjectCountE">stored::ExampleFunctionBase::[anonymous]::ObjectCount (C++ enumerator)</a>
+      <li><a href="doc/example_4_function.html#_CPPv4N6stored19ExampleFunctionBaseUt2_4111ObjectCountE">stored::ExampleFunctionBase::[anonymous]::ObjectCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_4_function.html#_CPPv4N6stored19ExampleFunctionBaseUt2_2913VariableCountE">stored::ExampleFunctionBase::[anonymous]::VariableCount (C++ enumerator)</a>
+      <li><a href="doc/example_4_function.html#_CPPv4N6stored19ExampleFunctionBaseUt2_4113VariableCountE">stored::ExampleFunctionBase::[anonymous]::VariableCount (C++ enumerator)</a>
 </li>
       <li><a href="doc/example_4_function.html#_CPPv4N6stored19ExampleFunctionBase8__echo_0EbR7int32_t">stored::ExampleFunctionBase::__echo_0 (C++ function)</a>
 </li>
@@ -1488,6 +1727,12 @@
       <li><a href="doc/example_4_function.html#_CPPv4N6stored19ExampleFunctionBase19ExampleFunctionBaseERK19ExampleFunctionBase">stored::ExampleFunctionBase::ExampleFunctionBase (C++ function)</a>, <a href="doc/example_4_function.html#_CPPv4N6stored19ExampleFunctionBase19ExampleFunctionBaseERR19ExampleFunctionBase">[1]</a>
 </li>
       <li><a href="doc/example_4_function.html#_CPPv4N6stored19ExampleFunctionBase4findEPKc6size_t">stored::ExampleFunctionBase::find (C++ function)</a>
+</li>
+      <li><a href="doc/example_4_function.html#_CPPv4I0EN6stored19ExampleFunctionBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ExampleFunctionBase::freeFunction (C++ function)</a>
+</li>
+      <li><a href="doc/example_4_function.html#_CPPv4I0EN6stored19ExampleFunctionBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ExampleFunctionBase::freeVariable (C++ function)</a>
+</li>
+      <li><a href="doc/example_4_function.html#_CPPv4I0EN6stored19ExampleFunctionBase8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ExampleFunctionBase::function (C++ function)</a>
 </li>
       <li><a href="doc/example_4_function.html#_CPPv4N6stored19ExampleFunctionBase4hashEv">stored::ExampleFunctionBase::hash (C++ function)</a>
 </li>
@@ -1513,6 +1758,8 @@
 </li>
       <li><a href="doc/example_4_function.html#_CPPv4NK6stored19ExampleFunctionBase14shortDirectoryEv">stored::ExampleFunctionBase::shortDirectory (C++ function)</a>
 </li>
+      <li><a href="doc/example_4_function.html#_CPPv4I0EN6stored19ExampleFunctionBase8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ExampleFunctionBase::variable (C++ function)</a>
+</li>
       <li><a href="doc/example_4_function.html#_CPPv4I00EN6stored22ExampleFunctionObjectsE">stored::ExampleFunctionObjects (C++ class)</a>
 </li>
       <li><a href="doc/example_4_function.html#_CPPv4N6stored22ExampleFunctionObjects4BaseE">stored::ExampleFunctionObjects::Base (C++ type)</a>
@@ -1533,27 +1780,31 @@
 </li>
       <li><a href="doc/example_1_hello.html#_CPPv4N6stored12ExampleHello12ExampleHelloERK12ExampleHello">stored::ExampleHello::ExampleHello (C++ function)</a>, <a href="doc/example_1_hello.html#_CPPv4N6stored12ExampleHello12ExampleHelloERR12ExampleHello">[1]</a>, <a href="doc/example_1_hello.html#_CPPv4N6stored12ExampleHello12ExampleHelloEv">[2]</a>
 </li>
-      <li><a href="doc/example_1_hello.html#_CPPv4N6stored12ExampleHello14ImplementationE">stored::ExampleHello::Implementation (C++ type)</a>
-</li>
       <li><a href="doc/example_1_hello.html#_CPPv4N6stored12ExampleHelloaSERK12ExampleHello">stored::ExampleHello::operator= (C++ function)</a>, <a href="doc/example_1_hello.html#_CPPv4N6stored12ExampleHelloaSERR12ExampleHello">[1]</a>
 </li>
       <li><a href="doc/example_1_hello.html#_CPPv4I0EN6stored16ExampleHelloBaseE">stored::ExampleHelloBase (C++ class)</a>
 </li>
-      <li><a href="doc/example_1_hello.html#_CPPv4N6stored16ExampleHelloBaseUt2_26E">stored::ExampleHelloBase::[anonymous] (C++ enum)</a>
+      <li><a href="doc/example_1_hello.html#_CPPv4N6stored16ExampleHelloBaseUt2_38E">stored::ExampleHelloBase::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/example_1_hello.html#_CPPv4N6stored16ExampleHelloBaseUt2_2610BufferSizeE">stored::ExampleHelloBase::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/example_1_hello.html#_CPPv4N6stored16ExampleHelloBaseUt2_3810BufferSizeE">stored::ExampleHelloBase::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_1_hello.html#_CPPv4N6stored16ExampleHelloBaseUt2_2613FunctionCountE">stored::ExampleHelloBase::[anonymous]::FunctionCount (C++ enumerator)</a>
+      <li><a href="doc/example_1_hello.html#_CPPv4N6stored16ExampleHelloBaseUt2_3813FunctionCountE">stored::ExampleHelloBase::[anonymous]::FunctionCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_1_hello.html#_CPPv4N6stored16ExampleHelloBaseUt2_2611ObjectCountE">stored::ExampleHelloBase::[anonymous]::ObjectCount (C++ enumerator)</a>
+      <li><a href="doc/example_1_hello.html#_CPPv4N6stored16ExampleHelloBaseUt2_3811ObjectCountE">stored::ExampleHelloBase::[anonymous]::ObjectCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_1_hello.html#_CPPv4N6stored16ExampleHelloBaseUt2_2613VariableCountE">stored::ExampleHelloBase::[anonymous]::VariableCount (C++ enumerator)</a>
+      <li><a href="doc/example_1_hello.html#_CPPv4N6stored16ExampleHelloBaseUt2_3813VariableCountE">stored::ExampleHelloBase::[anonymous]::VariableCount (C++ enumerator)</a>
 </li>
       <li><a href="doc/example_1_hello.html#_CPPv4NK6stored16ExampleHelloBase11bufferToKeyEPKv">stored::ExampleHelloBase::bufferToKey (C++ function)</a>
 </li>
       <li><a href="doc/example_1_hello.html#_CPPv4N6stored16ExampleHelloBase16ExampleHelloBaseERK16ExampleHelloBase">stored::ExampleHelloBase::ExampleHelloBase (C++ function)</a>, <a href="doc/example_1_hello.html#_CPPv4N6stored16ExampleHelloBase16ExampleHelloBaseERR16ExampleHelloBase">[1]</a>
 </li>
       <li><a href="doc/example_1_hello.html#_CPPv4N6stored16ExampleHelloBase4findEPKc6size_t">stored::ExampleHelloBase::find (C++ function)</a>
+</li>
+      <li><a href="doc/example_1_hello.html#_CPPv4I0EN6stored16ExampleHelloBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ExampleHelloBase::freeFunction (C++ function)</a>
+</li>
+      <li><a href="doc/example_1_hello.html#_CPPv4I0EN6stored16ExampleHelloBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ExampleHelloBase::freeVariable (C++ function)</a>
+</li>
+      <li><a href="doc/example_1_hello.html#_CPPv4I0EN6stored16ExampleHelloBase8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ExampleHelloBase::function (C++ function)</a>
 </li>
       <li><a href="doc/example_1_hello.html#_CPPv4N6stored16ExampleHelloBase4hashEv">stored::ExampleHelloBase::hash (C++ function)</a>
 </li>
@@ -1579,6 +1830,8 @@
 </li>
       <li><a href="doc/example_1_hello.html#_CPPv4NK6stored16ExampleHelloBase14shortDirectoryEv">stored::ExampleHelloBase::shortDirectory (C++ function)</a>
 </li>
+      <li><a href="doc/example_1_hello.html#_CPPv4I0EN6stored16ExampleHelloBase8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ExampleHelloBase::variable (C++ function)</a>
+</li>
       <li><a href="doc/example_1_hello.html#_CPPv4I00EN6stored19ExampleHelloObjectsE">stored::ExampleHelloObjects (C++ class)</a>
 </li>
       <li><a href="doc/example_1_hello.html#_CPPv4N6stored19ExampleHelloObjects4BaseE">stored::ExampleHelloObjects::Base (C++ type)</a>
@@ -1595,29 +1848,33 @@
 </li>
       <li><a href="doc/example_6_hooks.html#_CPPv4N6stored12ExampleHooks12ExampleHooksERK12ExampleHooks">stored::ExampleHooks::ExampleHooks (C++ function)</a>, <a href="doc/example_6_hooks.html#_CPPv4N6stored12ExampleHooks12ExampleHooksERR12ExampleHooks">[1]</a>, <a href="doc/example_6_hooks.html#_CPPv4N6stored12ExampleHooks12ExampleHooksEv">[2]</a>
 </li>
-      <li><a href="doc/example_6_hooks.html#_CPPv4N6stored12ExampleHooks14ImplementationE">stored::ExampleHooks::Implementation (C++ type)</a>
-</li>
       <li><a href="doc/example_6_hooks.html#_CPPv4N6stored12ExampleHooksaSERK12ExampleHooks">stored::ExampleHooks::operator= (C++ function)</a>, <a href="doc/example_6_hooks.html#_CPPv4N6stored12ExampleHooksaSERR12ExampleHooks">[1]</a>
 </li>
       <li><a href="doc/example_6_hooks.html#_CPPv4I0EN6stored16ExampleHooksBaseE">stored::ExampleHooksBase (C++ class)</a>
 </li>
-      <li><a href="doc/example_6_hooks.html#_CPPv4N6stored16ExampleHooksBaseUt2_32E">stored::ExampleHooksBase::[anonymous] (C++ enum)</a>
+      <li><a href="doc/example_6_hooks.html#_CPPv4N6stored16ExampleHooksBaseUt2_44E">stored::ExampleHooksBase::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/example_6_hooks.html#_CPPv4N6stored16ExampleHooksBaseUt2_3210BufferSizeE">stored::ExampleHooksBase::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/example_6_hooks.html#_CPPv4N6stored16ExampleHooksBaseUt2_4410BufferSizeE">stored::ExampleHooksBase::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_6_hooks.html#_CPPv4N6stored16ExampleHooksBaseUt2_3213FunctionCountE">stored::ExampleHooksBase::[anonymous]::FunctionCount (C++ enumerator)</a>
+      <li><a href="doc/example_6_hooks.html#_CPPv4N6stored16ExampleHooksBaseUt2_4413FunctionCountE">stored::ExampleHooksBase::[anonymous]::FunctionCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_6_hooks.html#_CPPv4N6stored16ExampleHooksBaseUt2_3211ObjectCountE">stored::ExampleHooksBase::[anonymous]::ObjectCount (C++ enumerator)</a>
+      <li><a href="doc/example_6_hooks.html#_CPPv4N6stored16ExampleHooksBaseUt2_4411ObjectCountE">stored::ExampleHooksBase::[anonymous]::ObjectCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_6_hooks.html#_CPPv4N6stored16ExampleHooksBaseUt2_3213VariableCountE">stored::ExampleHooksBase::[anonymous]::VariableCount (C++ enumerator)</a>
+      <li><a href="doc/example_6_hooks.html#_CPPv4N6stored16ExampleHooksBaseUt2_4413VariableCountE">stored::ExampleHooksBase::[anonymous]::VariableCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_6_hooks.html#_CPPv4N6stored16ExampleHooksBase10__functionEbR7int32_t">stored::ExampleHooksBase::__function (C++ function)</a>
+      <li><a href="doc/example_6_hooks.html#_CPPv4N6stored16ExampleHooksBase15__some_functionEbR7int32_t">stored::ExampleHooksBase::__some_function (C++ function)</a>
 </li>
       <li><a href="doc/example_6_hooks.html#_CPPv4NK6stored16ExampleHooksBase11bufferToKeyEPKv">stored::ExampleHooksBase::bufferToKey (C++ function)</a>
 </li>
       <li><a href="doc/example_6_hooks.html#_CPPv4N6stored16ExampleHooksBase16ExampleHooksBaseERK16ExampleHooksBase">stored::ExampleHooksBase::ExampleHooksBase (C++ function)</a>, <a href="doc/example_6_hooks.html#_CPPv4N6stored16ExampleHooksBase16ExampleHooksBaseERR16ExampleHooksBase">[1]</a>
 </li>
       <li><a href="doc/example_6_hooks.html#_CPPv4N6stored16ExampleHooksBase4findEPKc6size_t">stored::ExampleHooksBase::find (C++ function)</a>
+</li>
+      <li><a href="doc/example_6_hooks.html#_CPPv4I0EN6stored16ExampleHooksBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ExampleHooksBase::freeFunction (C++ function)</a>
+</li>
+      <li><a href="doc/example_6_hooks.html#_CPPv4I0EN6stored16ExampleHooksBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ExampleHooksBase::freeVariable (C++ function)</a>
+</li>
+      <li><a href="doc/example_6_hooks.html#_CPPv4I0EN6stored16ExampleHooksBase8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ExampleHooksBase::function (C++ function)</a>
 </li>
       <li><a href="doc/example_6_hooks.html#_CPPv4N6stored16ExampleHooksBase4hashEv">stored::ExampleHooksBase::hash (C++ function)</a>
 </li>
@@ -1643,13 +1900,15 @@
 </li>
       <li><a href="doc/example_6_hooks.html#_CPPv4NK6stored16ExampleHooksBase14shortDirectoryEv">stored::ExampleHooksBase::shortDirectory (C++ function)</a>
 </li>
+      <li><a href="doc/example_6_hooks.html#_CPPv4I0EN6stored16ExampleHooksBase8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ExampleHooksBase::variable (C++ function)</a>
+</li>
       <li><a href="doc/example_6_hooks.html#_CPPv4I00EN6stored19ExampleHooksObjectsE">stored::ExampleHooksObjects (C++ class)</a>
 </li>
       <li><a href="doc/example_6_hooks.html#_CPPv4N6stored19ExampleHooksObjects4BaseE">stored::ExampleHooksObjects::Base (C++ type)</a>
 </li>
-      <li><a href="doc/example_6_hooks.html#_CPPv4N6stored19ExampleHooksObjects8functionE">stored::ExampleHooksObjects::function (C++ member)</a>
-</li>
       <li><a href="doc/example_6_hooks.html#_CPPv4N6stored19ExampleHooksObjects14ImplementationE">stored::ExampleHooksObjects::Implementation (C++ type)</a>
+</li>
+      <li><a href="doc/example_6_hooks.html#_CPPv4N6stored19ExampleHooksObjects13some_functionE">stored::ExampleHooksObjects::some_function (C++ member)</a>
 </li>
       <li><a href="doc/example_6_hooks.html#_CPPv4N6stored19ExampleHooksObjects10variable_1E">stored::ExampleHooksObjects::variable_1 (C++ member)</a>
 </li>
@@ -1661,27 +1920,31 @@
 </li>
       <li><a href="doc/example_7_protocol.html#_CPPv4N6stored15ExampleProtocol15ExampleProtocolERK15ExampleProtocol">stored::ExampleProtocol::ExampleProtocol (C++ function)</a>, <a href="doc/example_7_protocol.html#_CPPv4N6stored15ExampleProtocol15ExampleProtocolERR15ExampleProtocol">[1]</a>, <a href="doc/example_7_protocol.html#_CPPv4N6stored15ExampleProtocol15ExampleProtocolEv">[2]</a>
 </li>
-      <li><a href="doc/example_7_protocol.html#_CPPv4N6stored15ExampleProtocol14ImplementationE">stored::ExampleProtocol::Implementation (C++ type)</a>
-</li>
       <li><a href="doc/example_7_protocol.html#_CPPv4N6stored15ExampleProtocolaSERK15ExampleProtocol">stored::ExampleProtocol::operator= (C++ function)</a>, <a href="doc/example_7_protocol.html#_CPPv4N6stored15ExampleProtocolaSERR15ExampleProtocol">[1]</a>
 </li>
       <li><a href="doc/example_7_protocol.html#_CPPv4I0EN6stored19ExampleProtocolBaseE">stored::ExampleProtocolBase (C++ class)</a>
 </li>
-      <li><a href="doc/example_7_protocol.html#_CPPv4N6stored19ExampleProtocolBaseUt2_33E">stored::ExampleProtocolBase::[anonymous] (C++ enum)</a>
+      <li><a href="doc/example_7_protocol.html#_CPPv4N6stored19ExampleProtocolBaseUt2_45E">stored::ExampleProtocolBase::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/example_7_protocol.html#_CPPv4N6stored19ExampleProtocolBaseUt2_3310BufferSizeE">stored::ExampleProtocolBase::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/example_7_protocol.html#_CPPv4N6stored19ExampleProtocolBaseUt2_4510BufferSizeE">stored::ExampleProtocolBase::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_7_protocol.html#_CPPv4N6stored19ExampleProtocolBaseUt2_3313FunctionCountE">stored::ExampleProtocolBase::[anonymous]::FunctionCount (C++ enumerator)</a>
+      <li><a href="doc/example_7_protocol.html#_CPPv4N6stored19ExampleProtocolBaseUt2_4513FunctionCountE">stored::ExampleProtocolBase::[anonymous]::FunctionCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_7_protocol.html#_CPPv4N6stored19ExampleProtocolBaseUt2_3311ObjectCountE">stored::ExampleProtocolBase::[anonymous]::ObjectCount (C++ enumerator)</a>
+      <li><a href="doc/example_7_protocol.html#_CPPv4N6stored19ExampleProtocolBaseUt2_4511ObjectCountE">stored::ExampleProtocolBase::[anonymous]::ObjectCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_7_protocol.html#_CPPv4N6stored19ExampleProtocolBaseUt2_3313VariableCountE">stored::ExampleProtocolBase::[anonymous]::VariableCount (C++ enumerator)</a>
+      <li><a href="doc/example_7_protocol.html#_CPPv4N6stored19ExampleProtocolBaseUt2_4513VariableCountE">stored::ExampleProtocolBase::[anonymous]::VariableCount (C++ enumerator)</a>
 </li>
       <li><a href="doc/example_7_protocol.html#_CPPv4NK6stored19ExampleProtocolBase11bufferToKeyEPKv">stored::ExampleProtocolBase::bufferToKey (C++ function)</a>
 </li>
       <li><a href="doc/example_7_protocol.html#_CPPv4N6stored19ExampleProtocolBase19ExampleProtocolBaseERK19ExampleProtocolBase">stored::ExampleProtocolBase::ExampleProtocolBase (C++ function)</a>, <a href="doc/example_7_protocol.html#_CPPv4N6stored19ExampleProtocolBase19ExampleProtocolBaseERR19ExampleProtocolBase">[1]</a>
 </li>
       <li><a href="doc/example_7_protocol.html#_CPPv4N6stored19ExampleProtocolBase4findEPKc6size_t">stored::ExampleProtocolBase::find (C++ function)</a>
+</li>
+      <li><a href="doc/example_7_protocol.html#_CPPv4I0EN6stored19ExampleProtocolBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ExampleProtocolBase::freeFunction (C++ function)</a>
+</li>
+      <li><a href="doc/example_7_protocol.html#_CPPv4I0EN6stored19ExampleProtocolBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ExampleProtocolBase::freeVariable (C++ function)</a>
+</li>
+      <li><a href="doc/example_7_protocol.html#_CPPv4I0EN6stored19ExampleProtocolBase8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ExampleProtocolBase::function (C++ function)</a>
 </li>
       <li><a href="doc/example_7_protocol.html#_CPPv4N6stored19ExampleProtocolBase4hashEv">stored::ExampleProtocolBase::hash (C++ function)</a>
 </li>
@@ -1707,6 +1970,10 @@
 </li>
       <li><a href="doc/example_7_protocol.html#_CPPv4NK6stored19ExampleProtocolBase14shortDirectoryEv">stored::ExampleProtocolBase::shortDirectory (C++ function)</a>
 </li>
+      <li><a href="doc/example_7_protocol.html#_CPPv4I0EN6stored19ExampleProtocolBase8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ExampleProtocolBase::variable (C++ function)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="doc/example_7_protocol.html#_CPPv4I00EN6stored22ExampleProtocolObjectsE">stored::ExampleProtocolObjects (C++ class)</a>
 </li>
       <li><a href="doc/example_7_protocol.html#_CPPv4N6stored22ExampleProtocolObjects55a_long_string_that_does_not_fit_in_the_response_buffersE">stored::ExampleProtocolObjects::a_long_string_that_does_not_fit_in_the_response_buffers (C++ member)</a>
@@ -1729,29 +1996,31 @@
 </li>
       <li><a href="doc/example_3_scope.html#_CPPv4N6stored12ExampleScope12ExampleScopeERK12ExampleScope">stored::ExampleScope::ExampleScope (C++ function)</a>, <a href="doc/example_3_scope.html#_CPPv4N6stored12ExampleScope12ExampleScopeERR12ExampleScope">[1]</a>, <a href="doc/example_3_scope.html#_CPPv4N6stored12ExampleScope12ExampleScopeEv">[2]</a>
 </li>
-      <li><a href="doc/example_3_scope.html#_CPPv4N6stored12ExampleScope14ImplementationE">stored::ExampleScope::Implementation (C++ type)</a>
-</li>
       <li><a href="doc/example_3_scope.html#_CPPv4N6stored12ExampleScopeaSERK12ExampleScope">stored::ExampleScope::operator= (C++ function)</a>, <a href="doc/example_3_scope.html#_CPPv4N6stored12ExampleScopeaSERR12ExampleScope">[1]</a>
 </li>
       <li><a href="doc/example_3_scope.html#_CPPv4I0EN6stored16ExampleScopeBaseE">stored::ExampleScopeBase (C++ class)</a>
 </li>
-      <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBaseUt2_28E">stored::ExampleScopeBase::[anonymous] (C++ enum)</a>
+      <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBaseUt2_40E">stored::ExampleScopeBase::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBaseUt2_2810BufferSizeE">stored::ExampleScopeBase::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBaseUt2_4010BufferSizeE">stored::ExampleScopeBase::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBaseUt2_2813FunctionCountE">stored::ExampleScopeBase::[anonymous]::FunctionCount (C++ enumerator)</a>
+      <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBaseUt2_4013FunctionCountE">stored::ExampleScopeBase::[anonymous]::FunctionCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBaseUt2_2811ObjectCountE">stored::ExampleScopeBase::[anonymous]::ObjectCount (C++ enumerator)</a>
+      <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBaseUt2_4011ObjectCountE">stored::ExampleScopeBase::[anonymous]::ObjectCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBaseUt2_2813VariableCountE">stored::ExampleScopeBase::[anonymous]::VariableCount (C++ enumerator)</a>
+      <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBaseUt2_4013VariableCountE">stored::ExampleScopeBase::[anonymous]::VariableCount (C++ enumerator)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="doc/example_3_scope.html#_CPPv4NK6stored16ExampleScopeBase11bufferToKeyEPKv">stored::ExampleScopeBase::bufferToKey (C++ function)</a>
 </li>
       <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBase16ExampleScopeBaseERK16ExampleScopeBase">stored::ExampleScopeBase::ExampleScopeBase (C++ function)</a>, <a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBase16ExampleScopeBaseERR16ExampleScopeBase">[1]</a>
 </li>
       <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBase4findEPKc6size_t">stored::ExampleScopeBase::find (C++ function)</a>
+</li>
+      <li><a href="doc/example_3_scope.html#_CPPv4I0EN6stored16ExampleScopeBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ExampleScopeBase::freeFunction (C++ function)</a>
+</li>
+      <li><a href="doc/example_3_scope.html#_CPPv4I0EN6stored16ExampleScopeBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ExampleScopeBase::freeVariable (C++ function)</a>
+</li>
+      <li><a href="doc/example_3_scope.html#_CPPv4I0EN6stored16ExampleScopeBase8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ExampleScopeBase::function (C++ function)</a>
 </li>
       <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBase4hashEv">stored::ExampleScopeBase::hash (C++ function)</a>
 </li>
@@ -1778,6 +2047,8 @@
       <li><a href="doc/example_3_scope.html#_CPPv4NK6stored16ExampleScopeBase14shortDirectoryEv">stored::ExampleScopeBase::shortDirectory (C++ function)</a>
 </li>
       <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBase15two_scopes_a__iEi">stored::ExampleScopeBase::two_scopes_a__i (C++ function)</a>
+</li>
+      <li><a href="doc/example_3_scope.html#_CPPv4I0EN6stored16ExampleScopeBase8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ExampleScopeBase::variable (C++ function)</a>
 </li>
       <li><a href="doc/example_3_scope.html#_CPPv4I00EN6stored19ExampleScopeObjectsE">stored::ExampleScopeObjects (C++ class)</a>
 </li>
@@ -1807,21 +2078,19 @@
 </li>
       <li><a href="doc/example_8_sync.html#_CPPv4N6stored12ExampleSync112ExampleSync1ERK12ExampleSync1">stored::ExampleSync1::ExampleSync1 (C++ function)</a>, <a href="doc/example_8_sync.html#_CPPv4N6stored12ExampleSync112ExampleSync1ERR12ExampleSync1">[1]</a>, <a href="doc/example_8_sync.html#_CPPv4N6stored12ExampleSync112ExampleSync1Ev">[2]</a>
 </li>
-      <li><a href="doc/example_8_sync.html#_CPPv4N6stored12ExampleSync114ImplementationE">stored::ExampleSync1::Implementation (C++ type)</a>
-</li>
       <li><a href="doc/example_8_sync.html#_CPPv4N6stored12ExampleSync1aSERK12ExampleSync1">stored::ExampleSync1::operator= (C++ function)</a>, <a href="doc/example_8_sync.html#_CPPv4N6stored12ExampleSync1aSERR12ExampleSync1">[1]</a>
 </li>
       <li><a href="doc/example_8_sync.html#_CPPv4I0EN6stored16ExampleSync1BaseE">stored::ExampleSync1Base (C++ class)</a>
 </li>
-      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync1BaseUt2_34E">stored::ExampleSync1Base::[anonymous] (C++ enum)</a>
+      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync1BaseUt2_46E">stored::ExampleSync1Base::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync1BaseUt2_3410BufferSizeE">stored::ExampleSync1Base::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync1BaseUt2_4610BufferSizeE">stored::ExampleSync1Base::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync1BaseUt2_3413FunctionCountE">stored::ExampleSync1Base::[anonymous]::FunctionCount (C++ enumerator)</a>
+      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync1BaseUt2_4613FunctionCountE">stored::ExampleSync1Base::[anonymous]::FunctionCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync1BaseUt2_3411ObjectCountE">stored::ExampleSync1Base::[anonymous]::ObjectCount (C++ enumerator)</a>
+      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync1BaseUt2_4611ObjectCountE">stored::ExampleSync1Base::[anonymous]::ObjectCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync1BaseUt2_3413VariableCountE">stored::ExampleSync1Base::[anonymous]::VariableCount (C++ enumerator)</a>
+      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync1BaseUt2_4613VariableCountE">stored::ExampleSync1Base::[anonymous]::VariableCount (C++ enumerator)</a>
 </li>
       <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync1Base19__sync_ExampleSync2EbRb">stored::ExampleSync1Base::__sync_ExampleSync2 (C++ function)</a>
 </li>
@@ -1830,6 +2099,12 @@
       <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync1Base16ExampleSync1BaseERK16ExampleSync1Base">stored::ExampleSync1Base::ExampleSync1Base (C++ function)</a>, <a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync1Base16ExampleSync1BaseERR16ExampleSync1Base">[1]</a>
 </li>
       <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync1Base4findEPKc6size_t">stored::ExampleSync1Base::find (C++ function)</a>
+</li>
+      <li><a href="doc/example_8_sync.html#_CPPv4I0EN6stored16ExampleSync1Base12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ExampleSync1Base::freeFunction (C++ function)</a>
+</li>
+      <li><a href="doc/example_8_sync.html#_CPPv4I0EN6stored16ExampleSync1Base12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ExampleSync1Base::freeVariable (C++ function)</a>
+</li>
+      <li><a href="doc/example_8_sync.html#_CPPv4I0EN6stored16ExampleSync1Base8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ExampleSync1Base::function (C++ function)</a>
 </li>
       <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync1Base4hashEv">stored::ExampleSync1Base::hash (C++ function)</a>
 </li>
@@ -1855,6 +2130,8 @@
 </li>
       <li><a href="doc/example_8_sync.html#_CPPv4NK6stored16ExampleSync1Base14shortDirectoryEv">stored::ExampleSync1Base::shortDirectory (C++ function)</a>
 </li>
+      <li><a href="doc/example_8_sync.html#_CPPv4I0EN6stored16ExampleSync1Base8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ExampleSync1Base::variable (C++ function)</a>
+</li>
       <li><a href="doc/example_8_sync.html#_CPPv4I00EN6stored19ExampleSync1ObjectsE">stored::ExampleSync1Objects (C++ class)</a>
 </li>
       <li><a href="doc/example_8_sync.html#_CPPv4N6stored19ExampleSync1Objects4BaseE">stored::ExampleSync1Objects::Base (C++ type)</a>
@@ -1873,27 +2150,31 @@
 </li>
       <li><a href="doc/example_8_sync.html#_CPPv4N6stored12ExampleSync212ExampleSync2ERK12ExampleSync2">stored::ExampleSync2::ExampleSync2 (C++ function)</a>, <a href="doc/example_8_sync.html#_CPPv4N6stored12ExampleSync212ExampleSync2ERR12ExampleSync2">[1]</a>, <a href="doc/example_8_sync.html#_CPPv4N6stored12ExampleSync212ExampleSync2Ev">[2]</a>
 </li>
-      <li><a href="doc/example_8_sync.html#_CPPv4N6stored12ExampleSync214ImplementationE">stored::ExampleSync2::Implementation (C++ type)</a>
-</li>
       <li><a href="doc/example_8_sync.html#_CPPv4N6stored12ExampleSync2aSERK12ExampleSync2">stored::ExampleSync2::operator= (C++ function)</a>, <a href="doc/example_8_sync.html#_CPPv4N6stored12ExampleSync2aSERR12ExampleSync2">[1]</a>
 </li>
       <li><a href="doc/example_8_sync.html#_CPPv4I0EN6stored16ExampleSync2BaseE">stored::ExampleSync2Base (C++ class)</a>
 </li>
-      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync2BaseUt2_35E">stored::ExampleSync2Base::[anonymous] (C++ enum)</a>
+      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync2BaseUt2_47E">stored::ExampleSync2Base::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync2BaseUt2_3510BufferSizeE">stored::ExampleSync2Base::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync2BaseUt2_4710BufferSizeE">stored::ExampleSync2Base::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync2BaseUt2_3513FunctionCountE">stored::ExampleSync2Base::[anonymous]::FunctionCount (C++ enumerator)</a>
+      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync2BaseUt2_4713FunctionCountE">stored::ExampleSync2Base::[anonymous]::FunctionCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync2BaseUt2_3511ObjectCountE">stored::ExampleSync2Base::[anonymous]::ObjectCount (C++ enumerator)</a>
+      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync2BaseUt2_4711ObjectCountE">stored::ExampleSync2Base::[anonymous]::ObjectCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync2BaseUt2_3513VariableCountE">stored::ExampleSync2Base::[anonymous]::VariableCount (C++ enumerator)</a>
+      <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync2BaseUt2_4713VariableCountE">stored::ExampleSync2Base::[anonymous]::VariableCount (C++ enumerator)</a>
 </li>
       <li><a href="doc/example_8_sync.html#_CPPv4NK6stored16ExampleSync2Base11bufferToKeyEPKv">stored::ExampleSync2Base::bufferToKey (C++ function)</a>
 </li>
       <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync2Base16ExampleSync2BaseERK16ExampleSync2Base">stored::ExampleSync2Base::ExampleSync2Base (C++ function)</a>, <a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync2Base16ExampleSync2BaseERR16ExampleSync2Base">[1]</a>
 </li>
       <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync2Base4findEPKc6size_t">stored::ExampleSync2Base::find (C++ function)</a>
+</li>
+      <li><a href="doc/example_8_sync.html#_CPPv4I0EN6stored16ExampleSync2Base12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ExampleSync2Base::freeFunction (C++ function)</a>
+</li>
+      <li><a href="doc/example_8_sync.html#_CPPv4I0EN6stored16ExampleSync2Base12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ExampleSync2Base::freeVariable (C++ function)</a>
+</li>
+      <li><a href="doc/example_8_sync.html#_CPPv4I0EN6stored16ExampleSync2Base8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ExampleSync2Base::function (C++ function)</a>
 </li>
       <li><a href="doc/example_8_sync.html#_CPPv4N6stored16ExampleSync2Base4hashEv">stored::ExampleSync2Base::hash (C++ function)</a>
 </li>
@@ -1919,6 +2200,8 @@
 </li>
       <li><a href="doc/example_8_sync.html#_CPPv4NK6stored16ExampleSync2Base14shortDirectoryEv">stored::ExampleSync2Base::shortDirectory (C++ function)</a>
 </li>
+      <li><a href="doc/example_8_sync.html#_CPPv4I0EN6stored16ExampleSync2Base8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ExampleSync2Base::variable (C++ function)</a>
+</li>
       <li><a href="doc/example_8_sync.html#_CPPv4I00EN6stored19ExampleSync2ObjectsE">stored::ExampleSync2Objects (C++ class)</a>
 </li>
       <li><a href="doc/example_8_sync.html#_CPPv4N6stored19ExampleSync2Objects1bE">stored::ExampleSync2Objects::b (C++ member)</a>
@@ -1935,27 +2218,31 @@
 </li>
       <li><a href="doc/example_terminal.html#_CPPv4N6stored15ExampleTerminal15ExampleTerminalERK15ExampleTerminal">stored::ExampleTerminal::ExampleTerminal (C++ function)</a>, <a href="doc/example_terminal.html#_CPPv4N6stored15ExampleTerminal15ExampleTerminalERR15ExampleTerminal">[1]</a>, <a href="doc/example_terminal.html#_CPPv4N6stored15ExampleTerminal15ExampleTerminalEv">[2]</a>
 </li>
-      <li><a href="doc/example_terminal.html#_CPPv4N6stored15ExampleTerminal14ImplementationE">stored::ExampleTerminal::Implementation (C++ type)</a>
-</li>
       <li><a href="doc/example_terminal.html#_CPPv4N6stored15ExampleTerminalaSERK15ExampleTerminal">stored::ExampleTerminal::operator= (C++ function)</a>, <a href="doc/example_terminal.html#_CPPv4N6stored15ExampleTerminalaSERR15ExampleTerminal">[1]</a>
 </li>
       <li><a href="doc/example_terminal.html#_CPPv4I0EN6stored19ExampleTerminalBaseE">stored::ExampleTerminalBase (C++ class)</a>
 </li>
-      <li><a href="doc/example_terminal.html#_CPPv4N6stored19ExampleTerminalBaseUt2_40E">stored::ExampleTerminalBase::[anonymous] (C++ enum)</a>
+      <li><a href="doc/example_terminal.html#_CPPv4N6stored19ExampleTerminalBaseUt2_53E">stored::ExampleTerminalBase::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/example_terminal.html#_CPPv4N6stored19ExampleTerminalBaseUt2_4010BufferSizeE">stored::ExampleTerminalBase::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/example_terminal.html#_CPPv4N6stored19ExampleTerminalBaseUt2_5310BufferSizeE">stored::ExampleTerminalBase::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_terminal.html#_CPPv4N6stored19ExampleTerminalBaseUt2_4013FunctionCountE">stored::ExampleTerminalBase::[anonymous]::FunctionCount (C++ enumerator)</a>
+      <li><a href="doc/example_terminal.html#_CPPv4N6stored19ExampleTerminalBaseUt2_5313FunctionCountE">stored::ExampleTerminalBase::[anonymous]::FunctionCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_terminal.html#_CPPv4N6stored19ExampleTerminalBaseUt2_4011ObjectCountE">stored::ExampleTerminalBase::[anonymous]::ObjectCount (C++ enumerator)</a>
+      <li><a href="doc/example_terminal.html#_CPPv4N6stored19ExampleTerminalBaseUt2_5311ObjectCountE">stored::ExampleTerminalBase::[anonymous]::ObjectCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_terminal.html#_CPPv4N6stored19ExampleTerminalBaseUt2_4013VariableCountE">stored::ExampleTerminalBase::[anonymous]::VariableCount (C++ enumerator)</a>
+      <li><a href="doc/example_terminal.html#_CPPv4N6stored19ExampleTerminalBaseUt2_5313VariableCountE">stored::ExampleTerminalBase::[anonymous]::VariableCount (C++ enumerator)</a>
 </li>
       <li><a href="doc/example_terminal.html#_CPPv4NK6stored19ExampleTerminalBase11bufferToKeyEPKv">stored::ExampleTerminalBase::bufferToKey (C++ function)</a>
 </li>
       <li><a href="doc/example_terminal.html#_CPPv4N6stored19ExampleTerminalBase19ExampleTerminalBaseERK19ExampleTerminalBase">stored::ExampleTerminalBase::ExampleTerminalBase (C++ function)</a>, <a href="doc/example_terminal.html#_CPPv4N6stored19ExampleTerminalBase19ExampleTerminalBaseERR19ExampleTerminalBase">[1]</a>
 </li>
       <li><a href="doc/example_terminal.html#_CPPv4N6stored19ExampleTerminalBase4findEPKc6size_t">stored::ExampleTerminalBase::find (C++ function)</a>
+</li>
+      <li><a href="doc/example_terminal.html#_CPPv4I0EN6stored19ExampleTerminalBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ExampleTerminalBase::freeFunction (C++ function)</a>
+</li>
+      <li><a href="doc/example_terminal.html#_CPPv4I0EN6stored19ExampleTerminalBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ExampleTerminalBase::freeVariable (C++ function)</a>
+</li>
+      <li><a href="doc/example_terminal.html#_CPPv4I0EN6stored19ExampleTerminalBase8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ExampleTerminalBase::function (C++ function)</a>
 </li>
       <li><a href="doc/example_terminal.html#_CPPv4N6stored19ExampleTerminalBase4hashEv">stored::ExampleTerminalBase::hash (C++ function)</a>
 </li>
@@ -1980,6 +2267,8 @@
       <li><a href="doc/example_terminal.html#_CPPv4N6stored19ExampleTerminalBaseaSERK19ExampleTerminalBase">stored::ExampleTerminalBase::operator= (C++ function)</a>, <a href="doc/example_terminal.html#_CPPv4N6stored19ExampleTerminalBaseaSERR19ExampleTerminalBase">[1]</a>
 </li>
       <li><a href="doc/example_terminal.html#_CPPv4NK6stored19ExampleTerminalBase14shortDirectoryEv">stored::ExampleTerminalBase::shortDirectory (C++ function)</a>
+</li>
+      <li><a href="doc/example_terminal.html#_CPPv4I0EN6stored19ExampleTerminalBase8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ExampleTerminalBase::variable (C++ function)</a>
 </li>
       <li><a href="doc/example_terminal.html#_CPPv4I00EN6stored22ExampleTerminalObjectsE">stored::ExampleTerminalObjects (C++ class)</a>
 </li>
@@ -2087,17 +2376,15 @@
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9FileLayerE">stored::FileLayer (C++ class)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9FileLayerUt2_11E">stored::FileLayer::[anonymous] (C++ enum)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9FileLayerUt2_25E">stored::FileLayer::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9FileLayerUt2_1110BufferSizeE">stored::FileLayer::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9FileLayerUt2_2510BufferSizeE">stored::FileLayer::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9FileLayer4baseE">stored::FileLayer::base (C++ type)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9FileLayer6encodeEPKv6size_tb">stored::FileLayer::encode (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4NK6stored9FileLayer2fdEv">stored::FileLayer::fd (C++ function)</a>
-</li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9FileLayer7fd_typeE">stored::FileLayer::fd_type (C++ type)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9FileLayer9FileLayerEPKcPKcP13ProtocolLayerP13ProtocolLayer">stored::FileLayer::FileLayer (C++ function)</a>, <a href="doc/cpp_protocol.html#_CPPv4N6stored9FileLayer9FileLayerERK9FileLayer">[1]</a>, <a href="doc/cpp_protocol.html#_CPPv4N6stored9FileLayer9FileLayerERR9FileLayer">[2]</a>, <a href="doc/cpp_protocol.html#_CPPv4N6stored9FileLayer9FileLayerEiiP13ProtocolLayerP13ProtocolLayer">[3]</a>
 </li>
@@ -2109,7 +2396,7 @@
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9FileLayerD0Ev">stored::FileLayer::~FileLayer (C++ function)</a>
 </li>
-      <li><a href="doc/cpp_directory.html#_CPPv4I0EN6stored4findE7VariantI9ContainerER9ContainerPvPK7uint8_tPKc6size_t">stored::find (C++ function)</a>
+      <li><a href="doc/cpp_directory.html#_CPPv4I0EN6stored4findE7VariantI9ContainerER9ContainerPK7uint8_tPKc6size_t">stored::find (C++ function)</a>
 </li>
       <li><a href="doc/cpp_types.html#_CPPv4I00EN6stored8FunctionE">stored::Function (C++ class)</a>
 </li>
@@ -2129,7 +2416,7 @@
 </li>
       <li><a href="doc/cpp_types.html#_CPPv4NK6stored8FunctionneERK8Function">stored::Function::operator!= (C++ function)</a>
 </li>
-      <li><a href="doc/cpp_types.html#_CPPv4NK6stored8FunctionclE4type">stored::Function::operator() (C++ function)</a>, <a href="doc/cpp_types.html#_CPPv4NK6stored8FunctionclEv">[1]</a>
+      <li><a href="doc/cpp_types.html#_CPPv4N6stored8FunctionclE4type">stored::Function::operator() (C++ function)</a>, <a href="doc/cpp_types.html#_CPPv4NK6stored8FunctionclEv">[1]</a>
 </li>
       <li><a href="doc/cpp_types.html#_CPPv4N6stored8FunctionaSE4type">stored::Function::operator= (C++ function)</a>
 </li>
@@ -2142,6 +2429,28 @@
       <li><a href="doc/cpp_types.html#_CPPv4N6stored8Function4typeE">stored::Function::type (C++ type)</a>
 </li>
       <li><a href="doc/cpp_types.html#_CPPv4NK6stored8Function5validEv">stored::Function::valid (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored14IdleCheckLayerE">stored::IdleCheckLayer (C++ class)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored14IdleCheckLayer4baseE">stored::IdleCheckLayer::base (C++ type)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored14IdleCheckLayer6decodeEPv6size_t">stored::IdleCheckLayer::decode (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored14IdleCheckLayer6encodeEPKv6size_tb">stored::IdleCheckLayer::encode (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4NK6stored14IdleCheckLayer4idleEv">stored::IdleCheckLayer::idle (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored14IdleCheckLayer14IdleCheckLayerEP13ProtocolLayerP13ProtocolLayer">stored::IdleCheckLayer::IdleCheckLayer (C++ function)</a>, <a href="doc/cpp_protocol.html#_CPPv4N6stored14IdleCheckLayer14IdleCheckLayerERK14IdleCheckLayer">[1]</a>, <a href="doc/cpp_protocol.html#_CPPv4N6stored14IdleCheckLayer14IdleCheckLayerERR14IdleCheckLayer">[2]</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4NK6stored14IdleCheckLayer8idleDownEv">stored::IdleCheckLayer::idleDown (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4NK6stored14IdleCheckLayer6idleUpEv">stored::IdleCheckLayer::idleUp (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored14IdleCheckLayeraSERK14IdleCheckLayer">stored::IdleCheckLayer::operator= (C++ function)</a>, <a href="doc/cpp_protocol.html#_CPPv4N6stored14IdleCheckLayeraSERR14IdleCheckLayer">[1]</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored14IdleCheckLayer7setIdleEv">stored::IdleCheckLayer::setIdle (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored14IdleCheckLayerD0Ev">stored::IdleCheckLayer::~IdleCheckLayer (C++ function)</a>
 </li>
       <li><a href="doc/cpp_directory.html#_CPPv4N6stored4listEPvPvPK7uint8_tP15ListCallbackArgPvPKc">stored::list (C++ function)</a>
 </li>
@@ -2197,9 +2506,9 @@
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored14NamedPipeLayerE">stored::NamedPipeLayer (C++ class)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored14NamedPipeLayerUt2_12E">stored::NamedPipeLayer::[anonymous] (C++ enum)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored14NamedPipeLayerUt2_26E">stored::NamedPipeLayer::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored14NamedPipeLayerUt2_1210BufferSizeE">stored::NamedPipeLayer::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored14NamedPipeLayerUt2_2610BufferSizeE">stored::NamedPipeLayer::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored14NamedPipeLayer4baseE">stored::NamedPipeLayer::base (C++ type)</a>
 </li>
@@ -2220,6 +2529,128 @@
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored14NamedPipeLayer6reopenEv">stored::NamedPipeLayer::reopen (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored14NamedPipeLayerD0Ev">stored::NamedPipeLayer::~NamedPipeLayer (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4I0_y0EN6stored3PIDE">stored::PID (C++ class)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored3PID5BoundE">stored::PID::Bound (C++ type)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID7enabledEv">stored::PID::enabled (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID12enableObjectEv">stored::PID::enableObject (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID9frequencyEv">stored::PID::frequency (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID15frequencyObjectEv">stored::PID::frequencyObject (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID4highEv">stored::PID::high (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID10highObjectEv">stored::PID::highObject (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID4int_Ev">stored::PID::int_ (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID7intHighEv">stored::PID::intHigh (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID13intHighObjectEv">stored::PID::intHighObject (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID6intLowEv">stored::PID::intLow (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID12intLowObjectEv">stored::PID::intLowObject (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored3PID9intObjectEv">stored::PID::intObject (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored3PID9intObjectEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID2KdEv">stored::PID::Kd (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID3KffEv">stored::PID::Kff (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID9KffObjectEv">stored::PID::KffObject (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID2KiEv">stored::PID::Ki (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID2KpEv">stored::PID::Kp (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID8KpObjectEv">stored::PID::KpObject (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID3lowEv">stored::PID::low (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID9lowObjectEv">stored::PID::lowObject (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4I_Dpc_6size_tEN6stored3PID7objectsEDaRA1N_Kc">stored::PID::objects (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored3PIDclE4type">stored::PID::operator() (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4N6stored3PIDclEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID9override_Ev">stored::PID::override_ (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID14overrideObjectEv">stored::PID::overrideObject (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored3PID3PIDERK10PIDObjectsI9Container4typeER9Container">stored::PID::PID (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4N6stored3PID3PIDEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID5resetEv">stored::PID::reset (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored3PID11resetObjectEv">stored::PID::resetObject (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored3PID11resetObjectEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID8setpointEv">stored::PID::setpoint (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID14setpointObjectEv">stored::PID::setpointObject (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID2TdEv">stored::PID::Td (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID8TdObjectEv">stored::PID::TdObject (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID2TiEv">stored::PID::Ti (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID8TiObjectEv">stored::PID::TiObject (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored3PID4typeE">stored::PID::type (C++ type)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID1uEv">stored::PID::u (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored3PID7uObjectEv">stored::PID::uObject (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored3PID7uObjectEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID1yEv">stored::PID::y (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored3PID7yObjectEv">stored::PID::yObject (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored3PID7yObjectEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4I0_yEN6stored5PinInE">stored::PinIn (C++ class)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored5PinIn5BoundE">stored::PinIn::Bound (C++ type)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored5PinIn5inputEv">stored::PinIn::input (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored5PinIn11inputObjectEv">stored::PinIn::inputObject (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored5PinIn11inputObjectEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4I_Dpc_6size_tEN6stored5PinIn7objectsEDaRA1N_Kc">stored::PinIn::objects (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored5PinInclEb">stored::PinIn::operator() (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4N6stored5PinInclEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored5PinIn9override_Ev">stored::PinIn::override_ (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored5PinIn14overrideObjectEv">stored::PinIn::overrideObject (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored5PinIn14overrideObjectEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored5PinIn3pinEv">stored::PinIn::pin (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored5PinIn5PinInERK12PinInObjectsI9ContainerER9Container">stored::PinIn::PinIn (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4N6stored5PinIn5PinInEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored5PinIn9pinObjectEv">stored::PinIn::pinObject (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4I0_yEN6stored6PinOutE">stored::PinOut (C++ class)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored6PinOut5BoundE">stored::PinOut::Bound (C++ type)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4I_Dpc_6size_tEN6stored6PinOut7objectsEDaRA1N_Kc">stored::PinOut::objects (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored6PinOutclEb">stored::PinOut::operator() (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4N6stored6PinOutclEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored6PinOut6outputEv">stored::PinOut::output (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored6PinOut12outputObjectEv">stored::PinOut::outputObject (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored6PinOut12outputObjectEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored6PinOut9override_E6int8_t">stored::PinOut::override_ (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored6PinOut9override_Ev">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored6PinOut3pinEb">stored::PinOut::pin (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored6PinOut9pinObjectEv">stored::PinOut::pinObject (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored6PinOut6PinOutERK13PinOutObjectsI9ContainerER9Container">stored::PinOut::PinOut (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4N6stored6PinOut6PinOutEv">[1]</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored15PolledFileLayerE">stored::PolledFileLayer (C++ class)</a>
 </li>
@@ -2259,7 +2690,7 @@
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored6Poller5EventE">stored::Poller::Event (C++ class)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored6Poller5EventUt1_3E">stored::Poller::Event::[anonymous] (C++ member)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored6Poller5EventUt2_17E">stored::Poller::Event::[anonymous] (C++ member)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored6Poller5Event5EventEiz">stored::Poller::Event::Event (C++ function)</a>, <a href="doc/cpp_protocol.html#_CPPv4N6stored6Poller5Event5EventEv">[1]</a>
 </li>
@@ -2321,7 +2752,15 @@
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10PrintLayer6decodeEPv6size_t">stored::PrintLayer::decode (C++ function)</a>
 </li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10PrintLayer7disableEv">stored::PrintLayer::disable (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10PrintLayer6enableEb">stored::PrintLayer::enable (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4NK6stored10PrintLayer7enabledEv">stored::PrintLayer::enabled (C++ function)</a>
+</li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10PrintLayer6encodeEPKv6size_tb">stored::PrintLayer::encode (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4NK6stored10PrintLayer4fileEv">stored::PrintLayer::file (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10PrintLayeraSERK10PrintLayer">stored::PrintLayer::operator= (C++ function)</a>, <a href="doc/cpp_protocol.html#_CPPv4N6stored10PrintLayeraSERR10PrintLayer">[1]</a>
 </li>
@@ -2365,13 +2804,13 @@
 </li>
       <li><a href="doc/cpp_util.html#_CPPv4I_6size_tEN6stored10ScratchPadE">stored::ScratchPad (C++ class)</a>
 </li>
-      <li><a href="doc/cpp_util.html#_CPPv4N6stored10ScratchPadUt2_14E">stored::ScratchPad::[anonymous] (C++ enum)</a>
+      <li><a href="doc/cpp_util.html#_CPPv4N6stored10ScratchPadUt2_28E">stored::ScratchPad::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/cpp_util.html#_CPPv4N6stored10ScratchPadUt2_1411chunkHeaderE">stored::ScratchPad::[anonymous]::chunkHeader (C++ enumerator)</a>
+      <li><a href="doc/cpp_util.html#_CPPv4N6stored10ScratchPadUt2_2811chunkHeaderE">stored::ScratchPad::[anonymous]::chunkHeader (C++ enumerator)</a>
 </li>
-      <li><a href="doc/cpp_util.html#_CPPv4N6stored10ScratchPadUt2_147maxSizeE">stored::ScratchPad::[anonymous]::maxSize (C++ enumerator)</a>
+      <li><a href="doc/cpp_util.html#_CPPv4N6stored10ScratchPadUt2_287maxSizeE">stored::ScratchPad::[anonymous]::maxSize (C++ enumerator)</a>
 </li>
-      <li><a href="doc/cpp_util.html#_CPPv4N6stored10ScratchPadUt2_145spareE">stored::ScratchPad::[anonymous]::spare (C++ enumerator)</a>
+      <li><a href="doc/cpp_util.html#_CPPv4N6stored10ScratchPadUt2_285spareE">stored::ScratchPad::[anonymous]::spare (C++ enumerator)</a>
 </li>
       <li><a href="doc/cpp_util.html#_CPPv4I0EN6stored10ScratchPad5allocEP1T6size_t6size_t">stored::ScratchPad::alloc (C++ function)</a>
 </li>
@@ -2443,23 +2882,23 @@
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored11SerialLayeraSERK11SerialLayer">stored::SerialLayer::operator= (C++ function)</a>, <a href="doc/cpp_protocol.html#_CPPv4N6stored11SerialLayeraSERR11SerialLayer">[1]</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored11SerialLayer11SerialLayerEPKcmbP13ProtocolLayerP13ProtocolLayer">stored::SerialLayer::SerialLayer (C++ function)</a>, <a href="doc/cpp_protocol.html#_CPPv4N6stored11SerialLayer11SerialLayerERK11SerialLayer">[1]</a>, <a href="doc/cpp_protocol.html#_CPPv4N6stored11SerialLayer11SerialLayerERR11SerialLayer">[2]</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored11SerialLayer13resetAutoBaudEv">stored::SerialLayer::resetAutoBaud (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored11SerialLayer11SerialLayerEPKcmbbP13ProtocolLayerP13ProtocolLayer">stored::SerialLayer::SerialLayer (C++ function)</a>, <a href="doc/cpp_protocol.html#_CPPv4N6stored11SerialLayer11SerialLayerERK11SerialLayer">[1]</a>, <a href="doc/cpp_protocol.html#_CPPv4N6stored11SerialLayer11SerialLayerERR11SerialLayer">[2]</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored11SerialLayerD0Ev">stored::SerialLayer::~SerialLayer (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10StdioLayerE">stored::StdioLayer (C++ class)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10StdioLayerUt2_13E">stored::StdioLayer::[anonymous] (C++ enum)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10StdioLayerUt2_27E">stored::StdioLayer::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10StdioLayerUt2_1310BufferSizeE">stored::StdioLayer::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10StdioLayerUt2_2710BufferSizeE">stored::StdioLayer::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10StdioLayer4baseE">stored::StdioLayer::base (C++ type)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10StdioLayer6encodeEPKv6size_tb">stored::StdioLayer::encode (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4NK6stored10StdioLayer2fdEv">stored::StdioLayer::fd (C++ function)</a>
-</li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10StdioLayer7fd_typeE">stored::StdioLayer::fd_type (C++ type)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4NK6stored10StdioLayer6isOpenEv">stored::StdioLayer::isOpen (C++ function)</a>
 </li>
@@ -2477,13 +2916,13 @@
 </li>
       <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored12StoreJournalE">stored::StoreJournal (C++ class)</a>
 </li>
-      <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored12StoreJournalUt2_15E">stored::StoreJournal::[anonymous] (C++ enum)</a>
+      <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored12StoreJournalUt2_29E">stored::StoreJournal::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored12StoreJournalUt2_1517SeqCleanThresholdE">stored::StoreJournal::[anonymous]::SeqCleanThreshold (C++ enumerator)</a>
+      <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored12StoreJournalUt2_2917SeqCleanThresholdE">stored::StoreJournal::[anonymous]::SeqCleanThreshold (C++ enumerator)</a>
 </li>
-      <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored12StoreJournalUt2_1514SeqLowerMarginE">stored::StoreJournal::[anonymous]::SeqLowerMargin (C++ enumerator)</a>
+      <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored12StoreJournalUt2_2914SeqLowerMarginE">stored::StoreJournal::[anonymous]::SeqLowerMargin (C++ enumerator)</a>
 </li>
-      <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored12StoreJournalUt2_1514ShortSeqWindowE">stored::StoreJournal::[anonymous]::ShortSeqWindow (C++ enumerator)</a>
+      <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored12StoreJournalUt2_2914ShortSeqWindowE">stored::StoreJournal::[anonymous]::ShortSeqWindow (C++ enumerator)</a>
 </li>
       <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored12StoreJournal7bumpSeqEv">stored::StoreJournal::bumpSeq (C++ function)</a>
 </li>
@@ -2577,9 +3016,9 @@
 </li>
       <li><a href="doc/cpp_synchronizer.html#_CPPv4I0EN6stored14SynchronizableE">stored::Synchronizable (C++ class)</a>
 </li>
-      <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored14SynchronizableUt2_16E">stored::Synchronizable::[anonymous] (C++ enum)</a>
+      <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored14SynchronizableUt2_30E">stored::Synchronizable::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored14SynchronizableUt2_1614MaxMessageSizeE">stored::Synchronizable::[anonymous]::MaxMessageSize (C++ enumerator)</a>
+      <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored14SynchronizableUt2_3014MaxMessageSizeE">stored::Synchronizable::[anonymous]::MaxMessageSize (C++ enumerator)</a>
 </li>
       <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored14Synchronizable4baseE">stored::Synchronizable::base (C++ type)</a>
 </li>
@@ -2637,9 +3076,9 @@
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13TerminalLayerE">stored::TerminalLayer (C++ class)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13TerminalLayerUt1_4E">stored::TerminalLayer::[anonymous] (C++ enum)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13TerminalLayerUt2_18E">stored::TerminalLayer::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13TerminalLayerUt1_49MaxBufferE">stored::TerminalLayer::[anonymous]::MaxBuffer (C++ enumerator)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13TerminalLayerUt2_189MaxBufferE">stored::TerminalLayer::[anonymous]::MaxBuffer (C++ enumerator)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13TerminalLayer4baseE">stored::TerminalLayer::base (C++ type)</a>
 </li>
@@ -2657,7 +3096,7 @@
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13TerminalLayer22NonDebugDecodeCallbackE">stored::TerminalLayer::NonDebugDecodeCallback (C++ type)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13TerminalLayer14nonDebugEncodeEPv6size_t">stored::TerminalLayer::nonDebugEncode (C++ function)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13TerminalLayer14nonDebugEncodeEPKv6size_t">stored::TerminalLayer::nonDebugEncode (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13TerminalLayeraSERK13TerminalLayer">stored::TerminalLayer::operator= (C++ function)</a>, <a href="doc/cpp_protocol.html#_CPPv4N6stored13TerminalLayeraSERR13TerminalLayer">[1]</a>
 </li>
@@ -2791,15 +3230,13 @@
 </li>
       <li><a href="doc/cpp_types.html#_CPPv4NK6stored7VariantIvE5exitXEb6size_t">stored::Variant&lt;void&gt;::exitX (C++ function)</a>
 </li>
+      <li><a href="doc/cpp_types.html#_CPPv4I00ENK6stored7VariantIvE8functionE12FreeFunctionI1T9ContainerEv">stored::Variant&lt;void&gt;::function (C++ function)</a>, <a href="doc/cpp_types.html#_CPPv4I00ENK6stored7VariantIvE8functionE8VariableI1T9ContainerER9Container">[1]</a>
+</li>
       <li><a href="doc/cpp_types.html#_CPPv4I0ENK6stored7VariantIvE3getE1Tv">stored::Variant&lt;void&gt;::get (C++ function)</a>, <a href="doc/cpp_types.html#_CPPv4NK6stored7VariantIvE3getEPv6size_t">[1]</a>
 </li>
       <li><a href="doc/cpp_types.html#_CPPv4NK6stored7VariantIvE10isFunctionEv">stored::Variant&lt;void&gt;::isFunction (C++ function)</a>
 </li>
       <li><a href="doc/cpp_types.html#_CPPv4NK6stored7VariantIvE10isVariableEv">stored::Variant&lt;void&gt;::isVariable (C++ function)</a>
-</li>
-      <li><a href="doc/cpp_types.html#_CPPv4N6stored7VariantIvE8m_bufferE">stored::Variant&lt;void&gt;::m_buffer (C++ member)</a>
-</li>
-      <li><a href="doc/cpp_types.html#_CPPv4N6stored7VariantIvE3m_fE">stored::Variant&lt;void&gt;::m_f (C++ member)</a>
 </li>
       <li><a href="doc/cpp_types.html#_CPPv4NK6stored7VariantIvEneERK7Variant">stored::Variant&lt;void&gt;::operator!= (C++ function)</a>
 </li>
@@ -2813,7 +3250,9 @@
 </li>
       <li><a href="doc/cpp_types.html#_CPPv4NK6stored7VariantIvE5validEv">stored::Variant&lt;void&gt;::valid (C++ function)</a>
 </li>
-      <li><a href="doc/cpp_types.html#_CPPv4N6stored7VariantIvE7VariantEN4Type4typeEPv6size_t">stored::Variant&lt;void&gt;::Variant (C++ function)</a>, <a href="doc/cpp_types.html#_CPPv4N6stored7VariantIvE7VariantEN4Type4typeEj6size_t">[1]</a>, <a href="doc/cpp_types.html#_CPPv4N6stored7VariantIvE7VariantEv">[2]</a>
+      <li><a href="doc/cpp_types.html#_CPPv4I00ENK6stored7VariantIvE8variableE12FreeVariableI1T9ContainerEv">stored::Variant&lt;void&gt;::variable (C++ function)</a>, <a href="doc/cpp_types.html#_CPPv4I00ENK6stored7VariantIvE8variableE8VariableI1T9ContainerER9Container">[1]</a>
+</li>
+      <li><a href="doc/cpp_types.html#_CPPv4N6stored7VariantIvE7VariantEN4Type4typeE9uintptr_t6size_t">stored::Variant&lt;void&gt;::Variant (C++ function)</a>, <a href="doc/cpp_types.html#_CPPv4N6stored7VariantIvE7VariantEv">[1]</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9XsimLayerE">stored::XsimLayer (C++ class)</a>
 </li>
@@ -2843,23 +3282,21 @@
 </li>
       <li><a href="doc/example_zmqserver.html#_CPPv4N6stored14ZmqServerStore4baseE">stored::ZmqServerStore::base (C++ type)</a>
 </li>
-      <li><a href="doc/example_zmqserver.html#_CPPv4N6stored14ZmqServerStore14ImplementationE">stored::ZmqServerStore::Implementation (C++ type)</a>
-</li>
       <li><a href="doc/example_zmqserver.html#_CPPv4N6stored14ZmqServerStoreaSERK14ZmqServerStore">stored::ZmqServerStore::operator= (C++ function)</a>, <a href="doc/example_zmqserver.html#_CPPv4N6stored14ZmqServerStoreaSERR14ZmqServerStore">[1]</a>
 </li>
       <li><a href="doc/example_zmqserver.html#_CPPv4N6stored14ZmqServerStore14ZmqServerStoreERK14ZmqServerStore">stored::ZmqServerStore::ZmqServerStore (C++ function)</a>, <a href="doc/example_zmqserver.html#_CPPv4N6stored14ZmqServerStore14ZmqServerStoreERR14ZmqServerStore">[1]</a>, <a href="doc/example_zmqserver.html#_CPPv4N6stored14ZmqServerStore14ZmqServerStoreEv">[2]</a>
 </li>
       <li><a href="doc/example_zmqserver.html#_CPPv4I0EN6stored18ZmqServerStoreBaseE">stored::ZmqServerStoreBase (C++ class)</a>
 </li>
-      <li><a href="doc/example_zmqserver.html#_CPPv4N6stored18ZmqServerStoreBaseUt2_41E">stored::ZmqServerStoreBase::[anonymous] (C++ enum)</a>
+      <li><a href="doc/example_zmqserver.html#_CPPv4N6stored18ZmqServerStoreBaseUt2_54E">stored::ZmqServerStoreBase::[anonymous] (C++ enum)</a>
 </li>
-      <li><a href="doc/example_zmqserver.html#_CPPv4N6stored18ZmqServerStoreBaseUt2_4110BufferSizeE">stored::ZmqServerStoreBase::[anonymous]::BufferSize (C++ enumerator)</a>
+      <li><a href="doc/example_zmqserver.html#_CPPv4N6stored18ZmqServerStoreBaseUt2_5410BufferSizeE">stored::ZmqServerStoreBase::[anonymous]::BufferSize (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_zmqserver.html#_CPPv4N6stored18ZmqServerStoreBaseUt2_4113FunctionCountE">stored::ZmqServerStoreBase::[anonymous]::FunctionCount (C++ enumerator)</a>
+      <li><a href="doc/example_zmqserver.html#_CPPv4N6stored18ZmqServerStoreBaseUt2_5413FunctionCountE">stored::ZmqServerStoreBase::[anonymous]::FunctionCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_zmqserver.html#_CPPv4N6stored18ZmqServerStoreBaseUt2_4111ObjectCountE">stored::ZmqServerStoreBase::[anonymous]::ObjectCount (C++ enumerator)</a>
+      <li><a href="doc/example_zmqserver.html#_CPPv4N6stored18ZmqServerStoreBaseUt2_5411ObjectCountE">stored::ZmqServerStoreBase::[anonymous]::ObjectCount (C++ enumerator)</a>
 </li>
-      <li><a href="doc/example_zmqserver.html#_CPPv4N6stored18ZmqServerStoreBaseUt2_4113VariableCountE">stored::ZmqServerStoreBase::[anonymous]::VariableCount (C++ enumerator)</a>
+      <li><a href="doc/example_zmqserver.html#_CPPv4N6stored18ZmqServerStoreBaseUt2_5413VariableCountE">stored::ZmqServerStoreBase::[anonymous]::VariableCount (C++ enumerator)</a>
 </li>
       <li><a href="doc/example_zmqserver.html#_CPPv4N6stored18ZmqServerStoreBase27__compute__an_int8_an_int16EbR7int32_t">stored::ZmqServerStoreBase::__compute__an_int8_an_int16 (C++ function)</a>
 </li>
@@ -2878,6 +3315,12 @@
       <li><a href="doc/example_zmqserver.html#_CPPv4NK6stored18ZmqServerStoreBase11bufferToKeyEPKv">stored::ZmqServerStoreBase::bufferToKey (C++ function)</a>
 </li>
       <li><a href="doc/example_zmqserver.html#_CPPv4N6stored18ZmqServerStoreBase4findEPKc6size_t">stored::ZmqServerStoreBase::find (C++ function)</a>
+</li>
+      <li><a href="doc/example_zmqserver.html#_CPPv4I0EN6stored18ZmqServerStoreBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ZmqServerStoreBase::freeFunction (C++ function)</a>
+</li>
+      <li><a href="doc/example_zmqserver.html#_CPPv4I0EN6stored18ZmqServerStoreBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ZmqServerStoreBase::freeVariable (C++ function)</a>
+</li>
+      <li><a href="doc/example_zmqserver.html#_CPPv4I0EN6stored18ZmqServerStoreBase8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ZmqServerStoreBase::function (C++ function)</a>
 </li>
       <li><a href="doc/example_zmqserver.html#_CPPv4N6stored18ZmqServerStoreBase4hashEv">stored::ZmqServerStoreBase::hash (C++ function)</a>
 </li>
@@ -2902,6 +3345,8 @@
       <li><a href="doc/example_zmqserver.html#_CPPv4N6stored18ZmqServerStoreBaseaSERK18ZmqServerStoreBase">stored::ZmqServerStoreBase::operator= (C++ function)</a>, <a href="doc/example_zmqserver.html#_CPPv4N6stored18ZmqServerStoreBaseaSERR18ZmqServerStoreBase">[1]</a>
 </li>
       <li><a href="doc/example_zmqserver.html#_CPPv4NK6stored18ZmqServerStoreBase14shortDirectoryEv">stored::ZmqServerStoreBase::shortDirectory (C++ function)</a>
+</li>
+      <li><a href="doc/example_zmqserver.html#_CPPv4I0EN6stored18ZmqServerStoreBase8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ZmqServerStoreBase::variable (C++ function)</a>
 </li>
       <li><a href="doc/example_zmqserver.html#_CPPv4N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERK18ZmqServerStoreBase">stored::ZmqServerStoreBase::ZmqServerStoreBase (C++ function)</a>, <a href="doc/example_zmqserver.html#_CPPv4N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERR18ZmqServerStoreBase">[1]</a>
 </li>
@@ -2993,6 +3438,8 @@
 </li>
       <li><a href="doc/py_py.html#ed2.ZmqClient.traceDecimate">traceDecimate() (ed2.ZmqClient method)</a>
 </li>
+      <li><a href="doc/py_py.html#ed2.ZmqClient.traceProcess">traceProcess() (ed2.ZmqClient method)</a>
+</li>
       <li><a href="doc/py_py.html#ed2.ZmqClient.traceThreshold_s">traceThreshold_s (ed2.ZmqClient attribute)</a>
 </li>
   </ul></td>
@@ -3005,7 +3452,7 @@
 </li>
       <li><a href="doc/py_wrapper.html#ed2.ZmqServer.unregister">unregister() (ed2.ZmqServer method)</a>
 </li>
-      <li><a href="doc/py_py.html#ed2.protocol.ProtocolLayer.up">up() (ed2.protocol.ProtocolLayer property)</a>
+      <li><a href="doc/py_py.html#ed2.protocol.ProtocolLayer.up">up (ed2.protocol.ProtocolLayer property)</a>
 
       <ul>
         <li><a href="doc/py_wrapper.html#ed2.Serial2Zmq.up">(ed2.Serial2Zmq property)</a>
@@ -3019,7 +3466,7 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="doc/py_py.html#ed2.ZmqClient.useEventLoop">useEventLoop() (ed2.ZmqClient property)</a>
+      <li><a href="doc/py_py.html#ed2.ZmqClient.useEventLoop">useEventLoop (ed2.ZmqClient property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -3057,7 +3504,7 @@
 <h2 id="Z">Z</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="doc/py_wrapper.html#ed2.Serial2Zmq.zmq">zmq() (ed2.Serial2Zmq property)</a>
+      <li><a href="doc/py_wrapper.html#ed2.Serial2Zmq.zmq">zmq (ed2.Serial2Zmq property)</a>
 
       <ul>
         <li><a href="doc/py_wrapper.html#ed2.Stdio2Zmq.zmq">(ed2.Stdio2Zmq property)</a>

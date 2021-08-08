@@ -1,0 +1,972 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Components &mdash; libstored 1.0.0-rc documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Debugger" href="cpp_debugger.html" />
+    <link rel="prev" title="Config" href="cpp_config.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> libstored
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0.0.dev0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Content</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">CHANGELOG</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="cpp.html">C++</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cpp_config.html">Config</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Components</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#stored-amplifier">stored::Amplifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-pinin">stored::PinIn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-pinout">stored::PinOut</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-pid">stored::PID</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html">Debugger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_directory.html">Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html">Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_synchronizer.html">Synchronizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fpga.html">VHDL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libstored</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="cpp.html">C++</a> &raquo;</li>
+        
+      <li>Components</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/doc/cpp_components.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="components">
+<h1>Components<a class="headerlink" href="#components" title="Permalink to this headline">¶</a></h1>
+<p>Components are C++ classes that use store objects for input/output/parameters/control.
+This let’s you easily tune and debug an application.</p>
+<p>The instances of these classes are tuned at compile-time to reflect the objects in the store.
+Especially, no resources are used for (optional) fields that do not exist in the store, and
+all store lookups in the directory are done at compile-time. You need C++14 (or later), though.</p>
+<p>Check out the <code class="docutils literal notranslate"><span class="pre">components</span></code> example.</p>
+<section id="stored-amplifier">
+<h2>stored::Amplifier<a class="headerlink" href="#stored-amplifier" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0_y0EN6stored9AmplifierE">
+<span id="_CPPv3I0_y0EN6stored9AmplifierE"></span><span id="_CPPv2I0_y0EN6stored9AmplifierE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Container</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span> <span class="pre">long</span> <span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flags</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_amplifier"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Amplifier</span></span></span><a class="headerlink" href="#_CPPv4I0_y0EN6stored9AmplifierE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>An offset/gain amplifier, based on store variables. </p>
+<p>This class comes in very handy when converting ADC inputs to some SI-value. It includes an override field to force inputs to some test value.</p>
+<p>To use this class, add a scope to your store, like:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+    float input
+    bool=true enable
+    float=2 gain
+    float=0.5 offset
+    float=-1 low
+    float=10 high
+    float=nan override
+    float output
+} amp
+</pre></div>
+</div>
+</p>
+<p>All fields are optional.</p>
+<p>The amplifier basically does:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if(override is nan)
+    output = min(high, max(low, input * gain + offset))
+else
+    output = override
+</pre></div>
+</div>
+</p>
+<p>Then, instantiate the amplifier like this:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
+constexpr auto amp_o = stored::Amplifier&lt;stored::YourStore&gt;::objects(&quot;/amp/&quot;);
+// Instantiate an Amplifier, tailored to the available fields in the store.
+stored::Amplifier&lt;stored::YourStore, amp_o.flags()&gt; amp{amp_o, yourStore};
+</pre></div>
+</div>
+</p>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">amp()</span></code> now uses the <code class="docutils literal notranslate"><span class="pre">input</span></code> and produces the a value in <code class="docutils literal notranslate"><span class="pre">output</span></code>. Alternatively, or when the <code class="docutils literal notranslate"><span class="pre">input</span></code> field is absent in the store, call <code class="docutils literal notranslate"><span class="pre">amp(x)</span></code>, where <code class="docutils literal notranslate"><span class="pre">x</span></code> is the input. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9Amplifier5BoundE">
+<span id="_CPPv3N6stored9Amplifier5BoundE"></span><span id="_CPPv2N6stored9Amplifier5BoundE"></span><span class="target" id="classstored_1_1_amplifier_1ae6da1e69e327622d04ecb34b37c2ced3"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Bound</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="n"><span class="pre">AmplifierObjects</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_y0EN6stored9AmplifierE" title="stored::Amplifier::Container"><span class="n"><span class="pre">Container</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored9Amplifier4typeE" title="stored::Amplifier::type"><span class="n"><span class="pre">type</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="k"><span class="pre">template</span></span><span class="w"> </span><span class="n"><span class="pre">Bound</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_y0EN6stored9AmplifierE" title="stored::Amplifier::flags"><span class="n"><span class="pre">flags</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored9Amplifier5BoundE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9Amplifier4typeE">
+<span id="_CPPv3N6stored9Amplifier4typeE"></span><span id="_CPPv2N6stored9Amplifier4typeE"></span><span class="target" id="classstored_1_1_amplifier_1a260a0904c07d6ce72f8b5bffc1960798"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_y0EN6stored9AmplifierE" title="stored::Amplifier::T"><span class="n"><span class="pre">T</span></span></a><a class="headerlink" href="#_CPPv4N6stored9Amplifier4typeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9Amplifier9AmplifierEv">
+<span id="_CPPv3N6stored9Amplifier9AmplifierEv"></span><span id="_CPPv2N6stored9Amplifier9AmplifierEv"></span><span id="stored::Amplifier::AmplifierCE"></span><span class="target" id="classstored_1_1_amplifier_1a0e4b73433084e3a61050da191a669656"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Amplifier</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored9Amplifier9AmplifierEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9Amplifier9AmplifierERK16AmplifierObjectsI9Container4typeER9Container">
+<span id="_CPPv3N6stored9Amplifier9AmplifierERK16AmplifierObjectsI9Container4typeER9Container"></span><span id="_CPPv2N6stored9Amplifier9AmplifierERK16AmplifierObjectsI9Container4typeER9Container"></span><span id="stored::Amplifier::Amplifier__AmplifierObjects:Container.type:CR.ContainerRCE"></span><span class="target" id="classstored_1_1_amplifier_1a28a5ce36b431f73b3f25da196d5bc900"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Amplifier</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">AmplifierObjects</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_y0EN6stored9AmplifierE" title="stored::Amplifier::Container"><span class="n"><span class="pre">Container</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored9Amplifier4typeE" title="stored::Amplifier::type"><span class="n"><span class="pre">type</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">o</span></span>, <a class="reference internal" href="#_CPPv4I0_y0EN6stored9AmplifierE" title="stored::Amplifier::Container"><span class="n"><span class="pre">Container</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">container</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored9Amplifier9AmplifierERK16AmplifierObjectsI9Container4typeER9Container" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9Amplifier7disableEv">
+<span id="_CPPv3N6stored9Amplifier7disableEv"></span><span id="_CPPv2N6stored9Amplifier7disableEv"></span><span id="stored::Amplifier::disable"></span><span class="target" id="classstored_1_1_amplifier_1ad7fb14124f59af9f16ef96e20dc19db5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">disable</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored9Amplifier7disableEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9Amplifier6enableEb">
+<span id="_CPPv3N6stored9Amplifier6enableEb"></span><span id="_CPPv2N6stored9Amplifier6enableEb"></span><span id="stored::Amplifier::enable__b"></span><span class="target" id="classstored_1_1_amplifier_1a2ca7618e16eecf0b7208a251a98747a2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">enable</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored9Amplifier6enableEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored9Amplifier7enabledEv">
+<span id="_CPPv3NK6stored9Amplifier7enabledEv"></span><span id="_CPPv2NK6stored9Amplifier7enabledEv"></span><span id="stored::Amplifier::enabledC"></span><span class="target" id="classstored_1_1_amplifier_1ad894cf8716db91bd12fde08b52db20c2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">enabled</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored9Amplifier7enabledEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored9Amplifier12enableObjectEv">
+<span id="_CPPv3NK6stored9Amplifier12enableObjectEv"></span><span id="_CPPv2NK6stored9Amplifier12enableObjectEv"></span><span id="stored::Amplifier::enableObjectC"></span><span class="target" id="classstored_1_1_amplifier_1ae1d3653ac263820dd3f3b114b05b623d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">enableObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored9Amplifier12enableObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9Amplifier12enableObjectEv">
+<span id="_CPPv3N6stored9Amplifier12enableObjectEv"></span><span id="_CPPv2N6stored9Amplifier12enableObjectEv"></span><span id="stored::Amplifier::enableObject"></span><span class="target" id="classstored_1_1_amplifier_1a5b0c3bc2111c996678d53f3159f09bdd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">enableObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored9Amplifier12enableObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored9Amplifier4gainEv">
+<span id="_CPPv3NK6stored9Amplifier4gainEv"></span><span id="_CPPv2NK6stored9Amplifier4gainEv"></span><span id="stored::Amplifier::gainC"></span><span class="target" id="classstored_1_1_amplifier_1aabae023c8863dd996ab31b31f3c9e15d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored9Amplifier4typeE" title="stored::Amplifier::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gain</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored9Amplifier4gainEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored9Amplifier10gainObjectEv">
+<span id="_CPPv3NK6stored9Amplifier10gainObjectEv"></span><span id="_CPPv2NK6stored9Amplifier10gainObjectEv"></span><span id="stored::Amplifier::gainObjectC"></span><span class="target" id="classstored_1_1_amplifier_1a207725d04a19b8688717fecf725b6d30"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gainObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored9Amplifier10gainObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9Amplifier10gainObjectEv">
+<span id="_CPPv3N6stored9Amplifier10gainObjectEv"></span><span id="_CPPv2N6stored9Amplifier10gainObjectEv"></span><span id="stored::Amplifier::gainObject"></span><span class="target" id="classstored_1_1_amplifier_1a5f7ee40f55f94b0d3f4a91b80ca3567a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gainObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored9Amplifier10gainObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored9Amplifier4highEv">
+<span id="_CPPv3NK6stored9Amplifier4highEv"></span><span id="_CPPv2NK6stored9Amplifier4highEv"></span><span id="stored::Amplifier::highC"></span><span class="target" id="classstored_1_1_amplifier_1aa38de6c9d0a20e6e013ea37b1c73bffc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored9Amplifier4typeE" title="stored::Amplifier::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">high</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored9Amplifier4highEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored9Amplifier10highObjectEv">
+<span id="_CPPv3NK6stored9Amplifier10highObjectEv"></span><span id="_CPPv2NK6stored9Amplifier10highObjectEv"></span><span id="stored::Amplifier::highObjectC"></span><span class="target" id="classstored_1_1_amplifier_1a91cdcfd2a8ecf367c0a1d8a220b6c583"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">highObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored9Amplifier10highObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9Amplifier10highObjectEv">
+<span id="_CPPv3N6stored9Amplifier10highObjectEv"></span><span id="_CPPv2N6stored9Amplifier10highObjectEv"></span><span id="stored::Amplifier::highObject"></span><span class="target" id="classstored_1_1_amplifier_1a3f75332cd5bcaae251105435ae29b4ef"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">highObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored9Amplifier10highObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored9Amplifier5inputEv">
+<span id="_CPPv3NK6stored9Amplifier5inputEv"></span><span id="_CPPv2NK6stored9Amplifier5inputEv"></span><span id="stored::Amplifier::inputC"></span><span class="target" id="classstored_1_1_amplifier_1aeb7c64383f9d77adeedb6c032fd9b553"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored9Amplifier4typeE" title="stored::Amplifier::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">input</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored9Amplifier5inputEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored9Amplifier11inputObjectEv">
+<span id="_CPPv3NK6stored9Amplifier11inputObjectEv"></span><span id="_CPPv2NK6stored9Amplifier11inputObjectEv"></span><span id="stored::Amplifier::inputObjectC"></span><span class="target" id="classstored_1_1_amplifier_1aab422680b71bf4bcb96ceb64ad5e2e38"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">inputObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored9Amplifier11inputObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9Amplifier11inputObjectEv">
+<span id="_CPPv3N6stored9Amplifier11inputObjectEv"></span><span id="_CPPv2N6stored9Amplifier11inputObjectEv"></span><span id="stored::Amplifier::inputObject"></span><span class="target" id="classstored_1_1_amplifier_1a66c63f50edcac81b98e730e9987e016e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">inputObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored9Amplifier11inputObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored9Amplifier3lowEv">
+<span id="_CPPv3NK6stored9Amplifier3lowEv"></span><span id="_CPPv2NK6stored9Amplifier3lowEv"></span><span id="stored::Amplifier::lowC"></span><span class="target" id="classstored_1_1_amplifier_1a6a7d563abe0b779bb7632b94fea3de1a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored9Amplifier4typeE" title="stored::Amplifier::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">low</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored9Amplifier3lowEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored9Amplifier9lowObjectEv">
+<span id="_CPPv3NK6stored9Amplifier9lowObjectEv"></span><span id="_CPPv2NK6stored9Amplifier9lowObjectEv"></span><span id="stored::Amplifier::lowObjectC"></span><span class="target" id="classstored_1_1_amplifier_1a2b3ae343f6d24cb14322817b407a8fdb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lowObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored9Amplifier9lowObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9Amplifier9lowObjectEv">
+<span id="_CPPv3N6stored9Amplifier9lowObjectEv"></span><span id="_CPPv2N6stored9Amplifier9lowObjectEv"></span><span id="stored::Amplifier::lowObject"></span><span class="target" id="classstored_1_1_amplifier_1a57dd20fa4f1d1d2761993f969f56854d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lowObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored9Amplifier9lowObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored9Amplifier6offsetEv">
+<span id="_CPPv3NK6stored9Amplifier6offsetEv"></span><span id="_CPPv2NK6stored9Amplifier6offsetEv"></span><span id="stored::Amplifier::offsetC"></span><span class="target" id="classstored_1_1_amplifier_1ab713be659f0303377dbc3b1fe35c3c2d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored9Amplifier4typeE" title="stored::Amplifier::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">offset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored9Amplifier6offsetEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored9Amplifier12offsetObjectEv">
+<span id="_CPPv3NK6stored9Amplifier12offsetObjectEv"></span><span id="_CPPv2NK6stored9Amplifier12offsetObjectEv"></span><span id="stored::Amplifier::offsetObjectC"></span><span class="target" id="classstored_1_1_amplifier_1af2dd11d9b51d364b04cb628383c807ad"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">offsetObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored9Amplifier12offsetObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9Amplifier12offsetObjectEv">
+<span id="_CPPv3N6stored9Amplifier12offsetObjectEv"></span><span id="_CPPv2N6stored9Amplifier12offsetObjectEv"></span><span id="stored::Amplifier::offsetObject"></span><span class="target" id="classstored_1_1_amplifier_1a13c50d5568c825adc9eed642252df72e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">offsetObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored9Amplifier12offsetObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9AmplifierclEv">
+<span id="_CPPv3N6stored9AmplifierclEv"></span><span id="_CPPv2N6stored9AmplifierclEv"></span><span id="stored::Amplifier::call-operator"></span><span class="target" id="classstored_1_1_amplifier_1afdd67ecb8c06f6a74c0296a710701ce6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored9Amplifier4typeE" title="stored::Amplifier::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored9AmplifierclEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9AmplifierclE4type">
+<span id="_CPPv3N6stored9AmplifierclE4type"></span><span id="_CPPv2N6stored9AmplifierclE4type"></span><span id="stored::Amplifier::call-operator__type"></span><span class="target" id="classstored_1_1_amplifier_1acf7f7b3c5d71a74fe4215633cd6aa390"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored9Amplifier4typeE" title="stored::Amplifier::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored9Amplifier4typeE" title="stored::Amplifier::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">input</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored9AmplifierclE4type" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored9Amplifier6outputEv">
+<span id="_CPPv3NK6stored9Amplifier6outputEv"></span><span id="_CPPv2NK6stored9Amplifier6outputEv"></span><span id="stored::Amplifier::outputC"></span><span class="target" id="classstored_1_1_amplifier_1ac1268c5ffb1a836e252f5511b4d6208d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored9Amplifier4typeE" title="stored::Amplifier::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">output</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored9Amplifier6outputEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored9Amplifier12outputObjectEv">
+<span id="_CPPv3NK6stored9Amplifier12outputObjectEv"></span><span id="_CPPv2NK6stored9Amplifier12outputObjectEv"></span><span id="stored::Amplifier::outputObjectC"></span><span class="target" id="classstored_1_1_amplifier_1abcce127fd99e741106bb54bf41bead44"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">outputObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored9Amplifier12outputObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9Amplifier12outputObjectEv">
+<span id="_CPPv3N6stored9Amplifier12outputObjectEv"></span><span id="_CPPv2N6stored9Amplifier12outputObjectEv"></span><span id="stored::Amplifier::outputObject"></span><span class="target" id="classstored_1_1_amplifier_1a886ae37f9521604f20a4c61657da1792"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">outputObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored9Amplifier12outputObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored9Amplifier9override_Ev">
+<span id="_CPPv3NK6stored9Amplifier9override_Ev"></span><span id="_CPPv2NK6stored9Amplifier9override_Ev"></span><span id="stored::Amplifier::override_C"></span><span class="target" id="classstored_1_1_amplifier_1ac86b6a0892c9d5da7f73e65ad7cb58f7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored9Amplifier4typeE" title="stored::Amplifier::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">override_</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored9Amplifier9override_Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored9Amplifier14overrideObjectEv">
+<span id="_CPPv3NK6stored9Amplifier14overrideObjectEv"></span><span id="_CPPv2NK6stored9Amplifier14overrideObjectEv"></span><span id="stored::Amplifier::overrideObjectC"></span><span class="target" id="classstored_1_1_amplifier_1aee2f58fb85669c4c21c429719d328da5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">overrideObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored9Amplifier14overrideObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9Amplifier14overrideObjectEv">
+<span id="_CPPv3N6stored9Amplifier14overrideObjectEv"></span><span id="_CPPv2N6stored9Amplifier14overrideObjectEv"></span><span id="stored::Amplifier::overrideObject"></span><span class="target" id="classstored_1_1_amplifier_1a9ffb15abe7bdb6fc792c7bfdb0393a92"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">overrideObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored9Amplifier14overrideObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_Dpc_6size_tEN6stored9Amplifier7objectsEDaRA1N_Kc">
+<span id="_CPPv3I_Dpc_6size_tEN6stored9Amplifier7objectsERA1N_Kc"></span><span id="_CPPv2I_Dpc_6size_tEN6stored9Amplifier7objectsERAN_Kc"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnlyId</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_amplifier_1a1308bb3a2ea5cce15cd2cdf8421acdf1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">objects</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">prefix</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#_CPPv4I_Dpc_6size_tEN6stored9Amplifier7objectsEDaRA1N_Kc" title="stored::Amplifier::objects::N"><span class="n"><span class="pre">N</span></span></a><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I_Dpc_6size_tEN6stored9Amplifier7objectsEDaRA1N_Kc" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+<section id="stored-pinin">
+<h2>stored::PinIn<a class="headerlink" href="#stored-pinin" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0_yEN6stored5PinInE">
+<span id="_CPPv3I0_yEN6stored5PinInE"></span><span id="_CPPv2I0_yEN6stored5PinInE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Container</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span> <span class="pre">long</span> <span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flags</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_pin_in"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">PinIn</span></span></span><a class="headerlink" href="#_CPPv4I0_yEN6stored5PinInE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>An GPIO input pin, based on store variables. </p>
+<p>This class comes in very handy when a GPIO input should be observed and overridden while debugging. It gives some interface between the hardware pin and the input that the application sees.</p>
+<p>To use this class, add a scope to your store, like:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+    (bool) pin
+    int8=-1 override
+    bool input
+    (bool) get
+} pin
+</pre></div>
+</div>
+</p>
+<p>All fields are optional. You can implement the store’s <code class="docutils literal notranslate"><span class="pre">pin</span></code> function, override the virtual <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_pin_in_1a9217ebb0c27b5592d380f72fb38414c2"><span class="std std-ref"><span class="pre">pin()</span></span></a></code> function of the <a class="reference internal" href="#classstored_1_1_pin_in"><span class="std std-ref">PinIn</span></a> class, or pass the hardware pin value as an argument to the PinIn::operator().</p>
+<p>The pin basically does:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>switch(override) {
+case -1: input = pin; break;
+case  0: input = false; break;
+case  1: input = true; break;
+case  2: input = !pin; break;
+}
+</pre></div>
+</div>
+</p>
+<p>Then, instantiate the pin like this:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
+constexpr auto pin_o = stored::PinIn&lt;stored::YourStore&gt;::objects(&quot;/pin/&quot;);
+// Instantiate an PinIn, tailored to the available fields in the store.
+stored::PinIn&lt;stored::YourStore, pin_o.flags()&gt; pin{pin_o, yourStore};
+</pre></div>
+</div>
+</p>
+<p>When <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_pin_in_1a9217ebb0c27b5592d380f72fb38414c2"><span class="std std-ref"><span class="pre">pin()</span></span></a></code> is called, it will invoke the <code class="docutils literal notranslate"><span class="pre">pin</span></code> function to get the actual hardware pin status. Then, it will set the <code class="docutils literal notranslate"><span class="pre">input</span></code> variable.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">get</span></code> function is not used/provided by this <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_pin_in"><span class="std std-ref"><span class="pre">PinIn</span></span></a></code>. Implement this store function such that it calls and returns <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_pin_in_1a9217ebb0c27b5592d380f72fb38414c2"><span class="std std-ref"><span class="pre">pin()</span></span></a></code>. When applications read the <code class="docutils literal notranslate"><span class="pre">get</span></code> function, they will always get the actual pin value. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored5PinIn5BoundE">
+<span id="_CPPv3N6stored5PinIn5BoundE"></span><span id="_CPPv2N6stored5PinIn5BoundE"></span><span class="target" id="classstored_1_1_pin_in_1a59ca7fd6c85c58ccd5d82f19c6312b39"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Bound</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="n"><span class="pre">PinInObjects</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_yEN6stored5PinInE" title="stored::PinIn::Container"><span class="n"><span class="pre">Container</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="k"><span class="pre">template</span></span><span class="w"> </span><span class="n"><span class="pre">Bound</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_yEN6stored5PinInE" title="stored::PinIn::flags"><span class="n"><span class="pre">flags</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored5PinIn5BoundE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored5PinIn5PinInEv">
+<span id="_CPPv3N6stored5PinIn5PinInEv"></span><span id="_CPPv2N6stored5PinIn5PinInEv"></span><span id="stored::PinIn::PinInCE"></span><span class="target" id="classstored_1_1_pin_in_1a446ab021106148a8cf36e375dc28976f"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PinIn</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored5PinIn5PinInEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored5PinIn5PinInERK12PinInObjectsI9ContainerER9Container">
+<span id="_CPPv3N6stored5PinIn5PinInERK12PinInObjectsI9ContainerER9Container"></span><span id="_CPPv2N6stored5PinIn5PinInERK12PinInObjectsI9ContainerER9Container"></span><span id="stored::PinIn::PinIn__PinInObjects:Container:CR.ContainerRCE"></span><span class="target" id="classstored_1_1_pin_in_1a9ee5bc8fdaf659bc96de82b911ef3327"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PinIn</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">PinInObjects</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_yEN6stored5PinInE" title="stored::PinIn::Container"><span class="n"><span class="pre">Container</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">o</span></span>, <a class="reference internal" href="#_CPPv4I0_yEN6stored5PinInE" title="stored::PinIn::Container"><span class="n"><span class="pre">Container</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">container</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored5PinIn5PinInERK12PinInObjectsI9ContainerER9Container" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored5PinIn5inputEv">
+<span id="_CPPv3NK6stored5PinIn5inputEv"></span><span id="_CPPv2NK6stored5PinIn5inputEv"></span><span id="stored::PinIn::inputC"></span><span class="target" id="classstored_1_1_pin_in_1a358975c469dc010807af5fb7d5d8534d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">input</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored5PinIn5inputEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored5PinIn11inputObjectEv">
+<span id="_CPPv3NK6stored5PinIn11inputObjectEv"></span><span id="_CPPv2NK6stored5PinIn11inputObjectEv"></span><span id="stored::PinIn::inputObjectC"></span><span class="target" id="classstored_1_1_pin_in_1a1dae49774972ab931249b1bd27b782bd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">inputObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored5PinIn11inputObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored5PinIn11inputObjectEv">
+<span id="_CPPv3N6stored5PinIn11inputObjectEv"></span><span id="_CPPv2N6stored5PinIn11inputObjectEv"></span><span id="stored::PinIn::inputObject"></span><span class="target" id="classstored_1_1_pin_in_1a7aab0a377e046be30266aec0d7ffb5db"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">inputObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored5PinIn11inputObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored5PinInclEv">
+<span id="_CPPv3N6stored5PinInclEv"></span><span id="_CPPv2N6stored5PinInclEv"></span><span id="stored::PinIn::call-operator"></span><span class="target" id="classstored_1_1_pin_in_1a3aa2718cf4607f9e573f68e4956b96db"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored5PinInclEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored5PinInclEb">
+<span id="_CPPv3N6stored5PinInclEb"></span><span id="_CPPv2N6stored5PinInclEb"></span><span id="stored::PinIn::call-operator__b"></span><span class="target" id="classstored_1_1_pin_in_1a7283dff8d1d9a2190c8070d8a563140e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pin</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored5PinInclEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored5PinIn9override_Ev">
+<span id="_CPPv3NK6stored5PinIn9override_Ev"></span><span id="_CPPv2NK6stored5PinIn9override_Ev"></span><span id="stored::PinIn::override_C"></span><span class="target" id="classstored_1_1_pin_in_1a5a0a31f66a07f75e08a2f90bae1ec2f6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">int8_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">override_</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored5PinIn9override_Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored5PinIn14overrideObjectEv">
+<span id="_CPPv3NK6stored5PinIn14overrideObjectEv"></span><span id="_CPPv2NK6stored5PinIn14overrideObjectEv"></span><span id="stored::PinIn::overrideObjectC"></span><span class="target" id="classstored_1_1_pin_in_1afdf9b86fc1bbb012bc63b7d619251953"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">overrideObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored5PinIn14overrideObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored5PinIn14overrideObjectEv">
+<span id="_CPPv3N6stored5PinIn14overrideObjectEv"></span><span id="_CPPv2N6stored5PinIn14overrideObjectEv"></span><span id="stored::PinIn::overrideObject"></span><span class="target" id="classstored_1_1_pin_in_1a10bf286058aaa9993a0fe9ecf9f99010"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">overrideObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored5PinIn14overrideObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored5PinIn3pinEv">
+<span id="_CPPv3NK6stored5PinIn3pinEv"></span><span id="_CPPv2NK6stored5PinIn3pinEv"></span><span id="stored::PinIn::pinC"></span><span class="target" id="classstored_1_1_pin_in_1a9217ebb0c27b5592d380f72fb38414c2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored5PinIn3pinEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored5PinIn9pinObjectEv">
+<span id="_CPPv3NK6stored5PinIn9pinObjectEv"></span><span id="_CPPv2NK6stored5PinIn9pinObjectEv"></span><span id="stored::PinIn::pinObjectC"></span><span class="target" id="classstored_1_1_pin_in_1a65474bfe83c29d6c8c6b6ef6871e4148"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pinObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored5PinIn9pinObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_Dpc_6size_tEN6stored5PinIn7objectsEDaRA1N_Kc">
+<span id="_CPPv3I_Dpc_6size_tEN6stored5PinIn7objectsERA1N_Kc"></span><span id="_CPPv2I_Dpc_6size_tEN6stored5PinIn7objectsERAN_Kc"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnlyId</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_pin_in_1ab99a7bbeadca8cdbfa3566b52837aea4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">objects</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">prefix</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#_CPPv4I_Dpc_6size_tEN6stored5PinIn7objectsEDaRA1N_Kc" title="stored::PinIn::objects::N"><span class="n"><span class="pre">N</span></span></a><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I_Dpc_6size_tEN6stored5PinIn7objectsEDaRA1N_Kc" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+<section id="stored-pinout">
+<h2>stored::PinOut<a class="headerlink" href="#stored-pinout" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0_yEN6stored6PinOutE">
+<span id="_CPPv3I0_yEN6stored6PinOutE"></span><span id="_CPPv2I0_yEN6stored6PinOutE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Container</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span> <span class="pre">long</span> <span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flags</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_pin_out"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">PinOut</span></span></span><a class="headerlink" href="#_CPPv4I0_yEN6stored6PinOutE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>An GPIO output pin, based on store variables. </p>
+<p>This class comes in very handy when a GPIO output should be observed and overridden while debugging. It gives some interface between the hardware pin and the output that the application wants.</p>
+<p>To use this class, add a scope to your store, like:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+    (bool) set
+    bool output
+    (int8) override
+    (bool) pin
+} pin
+</pre></div>
+</div>
+</p>
+<p>All fields are optional, except <code class="docutils literal notranslate"><span class="pre">output</span></code>. You can implement the store’s <code class="docutils literal notranslate"><span class="pre">pin</span></code> function, override the virtual <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_pin_out_1a4ca9a656489d67604bea213df687a986"><span class="std std-ref"><span class="pre">pin()</span></span></a></code> function of the <a class="reference internal" href="#classstored_1_1_pin_out"><span class="std std-ref">PinOut</span></a> class, or forward the return value of PinOut::operator() to the hardware pin.</p>
+<p>The pin basically does:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>switch(override) {
+case -1: pin = output; break;
+case  0: pin = false; break;
+case  1: pin = true; break;
+case  2: pin = !output; break;
+}
+</pre></div>
+</div>
+</p>
+<p>Then, instantiate the pin like this:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
+constexpr auto pin_o = stored::PinOut&lt;stored::YourStore&gt;::objects(&quot;/pin/&quot;);
+// Instantiate an PinOut, tailored to the available fields in the store.
+stored::PinOut&lt;stored::YourStore, pin_o.flags()&gt; pin{pin_o, yourStore};
+</pre></div>
+</div>
+</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">set</span></code> function is not used/provided by this <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_pin_out"><span class="std std-ref"><span class="pre">PinOut</span></span></a></code>. Implement this store function such that it calls <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_pin_out_1a4ca9a656489d67604bea213df687a986"><span class="std std-ref"><span class="pre">pin()</span></span></a></code> with the provided value. When applications write the <code class="docutils literal notranslate"><span class="pre">set</span></code> function, they will immediately control the hardware pin.</p>
+<p>Similar holds for the <code class="docutils literal notranslate"><span class="pre">override</span></code> function; implement it to call the <a class="reference internal" href="#classstored_1_1_pin_out_1a05fc7cd86cc419a60257fa7a4aca8ce4"><span class="std std-ref">override_()</span></a> of <a class="reference internal" href="#classstored_1_1_pin_out"><span class="std std-ref">PinOut</span></a>. This way, if one sets the override value, the hardware pin is updated accordingly. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored6PinOut5BoundE">
+<span id="_CPPv3N6stored6PinOut5BoundE"></span><span id="_CPPv2N6stored6PinOut5BoundE"></span><span class="target" id="classstored_1_1_pin_out_1aec9b5a54665560ea89db863c035c5e3a"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Bound</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="n"><span class="pre">PinOutObjects</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_yEN6stored6PinOutE" title="stored::PinOut::Container"><span class="n"><span class="pre">Container</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="k"><span class="pre">template</span></span><span class="w"> </span><span class="n"><span class="pre">Bound</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_yEN6stored6PinOutE" title="stored::PinOut::flags"><span class="n"><span class="pre">flags</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored6PinOut5BoundE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored6PinOut6PinOutEv">
+<span id="_CPPv3N6stored6PinOut6PinOutEv"></span><span id="_CPPv2N6stored6PinOut6PinOutEv"></span><span id="stored::PinOut::PinOutCE"></span><span class="target" id="classstored_1_1_pin_out_1a6c961b265f11e6344feae49774f3f5df"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PinOut</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored6PinOut6PinOutEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored6PinOut6PinOutERK13PinOutObjectsI9ContainerER9Container">
+<span id="_CPPv3N6stored6PinOut6PinOutERK13PinOutObjectsI9ContainerER9Container"></span><span id="_CPPv2N6stored6PinOut6PinOutERK13PinOutObjectsI9ContainerER9Container"></span><span id="stored::PinOut::PinOut__PinOutObjects:Container:CR.ContainerRCE"></span><span class="target" id="classstored_1_1_pin_out_1a08cc7782eeaffbde28d960de81badc07"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PinOut</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">PinOutObjects</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_yEN6stored6PinOutE" title="stored::PinOut::Container"><span class="n"><span class="pre">Container</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">o</span></span>, <a class="reference internal" href="#_CPPv4I0_yEN6stored6PinOutE" title="stored::PinOut::Container"><span class="n"><span class="pre">Container</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">container</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored6PinOut6PinOutERK13PinOutObjectsI9ContainerER9Container" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored6PinOutclEv">
+<span id="_CPPv3N6stored6PinOutclEv"></span><span id="_CPPv2N6stored6PinOutclEv"></span><span id="stored::PinOut::call-operator"></span><span class="target" id="classstored_1_1_pin_out_1a4f3c56bbf47bb50f1d09fe46b9dc4a89"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored6PinOutclEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored6PinOutclEb">
+<span id="_CPPv3N6stored6PinOutclEb"></span><span id="_CPPv2N6stored6PinOutclEb"></span><span id="stored::PinOut::call-operator__b"></span><span class="target" id="classstored_1_1_pin_out_1a28a5a86b32ea029657a615d0ff7a9525"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">output</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored6PinOutclEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored6PinOut6outputEv">
+<span id="_CPPv3NK6stored6PinOut6outputEv"></span><span id="_CPPv2NK6stored6PinOut6outputEv"></span><span id="stored::PinOut::outputC"></span><span class="target" id="classstored_1_1_pin_out_1ad443853d8201d0721bd55b02ede31603"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">output</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored6PinOut6outputEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored6PinOut12outputObjectEv">
+<span id="_CPPv3NK6stored6PinOut12outputObjectEv"></span><span id="_CPPv2NK6stored6PinOut12outputObjectEv"></span><span id="stored::PinOut::outputObjectC"></span><span class="target" id="classstored_1_1_pin_out_1ad14475f308d72fb102a5f5a2aa847cd6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">outputObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored6PinOut12outputObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored6PinOut12outputObjectEv">
+<span id="_CPPv3N6stored6PinOut12outputObjectEv"></span><span id="_CPPv2N6stored6PinOut12outputObjectEv"></span><span id="stored::PinOut::outputObject"></span><span class="target" id="classstored_1_1_pin_out_1a4eaa1271de114e0eb8de318affe92ee4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">outputObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored6PinOut12outputObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored6PinOut9override_Ev">
+<span id="_CPPv3NK6stored6PinOut9override_Ev"></span><span id="_CPPv2NK6stored6PinOut9override_Ev"></span><span id="stored::PinOut::override_C"></span><span class="target" id="classstored_1_1_pin_out_1a05fc7cd86cc419a60257fa7a4aca8ce4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">int8_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">override_</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored6PinOut9override_Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored6PinOut9override_E6int8_t">
+<span id="_CPPv3N6stored6PinOut9override_E6int8_t"></span><span id="_CPPv2N6stored6PinOut9override_E6int8_t"></span><span id="stored::PinOut::override___int8_t"></span><span class="target" id="classstored_1_1_pin_out_1a0a5a0370d22ffbb01f7ce74509bbd2f4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">override_</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">int8_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored6PinOut9override_E6int8_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored6PinOut3pinEb">
+<span id="_CPPv3N6stored6PinOut3pinEb"></span><span id="_CPPv2N6stored6PinOut3pinEb"></span><span id="stored::PinOut::pin__b"></span><span class="target" id="classstored_1_1_pin_out_1a4ca9a656489d67604bea213df687a986"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pin</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored6PinOut3pinEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored6PinOut9pinObjectEv">
+<span id="_CPPv3N6stored6PinOut9pinObjectEv"></span><span id="_CPPv2N6stored6PinOut9pinObjectEv"></span><span id="stored::PinOut::pinObject"></span><span class="target" id="classstored_1_1_pin_out_1afec1b6598096c9f6f66657395a6e6042"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pinObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored6PinOut9pinObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_Dpc_6size_tEN6stored6PinOut7objectsEDaRA1N_Kc">
+<span id="_CPPv3I_Dpc_6size_tEN6stored6PinOut7objectsERA1N_Kc"></span><span id="_CPPv2I_Dpc_6size_tEN6stored6PinOut7objectsERAN_Kc"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnlyId</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_pin_out_1a1d9a1444ebdc17acc38b4c19766dcb84"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">objects</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">prefix</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#_CPPv4I_Dpc_6size_tEN6stored6PinOut7objectsEDaRA1N_Kc" title="stored::PinOut::objects::N"><span class="n"><span class="pre">N</span></span></a><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I_Dpc_6size_tEN6stored6PinOut7objectsEDaRA1N_Kc" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+<section id="stored-pid">
+<h2>stored::PID<a class="headerlink" href="#stored-pid" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0_y0EN6stored3PIDE">
+<span id="_CPPv3I0_y0EN6stored3PIDE"></span><span id="_CPPv2I0_y0EN6stored3PIDE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Container</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span> <span class="pre">long</span> <span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flags</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_p_i_d"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">PID</span></span></span><a class="headerlink" href="#_CPPv4I0_y0EN6stored3PIDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><a class="reference internal" href="#classstored_1_1_p_i_d"><span class="std std-ref">PID</span></a> controller, based on store variables. </p>
+<p>To use this class, add a scope to your store, like:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+    (float) frequency (Hz)
+    float y
+    float setpoint
+    bool=true enable
+    float=1 Kp
+    float=inf Ti (s)
+    float=0 Td (s)
+    float=0 Kff
+    float int
+    float=-inf int low
+    float=inf int high
+    float=-inf low
+    float=inf high
+    bool reset
+    float=nan override
+    float u
+} pid
+</pre></div>
+</div>
+</p>
+<p>Only <code class="docutils literal notranslate"><span class="pre">frequency</span></code>, <code class="docutils literal notranslate"><span class="pre">setpoint</span></code>, and <code class="docutils literal notranslate"><span class="pre">Kp</span></code> are mandatory. Then, instantiate the controller like this:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
+constexpr auto pid_o = stored::PID&lt;stored::YourStore&gt;::objects(&quot;/pid/&quot;);
+// Instantiate an PID, tailored to the available fields in the store.
+stored::PID&lt;stored::YourStore, pid_o.flags()&gt; pid{pid_o, yourStore};
+</pre></div>
+</div>
+ </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored3PID5BoundE">
+<span id="_CPPv3N6stored3PID5BoundE"></span><span id="_CPPv2N6stored3PID5BoundE"></span><span class="target" id="classstored_1_1_p_i_d_1a48862fdf98a09c1780f633a5ec76a01e"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Bound</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="n"><span class="pre">PIDObjects</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_y0EN6stored3PIDE" title="stored::PID::Container"><span class="n"><span class="pre">Container</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="k"><span class="pre">template</span></span><span class="w"> </span><span class="n"><span class="pre">Bound</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_y0EN6stored3PIDE" title="stored::PID::flags"><span class="n"><span class="pre">flags</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored3PID5BoundE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored3PID4typeE">
+<span id="_CPPv3N6stored3PID4typeE"></span><span id="_CPPv2N6stored3PID4typeE"></span><span class="target" id="classstored_1_1_p_i_d_1a91e7d0730b2eb3cd5c2281392f3628cb"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_y0EN6stored3PIDE" title="stored::PID::T"><span class="n"><span class="pre">T</span></span></a><a class="headerlink" href="#_CPPv4N6stored3PID4typeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored3PID3PIDEv">
+<span id="_CPPv3N6stored3PID3PIDEv"></span><span id="_CPPv2N6stored3PID3PIDEv"></span><span id="stored::PID::PIDCE"></span><span class="target" id="classstored_1_1_p_i_d_1af1084617a23b9e8b67eec55e39ef929a"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PID</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored3PID3PIDEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored3PID3PIDERK10PIDObjectsI9Container4typeER9Container">
+<span id="_CPPv3N6stored3PID3PIDERK10PIDObjectsI9Container4typeER9Container"></span><span id="_CPPv2N6stored3PID3PIDERK10PIDObjectsI9Container4typeER9Container"></span><span id="stored::PID::PID__PIDObjects:Container.type:CR.ContainerRCE"></span><span class="target" id="classstored_1_1_p_i_d_1a52b301f561c10a5ec71a3329e9c8f3b8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PID</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">PIDObjects</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_y0EN6stored3PIDE" title="stored::PID::Container"><span class="n"><span class="pre">Container</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">o</span></span>, <a class="reference internal" href="#_CPPv4I0_y0EN6stored3PIDE" title="stored::PID::Container"><span class="n"><span class="pre">Container</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">container</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored3PID3PIDERK10PIDObjectsI9Container4typeER9Container" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID7enabledEv">
+<span id="_CPPv3NK6stored3PID7enabledEv"></span><span id="_CPPv2NK6stored3PID7enabledEv"></span><span id="stored::PID::enabledC"></span><span class="target" id="classstored_1_1_p_i_d_1ac7a5591e79a1a5646f68cd72c1fa1236"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">enabled</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID7enabledEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID12enableObjectEv">
+<span id="_CPPv3NK6stored3PID12enableObjectEv"></span><span id="_CPPv2NK6stored3PID12enableObjectEv"></span><span id="stored::PID::enableObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1aaaf3a56a599c60ef71cdd852977b9b31"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">enableObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID12enableObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID9frequencyEv">
+<span id="_CPPv3NK6stored3PID9frequencyEv"></span><span id="_CPPv2NK6stored3PID9frequencyEv"></span><span id="stored::PID::frequencyC"></span><span class="target" id="classstored_1_1_p_i_d_1a7a2e645e01853ce6cd51bfc9be010ae0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">frequency</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID9frequencyEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID15frequencyObjectEv">
+<span id="_CPPv3NK6stored3PID15frequencyObjectEv"></span><span id="_CPPv2NK6stored3PID15frequencyObjectEv"></span><span id="stored::PID::frequencyObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1a5cce874b6af8d86ef639733d717bea2a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">frequencyObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID15frequencyObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID4highEv">
+<span id="_CPPv3NK6stored3PID4highEv"></span><span id="_CPPv2NK6stored3PID4highEv"></span><span id="stored::PID::highC"></span><span class="target" id="classstored_1_1_p_i_d_1adc67812087953e27e56118f94f2a876d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">high</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID4highEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID10highObjectEv">
+<span id="_CPPv3NK6stored3PID10highObjectEv"></span><span id="_CPPv2NK6stored3PID10highObjectEv"></span><span id="stored::PID::highObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1a5b1f3145f7033be18717ebe234a30c19"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">highObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID10highObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID4int_Ev">
+<span id="_CPPv3NK6stored3PID4int_Ev"></span><span id="_CPPv2NK6stored3PID4int_Ev"></span><span id="stored::PID::int_C"></span><span class="target" id="classstored_1_1_p_i_d_1a03ba3c2eda1942b766be5ddabec00891"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">int_</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID4int_Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID7intHighEv">
+<span id="_CPPv3NK6stored3PID7intHighEv"></span><span id="_CPPv2NK6stored3PID7intHighEv"></span><span id="stored::PID::intHighC"></span><span class="target" id="classstored_1_1_p_i_d_1a2124e251f3e08fe0c04a9bc6edb46de7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">intHigh</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID7intHighEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID13intHighObjectEv">
+<span id="_CPPv3NK6stored3PID13intHighObjectEv"></span><span id="_CPPv2NK6stored3PID13intHighObjectEv"></span><span id="stored::PID::intHighObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1af2dbf7a0aebcd720bacb97f0856d2854"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">intHighObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID13intHighObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID6intLowEv">
+<span id="_CPPv3NK6stored3PID6intLowEv"></span><span id="_CPPv2NK6stored3PID6intLowEv"></span><span id="stored::PID::intLowC"></span><span class="target" id="classstored_1_1_p_i_d_1a389798743a2069e2b618f24ae6f737df"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">intLow</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID6intLowEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID12intLowObjectEv">
+<span id="_CPPv3NK6stored3PID12intLowObjectEv"></span><span id="_CPPv2NK6stored3PID12intLowObjectEv"></span><span id="stored::PID::intLowObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1a67b6371c30491c9e9e921cf4c35236bd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">intLowObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID12intLowObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID9intObjectEv">
+<span id="_CPPv3NK6stored3PID9intObjectEv"></span><span id="_CPPv2NK6stored3PID9intObjectEv"></span><span id="stored::PID::intObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1ae612f7410c4e99bec5a99fbb3116fb60"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">intObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID9intObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored3PID9intObjectEv">
+<span id="_CPPv3N6stored3PID9intObjectEv"></span><span id="_CPPv2N6stored3PID9intObjectEv"></span><span id="stored::PID::intObject"></span><span class="target" id="classstored_1_1_p_i_d_1a2d1bce56ad1284c6ef4800a665fa7c21"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">intObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored3PID9intObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID2KdEv">
+<span id="_CPPv3NK6stored3PID2KdEv"></span><span id="_CPPv2NK6stored3PID2KdEv"></span><span id="stored::PID::KdC"></span><span class="target" id="classstored_1_1_p_i_d_1a847162a6e38ee0ff226740c7263d71c2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Kd</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID2KdEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID3KffEv">
+<span id="_CPPv3NK6stored3PID3KffEv"></span><span id="_CPPv2NK6stored3PID3KffEv"></span><span id="stored::PID::KffC"></span><span class="target" id="classstored_1_1_p_i_d_1a1408e11d71cb5e28751e8a1576a889e6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Kff</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID3KffEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID9KffObjectEv">
+<span id="_CPPv3NK6stored3PID9KffObjectEv"></span><span id="_CPPv2NK6stored3PID9KffObjectEv"></span><span id="stored::PID::KffObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1a93c66303947370fb1430a3bea25a9904"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">KffObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID9KffObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID2KiEv">
+<span id="_CPPv3NK6stored3PID2KiEv"></span><span id="_CPPv2NK6stored3PID2KiEv"></span><span id="stored::PID::KiC"></span><span class="target" id="classstored_1_1_p_i_d_1af307814f521f5300a99c9d73bfa38a16"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Ki</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID2KiEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID2KpEv">
+<span id="_CPPv3NK6stored3PID2KpEv"></span><span id="_CPPv2NK6stored3PID2KpEv"></span><span id="stored::PID::KpC"></span><span class="target" id="classstored_1_1_p_i_d_1a322f0f1d05c6b1e4092f05305d8a0882"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Kp</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID2KpEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID8KpObjectEv">
+<span id="_CPPv3NK6stored3PID8KpObjectEv"></span><span id="_CPPv2NK6stored3PID8KpObjectEv"></span><span id="stored::PID::KpObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1a07e0f516e59a4a4ef427fd3a90ffc409"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">KpObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID8KpObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID3lowEv">
+<span id="_CPPv3NK6stored3PID3lowEv"></span><span id="_CPPv2NK6stored3PID3lowEv"></span><span id="stored::PID::lowC"></span><span class="target" id="classstored_1_1_p_i_d_1a41320112687d2eee09e3ccbbaea3a198"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">low</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID3lowEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID9lowObjectEv">
+<span id="_CPPv3NK6stored3PID9lowObjectEv"></span><span id="_CPPv2NK6stored3PID9lowObjectEv"></span><span id="stored::PID::lowObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1ab27dc6804250b9eefe98d36a102bc5ef"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lowObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID9lowObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored3PIDclEv">
+<span id="_CPPv3N6stored3PIDclEv"></span><span id="_CPPv2N6stored3PIDclEv"></span><span id="stored::PID::call-operator"></span><span class="target" id="classstored_1_1_p_i_d_1a2f9308a9b38d608d696fd4db01853551"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored3PIDclEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored3PIDclE4type">
+<span id="_CPPv3N6stored3PIDclE4type"></span><span id="_CPPv2N6stored3PIDclE4type"></span><span id="stored::PID::call-operator__type"></span><span class="target" id="classstored_1_1_p_i_d_1ad936b07ef1ca4a5d854d0e988afd109c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored3PIDclE4type" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID9override_Ev">
+<span id="_CPPv3NK6stored3PID9override_Ev"></span><span id="_CPPv2NK6stored3PID9override_Ev"></span><span id="stored::PID::override_C"></span><span class="target" id="classstored_1_1_p_i_d_1ab680bbad583c09afb8024c764ff34e29"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">override_</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID9override_Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID14overrideObjectEv">
+<span id="_CPPv3NK6stored3PID14overrideObjectEv"></span><span id="_CPPv2NK6stored3PID14overrideObjectEv"></span><span id="stored::PID::overrideObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1a4e0b78ae3aada2ee310bab65d4dca11c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">overrideObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID14overrideObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID5resetEv">
+<span id="_CPPv3NK6stored3PID5resetEv"></span><span id="_CPPv2NK6stored3PID5resetEv"></span><span id="stored::PID::resetC"></span><span class="target" id="classstored_1_1_p_i_d_1a3011b40f2b8b6760170a9a3e84f4429e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID5resetEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID11resetObjectEv">
+<span id="_CPPv3NK6stored3PID11resetObjectEv"></span><span id="_CPPv2NK6stored3PID11resetObjectEv"></span><span id="stored::PID::resetObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1a43dbf73f3d8d400e58b1f6cda2a8aca8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">resetObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID11resetObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored3PID11resetObjectEv">
+<span id="_CPPv3N6stored3PID11resetObjectEv"></span><span id="_CPPv2N6stored3PID11resetObjectEv"></span><span id="stored::PID::resetObject"></span><span class="target" id="classstored_1_1_p_i_d_1a0ce9d3ee27dbef9a67453cf9f87b2735"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">resetObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored3PID11resetObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID8setpointEv">
+<span id="_CPPv3NK6stored3PID8setpointEv"></span><span id="_CPPv2NK6stored3PID8setpointEv"></span><span id="stored::PID::setpointC"></span><span class="target" id="classstored_1_1_p_i_d_1ac35bfd87b7f20ddfce36743de5479a47"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setpoint</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID8setpointEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID14setpointObjectEv">
+<span id="_CPPv3NK6stored3PID14setpointObjectEv"></span><span id="_CPPv2NK6stored3PID14setpointObjectEv"></span><span id="stored::PID::setpointObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1ae7dbf73ecd09297ce7e77d2173611b1a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setpointObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID14setpointObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID2TdEv">
+<span id="_CPPv3NK6stored3PID2TdEv"></span><span id="_CPPv2NK6stored3PID2TdEv"></span><span id="stored::PID::TdC"></span><span class="target" id="classstored_1_1_p_i_d_1a1155dbd118a7b3c61a73ac6fbd407b79"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Td</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID2TdEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID8TdObjectEv">
+<span id="_CPPv3NK6stored3PID8TdObjectEv"></span><span id="_CPPv2NK6stored3PID8TdObjectEv"></span><span id="stored::PID::TdObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1af46271dbdb3d54c70fef602ee395e56e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TdObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID8TdObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID2TiEv">
+<span id="_CPPv3NK6stored3PID2TiEv"></span><span id="_CPPv2NK6stored3PID2TiEv"></span><span id="stored::PID::TiC"></span><span class="target" id="classstored_1_1_p_i_d_1aae13e3bddb702fd7e0f5e0a9d2ee5067"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Ti</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID2TiEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID8TiObjectEv">
+<span id="_CPPv3NK6stored3PID8TiObjectEv"></span><span id="_CPPv2NK6stored3PID8TiObjectEv"></span><span id="stored::PID::TiObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1a21c750b1b0aa1f627740cc6ac73252af"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TiObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID8TiObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID1uEv">
+<span id="_CPPv3NK6stored3PID1uEv"></span><span id="_CPPv2NK6stored3PID1uEv"></span><span id="stored::PID::uC"></span><span class="target" id="classstored_1_1_p_i_d_1ab5af3d82c6e29164df055137a3966311"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">u</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID1uEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID7uObjectEv">
+<span id="_CPPv3NK6stored3PID7uObjectEv"></span><span id="_CPPv2NK6stored3PID7uObjectEv"></span><span id="stored::PID::uObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1a000a6c865c72492f950de5f768c12c54"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">uObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID7uObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored3PID7uObjectEv">
+<span id="_CPPv3N6stored3PID7uObjectEv"></span><span id="_CPPv2N6stored3PID7uObjectEv"></span><span id="stored::PID::uObject"></span><span class="target" id="classstored_1_1_p_i_d_1ae86ed951082cf4da1d46af5427fae1da"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">uObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored3PID7uObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID1yEv">
+<span id="_CPPv3NK6stored3PID1yEv"></span><span id="_CPPv2NK6stored3PID1yEv"></span><span id="stored::PID::yC"></span><span class="target" id="classstored_1_1_p_i_d_1a18775e96f20c09966ca30cfd3e06eb9d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">y</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID1yEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID7yObjectEv">
+<span id="_CPPv3NK6stored3PID7yObjectEv"></span><span id="_CPPv2NK6stored3PID7yObjectEv"></span><span id="stored::PID::yObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1af0d7096dd6674f1818a9272ef004a7e8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">yObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID7yObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored3PID7yObjectEv">
+<span id="_CPPv3N6stored3PID7yObjectEv"></span><span id="_CPPv2N6stored3PID7yObjectEv"></span><span id="stored::PID::yObject"></span><span class="target" id="classstored_1_1_p_i_d_1aef3ee01d154049d1ff875d506d63f387"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">yObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored3PID7yObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_Dpc_6size_tEN6stored3PID7objectsEDaRA1N_Kc">
+<span id="_CPPv3I_Dpc_6size_tEN6stored3PID7objectsERA1N_Kc"></span><span id="_CPPv2I_Dpc_6size_tEN6stored3PID7objectsERAN_Kc"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnlyId</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_p_i_d_1ac4fb9b01cfe6c452ced63cde0cb21525"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">objects</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">prefix</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#_CPPv4I_Dpc_6size_tEN6stored3PID7objectsEDaRA1N_Kc" title="stored::PID::objects::N"><span class="n"><span class="pre">N</span></span></a><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I_Dpc_6size_tEN6stored3PID7objectsEDaRA1N_Kc" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="cpp_debugger.html" class="btn btn-neutral float-right" title="Debugger" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="cpp_config.html" class="btn btn-neutral float-left" title="Config" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020-2021, Jochem Rutgers.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

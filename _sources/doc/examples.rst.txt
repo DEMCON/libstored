@@ -11,6 +11,7 @@ Examples
    example_7_protocol
    example_8_sync
    example_9_fpga
+   example_components
    example_concurrency
    example_terminal
    example_zmqserver

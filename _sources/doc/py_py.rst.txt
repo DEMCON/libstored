@@ -19,6 +19,8 @@ Protocol layers
 
 .. autoclass:: ed2.protocol.TerminalLayer
 
+.. autoclass:: ed2.protocol.PubTerminalLayer
+
 .. autoclass:: ed2.protocol.SegmentationLayer
 
 .. autoclass:: ed2.protocol.DebugArqLayer
