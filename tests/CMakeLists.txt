@@ -43,6 +43,14 @@ libstored_generate(teststore TestStore.st)
 target_compile_definitions(teststore-libstored PUBLIC STORED_POLL_${LIBSTORED_POLL})
 target_include_directories(teststore-libstored BEFORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+if(LIBSTORED_ENABLE_UBSAN AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	# The combination of -fno-sanitize-recover and ubsan gives some issues with
+	# vptr. This might be related: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94325.
+	# Disable it for now.
+	add_compile_options(-fno-sanitize=vptr)
+	target_compile_options(teststore-libstored PUBLIC -fno-sanitize=vptr)
+endif()
+
 macro(libstored_add_test TESTNAME)
 	add_executable(${TESTNAME} ${ARGN} test_base.cpp)
 	target_include_directories(${TESTNAME} BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)

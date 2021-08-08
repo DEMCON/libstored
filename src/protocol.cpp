@@ -53,15 +53,6 @@ namespace stored {
  *
  * Ties to the layer above and below are nicely removed.
  */
-#ifdef STORED_ENABLE_UBSAN
-// No clue why ubsan reports "object has invalid vptr" (which is a nullptr
-// during the dtor) on this one...
-#  ifdef __has_attribute
-#    if __has_attribute(no_sanitize)
-__attribute__((no_sanitize("undefined")))
-#    endif
-#  endif
-#endif
 ProtocolLayer::~ProtocolLayer() {
 	if(up() && up()->down() == this)
 		up()->setDown(down());
