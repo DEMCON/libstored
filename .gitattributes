@@ -1,3 +1,4 @@
 *.st linguist-language=Text
 presentation/*.html linguist-detectable=false
 presentation linguist-documentation
+tests/test_fpga/stack_in.txt text eol=crlf

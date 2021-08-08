@@ -30,6 +30,7 @@
 
 #if STORED_cplusplus >= 201103L
 #  include <functional>
+#  include <utility>
 #endif
 
 #ifdef STORED_COMPILER_MSVC
@@ -303,7 +304,7 @@ namespace stored {
 		virtual size_t mtu() const override;
 		virtual void reset() override;
 
-		virtual void nonDebugEncode(void* buffer, size_t len);
+		virtual void nonDebugEncode(void const* buffer, size_t len);
 
 	protected:
 		virtual void nonDebugDecode(void* buffer, size_t len);
@@ -312,18 +313,14 @@ namespace stored {
 
 	private:
 		/*! \brief The callback to write non-debug decoded data to. */
-#if STORED_cplusplus >= 201103L
-		std::function<NonDebugDecodeCallback> m_nonDebugDecodeCallback;
-#else
-		NonDebugDecodeCallback* m_nonDebugDecodeCallback;
-#endif
+		Callable<NonDebugDecodeCallback>::type m_nonDebugDecodeCallback;
 
 		/*! \brief States of frame extraction. */
 		enum State { StateNormal, StateNormalEsc, StateDebug, StateDebugEsc };
 		/*! \brief State of frame extraction. */
 		State m_decodeState;
 		/*! \brief Buffer of to-be-decoded data. */
-		std::vector<char> m_buffer;
+		Vector<char>::type m_buffer;
 
 		/*! \brief State of frame injection. */
 		bool m_encodeState;
@@ -366,7 +363,7 @@ namespace stored {
 
 	private:
 		size_t m_mtu;
-		std::vector<char> m_decode;
+		Vector<char>::type m_decode;
 		size_t m_encoded;
 	};
 
@@ -530,19 +527,19 @@ namespace stored {
 
 		void popEncodeQueue();
 		void pushEncodeQueue(void const* buffer, size_t len);
-		std::string& pushEncodeQueueRaw();
+		String::type& pushEncodeQueueRaw();
 
 	private:
 #if STORED_cplusplus < 201103L
 		EventCallbackArg* m_cb;
 		void* m_cbArg;
 #else
-		std::function<EventCallback> m_cb;
+		Callable<EventCallback>::type m_cb;
 #endif
 
 		size_t const m_maxEncodeBuffer;
-		std::deque<std::string*> m_encodeQueue;
-		std::deque<std::string*> m_spare;
+		Deque<String::type*>::type m_encodeQueue;
+		Deque<String::type*>::type m_spare;
 		size_t m_encodeQueueSize;
 		EncodeState m_encodeState;
 		bool m_didTransmit;
@@ -670,7 +667,7 @@ namespace stored {
 		bool m_encodeSeqReset;
 
 		size_t const m_maxEncodeBuffer;
-		std::vector<std::string> m_encodeBuffer;
+		Vector<String::type>::type m_encodeBuffer;
 		size_t m_encodeBufferSize;
 	};
 
@@ -776,7 +773,7 @@ namespace stored {
 
 	private:
 		size_t const m_size;
-		std::string m_buffer;
+		String::type m_buffer;
 	};
 
 	/*!
@@ -784,6 +781,9 @@ namespace stored {
 	 *
 	 * Messages are printed on a line.
 	 * Decoded message start with &lt;, encoded messages with &gt;, partial encoded messages with *.
+	 *
+	 * Printing can be suspended and resumed by calling #enable() or #disable().
+	 * The default state is enabled.
 	 *
 	 * Mainly for debugging purposes.
 	 */
@@ -802,14 +802,181 @@ namespace stored {
 #endif
 
 		void setFile(FILE* f);
+		FILE* file() const;
+		void enable(bool enable = true);
+		void disable();
+		bool enabled() const;
 
 	private:
 		FILE* m_f;
 		char const* const m_name;
+		bool m_enable;
 	};
 
+	/*!
+	 * \brief A layer that tracks if it sees communication through the stack.
+	 *
+	 * This may be used to check of long inactivity on stalled or disconnected
+	 * communication channels.
+	 */
+	class IdleCheckLayer : public ProtocolLayer {
+		CLASS_NOCOPY(IdleCheckLayer)
+	public:
+		typedef ProtocolLayer base;
+
+		explicit IdleCheckLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
+			: base(up, down)
+			, m_idleUp(true)
+			, m_idleDown(true)
+		{}
+
+		virtual ~IdleCheckLayer() override is_default
+
+		virtual void decode(void* buffer, size_t len) override
+		{
+			m_idleUp = false;
+			base::decode(buffer, len);
+		}
+
+		virtual void encode(void const* buffer, size_t len, bool last = true) override
+		{
+			m_idleDown = false;
+			base::encode(buffer, len, last);
+		}
+
+#ifndef DOXYGEN
+		using base::encode;
+#endif
+
+		/*!
+		 * \brief Checks if both up and down the stack was idle since the last call to #setIdle().
+		 */
+		bool idle() const
+		{
+			return idleUp() && idleDown();
+		}
+
+		/*!
+		 * \brief Checks if upstream was idle since the last call to #setIdle().
+		 */
+		bool idleUp() const
+		{
+			return m_idleUp;
+		}
+
+		/*!
+		 * \brief Checks if downstream was idle since the last call to #setIdle().
+		 */
+		bool idleDown() const
+		{
+			return m_idleDown;
+		}
+
+		/*!
+		 * \brief Resets idle flags.
+		 */
+		void setIdle()
+		{
+			m_idleUp = true;
+			m_idleDown = true;
+		}
+
+	private:
+		bool m_idleUp;
+		bool m_idleDown;
+	};
+
+#if STORED_cplusplus >= 201103L
+	template <typename Up, typename Down>
+	class CallbackLayer;
+
+	template <typename Up, typename Down>
+	static inline CallbackLayer<typename std::decay<Up>::type, typename std::decay<Down>::type>
+		make_callback(Up&& up, Down&& down);
+
+	/*!
+	 * \brief Callback class that invokes a callback for every messages through the stack.
+	 *
+	 * \copydetails #stored::make_callback()
+	 */
+	template <typename Up, typename Down>
+	class CallbackLayer : public ProtocolLayer {
+	public:
+		typedef ProtocolLayer base;
+
+	protected:
+		template <typename U, typename D>
+		CallbackLayer(U&& u, D&& d)
+			: m_up{std::forward<U>(u)}
+			, m_down{std::forward<D>(d)}
+		{}
+
+		template <typename U, typename D>
+		friend CallbackLayer<typename std::decay<U>::type, typename std::decay<D>::type>
+			make_callback(U&& up, D&& down);
+
+	public:
+
+		CallbackLayer(CallbackLayer&& l) noexcept
+			: m_up{std::move(l.m_up)}
+			, m_down{std::move(l.m_down)}
+		{
+		}
+
+		CallbackLayer(CallbackLayer const&) = delete;
+
+		void operator=(CallbackLayer const&) = delete;
+		void operator=(CallbackLayer&&) = delete;
+
+		virtual ~CallbackLayer() override = default;
+
+		virtual void decode(void* buffer, size_t len) override
+		{
+			m_up(buffer, len);
+			base::decode(buffer, len);
+		}
+
+		virtual void encode(void const* buffer, size_t len, bool last = true) override
+		{
+			m_down(buffer, len, last);
+			base::encode(buffer, len, last);
+		}
+
+#ifndef DOXYGEN
+		using base::encode;
+#endif
+
+	private:
+		Up m_up;
+		Down m_down;
+	};
+
+	/*!
+	 * \brief Creates a ProtocolLayer that invokes a given callback on every messages through the layer.
+	 *
+	 * Use as follows:
+	 *
+	 * \code
+	 * auto cb = stored::make_callback(
+	 *               [&](void*, size_t){ ... },
+	 *               [&](void const&, size_t, bool){ ... });
+	 * \endcode
+	 *
+	 * The first argument (a lambda in the example above), gets the parameters
+	 * as passed to \c decode().  The second argument get the parameters as
+	 * passed to \c encode().
+	 */
+	template <typename Up, typename Down>
+	static inline CallbackLayer<typename std::decay<Up>::type, typename std::decay<Down>::type>
+		make_callback(Up&& up, Down&& down)
+	{
+		return CallbackLayer<typename std::decay<Up>::type, typename std::decay<Down>::type>{
+			std::forward<Up>(up), std::forward<Down>(down)};
+	}
+#endif // C++11
+
 	namespace impl {
-		class Loopback1 : public ProtocolLayer {
+		class Loopback1 final : public ProtocolLayer {
 			CLASS_NOCOPY(Loopback1)
 		public:
 			typedef ProtocolLayer base;
@@ -1047,7 +1214,7 @@ public:
 	private:
 		fd_type m_fd_r;
 		fd_type m_fd_w;
-		std::vector<char> m_bufferRead;
+		Vector<char>::type m_bufferRead;
 
 #ifdef STORED_OS_WINDOWS
 		OVERLAPPED m_overlappedRead;
@@ -1058,7 +1225,7 @@ public:
 			FileLayer* const m_this;
 		};
 
-		std::vector<char> m_bufferWrite;
+		Vector<char>::type m_bufferWrite;
 		size_t m_writeLen;
 #endif
 	};
@@ -1080,7 +1247,7 @@ public:
 
 		NamedPipeLayer(char const* name, DWORD openMode = PIPE_ACCESS_DUPLEX, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~NamedPipeLayer() override;
-		std::string const& name() const;
+		String::type const& name() const;
 		int recv(long timeout_us = 0) final;
 		HANDLE handle() const;
 		bool isConnected() const;
@@ -1105,7 +1272,7 @@ public:
 
 	private:
 		State m_state;
-		std::string m_name;
+		String::type m_name;
 		DWORD m_openMode;
 	};
 
@@ -1246,7 +1413,7 @@ public:
 		fd_type m_fd_w;
 		bool m_pipe_r;
 		bool m_pipe_w;
-		std::vector<char> m_bufferRead;
+		Vector<char>::type m_bufferRead;
 	};
 
 #else // !STORED_OS_WINDOWS
@@ -1281,8 +1448,9 @@ public:
 		CLASS_NOCOPY(SerialLayer)
 	public:
 		typedef FileLayer base;
-		explicit SerialLayer(char const* name, unsigned long baud, bool rtscts = false, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+		explicit SerialLayer(char const* name, unsigned long baud, bool rtscts = false, bool xonxoff = false, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 		virtual ~SerialLayer() override is_default
+		int resetAutoBaud();
 	};
 #endif // STORED_OS_WINDOWS || STORED_OS_POSIX
 

@@ -22,13 +22,27 @@ import logging
 
 from PySide2.QtGui import QGuiApplication, QIcon
 from PySide2.QtQml import QQmlApplicationEngine
-from PySide2.QtCore import QUrl, QAbstractListModel, QModelIndex, Qt, Slot, QSortFilterProxyModel, QCoreApplication
+from PySide2.QtCore import QUrl, QAbstractListModel, QModelIndex, Qt, Slot, QSortFilterProxyModel, QCoreApplication, qInstallMessageHandler, QtMsgType
 
 from lognplot.client import LognplotTcpClient
 
 from ..zmq_client import ZmqClient
 from ..zmq_server import ZmqServer
 from ..csv import generateFilename
+from ..version import __version__
+
+def msgHandler(msgType, context, msg):
+    global logger
+    if msgType == QtMsgType.QtDebugMsg:
+        logger.debug(msg)
+    elif msgType == QtMsgType.QtInfoMsg:
+        logger.info(msg)
+    elif msgType == QtMsgType.QtWarningMsg:
+        logger.warning(msg)
+    elif msgType == QtMsgType.QtCriticalMsg:
+        logger.error(msg)
+    else:
+        logger.critical(msg)
 
 class NatSort(QSortFilterProxyModel):
     def __init__(self, *args, **kwargs):
@@ -108,9 +122,18 @@ def lognplot_send(lognplot, o):
 
 
 if __name__ == '__main__':
+    logger = logging.getLogger('gui')
+    qInstallMessageHandler(msgHandler)
+
     QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     QCoreApplication.setApplicationName("Embedded Debugger")
+    QCoreApplication.setApplicationVersion(__version__)
+    try:
+        QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+    except:
+        pass
+    app = QGuiApplication(sys.argv)
 
     parser = argparse.ArgumentParser(description='ZMQ GUI client', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
@@ -126,13 +149,13 @@ if __name__ == '__main__':
     parser.add_argument('-m', dest='multi', default=False,
         help='Enable multi-mode; allow multiple simultaneous connections to the same target, ' +
             'but it is less efficient.', action='store_true')
+    parser.add_argument('-c', dest='clearState', default=False, help='Clear previously saved state', action='store_true')
 
-    args = parser.parse_args()
+    args = parser.parse_args(app.arguments()[1:])
 
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
 
-    app = QGuiApplication(sys.argv)
     app.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "twotone_bug_report_black_48dp.png")))
     engine = QQmlApplicationEngine(parent=app)
 
@@ -173,7 +196,10 @@ if __name__ == '__main__':
     if not engine.rootObjects():
         sys.exit(-1)
 
-    client.restoreState()
+    if not args.clearState:
+        # We are not really clearing the state; we won't load it, but we still
+        # do overwrite it afterwards.
+        client.restoreState()
 
     res = app.exec_()
 

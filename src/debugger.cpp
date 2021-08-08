@@ -19,25 +19,9 @@
 #include <libstored/debugger.h>
 
 #include <cstring>
-#include <string>
 
 #ifdef STORED_COMPILER_ARMCC
 #  pragma clang diagnostic ignored "-Wweak-vtables"
-#endif
-
-/*!
- * \brief Cleanup of a given object.
- */
-#if STORED_cplusplus < 201103L
-template <typename T>
-static void cleanup(T* t) {
-	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-	delete t;
-}
-#else
-template <typename T>
-static void cleanup(std::unique_ptr<T>& UNUSED_PAR(t)) {
-}
 #endif
 
 namespace stored {
@@ -82,17 +66,13 @@ Debugger::Debugger(char const* identification, char const* versions)
 /*!
  * \brief Destructor.
  */
-Debugger::~Debugger()
-#if STORED_cplusplus < 201103L
+Debugger::~Debugger() noexcept
 {
 	for(StoreMap::iterator it = m_map.begin(); it != m_map.end(); ++it)
 		cleanup(it->second);
 	for(StreamMap::iterator it = m_streams.begin(); it != m_streams.end(); ++it)
 		cleanup(it->second);
 }
-#else
-	= default;
-#endif
 
 /*! \copydoc stored::DebugStoreBase::find() */
 DebugVariant Debugger::find(char const* name, size_t len) const {
@@ -129,7 +109,7 @@ notfound:
 	// a store.
 
 	size_t prefix_len = 1;
-	for(; prefix_len <= len && name[prefix_len] && name[prefix_len] != '/'; prefix_len++);
+	for(; prefix_len < len && name[prefix_len] && name[prefix_len] != '/'; prefix_len++);
 	if(prefix_len == len)
 		goto notfound;
 
@@ -178,7 +158,7 @@ void Debugger::map(DebugStoreBase* store, char const* name) {
 
 	if(!name || name[0] != '/' || strchr(name + 1, '/') || !store) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-		delete store;
+		cleanup(store);
 		return;
 	}
 
@@ -186,19 +166,11 @@ void Debugger::map(DebugStoreBase* store, char const* name) {
 
 	if(it == m_map.end()) {
 		// New; insert.
-#if STORED_cplusplus >= 201103L
-		m_map.insert(StoreMap::value_type(name, std::unique_ptr<DebugStoreBase>(store)));
-#else
 		m_map.insert(StoreMap::value_type(name, store));
-#endif
 	} else {
 		// Replace previous mapping.
-#if STORED_cplusplus >= 201103L
-		it->second.reset(store);
-#else
 		cleanup(it->second);
 		it->second = store;
-#endif
 	}
 }
 
@@ -260,7 +232,7 @@ Debugger::MacroMap& Debugger::macros() {
  * \param arg an arbitrary argument to be passed to \p f
  */
 void Debugger::list(ListCallbackArg* f, void* arg) const {
-	if(m_map.size() == 1)
+	if(!Config::DebuggerListPrefixAlways && m_map.size() == 1)
 		m_map.begin()->second->list(f, arg);
 	else
 		for(StoreMap::const_iterator it = m_map.begin(); it != m_map.end(); ++it)
@@ -273,48 +245,48 @@ void Debugger::list(ListCallbackArg* f, void* arg) const {
  * The \p list is allocated on the #spm().
  * The pointer and the length are returned through the \p list and \p len arguments.
  *
- * \param list the list of capabilities
+ * \param caps the list of capabilities
  * \param len the size of the buffer of \p list
  * \param reserve when allocating memory for \p list, add this number of bytes
  */
-void Debugger::capabilities(char*& list, size_t& len, size_t reserve) {
+void Debugger::capabilities(char*& caps, size_t& len, size_t reserve) {
 	size_t const maxlen = 16;
-	list = spm().alloc<char>(maxlen + reserve);
+	caps = spm().alloc<char>(maxlen + reserve);
 	len = 0;
 
-	list[len++] = CmdCapabilities;
+	caps[len++] = CmdCapabilities;
 	if(Config::DebuggerRead)
-		list[len++] = CmdRead;
+		caps[len++] = CmdRead;
 	if(Config::DebuggerWrite)
-		list[len++] = CmdWrite;
+		caps[len++] = CmdWrite;
 	if(Config::DebuggerEcho)
-		list[len++] = CmdEcho;
+		caps[len++] = CmdEcho;
 	if(Config::DebuggerList)
-		list[len++] = CmdList;
+		caps[len++] = CmdList;
 	if(Config::DebuggerAlias > 0)
-		list[len++] = CmdAlias;
+		caps[len++] = CmdAlias;
 	if(Config::DebuggerMacro > 0)
-		list[len++] = CmdMacro;
+		caps[len++] = CmdMacro;
 	if(Config::DebuggerIdentification) {
 		char const* id = identification();
 		if(id && *id)
-			list[len++] = CmdIdentification;
+			caps[len++] = CmdIdentification;
 	}
 	if(Config::DebuggerVersion > 0)
-		list[len++] = CmdVersion;
+		caps[len++] = CmdVersion;
 	if(Config::DebuggerReadMem)
-		list[len++] = CmdReadMem;
+		caps[len++] = CmdReadMem;
 	if(Config::DebuggerWriteMem)
-		list[len++] = CmdWriteMem;
+		caps[len++] = CmdWriteMem;
 	if(Config::DebuggerStreams > 0 && Config::DebuggerStreamBuffer > 0)
-		list[len++] = CmdStream;
+		caps[len++] = CmdStream;
 	if(Config::DebuggerTrace)
-		list[len++] = CmdTrace;
+		caps[len++] = CmdTrace;
 	if(Config::CompressStreams)
-		list[len++] = CmdFlush;
+		caps[len++] = CmdFlush;
 
 	stored_assert(len < maxlen);
-	list[len] = 0;
+	caps[len] = 0;
 }
 
 /*!
@@ -344,9 +316,9 @@ void Debugger::setIdentification(char const* identification) {
  * \see #setVersions()
  */
 bool Debugger::version(ProtocolLayer& response) {
-	char* buffer = nullptr;
-	size_t len = encodeHex(Config::DebuggerVersion, buffer);
-	response.encode(buffer, len, false);
+	char* buf = nullptr;
+	size_t len = encodeHex(Config::DebuggerVersion, buf);
+	response.encode(buf, len, false);
 
 	if(m_versions && *m_versions) {
 		response.encode(" ", 1, false);
@@ -560,7 +532,8 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 			if(newlen > Config::DebuggerMacro)
 				goto error;
 
-			macros().insert(MacroMap::value_type(m, std::string(p, len)));
+			std::pair<MacroMap::iterator,bool> inserted = macros().insert(MacroMap::value_type(m, String::type()));
+			inserted.first->second.append(p, len);
 			m_macroSize = newlen;
 		} else {
 			// Update existing macro.
@@ -568,7 +541,8 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 			if(newlen > Config::DebuggerMacro)
 				goto error;
 
-			it->second = std::string(p, len);
+			it->second.clear();
+			it->second.append(p, len);
 			m_macroSize = newlen;
 		}
 		break;
@@ -620,28 +594,28 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		char const* addrhex = ++p;
 
 		// Find end of address
-		size_t bufferlen = 1;
+		size_t buflen = 1;
 		p++;
 		len -= 2;
-		for(; len > 0 && *p != ' '; bufferlen++, p++, len--);
+		for(; len > 0 && *p != ' '; buflen++, p++, len--);
 
-		void const* buffer = addrhex;
-		if(!decodeHex(Type::Pointer, buffer, bufferlen))
+		void const* buf = addrhex;
+		if(!decodeHex(Type::Pointer, buf, buflen))
 			goto error;
 
-		stored_assert(bufferlen == sizeof(void*));
+		stored_assert(buflen == sizeof(void*));
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-		char* addr = *reinterpret_cast<char* const*>(buffer);
+		char* addr = *reinterpret_cast<char* const*>(buf);
 		size_t datalen = sizeof(void*);
 
 		if(len > 1) {
-			buffer = p + 1;
-			bufferlen = len - 1;
-			if(!decodeHex(Type::Uint, buffer, bufferlen))
+			buf = p + 1;
+			buflen = len - 1;
+			if(!decodeHex(Type::Uint, buf, buflen))
 				goto error;
 
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-			datalen = (size_t)*reinterpret_cast<unsigned int const*>(buffer);
+			datalen = (size_t)*reinterpret_cast<unsigned int const*>(buf);
 		}
 
 		if(datalen == 0)
@@ -679,18 +653,18 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		char const* addrhex = ++p;
 
 		// Find length of address
-		size_t bufferlen = 1;
+		size_t buflen = 1;
 		p++;
 		len -= 2;
-		for(; len > 0 && *p != ' '; bufferlen++, p++, len--);
+		for(; len > 0 && *p != ' '; buflen++, p++, len--);
 
-		void const* buffer = addrhex;
-		if(!decodeHex(Type::Pointer, buffer, bufferlen))
+		void const* buf = addrhex;
+		if(!decodeHex(Type::Pointer, buf, buflen))
 			goto error;
 
-		stored_assert(bufferlen == sizeof(void*));
+		stored_assert(buflen == sizeof(void*));
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-		char* addr = *reinterpret_cast<char* const*>(buffer);
+		char* addr = *reinterpret_cast<char* const*>(buf);
 
 		// p should point to the ' ' before the data
 		if(len < 3) // ' ' and two hex chars of the first byte
@@ -733,13 +707,13 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 			goto error;
 
 		if(len == 1) {
-			void const* buffer = nullptr;
-			size_t bufferlen = 0;
-			streams(buffer, bufferlen);
-			if(bufferlen == 0)
+			void const* buf = nullptr;
+			size_t buflen = 0;
+			streams(buf, buflen);
+			if(buflen == 0)
 				goto error;
 
-			response.encode(buffer, bufferlen);
+			response.encode(buf, buflen);
 			return;
 		}
 
@@ -754,7 +728,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
 		if(tracing() && s == m_traceStream)
 			response.setPurgeableResponse();
 
-		std::string const& strstr = str->buffer();
+		String::type const& strstr = str->buffer();
 		response.encode(strstr.data(), strstr.size(), false);
 		str->clear();
 
@@ -876,7 +850,7 @@ bool Debugger::runMacro(char m, ProtocolLayer& response) {
 		return false;
 
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-	std::string const& definition = const_cast<std::string const&>(it->second);
+	String::type const& definition = const_cast<String::type const&>(it->second);
 
 	// Expect the separator and at least one char to execute.
 	if(definition.size() < 2)
@@ -891,13 +865,13 @@ bool Debugger::runMacro(char m, ProtocolLayer& response) {
 	do {
 		size_t nextpos = definition.find(sep, ++pos);
 		size_t len = 0;
-		if(nextpos == std::string::npos)
+		if(nextpos == String::type::npos)
 			len = definition.size() - pos;
 		else
 			len = nextpos - pos;
 		process(&definition[pos], len, merger);
 		pos = nextpos;
-	} while(pos != std::string::npos);
+	} while(pos != String::type::npos);
 
 	response.encode();
 	return true;
@@ -1114,7 +1088,7 @@ size_t Debugger::stream(char s, char const* data, size_t len) {
 	if(!str)
 		return 0;
 
-	len = std::min(len, Config::DebuggerStreamBuffer - str->buffer().size());
+	len = std::min(len, std::max(str->buffer().capacity(), (size_t)Config::DebuggerStreamBuffer) - str->buffer().size());
 
 	str->encode(data, len);
 
@@ -1130,11 +1104,7 @@ Stream<> const* Debugger::stream(char s) const {
 	if(it == m_streams.end())
 		return nullptr;
 
-#if STORED_cplusplus < 201103L
 	return it->second;
-#else
-	return it->second.get();
-#endif
 }
 
 /*!
@@ -1146,11 +1116,7 @@ Stream<>* Debugger::stream(char s, bool alloc) {
 	StreamMap::iterator it = m_streams.find(s);
 
 	if(it != m_streams.end()) {
-#if STORED_cplusplus < 201103L
 		return it->second;
-#else
-		return it->second.get();
-#endif
 	} else if(alloc) {
 		StreamMap::mapped_type recycle = nullptr;
 
@@ -1161,13 +1127,9 @@ Stream<>* Debugger::stream(char s, bool alloc) {
 			for(StreamMap::iterator it2 = m_streams.begin(); it2 != m_streams.end(); ++it2)
 				if(it2->second->empty()) {
 					// Got one.
-					if(!recycle) {
-#if STORED_cplusplus < 201103L
+					if(!recycle)
 						recycle = it2->second;
-#else
-						recycle = std::move(it2->second);
-#endif
-					} else
+					else
 						cleanup(it2->second);
 
 					m_streams.erase(it2);
@@ -1178,15 +1140,9 @@ Stream<>* Debugger::stream(char s, bool alloc) {
 
 		if(m_streams.size() < Config::DebuggerStreams) {
 			// Add a new stream.
-#if STORED_cplusplus < 201103L
 			return m_streams.insert(std::make_pair(s,
-				recycle ? recycle :	new Stream<>() // NOLINT(cppcoreguidelines-owning-memory)
+				recycle ? recycle :	new(allocate<Stream<> >()) Stream<>()
 				)).first->second;
-#else
-			if(!recycle)
-				recycle.reset(new Stream<>()); // NOLINT(cppcoreguidelines-owning-memory)
-			return m_streams.emplace(s,std::move(recycle)).first->second.get();
-#endif
 		} else {
 			// Out of buffers.
 			stored_assert(!recycle);

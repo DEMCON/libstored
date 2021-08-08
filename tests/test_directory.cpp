@@ -32,6 +32,9 @@ TEST(Directory, FullMatch) {
 	EXPECT_TRUE(store.find("/f read-only").valid());
 	EXPECT_TRUE(store.find("/array bool[1]").valid());
 	EXPECT_TRUE(store.find("/scope/inner bool").valid());
+	EXPECT_TRUE(store.find("/some other scope/some other inner bool").valid());
+	EXPECT_TRUE(store.find("/value with ambiguous unit (m/s)").valid());
+	EXPECT_TRUE(store.find("/value with ambiguous unit (m/h)").valid());
 }
 
 TEST(Directory, ShortMatch) {
@@ -42,12 +45,15 @@ TEST(Directory, ShortMatch) {
 	EXPECT_TRUE(store.find("/init float 3").valid());
 	EXPECT_TRUE(store.find("/sc/i.....b").valid());
 	EXPECT_TRUE(store.find("/so/s").valid());
+	EXPECT_TRUE(store.find("/value with unit").valid());
+	EXPECT_TRUE(store.find("/value with complex").valid());
 }
 
 TEST(Directory, Ambiguous) {
 	stored::TestStore store;
 	EXPECT_FALSE(store.find("/default int").valid());
 	EXPECT_FALSE(store.find("/s/inner bool").valid());
+	EXPECT_FALSE(store.find("/value with ambiguous unit").valid());
 }
 
 TEST(Directory, Bogus) {
@@ -114,6 +120,18 @@ TEST(Directory, List) {
 	// Check all collected names.
 	for(auto const& n : names)
 		EXPECT_TRUE(std::find(names.begin(), names.end(), n.c_str()) != names.end());
+}
+
+TEST(Directory, Constexpr) {
+	static_assert(stored::TestStoreData::shortDirectory() != nullptr, "");
+
+	constexpr auto v = stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int8");
+	static_assert(v.valid(), "");
+	EXPECT_TRUE(v.valid());
+
+	static_assert(!stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int7").valid(), "");
+	static_assert(!stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int9").valid(), "");
+	static_assert(!stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int8", 1).valid(), "");
 }
 
 } // namespace

@@ -108,7 +108,7 @@ static HANDLE dummyEventReset; // NOLINT(cppcoreguidelines-avoid-non-const-globa
 static int fd_to_HANDLE(int fd, HANDLE& h) {
 	intptr_t res = _get_osfhandle(fd);
 
-	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,performance-no-int-to-ptr)
 	if((HANDLE)res == INVALID_HANDLE_VALUE) {
 		return EINVAL;
 	} else if(res == -2) {
@@ -129,7 +129,7 @@ static int fd_to_HANDLE(int fd, HANDLE& h) {
 		h = dummyEventSet;
 		return 0;
 	} else {
-		h = (HANDLE)res; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+		h = (HANDLE)res; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast,performance-no-int-to-ptr)
 		return 0;
 	}
 }
@@ -572,6 +572,7 @@ Poller::Result const& Poller::poll(long timeout_us, bool suspend) {
 retry:
 	int res = 0;
 
+	// NOLINTNEXTLINE(bugprone-branch-clone)
 	if(suspend) {
 		// Just suspend; not fiber-aware.
 		res =

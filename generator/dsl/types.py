@@ -290,6 +290,10 @@ class Directory(object):
         # Find the chain:  h[k] -> v[vk] -> vv={int: object}
         # And replace by:  h[k] -> vv={int+1: object}
 
+        # Strip off paths with single leaf object:
+        # Find the chain: h[k] -> v[/] -> vv={char: {\0: object}}
+        # And replace by: k[k] -> vv
+
 #        print(f'strip {h}')
         for k in list(h.keys()):
             v = h[k]
@@ -298,9 +302,17 @@ class Directory(object):
             self.stripUnambig(v)
             if len(v) == 1:
                 vk = list(v.keys())[0]
-                if vk == '/' or vk == '\x00':
+                if vk == '\x00':
                     continue
                 vv = v[vk]
+                if vk == '/':
+                    if len(vv) == 1:
+                        # Scope with single leaf?
+                        vkk = list(vv.keys())[0]
+                        if isinstance(vkk, str) and isinstance(vv[vkk], dict) and len(vv[vkk]) == 1 and '\0' in vv[vkk]:
+#                            print(f'drop path of {v}')
+                            h[k] = vv[vkk]
+                    continue
                 if len(vv) == 1:
                     vvk = list(vv.keys())[0]
                     if isinstance(vvk, int):

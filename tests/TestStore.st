@@ -49,3 +49,7 @@ float[1]=3		array single
 	bool some other inner bool
 } some other scope
 
+float value with unit (km/s)
+float value with complex unit (J/s/m^2)
+float value with abiguous unit (m/s)
+float value with abiguous unit (m/h)

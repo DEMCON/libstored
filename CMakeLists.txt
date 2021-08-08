@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.1)
 project(libstored)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -9,17 +9,29 @@ message(STATUS "CMAKE_BUILD_TYPE is ${CMAKE_BUILD_TYPE}")
 
 if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
   message(FATAL_ERROR "CMake generation is not allowed within the source directory! \
-    Remove the CMakeCache.txt file and try again from another folder, e.g.: \
-    \
-      rm CMakeCache.txt \
-      mkdir build \
-      cd build \
-      cmake ..")
+	Remove the CMakeCache.txt file and try again from another folder, e.g.: \
+	\
+	  rm CMakeCache.txt \
+	  mkdir build \
+	  cd build \
+	  cmake ..")
 endif()
+
+option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" OFF)
+option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" OFF)
+option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" OFF)
 
 add_subdirectory(version)
 
-option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" ON)
+if(WIN32)
+	# The documentation needs wavedrom (via sphinx), but sphinxcontrib-wavedrom
+	# needs cairo.  In turn, that package needs libcairo-2.dll (64-bit,
+	# matching python's word size), which cannot be installed automatically by
+	# bootstrap.cmd. So, by default, leave it out.
+	option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" OFF)
+else()
+	option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" ON)
+endif()
 
 if(LIBSTORED_DOCUMENTATION)
 	add_subdirectory(sphinx)
@@ -69,60 +81,66 @@ function(libstored_copy_dlls target)
 endfunction()
 
 function(libstored_generate target) # add all other models as varargs
-    foreach(model IN ITEMS ${ARGN})
-        list(APPEND models ${CMAKE_CURRENT_SOURCE_DIR}/${model})
-    endforeach()
+	foreach(model IN ITEMS ${ARGN})
+		list(APPEND models ${CMAKE_CURRENT_SOURCE_DIR}/${model})
+	endforeach()
 
-    if(NOT EXISTS libstored)
-        # Execute right away, such that the CMakeLists.txt exists.
-        execute_process(
-            COMMAND ${PYTHON_EXECUTABLE} ${LIBSTORED_SOURCE_DIR}/generator/generate.py -p ${target}- ${models} ${CMAKE_CURRENT_SOURCE_DIR}/libstored
-        )
-    endif()
+	if(NOT EXISTS libstored)
+		# Execute right away, such that the CMakeLists.txt exists.
+		execute_process(
+			COMMAND ${PYTHON_EXECUTABLE} ${LIBSTORED_SOURCE_DIR}/generator/generate.py -p ${target}- ${models} ${CMAKE_CURRENT_SOURCE_DIR}/libstored
+			COMMAND ${CMAKE_COMMAND} -E touch ${target}-libstored.timestamp
+		)
+	endif()
 
-    add_subdirectory(libstored)
+	add_subdirectory(libstored)
 
-    add_custom_command(
-        OUTPUT ${target}-libstored.timestamp
-        DEPENDS ${LIBSTORED_SOURCE_DIR}/include/libstored/store.h.tmpl
-        DEPENDS ${LIBSTORED_SOURCE_DIR}/src/store.cpp.tmpl
-        DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.rtf.tmpl
-        DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.csv.tmpl
-        DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store.vhd.tmpl
-        DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store_pkg.vhd.tmpl
-        DEPENDS ${LIBSTORED_SOURCE_DIR}/CMakeLists.txt.tmpl
+	add_custom_command(
+		OUTPUT ${target}-libstored.timestamp
+		DEPENDS ${LIBSTORED_SOURCE_DIR}/include/libstored/store.h.tmpl
+		DEPENDS ${LIBSTORED_SOURCE_DIR}/src/store.cpp.tmpl
+		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.rtf.tmpl
+		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.csv.tmpl
+		DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store.vhd.tmpl
+		DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store_pkg.vhd.tmpl
+		DEPENDS ${LIBSTORED_SOURCE_DIR}/CMakeLists.txt.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/generate.py
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/dsl/grammar.tx
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/dsl/types.py
-        DEPENDS ${models}
-        COMMAND ${PYTHON_EXECUTABLE} ${LIBSTORED_SOURCE_DIR}/generator/generate.py -p ${target}- ${models} ${CMAKE_CURRENT_SOURCE_DIR}/libstored
-        COMMAND ${CMAKE_COMMAND} -E touch ${target}-libstored.timestamp
-        COMMENT "Generate store from ${ARGN}"
-        VERBATIM
-    )
-    add_custom_target(${target}-libstored-generate
-        DEPENDS ${target}-libstored.timestamp
-    )
-    add_dependencies(${target}-libstored ${target}-libstored-generate)
+		DEPENDS ${models}
+		COMMAND ${PYTHON_EXECUTABLE} ${LIBSTORED_SOURCE_DIR}/generator/generate.py -p ${target}- ${models} ${CMAKE_CURRENT_SOURCE_DIR}/libstored
+		COMMAND ${CMAKE_COMMAND} -E touch ${target}-libstored.timestamp
+		COMMENT "Generate store from ${ARGN}"
+		VERBATIM
+	)
+	add_custom_target(${target}-libstored-generate
+		DEPENDS ${target}-libstored.timestamp
+	)
+	add_dependencies(${target}-libstored ${target}-libstored-generate)
 
 	get_target_property(target_type ${target} TYPE)
 	if(target_type MATCHES "^(STATIC_LIBRARY|MODULE_LIBRARY|SHARED_LIBRARY|EXECUTABLE)$")
-	    target_link_libraries(${target} PUBLIC ${target}-libstored)
+		target_link_libraries(${target} PUBLIC ${target}-libstored)
 	else()
 		add_dependencies(${target} ${target}-libstored)
 	endif()
 
-    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
-		if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	get_target_property(target_cxx_standard ${target} CXX_STANDARD)
+	if(NOT target_cxx_standard STREQUAL "target_cxx_standard-NOTFOUND")
+		set_target_properties(${target}-libstored PROPERTIES CXX_STANDARD ${target_cxx_standard})
+	endif()
+
+	if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
+		if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT APPLE)
 			if(target_type STREQUAL "EXECUTABLE")
 				target_link_options(${target} PUBLIC -Wl,--gc-sections)
 			endif()
 		endif()
-    endif()
+	endif()
 
-    if(LIBSTORED_DOCUMENTATION)
-        add_dependencies(doc ${target}-libstored-generate)
-    endif()
+	if(LIBSTORED_DOCUMENTATION)
+		add_dependencies(doc ${target}-libstored-generate)
+	endif()
 
 	libstored_copy_dlls(${target})
 endfunction()
@@ -150,14 +168,21 @@ endif()
 
 option(LIBSTORED_EXAMPLES "Build examples" ON)
 if(LIBSTORED_EXAMPLES)
-    add_subdirectory(examples)
+	add_subdirectory(examples)
 endif()
 
 option(LIBSTORED_PIP_INSTALL_USER "Run pip install --user when installing wheel files" OFF)
 add_subdirectory(client)
 
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0")
-	option(LIBSTORED_TESTS "Build the tests" ON)
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0")
+	if(CMAKE_CROSSCOMPILING)
+		set(LIBSTORED_TESTS_DEFAULT OFF)
+	else()
+		set(LIBSTORED_TESTS_DEFAULT ON)
+	endif()
+
+	option(LIBSTORED_TESTS "Build the tests" ${LIBSTORED_TESTS_DEFAULT})
+
 	if(LIBSTORED_TESTS)
 		enable_testing()
 
@@ -166,7 +191,6 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0")
 			list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
 		endif()
 
-		include(GoogleTest)
 		add_subdirectory(tests)
 	endif()
 endif()
@@ -184,6 +208,7 @@ if(CPPCHECK_CMD)
 			-I examples/7_protocol/libstored/include
 			-I examples/8_sync/libstored/include
 			-I examples/9_fpga/libstored/include
+			-I examples/components/libstored/include
 			-I examples/concurrency/libstored/include
 			-I examples/terminal/libstored/include
 			-I examples/zmqserver/libstored/include
@@ -191,7 +216,7 @@ if(CPPCHECK_CMD)
 		)
 	endif()
 
-	add_custom_target(cppcheck
+	add_custom_target(libstored-cppcheck
 		COMMAND
 			${CPPCHECK_CMD}
 			--enable=warning,style,information
@@ -211,7 +236,7 @@ if(CPPCHECK_CMD)
 
 	option(LIBSTORED_CPPCHECK "Run cppcheck by default" ON)
 	if(LIBSTORED_CPPCHECK)
-		add_custom_target(cppcheck-all ALL DEPENDS cppcheck)
+		add_custom_target(libstored-cppcheck-all ALL DEPENDS libstored-cppcheck)
 	endif()
 endif()
 

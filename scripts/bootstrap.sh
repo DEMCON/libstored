@@ -7,6 +7,8 @@ function gotErr {
 
 trap gotErr ERR
 
+pushd "$( cd "$(dirname "$0")"/..; pwd -P )" > /dev/null
+
 case `uname -s` in
 	Linux*)
 		sudo apt update
@@ -49,3 +51,4 @@ case `uname -s` in
 		exit 1;;
 esac
 
+popd > /dev/null

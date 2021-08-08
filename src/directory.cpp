@@ -20,121 +20,15 @@
 
 #include <string>
 
-/*!
- * \brief Decodes an Unsigned VLQ number.
- * \param p a pointer to the buffer to decode, which is incremented till after the decoded value
- * \return the decoded value
- */
-template <typename T>
-static T decodeInt(uint8_t const*& p) {
-	T v = 0;
-	while(*p & 0x80u) {
-		v = (v | (T)(*p & 0x7fu)) << 7u;
-		p++;
-	}
-	return v | (T)*p++;
-}
-
-/*!
- * \brief Skips an Unsigned VLQ number, which encodes a buffer offset.
- * \param p a pointer to the offset to be skipped, which is increment till after the offset
- */
-static void skipOffset(uint8_t const*& p) {
-	while(*p++ & 0x80u);
-}
+using stored::impl::decodeInt;
 
 namespace stored {
-namespace impl {
-
-/*!
- * \brief Finds an object in a directory.
- *
- * Don't call this function, use stored::find() instead.
- *
- * \param buffer the buffer with variable's data
- * \param directory the binary directory description
- * \param name the name to find, can be abbreviated as long as it is unambiguous
- * \param len the maximum length of \p name to parse
- * \return a container-independent variant, which is not valid when not found
- * \see #stored::find()
- * \private
- */
-Variant<> find(void* buffer, uint8_t const* directory, char const* name, size_t len) {
-	if(unlikely(!directory || !name)) {
-notfound:
-		return Variant<>();
-	}
-
-	uint8_t const* p = directory;
-	while(true) {
-		bool nameEnd = !*name || len == 0;
-		if(*p == 0) {
-			// end
-			goto notfound;
-		} else if(*p >= 0x80u) {
-			// var
-			Type::type type = (Type::type)(*p++ ^ 0x80u);
-			size_t datalen = !Type::isFixed(type) ? decodeInt<size_t>(p) : Type::size(type);
-			size_t offset = decodeInt<size_t>(p);
-			if(Type::isFunction(type))
-				return Variant<>(type, (unsigned int)offset, datalen);
-			else
-				return Variant<>(type, static_cast<char*>(buffer) + offset, datalen);
-		} else if(*p <= 0x1f) {
-			// skip
-			if(nameEnd)
-				goto notfound;
-
-			uint8_t skip = 0;
-			for(skip = *p++; skip > 0 && len > 0 && *name; skip--, name++, len--) {
-				switch(*name) {
-				case '/':
-					goto notfound;
-				default:;
-				}
-			}
-
-			if(skip > 0)
-				// Premature end of name
-				goto notfound;
-		} else if(*p == '/') {
-			// Skip till next /
-			if(nameEnd)
-				goto notfound;
-
-			while(len-- > 0 && *name++ != '/')
-				if(!*name)
-					goto notfound;
-			p++;
-		} else {
-			// match char
-			int c = (nameEnd ? 0 : (int)*name) - (int)*p++;
-			if(c < 0) {
-				// take jmp_l
-				p += decodeInt<uintptr_t>(p) - 1;
-			} else {
-				skipOffset(p);
-				if(c > 0) {
-					// take jmp_g
-					p += decodeInt<uintptr_t>(p) - 1;
-				} else {
-					// equal
-					skipOffset(p);
-					name++;
-					len--;
-				}
-			}
-		}
-	}
-}
-
-} // namespace impl
 
 /*!
  * \brief Implementation for stored::list().
  * \private
  */
-static void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg, std::string& name)
+static void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg, String::type& name)
 {
 	if(unlikely(!buffer || !directory))
 		return;
@@ -151,8 +45,9 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
 			Type::type type = (Type::type)(*p++ ^ 0x80u);
 			size_t len = !Type::isFixed(type) ? decodeInt<size_t>(p) : Type::size(type);
 			size_t offset = decodeInt<size_t>(p);
-			char* b = Type::isFunction(type) ? nullptr : static_cast<char*>(buffer);
-			f(container, name.c_str(), type, b + offset, len, arg);
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast,performance-no-int-to-ptr)
+			char* b = Type::isFunction(type) ? reinterpret_cast<char*>(offset) : static_cast<char*>(buffer) + offset;
+			f(container, name.c_str(), type, b, len, arg);
 			break;
 		} else if(*p <= 0x1f) {
 			// skip
@@ -194,11 +89,17 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
  * \param f the callback function
  * \param arg an arbitrary argument to be passed to \p f
  * \param prefix when not \c nullptr, a string that is prepended for the name that is supplied to \p f
+ *
+ * This function is not reentrant. Do not call it recursively.
  */
 void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg, char const* prefix) {
-	std::string name;
+	static String::type name;
+	if(Config::AvoidDynamicMemory)
+		name.reserve((prefix ? strlen(prefix) * 2U : 0U) + 128U); // Some arbitrary buffer, which should usually be sufficient.
+
 	if(prefix)
 		name = prefix;
+
 	list(container, buffer, directory, f, arg, name);
 }
 

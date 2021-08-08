@@ -24,7 +24,7 @@ Item {
     required property var ref
     property var obj: null
     property string name: obj ? obj.name : ""
-    property real pollInterval: 1
+    property real pollInterval: 2
 
     onRefChanged: {
         if(typeof(ref) != "string") {
@@ -45,6 +45,9 @@ Item {
                     obj.poll(pollInterval)
                 else
                     obj.asyncRead()
+            } else if(pollInterval > 0 && obj.pollInterval > pollInterval) {
+                // Prefer the faster setting, if there are multiple.
+                obj.poll(pollInterval)
             }
         } else {
             value = null

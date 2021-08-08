@@ -9,7 +9,7 @@ lognplot
 natsort
 crcmod
 heatshrink2
-Sphinx
+Sphinx<4.1.0
 sphinx-rtd-theme
 sphinxcontrib-plantuml
 breathe

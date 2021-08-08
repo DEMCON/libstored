@@ -395,7 +395,7 @@ begin
 			when STATE_RESET =>
 				v.state := STATE_IDLE;
 			when STATE_IDLE =>
-				if sync_out_valid_prev = '1' then
+				if sync_out_valid_prev = '1' and sync_out_accept_i = '1' then
 					if not VAR_WRITE or v.changed = '0' then
 						if sync_out_last_prev = '0' then
 							v.state := STATE_PASSTHROUGH;
@@ -419,7 +419,7 @@ begin
 					end if;
 				end if;
 			when STATE_WAIT =>
-				if sync_out_valid_prev = '1' and sync_out_last_prev = '1' then
+				if sync_out_valid_prev = '1' and sync_out_last_prev = '1' and sync_out_accept_i = '1' then
 					v.state := STATE_KEY;
 					v.cnt := KEY_BYTES;
 				end if;
@@ -438,7 +438,7 @@ begin
 					v.state := STATE_IDLE;
 				end if;
 			when STATE_PASSTHROUGH =>
-				if sync_out_valid_prev = '1' and sync_out_last_prev = '1' then
+				if sync_out_valid_prev = '1' and sync_out_last_prev = '1' and sync_out_accept_i = '1' then
 					v.state := STATE_IDLE;
 				end if;
 			end case;

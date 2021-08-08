@@ -33,14 +33,14 @@ namespace stored {
  */
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
 static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len}}] = {
-{{store.buffer.init|carray}}
+	{{store.buffer.init|carray|tab_indent(1)}}
 };
 
 {% endif %}
 /*!
  * \brief Constructor.
  */
-{{store.name}}Data::{{store.name}}Data()
+{{store.name}}Data::{{store.name}}Data() noexcept
     : buffer()
 {
 {% if store.buffer.init|len > 0 %}
@@ -53,6 +53,34 @@ static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len
 {% endif %}
 }
 
+// For C++14, put the short directory in the header file to be able to access
+// it for constexpr find().  However, for older C++ versions, that is not
+// possible. In that case, put it here to save some compilation time.
+
+/*!
+ * \brief Directory listing with short (but unambiguous) names in binary directory format.
+ * \details This is typically used for searching the directory.
+ * \see include/libstored/directory.h for the format
+ */
+#if STORED_cplusplus >= 201402L
+#  if STORED_cplusplus < 201703L
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,readability-redundant-declaration)
+constexpr uint8_t {{store.name}}Data::directory[];
+#  endif
+#else
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
+static uint8_t const {{store.name}}Data_directory[{{store.directory.data|len}}] = {
+	{{store.directory.data|carray|tab_indent(1)}}
+};
+
+/*!
+ * \brief Returns the short directory.
+ */
+uint8_t const* {{store.name}}Data::shortDirectory() noexcept {
+    return (uint8_t const*){{store.name}}Data_directory;
+}
+#endif
+
 /*!
  * \brief Directory listing with full names in binary directory format.
  * \details This is typically used for listing the directory.
@@ -60,32 +88,15 @@ static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len
  */
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
 static uint8_t const {{store.name}}Data_directory_full[{{store.directory.longdata|len}}] = {
-{{store.directory.longdata|carray}}
-};
-
-/*!
- * \brief Directory listing with short (but unambiguous) names in binary directory format.
- * \details This is typically used for searching the directory.
- * \see include/libstored/directory.h for the format
- */
-// NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
-static uint8_t const {{store.name}}Data_directory[{{store.directory.data|len}}] = {
-{{store.directory.data|carray}}
+	{{store.directory.longdata|carray|tab_indent(1)}}
 };
 
 /*!
  * \brief Retuns the long directory.
  * \details When not available, the short directory is returned.
  */
-uint8_t const* {{store.name}}Data::longDirectory() {
-    return Config::FullNames ? (uint8_t const*){{store.name}}Data_directory_full : (uint8_t const*){{store.name}}Data_directory;
-}
-
-/*!
- * \brief Returns the short directory.
- */
-uint8_t const* {{store.name}}Data::shortDirectory() {
-    return (uint8_t const*){{store.name}}Data_directory;
+uint8_t const* {{store.name}}Data::longDirectory() noexcept {
+    return Config::FullNames ? (uint8_t const*){{store.name}}Data_directory_full : shortDirectory();
 }
 
 } // namespace stored

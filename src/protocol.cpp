@@ -267,9 +267,11 @@ void TerminalLayer::decode(void* buffer, size_t len) {
 		nonDebugDecode(static_cast<char*>(buffer) + nonDebugOffset, len - nonDebugOffset);
 }
 
-void TerminalLayer::nonDebugEncode(void* buffer, size_t len) {
+void TerminalLayer::nonDebugEncode(void const* buffer, size_t len) {
 	stored_assert(!m_encodeState);
-	encode(buffer, len, true);
+	stored_assert(buffer || len == 0);
+	if(len)
+		base::encode(buffer, len, true);
 }
 
 /*!
@@ -310,9 +312,9 @@ void TerminalLayer::encodeEnd() {
 	if(!m_encodeState)
 		return;
 
+	m_encodeState = false;
 	char end[2] = {Esc, EscEnd};
 	base::encode((void*)end, sizeof(end), true);
-	m_encodeState = false;
 }
 
 size_t TerminalLayer::mtu() const {
@@ -464,10 +466,10 @@ ArqLayer::ArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* dow
  * \brief Dtor.
  */
 ArqLayer::~ArqLayer() {
-	for(std::deque<std::string*>::iterator it = m_encodeQueue.begin(); it != m_encodeQueue.end(); ++it)
-		delete *it; // NOLINT(cppcoreguidelines-owning-memory)
-	for(std::deque<std::string*>::iterator it = m_spare.begin(); it != m_spare.end(); ++it)
-		delete *it; // NOLINT(cppcoreguidelines-owning-memory)
+	for(Deque<String::type*>::type::iterator it = m_encodeQueue.begin(); it != m_encodeQueue.end(); ++it)
+		cleanup(*it);
+	for(Deque<String::type*>::type::iterator it = m_spare.begin(); it != m_spare.end(); ++it)
+		cleanup(*it);
 }
 
 void ArqLayer::reset() {
@@ -639,6 +641,7 @@ void ArqLayer::event(ArqLayer::Event e) {
  */
 uint8_t ArqLayer::nextSeq(uint8_t seq) {
 	seq = (uint8_t)((seq + 1u) & SeqMask);
+	// cppcheck-suppress knownConditionTrueFalse
 	return seq ? seq : 1u;
 }
 
@@ -727,7 +730,7 @@ void ArqLayer::popEncodeQueue() {
  * \brief Push the given buffer into the encode queue.
  */
 void ArqLayer::pushEncodeQueue(void const* buffer, size_t len) {
-	std::string& s = pushEncodeQueueRaw();
+	String::type& s = pushEncodeQueueRaw();
 	s.push_back((char)m_sendSeq);
 	s.append(static_cast<char const*>(buffer), len);
 	m_sendSeq = nextSeq(m_sendSeq);
@@ -740,12 +743,11 @@ void ArqLayer::pushEncodeQueue(void const* buffer, size_t len) {
  * The returned buffer can be used to put the message in. This should include
  * the sequence number as the first byte.
  */
-std::string& ArqLayer::pushEncodeQueueRaw() {
-	std::string* s = nullptr;
+String::type& ArqLayer::pushEncodeQueueRaw() {
+	String::type* s = nullptr;
 
 	if(m_spare.empty()) {
-		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-		s = new std::string;
+		s = new(allocate<String::type>()) String::type; // NOLINT(cppcoreguidelines-owning-memory)
 
 		m_encodeQueue.
 #if STORED_cplusplus >= 201103L
@@ -773,15 +775,15 @@ std::string& ArqLayer::pushEncodeQueueRaw() {
  * \brief Free all unused memory.
  */
 void ArqLayer::shrink_to_fit() {
-	for(std::deque<std::string*>::iterator it = m_encodeQueue.begin(); it != m_encodeQueue.end(); ++it)
+	for(Deque<String::type*>::type::iterator it = m_encodeQueue.begin(); it != m_encodeQueue.end(); ++it)
 #if STORED_cplusplus >= 201103L
 		(*it)->shrink_to_fit();
 #else
 		(*it)->reserve((*it)->size());
 #endif
 
-	for(std::deque<std::string*>::iterator it = m_spare.begin(); it != m_spare.end(); ++it)
-		delete *it; // NOLINT(cppcoreguidelines-owning-memory)
+	for(Deque<String::type*>::type::iterator it = m_spare.begin(); it != m_spare.end(); ++it)
+		cleanup(*it);
 
 	m_spare.clear();
 #if STORED_cplusplus >= 201103L
@@ -854,8 +856,9 @@ void DebugArqLayer::decode(void* buffer, size_t len) {
 			m_encodeBuffer.clear();
 			m_encodeBufferSize = 0;
 			setPurgeableResponse(false);
-		} else
-			// fall-through
+			break;
+		}
+		STORED_FALLTHROUGH
 	case DecodeStateRetransmit:
 		if(seq == m_decodeSeqStart) {
 			// This seems to be a retransmit of the current command.
@@ -883,7 +886,7 @@ void DebugArqLayer::decode(void* buffer, size_t len) {
 	case DecodeStateRetransmit:
 		if(nextSeq(seq) == m_decodeSeq) {
 			// Got the last part of the command. Retransmit the response buffer.
-			for(std::vector<std::string>::const_iterator it = m_encodeBuffer.begin(); it != m_encodeBuffer.end(); ++it)
+			for(Vector<String::type>::type::const_iterator it = m_encodeBuffer.begin(); it != m_encodeBuffer.end(); ++it)
 				base::encode(it->data(), it->size(), true);
 			m_decodeState = DecodeStateDecoded;
 		}
@@ -891,7 +894,7 @@ void DebugArqLayer::decode(void* buffer, size_t len) {
 	case DecodeStateIdle:
 		m_decodeSeqStart = m_decodeSeq;
 		m_decodeState = DecodeStateDecoding;
-		// fall-through
+		STORED_FALLTHROUGH
 	case DecodeStateDecoding:
 		if(likely(seq == m_decodeSeq)) {
 			// Properly in sequence.
@@ -947,7 +950,7 @@ void DebugArqLayer::encode(void const* buffer, size_t len, bool last) {
 	case EncodeStateUnbufferedIdle:
 		base::encode(seq, seqlen, false);
 		m_encodeState = EncodeStateUnbufferedEncoding;
-		// fall-through
+		STORED_FALLTHROUGH
 	case EncodeStateUnbufferedEncoding:
 		base::encode(buffer, len, last);
 		if(last)
@@ -960,11 +963,11 @@ void DebugArqLayer::encode(void const* buffer, size_t len, bool last) {
 		m_encodeBuffer.emplace_back(reinterpret_cast<char*>(seq), seqlen);
 #else
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-		m_encodeBuffer.push_back(std::string(reinterpret_cast<char*>(seq), seqlen));
+		m_encodeBuffer.push_back(String::type(reinterpret_cast<char*>(seq), seqlen));
 #endif
 		m_encodeState = EncodeStateEncoding;
 		m_encodeBufferSize += seqlen;
-		// fall-through
+		STORED_FALLTHROUGH
 	case EncodeStateEncoding:
 		stored_assert(!m_encodeBuffer.empty());
 		m_encodeBufferSize += len;
@@ -989,7 +992,7 @@ void DebugArqLayer::setPurgeableResponse(bool purgeable) {
 
 		switch(m_encodeState) {
 		case EncodeStateEncoding: {
-			std::string const& s = m_encodeBuffer.back();
+			String::type const& s = m_encodeBuffer.back();
 			base::encode(s.data(), s.size(), false);
 			m_encodeState = EncodeStateUnbufferedEncoding;
 			break; }
@@ -1033,6 +1036,7 @@ size_t DebugArqLayer::mtu() const {
  */
 uint32_t DebugArqLayer::nextSeq(uint32_t seq) {
 	seq = (uint32_t)((seq + 1u) % 0x8000000);
+	// cppcheck-suppress knownConditionTrueFalse
 	return seq ? seq : 1u;
 }
 
@@ -1329,17 +1333,18 @@ PrintLayer::PrintLayer(FILE* f, char const* name, ProtocolLayer* up, ProtocolLay
 	: base(up, down)
 	, m_f(f)
 	, m_name(name)
+	, m_enable(true)
 {
 }
 
 void PrintLayer::decode(void* buffer, size_t len) {
-	if(m_f) {
-		std::string prefix;
+	if(m_f && enabled()) {
+		String::type prefix;
 		if(m_name)
 			prefix += m_name;
 		prefix += " < ";
 
-		std::string s = string_literal(buffer, len, prefix.c_str());
+		String::type s = string_literal(buffer, len, prefix.c_str());
 		s += "\n";
 		fputs(s.c_str(), m_f);
 	}
@@ -1348,8 +1353,8 @@ void PrintLayer::decode(void* buffer, size_t len) {
 }
 
 void PrintLayer::encode(void const* buffer, size_t len, bool last) {
-	if(m_f) {
-		std::string prefix;
+	if(m_f && enabled()) {
+		String::type prefix;
 		if(m_name)
 			prefix += m_name;
 
@@ -1358,7 +1363,7 @@ void PrintLayer::encode(void const* buffer, size_t len, bool last) {
 		else
 			prefix += " * ";
 
-		std::string s = string_literal(buffer, len, prefix.c_str());
+		String::type s = string_literal(buffer, len, prefix.c_str());
 		s += "\n";
 		fputs(s.c_str(), m_f);
 	}
@@ -1372,6 +1377,36 @@ void PrintLayer::encode(void const* buffer, size_t len, bool last) {
  */
 void PrintLayer::setFile(FILE* f) {
 	m_f = f;
+}
+
+/*!
+ * \brief Return the \c FILE that is written to.
+ */
+FILE* PrintLayer::file() const {
+	return m_f;
+}
+
+/*!
+ * \brief Enable printing all messages.
+ */
+void PrintLayer::enable(bool enable) {
+	m_enable = enable;
+}
+
+/*!
+ * \brief Disable printing all messages.
+ *
+ * This is equivalent to calling \c enable(false).
+ */
+void PrintLayer::disable() {
+	enable(false);
+}
+
+/*!
+ * \brief Returns if printing is currently enabled.
+ */
+bool PrintLayer::enabled() const {
+	return m_enable;
 }
 
 
@@ -1476,7 +1511,7 @@ PolledLayer::~PolledLayer() {
 	// in your subclass dtor.
 	//close();
 
-	delete m_poller;
+	cleanup(m_poller);
 }
 
 /*!
@@ -1486,7 +1521,7 @@ PolledLayer::~PolledLayer() {
  */
 Poller& PolledLayer::poller() {
 	if(!m_poller)
-		m_poller = new Poller(); // NOLINT(cppcoreguidelines-owning-memory)
+		m_poller = new(allocate<Poller>()) Poller(); // NOLINT(cppcoreguidelines-owning-memory)
 
 	return *m_poller;
 }
@@ -1664,7 +1699,7 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 		if((w = r = open(name_r, O_RDWR | O_APPEND | O_CREAT | O_NONBLOCK, 0666)) == -1)
 			goto error;
 
-	// NOLINTNEXTLINE(hicpp-signed-bitwise)
+	// NOLINTNEXTLINE(hicpp-signed-bitwise,bugprone-branch-clone)
 	} else if((r = open(name_r, O_RDONLY | O_CREAT | O_NONBLOCK, 0666)) == -1) {
 		goto error;
 
@@ -2660,7 +2695,7 @@ void NamedPipeLayer::encode(void const* buffer, size_t len, bool last) {
  *
  * This name can be used to open it elsewhere as a normal file.
  */
-std::string const& NamedPipeLayer::name() const {
+String::type const& NamedPipeLayer::name() const {
 	return m_name;
 }
 
@@ -2746,11 +2781,11 @@ void DoublePipeLayer::reset() {
 //
 
 XsimLayer::XsimLayer(char const* pipe_prefix, ProtocolLayer* up, ProtocolLayer* down)
-	: base(	(std::string(pipe_prefix) += "_from_xsim").c_str(),
-			(std::string(pipe_prefix) += "_to_xsim").c_str(),
+	: base(	(String::type(pipe_prefix) += "_from_xsim").c_str(),
+			(String::type(pipe_prefix) += "_to_xsim").c_str(),
 			up, down)
 	, m_callback(*this)
-	, m_req((std::string(pipe_prefix) += "_req_xsim").c_str(), PIPE_ACCESS_INBOUND)
+	, m_req((String::type(pipe_prefix) += "_req_xsim").c_str(), PIPE_ACCESS_INBOUND)
 	, m_inFlight()
 {
 	m_req.wrap(m_callback);
@@ -2817,14 +2852,14 @@ int XsimLayer::recv(long timeout_us) {
 		case EIO:
 			// Try to recover all channels.
 			reopen();
-			// fall-through
+			STORED_FALLTHROUGH
 		default:
 			return setLastError(resReq);
 		}
 	case EIO:
 		// Try to recover all channels.
 		reopen();
-		// fall-through
+		STORED_FALLTHROUGH
 	default:
 		return resBase;
 	}
@@ -3015,7 +3050,7 @@ StdioLayer::StdioLayer(ProtocolLayer* up, ProtocolLayer* down)
 //
 
 #ifdef STORED_OS_WINDOWS
-SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, ProtocolLayer* up, ProtocolLayer* down)
+SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, bool xonxoff, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 {
 	HANDLE h = INVALID_HANDLE_VALUE; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
@@ -3052,19 +3087,57 @@ SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, Prot
 	dcb.fOutxDsrFlow = FALSE;
 	dcb.fDtrControl = DTR_CONTROL_DISABLE;
 	dcb.fNull = FALSE;
-	dcb.fRtsControl = (DWORD)(rtscts ? RTS_CONTROL_ENABLE : RTS_CONTROL_DISABLE);
+	dcb.fRtsControl = (DWORD)(rtscts ? RTS_CONTROL_HANDSHAKE : RTS_CONTROL_DISABLE);
 	dcb.fAbortOnError = FALSE;
-	dcb.fOutX = FALSE;
-	dcb.fInX = FALSE;
+	dcb.fOutX = xonxoff;
+	dcb.fInX = xonxoff;
+	dcb.XonChar = '\x11';
+	dcb.XoffChar = '\x13';
 
 	if(!SetCommState(h, &dcb)) {
 		setLastError(EIO);
 		return;
 	}
+
+	resetAutoBaud();
+	// Ignore auto baud errors, as it is an optional feature.
+	setLastError(0);
+}
+
+int SerialLayer::resetAutoBaud()
+{
+	if(!isOpen())
+		return setLastError(EAGAIN);
+
+	setLastError(0);
+
+	HANDLE h = fd_r();
+	int res = 0;
+	if(!SetCommBreak(h))
+		res = EIO;
+
+	// Kind of arbitrary sleep. And Windows does not really guarantee how much
+	// we will sleep actually. Could be improved.
+	Sleep(125);
+
+	if(!ClearCommBreak(h))
+		res = EIO;
+
+	// Some sleep is required here. It seems that when sending data immediately
+	// after ClearCommBreak(), it gets lost somehow (at least in the setup I
+	// tested).
+	Sleep(125);
+
+	encode("\x11", 1);
+
+	if(res)
+		setLastError(res);
+
+	return lastError();
 }
 
 #elif defined(STORED_OS_POSIX)
-SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, ProtocolLayer* up, ProtocolLayer* down)
+SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, bool xonxoff, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 {
 	int fd = -1;
@@ -3087,12 +3160,17 @@ SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, Prot
 	}
 
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
-	config.c_iflag &= (tcflag_t)~(BRKINT | ICRNL | INLCR | PARMRK | INPCK | ISTRIP | IXON);
+	config.c_iflag &= (tcflag_t)~(BRKINT | ICRNL | INLCR | PARMRK | INPCK | ISTRIP | IXON | IXOFF);
+	if(xonxoff) {
+		// NOLINTNEXTLINE(hicpp-signed-bitwise)
+		config.c_iflag |= (tcflag_t)(IXON | IXOFF);
+	}
 	config.c_oflag = 0;
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	config.c_lflag &= (tcflag_t)~(ECHO | ECHONL | ICANON | IEXTEN | ISIG);
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	config.c_cflag &= (tcflag_t)~(CSIZE | PARENB | CSTOPB);
+	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	config.c_cflag |= CS8;
 	if(rtscts) {
 #ifdef CNEW_RTSCTS
@@ -3116,6 +3194,28 @@ SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, Prot
 		setLastError(errno);
 		return;
 	}
+
+	resetAutoBaud();
+	setLastError(0);
+}
+
+int SerialLayer::resetAutoBaud()
+{
+	if(!isOpen())
+		return setLastError(EAGAIN);
+
+	setLastError(0);
+
+	int res = 0;
+	if(tcsendbreak(fd_r(), 0))
+		res = errno;
+
+	encode("\x11", 1);
+
+	if(res)
+		setLastError(res);
+
+	return lastError();
 }
 #endif // STORED_OS_POSIX
 

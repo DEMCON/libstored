@@ -33,7 +33,6 @@
 #include <new>
 #include <iterator>
 #include <array>
-#include <vector>
 #include <utility>
 #include <string>
 #include <functional>
@@ -168,7 +167,7 @@ namespace stored {
 		}
 
 	private:
-		std::vector<type> m_buffer;
+		typename Vector<type>::type m_buffer;
 	};
 
 	/*!
@@ -432,7 +431,8 @@ namespace stored {
 			: m_message(message), m_length(length)
 		{}
 
-		MessageView(std::string const& str) noexcept
+		template <typename Traits, typename Allocator>
+		MessageView(std::basic_string<char,Traits,Allocator> const& str) noexcept
 			: m_message(str.data()), m_length(str.size())
 		{}
 
@@ -801,7 +801,7 @@ namespace stored {
 
 	private:
 		Fifo_type m_fifo;
-		std::function<OverflowCallback> m_overflowCallback;
+		Callable<OverflowCallback>::type m_overflowCallback;
 	};
 
 	/*!

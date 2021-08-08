@@ -29,7 +29,12 @@
 
 #  include <cerrno>
 #  include <cstdlib>
-#  include <cinttypes>
+
+#  if STORED_cplusplus < 201103L
+#    include <inttypes.h>
+#  else
+#    include <cinttypes>
+#  endif
 
 namespace stored {
 
@@ -256,7 +261,7 @@ int ZmqLayer::recv(long timeout_us) {
 				// We already got something, so don't make this an error.
 				return setLastError(0);
 			}
-			// fall-through
+			STORED_FALLTHROUGH
 		default:
 			return res;
 		}

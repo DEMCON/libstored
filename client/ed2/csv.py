@@ -24,7 +24,7 @@ import os
 from PySide2.QtCore import QObject, Signal, Slot, Property
 
 def generateFilename(filename=None, base=None, addTimestamp=False, ext='.csv', now=None):
-    if filename == None and base == None:
+    if filename is None and base is None:
         raise ValueError('Specify filename and/or base')
 
     returnList = False
@@ -62,7 +62,7 @@ def generateFilename(filename=None, base=None, addTimestamp=False, ext='.csv', n
         for b in base:
             names.append((b, e))
 
-    if now == None:
+    if now is None:
         now = time.localtime()
 
     if addTimestamp:
@@ -86,6 +86,8 @@ class CsvExport(QObject):
         super().__init__(parent=parent)
         self.logger = logging.getLogger(__name__)
         self._fmtparams = fmtparams
+        if not isinstance(filename, str):
+            filename = None
         self._filename = filename
         self._objects = set()
         self._csv = None
@@ -95,18 +97,27 @@ class CsvExport(QObject):
         self._thread = None
         self._queue = None
         self._dropNext = False
-
-        self.logger.info('Writing samples to %s...', self._filename)
         self._lock = threading.RLock()
-        self.restart()
+        self._paused = False
+        self._postponedAutoRestart = False
+
+        if filename is None:
+            self.pause()
+        else:
+            self.logger.info('Writing samples to %s...', self._filename)
+            self.restart()
+
         if threaded:
             self._queue = queue.Queue()
             self._thread = threading.Thread(target=self._worker)
             self._thread.daemon = True
             self._thread.start()
 
+    def __del__(self):
+        self.close()
+
     def _clear(self):
-        if self._queue == None:
+        if self._queue is None:
             return
 
         try:
@@ -121,47 +132,121 @@ class CsvExport(QObject):
             return
 
         self._objects.add(o)
-        self.restart()
+        if self._paused:
+            self._postponedAutoRestart = True
+        else:
+            self.restart()
 
     def remove(self, o):
         if not o in self._objects:
             return
 
         self._objects.remove(o)
-        self.restart()
+        if self._paused:
+            self._postponedAutoRestart = True
+        else:
+            self.restart()
 
-    def restart(self):
+    def restart(self, filename=None):
+        self._postponedAutoRestart = False
         self._lock.acquire()
-        objList = sorted(self._objects, key=lambda x: x.name)
-        if self._file != None:
-            self._file.close()
-        self._file = open(self._filename, 'w', newline='')
-        self._csv = csv.writer(self._file, **self._fmtparams)
-        self._objValues = [lambda x=x: x._value for x in objList]
-        self._csv.writerow(['t'] + [x.name for x in objList])
-        self._clear()
-        self._lock.release()
+
+        try:
+            if not self._file is None:
+                self._file.close()
+                self._file = None
+
+            if not filename is None:
+                self._filename = filename
+                self.logger.info('Writing samples to %s...', self._filename)
+                self._paused = False
+            elif self._filename is None:
+                self.pause()
+            elif self._paused:
+                self.unpause()
+
+            objList = sorted(self._objects, key=lambda x: x.name)
+            self._objValues = [lambda x=x: x._value for x in objList]
+            self._clear()
+
+            if not self._filename is None:
+                f = open(self._filename, 'w', newline='')
+                self._csv = csv.writer(f, **self._fmtparams)
+                self._csv.writerow(['t'] + [x.name for x in objList])
+                self._file = f
+
+        finally:
+            self._lock.release()
+
+    def pause(self, closeFile=False):
+        if self._paused:
+            return
+
+        self.logger.info('Paused')
+        self._paused = True
+        if closeFile:
+            self._postponedAutoRestart = True
+            if not self._file is None:
+                self._file.close()
+                self._file = None
+
+    def unpause(self):
+        if not self._paused or self._file is None:
+            return
+
+        self.logger.info('Continue')
+        self._paused = False
+        if self._postponedAutoRestart:
+            self.restart()
+
+    @property
+    def paused(self):
+        return self._paused
+
+    @paused.setter
+    def paused(self, value):
+        if value:
+            self.pause()
+        else:
+            self.unpause()
 
     def write(self, t=None):
+        if self._paused:
+            return
+
         now = time.time()
-        if t == None:
+        if t is None:
             t = now
 
         data = [t]
         data.extend(map(lambda x: x(), self._objValues))
 
-        if self._queue == None:
+        if self._queue is None:
             self._write(data)
         else:
             self._queue.put(data)
 
+    def close(self):
+        if not self._queue is None:
+            self._queue.put(None)
+            self._thread.join()
+            if not self._file is None:
+                self._file.flush()
+
+            self._queue = None
+            self._thread = None
+
+        if not self._file is None:
+            self._file.close()
+            self._file = None
+
     def _write(self, data):
-        if self._file == None:
+        if self._file is None:
             return
 
         self._csv.writerow(data)
 
-        if self._autoFlushInterval != None:
+        if not self._autoFlushInterval is None:
             now = time.time()
             if self._autoFlushed + self._autoFlushInterval <= now:
                 self._file.flush()
@@ -170,10 +255,14 @@ class CsvExport(QObject):
     def _worker(self):
         while True:
             d = self._queue.get()
+            if d is None:
+                return
             self._lock.acquire()
-            if self._dropNext:
-                self._dropNext = False
-            else:
-                self._write(d)
-            self._lock.release()
+            try:
+                if self._dropNext:
+                    self._dropNext = False
+                else:
+                    self._write(d)
+            finally:
+                self._lock.release()
 

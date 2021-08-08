@@ -73,8 +73,9 @@ package libstored_tb_pkg is
 
 	procedure test_expect_true(variable test : inout test_t; constant x : in boolean; constant ref : string := "");
 	procedure test_expect_false(variable test : inout test_t; constant x : in boolean; constant ref : string := "");
+	procedure test_expect_eq(variable test : inout test_t; constant x : in integer; constant expect : in integer; constant ref : string := "");
 	procedure test_expect_eq(variable test : inout test_t; constant x : in unsigned; constant expect : in natural; constant ref : string := "");
-	procedure test_expect_eq(variable test : inout test_t; constant x: in signed; constant expect : in natural; constant ref : string := "");
+	procedure test_expect_eq(variable test : inout test_t; constant x: in signed; constant expect : in integer; constant ref : string := "");
 	procedure test_expect_eq(variable test : inout test_t; constant x, expect : in std_logic; constant ref : string := "");
 	procedure test_expect_eq(variable test : inout test_t; constant x, expect : in std_logic_vector; constant ref : string := "");
 	procedure test_expect_eq(variable test : inout test_t;
@@ -149,7 +150,7 @@ package libstored_tb_pkg is
 	procedure axi_write(signal clk : in std_logic; signal m2s : inout axi_m2s_t; signal s2m : in axi_s2m_t;
 		constant addr : in natural; constant data : in std_logic_vector(31 downto 0);
 		constant timeout : in time := 1 ms);
-	procedure axi_read(signal clk : std_logic; signal m2s : inout axi_m2s_t; signal s2m : in axi_s2m_t;
+	procedure axi_read(signal clk : in std_logic; signal m2s : inout axi_m2s_t; signal s2m : in axi_s2m_t;
 		constant addr : in natural; variable data : out std_logic_vector(31 downto 0);
 		constant timeout : in time := 1 ms);
 
@@ -495,6 +496,11 @@ package body libstored_tb_pkg is
 		end if;
 	end procedure;
 
+	procedure test_expect_eq(variable test : inout test_t; constant x : in integer; constant expect : in integer; constant ref : string := "") is
+	begin
+		test_expect_eq(test, to_signed(x, 32), expect, ref);
+	end procedure;
+
 	procedure test_expect_eq(variable test : inout test_t; constant x : in unsigned; constant expect : in natural; constant ref : string := "") is
 	begin
 		test_expect_eq(test, std_logic_vector(x), std_logic_vector(to_unsigned(expect, x'length)), ref);
@@ -632,15 +638,15 @@ package body libstored_tb_pkg is
 			str_set(res, "");
 			for i in v'range loop
 				case v(i) is
-				when '0' => res := res & "0";
-				when '1' => res := res & "1";
-				when 'L' => res := res & "L";
-				when 'H' => res := res & "H";
-				when 'W' => res := res & "W";
-				when 'Z' => res := res & "Z";
-				when '-' => res := res & "-";
-				when 'U' => res := res & "U";
-				when 'X' => res := res & "X";
+				when '0' => res := res & to_string("0");
+				when '1' => res := res & to_string("1");
+				when 'L' => res := res & to_string("L");
+				when 'H' => res := res & to_string("H");
+				when 'W' => res := res & to_string("W");
+				when 'Z' => res := res & to_string("Z");
+				when '-' => res := res & to_string("-");
+				when 'U' => res := res & to_string("U");
+				when 'X' => res := res & to_string("X");
 				end case;
 			end loop;
 		else
@@ -648,36 +654,36 @@ package body libstored_tb_pkg is
 
 			for i in v'length / 4 - 1 downto 0 loop
 				case v(i * 4 + 3 downto i * 4) is
-				when "0000" => res := res & "0";
-				when "0001" => res := res & "1";
-				when "0010" => res := res & "2";
-				when "0011" => res := res & "3";
-				when "0100" => res := res & "4";
-				when "0101" => res := res & "5";
-				when "0110" => res := res & "6";
-				when "0111" => res := res & "7";
-				when "1000" => res := res & "8";
-				when "1001" => res := res & "9";
-				when "1010" => res := res & "a";
-				when "1011" => res := res & "b";
-				when "1100" => res := res & "c";
-				when "1101" => res := res & "d";
-				when "1110" => res := res & "e";
-				when "1111" => res := res & "f";
-				when "----" => res := res & "-";
-				when "LLLL" => res := res & "L";
-				when "HHHH" => res := res & "H";
-				when "WWWW" => res := res & "W";
-				when "ZZZZ" => res := res & "Z";
-				when "UUUU" => res := res & "U";
-				when "XXXX" => res := res & "X";
-				when others => res := res & "?";
+				when "0000" => res := res & to_string("0");
+				when "0001" => res := res & to_string("1");
+				when "0010" => res := res & to_string("2");
+				when "0011" => res := res & to_string("3");
+				when "0100" => res := res & to_string("4");
+				when "0101" => res := res & to_string("5");
+				when "0110" => res := res & to_string("6");
+				when "0111" => res := res & to_string("7");
+				when "1000" => res := res & to_string("8");
+				when "1001" => res := res & to_string("9");
+				when "1010" => res := res & to_string("a");
+				when "1011" => res := res & to_string("b");
+				when "1100" => res := res & to_string("c");
+				when "1101" => res := res & to_string("d");
+				when "1110" => res := res & to_string("e");
+				when "1111" => res := res & to_string("f");
+				when "----" => res := res & to_string("-");
+				when "LLLL" => res := res & to_string("L");
+				when "HHHH" => res := res & to_string("H");
+				when "WWWW" => res := res & to_string("W");
+				when "ZZZZ" => res := res & to_string("Z");
+				when "UUUU" => res := res & to_string("U");
+				when "XXXX" => res := res & to_string("X");
+				when others => res := res & to_string("?");
 				end case;
 			end loop;
 		end if;
 
 		if x'length > v'length then
-			res := res & "...";
+			res := res & to_string("...");
 		end if;
 
 		return to_string(res);
@@ -1591,5 +1597,125 @@ begin
 	idle <= idle_pipe and idle_tee;
 
 end behav;
+
+
+
+
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.math_real.all;
+use work.libstored_pkg;
+use work.libstored_tb_pkg;
+
+entity RandomDelayLayer is
+	generic (
+		SYSTEM_CLK_FREQ : integer := 100e6;
+		MIN_DELAY_s : real := 0.0;
+		MAX_DELAY_s : real := 1.0e-6;
+		SEED : positive := 42
+	);
+	port (
+		clk : in std_logic;
+		rstn : in std_logic;
+
+		encode_in : in libstored_pkg.msg_t;
+		encode_out : out libstored_pkg.msg_t;
+
+		decode_in : in libstored_pkg.msg_t;
+		decode_out : out libstored_pkg.msg_t
+	);
+end RandomDelayLayer;
+
+architecture behav of RandomDelayLayer is
+	constant MIN_DELAY : natural := integer(MIN_DELAY_s * real(SYSTEM_CLK_FREQ));
+	constant MAX_DELAY : natural := libstored_pkg.maximum(MIN_DELAY + 1, integer(MAX_DELAY_s * real(SYSTEM_CLK_FREQ)));
+
+	shared variable seed1, seed2 : integer := SEED;
+
+	impure function rand_duration return natural is
+		variable r : real;
+	begin
+		uniform(seed1, seed2, r);
+		return natural(round(r * real(MAX_DELAY - MIN_DELAY + 1) + real(MIN_DELAY) - 0.5));
+	end function;
+
+	procedure accept_delay(
+		signal valid_in : in std_logic; signal accept_in : std_logic;
+		signal valid_out : out std_logic; signal accept_out : out std_logic) is
+		variable delay : natural;
+	begin
+		accept_out <= '0';
+		valid_out <= '0';
+		wait until rising_edge(clk) and rstn = '1';
+
+		while true loop
+			accept_out <= '0';
+			valid_out <= '0';
+
+			delay := rand_duration;
+
+			while delay > 0 and not valid_in = '1' loop
+				delay := delay - 1;
+--				report "wait " & integer'image(delay) severity note;
+				wait until rising_edge(clk);
+			end loop;
+
+			if delay = 0 then
+				-- delay is 0, so pass through
+				accept_out <= accept_in;
+				valid_out <= valid_in;
+				while not (rising_edge(clk) and valid_in = '1') loop
+					wait until rising_edge(clk) or accept_in'event or valid_in'event;
+					accept_out <= accept_in;
+					valid_out <= valid_in;
+--					report "pass through " severity note;
+				end loop;
+			else
+				-- is valid, but wait a bit longer
+				for n in delay - 1 downto 0 loop
+--					report "delay " & integer'image(n) severity note;
+					wait until rising_edge(clk);
+				end loop;
+
+				wait for 0 ns;
+				valid_out <= '1';
+				accept_out <= accept_in;
+			end if;
+
+			while not (rising_edge(clk) and accept_in = '1') loop
+				accept_out <= accept_in;
+				wait until rising_edge(clk) or accept_in'event;
+			end loop;
+		end loop;
+	end procedure;
+
+	signal encode_out_accept_i, decode_out_accept_i : std_logic;
+	signal encode_out_valid_i, decode_out_valid_i : std_logic;
+begin
+
+	process
+	begin
+		accept_delay(encode_in.valid, decode_in.accept, encode_out_valid_i, decode_out_accept_i);
+	end process;
+
+	encode_out.valid <= encode_out_valid_i;
+	encode_out.data <= encode_in.data when encode_out_valid_i = '1' else (others => '-');
+	encode_out.last <= encode_in.last when encode_out_valid_i = '1' else '-';
+	decode_out.accept <= decode_out_accept_i;
+
+	process
+	begin
+		accept_delay(decode_in.valid, encode_in.accept, decode_out_valid_i, encode_out_accept_i);
+	end process;
+
+	decode_out.valid <= decode_out_valid_i;
+	decode_out.data <= decode_in.data when decode_out_valid_i = '1' else (others => '-');
+	decode_out.last <= decode_in.last when decode_out_valid_i = '1' else '-';
+	encode_out.accept <= encode_out_accept_i;
+
+end behav;
+
 --pragma translate_on
 

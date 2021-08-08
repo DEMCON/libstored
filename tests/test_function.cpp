@@ -77,5 +77,19 @@ TEST(Function, WriteOnly) {
 	EXPECT_EQ(store.f_write_only.set(buffer, strlen(buffer)), 4u);
 }
 
+TEST(Function, FreeFunction) {
+	FunctionTestStore store;
+
+	constexpr auto rw = FunctionTestStore::freeFunction<double>("/f read/write");
+	static_assert(rw.valid(), "");
+
+	rw.apply(store) = 123.4;
+	EXPECT_DOUBLE_EQ(store.f_read__write.get(), 123.4);
+
+	store.f_read__write = 56.7;
+	constexpr auto ro = FunctionTestStore::freeFunction<uint16_t>("/f read-only");
+	EXPECT_EQ(ro.apply(store).get(), 57);
+}
+
 } // namespace
 

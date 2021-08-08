@@ -77,12 +77,23 @@
 #    define GCC_VERSION (__GNUC__ * 10000L + __GNUC_MINOR__ * 100L + __GNUC_PATCHLEVEL__)
 #  endif
 #  ifndef UNUSED_PAR
-#    define UNUSED_PAR(name)	name __attribute__((unused))
+#    if STORED_cplusplus >= 201703L
+#      define UNUSED_PAR(name)	name [[maybe_unused]]
+#    else
+#      define UNUSED_PAR(name)	name __attribute__((unused))
+#    endif
 #  endif
 #elif defined(_MSC_VER)
 #  define STORED_COMPILER_MSVC
+// MSVC always defines __cplusplus as 199711L, even though it actually compiles a different language version.
+#  ifdef __cplusplus
+#    undef STORED_cplusplus
+#    define STORED_cplusplus _MSVC_LANG
+#  endif
 #  ifndef UNUSED_PAR
-#    ifdef __clang__
+#    if STORED_cplusplus >= 201703L
+#      define UNUSED_PAR(name)	name [[maybe_unused]]
+#    elif defined(__clang__)
 // That's odd. Probably clang-tidy.
 #      define UNUSED_PAR(name)	name /* NOLINT(clang-diagnostic-unused-parameter,misc-unused-parameters) */
 #    else
@@ -91,7 +102,7 @@
 #  endif
 #  define NOMINMAX
 #  define _USE_MATH_DEFINES
-#  pragma warning(disable: 4061 4068 4100 4127 4200 4201 4296 4324 4355 4514 4571 4625 4626 4706 4710 4711 4774 4789 4820 5026 5027 5039 5045)
+#  pragma warning(disable: 4061 4068 4100 4127 4200 4201 4296 4324 4355 4459 4514 4571 4625 4626 4706 4710 4711 4774 4789 4820 5026 5027 5039 5045)
 #  if _MSC_VER >= 1925
 #    pragma warning(disable: 5204)
 #  endif
@@ -100,11 +111,6 @@ typedef SSIZE_T ssize_t;
 #  define __attribute__(...)
 #  ifndef __restrict__
 #    define __restrict__ __restrict
-#  endif
-// MSVC always defines __cplusplus as 199711L, even though it actually compiles a different language version.
-#  ifdef __cplusplus
-#    undef STORED_cplusplus
-#    define STORED_cplusplus _MSVC_LANG
 #  endif
 #else
 #  error Unsupported compiler.
@@ -216,6 +222,17 @@ typedef SSIZE_T ssize_t;
 #    ifndef nullptr
 #      define nullptr NULL
 #    endif
+#    ifndef noexcept
+#      define noexcept throw()
+#    endif
+#  endif
+#endif
+
+#ifndef constexpr14
+#  if STORED_cplusplus >= 201402L
+#    define constexpr14 constexpr
+#  else
+#    define constexpr14 inline
 #  endif
 #endif
 

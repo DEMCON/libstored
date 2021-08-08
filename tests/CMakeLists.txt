@@ -13,19 +13,47 @@ if(MSVC)
 	endif()
 else()
 	add_compile_options(-Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wconversion -ffunction-sections -fdata-sections)
+	if(UNIX)
+		set(LIBSTORED_ENABLE_ASAN ON)
+		if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+			set(LIBSTORED_ENABLE_LSAN ON)
+		endif()
+		set(LIBSTORED_ENABLE_UBSAN ON)
+		add_compile_options(-fno-sanitize-recover=undefined)
+	endif()
 endif()
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_subdirectory("${PROJECT_SOURCE_DIR}/extern/googletest" "extern/googletest")
+include(FetchContent)
+FetchContent_Declare(
+	googletest
+	GIT_REPOSITORY https://github.com/google/googletest.git
+	GIT_TAG        release-1.11.0
+)
+
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+include(GoogleTest)
 
 add_custom_target(teststore)
 libstored_generate(teststore TestStore.st)
 target_compile_definitions(teststore-libstored PUBLIC STORED_POLL_${LIBSTORED_POLL})
+target_include_directories(teststore-libstored BEFORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+if(LIBSTORED_ENABLE_UBSAN AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	# The combination of -fno-sanitize-recover and ubsan gives some issues with
+	# vptr. This might be related: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94325.
+	# Disable it for now.
+	add_compile_options(-fno-sanitize=vptr)
+	target_compile_options(teststore-libstored PUBLIC -fno-sanitize=vptr)
+endif()
 
 macro(libstored_add_test TESTNAME)
-	add_executable(${TESTNAME} ${ARGN})
+	add_executable(${TESTNAME} ${ARGN} test_base.cpp)
+	target_include_directories(${TESTNAME} BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 	target_link_libraries(${TESTNAME} gtest gmock gtest_main teststore-libstored)
 	gtest_discover_tests(${TESTNAME} TEST_LIST tests)
 	set_tests_properties(${tests} PROPERTIES TIMEOUT 60)
@@ -36,6 +64,7 @@ macro(libstored_add_test TESTNAME)
 	endif()
 endmacro()
 
+libstored_add_test(test_allocator test_allocator.cpp)
 libstored_add_test(test_types test_types.cpp)
 libstored_add_test(test_init test_init.cpp)
 libstored_add_test(test_function test_function.cpp)
@@ -69,10 +98,12 @@ endif()
 
 if(LIBSTORED_EXAMPLES)
 	macro(libstored_example_test EXAMPLE)
-		if(HAVE_VALGRIND)
-			add_test(NAME ${EXAMPLE}-valgrind
-				COMMAND valgrind --error-exitcode=1 --leak-check=full $<TARGET_FILE:${EXAMPLE}> ${ARGN})
-		endif()
+
+		# Disabled in favor of sanitizers.
+#		if(HAVE_VALGRIND)
+#			add_test(NAME ${EXAMPLE}-valgrind
+#				COMMAND valgrind --error-exitcode=1 --leak-check=full $<TARGET_FILE:${EXAMPLE}> ${ARGN})
+#		endif()
 
 		if(WIN32)
 			add_test(NAME ${EXAMPLE}-run
@@ -94,7 +125,7 @@ if(LIBSTORED_EXAMPLES)
 	libstored_example_test(4_function)
 	libstored_example_test(5_debug)
 	libstored_example_test(6_hooks)
-	if(NOT MINGW)
+	if(TARGET concurrency)
 		libstored_example_test(concurrency 3)
 	endif()
 endif()

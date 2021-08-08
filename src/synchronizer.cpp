@@ -468,8 +468,8 @@ StoreJournal::Key StoreJournal::decodeKey(uint8_t*& buffer, size_t& len, bool& o
 
 	switch(i) {
 	case 1: key = (Key)*buffer; break;
-	case 2: key = (Key)endian_s2h(*reinterpret_cast<uint16_t*>(buffer)); break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-	case 4: key = (Key)endian_s2h(*reinterpret_cast<uint32_t*>(buffer)); break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+	case 2: key = (Key)endian_s2h<uint16_t>(buffer); break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+	case 4: key = (Key)endian_s2h<uint32_t>(buffer); break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 	default:
 			stored_assert(false); // NOLINT(hicpp-static-assert,misc-static-assert)
 			ok = false;
@@ -689,7 +689,7 @@ void SyncConnection::erase(char const* hash) {
 void SyncConnection::bye(SyncConnection::Id id) {
 	eraseIn(id);
 	encodeCmd(Bye);
-	encodeId(id);
+	encodeId(id, true);
 }
 
 /*!
@@ -931,7 +931,7 @@ SyncConnection::Id SyncConnection::decodeId(void*& buffer, size_t& len) {
 		return 0;
 
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-	Id id = endian_s2h(*reinterpret_cast<Id*>(buffer));
+	Id id = endian_s2h<Id>(buffer);
 
 	len -= sizeof(Id);
 	buffer = static_cast<char*>(buffer) + sizeof(Id);

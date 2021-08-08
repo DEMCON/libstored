@@ -26,6 +26,7 @@ import logging
 import heatshrink2
 import keyword
 import weakref
+import random
 
 from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, \
     QEvent, QCoreApplication, QStandardPaths, QSocketNotifier, QEventLoop, SIGNAL
@@ -93,6 +94,7 @@ class Object(QObject):
         self._alias = None
         self._polling = False
         self._pollTimer = None
+        self._pollTimerRunning = False
         self._pollInterval_s = None
         self._format = None
         self._format_set(self.formats[0])
@@ -220,22 +222,23 @@ class Object(QObject):
         self._alias = a
         self.aliasChanged.emit()
 
-    alias = _Property(str, _alias_get, _alias_set, notify=aliasChanged)
+    # alias is read-only as there may exist macros that use them too.
+    alias = _Property(str, _alias_get, notify=aliasChanged)
 
     # Return the alias or the normal name, if no alias was set.
     def shortName(self, tryToGetAlias = True):
-        if self._alias != None:
+        if not self._alias is None:
             return self._alias
 
-        if self._client != None and tryToGetAlias:
+        if not self._client is None and tryToGetAlias:
             # We don't have an alias, try to get one.
             self._client.acquireAlias(self)
 
-            if self._alias != None:
-                # We may have got one. Use it.
+            if not self._alias is None:
+                # We have got one. Use it.
                 return self._alias
 
-        # Still not alias, return name instead.
+        # Still no alias, return name instead.
         return self._name
 
     @staticmethod
@@ -259,7 +262,7 @@ class Object(QObject):
     def _asyncRead(self):
         if self._asyncReadPending:
             pass
-        elif self._client != None:
+        elif not self._client is None:
             self._asyncReadPending = True
             self._client.reqAsync(b'r' + self.shortName(False).encode(), self._asyncReadRep)
 
@@ -275,7 +278,7 @@ class Object(QObject):
             return super().event(event)
 
     def _read(self, tryToGetAlias=True):
-        if self._client == None:
+        if self._client is None:
             return None
 
         rep = self._client.req(b'r' + self.shortName(tryToGetAlias).encode())
@@ -286,7 +289,7 @@ class Object(QObject):
         if rep == b'?':
             return None
         value = self._decode(rep)
-        if value != None:
+        if not value is None:
             self.set(value, t)
         return value
 
@@ -344,13 +347,13 @@ class Object(QObject):
     # Write value to server.
     @Slot(object, result=bool)
     def write(self, value = None):
-        if value != None:
+        if not value is None:
             self.set(value)
         return self._write(value)
 
     @Slot(object)
     def asyncWrite(self, value = None):
-        if value != None:
+        if not value is None:
             self.set(value)
         self._write(value, lambda rep, value=value: self._asyncWriteCallback(value, rep))
 
@@ -358,22 +361,22 @@ class Object(QObject):
         if rep == b'!':
             # A concurrent async read may have overwritten our value,
             # which was just set. Set it here again.
-            if value != None:
+            if not value is None:
                 self.set(value)
 
     def _write(self, value, asyncCallback=None):
-        if self._client == None:
+        if self._client is None:
             return False
 
         dtype = self.type & ~self.FlagFunction
 
         data = self._encode(value)
-        if data == None:
+        if data is None:
             return False
 
-        req = b'w' + data + self.shortName().encode()
+        req = b'w' + data + self.shortName(asyncCallback is None).encode()
 
-        if asyncCallback != None:
+        if not asyncCallback is None:
             self._client.reqAsync(req, asyncCallback)
             # Assume it was successful.
             return True
@@ -423,10 +426,10 @@ class Object(QObject):
 
     # Locally set value, but do not actually write it to the server.
     def set(self, value, t = None):
-        if t == None:
+        if t is None:
             t = time.time()
 
-        if self._t != None and t < self._t:
+        if not self._t is None and t < self._t:
             # Old value.
             return
 
@@ -440,6 +443,10 @@ class Object(QObject):
                 self._tUpdatedChangedRateLimiter.receive()
             updated = True
 
+        if not self.isFixed():
+            if isinstance(value, str) or isinstance(value, bytes):
+                value = value[0:self.size]
+
         if isinstance(value, float) and math.isnan(value) and isinstance(self._value, float) and math.isnan(self._value):
             # Not updated, even though value != self._value would be True
             pass
@@ -449,7 +456,7 @@ class Object(QObject):
                 self.valueChanged.emit()
             else:
                 self._valueChangedRateLimiter.receive()
-            if self._autoCsv and self._polling and self._client.csv != None and (self._client._tracing == None or not self._client._tracing.enabled):
+            if self._autoCsv and self._polling and not self._client.csv is None and (self._client._tracing is None or not self._client._tracing.enabled):
                 self._client.csv.write(t)
             updated = True
 
@@ -462,7 +469,7 @@ class Object(QObject):
     t = _Property(float, _t_get, notify=tUpdated)
 
     def _tString_get(self):
-        if self._t == None:
+        if self._t is None:
             return None
         else:
             return datetime.datetime.fromtimestamp(self._t).strftime('%Y-%m-%d %H:%M:%S.%f')
@@ -511,7 +518,7 @@ class Object(QObject):
 
     def _valueString_get(self):
         v = self._value
-        if v == None:
+        if v is None:
             return ""
         else:
             try:
@@ -539,14 +546,14 @@ class Object(QObject):
             self._formatter = bin
         elif f == 'bytes':
             self._formatter = self._formatBytes
-        elif self._type == self.Float:
+        elif self._type & ~self.FlagFunction == self.Float:
             self._formatter = lambda x: f'{x:.6g}'
         else:
             self._formatter = str
 
         self.formatChanged.emit()
         self.valueChanged.emit()
-        if self._client != None:
+        if not self._client is None:
             self._client._autoSaveStateNow()
 
     format = _Property(str, _format_get, _format_set, notify=formatChanged)
@@ -584,24 +591,49 @@ class Object(QObject):
 
     polling = _Property(bool, _polling_get, _polling_set, notify=pollingChanged)
 
+    def _pollInterval_get(self):
+        if self._polling:
+            return self._pollInterval_s
+        else:
+            return float('nan')
+
+    pollIntervalChanged = Signal()
+
     @Slot(float)
     def poll(self, interval_s=0):
-        if self._client != None:
+        if not self._client is None:
+            if interval_s is not None and math.isnan(interval_s):
+                interval_s = None
             self._client.poll(self, interval_s)
 
     def _pollStop(self):
         self._pollSetFlag(False)
-        if self._pollTimer != None:
+        if not self._pollTimer is None:
+            self._pollTimerRunning = False
             self._pollTimer.stop()
+
+    def _pollTimerChangeOffset(self, offset, start, tries=10):
+        if not self._pollTimerRunning or self._pollTimer is None or tries < 1:
+            return
+
+        now = time.time()
+        precision = max(0.05, self._pollInterval_s / 20)
+        if abs(now - start - offset) < precision:
+            # Good enough. Restart to set the new offset.
+            self._pollTimer.start()
+        else:
+            # Timer overran quite a lot. Try again.
+            QTimer.singleShot(int(offset * 1000), lambda: self._pollTimerChangeOffset(offset, now, tries - 1))
 
     def _pollSlow(self, interval_s):
         self._pollSetFlag(True)
         self._autoCsv = True
         self._pollInterval_s = interval_s
+        self.pollIntervalChanged.emit()
 
         self._read()
 
-        if self._pollTimer == None:
+        if self._pollTimer is None:
             self._pollTimer = QTimer(parent=self)
             self._pollTimer.timeout.connect(self._pollRead)
             self._pollTimer.setSingleShot(False)
@@ -612,18 +644,22 @@ class Object(QObject):
         else:
             self._pollTimer.setTimerType(Qt.VeryCoarseTimer)
 
+        # Randomize start times of the timer to distribute multiple polling
+        # objects, which are initialized at the same times, somewhat over time.
+        self._pollTimerRunning = True
         self._pollTimer.start()
+        self._pollTimerChangeOffset(random.random() * interval_s, time.time())
 
     def _pollRead(self):
         try:
-            if self.alias == None:
+            if self.alias is None:
                 # Do a sequential read to get an alias.
                 self._read(True)
             else:
                 # Now we have an alias, do async reads.
                 self._asyncRead()
         except zmq.ZMQError as e:
-            if self._client.socket != None:
+            if not self._client.socket is None:
                 # Only reraise error when the socket wasn't closed meanwhile.
                 raise e
 
@@ -633,9 +669,11 @@ class Object(QObject):
         else:
             self._suppressSetSignals = False
         self._pollSetFlag(True)
-        self._autoCsv = False
+        self._autoCsv = interval_s > 0.01
         self._pollInterval_s = interval_s
-        if self._pollTimer != None:
+        self.pollIntervalChanged.emit()
+        if not self._pollTimer is None:
+            self._pollTimerRunning = False
             self._pollTimer.stop()
 
     def _pollSetFlag(self, enable):
@@ -649,6 +687,8 @@ class Object(QObject):
                     self._client.csv.add(self)
                 else:
                     self._client.csv.remove(self)
+
+    pollInterval = _Property(float, _pollInterval_get, poll, notify=pollIntervalChanged)
 
     def _state(self):
         res = ''
@@ -700,13 +740,13 @@ class Stream(object):
 
     def poll(self, suffix='', callback=None):
         req = b's' + (self.name + suffix).encode()
-        if callback == None:
+        if callback is None:
             return self._decode(self.client.req(req))
         else:
             return self.client.reqAsync(req, lambda x: callback(self._decode(x)))
 
     def _decode(self, x):
-        if self._decoder != None:
+        if not self._decoder is None:
             x = self._decoder.fill(x)
             if self._finishing:
                 x += self._decoder.finish()
@@ -749,7 +789,7 @@ class Macro(object):
         self._client = client
 
         self._macro = client.acquireMacro()
-        if self._macro != None:
+        if not self._macro is None:
             self._macro = self._macro.encode()
 
         self._cmds = {}
@@ -779,7 +819,7 @@ class Macro(object):
         self._update()
 
         # Check if it still works...
-        if cb == None:
+        if cb is None:
             # No response expected
             return True
 
@@ -800,7 +840,7 @@ class Macro(object):
             return False
 
     def _update(self):
-        if self._macro == None:
+        if self._macro is None:
             return
 
         cmds = []
@@ -812,7 +852,7 @@ class Macro(object):
         self._client.assignMacro(self._macro, cmds, self._reqsep)
 
     def run(self, asyncDecode=False):
-        if self._macro != None:
+        if not self._macro is None:
             if asyncDecode:
                 if not self._pending:
                     self._pending = True
@@ -822,7 +862,7 @@ class Macro(object):
                 return self.decode(self._client.req(self._macro))
         else:
             for c in self._cmds.values():
-                if c[1] != None:
+                if not c[1] is None:
                     c[1](self._client.req(c[0]))
                 else:
                     self._client.req(c[0])
@@ -837,10 +877,10 @@ class Macro(object):
             return False
 
         for i in range(0, len(values)):
-            if cb[i + skip] != None:
+            if not cb[i + skip] is None:
                 cb[i + skip](values[i], t)
 
-        if self._client.csv != None:
+        if self._client.csv is not None and (t is not None or self._client._tracing is None or not self._client._tracing.enabled):
             self._client.csv.write(t)
 
         return True
@@ -875,11 +915,11 @@ class Tracing(Macro):
         self.add('e\n', None, 'e')
 
         # We must have a macro, not a simulated Macro instance.
-        if self.macro == None:
+        if self.macro is None:
             raise ValueError('Cannot get macro for tracing')
 
         t = self.client.time()
-        if t == None:
+        if t is None:
             raise ValueError('Cannot determine time stamp variable')
 
         self.add(f'r{t.shortName()}', None, 't')
@@ -900,7 +940,7 @@ class Tracing(Macro):
         self._updateTracing()
 
     def _updateTracing(self, force=False):
-        if self._enabled == None:
+        if self._enabled is None:
             # Initializing
             return
 
@@ -965,7 +1005,7 @@ class Tracing(Macro):
                 # Empty sample.
                 continue
             t = time._decode(t_data[0])
-            if t == None:
+            if t is None:
                 continue
             ts = self.client.timestampToTime(t)
             time.set(t, ts)
@@ -985,15 +1025,24 @@ class ZmqClient(QObject):
 
     traceThreshold_s = 0.1
     fastPollThreshold_s = 0.9
-    slowPollInterval_s = 2.0
+    slowPollInterval_s = 1.0
     defaultPollIntervalChanged = Signal()
+    closed = Signal()
 
-    def __init__(self, address='localhost', port=ZmqServer.default_port, csv=None, multi=False, parent=None, t=None):
+    def __init__(self, address='localhost', port=ZmqServer.default_port, csv=None, multi=False, parent=None, t=None, timeout=None):
         super().__init__(parent=parent)
         self.logger = logging.getLogger(__name__)
         self._multi = multi
         self._context = zmq.Context()
         self._socket = self._context.socket(zmq.REQ)
+        if timeout is not None and timeout <= 0:
+            timeout = None
+        self._timeout = timeout
+        if timeout is not None:
+            self.logger.debug(f'Using a timeout of {timeout} s')
+            self._socket.setsockopt(zmq.CONNECT_TIMEOUT, int(timeout * 1000))
+            self._socket.setsockopt(zmq.RCVTIMEO, int(timeout * 1000))
+            self._socket.setsockopt(zmq.SNDTIMEO, int(timeout * 1000))
         self.logger.debug('Connecting to %s:%d...', address, port)
         self._socket.connect(f'tcp://{address}:{port}')
         self.logger.debug('Connected')
@@ -1007,7 +1056,7 @@ class ZmqClient(QObject):
         self._objects = None
         self._fastPollMacro = None
         self._fastPollTimer = None
-        if csv == None:
+        if csv is None:
             self.csv = None
         else:
             self.csv = CsvExport(filename=csv, parent=self)
@@ -1024,7 +1073,7 @@ class ZmqClient(QObject):
         self._useEventLoop = False
         QTimer.singleShot(0, self._haveEventLoop)
         app = QCoreApplication.instance()
-        if app != None:
+        if not app is None:
             app.aboutToQuit.connect(self._aboutToQuit)
 
         if 'f' in self.capabilities():
@@ -1051,7 +1100,10 @@ class ZmqClient(QObject):
 
     @property
     def objects(self):
-        return list(self._objects)
+        if self._objects is None:
+            return list()
+        else:
+            return list(self._objects)
 
     @property
     def socket(self):
@@ -1065,18 +1117,23 @@ class ZmqClient(QObject):
         if message == b'':
             return b''
 
-        while self._reqQueue != []:
-            # Wait for all outstanding requests first.
-            QCoreApplication.processEvents(QEventLoop.AllEvents, 100)
+        # Wait for all outstanding requests first.
+        self._reqAsyncFlush()
 
-        if self._socket == None:
+        if self._socket is None:
             return None
 
         self.logger.debug('req %s', message)
         self._socket.send(message)
 
         # Block till we have some message.
+        start = time.time()
         while True:
+            if self._timeout is not None and time.time() - start > self._timeout:
+                self.logger.error('Closing because of communication timeout')
+                self.close()
+                raise TimeoutError()
+
             try:
                 rep = b''.join(self._socket.recv_multipart(zmq.NOBLOCK))
                 break
@@ -1091,14 +1148,14 @@ class ZmqClient(QObject):
     def reqAsync(self, message, callback=None):
         if isinstance(message,str):
             message = message.encode()
-            if callback == None:
+            if callback is None:
                 self.reqAsync(message)
             else:
                 self.reqAsync(message, lambda rep: callback(rep.decode()))
             return
 
         if message == b'':
-            if callback != None:
+            if not callback is None:
                 callback(b'')
             return
 
@@ -1106,7 +1163,7 @@ class ZmqClient(QObject):
             # Without event loop, async does not work.
             # Forward to blocking req instead.
             rep = self.req(message)
-            if callback != None:
+            if not callback is None:
                 callback(rep)
             elif rep == b'?':
                 self.logger.warning('Async req returned an error, which was not handled')
@@ -1120,7 +1177,7 @@ class ZmqClient(QObject):
             self.logger.debug('req async queued %s', message)
 
     def _reqAsyncSendNext(self):
-        if self._socket != None and self._reqQueue != []:
+        if not self._socket is None and self._reqQueue != []:
             req, _ = self._reqQueue[0]
             self.logger.debug('req async send %s', req)
             self._socket.send(req)
@@ -1132,7 +1189,7 @@ class ZmqClient(QObject):
         res = False
 
         try:
-            while self._socket != None:
+            while not self._socket is None:
                 resp = b''.join(self._socket.recv_multipart(zmq.NOBLOCK))
                 self._reqAsyncHandleResponse(resp)
                 res = True
@@ -1145,7 +1202,7 @@ class ZmqClient(QObject):
         assert(self._reqQueue != [])
         req, callback = self._reqQueue.pop(0)
         self._reqAsyncSendNext()
-        if callback != None:
+        if not callback is None:
             callback(resp)
         elif resp == b'?':
             # We got an error back, but no callback was specified. Report it anyway.
@@ -1153,24 +1210,32 @@ class ZmqClient(QObject):
 
     def _reqAsyncFlush(self, timeout=None):
         start = time.time()
+        lastMsg = start
+
         pollInterval = 1000
-        if timeout != None:
+        if timeout is not None:
             pollInterval = min(timeout, pollInterval)
 
         while self._reqQueue != []:
-            if timeout != None and time.time() - start > timeout:
+            if not timeout is None and time.time() - start > timeout:
                 raise TimeoutError()
 
-            if self._socket == None:
+            if self._socket is None:
                 self._reqAsyncHandleResponse(b'')
                 continue
 
             try:
                 self._reqAsyncHandleResponse(b''.join(self._socket.recv_multipart(zmq.NOBLOCK)))
+                lastMsg = time.time()
             except zmq.ZMQError as e:
                 if e.errno != zmq.EAGAIN:
                     raise
                 else:
+                    if self._timeout is not None and time.time() - lastMsg > self._timeout:
+                        self.logger.error('Closing because of communication timeout')
+                        self.close()
+                        raise TimeoutError()
+
                     self._socket.poll(pollInterval)
 
     @Slot()
@@ -1184,7 +1249,7 @@ class ZmqClient(QObject):
 
         try:
             app = QCoreApplication.instance()
-            if app != None:
+            if not app is None:
                 app.aboutToQuit.disconnect(self._aboutToQuit)
         except:
             pass
@@ -1193,7 +1258,7 @@ class ZmqClient(QObject):
         if self._t == False:
             # Not found
             return None
-        elif self._t != None:
+        elif not self._t is None:
             return self._t
 
         # Not initialized.
@@ -1206,7 +1271,7 @@ class ZmqClient(QObject):
             # Try finding /t (unit)
             t = self.find('/t (')
 
-        if t == None:
+        if t is None:
             # Not found, try the first /store/t (unit)
             for o in self.list():
                 chunks = o.name.split('/', 4)
@@ -1217,7 +1282,7 @@ class ZmqClient(QObject):
                     # Got some
                     t = o
                     break;
-            if t == None:
+            if t is None:
                 # Still not found. Give up.
                 return None
         elif isinstance(t, list):
@@ -1256,7 +1321,7 @@ class ZmqClient(QObject):
         return self._t
 
     def timestampToTime(self, t = None):
-        if t == None:
+        if t is None:
             return time.time()
         else:
             # Override to implement arbitrary conversion.
@@ -1270,7 +1335,7 @@ class ZmqClient(QObject):
             self._tracingTimer.stop()
         s = self._socket
         self._socket = None
-        if s != None:
+        if not s is None:
             s.close(0)
         self._aboutToQuit()
 
@@ -1282,10 +1347,17 @@ class ZmqClient(QObject):
         self._tracing = None
         self._t = None
 
-        for o in self._objects:
-            o.setParent(None)
+        if not self._objects is None:
+            for o in self._objects:
+                o.setParent(None)
 
-        self._objects = None
+            self._objects = None
+
+        if not self.csv is None:
+            self.csv.close()
+            self.csv = None
+
+        self.closed.emit()
 
     def __enter__(self):
         return self
@@ -1297,12 +1369,15 @@ class ZmqClient(QObject):
         self.logger.debug('del')
         s = self._socket
         self._socket = None
-        if s != None:
+        if not s is None:
             s.close(0)
+        if not self.csv is None:
+            self.csv.close()
+            self.csv = None
 
     @Slot(result=str)
     def capabilities(self):
-        if self._capabilities == None:
+        if self._capabilities is None:
             self._capabilities = self.req('?')
             if self._multi:
                 # Remove capabilities that are stateful at the embedded side.
@@ -1341,13 +1416,13 @@ class ZmqClient(QObject):
         return n
 
     def _list_init(self):
-        if self._objects != None:
+        if not self._objects is None:
             return
 
         res = []
         for o in self.req(b'l').decode().split('\n'):
             obj = Object.listResponseDecode(o, self)
-            if obj != None:
+            if not obj is None:
                 res.append(obj)
                 pyname = self.pyname(obj.name)
                 wobj = weakref.ref(obj)
@@ -1379,37 +1454,53 @@ class ZmqClient(QObject):
                 # Assume abbreviated names.
                 if ochunks[i] != chunks[i]:
                     match = False
+                    break
             if match:
                 obj1.add(o)
 
             # Case 2.
             match = True
             for i in range(0, len(ochunks)):
-                if re.fullmatch(re.sub(r'\\\?', '.', re.escape(ochunks[i])) + r'.*', chunks[i]) == None:
+                if re.fullmatch(re.sub(r'\\\?', '.', re.escape(ochunks[i])) + r'.*', chunks[i]) is None:
                     match = False
+                    break
                 # It seems to match. Additional check: the object's chunk should not be longer, as it makes name ambiguous.
                 elif len(ochunks[i]) > len(chunks[i]):
                     match = False
+                    break
             if match:
                 obj2.add(o)
 
             # Case 3.
+            # Prefer names that have an exact prefix, even when ambiguous.
             match = True
+            exact = True
+            exactLen = 0
             for i in range(0, len(ochunks)):
                 if not ochunks[i].startswith(chunks[i]):
                     match = False
+                    break
+                if exact:
+                    if ochunks[i] == chunks[i]:
+                        exactLen += 1
+                    else:
+                        exact = False
             if match:
-                obj3.add(o)
+                obj3 = {(x,e) for x,e in obj3 if e >= exactLen}
+                best = max(obj3, key=lambda x: x[1], default=(None,0))[1]
+                if exactLen >= best:
+                    obj3.add((o,exactLen))
 
             # Case 4.
             match = True
             for i in range(0, len(ochunks)):
-                if re.fullmatch(re.sub(r'\\\?', '.', re.escape(ochunks[i])) + r'.*', chunks[i]) == None:
+                if re.fullmatch(re.sub(r'\\\?', '.', re.escape(ochunks[i])) + r'.*', chunks[i]) is None:
                     match = False
+                    break
             if match:
                 obj4.add(o)
 
-        obj = obj1 | obj2 | obj3 | obj4
+        obj = obj1 | obj2 | {x for x,e in obj3} | obj4
         if all:
             return obj
         if len(obj1) == 1:
@@ -1432,7 +1523,7 @@ class ZmqClient(QObject):
         obj = self.find(x)
         if isinstance(obj, Object):
             return obj
-        elif obj == None:
+        elif obj is None:
             raise ValueError(f'Cannot find object with name "{x}"')
         else:
             raise ValueError(f'Object name "{x}" is ambiguous')
@@ -1495,26 +1586,30 @@ class ZmqClient(QObject):
 
     defaultPollInterval = _Property(float, _defaultPollInterval_get, _defaultPollInterval_set, notify=defaultPollIntervalChanged)
 
-    def acquireAlias(self, obj, prefer=None, temporary=True):
-        if prefer == None and obj.alias != None:
+    def acquireAlias(self, obj, prefer=None, temporary=True, permanentRef=None):
+        if prefer is None and not obj.alias is None:
             if temporary != self._isTemporaryAlias(obj.alias):
                 # Switch type
-                return self._reassignAlias(obj.alias, obj, temporary)
+                return self._reassignAlias(obj.alias, obj, temporary, permanentRef)
             else:
+                if not temporary:
+                    self._incPermanentAlias(obj.alias, permanentRef)
                 # Already assigned one.
                 return obj.alias
-        if prefer != None:
+        if not prefer is None:
             if obj.alias != prefer:
                 # Go assign one.
                 pass
             elif temporary != self._isTemporaryAlias(prefer):
                 # Switch type
-                return self._reassignAlias(prefer, obj, temporary)
+                return self._reassignAlias(prefer, obj, temporary, permanentRef)
             else:
+                if not temporary:
+                    self._incPermanentAlias(prefer, permanentRef)
                 # Already assigned preferred one.
                 return prefer
 
-        if self._availableAliases == None:
+        if self._availableAliases is None:
             # Not yet initialized
             if 'a' in self.capabilities():
                 self._availableAliases = list(map(chr, range(0x20, 0x7f)))
@@ -1522,22 +1617,22 @@ class ZmqClient(QObject):
             else:
                 self._availableAliases = []
 
-        if prefer != None:
+        if not prefer is None:
             if self._isAliasAvailable(prefer):
-                return self._acquireAlias(prefer, obj, temporary)
+                return self._acquireAlias(prefer, obj, temporary, permanentRef)
             elif self._isTemporaryAlias(prefer):
-                return self._reassignAlias(prefer, obj, temporary)
+                return self._reassignAlias(prefer, obj, temporary, permanentRef)
             else:
                 # Cannot reassign permanent alias.
                 return None
         else:
             a = self._getFreeAlias()
-            if a == None:
+            if a is None:
                 a = self._getTemporaryAlias()
-            if a == None:
+            if a is None:
                 # Nothing free.
                 return None
-            return self._acquireAlias(a, obj, temporary)
+            return self._acquireAlias(a, obj, temporary, permanentRef)
 
     def _isAliasAvailable(self, a):
         return a in self._availableAliases
@@ -1546,19 +1641,47 @@ class ZmqClient(QObject):
         return a in self._temporaryAliases
 
     def _isAliasInUse(self, a):
-        return a in self._temporaryAliases or a  in self._permanentAliases
+        return a in self._temporaryAliases or a in self._permanentAliases
 
-    def _acquireAlias(self, a, obj, temporary):
+    def _incPermanentAlias(self, a, permanentRef):
+        assert a in self._permanentAliases
+        self.logger.debug(f'increment permanent alias {a} use')
+        self._permanentAliases[a][1].append(permanentRef)
+
+    def _decPermanentAlias(self, a, permanentRef):
+        assert a in self._permanentAliases
+        if permanentRef is None:
+            self.logger.debug(f'ignored decrement permanent alias {a} use')
+            return False
+
+        try:
+            self._permanentAliases[a][1].remove(permanentRef)
+            self.logger.debug(f'decrement permanent alias {a} use')
+        except ValueError:
+            # Unknown ref.
+            pass
+
+        return self._permanentAliases[a][1] == []
+
+    def _acquireAlias(self, a, obj, temporary, permanentRef):
         assert not self._isAliasInUse(a)
 
         if not (isinstance(a, str) and len(a) == 1):
             raise ValueError('Invalid alias ' + a)
 
+        availableUponRollback = False
+        if a in self._availableAliases:
+            self.logger.debug('available: ' + ''.join(self._availableAliases))
+            self._availableAliases.remove(a)
+            availableUponRollback = True
+
         if not self._setAlias(a, obj.name):
             # Too many aliases, apparently. Drop a temporary one.
             tmp = self._getTemporaryAlias()
-            if tmp == None:
+            if tmp is None:
                 # Nothing to drop.
+                if availableUponRollback:
+                    self._availableAliases.append(a)
                 return None
 
             self.releaseAlias(tmp)
@@ -1566,15 +1689,17 @@ class ZmqClient(QObject):
             # OK, we should have some more space now. Retry.
             if not self._setAlias(a, obj.name):
                 # Still failing, give up.
+                if availableUponRollback:
+                    self._availableAliases.append(a)
                 return None
 
         # Success!
-        if a in self._availableAliases:
-            self._availableAliases.remove(a)
         if temporary:
+            self.logger.debug(f'new temporary alias {a} for {obj.name}')
             self._temporaryAliases[a] = obj
         else:
-            self._permanentAliases[a] = obj
+            self.logger.debug(f'new permanent alias {a} for {obj.name}')
+            self._permanentAliases[a] = (obj, [permanentRef])
         obj._alias_set(a)
         return a
 
@@ -1582,37 +1707,51 @@ class ZmqClient(QObject):
         rep = self.req(b'a' + a.encode() + name.encode())
         return rep == b'!'
 
-    def _reassignAlias(self, a, obj, temporary):
+    def _reassignAlias(self, a, obj, temporary, permanentRef):
         assert a in self._temporaryAliases or a in self._permanentAliases
         assert not self._isAliasAvailable(a)
 
         if not self._setAlias(a, obj.name):
             return None
 
-        self._releaseAlias(a)
-        if a in self._availableAliases:
-            self._availableAliases.remove(a)
-        if temporary:
-            self._temporaryAliases[a] = obj
+        if not self._releaseAlias(a, permanentRef):
+            # Not allowed, still is use as permanent alias.
+            self.logger.debug(f'cannot release alias {a}; still in use')
+            pass
         else:
-            self._permanentAliases[a] = obj
+            if a in self._availableAliases:
+                self._availableAliases.remove(a)
+            if temporary:
+                self.logger.debug(f'reassigned temporary alias {a} to {obj.name}')
+                self._temporaryAliases[a] = obj
+            else:
+                self.logger.debug(f'reassigned permanent alias {a} to {obj.name}')
+                self._permanentAliases[a] = (obj, [permanentRef])
+
         obj._alias_set(a)
         return a
 
-    def _releaseAlias(self, alias):
+    def _releaseAlias(self, alias, permanentRef=None):
         obj = None
         if alias in self._temporaryAliases:
             obj = self._temporaryAliases[alias]
             del self._temporaryAliases[alias]
+            self.logger.debug(f'released temporary alias {alias}')
         elif alias in self._permanentAliases:
-            obj = self._permanentAliases[alias]
+            if not self._decPermanentAlias(alias, permanentRef):
+                # Do not release (yet).
+                return False
+            obj = self._permanentAliases[alias][0]
             del self._permanentAliases[alias]
+            self.logger.debug(f'released permanent alias {alias}')
+        else:
+            self.logger.debug(f'released unused alias {alias}')
 
-        if obj != None:
+        if not obj is None:
             obj._alias_set(None)
             self._availableAliases.append(alias)
 
-        return obj
+        return True
 
     def _getFreeAlias(self):
         if self._availableAliases == []:
@@ -1625,15 +1764,17 @@ class ZmqClient(QObject):
         if keys == []:
             return None
         a = keys[0] # pick oldest one
+        self.logger.debug(f'stealing temporary alias {a}')
         self._releaseAlias(a)
         return a
 
-    def releaseAlias(self, alias):
-        self._releaseAlias(alias)
-        self.req(b'a' + alias.encode())
+    def releaseAlias(self, alias, permanentRef=None):
+        if self._releaseAlias(alias, permanentRef):
+            if alias is not None:
+                self.req(b'a' + alias.encode())
 
     def _printAliasMap(self):
-        if self._availableAliases == None:
+        if self._availableAliases is None:
             print("Not initialized")
         else:
             print("Available aliases: " + ''.join(self._availableAliases))
@@ -1646,10 +1787,10 @@ class ZmqClient(QObject):
             if len(self._permanentAliases) == 0:
                 print("No permanent aliases")
             else:
-                print("Permanent aliases: \n\t" + '\n\t'.join([f'{a}: {o.name}' for a,o in self._permanentAliases.items()]))
+                print("Permanent aliases: \n\t" + '\n\t'.join([f'{a}: {o[0].name} ({len(o[1])})' for a,o in self._permanentAliases.items()]))
 
     def acquireMacro(self, cmds = None, sep='\n'):
-        if self._availableMacros == None:
+        if self._availableMacros is None:
             # Not initialized yet.
             capabilities = self.capabilities()
             if not 'm' in capabilities:
@@ -1664,7 +1805,7 @@ class ZmqClient(QObject):
             return None
 
         m = self._availableMacros.pop()
-        if cmds != None:
+        if not cmds is None:
             if not self.assignMacro(m, cmds, sep):
                 # Setting macro failed. Rollback.
                 self._availableMacros.append(m)
@@ -1695,8 +1836,9 @@ class ZmqClient(QObject):
             self.req(b'm' + m.encode())
 
     def poll(self, obj, interval_s=0):
-        if interval_s == None:
-            self._pollStop(obj)
+        self._pollStop(obj)
+
+        if interval_s is None:
             self._autoSaveStateNow()
             return
 
@@ -1713,7 +1855,7 @@ class ZmqClient(QObject):
         self._autoSaveStateNow()
 
     def _pollFast(self, obj, interval_s):
-        if self._fastPollMacro == None:
+        if self._fastPollMacro is None:
             self._fastPollMacro = Macro(self)
             self._fastPollTimer = QTimer(parent=self)
             self._fastPollTimer.timeout.connect(lambda: self._fastPollMacro.run(True))
@@ -1724,6 +1866,11 @@ class ZmqClient(QObject):
         if not self._fastPollMacro.add(b'r' + obj.shortName().encode(), obj.decodeReadRep, obj):
             self._pollSlow(obj, interval_s)
         else:
+            a = obj.alias
+            if not a is None:
+                # Make alias permanent.
+                self.acquireAlias(obj, a, False, self._fastPollMacro)
+
             obj._pollFast(interval_s)
             self._fastPollTimer.setInterval(min(self._fastPollTimer.interval(), interval_s * 1000))
             self._fastPollTimer.start()
@@ -1732,26 +1879,32 @@ class ZmqClient(QObject):
         obj._pollSlow(max(self.slowPollInterval_s, interval_s))
 
     def _pollStop(self, obj):
-        if self._fastPollMacro != None:
-            self._fastPollMacro.remove(obj)
-            if len(self._fastPollMacro) == 0:
-                self._fastPollTimer.stop()
-                self._fastPollTimer.setInterval(self.fastPollThreshold_s * 1000)
+        if not self._fastPollMacro is None:
+            if self._fastPollMacro.remove(obj):
+                # Did remove, so release permanent alias.
+                self.releaseAlias(obj.alias, self._fastPollMacro)
 
-        if self._tracing != None:
-            if self._tracing.remove(obj) and not self._tracing.enabled:
-                self._tracingTimer.stop()
+                if len(self._fastPollMacro) == 0:
+                    self._fastPollTimer.stop()
+                    self._fastPollTimer.setInterval(self.fastPollThreshold_s * 1000)
+
+        if not self._tracing is None:
+            if self._tracing.remove(obj):
+                self.releaseAlias(obj.alias, self._tracing)
+
+                if not self._tracing.enabled:
+                    self._tracingTimer.stop()
 
         obj._pollStop()
 
     def _trace(self, obj, interval_s):
-        if self._tracing == None:
+        if self._tracing is None:
             self._pollFast(obj, interval_s)
             return
 
-        if self._tracingTimer == None:
+        if self._tracingTimer is None:
             self._tracingTimer = QTimer(parent=self)
-            self._tracingTimer.timeout.connect(self._tracing.process)
+            self._tracingTimer.timeout.connect(self.traceProcess)
             self._tracingTimer.setInterval(self.traceThreshold_s * 1000)
             self._tracingTimer.setSingleShot(False)
             self._tracingTimer.setTimerType(Qt.PreciseTimer)
@@ -1760,11 +1913,26 @@ class ZmqClient(QObject):
             self.logger.debug('Cannot add %s for tracing, use polling instead', obj.name)
             self._pollFast(obj, interval_s)
             return
+        else:
+            a = obj.alias
+            if not a is None:
+                # Make alias permanent.
+                self.acquireAlias(obj, a, False, self._tracing)
 
         obj._pollFast(interval_s)
 
         if self._tracing.enabled:
             self._tracingTimer.start()
+
+    def traceProcess(self):
+        """
+        In case there is no Qt event loop running, call this function to poll
+        and process data that is expected via the trace stream.
+        """
+        if self._tracing is None:
+            return
+
+        self._tracing.process()
 
     @Slot(int)
     def traceDecimate(self, decimate):
@@ -1783,7 +1951,7 @@ class ZmqClient(QObject):
     @Slot()
     @Slot(str)
     def saveState(self, f=None):
-        if f == None:
+        if f is None:
             f = self.defaultStateFile()
 
         os.makedirs(os.path.dirname(f), exist_ok=True)
@@ -1791,18 +1959,19 @@ class ZmqClient(QObject):
         with open(f, 'w') as f:
             res = ''
             f.write('# This file is auto-generated.\n')
-            if self._identification == None:
+            if self._identification is None:
                 self.identification()
-            if self._identification != None:
+            if not self._identification is None:
                 f.write(f'if client.identification() != {repr(self._identification)}:\n   raise NameError()\n')
 
-            for o in self._objects:
-                f.write(o._state())
+            if not self._objects is None:
+                for o in self._objects:
+                    f.write(o._state())
 
     @Slot()
     @Slot(str)
     def restoreState(self, f=None):
-        if f == None:
+        if f is None:
             f = self.defaultStateFile()
 
         autoSaveState = self._autoSaveState

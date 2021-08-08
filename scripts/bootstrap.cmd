@@ -27,6 +27,16 @@ goto error
 choco install -y --no-progress python3 tortoisegit git cmake make pkgconfiglite mingw doxygen.install plantuml
 if errorlevel 1 goto error
 
+where /q libcairo-2.dll > NUL 2> NUL
+if errorlevel 1 goto no_cairo
+goto have_cairo
+:no_cairo
+echo To build the documentation, you need the GTK+ runtime. Install it from here:
+echo https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases/download/2021-04-29/gtk3-runtime-3.24.29-2021-04-29-ts-win64.exe
+rem sleep 5, to show the user this message
+ping -n 6 127.0.0.1 > NUL
+:have_cairo
+
 call refreshenv
 
 python.exe -m ensurepip

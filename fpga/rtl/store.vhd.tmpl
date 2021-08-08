@@ -657,7 +657,7 @@ begin
 
 		signal r, r_in : r_t;
 	begin
-		process(r, rstn, sync_in.valid, sync_in.last, sync_in.data, sync_chained_out_accept_i)
+		process(r, rstn, sync_in.valid, sync_in.last, sync_in.data, sync_chained_out_accept_i, id_in)
 			variable v : r_t;
 		begin
 			v := r;
@@ -688,6 +688,12 @@ begin
 						v.state := STATE_WELCOME;
 					elsif sync_in.data = MSG_UPDATE then
 						v.state := STATE_UPDATE;
+					elsif sync_in.data = MSG_BYE then
+						-- This is a bit simplified: on every bye message,
+						-- disconnect all stores. This should not happen anyway,
+						-- and if it does, the FPGA will try to reconnected immediately.
+						v.id_out_valid := '0';
+						v.state := STATE_PASSTHROUGH;
 					else
 						v.state := STATE_PASSTHROUGH;
 					end if;

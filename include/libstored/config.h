@@ -22,6 +22,7 @@
 
 #ifdef __cplusplus
 #include <cstddef>
+#include <memory>
 
 namespace stored {
 	/*!
@@ -90,6 +91,20 @@ namespace stored {
 		 */
 		static bool const EnableHooks = true;
 
+		/*!
+		 * \brief When \c true, avoid dynamic memory reallocation where possible.
+		 *
+		 * The Allocator will still be used, but reallocation to dynamically
+		 * sized buffers is avoided.  This implies that worst-case allocation
+		 * may be done at startup.
+		 */
+		static bool const AvoidDynamicMemory =
+#if defined(STORED_OS_BAREMETAL) || defined(STORED_OS_GENERIC)
+			true;
+#else
+			false;
+#endif
+
 		/*! \brief When \c true, stored::Debugger implements the read capability. */
 		static bool const DebuggerRead = true;
 		/*! \brief When \c true, stored::Debugger implements the write capability. */
@@ -98,6 +113,9 @@ namespace stored {
 		static bool const DebuggerEcho = true;
 		/*! \brief When \c true, stored::Debugger implements the list capability. */
 		static bool const DebuggerList = true;
+		/*! \brief When \c true, stored::Debugger always lists the store prefix,
+		 *         even if there is only one store mapped. */
+		static bool const DebuggerListPrefixAlways = false;
 		/*!
 		 * \brief When not 0, stored::Debugger implements the alias capability.
 		 *
@@ -128,6 +146,25 @@ namespace stored {
 		static int const DebuggerStreams = 2; // by default two: one for the application, one for tracing
 		/*! \brief Size of one stream buffer in bytes. */
 		static size_t const DebuggerStreamBuffer = 1024;
+		/*!
+		 * \brief The maximum (expected) size the stream buffer may overflow.
+		 *
+		 * The trace uses a stream buffer. As long the buffer contents are
+		 * below DebuggerStreamBuffer, another sample may be added. This may
+		 * make the buffer overflow, resulting in a dynamic reallocation. To
+		 * avoid realloc, a trace sample (after compression) should fit in
+		 * DebuggerStreamBufferOverflow, which is a preallocated space on top
+		 * of DebuggerStreamBuffer. As the trace sample size is application-
+		 * dependent, this should be set appropriately. When set to small,
+		 * realloc will happen anyway.
+		 */
+		static size_t const DebuggerStreamBufferOverflow =
+#ifndef DOXYGEN
+			// Seems to be to hard to parse by doxygen/sphinx.
+			AvoidDynamicMemory ? DebuggerStreamBuffer / 8 : 0;
+#else
+			0;
+#endif
 
 		/*! \brief When \c true, stored::Debugger implements the trace capability. */
 		static bool const DebuggerTrace = DebuggerStreams > 0 && DebuggerMacro > 0;
@@ -140,6 +177,19 @@ namespace stored {
 			false;
 #endif
 
+		/*!
+		 * \brief Allocator to be used for all dynamic memory allocations.
+		 *
+		 * Define a similar struct with \c type member to override the default
+		 * allocator.
+		 *
+		 * C++11's <tt>template &lt;typename T&gt; using Allocator = std::allocator&lt;T&gt;;</tt>
+		 * would be nicer, but this construct works for all versions of C++.
+		 */
+		template <typename T>
+		struct Allocator {
+			typedef std::allocator<T> type;
+		};
 	};
 } // namespace
 #endif // __cplusplus

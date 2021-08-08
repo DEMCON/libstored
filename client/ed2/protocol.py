@@ -19,6 +19,7 @@ import crcmod
 import sys
 import time
 import struct
+import zmq
 
 class ProtocolLayer:
     name = 'layer'
@@ -83,6 +84,12 @@ class ProtocolLayer:
             a = self.down.lastActivity()
 
         return max(a, self._activity)
+
+    def __del__(self):
+        self.close()
+
+    def close(self):
+        pass
 
 class AsciiEscapeLayer(ProtocolLayer):
     name = 'ascii'
@@ -192,6 +199,7 @@ class TerminalLayer(ProtocolLayer):
             if not self._inMsg:
                 c = self._data.split(self.start, 1)
                 if c[0] != b'':
+                    self.logger.debug('non-debug %s', bytes(c[0]))
                     self.nonDebugData(c[0])
 
                 if len(c) == 1:
@@ -212,11 +220,11 @@ class TerminalLayer(ProtocolLayer):
                     # Remove \r as they can be inserted automatically by Windows.
                     # If \r is meant to be sent, escape it.
                     msg = c[0].replace(b'\r', b'')
-                    self.logger.debug('extracted ' + str(bytes(msg)))
-                    self.activity()
-                    super().decode(msg)
+                    self.logger.debug('extracted %s', bytes(msg))
                     self._data = c[1]
                     self._inMsg = False
+                    self.activity()
+                    super().decode(msg)
 
     @property
     def mtu(self):
@@ -224,6 +232,33 @@ class TerminalLayer(ProtocolLayer):
         if m == 0:
             return 0
         return max(1, m - len(start) - len(end))
+
+class PubTerminalLayer(TerminalLayer):
+    """
+    A TerminalLayer (term), that also forwards all non-debug data over a PUB socket.
+    """
+
+    name = 'pubterm'
+    default_port = 19027 # This is the ZmqServer.default port + 1.
+
+    def __init__(self, bind=f'*:{default_port}', **kwargs):
+        super().__init__(**kwargs)
+        self.context = zmq.Context()
+        self.socket = self.context.socket(zmq.PUB)
+        self.socket.bind(f'tcp://{bind}')
+
+    def __del__(self):
+        self.close()
+
+    def close(self):
+        if self.socket is not None:
+            self.socket.close()
+            self.socket = None
+
+    def nonDebugData(self, data):
+        super().nonDebugData(data)
+        if len(data) > 0:
+            self.socket.send(data)
 
 class SegmentationLayer(ProtocolLayer):
     name = 'segment'
@@ -239,7 +274,7 @@ class SegmentationLayer(ProtocolLayer):
         self._buffer += data[:-1]
         self.activity()
         if data[-1:] == self.end:
-            self.logger.debug('reassembled ' + str(bytes(self._buffer)))
+            self.logger.debug('reassembled %s' + bytes(self._buffer))
             super().decode(self._buffer)
             self._buffer = bytearray()
 
@@ -436,7 +471,7 @@ class Crc8Layer(ProtocolLayer):
 #            self.logger.debug('invalid CRC, dropped ' + str(bytes(data)))
             return
 
-        self.logger.debug('valid CRC ' + str(bytes(data)))
+        self.logger.debug('valid CRC %s', bytes(data))
         self.activity()
         super().decode(data[0:-1])
 
@@ -470,7 +505,7 @@ class Crc16Layer(ProtocolLayer):
 #            self.logger.debug('invalid CRC, dropped ' + str(bytes(data)))
             return
 
-        self.logger.debug('valid CRC ' + str(bytes(data)))
+        self.logger.debug('valid CRC %s', bytes(data))
         self.activity()
         super().decode(data[0:-2])
 
@@ -560,6 +595,7 @@ class RawLayer(ProtocolLayer):
 layer_types = [
     AsciiEscapeLayer,
     TerminalLayer,
+    PubTerminalLayer,
     SegmentationLayer,
     DebugArqLayer,
     Crc8Layer,

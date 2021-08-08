@@ -839,7 +839,7 @@ static int recvAll(L& l) {
 		case 0:
 			first = false;
 			idle = 0;
-			// fall-through
+			STORED_FALLTHROUGH
 		case EINTR:
 			break;
 		case EAGAIN:
@@ -1003,6 +1003,64 @@ TEST(FifoLoopback, FifoLoopback) {
 	l.a2b().setOverflowHandler();
 	l.a2b().overflow();
 	EXPECT_EQ(l.a2b().lastError(), ENOMEM);
+}
+
+TEST(IdleLayer, IdleLayer) {
+	stored::IdleCheckLayer idle;
+	EXPECT_TRUE(idle.idle());
+
+	idle.encode("down", 4);
+	EXPECT_FALSE(idle.idle());
+	EXPECT_TRUE(idle.idleUp());
+	EXPECT_FALSE(idle.idleDown());
+
+	DECODE(idle, "up");
+	EXPECT_FALSE(idle.idleUp());
+
+	idle.setIdle();
+	EXPECT_TRUE(idle.idle());
+}
+
+TEST(CallbackLayer, CallbackLayer) {
+	bool up = false;
+	bool down = false;
+
+	auto cb = ::stored::make_callback(
+			[&](void*,size_t){ up = true; },
+			[&](void const*,size_t,bool){ down = true; });
+
+	cb.encode("down", 4);
+	EXPECT_TRUE(down);
+
+	DECODE(cb, "up");
+	EXPECT_TRUE(up);
+}
+
+TEST(TerminalLayer, Encode) {
+	stored::TerminalLayer l;
+	LoggingLayer ll;
+	ll.wrap(l);
+
+	ll.encoded().clear();
+	l.encode("You can learn a lot", 19);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "\x1b_You can learn a lot\x1b\\");
+
+	l.nonDebugEncode("of things", 9);
+	EXPECT_EQ(ll.encoded().size(), 2);
+	EXPECT_EQ(ll.encoded().at(1), "of things");
+}
+
+TEST(TerminalLayer, Decode) {
+	std::string nonDebug;
+	stored::TerminalLayer l([&](void* buf, size_t len){ nonDebug.append((char const*)buf, len); });
+	LoggingLayer ll;
+	l.wrap(ll);
+
+	DECODE(l, "from the \x1b_flowers\x1b\\...");
+	EXPECT_EQ(nonDebug, "from the ...");
+	EXPECT_EQ(ll.decoded().size(), 1);
+	EXPECT_EQ(ll.decoded().at(0), "flowers");
 }
 
 } // namespace

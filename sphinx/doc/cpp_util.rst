@@ -29,9 +29,9 @@ Misc helper functionality.
 
 .. doxygenfunction:: stored::strncpy
 
-.. doxygenfunction:: stored::swap_endian(T value)
+.. doxygenfunction:: stored::swap_endian(T value) noexcept
 
-.. doxygenfunction:: stored::swap_endian(void *buffer, size_t len)
+.. doxygenfunction:: stored::swap_endian(void *buffer, size_t len) noexcept
 .. dummy*
 
 

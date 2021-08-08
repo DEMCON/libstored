@@ -15,8 +15,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import argparse
-import serial
 import logging
+import re
+import serial
 
 from ...zmq_server import ZmqServer
 from ...serial2zmq import Serial2Zmq
@@ -29,15 +30,17 @@ if __name__ == '__main__':
     parser.add_argument('port', help='serial port')
     parser.add_argument('baud', nargs='?', type=int, default=115200, help='baud rate')
     parser.add_argument('-r', dest='rtscts', default=False, help='RTS/CTS flow control', action='store_true')
+    parser.add_argument('-x', dest='xonxoff', default=False, help='XON/XOFF flow control', action='store_true')
     parser.add_argument('-v', dest='verbose', default=False, help='Enable verbose output', action='store_true')
-    parser.add_argument('-S', dest='stack', type=str, default='ascii,term', help='protocol stack')
+    parser.add_argument('-S', dest='stack', type=str, default='ascii,pubterm', help='protocol stack')
 
     args = parser.parse_args()
 
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
 
-    bridge = Serial2Zmq(stack=args.stack, zmqlisten=args.zmqlisten, zmqport=args.zmqport, port=args.port, baudrate=args.baud, rtscts=args.rtscts)
+    stack = re.sub(r'\bpubterm\b(,|$)', f'pubterm={args.zmqlisten}:{args.zmqport+1}\\1', args.stack)
+    bridge = Serial2Zmq(stack=stack, zmqlisten=args.zmqlisten, zmqport=args.zmqport, port=args.port, baudrate=args.baud, rtscts=args.rtscts, xonxoff=args.xonxoff)
 
     try:
         while True:

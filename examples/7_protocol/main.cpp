@@ -33,8 +33,13 @@
 #endif
 
 #include <cstdio>
-#include <cinttypes>
 #include <ctime>
+
+#if STORED_cplusplus < 201103L
+#  include <inttypes.h>
+#else
+#  include <cinttypes>
+#endif
 
 static stored::ExampleProtocol store;
 

@@ -1,5 +1,3 @@
-// vim:et
-
 /*
  * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2021  Jochem Rutgers
@@ -19,13 +17,25 @@
  */
 
 import QtQuick 2.12
-import QtQuick.Layouts 1.15
-import QtQuick.Window 2.2
-import QtQuick.Controls 2.5
+import QtQuick.Layouts 1.12
+import QtQuick.Window 2.12
+import QtQuick.Controls 2.12
 
 Window {
-
     id: root
+
+    readonly property real uiScale: {
+        var s = screen
+        if(!s)
+            s = Qt.application.screens[0]
+        if(!s)
+            return 1
+
+        if(s.logicalPixelDensity !== undefined)
+            return (s.logicalPixelDensity * 25.4) / 72
+
+        return s.devicePixelRatio
+    }
     visible: true
     width: 800
     height: 600
@@ -46,7 +56,7 @@ Window {
         root.title = text
     }
 
-    readonly property int fontSize: 10
+    property real fontSize: 9 * uiScale
 
     Component {
         id: objectRow
@@ -54,7 +64,13 @@ Window {
             id: row
             width: objectList.width
             height: root.fontSize * 2
-            color: index % 2 == 0 ? "#f0f0f0" : "white"
+            color: {
+                if(ListView.view.currentIndex == index)
+                    return "#d0d0d0"
+                if(index % 2 == 0)
+                    return "#f0f0f0"
+                return "white"
+            }
 
             RowLayout {
                 anchors.fill: parent
@@ -248,6 +264,31 @@ Window {
                     }
                 }
             }
+
+            MouseArea {
+                anchors.fill: parent
+                propagateComposedEvents: true
+                onPressed: {
+                    objectList.currentIndex = -1
+                    polledObjectList.currentIndex = -1
+                    row.ListView.view.currentIndex = index
+                    row.ListView.view.focus = true
+                    mouse.accepted = false
+                }
+            }
+
+            TextEdit {
+                id: objNameCopy
+                visible: false
+                text: obj.name
+            }
+
+            Keys.onPressed: {
+                if(event.matches(StandardKey.Copy)) {
+                    objNameCopy.selectAll()
+                    objNameCopy.copy()
+                }
+            }
         }
     }
 
@@ -337,6 +378,7 @@ Window {
             model: objects
             delegate: objectRow
             spacing: 3
+            highlightFollowsCurrentItem: false
             ScrollBar.vertical: ScrollBar {}
         }
 
@@ -360,6 +402,8 @@ Window {
             model: polledObjects
             delegate: objectRow
             spacing: 3
+            highlightFollowsCurrentItem: false
+            currentIndex: -1
             ScrollBar.vertical: ScrollBar {}
             visible: count > 0
         }
@@ -398,5 +442,24 @@ Window {
 
             visible: req.activeFocus || rep.activeFocus
         }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        propagateComposedEvents: true
+
+        onWheel: {
+            if(wheel.modifiers & Qt.ControlModifier)
+                root.fontSize = root.fontSize * (1 + wheel.angleDelta.y * 0.0002)
+            else
+                wheel.accepted = false
+        }
+
+        onClicked: mouse.accepted = false
+        onDoubleClicked: mouse.accepted = false
+        onPositionChanged: mouse.accepted = false
+        onPressAndHold: mouse.accepted = false
+        onPressed: mouse.accepted = false
+        onReleased: mouse.accepted = false
     }
 }

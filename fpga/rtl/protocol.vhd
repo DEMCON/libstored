@@ -392,7 +392,7 @@ begin
 
 			case r.state is
 			when STATE_DATA =>
-				if encode_in.valid = '1' and encode_out_accept = '1' then
+				if encode_in.valid = '1' then
 					if ESCAPE_ALL then
 						if unsigned(encode_in.data) < 32 then
 							v.state := STATE_ESC;
@@ -420,17 +420,12 @@ begin
 
 				if v.state = STATE_ESC then
 					v.postpone_last := encode_in.last;
+				else
+					v.postpone_last := '0';
 				end if;
 			when STATE_ESC =>
-				if encode_out_accept = '1' then
-					v.state := STATE_DATA;
-				end if;
-			end case;
-
-			if rstn /= '1' then
 				v.state := STATE_DATA;
-				v.postpone_last := '0';
-			end if;
+			end case;
 
 			r_in <= v;
 		end process;
@@ -438,14 +433,19 @@ begin
 		process(clk)
 		begin
 			if rising_edge(clk) then
-				r <= r_in;
+				if rstn /= '1' then
+					r.state <= STATE_DATA;
+					r.postpone_last <= '0';
+				elsif encode_out_accept = '1' then
+					r <= r_in;
+				end if;
 			end if;
 		end process;
 
 		encode_out_data <=
 			encode_in.data when r.state = STATE_DATA and r_in.state = STATE_DATA else
-			x"7f" when r.state = STATE_DATA else
-			r.esc_data;
+			x"7f" when r.state = STATE_DATA else -- switching to STATE_ESC
+			r.esc_data; -- in STATE_ESC
 
 		with r.state select
 			encode_out_last <=
@@ -536,7 +536,7 @@ begin
 			decode_in.data;
 
 		decode_out_valid <=
-			decode_in.valid and decode_in.last when decode_in.data = x"0d" else -- is valid, but will be dropped
+			decode_in.valid and decode_in.last when decode_in.data = x"0d" else -- the last is valid, but will be dropped
 			'0' when r.state = STATE_DATA and decode_in_is_esc and decode_in.last = '0' else
 			decode_in.valid;
 
@@ -1009,8 +1009,27 @@ use work.libstored_pkg;
 entity UARTLayer is
 	generic (
 		SYSTEM_CLK_FREQ : integer := 100e6;
-		BAUD : integer := 115200;
-		DECODE_OUT_FIFO_DEPTH : natural := 0
+
+		-- Baud rate. When set to 0, do auto-baud. For this, the first
+		-- received character is used to determine the baud rate. For this,
+		-- the time between the first and the third rising edge is used as
+		-- the byte length. XON, XOFF, ESC are all valid for this detection.
+		-- To restart auto-baud, send a break (or any other character
+		-- with invalid stop bit).
+		BAUD : natural := 0;
+		AUTO_BAUD_MINIMUM : positive := 9600;
+
+		DECODE_OUT_FIFO_DEPTH : natural := 0;
+
+		-- Only enable XON/XOFF when there are no bit flips possible.
+		-- Otherwise, one could falsely see XOFF and suspend transmission.
+		-- The UARTLayer sends an XON when receiving the XOFF-XON-XON sequence,
+		-- which may solve the deadlock, but this mechanism may not be fool proof.
+		-- Moreover, always use the AsciiEscapeLayer to escape XON/XOFF in the data.
+		XON_XOFF : boolean := false;
+
+		-- Minimum number of bytes that can be received after sending XOFF.
+		XOFF_SPARE : natural := 0
 	);
 	port (
 		clk : in std_logic;
@@ -1024,16 +1043,87 @@ entity UARTLayer is
 		cts : in std_logic := '0';
 		rts : out std_logic;
 
-		idle : out std_logic
+		idle : out std_logic;
+		bit_clk : out natural
 	);
 end UARTLayer;
 
 architecture rtl of UARTLayer is
-	constant BIT_DURATION : integer := libstored_pkg.maximum(1, integer(real(SYSTEM_CLK_FREQ) / real(BAUD)));
+	constant XON : std_logic_vector(7 downto 0) := x"11";
+	constant XOFF : std_logic_vector(7 downto 0) := x"13";
+
+	impure function calc_decode_out_fifo_almost_full return natural is
+	begin
+		if XON_XOFF then
+			-- When this threshold is hit, we should finish the current TX,
+			-- send XOFF, which should be received, but the other party might
+			-- be currently sending a byte when it parses the XOFF.
+			-- So, we need at least 3, but allow for a bit more.
+			return 6 + XOFF_SPARE;
+		else
+			-- In case of RTS/CTS, hardware flow control is supposed to
+			-- react immediately. So, it only finishes the current byte
+			-- that is in transmission. Just add room for one more.
+			return 2;
+		end if;
+	end function;
+
+	impure function calc_decode_out_fifo_depth return natural is
+	begin
+		if XON_XOFF then
+			-- XON/XOFF is slow and possibly expensive. So, a large
+			-- buffer would be nice.
+			return libstored_pkg.maximum(DECODE_OUT_FIFO_DEPTH, calc_decode_out_fifo_almost_full + 6);
+		else
+			return libstored_pkg.maximum(DECODE_OUT_FIFO_DEPTH, 4);
+		end if;
+	end function;
+
+	impure function max_bit_duration return natural is
+	begin
+		if BAUD = 0 then
+			return libstored_pkg.maximum(1, integer(real(SYSTEM_CLK_FREQ) / real(AUTO_BAUD_MINIMUM)));
+		else
+			return libstored_pkg.maximum(1, integer(real(SYSTEM_CLK_FREQ) / real(BAUD)));
+		end if;
+	end function;
+
+	impure function max_byte_duration return natural is
+	begin
+		return max_bit_duration * 10;
+	end function;
+
+	signal auto_baud_valid : std_logic;
+	signal auto_bit_duration : natural range 0 to max_bit_duration;
+
+	impure function bit_duration return natural is
+	begin
+		if BAUD = 0 then
+			if auto_baud_valid = '1' then
+				return auto_bit_duration;
+			else
+				return 0;
+			end if;
+		else
+			return libstored_pkg.maximum(1, integer(real(SYSTEM_CLK_FREQ) / real(BAUD)));
+		end if;
+	end function;
+
+	impure function half_bit_duration return natural is
+	begin
+		return bit_duration / 2;
+	end function;
+
+	impure function quarter_bit_duration return natural is
+	begin
+		return half_bit_duration / 2;
+	end function;
+
 	signal rx_i, cts_i : std_logic;
 	signal rx_valid, rx_accept, rx_almost_full, rx_empty : std_logic;
 	signal rx_data : std_logic_vector(7 downto 0);
 	signal rx_idle, tx_idle : std_logic;
+	signal rx_pause, tx_pause, tx_xon : std_logic;
 begin
 
 	rx_meta_inst : entity work.libstored_metastabilize
@@ -1056,8 +1146,8 @@ begin
 	decode_out_fifo_inst : entity work.libstored_fifo
 		generic map (
 			WIDTH => 8,
-			DEPTH => libstored_pkg.maximum(DECODE_OUT_FIFO_DEPTH, 4),
-			ALMOST_FULL_REMAINING => 2
+			DEPTH => calc_decode_out_fifo_depth,
+			ALMOST_FULL_REMAINING => calc_decode_out_fifo_almost_full
 		)
 		port map (
 			clk => clk,
@@ -1072,6 +1162,7 @@ begin
 			empty => rx_empty
 		);
 
+	rx_pause <= rx_almost_full;
 	decode_out.last <= '0';
 	idle <= rx_idle and tx_idle and rx_empty;
 
@@ -1079,16 +1170,19 @@ begin
 		type state_t is (STATE_RESET, STATE_IDLE, STATE_START, STATE_DATA, STATE_STOP);
 		type r_t is record
 			state : state_t;
-			cnt : natural range 0 to BIT_DURATION;
+			cnt : natural range 0 to max_bit_duration;
 			len : natural range 0 to 7;
 			data : std_logic_vector(7 downto 0);
 			accept : std_logic;
 			tx : std_logic;
 			idle : std_logic;
+			rx_paused : std_logic;
+			tx_paused : std_logic;
+			tx_xon : std_logic;
 		end record;
 		signal r, r_in : r_t;
 	begin
-		process(r, rstn, encode_in.data, encode_in.valid, encode_in.last, cts_i)
+		process(r, rstn, encode_in.data, encode_in.valid, encode_in.last, cts_i, rx_pause, tx_pause, tx_xon, auto_baud_valid, auto_bit_duration)
 			variable v : r_t;
 		begin
 			v := r;
@@ -1098,29 +1192,46 @@ begin
 			end if;
 
 			v.accept := '0';
+			v.tx_xon := r.tx_xon or tx_xon;
 
 			case r.state is
 			when STATE_RESET =>
 				v.state := STATE_IDLE;
 			when STATE_IDLE =>
-				if encode_in.valid = '1' and cts_i = '0' then
-					v.cnt := BIT_DURATION;
-					v.data := encode_in.data;
-					v.len := 7;
-					v.accept := '1';
-					v.state := STATE_START;
-					v.idle := '0';
-					v.tx := '0';
+				if auto_baud_valid = '1' and cts_i = '0' and tx_pause = '0' then
+					if XON_XOFF and r.rx_paused = '0' and rx_pause = '1' then
+						-- Need to send XOFF now
+						v.rx_paused := '1';
+						v.data := XOFF;
+						v.state := STATE_START;
+					elsif XON_XOFF and (r.rx_paused = '1' or v.tx_xon = '1') and rx_pause = '0' then
+						-- Let's send XON first
+						v.rx_paused := '0';
+						v.tx_xon := '0';
+						v.data := XON;
+						v.state := STATE_START;
+					elsif encode_in.valid = '1' then
+						v.data := encode_in.data;
+						v.accept := '1';
+						v.state := STATE_START;
+					end if;
+
+					if v.state = STATE_START then
+						v.cnt := bit_duration;
+						v.len := 7;
+						v.idle := '0';
+						v.tx := '0';
+					end if;
 				end if;
 			when STATE_START =>
 				if v.cnt = 0 then
 					v.state := STATE_DATA;
-					v.cnt := BIT_DURATION;
+					v.cnt := bit_duration;
 					v.tx := r.data(0);
 				end if;
 			when STATE_DATA =>
 				if v.cnt = 0 then
-					v.cnt := BIT_DURATION;
+					v.cnt := bit_duration;
 					v.data := '-' & v.data(7 downto 1);
 					if r.len = 0 then
 						v.state := STATE_STOP;
@@ -1136,7 +1247,7 @@ begin
 				end if;
 			end case;
 
-			if encode_in.last = '1' and encode_in.valid = '1' then
+			if encode_in.last = '1' and encode_in.valid = '1' and v.accept = '1' then
 				v.idle := '1';
 			end if;
 
@@ -1144,6 +1255,9 @@ begin
 				v.state := STATE_RESET;
 				v.tx := '1';
 				v.idle := '1';
+				v.rx_paused := '0';
+				v.tx_paused := '0';
+				v.tx_xon := '0';
 			end if;
 
 			r_in <= v;
@@ -1163,18 +1277,29 @@ begin
 	end generate;
 
 	rx_g : if true generate
-		type state_t is (STATE_RESET, STATE_IDLE, STATE_START, STATE_DATA, STATE_STOP);
+		constant SYNC_DURATION : natural := max_byte_duration * 2;
+		constant CNT_BITS : natural := libstored_pkg.bits(SYNC_DURATION);
+		constant CNT_MAX : natural := 2**CNT_BITS - 1;
+		type state_t is (
+			STATE_RESET, STATE_SYNC,
+			STATE_AUTO_BAUD, STATE_EDGE_1, STATE_HIGH_1, STATE_EDGE_2, STATE_HIGH_2, STATE_EDGE_3, STATE_AUTO_BAUD_CHECK,
+			STATE_IDLE, STATE_EDGE, STATE_START, STATE_DATA, STATE_STOP);
 		type r_t is record
 			state : state_t;
-			cnt : natural range 0 to BIT_DURATION;
+			cnt : natural range 0 to CNT_MAX;
 			len : natural range 0 to 7;
 			data : std_logic_vector(7 downto 0);
 			valid : std_logic;
 			rts : std_logic;
+			tx_paused : std_logic;
+			tx_xon : std_logic;
+			tx_xon_suppress : std_logic;
+			auto_baud : natural range 0 to CNT_MAX;
+			auto_baud_valid : std_logic;
 		end record;
 		signal r, r_in : r_t;
 	begin
-		process(r, rstn, rx_i, rx_almost_full)
+		process(r, rstn, rx_i, rx_almost_full, auto_baud_valid, auto_bit_duration, rx_pause)
 			variable v : r_t;
 		begin
 			v := r;
@@ -1185,46 +1310,149 @@ begin
 
 			v.valid := '0';
 			v.rts := rx_almost_full;
+			v.tx_xon := '0';
 
 			case r.state is
 			when STATE_RESET =>
-				v.state := STATE_IDLE;
+				v.state := STATE_SYNC;
+				v.cnt := SYNC_DURATION;
+				v.tx_paused := '0';
+				v.tx_xon_suppress := '0';
+			when STATE_SYNC =>
+				if rx_i /= '1' then
+					-- Must be high for a while.
+					v.state := STATE_RESET;
+				elsif v.cnt = 0 then
+					if BAUD = 0 and r.auto_baud_valid = '0' then
+						v.state := STATE_AUTO_BAUD;
+					else
+						v.state := STATE_IDLE;
+					end if;
+				end if;
+			when STATE_AUTO_BAUD =>
+				if rx_i = '0' then
+					-- falling edge
+					v.cnt := max_bit_duration;
+					v.state := STATE_EDGE_1;
+				end if;
+			when STATE_EDGE_1 =>
+				if v.cnt = 0 then
+					-- Took too long. Abort.
+					v.state := STATE_SYNC;
+				elsif rx_i = '1' then
+					-- First rising edge, start measuring.
+					v.cnt := CNT_MAX - 4; -- -4 for rounding to auto_bit_duration later on
+					v.state := STATE_HIGH_1;
+				end if;
+			when STATE_HIGH_1 =>
+				if v.cnt = 0 then
+					v.state := STATE_SYNC;
+				elsif rx_i = '0' then
+					v.state := STATE_EDGE_2;
+				end if;
+			when STATE_EDGE_2 =>
+				if v.cnt = 0 then
+					v.state := STATE_SYNC;
+				elsif rx_i = '1' then
+					v.state := STATE_HIGH_2;
+				end if;
+			when STATE_HIGH_2 =>
+				if v.cnt = 0 then
+					v.state := STATE_SYNC;
+				elsif rx_i = '0' then
+					v.state := STATE_EDGE_3;
+				end if;
+			when STATE_EDGE_3 =>
+				if v.cnt = 0 then
+					v.state := STATE_SYNC;
+				elsif rx_i = '1' then
+					-- Got it.
+					v.auto_baud := to_integer(not to_unsigned(v.cnt, CNT_BITS));
+					v.state := STATE_AUTO_BAUD_CHECK;
+				end if;
+			when STATE_AUTO_BAUD_CHECK =>
+				if r.auto_baud > max_byte_duration then
+					v.state := STATE_SYNC;
+				else
+					v.auto_baud_valid := '1';
+					v.state := STATE_IDLE;
+				end if;
 			when STATE_IDLE =>
 				if rx_i = '0' then
-					v.cnt := libstored_pkg.maximum(0, (BIT_DURATION) / 2 - 2);
-						-- -2 is for meta stability delay
+					-- rx must be low for a quarter of a bit, otherwise
+					-- it is discarded as a glitch.
+					v.cnt := quarter_bit_duration;
+					v.state := STATE_EDGE;
+				end if;
+			when STATE_EDGE =>
+				if v.cnt = 0 then
+					if BAUD = 0 then
+						v.cnt := quarter_bit_duration;
+					else
+						-- On a perfect edge, we sync at sampling the bit exactly
+						-- halve way. If there is some noise at the edge,
+						-- this should be solved after a quarter of a bit, otherwise
+						-- the sample time gets close to the edge of the next bit.
+						v.cnt := libstored_pkg.maximum(0, half_bit_duration - quarter_bit_duration);
+					end if;
+
 					v.state := STATE_START;
+				elsif rx_i = '1' then
+					-- Was probably just a glitch.
+					v.state := STATE_IDLE;
 				end if;
 			when STATE_START =>
 				if v.cnt = 0 then
 					v.state := STATE_DATA;
-					v.cnt := BIT_DURATION;
+					v.cnt := bit_duration;
 					v.len := 7;
 				end if;
 			when STATE_DATA =>
 				if v.cnt = 0 then
-					v.cnt := BIT_DURATION;
+					v.cnt := bit_duration;
 					v.data := rx_i & v.data(7 downto 1);
 					if r.len = 0 then
 						v.state := STATE_STOP;
-						v.valid := '1';
 					else
 						v.len := r.len - 1;
 					end if;
 				end if;
 			when STATE_STOP =>
 				if v.cnt = 0 then
+					if rx_i = '1' then
+						v.state := STATE_IDLE;
+
+						if XON_XOFF and r.data = XON then
+							if r.tx_paused = '0' and rx_pause = '0' and r.tx_xon_suppress = '0' then
+								-- Not paused, just send an XON to make sure that
+								-- we did not send an XOFF by accident (e.g., due to bit flips).
+								v.tx_xon := '1';
+								v.tx_xon_suppress := '1';
+							end if;
+
+							v.tx_paused := '0';
+						elsif XON_XOFF and r.data = XOFF then
+							v.tx_paused := '1';
+							v.tx_xon_suppress := '0';
+						else
+							v.valid := '1';
+						end if;
+					else
 --pragma translate_off
-					assert rx_i = '1' report "Invalid stop bit" severity warning;
-					v.data := (others => '-');
+						report "Invalid stop bit" severity warning;
+						v.data := (others => '-');
 --pragma translate_on
-					v.state := STATE_IDLE;
+						v.state := STATE_RESET;
+						v.auto_baud_valid := '0';
+					end if;
 				end if;
 			end case;
 
 			if rstn /= '1' then
 				v.state := STATE_RESET;
 				v.rts := '1';
+				v.tx_xon_suppress := '0';
+				v.auto_baud_valid := '0';
 			end if;
 
 			r_in <= v;
@@ -1235,6 +1463,16 @@ begin
 		rts <= r.rts;
 
 		tx_idle <= '1' when r.state = STATE_IDLE else '0';
+		tx_pause <= r.tx_paused;
+		tx_xon <= r.tx_xon;
+
+		auto_baud_valid <= '1' when BAUD > 0 else r.auto_baud_valid;
+		auto_bit_duration <= bit_duration when BAUD > 0 else r.auto_baud / 8;
+
+		process(auto_baud_valid, auto_bit_duration)
+		begin
+			bit_clk <= bit_duration;
+		end process;
 
 --pragma translate_off
 		assert not (rising_edge(clk) and rx_valid = '1' and rx_accept = '0')

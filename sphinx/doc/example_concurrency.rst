@@ -27,18 +27,21 @@ When started like: ``concurrency 3``
 
 .. literalinclude:: ../../examples/concurrency/output.txt
 
-Store reference
----------------
 
-.. doxygenclass:: stored::ExampleConcurrencyMainObjects
+.. only:: threads
 
-.. doxygenclass:: stored::ExampleConcurrencyMainBase
+   Store reference
+   ---------------
 
-.. doxygenclass:: stored::ExampleConcurrencyMain
+   .. doxygenclass:: stored::ExampleConcurrencyMainObjects
 
-.. doxygenclass:: stored::ExampleConcurrencyControlObjects
+   .. doxygenclass:: stored::ExampleConcurrencyMainBase
 
-.. doxygenclass:: stored::ExampleConcurrencyControlBase
+   .. doxygenclass:: stored::ExampleConcurrencyMain
 
-.. doxygenclass:: stored::ExampleConcurrencyControl
+   .. doxygenclass:: stored::ExampleConcurrencyControlObjects
+
+   .. doxygenclass:: stored::ExampleConcurrencyControlBase
+
+   .. doxygenclass:: stored::ExampleConcurrencyControl
 

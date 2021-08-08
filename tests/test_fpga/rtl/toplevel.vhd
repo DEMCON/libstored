@@ -53,9 +53,10 @@ architecture behav of test_fpga is
 		return v;
 	end function;
 
-	constant BAUD : natural := 11520000;
+	constant BAUD : natural := 11000000;
 	signal uart_encode_in, uart_decode_out : msg_t := msg_term;
 	signal uart_rx, uart_tx, uart_cts, uart_rts : std_logic := '1';
+	signal uart_bit_clk : natural;
 
 	signal term_encode_in, term_encode_out, term_decode_in, term_decode_out : msg_t := msg_term;
 	signal term_terminal_out, term_terminal_in : msg_t := msg_term;
@@ -124,7 +125,9 @@ begin
 	UARTLayer_inst : entity work.UARTLayer
 		generic map (
 			SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ,
-			BAUD => BAUD
+			BAUD => 0, --BAUD,
+			AUTO_BAUD_MINIMUM => 960000,
+			XON_XOFF => true
 		)
 		port map (
 			clk => clk,
@@ -134,7 +137,8 @@ begin
 			rx => uart_rx,
 			tx => uart_tx,
 			cts => uart_cts,
-			rts => uart_rts
+			rts => uart_rts,
+			bit_clk => uart_bit_clk
 		);
 
 	TerminalLayer_inst : entity work.TerminalLayer
@@ -406,6 +410,37 @@ begin
 			test_expect_eq(test, var_out2.\default int8\.value, 16#82#);
 		end procedure;
 
+		procedure reset_auto_baud is
+		begin
+			wait until rising_edge(clk);
+			uart_rx <= '0';
+			wait for 1000 ms / SYSTEM_CLK_FREQ * uart_bit_clk * 11;
+			wait until rising_edge(clk);
+			uart_rx <= '1';
+			-- Wait for UART SYNC_DURATION.
+			wait for 0.021 ms;
+			wait until rising_edge(clk);
+		end procedure;
+
+		procedure do_test_uart_auto_baud is
+		begin
+			test_start(test, "UartAutoBaud");
+			-- SYNC_DURATION is two bytes at minimum baud rate, which is set
+			-- at 9600 * 100.
+			wait for 0.021 ms;
+
+			uart_do_rx(BAUD / 3, uart_rx, uart_rts, to_buffer(x"11")); -- XON
+			test_expect_eq(test, uart_bit_clk, integer(real(SYSTEM_CLK_FREQ) / real(BAUD / 3)));
+			reset_auto_baud;
+
+			uart_do_rx(BAUD / 2, uart_rx, uart_rts, to_buffer(x"13")); -- XOFF
+			test_expect_eq(test, uart_bit_clk, integer(real(SYSTEM_CLK_FREQ) / real(BAUD / 2)));
+			reset_auto_baud;
+
+			uart_do_rx(BAUD, uart_rx, uart_rts, to_buffer(x"1b")); -- ESC
+			test_expect_eq(test, uart_bit_clk, integer(real(SYSTEM_CLK_FREQ) / real(BAUD)));
+		end procedure;
+
 		procedure do_test_uart_tx is
 			variable buf : buffer_t(0 to 0);
 		begin
@@ -438,8 +473,38 @@ begin
 			wait until rising_edge(clk) and uart_decode_out.accept = '1' for 1 ms;
 			uart_encode_in.valid <= '0';
 			uart_do_tx(BAUD, uart_tx, buf);
+			uart_cts <= '1';
 			wait until rising_edge(clk);
 			test_expect_eq(test, buf(0), x"34");
+
+			-- Suspend because of software flow control.
+			uart_do_rx(BAUD, uart_rx, uart_rts, to_buffer(x"13")); -- XOFF
+			-- Hardware flow control allows tx to start.
+			uart_cts <= '0';
+			uart_encode_in.data <= x"56";
+			uart_encode_in.valid <= '1';
+			uart_encode_in.last <= '1';
+			uart_encode_in.accept <= '0';
+			wait until rising_edge(clk) and uart_decode_out.accept = '1' for 10 us;
+			-- Nothing should have happened.
+			test_expect_eq(test, uart_decode_out.accept, '0');
+			test_expect_eq(test, uart_tx, '1');
+
+			uart_do_rx(BAUD, uart_rx, uart_rts, to_buffer(x"11")); -- XON
+			-- msg should have been accepted already.
+			uart_encode_in.valid <= '0';
+			uart_do_tx(BAUD, uart_tx, buf);
+			uart_cts <= '1';
+			wait until rising_edge(clk);
+			test_expect_eq(test, buf(0), x"56");
+
+			-- Duplicate XON, should be responded to with XON.
+			uart_do_rx(BAUD, uart_rx, uart_rts, to_buffer(x"11")); -- XON
+			uart_cts <= '0';
+			uart_do_tx(BAUD, uart_tx, buf);
+			uart_cts <= '1';
+			wait until rising_edge(clk);
+			test_expect_eq(test, buf(0), x"11");
 		end procedure;
 
 		procedure do_test_uart_rx is
@@ -456,27 +521,42 @@ begin
 		end procedure;
 
 		procedure do_test_uart_rx_fc is
+			variable buf : buffer_t(0 to 0);
 		begin
 			test_start(test, "UartRxFlowControl");
-			-- FIFO has as size of 8 and will be almost empty at 5.
+			uart_cts <= '1';
+			-- FIFO has a size of 16 and will be almost full at 9, not counting XOFF and XON.
 			uart_do_rx(BAUD, uart_rx, uart_rts,
-				(x"01", x"02", x"03", x"04", x"05"));
-			wait until rising_edge(clk);
+				(x"01", x"02", x"03", x"04", x"13", x"05", x"06", x"11", x"07", x"08", x"09"));
+			wait until rising_edge(clk) and uart_rts = '1' for 1 us;
 			test_expect_eq(test, uart_rts, '1');
+			uart_cts <= '0';
+			uart_do_tx(BAUD, uart_tx, buf);
+			uart_cts <= '1';
+			wait until rising_edge(clk);
+			test_expect_eq(test, buf(0), x"13"); -- XOFF
+
 			uart_encode_in.accept <= '1';
-			for i in 1 to 5 loop
+			for i in 1 to 9 loop
 				wait until rising_edge(clk);
 				test_expect_eq(test, uart_decode_out.valid, '1');
 				test_expect_eq(test, unsigned(uart_decode_out.data), i);
 			end loop;
 			uart_encode_in.accept <= '0';
-			uart_do_rx(BAUD, uart_rx, uart_rts, to_buffer(x"06"));
+
+			uart_cts <= '0';
+			uart_do_tx(BAUD, uart_tx, buf);
+			uart_cts <= '1';
 			wait until rising_edge(clk);
+			test_expect_eq(test, buf(0), x"11"); -- XON
+
+			uart_do_rx(BAUD, uart_rx, uart_rts, to_buffer(x"0a"));
+			wait until rising_edge(clk) and uart_decode_out.valid = '1' for 1 ms;
 			uart_encode_in.accept <= '1';
+			test_expect_eq(test, unsigned(uart_decode_out.data), 10);
 			wait until rising_edge(clk);
-			test_expect_eq(test, uart_decode_out.valid, '1');
-			test_expect_eq(test, unsigned(uart_decode_out.data), 6);
 			uart_encode_in.accept <= '0';
+			wait until rising_edge(clk);
 		end procedure;
 
 		procedure do_test_term_inject is
@@ -584,7 +664,7 @@ begin
 		begin
 			test_start(test, "FileRead");
 			test_expect_eq(test, clk, file_decode_out, file_encode_in,
-				(x"31", x"32", x"33", x"0a", x"00"));
+				(x"31", x"32", x"33", x"0d", x"0a", x"00"));
 			test_expect_eq(test, file_decode_out.last, '1');
 		end procedure;
 
@@ -631,6 +711,7 @@ begin
 		do_test_chained_update;
 		do_test_chained_update_out;
 
+		do_test_uart_auto_baud;
 		do_test_uart_tx;
 		do_test_uart_tx_fc;
 		do_test_uart_rx;

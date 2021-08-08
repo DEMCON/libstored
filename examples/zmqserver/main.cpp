@@ -8,7 +8,7 @@
 #include <cmath>
 #include <time.h>
 
-#if __cplusplus >= 201103L
+#if STORED_cplusplus >= 201103L
 #  include <chrono>
 #endif
 

@@ -178,8 +178,8 @@ namespace stored {
 			{}
 
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-			explicit Event(int /*Type*/ type, ...)
-				: type((Type)type)
+			explicit Event(int /*Type*/ type_, ...)
+				: type((Type)type_)
 #ifndef STORED_POLL_ZMQ
 				, user_data(), events()
 #endif
@@ -188,7 +188,7 @@ namespace stored {
 #endif
 			{
 				va_list args;
-				va_start(args, type);
+				va_start(args, type_);
 
 				switch(type) {
 				case TypeFd: fd = va_arg(args, int); break;

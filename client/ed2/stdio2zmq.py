@@ -69,13 +69,15 @@ class Stdio2Zmq(Stream2Zmq):
             sys.exit(self.process.returncode)
 
     def sendToApp(self, data):
-        if len(data) == 0:
-            # Our stdin has closed, close the process's too.
-            self.logger.debug('stdin closed; shutdown')
-            self.process.stdin.close()
-        else:
+        if self.process.stdin.closed:
+            return
+
+        try:
             self.process.stdin.write(data)
             self.process.stdin.flush()
+        except:
+            self.logger.info('Cannot write to stdin; shutdown')
+            self.process.stdin.close()
 
     def encode(self, data):
         if len(data) > 0:

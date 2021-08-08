@@ -25,21 +25,142 @@
 namespace stored {
 
 	namespace impl {
-		Variant<> find(void* buffer, uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max());
+		/*!
+		 * \brief Decodes an Unsigned VLQ number.
+		 * \param p a pointer to the buffer to decode, which is incremented till after the decoded value
+		 * \return the decoded value
+		 * \private
+		 */
+		template <typename T>
+		constexpr14 T decodeInt(uint8_t const*& p) noexcept {
+			T v = 0;
+			while(*p & 0x80u) {
+				v = (v | (T)(*p & 0x7fu)) << 7u;
+				p++;
+			}
+			return v | (T)*p++;
+		}
+
+		/*!
+		 * \brief Skips an Unsigned VLQ number, which encodes a buffer offset.
+		 * \param p a pointer to the offset to be skipped, which is increment till after the offset
+		 * \private
+		 */
+		constexpr14 void skipOffset(uint8_t const*& p) noexcept {
+			while(*p++ & 0x80u);
+		}
+
+		/*!
+		 * \brief Finds an object in a directory.
+		 *
+		 * Don't call this function, use stored::find() instead.
+		 *
+		 * \param directory the binary directory description
+		 * \param name the name to find, can be abbreviated as long as it is unambiguous
+		 * \param len the maximum length of \p name to parse
+		 * \return a container-independent variant, which is not valid when not found
+		 * \see #stored::find()
+		 * \private
+		 */
+#if defined(STORED_ENABLE_UBSAN) && (defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG))
+		// Somehow, ubsan thinks that we are working outside of the directory definition.
+#  if GCC_VERSION < 80000L
+#    pragma GCC diagnostic push
+#    pragma GCC diagnostic ignored "-Wattributes"
+#  endif
+		__attribute__((no_sanitize("pointer-overflow")))
+#endif
+		constexpr14 Variant<> find(uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
+			Variant<> const notfound;
+
+			if(unlikely(!directory || !name))
+				return notfound;
+
+			uint8_t const* p = directory;
+			while(true) {
+				bool nameEnd = !*name || len == 0;
+				if(*p == 0) {
+					// end
+					break;
+				} else if(*p >= 0x80u) {
+					// var
+					Type::type type = (Type::type)(*p++ ^ 0x80u);
+					size_t datalen = !Type::isFixed(type) ? decodeInt<size_t>(p) : Type::size(type);
+					size_t offset = decodeInt<size_t>(p);
+					return Variant<>(type, (uintptr_t)offset, datalen);
+				} else if(*p <= 0x1f) {
+					// skip
+					if(nameEnd)
+						break;
+
+					uint8_t skip = 0;
+					for(skip = *p++; skip > 0 && len > 0 && *name && *name != '/'; skip--, name++, len--);
+
+					if(skip > 0)
+						// Premature end of name
+						break;
+				} else if(*p == '/') {
+					// Skip till next /
+					while(len > 0 && *name) {
+						len--;
+						if(*name++ == '/')
+							break;
+					}
+
+					p++;
+				} else {
+					// match char
+					int c = (nameEnd ? 0 : (int)*name) - (int)*p++;
+					if(c < 0) {
+						// take jmp_l
+
+						// This early-break is not required. However, clang and
+						// MSVC seems to have issues in evaluating constexpr,
+						// specifically when evaluating the end marker.
+						if(*p == 0)
+							break;
+
+						p += decodeInt<uintptr_t>(p) - 1;
+					} else {
+						skipOffset(p);
+						if(c > 0) {
+							// take jmp_g
+
+							// See above.
+							if(*p == 0)
+								break;
+
+							p += decodeInt<uintptr_t>(p) - 1;
+						} else {
+							// equal
+							skipOffset(p);
+							name++;
+							len--;
+						}
+					}
+				}
+			}
+
+			return Variant<>();
+		}
+#if defined(STORED_ENABLE_UBSAN) && (defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG))
+#  if GCC_VERSION < 80000L
+#    pragma GCC diagnostic pop
+#  endif
+#endif
 	}
 
 	/*!
 	 * \brief Finds an object in a directory.
 	 * \param container the container that has the \p buffer and \p directory. Specify the actual (lowest) subclass of the store.
-	 * \param buffer the buffer with variable's data
 	 * \param directory the binary directory description
 	 * \param name the name to find, can be abbreviated as long as it is unambiguous
 	 * \param len the maximum length of \p name to parse
 	 * \return a variant, which is not valid when not found
 	 */
 	template <typename Container>
-	Variant<Container> find(Container& container, void* buffer, uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max()) {
-		return impl::find(buffer, directory, name, len).apply<Container>(container);
+	constexpr14 Variant<Container> find(Container& container, uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
+		return impl::find(directory, name, len).apply<Container>(container);
 	}
 
 	/*!
@@ -64,12 +185,10 @@ namespace stored {
 	template <typename Container, typename F>
 	SFINAE_IS_FUNCTION(F, void(Container*, char const*, Type::type, void*, size_t), void)
 	list(Container* container, void* buffer, uint8_t const* directory, F&& f) {
-		typedef void(ListCallback)(Container*, char const*, Type::type, void*, size_t);
-		std::function<ListCallback> f_ = f;
-		auto cb = [](void* container_, char const* name, Type::type type, void* buffer_, size_t len, void* f__) {
-			(*(std::function<ListCallback>*)f__)((Container*)container_, name, type, buffer_, len);
+		auto cb = [](void* container_, char const* name, Type::type type, void* buffer_, size_t len, void* f_) {
+			(*static_cast<typename std::decay<F>::type*>(f_))((Container*)container_, name, type, buffer_, len);
 		};
-		list(container, buffer, directory, static_cast<ListCallbackArg*>(cb), &f_);
+		list(container, buffer, directory, static_cast<ListCallbackArg*>(cb), &f);
 	}
 #endif
 

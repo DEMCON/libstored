@@ -23,7 +23,6 @@
 #include <libstored/macros.h>
 #include <libstored/util.h>
 
-#include <list>
 #include <new>
 
 #ifdef STORED_HAVE_VALGRIND
@@ -81,12 +80,11 @@ namespace stored {
 		/*!
 		 * \brief Dtor.
 		 */
-		~ScratchPad() {
-			// NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc)
-			free(chunk());
+		~ScratchPad() noexcept {
+			deallocate<char>((char*)chunk(), bufferSize() + chunkHeader);
 
-			for(std::list<char*>::iterator it = m_old.begin(); it != m_old.end(); ++it)
-				free(chunk(*it)); // NOLINT(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc)
+			for(List<char*>::type::iterator it = m_old.begin(); it != m_old.end(); ++it)
+				deallocate<char>((char*)chunk(*it), bufferSize(*it) + chunkHeader);
 		}
 
 		/*!
@@ -95,14 +93,14 @@ namespace stored {
 		 * Coalesce chunks when required. It leaves #max() untouched.
 		 * To actually free all used memory, call #shrink_to_fit() afterwards.
 		 */
-		void reset() {
+		void reset() noexcept {
 			m_size = 0;
 			m_total = 0;
 
 			if(unlikely(!m_old.empty())) {
 				// Coalesce chunks.
-				for(std::list<char*>::iterator it = m_old.begin(); it != m_old.end(); ++it)
-					free(chunk(*it)); // NOLINT(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc)
+				for(List<char*>::type::iterator it = m_old.begin(); it != m_old.end(); ++it)
+					deallocate<char>((char*)chunk(*it), bufferSize(*it) + chunkHeader);
 
 				m_old.clear();
 				reserve(m_max);
@@ -118,7 +116,7 @@ namespace stored {
 		/*!
 		 * \brief Checks if the ScratchPad is empty.
 		 */
-		bool empty() const {
+		constexpr bool empty() const noexcept {
 			return m_total == 0;
 		}
 
@@ -126,7 +124,7 @@ namespace stored {
 		 * \brief Returns the total amount of allocated memory.
 		 * \details This includes padding because of alignment requirements of #alloc().
 		 */
-		size_t size() const {
+		constexpr size_t size() const noexcept {
 			return (size_t)m_total;
 		}
 
@@ -134,14 +132,14 @@ namespace stored {
 		 * \brief Returns the maximum size.
 		 * \details To reset this value, use #shrink_to_fit().
 		 */
-		size_t max() const {
+		constexpr size_t max() const noexcept {
 			return (size_t)m_max;
 		}
 
 		/*!
 		 * \brief Returns the total capacity currently available within the ScratchPad.
 		 */
-		size_t capacity() const {
+		constexpr size_t capacity() const noexcept {
 			return (size_t)m_total - (size_t)m_size + (size_t)bufferSize();
 		}
 
@@ -165,23 +163,26 @@ namespace stored {
 			/*!
 			 * \brief Ctor.
 			 */
-			Snapshot(ScratchPad& spm, void* buffer, ScratchPad::size_type size) : m_spm(&spm), m_buffer(buffer), m_size(size) {}
+			Snapshot(ScratchPad& spm, void* buffer, ScratchPad::size_type size) noexcept
+				: m_spm(&spm), m_buffer(buffer), m_size(size)
+			{}
+
 		public:
 			/*!
 			 * \brief Dtor, which implies a rollback.
 			 */
-			~Snapshot() { rollback(); }
+			~Snapshot() noexcept { rollback(); }
 
 			/*!
 			 * \brief Detach from the ScratchPad.
 			 * \details Cannot rollback afterwards.
 			 */
-			void reset() { m_spm = nullptr; }
+			void reset() noexcept { m_spm = nullptr; }
 
 			/*!
 			 * \brief Perform a rollback of the corresponding ScratchPad.
 			 */
-			void rollback() {
+			void rollback() noexcept {
 				if(m_spm)
 					m_spm->rollback(m_buffer, m_size);
 			}
@@ -190,7 +191,11 @@ namespace stored {
 			/*!
 			 * \brief Move ctor.
 			 */
-			Snapshot(Snapshot&& s) noexcept : m_spm(s.m_spm), m_buffer(s.m_buffer), m_size(s.m_size) { s.reset(); }
+			Snapshot(Snapshot&& s) noexcept
+				: m_spm(s.m_spm), m_buffer(s.m_buffer), m_size(s.m_size)
+			{
+				s.reset();
+			}
 
 			/*!
 			 * \brief Move-assign.
@@ -208,13 +213,17 @@ namespace stored {
 			 * \brief Move ctor.
 			 * \details Even though \p s is \c const, it will be reset anyway by this ctor.
 			 */
-			Snapshot(Snapshot const& s) : m_spm(s.m_spm), m_buffer(s.m_buffer), m_size(s.m_size) { s.reset(); }
+			Snapshot(Snapshot const& s) noexcept
+				: m_spm(s.m_spm), m_buffer(s.m_buffer), m_size(s.m_size)
+			{
+				s.reset();
+			}
 
 		private:
 			/*!
 			 * \brief Resets and detaches this snapshot from the ScratchPad.
 			 */
-			void reset() const { m_spm = nullptr; }
+			void reset() const noexcept { m_spm = nullptr; }
 
 #if STORED_cplusplus >= 201103L
 		public:
@@ -236,13 +245,14 @@ namespace stored {
 			/*! \brief The total size of the ScratchPad when taking the snapshot. */
 			ScratchPad::size_type m_size;
 		};
+
 		friend class Snapshot;
 
 		/*!
 		 * \brief Get a snapshot of the ScratchPad.
 		 * \see #stored::ScratchPad::Snapshot.
 		 */
-		Snapshot snapshot() {
+		Snapshot snapshot() noexcept {
 			return Snapshot(*this, empty() ? nullptr : &m_buffer[m_size], m_total);
 		}
 
@@ -251,7 +261,7 @@ private:
 		 * \brief Perform a rollback to the given point.
 		 * \see #stored::ScratchPad::Snapshot.
 		 */
-		void rollback(void* snapshot, size_type size) {
+		void rollback(void* snapshot, size_type size) noexcept {
 			if(!snapshot || !size) {
 				reset();
 				return;
@@ -290,17 +300,7 @@ private:
 			if(m_buffer)
 				m_old.push_back(m_buffer);
 
-			// NOLINTNEXTLINE(cppcoreguidelines-no-malloc,cppcoreguidelines-owning-memory)
-			void* p = malloc(size + chunkHeader);
-			if(!p) {
-#ifdef __cpp_exceptions
-				throw std::bad_alloc();
-#else
-				abort();
-#endif
-			}
-
-			m_buffer = buffer(p);
+			m_buffer = buffer(allocate<char>(size + chunkHeader));
 			setBufferSize(size);
 			m_size = 0;
 
@@ -313,11 +313,11 @@ private:
 		/*!
 		 * \brief Discard the current buffer and get the next one from the #m_old list.
 		 */
-		void bufferPop() {
+		void bufferPop() noexcept {
 			stored_assert(m_buffer || m_old.empty());
 
 			if(m_buffer) {
-				free(chunk(m_buffer)); // NOLINT(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc)
+				deallocate<char>((char*)chunk(), bufferSize() + chunkHeader);
 				m_buffer = nullptr;
 			}
 
@@ -339,23 +339,16 @@ private:
 		}
 
 		/*!
-		 * \brief Try to grow (\c realloc()) the current buffer.
-		 * \details The current buffer may be moved, which invalidates all allocations within the buffer.
+		 * \brief Replace current buffer by a bigger one.
+		 * \details Contents of the current buffer may be lost.
 		 */
 		void bufferGrow(size_t size) {
 			stored_assert(size > bufferSize());
-			// clang-analyzer-unix.API: clang-tidy thinks new_cap can be 0, but that's not true.
-			// NOLINTNEXTLINE(cppcoreguidelines-no-malloc,cppcoreguidelines-owning-memory,clang-analyzer-unix.API)
-			void* p = realloc(chunk(m_buffer), size + chunkHeader);
-			if(!p) {
-#ifdef __cpp_exceptions
-				throw std::bad_alloc();
-#else
-				abort();
-#endif
-			}
 
-			m_buffer = buffer(p);
+			// Standard allocators don't have realloc. So, deallocate first,
+			// and then allocate a new one.
+			deallocate<char>((char*)chunk(), bufferSize() + chunkHeader);
+			m_buffer = buffer(allocate<char>(size + chunkHeader));
 			setBufferSize(size);
 
 #ifdef STORED_HAVE_VALGRIND
@@ -365,16 +358,23 @@ private:
 		}
 
 		/*!
-		 * \brief Returns the size of the current buffer.
+		 * \brief Returns the size of the given buffer.
 		 */
-		size_t bufferSize() const {
-			return likely(m_buffer) ? *(size_t*)(chunk(m_buffer)) : 0;
+		static constexpr size_t bufferSize(char* buffer) noexcept {
+			return likely(buffer) ? *(size_t*)(chunk(buffer)) : 0;
 		}
 
 		/*!
-		 * \brief Saves the malloc()ed size of the curretn buffer.
+		 * \brief Returns the size of the current buffer.
 		 */
-		void setBufferSize(size_t size) {
+		size_t bufferSize() const noexcept {
+			return bufferSize(m_buffer);
+		}
+
+		/*!
+		 * \brief Saves the malloc()ed size of the current buffer.
+		 */
+		void setBufferSize(size_t size) noexcept {
 			stored_assert(m_buffer);
 			stored_assert(size > 0);
 			*(size_t*)(chunk(m_buffer)) = size;
@@ -384,7 +384,7 @@ private:
 		 * \brief Returns the chunk from the given buffer.
 		 * \details The chunk is the actual piece of memory on the heap, which is the buffer with a header.
 		 */
-		static void* chunk(char* buffer) {
+		static constexpr void* chunk(char* buffer) noexcept {
 			return buffer ? buffer - chunkHeader : nullptr;
 		}
 
@@ -392,21 +392,21 @@ private:
 		 * \brief Returns the chunk from the current buffer.
 		 * \details The chunk is the actual piece of memory on the heap, which is the buffer with a header.
 		 */
-		void* chunk() {
+		constexpr void* chunk() noexcept {
 			return m_buffer ? chunk(m_buffer) : nullptr;
 		}
 
 		/*!
 		 * \brief Returns the buffer within the given chunk.
 		 */
-		static char* buffer(void* chunk) {
+		static constexpr char* buffer(void* chunk) noexcept {
 			return static_cast<char*>(chunk) + chunkHeader;
 		}
 
 		/*!
 		 * \brief Returns the current buffer.
 		 */
-		char* buffer() {
+		constexpr char* buffer() noexcept {
 			return m_buffer;
 		}
 
@@ -433,7 +433,7 @@ public:
 		/*!
 		 * \brief Releases all unused memory back to the OS, if possible.
 		 */
-		void shrink_to_fit() {
+		void shrink_to_fit() noexcept {
 			if(unlikely(empty())) {
 				m_max = 0;
 				reset();
@@ -455,7 +455,7 @@ public:
 		 * application uses.  During this time, there may exist multiple
 		 * chunks.  Call #reset() to optimize memory usage.
 		 */
-		size_t chunks() const {
+		constexpr size_t chunks() const noexcept {
 			return m_old.size() + (m_buffer ? 1 : 0);
 		}
 
@@ -487,7 +487,7 @@ public:
 #ifdef __cpp_exceptions
 				throw std::bad_alloc();
 #else
-				abort();
+				std::terminate();
 #endif
 			}
 
@@ -530,7 +530,7 @@ public:
 		/*! \brief Current buffer chunk. If it gets full, it is pushed onto #m_old and a new one is allocated. */
 		char* m_buffer;
 		/*! \brief Previous buffer chunks. */
-		std::list<char*> m_old;
+		List<char*>::type m_old;
 		/*! \brief Used offset within #m_buffer. */
 		size_type m_size;
 		/*! \brief Total memory usage of all chunks. */
