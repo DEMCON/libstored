@@ -1,3 +1,19 @@
+# libstored, distributed debuggable data stores.
+# Copyright (C) 2020-2021  Jochem Rutgers
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 cmake_minimum_required(VERSION 3.1)
 project(libstored)
 
@@ -53,11 +69,16 @@ endif()
 option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
 option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
 
+list(APPEND CMAKE_MODULE_PATH ${LIBSTORED_SOURCE_DIR}/cmake)
+
+if(LIBSTORED_HAVE_HEATSHRINK)
+	find_package(Heatshrink)
+endif()
+
 add_subdirectory(extern)
 
 set(LIBSTORED_SOURCE_DIR ${PROJECT_SOURCE_DIR} CACHE STRING "Path to the libstored sources" FORCE)
 
-list(APPEND CMAKE_MODULE_PATH ${LIBSTORED_SOURCE_DIR}/cmake)
 include(libstored)
 
 if(DEFINED ENV{XILINX_VIVADO})
