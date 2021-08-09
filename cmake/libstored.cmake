@@ -50,7 +50,7 @@ function(libstored_lib libprefix libpath)
 	)
 
 	foreach(m IN LISTS ARGN)
-		target_sources(${libprefix}libstored PUBLIC
+		target_sources(${libprefix}libstored PRIVATE
 			${libpath}/include/${m}.h
 			${libpath}/src/${m}.cpp)
 	endforeach()
