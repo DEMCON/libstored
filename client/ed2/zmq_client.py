@@ -620,7 +620,11 @@ class Object(QObject):
         precision = max(0.05, self._pollInterval_s / 20)
         if abs(now - start - offset) < precision:
             # Good enough. Restart to set the new offset.
-            self._pollTimer.start()
+            try:
+                self._pollTimer.start()
+            except:
+                # Give up.
+                pass
         else:
             # Timer overran quite a lot. Try again.
             QTimer.singleShot(int(offset * 1000), lambda: self._pollTimerChangeOffset(offset, now, tries - 1))
