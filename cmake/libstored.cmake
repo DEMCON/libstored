@@ -16,7 +16,8 @@
 
 include(CheckIncludeFileCXX)
 
-get_filename_component(libstored_dir "${CMAKE_CURRENT_LIST_DIR}" DIRECTORY)
+get_filename_component(libstored_dir_ "${CMAKE_CURRENT_LIST_DIR}" DIRECTORY)
+set(libstored_dir "${libstored_dir_}" CACHE INTERNAL "")
 
 # Create the libstored library based on the generated files.
 function(libstored_lib libprefix libpath)
