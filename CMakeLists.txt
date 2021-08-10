@@ -149,6 +149,21 @@ if(CPPCHECK_CMD)
 			-I examples/zmqserver/libstored/include
 			examples
 		)
+		set(CPPCHECK_DEPENDS
+			1_hello-libstored-generate
+			2_basic-libstored-generate
+			3_scope-libstored-generate
+			4_function-libstored-generate
+			5_debug-libstored-generate
+			6_hooks-libstored-generate
+			7_protocol-libstored-generate
+			8_sync-libstored-generate
+			9_fpga-libstored-generate
+			components-libstored-generate
+			concurrency-libstored-generate
+			terminal-libstored-generate
+			zmqserver-libstored-generate
+		)
 	endif()
 
 	add_custom_target(libstored-cppcheck
@@ -168,6 +183,10 @@ if(CPPCHECK_CMD)
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		VERBATIM
 	)
+
+	if(CPPCHECK_DEPENDS)
+		add_dependencies(libstored-cppcheck ${CPPCHECK_DEPENDS})
+	endif()
 
 	option(LIBSTORED_CPPCHECK "Run cppcheck by default" ON)
 	if(LIBSTORED_CPPCHECK)
