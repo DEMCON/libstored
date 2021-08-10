@@ -69,6 +69,7 @@ endif()
 option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
 option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
 
+set(LIBSTORED_SOURCE_DIR ${PROJECT_SOURCE_DIR} CACHE STRING "Path to the libstored sources" FORCE)
 list(APPEND CMAKE_MODULE_PATH ${LIBSTORED_SOURCE_DIR}/cmake)
 
 if(LIBSTORED_HAVE_HEATSHRINK)
@@ -76,8 +77,6 @@ if(LIBSTORED_HAVE_HEATSHRINK)
 endif()
 
 add_subdirectory(extern)
-
-set(LIBSTORED_SOURCE_DIR ${PROJECT_SOURCE_DIR} CACHE STRING "Path to the libstored sources" FORCE)
 
 include(libstored)
 
