@@ -144,8 +144,10 @@ String::type string_literal(void const* buffer, size_t len, char const* prefix) 
 		case '\\': s += "\\\\"; break;
 		default:
 			if(b[i] < 0x20 || b[i] >= 0x7f) {
+				// Embedded systems may not have a fancy printf, so limit the
+				// formatting specifier somewhat.
 				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
-				snprintf(buf, sizeof(buf), "\\x%02" PRIx8, b[i]);
+				snprintf(buf, sizeof(buf), "\\x%02x", (unsigned int)b[i]);
 				s += buf;
 			} else {
 				s += (char)b[i];
