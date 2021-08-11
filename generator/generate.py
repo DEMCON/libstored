@@ -313,6 +313,11 @@ def generate_cmake(libprefix, model_files, output_dir):
     logger.info("generating CMakeLists.txt")
     models = list(map(model_name, model_files))
 
+    try:
+        libstored_reldir = '${CMAKE_CURRENT_SOURCE_DIR}/' + os.path.relpath(libstored_dir, output_dir)
+    except:
+        libstored_reldir = libstored_dir
+
     # create the output dir if it does not exist yet
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
@@ -334,7 +339,7 @@ def generate_cmake(libprefix, model_files, output_dir):
 
     with open(os.path.join(output_dir, 'CMakeLists.txt'), 'w') as f:
         f.write(cmake_tmpl.render(
-            libstored_dir=libstored_dir,
+            libstored_dir=libstored_reldir,
             models=models,
             libprefix=libprefix,
             ))

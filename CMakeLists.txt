@@ -1,3 +1,19 @@
+# libstored, distributed debuggable data stores.
+# Copyright (C) 2020-2021  Jochem Rutgers
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 cmake_minimum_required(VERSION 3.1)
 project(libstored)
 
@@ -53,97 +69,16 @@ endif()
 option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
 option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
 
+set(LIBSTORED_SOURCE_DIR ${PROJECT_SOURCE_DIR} CACHE STRING "Path to the libstored sources" FORCE)
+list(APPEND CMAKE_MODULE_PATH ${LIBSTORED_SOURCE_DIR}/cmake)
+
+if(LIBSTORED_HAVE_HEATSHRINK)
+	find_package(Heatshrink)
+endif()
+
 add_subdirectory(extern)
 
-set(LIBSTORED_SOURCE_DIR ${PROJECT_SOURCE_DIR} CACHE STRING "Path to the libstored sources" FORCE)
-
-# Not safe against parallel execution if the target directory is used more than once.
-function(libstored_copy_dlls target)
-	if(WIN32 AND LIBSTORED_HAVE_LIBZMQ)
-		get_target_property(target_type ${target} TYPE)
-		if(target_type STREQUAL "EXECUTABLE")
-			# Missing dll's... Really annoying. Just copy the libzmq.dll to wherever
-			# it is possibly needed.
-			if(CMAKE_STRIP)
-				add_custom_command(TARGET ${target} PRE_LINK
-					COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> $<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:libzmq>
-					COMMAND ${CMAKE_STRIP} $<SHELL_PATH:$<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:libzmq>>
-					VERBATIM
-				)
-			else()
-				add_custom_command(TARGET ${target} PRE_LINK
-					COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> $<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:libzmq>
-					VERBATIM
-				)
-			endif()
-		endif()
-	endif()
-endfunction()
-
-function(libstored_generate target) # add all other models as varargs
-	foreach(model IN ITEMS ${ARGN})
-		list(APPEND models ${CMAKE_CURRENT_SOURCE_DIR}/${model})
-	endforeach()
-
-	if(NOT EXISTS libstored)
-		# Execute right away, such that the CMakeLists.txt exists.
-		execute_process(
-			COMMAND ${PYTHON_EXECUTABLE} ${LIBSTORED_SOURCE_DIR}/generator/generate.py -p ${target}- ${models} ${CMAKE_CURRENT_SOURCE_DIR}/libstored
-			COMMAND ${CMAKE_COMMAND} -E touch ${target}-libstored.timestamp
-		)
-	endif()
-
-	add_subdirectory(libstored)
-
-	add_custom_command(
-		OUTPUT ${target}-libstored.timestamp
-		DEPENDS ${LIBSTORED_SOURCE_DIR}/include/libstored/store.h.tmpl
-		DEPENDS ${LIBSTORED_SOURCE_DIR}/src/store.cpp.tmpl
-		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.rtf.tmpl
-		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.csv.tmpl
-		DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store.vhd.tmpl
-		DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store_pkg.vhd.tmpl
-		DEPENDS ${LIBSTORED_SOURCE_DIR}/CMakeLists.txt.tmpl
-		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/generate.py
-		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/dsl/grammar.tx
-		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/dsl/types.py
-		DEPENDS ${models}
-		COMMAND ${PYTHON_EXECUTABLE} ${LIBSTORED_SOURCE_DIR}/generator/generate.py -p ${target}- ${models} ${CMAKE_CURRENT_SOURCE_DIR}/libstored
-		COMMAND ${CMAKE_COMMAND} -E touch ${target}-libstored.timestamp
-		COMMENT "Generate store from ${ARGN}"
-		VERBATIM
-	)
-	add_custom_target(${target}-libstored-generate
-		DEPENDS ${target}-libstored.timestamp
-	)
-	add_dependencies(${target}-libstored ${target}-libstored-generate)
-
-	get_target_property(target_type ${target} TYPE)
-	if(target_type MATCHES "^(STATIC_LIBRARY|MODULE_LIBRARY|SHARED_LIBRARY|EXECUTABLE)$")
-		target_link_libraries(${target} PUBLIC ${target}-libstored)
-	else()
-		add_dependencies(${target} ${target}-libstored)
-	endif()
-
-	get_target_property(target_cxx_standard ${target} CXX_STANDARD)
-	if(NOT target_cxx_standard STREQUAL "target_cxx_standard-NOTFOUND")
-		set_target_properties(${target}-libstored PROPERTIES CXX_STANDARD ${target_cxx_standard})
-	endif()
-
-	if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
-		if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT APPLE)
-			if(target_type STREQUAL "EXECUTABLE")
-				target_link_options(${target} PUBLIC -Wl,--gc-sections)
-			endif()
-		endif()
-	endif()
-
-	if(LIBSTORED_DOCUMENTATION)
-		add_dependencies(doc ${target}-libstored-generate)
-	endif()
-
-	libstored_copy_dlls(${target})
-endfunction()
+include(libstored)
 
 if(DEFINED ENV{XILINX_VIVADO})
 	find_program(VIVADO_CMD NAMES vivado PATHS "$ENV{XILINX_VIVADO}/bin")
@@ -214,6 +149,21 @@ if(CPPCHECK_CMD)
 			-I examples/zmqserver/libstored/include
 			examples
 		)
+		set(CPPCHECK_DEPENDS
+			1_hello-libstored-generate
+			2_basic-libstored-generate
+			3_scope-libstored-generate
+			4_function-libstored-generate
+			5_debug-libstored-generate
+			6_hooks-libstored-generate
+			7_protocol-libstored-generate
+			8_sync-libstored-generate
+			9_fpga-libstored-generate
+			components-libstored-generate
+			concurrency-libstored-generate
+			terminal-libstored-generate
+			zmqserver-libstored-generate
+		)
 	endif()
 
 	add_custom_target(libstored-cppcheck
@@ -233,6 +183,10 @@ if(CPPCHECK_CMD)
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		VERBATIM
 	)
+
+	if(CPPCHECK_DEPENDS)
+		add_dependencies(libstored-cppcheck ${CPPCHECK_DEPENDS})
+	endif()
 
 	option(LIBSTORED_CPPCHECK "Run cppcheck by default" ON)
 	if(LIBSTORED_CPPCHECK)
