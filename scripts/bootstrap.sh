@@ -13,7 +13,7 @@ case `uname -s` in
 	Linux*)
 		sudo apt update
 		sudo apt install -y build-essential valgrind git-core gcc-multilib cmake \
-			gdb-multiarch clang-tidy cppcheck doxygen pkg-config \
+			gdb-multiarch cppcheck doxygen pkg-config \
 			python3 python3-pip python3-setuptools \
 			python3-pyqt5 python3-pyqt5.qtquick \
 			spin plantuml

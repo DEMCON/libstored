@@ -113,6 +113,8 @@ function(libstored_lib libprefix libpath)
 			endif()
 
 			if(LIBSTORED_CLANG_TIDY)
+				message(STATUS "Enabled clang-tidy")
+
 				string(CONCAT CLANG_TIDY_CHECKS "-checks="
 					"bugprone-*,"
 					"clang-analyzer-*,"
