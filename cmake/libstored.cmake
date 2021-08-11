@@ -104,7 +104,14 @@ function(libstored_lib libprefix libpath)
 	if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 		find_program(CLANG_TIDY_EXE NAMES "clang-tidy" DOC "Path to clang-tidy executable")
 		if(CLANG_TIDY_EXE AND (NOT CMAKE_CXX_STANDARD OR NOT CMAKE_CXX_STANDARD EQUAL 98))
-			option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ON)
+			# It seems that if clang is not installed, clang-tidy doesn't work properly.
+			find_program(CLANG_EXE NAMES "clang" DOC "Path to clang executable")
+			if(CLANG_EXE)
+				option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ON)
+			else()
+				option(LIBSTORED_CLANG_TIDY "Run clang-tidy" OFF)
+			endif()
+
 			if(LIBSTORED_CLANG_TIDY)
 				string(CONCAT CLANG_TIDY_CHECKS "-checks="
 					"bugprone-*,"
