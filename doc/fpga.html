@@ -371,7 +371,7 @@ this:</p>
 </pre></div>
 </div>
 <p>The output timing is exemplified below.</p>
-<img alt="../_images/wavedrom-722ce1a3-65a7-4029-9dbe-e19d808017d2.svg" src="../_images/wavedrom-722ce1a3-65a7-4029-9dbe-e19d808017d2.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
+<img alt="../_images/wavedrom-417e3b16-9753-4ea3-84f0-6f67e1debea9.svg" src="../_images/wavedrom-417e3b16-9753-4ea3-84f0-6f67e1debea9.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
 When the value is written, via <code class="docutils literal notranslate"><span class="pre">var_in</span></code>, the AXI interface, or via the
 Synchronizer, <code class="docutils literal notranslate"><span class="pre">value</span></code> is updated and <code class="docutils literal notranslate"><span class="pre">updated</span></code> is flagged for one
 clock cycle.  The flag is set at every write, not only when the data
@@ -407,7 +407,7 @@ this:</p>
 </pre></div>
 </div>
 <p>When <code class="docutils literal notranslate"><span class="pre">we</span></code> is high, the <code class="docutils literal notranslate"><span class="pre">value</span></code> is written to the store.</p>
-<img alt="../_images/wavedrom-82d5b3da-6671-43e1-a18d-bfc608d1b271.svg" src="../_images/wavedrom-82d5b3da-6671-43e1-a18d-bfc608d1b271.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
+<img alt="../_images/wavedrom-12435cc3-36f6-46c8-a79a-9852faeb2754.svg" src="../_images/wavedrom-12435cc3-36f6-46c8-a79a-9852faeb2754.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
 the case that a microcontroller and the FPGA synchronize a store.  If a
 variable should be read-only for the microcontroller, <code class="docutils literal notranslate"><span class="pre">we</span></code> can be tied
 high by the FPGA, such that the FPGA updates the variable constantly.  In
@@ -525,7 +525,7 @@ layer in the stack.</p>
 </dd>
 </dl>
 <p>Passing messages follows this scheme, which is resembles the AXI4-Stream Protocol:</p>
-<img alt="../_images/wavedrom-a6c67923-9ebf-4fbe-9354-55317af21cf1.svg" src="../_images/wavedrom-a6c67923-9ebf-4fbe-9354-55317af21cf1.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
+<img alt="../_images/wavedrom-b5237331-aa9e-4ec0-a36b-4dfb72c005db.svg" src="../_images/wavedrom-b5237331-aa9e-4ec0-a36b-4dfb72c005db.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
 clock edge.  In the example above, this happens at edge 2, 3, 6, 9, and 10.
 There is no order or dependency in <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code>; both can be
 high while other is not, indicating ‘there is data’, or ‘the data can be
@@ -851,7 +851,7 @@ Only available in simulation.</p>
 </pre></div>
 </div>
 <p>Example that drops a tail of length 1:</p>
-<img alt="../_images/wavedrom-65da8d0e-00e5-4b50-8bd2-4accedebf5ae.svg" src="../_images/wavedrom-65da8d0e-00e5-4b50-8bd2-4accedebf5ae.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
+<img alt="../_images/wavedrom-a4dc2a33-0e0c-4497-814f-865677d4f497.svg" src="../_images/wavedrom-a4dc2a33-0e0c-4497-814f-865677d4f497.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
 unspecified.</p>
 <dl class="simple">
 <dt>FIFO_DEPTH<span class="classifier">natural := 0</span></dt><dd><p>Minimum FIFO depth. Set to 0 to allow pass-through.</p>
@@ -933,8 +933,8 @@ This is effectively a FIFO of size 1.</p>
 </pre></div>
 </div>
 <p>Example to drop and commit pushed data:</p>
-<img alt="../_images/wavedrom-5ac9fd4c-1ce8-4c72-95dd-28f5d29f36c4.svg" src="../_images/wavedrom-5ac9fd4c-1ce8-4c72-95dd-28f5d29f36c4.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
-<img alt="../_images/wavedrom-90330851-fc39-46d8-9c57-6b92e5311ede.svg" src="../_images/wavedrom-90330851-fc39-46d8-9c57-6b92e5311ede.svg" /><dl class="simple">
+<img alt="../_images/wavedrom-5b41037c-36d4-4d79-8211-73bf75e51e07.svg" src="../_images/wavedrom-5b41037c-36d4-4d79-8211-73bf75e51e07.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
+<img alt="../_images/wavedrom-6ee88d26-7add-4f8c-89e6-8991fbca5b6c.svg" src="../_images/wavedrom-6ee88d26-7add-4f8c-89e6-8991fbca5b6c.svg" /><dl class="simple">
 <dt>WIDTH<span class="classifier">positive</span></dt><dd><p>Data width.</p>
 </dd>
 <dt>DEPTH<span class="classifier">natural := 1</span></dt><dd><p>Minimum FIFO depth.</p>
