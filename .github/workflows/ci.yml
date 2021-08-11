@@ -21,7 +21,7 @@ jobs:
       - name: bootstrap
         run: |
           scripts/bootstrap.sh
-          sudo install clang-tidy clang
+          sudo apt install clang-tidy clang
       - name: build Debug
         run: scripts/build.sh Debug
       - name: test
