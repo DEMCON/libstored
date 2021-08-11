@@ -113,7 +113,7 @@ function(libstored_lib libprefix libpath)
 			endif()
 
 			if(LIBSTORED_CLANG_TIDY)
-				message(STATUS "Enabled clang-tidy")
+				message(STATUS "Enabled clang-tidy for ${libprefix}libstored")
 
 				string(CONCAT CLANG_TIDY_CHECKS "-checks="
 					"bugprone-*,"
