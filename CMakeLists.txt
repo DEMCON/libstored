@@ -66,14 +66,19 @@ else()
 	message(STATUS "Using python ${PYTHON_EXECUTABLE}")
 endif()
 
-option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
-option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
-
 set(LIBSTORED_SOURCE_DIR ${PROJECT_SOURCE_DIR} CACHE STRING "Path to the libstored sources" FORCE)
 list(APPEND CMAKE_MODULE_PATH ${LIBSTORED_SOURCE_DIR}/cmake)
 
+option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
+
 if(LIBSTORED_HAVE_HEATSHRINK)
 	find_package(Heatshrink)
+endif()
+
+option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
+
+if(LIBSTORED_HAVE_LIBZMQ)
+	find_package(ZeroMQ)
 endif()
 
 add_subdirectory(extern)

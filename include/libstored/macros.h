@@ -132,7 +132,9 @@ typedef SSIZE_T ssize_t;
 
 #ifdef STORED_HAVE_ZMQ
 // For the poller.
-#  define ZMQ_BUILD_DRAFT_API
+#  ifndef ZMQ_BUILD_DRAFT_API
+#    define ZMQ_BUILD_DRAFT_API
+#  endif
 #endif
 
 
