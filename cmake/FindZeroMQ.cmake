@@ -46,7 +46,7 @@ if(NOT TARGET libzmq)
 	message(STATUS "Building ZeroMQ from source")
 	set(ZeroMQ_FOUND 1)
 
-	set(libzmq_flags -DENABLE_DRAFTS=ON)
+	set(libzmq_flags -DENABLE_DRAFTS=ON -DCMAKE_BUILD_TYPE=Release)
 
 	if(MINGW)
 		# See https://github.com/zeromq/libzmq/issues/3859
@@ -62,21 +62,28 @@ if(NOT TARGET libzmq)
 	ExternalProject_Add(
 		libzmq-extern
 		GIT_REPOSITORY https://github.com/zeromq/libzmq.git
-		GIT_TAG v4.3.2
-		CMAKE_ARGS ${libzmq_flags} -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}
-		INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}
+		GIT_TAG v4.3.1
+		CMAKE_ARGS ${libzmq_flags} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
+		INSTALL_DIR ${CMAKE_BINARY_DIR}
 	)
+
+	file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include)
 
 	add_library(libzmq SHARED IMPORTED GLOBAL)
 	if(WIN32)
-		set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/lib/libzmq.dll)
-		set_property(TARGET libzmq PROPERTY IMPORTED_IMPLIB ${CMAKE_CURRENT_BINARY_DIR}/lib/libzmq.lib)
+		set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/bin/libzmq.dll)
+		if(MSVC)
+			set_property(TARGET libzmq PROPERTY IMPORTED_IMPLIB ${CMAKE_BINARY_DIR}/lib/libzmq.lib)
+		else()
+			set_property(TARGET libzmq PROPERTY IMPORTED_IMPLIB ${CMAKE_BINARY_DIR}/lib/libzmq.dll.a)
+		endif()
 	elseif(APPLE)
-		set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/lib/libzmq.dylib)
+		set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib/libzmq.dylib)
 	else()
-		set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/lib/libzmq.a)
+		set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib/libzmq.a)
 	endif()
-	target_include_directories(libzmq INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/include)
+	target_include_directories(libzmq INTERFACE ${CMAKE_BINARY_DIR}/include)
 	target_compile_options(libzmq INTERFACE -DZMQ_BUILD_DRAFT_API=1)
+	add_dependencies(libzmq libzmq-extern)
 endif()
 

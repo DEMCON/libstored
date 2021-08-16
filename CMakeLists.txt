@@ -138,37 +138,26 @@ endif()
 find_program(CPPCHECK_CMD NAMES cppcheck)
 if(CPPCHECK_CMD)
 	if(LIBSTORED_EXAMPLES)
-		set(CPPCHECK_EXAMPLES
-			-I examples/1_hello/libstored/include
-			-I examples/2_basic/libstored/include
-			-I examples/3_scope/libstored/include
-			-I examples/4_function/libstored/include
-			-I examples/5_debug/libstored/include
-			-I examples/6_hooks/libstored/include
-			-I examples/7_protocol/libstored/include
-			-I examples/8_sync/libstored/include
-			-I examples/9_fpga/libstored/include
-			-I examples/components/libstored/include
-			-I examples/concurrency/libstored/include
-			-I examples/terminal/libstored/include
-			-I examples/zmqserver/libstored/include
-			examples
-		)
-		set(CPPCHECK_DEPENDS
-			1_hello-libstored-generate
-			2_basic-libstored-generate
-			3_scope-libstored-generate
-			4_function-libstored-generate
-			5_debug-libstored-generate
-			6_hooks-libstored-generate
-			7_protocol-libstored-generate
-			8_sync-libstored-generate
-			9_fpga-libstored-generate
-			components-libstored-generate
-			concurrency-libstored-generate
-			terminal-libstored-generate
-			zmqserver-libstored-generate
-		)
+		macro(cppcheck_add app)
+			if(TARGET ${app}-libstored-generate)
+				set(CPPCHECK_EXAMPLES ${CPPCHECK_EXAMPLES} -I examples/${app}/libstored/include examples/${app})
+				set(CPPCHECK_DEPENDS ${CPPCHECK_DEPENDS} ${app}-libstored-generate)
+			endif()
+		endmacro()
+
+		cppcheck_add(1_hello)
+		cppcheck_add(2_basic)
+		cppcheck_add(3_scope)
+		cppcheck_add(4_function)
+		cppcheck_add(5_debug)
+		cppcheck_add(6_hooks)
+		cppcheck_add(7_protocol)
+		cppcheck_add(8_sync)
+		cppcheck_add(9_fpga)
+		cppcheck_add(components)
+		cppcheck_add(concurrency)
+		cppcheck_add(terminal)
+		cppcheck_add(zmqserver)
 	endif()
 
 	add_custom_target(libstored-cppcheck
@@ -180,11 +169,11 @@ if(CPPCHECK_CMD)
 			--quiet
 			--suppressions-list=${CMAKE_CURRENT_SOURCE_DIR}/.cppcheck_suppr
 			--error-exitcode=1
-#			--xml
+			--xml
 			-I include
 			${CPPCHECK_EXAMPLES}
 			src
-#			--check-config
+			--check-config
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		VERBATIM
 	)

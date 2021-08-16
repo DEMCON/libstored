@@ -87,10 +87,7 @@ function(libstored_lib libprefix libpath)
 
 	if(LIBSTORED_HAVE_LIBZMQ)
 		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_HAVE_ZMQ)
-		target_include_directories(${libprefix}libstored
-			PRIVATE $<TARGET_PROPERTY:libzmq,INTERFACE_INCLUDE_DIRECTORIES>
-		)
-		target_link_libraries(${libprefix}libstored INTERFACE libzmq)
+		target_link_libraries(${libprefix}libstored PUBLIC libzmq)
 	endif()
 
 	if(WIN32)
@@ -98,7 +95,7 @@ function(libstored_lib libprefix libpath)
 	endif()
 
 	if(LIBSTORED_HAVE_HEATSHRINK)
-		target_link_libraries(${libprefix}libstored PUBLIC heatshrink)
+		add_dependencies(${libprefix}libstored heatshrink)
 	endif()
 
 	if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
@@ -165,8 +162,7 @@ function(libstored_lib libprefix libpath)
 				)
 				set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
 					"--extra-arg=-I${libstored_dir}/include"
-					"--extra-arg=-I${libstored_dir}/extern/libzmq/include"
-					"--extra-arg=-I${libstored_dir}/extern/heatshrink"
+					"--extra-arg=-I${CMAKE_BINARY_DIR}/include"
 					"--extra-arg=-I${libpath}/include"
 					"--header-filter=.*include/libstored.*"
 					"--warnings-as-errors=*"
