@@ -27,6 +27,7 @@ ExternalProject_Add(
 	LOG_BUILD 0
 	LOG_TEST 0
 	LOG_INSTALL 0
+	UPDATE_DISCONNECTED 1
 )
 
 ExternalProject_Get_Property(heatshrink-extern SOURCE_DIR)

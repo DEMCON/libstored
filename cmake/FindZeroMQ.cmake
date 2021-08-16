@@ -46,7 +46,8 @@ if(NOT TARGET libzmq)
 	message(STATUS "Building ZeroMQ from source")
 	set(ZeroMQ_FOUND 1)
 
-	set(libzmq_flags -DENABLE_DRAFTS=ON -DCMAKE_BUILD_TYPE=Release)
+	set(libzmq_flags -DENABLE_DRAFTS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+		-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER})
 
 	if(MINGW)
 		# See https://github.com/zeromq/libzmq/issues/3859
@@ -65,9 +66,11 @@ if(NOT TARGET libzmq)
 		GIT_TAG v4.3.1
 		CMAKE_ARGS ${libzmq_flags} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
 		INSTALL_DIR ${CMAKE_BINARY_DIR}
+		UPDATE_DISCONNECTED 1
 	)
 
 	file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include)
+	file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 	add_library(libzmq SHARED IMPORTED GLOBAL)
 	if(WIN32)
@@ -77,7 +80,7 @@ if(NOT TARGET libzmq)
 			else()
 				set(MSVC_TOOLSET "")
 			endif()
-			if(CMAKE_BUILD_TYPE EQUAL "Debug")
+			if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 				set(dllname "${MSVC_TOOLSET}-mt-gd")
 			else()
 				set(dllname "${MSVC_TOOLSET}-mt")

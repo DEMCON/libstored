@@ -15,6 +15,11 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT APPLE)
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections")
 endif()
 
+if(APPLE)
+	set(CMAKE_INSTALL_RPATH ${CMAKE_BINARY_DIR}/lib)
+	set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+endif()
+
 add_subdirectory(1_hello)
 add_subdirectory(2_basic)
 add_subdirectory(3_scope)
