@@ -169,11 +169,11 @@ if(CPPCHECK_CMD)
 			--quiet
 			--suppressions-list=${CMAKE_CURRENT_SOURCE_DIR}/.cppcheck_suppr
 			--error-exitcode=1
-			--xml
+#			--xml
 			-I include
 			${CPPCHECK_EXAMPLES}
 			src
-			--check-config
+#			--check-config
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		VERBATIM
 	)
