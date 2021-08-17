@@ -1,5 +1,5 @@
-#ifndef LIBSTORED_H
-#define LIBSTORED_H
+#ifndef LIBSTORED_STORED_H
+#define LIBSTORED_STORED_H
 /*
  * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2021  Jochem Rutgers
@@ -32,4 +32,4 @@
 #include <libstored/components.h>
 #include <libstored/version.h>
 
-#endif // LIBSTORED_H
+#endif // LIBSTORED_STORED_H

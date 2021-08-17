@@ -93,7 +93,8 @@ namespace stored {
 		 * Coalesce chunks when required. It leaves #max() untouched.
 		 * To actually free all used memory, call #shrink_to_fit() afterwards.
 		 */
-		void reset() noexcept {
+		void reset() noexcept
+		{
 			m_size = 0;
 			m_total = 0;
 
@@ -116,7 +117,8 @@ namespace stored {
 		/*!
 		 * \brief Checks if the ScratchPad is empty.
 		 */
-		constexpr bool empty() const noexcept {
+		constexpr bool empty() const noexcept
+		{
 			return m_total == 0;
 		}
 
@@ -124,7 +126,8 @@ namespace stored {
 		 * \brief Returns the total amount of allocated memory.
 		 * \details This includes padding because of alignment requirements of #alloc().
 		 */
-		constexpr size_t size() const noexcept {
+		constexpr size_t size() const noexcept
+		{
 			return (size_t)m_total;
 		}
 
@@ -132,14 +135,16 @@ namespace stored {
 		 * \brief Returns the maximum size.
 		 * \details To reset this value, use #shrink_to_fit().
 		 */
-		constexpr size_t max() const noexcept {
+		constexpr size_t max() const noexcept
+		{
 			return (size_t)m_max;
 		}
 
 		/*!
 		 * \brief Returns the total capacity currently available within the ScratchPad.
 		 */
-		constexpr size_t capacity() const noexcept {
+		constexpr size_t capacity() const noexcept
+		{
 			return (size_t)m_total - (size_t)m_size + (size_t)bufferSize();
 		}
 
@@ -182,7 +187,8 @@ namespace stored {
 			/*!
 			 * \brief Perform a rollback of the corresponding ScratchPad.
 			 */
-			void rollback() noexcept {
+			void rollback() noexcept
+			{
 				if(m_spm)
 					m_spm->rollback(m_buffer, m_size);
 			}
@@ -200,7 +206,8 @@ namespace stored {
 			/*!
 			 * \brief Move-assign.
 			 */
-			Snapshot& operator=(Snapshot&& s) noexcept {
+			Snapshot& operator=(Snapshot&& s) noexcept
+			{
 				reset();
 				m_spm = s.m_spm;
 				m_buffer = s.m_buffer;
@@ -252,7 +259,8 @@ namespace stored {
 		 * \brief Get a snapshot of the ScratchPad.
 		 * \see #stored::ScratchPad::Snapshot.
 		 */
-		Snapshot snapshot() noexcept {
+		Snapshot snapshot() noexcept
+		{
 			return Snapshot(*this, empty() ? nullptr : &m_buffer[m_size], m_total);
 		}
 
@@ -261,7 +269,8 @@ private:
 		 * \brief Perform a rollback to the given point.
 		 * \see #stored::ScratchPad::Snapshot.
 		 */
-		void rollback(void* snapshot, size_type size) noexcept {
+		void rollback(void* snapshot, size_type size) noexcept
+		{
 			if(!snapshot || !size) {
 				reset();
 				return;
@@ -294,7 +303,8 @@ private:
 		 * \brief Allocate a new buffer with the given size.
 		 * \details The current buffer is moved to the #m_old list.
 		 */
-		void bufferPush(size_t size) {
+		void bufferPush(size_t size)
+		{
 			stored_assert(size > 0);
 
 			if(m_buffer)
@@ -313,7 +323,8 @@ private:
 		/*!
 		 * \brief Discard the current buffer and get the next one from the #m_old list.
 		 */
-		void bufferPop() noexcept {
+		void bufferPop() noexcept
+		{
 			stored_assert(m_buffer || m_old.empty());
 
 			if(m_buffer) {
@@ -342,7 +353,8 @@ private:
 		 * \brief Replace current buffer by a bigger one.
 		 * \details Contents of the current buffer may be lost.
 		 */
-		void bufferGrow(size_t size) {
+		void bufferGrow(size_t size)
+		{
 			stored_assert(size > bufferSize());
 
 			// Standard allocators don't have realloc. So, deallocate first,
@@ -360,21 +372,24 @@ private:
 		/*!
 		 * \brief Returns the size of the given buffer.
 		 */
-		static constexpr size_t bufferSize(char* buffer) noexcept {
+		static constexpr size_t bufferSize(char* buffer) noexcept
+		{
 			return likely(buffer) ? *(size_t*)(chunk(buffer)) : 0;
 		}
 
 		/*!
 		 * \brief Returns the size of the current buffer.
 		 */
-		size_t bufferSize() const noexcept {
+		size_t bufferSize() const noexcept
+		{
 			return bufferSize(m_buffer);
 		}
 
 		/*!
 		 * \brief Saves the malloc()ed size of the current buffer.
 		 */
-		void setBufferSize(size_t size) noexcept {
+		void setBufferSize(size_t size) noexcept
+		{
 			stored_assert(m_buffer);
 			stored_assert(size > 0);
 			*(size_t*)(chunk(m_buffer)) = size;
@@ -384,7 +399,8 @@ private:
 		 * \brief Returns the chunk from the given buffer.
 		 * \details The chunk is the actual piece of memory on the heap, which is the buffer with a header.
 		 */
-		static constexpr void* chunk(char* buffer) noexcept {
+		static constexpr void* chunk(char* buffer) noexcept
+		{
 			return buffer ? buffer - chunkHeader : nullptr;
 		}
 
@@ -392,21 +408,24 @@ private:
 		 * \brief Returns the chunk from the current buffer.
 		 * \details The chunk is the actual piece of memory on the heap, which is the buffer with a header.
 		 */
-		constexpr void* chunk() noexcept {
+		constexpr void* chunk() noexcept
+		{
 			return m_buffer ? chunk(m_buffer) : nullptr;
 		}
 
 		/*!
 		 * \brief Returns the buffer within the given chunk.
 		 */
-		static constexpr char* buffer(void* chunk) noexcept {
+		static constexpr char* buffer(void* chunk) noexcept
+		{
 			return static_cast<char*>(chunk) + chunkHeader;
 		}
 
 		/*!
 		 * \brief Returns the current buffer.
 		 */
-		constexpr char* buffer() noexcept {
+		constexpr char* buffer() noexcept
+		{
 			return m_buffer;
 		}
 
@@ -414,7 +433,8 @@ public:
 		/*!
 		 * \brief Reserves memory to save the additional given amount of bytes.
 		 */
-		void reserve(size_t more) {
+		void reserve(size_t more)
+		{
 			size_t new_cap = m_size + more;
 
 			if(likely(new_cap <= bufferSize()))
@@ -433,7 +453,8 @@ public:
 		/*!
 		 * \brief Releases all unused memory back to the OS, if possible.
 		 */
-		void shrink_to_fit() noexcept {
+		void shrink_to_fit() noexcept
+		{
 			if(unlikely(empty())) {
 				m_max = 0;
 				reset();
@@ -455,7 +476,8 @@ public:
 		 * application uses.  During this time, there may exist multiple
 		 * chunks.  Call #reset() to optimize memory usage.
 		 */
-		constexpr size_t chunks() const noexcept {
+		constexpr size_t chunks() const noexcept
+		{
 			return m_old.size() + (m_buffer ? 1 : 0);
 		}
 
@@ -468,7 +490,8 @@ public:
 		 */
 		template <typename T>
 		__attribute__((malloc,returns_nonnull,warn_unused_result))
-		T* alloc(size_t count = 1, size_t align = sizeof(T)) {
+		T* alloc(size_t count = 1, size_t align = sizeof(T))
+		{
 			size_t alloc_size = count * sizeof(T);
 			if(unlikely(alloc_size == 0)) {
 				if(unlikely(!m_buffer))

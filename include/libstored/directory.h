@@ -32,7 +32,8 @@ namespace stored {
 		 * \private
 		 */
 		template <typename T>
-		constexpr14 T decodeInt(uint8_t const*& p) noexcept {
+		constexpr14 T decodeInt(uint8_t const*& p) noexcept
+		{
 			T v = 0;
 			while(*p & 0x80u) {
 				v = (v | (T)(*p & 0x7fu)) << 7u;
@@ -46,7 +47,8 @@ namespace stored {
 		 * \param p a pointer to the offset to be skipped, which is increment till after the offset
 		 * \private
 		 */
-		constexpr14 void skipOffset(uint8_t const*& p) noexcept {
+		constexpr14 void skipOffset(uint8_t const*& p) noexcept
+		{
 			while(*p++ & 0x80u);
 		}
 
@@ -70,7 +72,8 @@ namespace stored {
 #  endif
 		__attribute__((no_sanitize("pointer-overflow")))
 #endif
-		constexpr14 Variant<> find(uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
+		constexpr14 Variant<> find(uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept
+		{
 			Variant<> const notfound;
 
 			if(unlikely(!directory || !name))
@@ -159,7 +162,8 @@ namespace stored {
 	 * \return a variant, which is not valid when not found
 	 */
 	template <typename Container>
-	constexpr14 Variant<Container> find(Container& container, uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
+	constexpr14 Variant<Container> find(Container& container, uint8_t const* directory, char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept
+	{
 		return impl::find(directory, name, len).apply<Container>(container);
 	}
 
@@ -184,7 +188,8 @@ namespace stored {
 	 */
 	template <typename Container, typename F>
 	SFINAE_IS_FUNCTION(F, void(Container*, char const*, Type::type, void*, size_t), void)
-	list(Container* container, void* buffer, uint8_t const* directory, F&& f) {
+	list(Container* container, void* buffer, uint8_t const* directory, F&& f)
+	{
 		auto cb = [](void* container_, char const* name, Type::type type, void* buffer_, size_t len, void* f_) {
 			(*static_cast<typename std::decay<F>::type*>(f_))((Container*)container_, name, type, buffer_, len);
 		};

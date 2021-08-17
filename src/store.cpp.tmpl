@@ -41,10 +41,10 @@ static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len
  * \brief Constructor.
  */
 {{store.name}}Data::{{store.name}}Data() noexcept
-    : buffer()
+	: buffer()
 {
 {% if store.buffer.init|len > 0 %}
-    memcpy(buffer, {{store.name}}Data_bufferinit, sizeof({{store.name}}Data_bufferinit));
+	memcpy(buffer, {{store.name}}Data_bufferinit, sizeof({{store.name}}Data_bufferinit));
 {% endif %}
 {% if store.littleEndian %}
 	static_assert(Config::StoreInLittleEndian, "");
@@ -76,8 +76,9 @@ static uint8_t const {{store.name}}Data_directory[{{store.directory.data|len}}] 
 /*!
  * \brief Returns the short directory.
  */
-uint8_t const* {{store.name}}Data::shortDirectory() noexcept {
-    return (uint8_t const*){{store.name}}Data_directory;
+uint8_t const* {{store.name}}Data::shortDirectory() noexcept
+{
+	return (uint8_t const*){{store.name}}Data_directory;
 }
 #endif
 
@@ -95,8 +96,9 @@ static uint8_t const {{store.name}}Data_directory_full[{{store.directory.longdat
  * \brief Retuns the long directory.
  * \details When not available, the short directory is returned.
  */
-uint8_t const* {{store.name}}Data::longDirectory() noexcept {
-    return Config::FullNames ? (uint8_t const*){{store.name}}Data_directory_full : shortDirectory();
+uint8_t const* {{store.name}}Data::longDirectory() noexcept
+{
+	return Config::FullNames ? (uint8_t const*){{store.name}}Data_directory_full : shortDirectory();
 }
 
 } // namespace stored

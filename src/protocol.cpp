@@ -53,7 +53,8 @@ namespace stored {
  *
  * Ties to the layer above and below are nicely removed.
  */
-ProtocolLayer::~ProtocolLayer() {
+ProtocolLayer::~ProtocolLayer()
+{
 	if(up() && up()->down() == this)
 		up()->setDown(down());
 	if(down() && down()->up() == this)
@@ -75,7 +76,8 @@ AsciiEscapeLayer::AsciiEscapeLayer(bool all, ProtocolLayer* up, ProtocolLayer* d
 	, m_all(all)
 {}
 
-void AsciiEscapeLayer::decode(void* buffer, size_t len) {
+void AsciiEscapeLayer::decode(void* buffer, size_t len)
+{
 	char* p = static_cast<char*>(buffer);
 
 	// Common case: there is no escape character.
@@ -120,7 +122,8 @@ escape:
 	base::decode(p, decodeOffset);
 }
 
-char AsciiEscapeLayer::needEscape(char c) const {
+char AsciiEscapeLayer::needEscape(char c) const
+{
 	if(!((uint8_t)c & (uint8_t)~(uint8_t)AsciiEscapeLayer::EscMask)) {
 		if(!m_all) {
 			// Only escape what conflicts with other protocols.
@@ -148,7 +151,8 @@ char AsciiEscapeLayer::needEscape(char c) const {
 	}
 }
 
-void AsciiEscapeLayer::encode(void const* buffer, size_t len, bool last) {
+void AsciiEscapeLayer::encode(void const* buffer, size_t len, bool last)
+{
 	uint8_t const* p = static_cast<uint8_t const*>(buffer);
 	uint8_t const* chunk = p;
 
@@ -169,7 +173,8 @@ void AsciiEscapeLayer::encode(void const* buffer, size_t len, bool last) {
 		base::encode(chunk, (size_t)(p + len - chunk), last);
 }
 
-size_t AsciiEscapeLayer::mtu() const {
+size_t AsciiEscapeLayer::mtu() const
+{
 	size_t mtu = base::mtu();
 	if(mtu == 0u)
 		return 0u;
@@ -210,7 +215,8 @@ TerminalLayer::TerminalLayer(ProtocolLayer* up, ProtocolLayer* down)
 {
 }
 
-void TerminalLayer::reset() {
+void TerminalLayer::reset()
+{
 	m_decodeState = StateNormal;
 	m_encodeState = false;
 	m_buffer.clear();
@@ -222,7 +228,8 @@ void TerminalLayer::reset() {
  */
 TerminalLayer::~TerminalLayer() is_default
 
-void TerminalLayer::decode(void* buffer, size_t len) {
+void TerminalLayer::decode(void* buffer, size_t len)
+{
 	size_t nonDebugOffset = m_decodeState < StateDebug ? 0 : len;
 
 	for(size_t i = 0; i < len; i++) {
@@ -267,7 +274,8 @@ void TerminalLayer::decode(void* buffer, size_t len) {
 		nonDebugDecode(static_cast<char*>(buffer) + nonDebugOffset, len - nonDebugOffset);
 }
 
-void TerminalLayer::nonDebugEncode(void const* buffer, size_t len) {
+void TerminalLayer::nonDebugEncode(void const* buffer, size_t len)
+{
 	stored_assert(!m_encodeState);
 	stored_assert(buffer || len == 0);
 	if(len)
@@ -279,12 +287,14 @@ void TerminalLayer::nonDebugEncode(void const* buffer, size_t len) {
  *
  * Default implementation writes to the \c nonDebugDecodeFd, as supplied to the constructor.
  */
-void TerminalLayer::nonDebugDecode(void* buffer, size_t len) {
+void TerminalLayer::nonDebugDecode(void* buffer, size_t len)
+{
 	if(m_nonDebugDecodeCallback)
 		m_nonDebugDecodeCallback(buffer, len);
 }
 
-void TerminalLayer::encode(void const* buffer, size_t len, bool last) {
+void TerminalLayer::encode(void const* buffer, size_t len, bool last)
+{
 	encodeStart();
 	base::encode(buffer, len, false);
 	if(last)
@@ -296,7 +306,8 @@ void TerminalLayer::encode(void const* buffer, size_t len, bool last) {
  *
  * Call #encodeEnd() to finish the current frame.
  */
-void TerminalLayer::encodeStart() {
+void TerminalLayer::encodeStart()
+{
 	if(m_encodeState)
 		return;
 
@@ -308,7 +319,8 @@ void TerminalLayer::encodeStart() {
 /*!
  * \brief Emits an end-of-frame sequence of the frame started using #encodeStart().
  */
-void TerminalLayer::encodeEnd() {
+void TerminalLayer::encodeEnd()
+{
 	if(!m_encodeState)
 		return;
 
@@ -317,7 +329,8 @@ void TerminalLayer::encodeEnd() {
 	base::encode((void*)end, sizeof(end), true);
 }
 
-size_t TerminalLayer::mtu() const {
+size_t TerminalLayer::mtu() const
+{
 	size_t mtu = base::mtu();
 	if(mtu == 0)
 		return 0;
@@ -345,13 +358,15 @@ SegmentationLayer::SegmentationLayer(size_t mtu, ProtocolLayer* up, ProtocolLaye
 {
 }
 
-void SegmentationLayer::reset() {
+void SegmentationLayer::reset()
+{
 	m_decode.clear();
 	m_encoded = 0;
 	base::reset();
 }
 
-size_t SegmentationLayer::mtu() const {
+size_t SegmentationLayer::mtu() const
+{
 	// We segment, so all layers above can use any size they want.
 	return 0;
 }
@@ -359,7 +374,8 @@ size_t SegmentationLayer::mtu() const {
 /*!
  * \brief Returns the MTU used to split messages into.
  */
-size_t SegmentationLayer::lowerMtu() const {
+size_t SegmentationLayer::lowerMtu() const
+{
 	size_t lower_mtu = base::mtu();
 	if(!m_mtu)
 		return lower_mtu;
@@ -369,7 +385,8 @@ size_t SegmentationLayer::lowerMtu() const {
 		return std::min<size_t>(m_mtu, lower_mtu);
 }
 
-void SegmentationLayer::decode(void* buffer, size_t len) {
+void SegmentationLayer::decode(void* buffer, size_t len)
+{
 	if(len == 0)
 		return;
 
@@ -393,7 +410,8 @@ void SegmentationLayer::decode(void* buffer, size_t len) {
 	}
 }
 
-void SegmentationLayer::encode(void const* buffer, size_t len, bool last) {
+void SegmentationLayer::encode(void const* buffer, size_t len, bool last)
+{
 	char const* buffer_ = static_cast<char const*>(buffer);
 
 	size_t mtu = lowerMtu();
@@ -465,14 +483,16 @@ ArqLayer::ArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* dow
 /*!
  * \brief Dtor.
  */
-ArqLayer::~ArqLayer() {
+ArqLayer::~ArqLayer()
+{
 	for(Deque<String::type*>::type::iterator it = m_encodeQueue.begin(); it != m_encodeQueue.end(); ++it)
 		cleanup(*it);
 	for(Deque<String::type*>::type::iterator it = m_spare.begin(); it != m_spare.end(); ++it)
 		cleanup(*it);
 }
 
-void ArqLayer::reset() {
+void ArqLayer::reset()
+{
 	while(!m_encodeQueue.empty())
 		popEncodeQueue();
 	stored_assert(m_encodeQueueSize == 0);
@@ -486,7 +506,8 @@ void ArqLayer::reset() {
 	keepAlive();
 }
 
-void ArqLayer::decode(void* buffer, size_t len) {
+void ArqLayer::decode(void* buffer, size_t len)
+{
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 
 next:
@@ -542,7 +563,8 @@ next:
 /*!
  * \brief Checks if this layer is waiting for an ack.
  */
-bool ArqLayer::waitingForAck() const {
+bool ArqLayer::waitingForAck() const
+{
 	if(m_encodeQueue.empty())
 		return false;
 
@@ -553,7 +575,8 @@ bool ArqLayer::waitingForAck() const {
 	return true;
 }
 
-void ArqLayer::encode(void const* buffer, size_t len, bool last) {
+void ArqLayer::encode(void const* buffer, size_t len, bool last)
+{
 	if(m_maxEncodeBuffer > 0 && m_maxEncodeBuffer < m_encodeQueueSize + len)
 		event(EventEncodeBufferOverflow);
 
@@ -579,7 +602,8 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last) {
 	transmit();
 }
 
-bool ArqLayer::flush() {
+bool ArqLayer::flush()
+{
 	bool res = !transmit();
 	return base::flush() && res;
 }
@@ -588,7 +612,8 @@ bool ArqLayer::flush() {
  * \brief (Re)transmits the first message in the queue.
  * \return \c true if something has been sent, \c false if the queue is empty
  */
-bool ArqLayer::transmit() {
+bool ArqLayer::transmit()
+{
 	if(m_encodeQueue.empty())
 		// Nothing to send.
 		return false;
@@ -615,7 +640,8 @@ bool ArqLayer::transmit() {
 /*!
  * \brief Forward the given event to the registered callback, if any.
  */
-void ArqLayer::event(ArqLayer::Event e) {
+void ArqLayer::event(ArqLayer::Event e)
+{
 	if(m_cb) {
 #if STORED_cplusplus < 201103L
 		m_cb(*this, e, m_cbArg);
@@ -639,13 +665,15 @@ void ArqLayer::event(ArqLayer::Event e) {
 /*!
  * \brief Compute the next sequence number.
  */
-uint8_t ArqLayer::nextSeq(uint8_t seq) {
+uint8_t ArqLayer::nextSeq(uint8_t seq)
+{
 	seq = (uint8_t)((seq + 1u) & SeqMask);
 	// cppcheck-suppress knownConditionTrueFalse
 	return seq ? seq : 1u;
 }
 
-size_t ArqLayer::mtu() const {
+size_t ArqLayer::mtu() const
+{
 	size_t mtu = base::mtu();
 	if(mtu == 0)
 		return 0;
@@ -667,7 +695,8 @@ size_t ArqLayer::mtu() const {
  *
  * \see #resetDidTransmit()
  */
-bool ArqLayer::didTransmit() const {
+bool ArqLayer::didTransmit() const
+{
 	return m_didTransmit;
 }
 
@@ -675,7 +704,8 @@ bool ArqLayer::didTransmit() const {
  * \brief Reset the flag for #didTransmit().
  * \see #didTransmit()
  */
-void ArqLayer::resetDidTransmit() {
+void ArqLayer::resetDidTransmit()
+{
 	m_didTransmit = false;
 }
 
@@ -685,7 +715,8 @@ void ArqLayer::resetDidTransmit() {
  * Use this function to determine whether the connection is still alive.  It is
  * application-defined what the threshold is of too many retransmits.
  */
-size_t ArqLayer::retransmits() const {
+size_t ArqLayer::retransmits() const
+{
 	return m_retransmits ? m_retransmits - 1u : 0u;
 }
 
@@ -697,7 +728,8 @@ size_t ArqLayer::retransmits() const {
  * way, #retransmits() and the #EventRetransmit can be used afterwards to
  * determine the quality of the link.
  */
-void ArqLayer::keepAlive() {
+void ArqLayer::keepAlive()
+{
 	if(m_encodeQueue.empty()) {
 		// Send empty message. This will trigger (re)transmits, so a broken
 		// connection will be detected.
@@ -712,7 +744,8 @@ void ArqLayer::keepAlive() {
 /*!
  * \brief Drop front of encode queue.
  */
-void ArqLayer::popEncodeQueue() {
+void ArqLayer::popEncodeQueue()
+{
 	stored_assert(!m_encodeQueue.empty());
 	m_encodeQueueSize -= m_encodeQueue.front()->size();
 	m_encodeQueue.front()->clear();
@@ -729,7 +762,8 @@ void ArqLayer::popEncodeQueue() {
 /*!
  * \brief Push the given buffer into the encode queue.
  */
-void ArqLayer::pushEncodeQueue(void const* buffer, size_t len) {
+void ArqLayer::pushEncodeQueue(void const* buffer, size_t len)
+{
 	String::type& s = pushEncodeQueueRaw();
 	s.push_back((char)m_sendSeq);
 	s.append(static_cast<char const*>(buffer), len);
@@ -743,7 +777,8 @@ void ArqLayer::pushEncodeQueue(void const* buffer, size_t len) {
  * The returned buffer can be used to put the message in. This should include
  * the sequence number as the first byte.
  */
-String::type& ArqLayer::pushEncodeQueueRaw() {
+String::type& ArqLayer::pushEncodeQueueRaw()
+{
 	String::type* s = nullptr;
 
 	if(m_spare.empty()) {
@@ -774,7 +809,8 @@ String::type& ArqLayer::pushEncodeQueueRaw() {
 /*!
  * \brief Free all unused memory.
  */
-void ArqLayer::shrink_to_fit() {
+void ArqLayer::shrink_to_fit()
+{
 	for(Deque<String::type*>::type::iterator it = m_encodeQueue.begin(); it != m_encodeQueue.end(); ++it)
 #if STORED_cplusplus >= 201103L
 		(*it)->shrink_to_fit();
@@ -812,7 +848,8 @@ DebugArqLayer::DebugArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, Protocol
 {
 }
 
-void DebugArqLayer::reset() {
+void DebugArqLayer::reset()
+{
 	m_decodeState = DecodeStateIdle;
 	m_decodeSeq = 1;
 	m_decodeSeqStart = 0;
@@ -824,7 +861,8 @@ void DebugArqLayer::reset() {
 	base::reset();
 }
 
-void DebugArqLayer::decode(void* buffer, size_t len) {
+void DebugArqLayer::decode(void* buffer, size_t len)
+{
 	if(len == 0)
 		return;
 
@@ -909,7 +947,8 @@ void DebugArqLayer::decode(void* buffer, size_t len) {
 	}
 }
 
-void DebugArqLayer::encode(void const* buffer, size_t len, bool last) {
+void DebugArqLayer::encode(void const* buffer, size_t len, bool last)
+{
 	if(m_decodeState == DecodeStateDecoding) {
 		// This seems to be the first part of the response.
 		// So, the request message must have been complete.
@@ -980,7 +1019,8 @@ void DebugArqLayer::encode(void const* buffer, size_t len, bool last) {
 	}
 }
 
-void DebugArqLayer::setPurgeableResponse(bool purgeable) {
+void DebugArqLayer::setPurgeableResponse(bool purgeable)
+{
 	bool wasPurgeable = m_encodeState == EncodeStateUnbufferedIdle || m_encodeState == EncodeStateUnbufferedEncoding;
 
 	if(wasPurgeable == purgeable)
@@ -1022,7 +1062,8 @@ void DebugArqLayer::setPurgeableResponse(bool purgeable) {
 	}
 }
 
-size_t DebugArqLayer::mtu() const {
+size_t DebugArqLayer::mtu() const
+{
 	size_t mtu = base::mtu();
 	if(mtu == 0)
 		return 0;
@@ -1034,7 +1075,8 @@ size_t DebugArqLayer::mtu() const {
 /*!
  * \brief Compute the successive sequence number.
  */
-uint32_t DebugArqLayer::nextSeq(uint32_t seq) {
+uint32_t DebugArqLayer::nextSeq(uint32_t seq)
+{
 	seq = (uint32_t)((seq + 1u) % 0x8000000);
 	// cppcheck-suppress knownConditionTrueFalse
 	return seq ? seq : 1u;
@@ -1043,7 +1085,8 @@ uint32_t DebugArqLayer::nextSeq(uint32_t seq) {
 /*!
  * \brief Decode the sequence number from a buffer.
  */
-uint32_t DebugArqLayer::decodeSeq(uint8_t*& buffer, size_t& len) {
+uint32_t DebugArqLayer::decodeSeq(uint8_t*& buffer, size_t& len)
+{
 	uint32_t seq = 0;
 	uint8_t flag = 0x40;
 
@@ -1061,7 +1104,8 @@ uint32_t DebugArqLayer::decodeSeq(uint8_t*& buffer, size_t& len) {
  * \brief Encode a sequence number into a buffer.
  * \return the number of bytes written (maximum of 4)
  */
-size_t DebugArqLayer::encodeSeq(uint32_t seq, void* buffer) {
+size_t DebugArqLayer::encodeSeq(uint32_t seq, void* buffer)
+{
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 	if(seq < 0x40u) {
 		buffer_[0] = (uint8_t)(seq & 0x3fu);
@@ -1123,12 +1167,14 @@ Crc8Layer::Crc8Layer(ProtocolLayer* up, ProtocolLayer* down)
 {
 }
 
-void Crc8Layer::reset() {
+void Crc8Layer::reset()
+{
 	m_crc = init;
 	base::reset();
 }
 
-void Crc8Layer::decode(void* buffer, size_t len) {
+void Crc8Layer::decode(void* buffer, size_t len)
+{
 	if(len == 0)
 		return;
 
@@ -1144,7 +1190,8 @@ void Crc8Layer::decode(void* buffer, size_t len) {
 	base::decode(buffer, len - 1);
 }
 
-void Crc8Layer::encode(void const* buffer, size_t len, bool last) {
+void Crc8Layer::encode(void const* buffer, size_t len, bool last)
+{
 	uint8_t const* buffer_ = static_cast<uint8_t const*>(buffer);
 	for(size_t i = 0; i < len; i++)
 		m_crc = compute(m_crc, buffer_[i]);
@@ -1157,12 +1204,14 @@ void Crc8Layer::encode(void const* buffer, size_t len, bool last) {
 	}
 }
 
-uint8_t Crc8Layer::compute(uint8_t input, uint8_t crc) {
+uint8_t Crc8Layer::compute(uint8_t input, uint8_t crc)
+{
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
 	return crc8_table[(uint8_t)(input ^ crc)];
 }
 
-size_t Crc8Layer::mtu() const {
+size_t Crc8Layer::mtu() const
+{
 	size_t mtu = base::mtu();
 	if(mtu == 0 || mtu > 256u)
 		return 256u;
@@ -1208,12 +1257,14 @@ Crc16Layer::Crc16Layer(ProtocolLayer* up, ProtocolLayer* down)
 {
 }
 
-void Crc16Layer::reset() {
+void Crc16Layer::reset()
+{
 	m_crc = init;
 	base::reset();
 }
 
-void Crc16Layer::decode(void* buffer, size_t len) {
+void Crc16Layer::decode(void* buffer, size_t len)
+{
 	if(len < 2)
 		return;
 
@@ -1229,7 +1280,8 @@ void Crc16Layer::decode(void* buffer, size_t len) {
 	base::decode(buffer, len - 2);
 }
 
-void Crc16Layer::encode(void const* buffer, size_t len, bool last) {
+void Crc16Layer::encode(void const* buffer, size_t len, bool last)
+{
 	uint8_t const* buffer_ = static_cast<uint8_t const*>(buffer);
 	for(size_t i = 0; i < len; i++)
 		m_crc = compute(buffer_[i], m_crc);
@@ -1243,12 +1295,14 @@ void Crc16Layer::encode(void const* buffer, size_t len, bool last) {
 	}
 }
 
-uint16_t Crc16Layer::compute(uint8_t input, uint16_t crc) {
+uint16_t Crc16Layer::compute(uint8_t input, uint16_t crc)
+{
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
 	return (uint16_t)(crc16_table[input ^ (uint8_t)(crc >> 8u)] ^ (uint16_t)(crc << 8u));
 }
 
-size_t Crc16Layer::mtu() const {
+size_t Crc16Layer::mtu() const
+{
 	size_t mtu = base::mtu();
 	if(mtu == 0 || mtu > 256u)
 		return 256u;
@@ -1273,7 +1327,8 @@ BufferLayer::BufferLayer(size_t size, ProtocolLayer* up, ProtocolLayer* down)
 	, m_size(size ? size : std::numeric_limits<size_t>::max())
 {}
 
-void BufferLayer::reset() {
+void BufferLayer::reset()
+{
 	m_buffer.clear();
 	base::reset();
 }
@@ -1281,7 +1336,8 @@ void BufferLayer::reset() {
 /*!
  * \brief Collects all partial buffers, and passes the full encoded data on when \p last is set.
  */
-void BufferLayer::encode(void const* buffer, size_t len, bool last) {
+void BufferLayer::encode(void const* buffer, size_t len, bool last)
+{
 	char const* buffer_ = static_cast<char const*>(buffer);
 
 	size_t remaining = m_size - m_buffer.size();
@@ -1337,7 +1393,8 @@ PrintLayer::PrintLayer(FILE* f, char const* name, ProtocolLayer* up, ProtocolLay
 {
 }
 
-void PrintLayer::decode(void* buffer, size_t len) {
+void PrintLayer::decode(void* buffer, size_t len)
+{
 	if(m_f && enabled()) {
 		String::type prefix;
 		if(m_name)
@@ -1352,7 +1409,8 @@ void PrintLayer::decode(void* buffer, size_t len) {
 	base::decode(buffer, len);
 }
 
-void PrintLayer::encode(void const* buffer, size_t len, bool last) {
+void PrintLayer::encode(void const* buffer, size_t len, bool last)
+{
 	if(m_f && enabled()) {
 		String::type prefix;
 		if(m_name)
@@ -1375,21 +1433,24 @@ void PrintLayer::encode(void const* buffer, size_t len, bool last) {
  * \brief Set the \c FILE to write to.
  * \param f the \c FILE, set to \c nullptr to disable output
  */
-void PrintLayer::setFile(FILE* f) {
+void PrintLayer::setFile(FILE* f)
+{
 	m_f = f;
 }
 
 /*!
  * \brief Return the \c FILE that is written to.
  */
-FILE* PrintLayer::file() const {
+FILE* PrintLayer::file() const
+{
 	return m_f;
 }
 
 /*!
  * \brief Enable printing all messages.
  */
-void PrintLayer::enable(bool enable) {
+void PrintLayer::enable(bool enable)
+{
 	m_enable = enable;
 }
 
@@ -1398,14 +1459,16 @@ void PrintLayer::enable(bool enable) {
  *
  * This is equivalent to calling \c enable(false).
  */
-void PrintLayer::disable() {
+void PrintLayer::disable()
+{
 	enable(false);
 }
 
 /*!
  * \brief Returns if printing is currently enabled.
  */
-bool PrintLayer::enabled() const {
+bool PrintLayer::enabled() const
+{
 	return m_enable;
 }
 
@@ -1430,17 +1493,20 @@ impl::Loopback1::Loopback1(ProtocolLayer& from, ProtocolLayer& to)
 /*!
  * \brief Destructor.
  */
-impl::Loopback1::~Loopback1() {
+impl::Loopback1::~Loopback1()
+{
 	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory, cppcoreguidelines-no-malloc)
 	free(m_buffer);
 }
 
-void impl::Loopback1::reset() {
+void impl::Loopback1::reset()
+{
 	m_len = 0;
 	base::reset();
 }
 
-void impl::Loopback1::reserve(size_t capacity) {
+void impl::Loopback1::reserve(size_t capacity)
+{
 	if(likely(capacity <= m_capacity))
 		return;
 
@@ -1461,7 +1527,8 @@ void impl::Loopback1::reserve(size_t capacity) {
 /*!
  * \brief Collect partial data, and passes into the \c decode() of \c to when it has the full message.
  */
-void impl::Loopback1::encode(void const* buffer, size_t len, bool last) {
+void impl::Loopback1::encode(void const* buffer, size_t len, bool last)
+{
 	if(likely(len > 0)) {
 		if(unlikely(m_len + len > m_capacity))
 			reserve(m_len + len + ExtraAlloc);
@@ -1490,7 +1557,8 @@ Loopback::Loopback(ProtocolLayer& a, ProtocolLayer& b)
  *
  * The capacity is allocated twice; one for both directions.
  */
-void Loopback::reserve(size_t capacity) {
+void Loopback::reserve(size_t capacity)
+{
 	m_a2b.reserve(capacity);
 	m_b2a.reserve(capacity);
 }
@@ -1505,7 +1573,8 @@ void Loopback::reserve(size_t capacity) {
 /*!
  * \brief Dtor.
  */
-PolledLayer::~PolledLayer() {
+PolledLayer::~PolledLayer()
+{
 	// We would like to close(), but at this point, the subclass was
 	// already destructed. So, make sure to close the handles
 	// in your subclass dtor.
@@ -1519,7 +1588,8 @@ PolledLayer::~PolledLayer() {
  *
  * Pollers are reused between calls, but only allocated the first time is is needed.
  */
-Poller& PolledLayer::poller() {
+Poller& PolledLayer::poller()
+{
 	if(!m_poller)
 		m_poller = new(allocate<Poller>()) Poller(); // NOLINT(cppcoreguidelines-owning-memory)
 
@@ -1548,7 +1618,8 @@ PolledFileLayer::~PolledFileLayer() is_default
  * \param suspend if \c true, do a suspend of the thread while blocking, otherwise allow fiber switching (when using Zth)
  * \return 0 on success, otherwise an \c errno
  */
-int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, long timeout_us, bool suspend) {
+int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, long timeout_us, bool suspend)
+{
 	setLastError(0);
 
 	Poller& poller = this->poller();
@@ -1725,7 +1796,8 @@ error:
  * Does not return, but sets #lastError() appropriately.
  */
 // cppcheck-suppress passedByValue
-void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w) {
+void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w)
+{
 	stored_assert(m_fd_r == -1);
 	stored_assert(m_fd_w == -1);
 
@@ -1745,21 +1817,24 @@ void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w) {
  *
  * It calls #close_(), not #close() as the latter is virtual.
  */
-FileLayer::~FileLayer() {
+FileLayer::~FileLayer()
+{
 	close_();
 }
 
 /*!
  * \brief Virtual wrapper around #close_().
  */
-void FileLayer::close() {
+void FileLayer::close()
+{
 	close_();
 }
 
 /*!
  * \brief Close the file descriptors.
  */
-void FileLayer::close_() {
+void FileLayer::close_()
+{
 	if(m_fd_r != -1)
 		::close(m_fd_r);
 
@@ -1775,7 +1850,8 @@ void FileLayer::close_() {
 /*!
  * \brief Check if the file descriptors are open.
  */
-bool FileLayer::isOpen() const {
+bool FileLayer::isOpen() const
+{
 	return m_fd_r != -1;
 }
 
@@ -1783,7 +1859,8 @@ bool FileLayer::isOpen() const {
  * \copydoc stored::PolledFileLayer::encode(void const*, size_t, bool)
  * \details Sets #lastError() appropriately.
  */
-void FileLayer::encode(void const* buffer, size_t len, bool last) {
+void FileLayer::encode(void const* buffer, size_t len, bool last)
+{
 	if(m_fd_w == -1) {
 		setLastError(EBADF);
 done:
@@ -1840,21 +1917,24 @@ error:
 /*!
  * \brief Returns the file descriptor to be used by a #stored::Poller in order to call #recv().
  */
-FileLayer::fd_type FileLayer::fd() const {
+FileLayer::fd_type FileLayer::fd() const
+{
 	return m_fd_r;
 }
 
 /*!
  * \brief Returns the read file descriptor.
  */
-FileLayer::fd_type FileLayer::fd_r() const {
+FileLayer::fd_type FileLayer::fd_r() const
+{
 	return m_fd_r;
 }
 
 /*!
  * \brief Returns the write file descriptor.
  */
-FileLayer::fd_type FileLayer::fd_w() const {
+FileLayer::fd_type FileLayer::fd_w() const
+{
 	return m_fd_w;
 }
 
@@ -1863,7 +1943,8 @@ FileLayer::fd_type FileLayer::fd_w() const {
  * \param timeout_us if zero, this function does not block. -1 blocks indefinitely.
  * \return 0 on success, otherwise an errno
  */
-int FileLayer::recv(long timeout_us) {
+int FileLayer::recv(long timeout_us)
+{
 	if(fd_r() == -1)
 		return setLastError(EBADF);
 
@@ -1902,7 +1983,8 @@ again:
 /*!
  * \brief Checks if the given handle is valid.
  */
-static bool isValidHandle(HANDLE h) {
+static bool isValidHandle(HANDLE h)
+{
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 	return h != INVALID_HANDLE_VALUE;
 }
@@ -2051,7 +2133,8 @@ FileLayer::FileLayer(ProtocolLayer* up, ProtocolLayer* down)
  *
  * Does not return, but sets #lastError() appropriately.
  */
-void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w) {
+void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w)
+{
 	stored_assert(!isValidHandle(m_fd_r));
 	stored_assert(!isValidHandle(m_fd_w));
 
@@ -2114,21 +2197,24 @@ error:
  *
  * It calls #close_(), instead of #close(), as the latter is virtual.
  */
-FileLayer::~FileLayer() {
+FileLayer::~FileLayer()
+{
 	close_();
 }
 
 /*!
  * \brief Virtual wrapper for #close_().
  */
-void FileLayer::close() {
+void FileLayer::close()
+{
 	close_();
 }
 
 /*!
  * \brief Close the file handles.
  */
-void FileLayer::close_() {
+void FileLayer::close_()
+{
 	if(m_fd_r != m_fd_w && isValidHandle(m_fd_w)) {
 		FlushFileBuffers(m_fd_w);
 		CancelIo(m_fd_w);
@@ -2161,7 +2247,8 @@ void FileLayer::close_() {
 /*!
  * \brief Checks if the files are still open.
  */
-bool FileLayer::isOpen() const {
+bool FileLayer::isOpen() const
+{
 	return isValidHandle(m_fd_r);
 }
 
@@ -2169,7 +2256,8 @@ bool FileLayer::isOpen() const {
  * \brief Try to finish a previously started overlapped write.
  * \return 0 on success, otherwise an \c errno
  */
-int FileLayer::finishWrite(bool block) {
+int FileLayer::finishWrite(bool block)
+{
 	size_t offset = 0;
 
 wait_prev_write:
@@ -2235,7 +2323,8 @@ error:
  * If the write was incomplete (which is unlikely, but not guaranteed),
  * it will issue a new overlapped write to continue with the rest of the write buffer.
  */
-void FileLayer::writeCompletionRoutine(DWORD dwErrorCode, DWORD UNUSED_PAR(dwNumberOfBytesTransfered), LPOVERLAPPED lpOverlapped) {
+void FileLayer::writeCompletionRoutine(DWORD dwErrorCode, DWORD UNUSED_PAR(dwNumberOfBytesTransfered), LPOVERLAPPED lpOverlapped)
+{
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 	FileLayer* that = *(FileLayer**)((uintptr_t)lpOverlapped + sizeof(*lpOverlapped));
 	stored_assert(that);
@@ -2253,7 +2342,8 @@ void FileLayer::writeCompletionRoutine(DWORD dwErrorCode, DWORD UNUSED_PAR(dwNum
  * \copydoc stored::PolledFileLayer::encode(void const*, size_t, bool)
  * \details Sets #lastError() appropriately.
  */
-void FileLayer::encode(void const* buffer, size_t len, bool last) {
+void FileLayer::encode(void const* buffer, size_t len, bool last)
+{
 	if(!isValidHandle(fd_w())) {
 		setLastError(EBADF);
 done:
@@ -2298,28 +2388,32 @@ error:
 /*!
  * \brief Returns the file descriptor to be used by a #stored::Poller in order to call #recv().
  */
-FileLayer::fd_type FileLayer::fd() const {
+FileLayer::fd_type FileLayer::fd() const
+{
 	return m_overlappedRead.hEvent;
 }
 
 /*!
  * \brief The read handle.
  */
-FileLayer::fd_type FileLayer::fd_r() const {
+FileLayer::fd_type FileLayer::fd_r() const
+{
 	return m_fd_r;
 }
 
 /*!
  * \brief The write handle.
  */
-FileLayer::fd_type FileLayer::fd_w() const {
+FileLayer::fd_type FileLayer::fd_w() const
+{
 	return m_fd_w;
 }
 
 /*!
  * \brief Initiate an overlapped read.
  */
-int FileLayer::startRead() {
+int FileLayer::startRead()
+{
 	bool didDecode = false;
 
 again:
@@ -2369,7 +2463,8 @@ again:
  *
  * This value is used for the next overlapped read.
  */
-size_t FileLayer::available() {
+size_t FileLayer::available()
+{
 	if(!isValidHandle(m_fd_r))
 		return 0;
 
@@ -2416,7 +2511,8 @@ size_t FileLayer::available() {
  * \param timeout_us if zero, this function does not block. -1 blocks indefinitely.
  * \return 0 on success, otherwise an errno
  */
-int FileLayer::recv(long timeout_us) {
+int FileLayer::recv(long timeout_us)
+{
 	bool didDecode = false;
 
 	setLastError(0);
@@ -2461,14 +2557,16 @@ again:
 /*!
  * \brief Returns the OVERLAPPED struct for read operations.
  */
-OVERLAPPED& FileLayer::overlappedRead() {
+OVERLAPPED& FileLayer::overlappedRead()
+{
 	return m_overlappedRead;
 }
 
 /*!
  * \brief Returns the OVERLAPPED struct for read operations.
  */
-OVERLAPPED& FileLayer::overlappedWrite() {
+OVERLAPPED& FileLayer::overlappedWrite()
+{
 	return m_overlappedWrite;
 }
 
@@ -2477,7 +2575,8 @@ OVERLAPPED& FileLayer::overlappedWrite() {
  *
  * Make sure the previous read has completed before.
  */
-void FileLayer::resetOverlappedRead() {
+void FileLayer::resetOverlappedRead()
+{
 	HANDLE hEvent = m_overlappedRead.hEvent;
 	memset(&m_overlappedRead, 0, sizeof(m_overlappedRead));
 	m_overlappedRead.hEvent = hEvent;
@@ -2489,7 +2588,8 @@ void FileLayer::resetOverlappedRead() {
  *
  * Make sure the previous write has completed before.
  */
-void FileLayer::resetOverlappedWrite() {
+void FileLayer::resetOverlappedWrite()
+{
 	HANDLE hEvent = m_overlappedWrite.hEvent;
 	memset(&m_overlappedWrite, 0, sizeof(m_overlappedWrite));
 	m_overlappedWrite.hEvent = hEvent;
@@ -2539,14 +2639,16 @@ NamedPipeLayer::NamedPipeLayer(char const* name, DWORD openMode, ProtocolLayer* 
 /*!
  * \brief Dtor.
  */
-NamedPipeLayer::~NamedPipeLayer() {
+NamedPipeLayer::~NamedPipeLayer()
+{
 	close_();
 }
 
 /*!
  * \brief Close the pipe.
  */
-void NamedPipeLayer::close_() {
+void NamedPipeLayer::close_()
+{
 	if(isValidHandle(handle())) {
 		FlushFileBuffers(handle());
 		CancelIo(handle());
@@ -2559,14 +2661,16 @@ void NamedPipeLayer::close_() {
 /*!
  * \brief Resets the connection to accept a new incoming one.
  */
-void NamedPipeLayer::close() {
+void NamedPipeLayer::close()
+{
 	reopen();
 }
 
 /*!
  * \brief Resets the connection to accept a new incoming one.
  */
-void NamedPipeLayer::reopen() {
+void NamedPipeLayer::reopen()
+{
 	if(isValidHandle(handle()) && m_state > StateConnecting) {
 		// Don't really close, just reconnect.
 		FlushFileBuffers(handle());
@@ -2580,7 +2684,8 @@ void NamedPipeLayer::reopen() {
 	}
 }
 
-int NamedPipeLayer::recv(long timeout_us) {
+int NamedPipeLayer::recv(long timeout_us)
+{
 	bool didDecode = false;
 again:
 	switch(m_state) {
@@ -2660,7 +2765,8 @@ again:
 	}
 }
 
-int NamedPipeLayer::startRead() {
+int NamedPipeLayer::startRead()
+{
 	switch(m_state) {
 	case StateInit:
 		return recv(false);
@@ -2676,7 +2782,8 @@ int NamedPipeLayer::startRead() {
 	}
 }
 
-void NamedPipeLayer::encode(void const* buffer, size_t len, bool last) {
+void NamedPipeLayer::encode(void const* buffer, size_t len, bool last)
+{
 	switch(m_state) {
 	case StateConnected:
 		base::encode(buffer, len, last);
@@ -2695,21 +2802,24 @@ void NamedPipeLayer::encode(void const* buffer, size_t len, bool last) {
  *
  * This name can be used to open it elsewhere as a normal file.
  */
-String::type const& NamedPipeLayer::name() const {
+String::type const& NamedPipeLayer::name() const
+{
 	return m_name;
 }
 
 /*!
  * \brief Returns the pipe handle.
  */
-HANDLE NamedPipeLayer::handle() const {
+HANDLE NamedPipeLayer::handle() const
+{
 	return fd_r();
 }
 
 /*!
  * \brief Checks if the pipe is connected.
  */
-bool NamedPipeLayer::isConnected() const {
+bool NamedPipeLayer::isConnected() const
+{
 	return m_state == StateConnected;
 }
 
@@ -2732,42 +2842,50 @@ DoublePipeLayer::DoublePipeLayer(char const* name_r, char const* name_w, Protoco
 
 DoublePipeLayer::~DoublePipeLayer() is_default
 
-void DoublePipeLayer::encode(void const* buffer, size_t len, bool last) {
+void DoublePipeLayer::encode(void const* buffer, size_t len, bool last)
+{
 	m_w.encode(buffer, len, last);
 	setLastError(m_w.lastError());
 	base::encode(buffer, len, last);
 }
 
-bool DoublePipeLayer::isOpen() const {
+bool DoublePipeLayer::isOpen() const
+{
 	return m_r.isOpen() || m_w.isOpen();
 }
 
-int DoublePipeLayer::recv(long timeout_us) {
+int DoublePipeLayer::recv(long timeout_us)
+{
 	m_w.recv(false);
 	return setLastError(m_r.recv(timeout_us));
 }
 
-DoublePipeLayer::fd_type DoublePipeLayer::fd() const {
+DoublePipeLayer::fd_type DoublePipeLayer::fd() const
+{
 	return m_r.fd();
 }
 
 /*!
  * \brief Checks if both pipes are connected.
  */
-bool DoublePipeLayer::isConnected() const {
+bool DoublePipeLayer::isConnected() const
+{
 	return m_r.isConnected() && m_w.isConnected();
 }
 
-void DoublePipeLayer::close() {
+void DoublePipeLayer::close()
+{
 	reopen();
 }
 
-void DoublePipeLayer::reopen() {
+void DoublePipeLayer::reopen()
+{
 	m_r.reopen();
 	m_w.reopen();
 }
 
-void DoublePipeLayer::reset() {
+void DoublePipeLayer::reset()
+{
 	m_r.reset();
 	m_w.reset();
 	base::reset();
@@ -2796,7 +2914,8 @@ XsimLayer::XsimLayer(char const* pipe_prefix, ProtocolLayer* up, ProtocolLayer* 
 
 XsimLayer::~XsimLayer() is_default
 
-void XsimLayer::encode(void const* buffer, size_t len, bool last) {
+void XsimLayer::encode(void const* buffer, size_t len, bool last)
+{
 	m_inFlight += len;
 	base::encode(buffer, len, last);
 
@@ -2806,18 +2925,21 @@ void XsimLayer::encode(void const* buffer, size_t len, bool last) {
 	}
 }
 
-NamedPipeLayer& XsimLayer::req() {
+NamedPipeLayer& XsimLayer::req()
+{
 	return m_req;
 }
 
-void XsimLayer::reset() {
+void XsimLayer::reset()
+{
 	m_inFlight = 0;
 	m_req.reset();
 	base::reset();
 	keepAlive();
 }
 
-void XsimLayer::keepAlive() {
+void XsimLayer::keepAlive()
+{
 	// Make sure that there is always one byte to read, otherwise xsim may
 	// hang.  You would expect a < 1 in the line below, but that still makes
 	// xsim hang.  Unsure why.
@@ -2827,7 +2949,8 @@ void XsimLayer::keepAlive() {
 	}
 }
 
-void XsimLayer::decoded(size_t len) {
+void XsimLayer::decoded(size_t len)
+{
 	if(len > m_inFlight)
 		m_inFlight = 0;
 	else
@@ -2836,7 +2959,8 @@ void XsimLayer::decoded(size_t len) {
 	keepAlive();
 }
 
-int XsimLayer::recv(long timeout_us) {
+int XsimLayer::recv(long timeout_us)
+{
 	int resReq = m_req.recv();
 	int resBase = base::recv(timeout_us);
 
@@ -2865,7 +2989,8 @@ int XsimLayer::recv(long timeout_us) {
 	}
 }
 
-void XsimLayer::reopen() {
+void XsimLayer::reopen()
+{
 	m_inFlight = 0;
 	m_req.reopen();
 	base::reopen();
@@ -2915,38 +3040,45 @@ StdioLayer::StdioLayer(ProtocolLayer* up, ProtocolLayer* down)
 /*!
  * \brief Dtor.
  */
-StdioLayer::~StdioLayer() {
+StdioLayer::~StdioLayer()
+{
 	close_();
 }
 
 /*!
  * \brief Checks if the stdin is actually a pipe instead of an interactive console.
  */
-bool StdioLayer::isPipeIn() const {
+bool StdioLayer::isPipeIn() const
+{
 	return m_pipe_r;
 }
 
 /*!
  * \brief Checks if the stdout is actually a pipe instead of an interactive console.
  */
-bool StdioLayer::isPipeOut() const {
+bool StdioLayer::isPipeOut() const
+{
 	return m_pipe_w;
 }
 
-int StdioLayer::block(fd_type UNUSED_PAR(fd), bool UNUSED_PAR(forReading), long UNUSED_PAR(timeout_us), bool UNUSED_PAR(suspend)) {
+int StdioLayer::block(fd_type UNUSED_PAR(fd), bool UNUSED_PAR(forReading), long UNUSED_PAR(timeout_us), bool UNUSED_PAR(suspend))
+{
 	stored_assert(false);
 	return setLastError(EINVAL);
 }
 
-bool StdioLayer::isOpen() const {
+bool StdioLayer::isOpen() const
+{
 	return isValidHandle(m_fd_r);
 }
 
-void StdioLayer::close() {
+void StdioLayer::close()
+{
 	close_();
 }
 
-void StdioLayer::close_() {
+void StdioLayer::close_()
+{
 	if(isValidHandle(m_fd_r) && isPipeIn()) {
 		CloseHandle(m_fd_r);
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
@@ -2956,16 +3088,19 @@ void StdioLayer::close_() {
 	base::close();
 }
 
-StdioLayer::fd_type StdioLayer::fd_r() const {
+StdioLayer::fd_type StdioLayer::fd_r() const
+{
 	return m_fd_r;
 }
 
-StdioLayer::fd_type StdioLayer::fd_w() const {
+StdioLayer::fd_type StdioLayer::fd_w() const
+{
 	return m_fd_w;
 }
 
 // Guess what, Overlapped I/O is not supported on the console...
-int StdioLayer::recv(long timeout_us) {
+int StdioLayer::recv(long timeout_us)
+{
 	if(!isValidHandle(fd_r()))
 		return setLastError(EBADF);
 
@@ -3002,7 +3137,8 @@ error:
 	return setLastError(EIO);
 }
 
-void StdioLayer::encode(void const* buffer, size_t len, bool last) {
+void StdioLayer::encode(void const* buffer, size_t len, bool last)
+{
 	if(!isValidHandle(fd_w())) {
 		setLastError(EBADF);
 done:
@@ -3027,7 +3163,8 @@ done:
 	goto done;
 }
 
-StdioLayer::fd_type StdioLayer::fd() const {
+StdioLayer::fd_type StdioLayer::fd() const
+{
 	return fd_r();
 }
 

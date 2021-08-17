@@ -183,25 +183,29 @@ namespace stored {
 	int memcmp_swap(void const* a, void const* b, size_t len) noexcept;
 
 	template <size_t S>
-	static inline void swap_endian_(void* buffer) noexcept {
+	static inline void swap_endian_(void* buffer) noexcept
+	{
 		swap_endian(buffer, S);
 	}
 
 #ifdef STORED_COMPILER_GCC
 	template <>
-	inline void swap_endian_<2>(void* buffer) noexcept {
+	inline void swap_endian_<2>(void* buffer) noexcept
+	{
 		uint16_t* x = static_cast<uint16_t*>(buffer);
 		*x = __builtin_bswap16(*x);
 	}
 
 	template <>
-	inline void swap_endian_<4>(void* buffer) noexcept {
+	inline void swap_endian_<4>(void* buffer) noexcept
+	{
 		uint32_t* x = static_cast<uint32_t*>(buffer);
 		*x = __builtin_bswap32(*x);
 	}
 
 	template <>
-	inline void swap_endian_<8>(void* buffer) noexcept {
+	inline void swap_endian_<8>(void* buffer) noexcept
+	{
 		uint64_t* x = static_cast<uint64_t*>(buffer);
 		*x = __builtin_bswap64(*x);
 	}
@@ -209,19 +213,22 @@ namespace stored {
 
 #ifdef STORED_COMPILER_MSVC
 	template <>
-	inline void swap_endian_<sizeof(unsigned short)>(void* buffer) noexcept {
+	inline void swap_endian_<sizeof(unsigned short)>(void* buffer) noexcept
+	{
 		unsigned short* x = static_cast<unsigned short*>(buffer);
 		*x = _byteswap_ushort(*x);
 	}
 
 	template <>
-	inline void swap_endian_<sizeof(unsigned long)>(void* buffer) noexcept {
+	inline void swap_endian_<sizeof(unsigned long)>(void* buffer) noexcept
+	{
 		unsigned long* x = static_cast<unsigned long*>(buffer);
 		*x = _byteswap_ulong(*x);
 	}
 
 	template <>
-	inline void swap_endian_<sizeof(unsigned __int64)>(void* buffer) noexcept {
+	inline void swap_endian_<sizeof(unsigned __int64)>(void* buffer) noexcept
+	{
 		unsigned __int64* x = static_cast<unsigned __int64*>(buffer);
 		*x = _byteswap_uint64(*x);
 	}
@@ -231,7 +238,8 @@ namespace stored {
 	 * \brief Swap endianness of the given value.
 	 */
 	template <typename T>
-	static inline T swap_endian(T value) noexcept {
+	static inline T swap_endian(T value) noexcept
+	{
 		swap_endian_<sizeof(T)>(&value);
 		return value;
 	}
@@ -240,7 +248,8 @@ namespace stored {
 	 * \brief Swap host to big endianness.
 	 */
 	template <typename T>
-	static inline T endian_h2b(T value) noexcept {
+	static inline T endian_h2b(T value) noexcept
+	{
 #ifdef STORED_LITTLE_ENDIAN
 		swap_endian_<sizeof(T)>(&value);
 #endif
@@ -251,7 +260,8 @@ namespace stored {
 	 * \brief Swap host to network (big) endianness.
 	 */
 	template <typename T>
-	static inline T endian_h2n(T value) noexcept {
+	static inline T endian_h2n(T value) noexcept
+	{
 		return endian_h2b<T>(value);
 	}
 
@@ -259,7 +269,8 @@ namespace stored {
 	 * \brief Swap host to little endianness.
 	 */
 	template <typename T>
-	static inline T endian_h2l(T value) noexcept {
+	static inline T endian_h2l(T value) noexcept
+	{
 #ifdef STORED_BIG_ENDIAN
 		swap_endian_<sizeof(T)>(&value);
 #endif
@@ -270,7 +281,8 @@ namespace stored {
 	 * \brief Swap host to store endianness.
 	 */
 	template <typename T>
-	static inline T endian_h2s(T value) noexcept {
+	static inline T endian_h2s(T value) noexcept
+	{
 		if(Config::StoreInLittleEndian)
 			return endian_h2l<T>(value);
 		else
@@ -281,7 +293,8 @@ namespace stored {
 	 * \brief Swap big to host endianness.
 	 */
 	template <typename T>
-	static inline T endian_b2h(T value) noexcept {
+	static inline T endian_b2h(T value) noexcept
+	{
 #ifdef STORED_LITTLE_ENDIAN
 		swap_endian_<sizeof(T)>(&value);
 #endif
@@ -292,7 +305,8 @@ namespace stored {
 	 * \brief Swap network (big) to host endianness.
 	 */
 	template <typename T>
-	static inline T endian_n2h(T value) noexcept {
+	static inline T endian_n2h(T value) noexcept
+	{
 		return endian_b2h<T>(value);
 	}
 
@@ -300,7 +314,8 @@ namespace stored {
 	 * \brief Swap little to host endianness.
 	 */
 	template <typename T>
-	static inline T endian_l2h(T value) noexcept {
+	static inline T endian_l2h(T value) noexcept
+	{
 #ifdef STORED_BIG_ENDIAN
 		swap_endian_<sizeof(T)>(&value);
 #endif
@@ -311,7 +326,8 @@ namespace stored {
 	 * \brief Swap store to host endianness.
 	 */
 	template <typename T>
-	static inline T endian_s2h(T value) noexcept {
+	static inline T endian_s2h(T value) noexcept
+	{
 		if(Config::StoreInLittleEndian)
 			return endian_l2h<T>(value);
 		else
@@ -322,7 +338,8 @@ namespace stored {
 	 * \brief Load from (possibly unaligned) buffer and swap little to host endianness.
 	 */
 	template <typename T, typename P>
-	static inline T endian_l2h(P const* p) noexcept {
+	static inline T endian_l2h(P const* p) noexcept
+	{
 		T x;
 		memcpy(&x, p, sizeof(T));
 		return endian_l2h(x);
@@ -332,7 +349,8 @@ namespace stored {
 	 * \brief Load from (possibly unaligned) buffer and swap big to host endianness.
 	 */
 	template <typename T, typename P>
-	static inline T endian_b2h(P const* p) noexcept {
+	static inline T endian_b2h(P const* p) noexcept
+	{
 		T x;
 		memcpy(&x, p, sizeof(T));
 		return endian_b2h(x);
@@ -342,7 +360,8 @@ namespace stored {
 	 * \brief Load from (possibly unaligned) buffer and swap network (big) to host endianness.
 	 */
 	template <typename T, typename P>
-	static inline T endian_n2h(P const* p) noexcept {
+	static inline T endian_n2h(P const* p) noexcept
+	{
 		T x;
 		memcpy(&x, p, sizeof(T));
 		return endian_n2h(x);
@@ -352,7 +371,8 @@ namespace stored {
 	 * \brief Load from (possibly unaligned) buffer and swap store to host endianness.
 	 */
 	template <typename T, typename P>
-	static inline T endian_s2h(P const* p) noexcept {
+	static inline T endian_s2h(P const* p) noexcept
+	{
 		T x;
 		memcpy(&x, p, sizeof(T));
 		return endian_s2h(x);

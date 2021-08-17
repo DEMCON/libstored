@@ -28,7 +28,8 @@ extern "C" {
 /*!
  * \brief Helper to get a \c heatshrink_encoder reference from \c CompressLayer::m_encoder.
  */
-static heatshrink_encoder& encoder_(void* e) {
+static heatshrink_encoder& encoder_(void* e)
+{
 	stored_assert(e);
 	return *static_cast<heatshrink_encoder*>(e);
 }
@@ -37,7 +38,8 @@ static heatshrink_encoder& encoder_(void* e) {
 /*!
  * \brief Helper to get a \c heatshrink_decoder reference from \c CompressLayer::m_decoder.
  */
-static heatshrink_decoder& decoder_(void* d) {
+static heatshrink_decoder& decoder_(void* d)
+{
 	stored_assert(d);
 	return *static_cast<heatshrink_decoder*>(d);
 }
@@ -60,7 +62,8 @@ CompressLayer::CompressLayer(ProtocolLayer* up, ProtocolLayer* down)
 /*!
  * \brief Dtor.
  */
-CompressLayer::~CompressLayer() {
+CompressLayer::~CompressLayer()
+{
 	if(m_encoder)
 		heatshrink_encoder_free(&encoder());
 
@@ -68,7 +71,8 @@ CompressLayer::~CompressLayer() {
 		heatshrink_decoder_free(&decoder());
 }
 
-void CompressLayer::decode(void* buffer, size_t len) {
+void CompressLayer::decode(void* buffer, size_t len)
+{
 	stored_assert(len == 0 || buffer);
 
 	if(!buffer || !len)
@@ -105,7 +109,8 @@ void CompressLayer::decode(void* buffer, size_t len) {
 /*!
  * \brief Check if there is data to be extracted from the decoder.
  */
-void CompressLayer::decoderPoll() {
+void CompressLayer::decoderPoll()
+{
 	while(true) {
 		m_decodeBuffer.resize(m_decodeBufferSize + 128);
 		size_t output_size = 0;
@@ -125,7 +130,8 @@ void CompressLayer::decoderPoll() {
 	}
 }
 
-void CompressLayer::encode(void const* buffer, size_t len, bool last) {
+void CompressLayer::encode(void const* buffer, size_t len, bool last)
+{
 	stored_assert(len == 0 || buffer);
 
 	if(unlikely(!m_encoder))
@@ -161,7 +167,8 @@ void CompressLayer::encode(void const* buffer, size_t len, bool last) {
 /*!
  * \brief Check if there is data to be extracted from the encoder.
  */
-void CompressLayer::encoderPoll() {
+void CompressLayer::encoderPoll()
+{
 	uint8_t out_buf[128];
 
 	while(true) {
@@ -182,7 +189,8 @@ void CompressLayer::encoderPoll() {
 	}
 }
 
-size_t CompressLayer::mtu() const {
+size_t CompressLayer::mtu() const
+{
 	// This is a stream; we cannot handle limited messages.
 	// Use the SegmentationLayer for that.
 	stored_assert(base::mtu() == 0);
@@ -193,7 +201,8 @@ size_t CompressLayer::mtu() const {
  * \brief Check if the encoder and decoder are both in idle state.
  * \return \c true if there is no data stuck in any internal buffer.
  */
-bool CompressLayer::idle() const {
+bool CompressLayer::idle() const
+{
 	return m_state == 0;
 }
 
