@@ -1,4 +1,4 @@
-C++
+﻿C++
 ===
 
 This is the C++ API used by the generated store classes, and to be used in the

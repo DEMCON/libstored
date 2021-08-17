@@ -25,7 +25,8 @@
 static bool verbose_new;
 static size_t new_count;
 
-void* operator new(std::size_t count) {
+void* operator new(std::size_t count)
+{
 	void* ptr = malloc(count);
 	if(verbose_new)
 		printf("new %zu -> %p\n", count, ptr);
@@ -33,13 +34,15 @@ void* operator new(std::size_t count) {
 	return ptr;
 }
 
-void operator delete(void* ptr) noexcept {
+void operator delete(void* ptr) noexcept
+{
 	if(verbose_new)
 		printf("delete %p\n", ptr);
 	free(ptr);
 }
 
-void operator delete(void* ptr, std::size_t) noexcept {
+void operator delete(void* ptr, std::size_t) noexcept
+{
 	if(verbose_new)
 		printf("delete %p\n", ptr);
 	free(ptr);
@@ -47,11 +50,13 @@ void operator delete(void* ptr, std::size_t) noexcept {
 
 
 static bool callable_flag;
-static void callable() {
+static void callable()
+{
 	callable_flag = true;
 }
 
-TEST(Callable, FunctionPointer) {
+TEST(Callable, FunctionPointer)
+{
 	stored::Callable<void()>::type f;
 	EXPECT_FALSE((bool)f);
 
@@ -80,7 +85,8 @@ TEST(Callable, FunctionPointer) {
 	EXPECT_FALSE((bool)h);
 }
 
-TEST(Callable, Lambda) {
+TEST(Callable, Lambda)
+{
 	// Decays to normal function pointer.
 	callable_flag = false;
 	stored::Callable<void()>::type f{[](){ callable_flag = true; }};
@@ -119,7 +125,8 @@ TEST(Callable, Lambda) {
 	EXPECT_TRUE(flag7);
 }
 
-TEST(Callable, Functor) {
+TEST(Callable, Functor)
+{
 	struct C {
 		void operator()() { count++; }
 		int count = 0;
@@ -133,7 +140,8 @@ TEST(Callable, Functor) {
 	EXPECT_EQ(c.count, 2);
 }
 
-TEST(Callable, Move) {
+TEST(Callable, Move)
+{
 	bool flag = false;
 	stored::Callable<void()>::type f{[&](){ flag = true; }};
 	f();
@@ -177,7 +185,8 @@ TEST(Callable, Move) {
 	EXPECT_TRUE(flag7);
 }
 
-TEST(Callable, Copy) {
+TEST(Callable, Copy)
+{
 	bool flag = false;
 	stored::Callable<void()>::type f{[&](){ flag = true; }};
 	f();
@@ -237,7 +246,8 @@ struct C {
 	C(C const&) { copies++; }
 };
 
-TEST(Callable, Args) {
+TEST(Callable, Args)
+{
 	int v = 0;
 	stored::Callable<void(int)>::type f{[&](int x){ v = x; }};
 	f(1);
@@ -266,7 +276,8 @@ TEST(Callable, Args) {
 	EXPECT_EQ(copies, 0);
 }
 
-TEST(Callable, Return) {
+TEST(Callable, Return)
+{
 	stored::Callable<int(int*)>::type f{[](int* x){ return *x; }};
 
 	int i = 4;
@@ -275,21 +286,24 @@ TEST(Callable, Return) {
 
 class Allocator : public ::testing::Test {
 protected:
-	void SetUp() override {
+	void SetUp() override
+	{
 		TestAllocatorBase::allocate_cb = TestAllocatorBase::allocate_report;
 		TestAllocatorBase::deallocate_cb = TestAllocatorBase::deallocate_report;
 		verbose_new = true;
 		new_count = 0;
 	}
 
-	void TearDown() override {
+	void TearDown() override
+	{
 		verbose_new = false;
 		TestAllocatorBase::allocate_cb = nullptr;
 		TestAllocatorBase::deallocate_cb = nullptr;
 	}
 };
 
-TEST_F(Allocator, Store) {
+TEST_F(Allocator, Store)
+{
 	new_count = 0;
 
 	stored::TestStore s;

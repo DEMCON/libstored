@@ -27,7 +27,8 @@ public:
 	static Stats allocate_stats;
 	static Stats deallocate_stats;
 
-	static void allocate_report(std::type_info const& t, void* p, size_t size, size_t n) {
+	static void allocate_report(std::type_info const& t, void* p, size_t size, size_t n)
+	{
 		if(n == 1U)
 			printf("Allocated %s at %p\n", t.name(), p);
 		else
@@ -40,7 +41,8 @@ public:
 
 	static std::function<void(std::type_info const&, void*, size_t, size_t)> allocate_cb;
 
-	static void deallocate_report(std::type_info const& t, void* p, size_t size, size_t n) {
+	static void deallocate_report(std::type_info const& t, void* p, size_t size, size_t n)
+	{
 		if(n == 1U)
 			printf("Deallocate %s at %p\n", t.name(), p);
 		else
@@ -67,7 +69,8 @@ public:
 	template <typename A>
 	TestAllocator(TestAllocator<A>&&) noexcept {}
 
-	value_type* allocate(size_t n) {
+	value_type* allocate(size_t n)
+	{
 		value_type* p = (value_type*)malloc(sizeof(value_type) * n);
 		if(!p)
 			throw std::bad_alloc();
@@ -78,7 +81,8 @@ public:
 		return p;
 	}
 
-	void deallocate(value_type* p, size_t n) noexcept {
+	void deallocate(value_type* p, size_t n) noexcept
+	{
 		if(deallocate_cb)
 			deallocate_cb(typeid(value_type), p, sizeof(value_type), n);
 
@@ -100,4 +104,3 @@ namespace stored {
 } // namespace
 #endif // __cplusplus
 #endif // STORED_CONFIG_H
-

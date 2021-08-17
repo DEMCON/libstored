@@ -24,7 +24,8 @@
 
 namespace {
 
-TEST(Fifo, UnboundedFifo) {
+TEST(Fifo, UnboundedFifo)
+{
 	stored::Fifo<int> f;
 
 	EXPECT_FALSE(f.bounded());
@@ -67,7 +68,8 @@ TEST(Fifo, UnboundedFifo) {
 	EXPECT_EQ(f.front(), 6u);
 }
 
-TEST(Fifo, BoundedFifo) {
+TEST(Fifo, BoundedFifo)
+{
 	stored::Fifo<int, 4> f;
 
 	EXPECT_TRUE(f.bounded());
@@ -108,7 +110,8 @@ TEST(Fifo, BoundedFifo) {
 	EXPECT_TRUE(f.empty());
 }
 
-TEST(Fifo, IterateFifo) {
+TEST(Fifo, IterateFifo)
+{
 	stored::Fifo<int, 4> f;
 
 	f.push_back({1, 2, 3});
@@ -141,7 +144,8 @@ TEST(Fifo, IterateFifo) {
 		EXPECT_EQ(s_, "" str); \
 	} while(0)
 
-TEST(Fifo, UnboundedMessageFifo) {
+TEST(Fifo, UnboundedMessageFifo)
+{
 	stored::MessageFifo<> f;
 
 	EXPECT_FALSE(f.bounded());
@@ -180,7 +184,8 @@ TEST(Fifo, UnboundedMessageFifo) {
 	EXPECT_TRUE(f.empty());
 }
 
-TEST(Fifo, BoundedMessageFifo) {
+TEST(Fifo, BoundedMessageFifo)
+{
 	stored::MessageFifo<16, 4> f;
 
 	EXPECT_TRUE(f.bounded());
@@ -238,7 +243,8 @@ TEST(Fifo, BoundedMessageFifo) {
 	EXPECT_EQ(f.space(), 0u);
 }
 
-TEST(Fifo, IterateMessageFifo) {
+TEST(Fifo, IterateMessageFifo)
+{
 	stored::MessageFifo<16, 4> f;
 
 	EXPECT_EQ(f.push_back({{"0", 1}, {"1", 1}, {"2", 1}, {"3", 1}}), 4u);
@@ -252,34 +258,35 @@ TEST(Fifo, IterateMessageFifo) {
 #ifndef STORED_COMPILER_MINGW
 // MinGW does not implement std::thread.
 
-TEST(Fifo, ProducerConsumer) {
+TEST(Fifo, ProducerConsumer)
+{
 	stored::MessageFifo<16, 4> f;
 	char const msg[17] = "abcdefghijklmnop";
 
 	long pcs = 0;
 	std::thread p([&](){
-			for(int l = 0; l < 1000; l++) {
-				size_t len = (size_t)(rand() % 16) + 1;
-				for(size_t i = 0; i < len; i++)
-					pcs += (long)(msg[i] - 'a');
+		for(int l = 0; l < 1000; l++) {
+			size_t len = (size_t)(rand() % 16) + 1;
+			for(size_t i = 0; i < len; i++)
+				pcs += (long)(msg[i] - 'a');
 
-				while(!f.push_back(msg, len))
-					std::this_thread::yield();
-			}
+			while(!f.push_back(msg, len))
+				std::this_thread::yield();
+		}
 	});
 
 	long ccs = 0;
 	std::thread c([&](){
-			for(int l = 0; l < 1000; l++) {
-				while(f.empty())
-					std::this_thread::yield();
+		for(int l = 0; l < 1000; l++) {
+			while(f.empty())
+				std::this_thread::yield();
 
-				auto m = f.front();
-				for(size_t i = 0; i < m.size(); i++)
-					ccs += (long)(m.data()[i] - 'a');
+			auto m = f.front();
+			for(size_t i = 0; i < m.size(); i++)
+				ccs += (long)(m.data()[i] - 'a');
 
-				f.pop_front();
-			}
+			f.pop_front();
+		}
 	});
 
 	c.join();

@@ -1,4 +1,4 @@
-Base classes
+﻿Base classes
 ==============
 
 ZmqClient

@@ -25,7 +25,8 @@
 
 namespace {
 
-TEST(Directory, FullMatch) {
+TEST(Directory, FullMatch)
+{
 	stored::TestStore store;
 	EXPECT_TRUE(store.find("/default int8").valid());
 	EXPECT_TRUE(store.find("/f read/write").valid());
@@ -37,7 +38,8 @@ TEST(Directory, FullMatch) {
 	EXPECT_TRUE(store.find("/value with ambiguous unit (m/h)").valid());
 }
 
-TEST(Directory, ShortMatch) {
+TEST(Directory, ShortMatch)
+{
 	stored::TestStore store;
 	EXPECT_TRUE(store.find("/d.......f").valid());
 	EXPECT_TRUE(store.find("/f.r.../").valid());
@@ -49,14 +51,16 @@ TEST(Directory, ShortMatch) {
 	EXPECT_TRUE(store.find("/value with complex").valid());
 }
 
-TEST(Directory, Ambiguous) {
+TEST(Directory, Ambiguous)
+{
 	stored::TestStore store;
 	EXPECT_FALSE(store.find("/default int").valid());
 	EXPECT_FALSE(store.find("/s/inner bool").valid());
 	EXPECT_FALSE(store.find("/value with ambiguous unit").valid());
 }
 
-TEST(Directory, Bogus) {
+TEST(Directory, Bogus)
+{
 	stored::TestStore store;
 	EXPECT_FALSE(store.find("").valid());
 	EXPECT_FALSE(store.find("/").valid());
@@ -68,7 +72,8 @@ static int objects;
 static void list_cb_templ(stored::TestStore*, char const*, stored::Type::type, void*, size_t) { objects++; }
 static void list_cb_arg(void*, char const*, stored::Type::type, void*, size_t, void*) { objects++; }
 
-TEST(Directory, ListFunctions) {
+TEST(Directory, ListFunctions)
+{
 	stored::TestStore store;
 
 	// list() using an rvalue lambda (>= C++11)
@@ -100,7 +105,8 @@ TEST(Directory, ListFunctions) {
 	EXPECT_GT(objects, 1);
 }
 
-TEST(Directory, List) {
+TEST(Directory, List)
+{
 	stored::TestStore store;
 
 	std::list<std::string> names;
@@ -122,7 +128,8 @@ TEST(Directory, List) {
 		EXPECT_TRUE(std::find(names.begin(), names.end(), n.c_str()) != names.end());
 }
 
-TEST(Directory, Constexpr) {
+TEST(Directory, Constexpr)
+{
 	static_assert(stored::TestStoreData::shortDirectory() != nullptr, "");
 
 	constexpr auto v = stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int8");

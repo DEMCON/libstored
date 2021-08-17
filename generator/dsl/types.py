@@ -1,5 +1,3 @@
-# vim:et
-
 # libstored, distributed debuggable data stores.
 # Copyright (C) 2020-2021  Jochem Rutgers
 #

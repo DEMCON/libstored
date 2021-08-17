@@ -27,7 +27,8 @@
 
 namespace {
 
-TEST(Debugger, Capabilities) {
+TEST(Debugger, Capabilities)
+{
 	stored::Debugger d;
 	LoggingLayer ll;
 	ll.wrap(d);
@@ -36,7 +37,8 @@ TEST(Debugger, Capabilities) {
 	EXPECT_GT(ll.encoded().at(0).size(), 1);
 }
 
-TEST(Debugger, Identification) {
+TEST(Debugger, Identification)
+{
 	stored::Debugger d;
 	LoggingLayer ll;
 	ll.wrap(d);
@@ -52,7 +54,8 @@ TEST(Debugger, Identification) {
 	EXPECT_EQ(ll.encoded().at(1), "asdf");
 }
 
-TEST(Debugger, Version) {
+TEST(Debugger, Version)
+{
 	stored::Debugger d;
 	LoggingLayer ll;
 
@@ -82,7 +85,8 @@ TEST(Debugger, Version) {
 		EXPECT_EQ(ll.encoded().at(0), "2 baab");
 }
 
-TEST(Debugger, Find) {
+TEST(Debugger, Find)
+{
 	stored::Debugger d;
 	stored::TestStore store;
 	d.map(store);
@@ -93,7 +97,8 @@ TEST(Debugger, Find) {
 	EXPECT_TRUE(d.find("/sc/inner b").valid());
 }
 
-TEST(Debugger, List) {
+TEST(Debugger, List)
+{
 	stored::Debugger d;
 	stored::TestStore store;
 	d.map(store);
@@ -109,7 +114,8 @@ TEST(Debugger, List) {
 	EXPECT_TRUE(std::find(names.begin(), names.end(), "/f read/write") != names.end());
 }
 
-TEST(Debugger, FindMulti) {
+TEST(Debugger, FindMulti)
+{
 	stored::Debugger d;
 	stored::TestStore store1;
 	stored::TestStore store2;
@@ -144,7 +150,8 @@ TEST(Debugger, FindMulti) {
 	EXPECT_FALSE(d.find("/asdf/sc/inner b").valid());
 }
 
-TEST(Debugger, ListMulti) {
+TEST(Debugger, ListMulti)
+{
 	stored::Debugger d;
 	stored::TestStore store1;
 	stored::TestStore store2;
@@ -168,7 +175,8 @@ TEST(Debugger, ListMulti) {
 	EXPECT_NE(ll.encoded().at(0), "?");
 }
 
-TEST(Debugger, Read) {
+TEST(Debugger, Read)
+{
 	stored::Debugger d;
 	stored::TestStore store;
 	d.map(store);
@@ -181,7 +189,8 @@ TEST(Debugger, Read) {
 	EXPECT_EQ(ll.encoded().at(1), "2a");
 }
 
-TEST(Debugger, Write) {
+TEST(Debugger, Write)
+{
 	stored::Debugger d;
 	stored::TestStore store;
 	d.map(store);
@@ -193,7 +202,8 @@ TEST(Debugger, Write) {
 	EXPECT_EQ(store.default_int8.get(), 0x10);
 }
 
-TEST(Debugger, Echo) {
+TEST(Debugger, Echo)
+{
 	stored::Debugger d;
 	LoggingLayer ll;
 	ll.wrap(d);
@@ -205,7 +215,8 @@ TEST(Debugger, Echo) {
 	EXPECT_EQ(ll.encoded().at(1), "");
 }
 
-TEST(Debugger, Alias) {
+TEST(Debugger, Alias)
+{
 	stored::Debugger d;
 	stored::TestStore store;
 	d.map(store);
@@ -234,7 +245,8 @@ TEST(Debugger, Alias) {
 	EXPECT_EQ(ll.encoded().at(6), "?");
 }
 
-TEST(Debugger, Macro) {
+TEST(Debugger, Macro)
+{
 	stored::Debugger d;
 	stored::TestStore store;
 	d.map(store);
@@ -260,7 +272,8 @@ TEST(Debugger, Macro) {
 	EXPECT_EQ(ll.encoded().at(6), "?");
 }
 
-TEST(Debugger, ReadMem) {
+TEST(Debugger, ReadMem)
+{
 	stored::Debugger d;
 	stored::TestStore store;
 	d.map(store);
@@ -278,7 +291,8 @@ TEST(Debugger, ReadMem) {
 #endif
 }
 
-TEST(Debugger, WriteMem) {
+TEST(Debugger, WriteMem)
+{
 	stored::Debugger d;
 	stored::TestStore store;
 	d.map(store);
@@ -297,7 +311,8 @@ TEST(Debugger, WriteMem) {
 #endif
 }
 
-static std::string decompress(std::string const& s) {
+static std::string decompress(std::string const& s)
+{
 	LoggingLayer decompressed;
 	stored::CompressLayer decompress;
 	decompress.wrap(decompressed);
@@ -306,7 +321,8 @@ static std::string decompress(std::string const& s) {
 	return decompressed.decoded().at(0);
 }
 
-TEST(Debugger, Stream) {
+TEST(Debugger, Stream)
+{
 	stored::Debugger d;
 	stored::TestStore store;
 	d.map(store);
@@ -349,7 +365,8 @@ TEST(Debugger, Stream) {
 	EXPECT_EQ(ll.encoded().at(6), "?");
 }
 
-TEST(Debugger, Trace) {
+TEST(Debugger, Trace)
+{
 	stored::Debugger d;
 	stored::TestStore store;
 	d.map(store);

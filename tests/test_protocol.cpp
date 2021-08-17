@@ -30,7 +30,8 @@
 
 namespace {
 
-TEST(AsciiEscapeLayer, Encode) {
+TEST(AsciiEscapeLayer, Encode)
+{
 	stored::AsciiEscapeLayer l;
 	LoggingLayer ll;
 	ll.wrap(l);
@@ -61,7 +62,8 @@ TEST(AsciiEscapeLayer, Encode) {
 	EXPECT_EQ(ll.encoded().at(0), "\x7f\x7f""123\x7f\x4d");
 }
 
-TEST(AsciiEscapeLayer, Decode) {
+TEST(AsciiEscapeLayer, Decode)
+{
 	stored::AsciiEscapeLayer l;
 	LoggingLayer ll;
 	l.wrap(ll);
@@ -82,7 +84,8 @@ TEST(AsciiEscapeLayer, Decode) {
 	EXPECT_EQ(ll.decoded().at(0), "\x01""123");
 }
 
-TEST(SegmentationLayer, SingleChunkEncode) {
+TEST(SegmentationLayer, SingleChunkEncode)
+{
 	stored::SegmentationLayer l(8);
 	LoggingLayer ll;
 	ll.wrap(l);
@@ -116,7 +119,8 @@ TEST(SegmentationLayer, SingleChunkEncode) {
 	EXPECT_EQ(ll.encoded().at(0), "1234567E");
 }
 
-TEST(SegmentationLayer, MultiChunkEncode) {
+TEST(SegmentationLayer, MultiChunkEncode)
+{
 	stored::SegmentationLayer l(4);
 	LoggingLayer ll;
 	ll.wrap(l);
@@ -152,7 +156,8 @@ TEST(SegmentationLayer, MultiChunkEncode) {
 	EXPECT_EQ(ll.encoded().at(2), "789E");
 }
 
-TEST(SegmentationLayer, SingleChunkDecode) {
+TEST(SegmentationLayer, SingleChunkDecode)
+{
 	LoggingLayer ll;
 	stored::SegmentationLayer l(8);
 	l.wrap(ll);
@@ -172,7 +177,8 @@ TEST(SegmentationLayer, SingleChunkDecode) {
 	EXPECT_EQ(ll.decoded().size(), 0);
 }
 
-TEST(SegmentationLayer, MultiChunkDecode) {
+TEST(SegmentationLayer, MultiChunkDecode)
+{
 	LoggingLayer ll;
 	stored::SegmentationLayer l(4);
 	l.wrap(ll);
@@ -207,7 +213,8 @@ TEST(SegmentationLayer, MultiChunkDecode) {
 	EXPECT_EQ(ll.decoded().at(0), "123456789");
 }
 
-TEST(DebugArqLayer, SingleChunk) {
+TEST(DebugArqLayer, SingleChunk)
+{
 	LoggingLayer top;
 	stored::DebugArqLayer l;
 	l.wrap(top);
@@ -256,7 +263,8 @@ TEST(DebugArqLayer, SingleChunk) {
 	EXPECT_EQ(bottom.encoded().at(1), "\x01""abcdef");
 }
 
-TEST(DebugArqLayer, MultiChunk) {
+TEST(DebugArqLayer, MultiChunk)
+{
 	LoggingLayer top;
 	stored::DebugArqLayer l;
 	l.wrap(top);
@@ -293,7 +301,8 @@ TEST(DebugArqLayer, MultiChunk) {
 	EXPECT_EQ(bottom.encoded().at(1), "\x04""hi");
 }
 
-TEST(DebugArqLayer, LostRequest) {
+TEST(DebugArqLayer, LostRequest)
+{
 	LoggingLayer top;
 	stored::DebugArqLayer l;
 	l.wrap(top);
@@ -350,7 +359,8 @@ TEST(DebugArqLayer, LostRequest) {
 	EXPECT_EQ(top.decoded().at(2), "567");
 }
 
-TEST(DebugArqLayer, LostResponse) {
+TEST(DebugArqLayer, LostResponse)
+{
 	LoggingLayer top;
 	stored::DebugArqLayer l;
 	l.wrap(top);
@@ -392,7 +402,8 @@ TEST(DebugArqLayer, LostResponse) {
 	EXPECT_EQ(bottom.encoded().at(5), "\x03""hi");
 }
 
-TEST(DebugArqLayer, Purgeable) {
+TEST(DebugArqLayer, Purgeable)
+{
 	LoggingLayer top;
 	stored::DebugArqLayer l;
 	l.wrap(top);
@@ -446,7 +457,8 @@ TEST(DebugArqLayer, Purgeable) {
 	EXPECT_EQ(bottom.encoded().at(4), std::string("\x04""jkl", 4));
 }
 
-TEST(DebugArqLayer, Overflow) {
+TEST(DebugArqLayer, Overflow)
+{
 	LoggingLayer top;
 	stored::DebugArqLayer l(4);
 	l.wrap(top);
@@ -484,7 +496,8 @@ TEST(DebugArqLayer, Overflow) {
 	EXPECT_EQ(bottom.encoded().at(3), std::string("\x03""klm", 4));
 }
 
-TEST(Crc8Layer, Encode) {
+TEST(Crc8Layer, Encode)
+{
 	stored::Crc8Layer l;
 	LoggingLayer ll;
 	ll.wrap(l);
@@ -510,7 +523,8 @@ TEST(Crc8Layer, Encode) {
 	EXPECT_EQ(ll.encoded().at(0), "123\xfc");
 }
 
-TEST(Crc8Layer, Decode) {
+TEST(Crc8Layer, Decode)
+{
 	LoggingLayer ll;
 	stored::Crc8Layer l;
 	l.wrap(ll);
@@ -544,7 +558,8 @@ TEST(Crc8Layer, Decode) {
 	EXPECT_EQ(ll.decoded().size(), 0);
 }
 
-TEST(Crc16Layer, Encode) {
+TEST(Crc16Layer, Encode)
+{
 	stored::Crc16Layer l;
 	LoggingLayer ll;
 	ll.wrap(l);
@@ -570,7 +585,8 @@ TEST(Crc16Layer, Encode) {
 	EXPECT_EQ(ll.encoded().at(0), "123\x1C\x84");
 }
 
-TEST(Crc16Layer, Decode) {
+TEST(Crc16Layer, Decode)
+{
 	LoggingLayer ll;
 	stored::Crc16Layer l;
 	l.wrap(ll);
@@ -604,7 +620,8 @@ TEST(Crc16Layer, Decode) {
 	EXPECT_EQ(ll.decoded().size(), 0);
 }
 
-TEST(BufferLayer, Encode) {
+TEST(BufferLayer, Encode)
+{
 	stored::BufferLayer l(4);
 	LoggingLayer ll;
 	ll.wrap(l);
@@ -655,7 +672,8 @@ TEST(BufferLayer, Encode) {
 	EXPECT_EQ(ll.encoded().at(0), "1234567890");
 }
 
-TEST(ArqLayer, Normal) {
+TEST(ArqLayer, Normal)
+{
 	LoggingLayer top;
 	stored::ArqLayer l;
 	l.wrap(top);
@@ -687,7 +705,8 @@ TEST(ArqLayer, Normal) {
 	EXPECT_EQ(bottom.encoded().at(6), "\x02 6");
 }
 
-TEST(ArqLayer, Retransmit) {
+TEST(ArqLayer, Retransmit)
+{
 	LoggingLayer top;
 	stored::ArqLayer l;
 	l.wrap(top);
@@ -748,7 +767,8 @@ TEST(ArqLayer, Retransmit) {
 	EXPECT_EQ(bottom.encoded().at(2), "\x82");
 }
 
-TEST(ArqLayer, KeepAlive) {
+TEST(ArqLayer, KeepAlive)
+{
 	LoggingLayer top;
 	stored::ArqLayer l;
 	l.wrap(top);
@@ -776,7 +796,8 @@ TEST(ArqLayer, KeepAlive) {
 	EXPECT_EQ(bottom.encoded().at(3), "\x81");
 }
 
-TEST(ArqLayer, Callback) {
+TEST(ArqLayer, Callback)
+{
 	LoggingLayer top;
 	stored::ArqLayer l(100);
 	l.wrap(top);
@@ -806,7 +827,8 @@ TEST(ArqLayer, Callback) {
 	EXPECT_EQ(event, stored::ArqLayer::EventRetransmit);
 }
 
-TEST(CompressLayer, Compress) {
+TEST(CompressLayer, Compress)
+{
 	LoggingLayer top;
 	stored::CompressLayer l;
 	l.wrap(top);
@@ -826,7 +848,8 @@ TEST(CompressLayer, Compress) {
 }
 
 template <typename L>
-static int recvAll(L& l) {
+static int recvAll(L& l)
+{
 	using namespace std::chrono_literals;
 
 	bool first = true;
@@ -858,7 +881,8 @@ static int recvAll(L& l) {
 }
 
 #ifdef STORED_OS_WINDOWS
-TEST(FileLayer, NamedPipe) {
+TEST(FileLayer, NamedPipe)
+{
 	LoggingLayer top;
 	stored::NamedPipeLayer l("test");
 	l.wrap(top);
@@ -901,7 +925,8 @@ TEST(FileLayer, NamedPipe) {
 }
 #endif // STORED_OS_WINDOWS
 
-TEST(FileLayer, DoublePipe) {
+TEST(FileLayer, DoublePipe)
+{
 #ifdef STORED_OS_WINDOWS
 	stored::DoublePipeLayer p1("test_2to1", "test_1to2");
 	stored::FileLayer p2("\\\\.\\pipe\\test_1to2", "\\\\.\\pipe\\test_2to1");
@@ -937,7 +962,8 @@ TEST(FileLayer, DoublePipe) {
 	EXPECT_EQ(top1.allDecoded(), "Beautiful Tomorrow");
 }
 
-TEST(FifoLoopback1, FifoLoopback1) {
+TEST(FifoLoopback1, FifoLoopback1)
+{
 	LoggingLayer top;
 	stored::FifoLoopback1<128> l;
 	l.wrap(top);
@@ -963,7 +989,8 @@ TEST(FifoLoopback1, FifoLoopback1) {
 	EXPECT_EQ(top.decoded().size(), 3);
 }
 
-TEST(FifoLoopback, FifoLoopback) {
+TEST(FifoLoopback, FifoLoopback)
+{
 	LoggingLayer a;
 	LoggingLayer b;
 	stored::FifoLoopback<10> l(a, b);
@@ -1005,7 +1032,8 @@ TEST(FifoLoopback, FifoLoopback) {
 	EXPECT_EQ(l.a2b().lastError(), ENOMEM);
 }
 
-TEST(IdleLayer, IdleLayer) {
+TEST(IdleLayer, IdleLayer)
+{
 	stored::IdleCheckLayer idle;
 	EXPECT_TRUE(idle.idle());
 
@@ -1021,7 +1049,8 @@ TEST(IdleLayer, IdleLayer) {
 	EXPECT_TRUE(idle.idle());
 }
 
-TEST(CallbackLayer, CallbackLayer) {
+TEST(CallbackLayer, CallbackLayer)
+{
 	bool up = false;
 	bool down = false;
 
@@ -1036,7 +1065,8 @@ TEST(CallbackLayer, CallbackLayer) {
 	EXPECT_TRUE(up);
 }
 
-TEST(TerminalLayer, Encode) {
+TEST(TerminalLayer, Encode)
+{
 	stored::TerminalLayer l;
 	LoggingLayer ll;
 	ll.wrap(l);
@@ -1051,7 +1081,8 @@ TEST(TerminalLayer, Encode) {
 	EXPECT_EQ(ll.encoded().at(1), "of things");
 }
 
-TEST(TerminalLayer, Decode) {
+TEST(TerminalLayer, Decode)
+{
 	std::string nonDebug;
 	stored::TerminalLayer l([&](void* buf, size_t len){ nonDebug.append((char const*)buf, len); });
 	LoggingLayer ll;

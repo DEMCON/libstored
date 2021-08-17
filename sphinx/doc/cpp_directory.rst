@@ -1,4 +1,4 @@
-Directory
+﻿Directory
 =========
 
 Directory with names, types and buffer offsets.

@@ -31,7 +31,8 @@
 
 namespace {
 
-TEST(Poller, Pipe) {
+TEST(Poller, Pipe)
+{
 	puts(stored::banner());
 
 	int fd[2];
@@ -114,7 +115,8 @@ TEST(Poller, Pipe) {
 }
 
 #if defined(STORED_HAVE_ZMQ) && !defined(STORED_POLL_POLL) && !defined(STORED_POLL_LOOP) && !defined(STORED_POLL_ZTH_LOOP)
-TEST(Poller, Zmq) {
+TEST(Poller, Zmq)
+{
 	void* context = zmq_ctx_new();
 	ASSERT_NE(context, nullptr);
 	void* rep = zmq_socket(context, ZMQ_REP);

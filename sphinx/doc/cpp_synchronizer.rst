@@ -1,4 +1,4 @@
-Synchronizer
+﻿Synchronizer
 ============
 
 Distributed store synchronizer.
