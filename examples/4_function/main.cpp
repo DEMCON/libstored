@@ -27,14 +27,16 @@ public:
 
 	// The function gets the parameter set, which indicates if the value is
 	// written (true) or should be returned (false).
-	void __time_s(bool set, uint64_t& value) {
+	void __time_s(bool set, uint64_t& value)
+	{
 		if(set)
 			return; // read-only
 
 		value = (uint64_t)time(NULL);
 	}
 
-	void __rand(bool set, int32_t& value) {
+	void __rand(bool set, int32_t& value)
+	{
 		if(!set) {
 			int32_t a = 48271;
 			int32_t m = 2147483647;
@@ -47,7 +49,8 @@ public:
 	void __echo_1(bool set, int32_t& value) { __echo(1, set, value); }
 
 private:
-	void __echo(int i, bool set, int32_t& value) {
+	void __echo(int i, bool set, int32_t& value)
+	{
 		assert(i >= 0 && (size_t)i < sizeof(m_echo) / sizeof(m_echo[0]));
 
 		if(set)
@@ -62,7 +65,8 @@ private:
 	int32_t m_echo[2];
 };
 
-int main() {
+int main()
+{
 	MyExample e;
 
 //	time_t now = (time_t)e.time_s.get();

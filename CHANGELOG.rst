@@ -1,4 +1,4 @@
-CHANGELOG libstored
+﻿CHANGELOG libstored
 ===================
 
 1.0.0

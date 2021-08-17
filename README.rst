@@ -1,4 +1,4 @@
-.. image:: https://github.com/DEMCON/libstored/workflows/CI/badge.svg
+﻿.. image:: https://github.com/DEMCON/libstored/workflows/CI/badge.svg
    :alt: CI
    :target: https://github.com/DEMCON/libstored/actions?query=workflow%3ACI
 

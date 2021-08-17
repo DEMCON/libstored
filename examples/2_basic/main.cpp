@@ -9,7 +9,7 @@
 
 int main()
 {
-    stored::ExampleBasic e;
+	stored::ExampleBasic e;
 
 	// Initialized value.
 	printf("test42=%" PRId8 "\n", e.test42.get());
@@ -20,6 +20,6 @@ int main()
 	// The initialized array element.
 	printf("three ints[1]=%" PRId16 "\n", e.three_ints_1.get());
 
-    return 0;
+	return 0;
 }
 

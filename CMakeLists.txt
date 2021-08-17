@@ -18,19 +18,19 @@ cmake_minimum_required(VERSION 3.1)
 project(libstored)
 
 if(NOT CMAKE_BUILD_TYPE)
-   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
+	set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
 endif()
 
 message(STATUS "CMAKE_BUILD_TYPE is ${CMAKE_BUILD_TYPE}")
 
 if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
-  message(FATAL_ERROR "CMake generation is not allowed within the source directory! \
-	Remove the CMakeCache.txt file and try again from another folder, e.g.: \
-	\
-	  rm CMakeCache.txt \
-	  mkdir build \
-	  cd build \
-	  cmake ..")
+	message(FATAL_ERROR "CMake generation is not allowed within the source directory! \
+		Remove the CMakeCache.txt file and try again from another folder, e.g.: \
+		\
+		  rm CMakeCache.txt \
+		  mkdir build \
+		  cd build \
+		  cmake ..")
 endif()
 
 option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" OFF)
@@ -187,4 +187,3 @@ if(CPPCHECK_CMD)
 		add_custom_target(libstored-cppcheck-all ALL DEPENDS libstored-cppcheck)
 	endif()
 endif()
-

@@ -26,7 +26,8 @@ public:
 	virtual ~CaseInverter() override is_default
 
 protected:
-	void nonDebugDecode(void* buffer, size_t len) final {
+	void nonDebugDecode(void* buffer, size_t len) final
+	{
 		for(char* p = (char*)buffer; len > 0; len--, p++) {
 			char c = *p;
 			if(c >= 'a' && c <= 'z')
@@ -39,14 +40,16 @@ protected:
 	}
 
 #ifdef PRINT_TO_STDERR
-	void encode(void const* buffer, size_t len, bool last) final {
+	void encode(void const* buffer, size_t len, bool last) final
+	{
 		base::encode(buffer, len, last);
 		fwrite(buffer, len, 1, stderr);
 	}
 #endif
 };
 
-int main() {
+int main()
+{
 	stored::ExampleTerminal store;
 
 	stored::Debugger debugger;

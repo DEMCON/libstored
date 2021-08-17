@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # libstored, distributed debuggable data stores.
 # Copyright (C) 2020-2021  Jochem Rutgers
 #

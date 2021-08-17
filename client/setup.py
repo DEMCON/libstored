@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# vim:et
 
 import sys
 import os

@@ -28,20 +28,23 @@ public:
 		up.setDown(this);
 	}
 
-	void decode(char const* frame) {
+	void decode(char const* frame)
+	{
 		char* s = strdup(frame);
 		if(s)
 			decode(s, strlen(s));
 		free(s);
 	}
 
-	void decode(void* buffer, size_t len) final {
+	void decode(void* buffer, size_t len) final
+	{
 		if(!m_silenced)
 			printf(">>   %.*s\n", (int)len, (char const*)buffer);
 		base::decode(buffer, len);
 	}
 
-	void encode(void const* buffer, size_t len, bool last = true) final {
+	void encode(void const* buffer, size_t len, bool last = true) final
+	{
 		if(!m_encoding) {
 			if(!m_silenced)
 				printf("<<   ");
@@ -58,7 +61,8 @@ public:
 		}
 	}
 
-	void silence(bool silenced) {
+	void silence(bool silenced)
+	{
 		m_silenced = silenced;
 	}
 
@@ -78,14 +82,16 @@ public:
 
 	virtual ~ExtendedDebugger() noexcept override is_default;
 
-	virtual void capabilities(char*& caps, size_t& len, size_t reserve = 0) override {
+	virtual void capabilities(char*& caps, size_t& len, size_t reserve = 0) override
+	{
 		// Get the default capabilities.
 		base::capabilities(caps, len, reserve + 1 /* add room for our 'z' cmd */);
 		// Add our 'z' cmd.
 		caps[len++] = 'z';
 	}
 
-	virtual void process(void const* frame, size_t len, ProtocolLayer& response) override {
+	virtual void process(void const* frame, size_t len, ProtocolLayer& response) override
+	{
 		if(unlikely(!frame || len == 0))
 			return;
 
@@ -103,7 +109,8 @@ public:
 	}
 };
 
-int main() {
+int main()
+{
 	// Create a few stores.
 	stored::ExampleDebugSomeStore someStore1;
 	stored::ExampleDebugSomeStore someStore2;
