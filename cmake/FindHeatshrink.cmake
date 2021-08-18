@@ -48,7 +48,6 @@ if(MSVC)
 endif()
 
 target_include_directories(heatshrink PUBLIC ${SOURCE_DIR})
-target_compile_definitions(heatshrink INTERFACE STORED_HAVE_HEATSHRINK)
 
 set(Heatshrink_FOUND 1)
 

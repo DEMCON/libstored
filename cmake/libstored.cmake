@@ -95,7 +95,8 @@ function(libstored_lib libprefix libpath)
 	endif()
 
 	if(LIBSTORED_HAVE_HEATSHRINK)
-		add_dependencies(${libprefix}libstored heatshrink)
+		target_compile_definitions(${libprefix}libstored PUBLIC STORED_HAVE_HEATSHRINK)
+		target_link_libraries(${libprefix}libstored PUBLIC heatshrink)
 	endif()
 
 	if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
