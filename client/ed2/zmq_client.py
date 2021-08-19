@@ -28,7 +28,7 @@ import keyword
 import weakref
 import random
 
-from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, \
+from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, QLocale, \
     QEvent, QCoreApplication, QStandardPaths, QSocketNotifier, QEventLoop, SIGNAL
 
 from .zmq_server import ZmqServer
@@ -82,6 +82,7 @@ class Object(QObject):
     formatChanged = Signal()
     tUpdated = Signal()
     tStringChanged = Signal()
+    locale = QLocale()
 
     def __init__(self, name, type, size, client=None):
         super().__init__(parent=client)
@@ -476,6 +477,12 @@ class Object(QObject):
 
     tString = _Property(str, _tString_get, notify=tStringChanged)
 
+    def _interpret_float(self, value):
+        x, ok = self.locale.toDouble(value)
+        if not ok:
+            raise ValueError(f'Cannot convert "{value}" to float')
+        return x
+
     def interpret(self, value):
         if isinstance(value,str):
             value = {
@@ -487,8 +494,8 @@ class Object(QObject):
                 self.Uint32: lambda x: int(x,0),
                 self.Int64: lambda x: int(x,0),
                 self.Uint64: lambda x: int(x,0),
-                self.Float: lambda x: float(x),
-                self.Double: lambda x: float(x),
+                self.Float: self._interpret_float,
+                self.Double: self._interpret_float,
                 self.Pointer32: lambda x: int(x,0),
                 self.Pointer64: lambda x: int(x,0),
                 self.Bool: lambda x: x.lower() in ['true', '1'],
@@ -547,7 +554,9 @@ class Object(QObject):
         elif f == 'bytes':
             self._formatter = self._formatBytes
         elif self._type & ~self.FlagFunction == self.Float:
-            self._formatter = lambda x: f'{x:.6g}'
+            self._formatter = lambda x: self.locale.toString(x, 'g', prec=6)
+        elif self._type & ~self.FlagFunction == self.Double:
+            self._formatter = lambda x: self.locale.toString(x, 'g', prec=15)
         else:
             self._formatter = str
 
