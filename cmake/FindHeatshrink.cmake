@@ -33,6 +33,8 @@ ExternalProject_Add(
 ExternalProject_Get_Property(heatshrink-extern SOURCE_DIR)
 
 add_library(heatshrink STATIC ${SOURCE_DIR}/heatshrink_encoder.c ${SOURCE_DIR}/heatshrink_decoder.c)
+set_target_properties(heatshrink PROPERTIES PUBLIC_HEADER
+	"${SOURCE_DIR}/heatshrink_common.h;${SOURCE_DIR}/heatshrink_config.h;${SOURCE_DIR}/heatshrink_encoder.h;${SOURCE_DIR}/heatshrink_decoder.h")
 add_dependencies(heatshrink heatshrink-extern)
 
 get_target_property(heatshrink_src heatshrink SOURCES)
@@ -47,7 +49,9 @@ if(MSVC)
 	endif()
 endif()
 
-target_include_directories(heatshrink PUBLIC ${SOURCE_DIR})
+target_include_directories(heatshrink PUBLIC $<BUILD_INTERFACE:${SOURCE_DIR}> $<INSTALL_INTERFACE:include>)
+
+install(TARGETS heatshrink EXPORT libstored ARCHIVE PUBLIC_HEADER)
 
 set(Heatshrink_FOUND 1)
 

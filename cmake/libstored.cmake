@@ -21,7 +21,7 @@ set(libstored_dir "${libstored_dir_}" CACHE INTERNAL "")
 
 # Create the libstored library based on the generated files.
 function(libstored_lib libprefix libpath)
-	add_library(${libprefix}libstored
+	add_library(${libprefix}libstored STATIC
 		${libstored_dir}/include/stored
 		${libstored_dir}/include/stored.h
 		${libstored_dir}/include/stored_config.h
@@ -53,14 +53,19 @@ function(libstored_lib libprefix libpath)
 		target_sources(${libprefix}libstored PRIVATE
 			${libpath}/include/${m}.h
 			${libpath}/src/${m}.cpp)
+
+		set_property(TARGET ${libprefix}libstored APPEND PROPERTY PUBLIC_HEADER ${libpath}/include/${m}.h)
+		install(DIRECTORY ${libpath}/doc/ DESTINATION share/libstored)
 	endforeach()
 
-	target_include_directories(${libprefix}libstored
-		PUBLIC ${libstored_dir}/include
-		PUBLIC ${libpath}/include
+	target_include_directories(${libprefix}libstored PUBLIC
+		$<BUILD_INTERFACE:${libstored_dir}/include>
+		$<BUILD_INTERFACE:${libpath}/include>
+		$<INSTALL_INTERFACE:install>
 	)
 
-	set_target_properties(${libprefix}libstored PROPERTIES OUTPUT_NAME "stored")
+	string(REGEX REPLACE "^(.*)-$" "stored-\\1" libname ${libprefix})
+	set_target_properties(${libprefix}libstored PROPERTIES OUTPUT_NAME ${libname})
 
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		target_compile_definitions(${libprefix}libstored PUBLIC -D_DEBUG)
@@ -208,6 +213,10 @@ function(libstored_lib libprefix libpath)
 			target_link_libraries(${libprefix}libstored INTERFACE "-fsanitize=undefined")
 		endif()
 	endif()
+
+	if(LIBSTORED_INSTALL_STORE_LIBS)
+		install(TARGETS ${libprefix}libstored EXPORT libstored ARCHIVE PUBLIC_HEADER)
+	endif()
 endfunction()
 
 # Not safe against parallel execution if the target directory is used more than once.
@@ -301,4 +310,8 @@ function(libstored_generate target) # add all other models as varargs
 
 	libstored_copy_dlls(${target})
 endfunction()
+
+install(DIRECTORY ${libstored_dir}/include/ DESTINATION include PATTERN "*.h")
+install(FILES ${libstored_dir}/include/stored DESTINATION include)
+install(EXPORT libstored DESTINATION share/cmake/libstored)
 

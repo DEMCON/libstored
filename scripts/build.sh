@@ -44,12 +44,13 @@ else
 	mkdir build
 	pushd build > /dev/null
 	shift || true
-	cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" .. "$@"
+	cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCMAKE_INSTALL_PREFIX=dist .. "$@"
 	popd > /dev/null
 fi
 
 pushd build > /dev/null
 cmake --build . -- -j`numproc` all
+cmake --build . --target install -- -j`numproc` all
 popd > /dev/null
 
 popd > /dev/null

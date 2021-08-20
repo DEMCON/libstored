@@ -18,6 +18,7 @@
 set(LIBSTORED_POLL "AUTO" CACHE STRING "Poll method")
 
 set(LIBSTORED_CLANG_TIDY "OFF")
+set(LIBSTORED_INSTALL_STORE_LIBS "OFF")
 
 if(MSVC)
 	add_compile_options(/W1 /WX)
@@ -40,7 +41,7 @@ else()
 endif()
 
 if(APPLE)
-	set(CMAKE_INSTALL_RPATH ${CMAKE_BINARY_DIR}/lib)
+	set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib)
 	set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 endif()
 
@@ -128,10 +129,10 @@ if(LIBSTORED_EXAMPLES)
 
 		if(WIN32)
 			add_test(NAME ${EXAMPLE}-run
-				COMMAND ${CMAKE_COMMAND} -E chdir $<TARGET_FILE_DIR:${EXAMPLE}> $ENV{ComSpec} /C "$<SHELL_PATH:$<TARGET_FILE:${EXAMPLE}>> ${ARGN} > $<SHELL_PATH:${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt>")
+				COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_INSTALL_PREFIX}/bin $ENV{ComSpec} /C "$<SHELL_PATH:$<TARGET_FILE_NAME:${EXAMPLE}>> ${ARGN} > $<SHELL_PATH:${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt>")
 		else()
 			add_test(NAME ${EXAMPLE}-run
-				COMMAND sh -c "$<TARGET_FILE:${EXAMPLE}> ${ARGN} > ${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt")
+				COMMAND sh -c "${CMAKE_INSTALL_PREFIX}/bin/$<TARGET_FILE_NAME:${EXAMPLE}> ${ARGN} > ${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt")
 		endif()
 
 		if(EXISTS ${PROJECT_SOURCE_DIR}/examples/${EXAMPLE}/output.txt)
@@ -186,7 +187,7 @@ if(LIBSTORED_HAVE_LIBZMQ)
 		COMMAND ${CMAKE_COMMAND} -E env
 			PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/../client
 			"PATH=$<SHELL_PATH:$<TARGET_FILE_DIR:libzmq>>${ENV_PATH_SEP}$ENV{PATH}"
-			${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_ZmqClient.py $<TARGET_FILE:zmqserver>
+			${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_ZmqClient.py ${CMAKE_INSTALL_PREFIX}/bin/$<TARGET_FILE_NAME:zmqserver>
 	)
 
 	set_tests_properties(ZmqClient PROPERTIES TIMEOUT 60)

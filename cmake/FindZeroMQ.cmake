@@ -47,7 +47,9 @@ if(NOT TARGET libzmq)
 	set(ZeroMQ_FOUND 1)
 
 	set(libzmq_flags -DENABLE_DRAFTS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-		-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER})
+		-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+		-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+	)
 
 	if(MINGW)
 		# See https://github.com/zeromq/libzmq/issues/3859
@@ -64,13 +66,13 @@ if(NOT TARGET libzmq)
 		libzmq-extern
 		GIT_REPOSITORY https://github.com/zeromq/libzmq.git
 		GIT_TAG v4.3.1
-		CMAKE_ARGS ${libzmq_flags} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
-		INSTALL_DIR ${CMAKE_BINARY_DIR}
+		CMAKE_ARGS ${libzmq_flags}
+		INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
 		UPDATE_DISCONNECTED 1
 	)
 
-	file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include)
-	file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+	file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/include)
+	file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/lib)
 
 	add_library(libzmq SHARED IMPORTED GLOBAL)
 	if(WIN32)
@@ -85,18 +87,18 @@ if(NOT TARGET libzmq)
 			else()
 				set(dllname "${MSVC_TOOLSET}-mt")
 			endif()
-			set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/bin/libzmq${dllname}-4_3_1.dll)
-			set_property(TARGET libzmq PROPERTY IMPORTED_IMPLIB ${CMAKE_BINARY_DIR}/lib/libzmq${dllname}-4_3_1.lib)
+			set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${CMAKE_INSTALL_PREFIX}/bin/libzmq${dllname}-4_3_1.dll)
+			set_property(TARGET libzmq PROPERTY IMPORTED_IMPLIB ${CMAKE_INSTALL_PREFIX}/lib/libzmq${dllname}-4_3_1.lib)
 		else()
-			set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/bin/libzmq.dll)
-			set_property(TARGET libzmq PROPERTY IMPORTED_IMPLIB ${CMAKE_BINARY_DIR}/lib/libzmq.dll.a)
+			set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${CMAKE_INSTALL_PREFIX}/bin/libzmq.dll)
+			set_property(TARGET libzmq PROPERTY IMPORTED_IMPLIB ${CMAKE_INSTALL_PREFIX}/lib/libzmq.dll.a)
 		endif()
 	elseif(APPLE)
-		set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib/libzmq.dylib)
+		set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${CMAKE_INSTALL_PREFIX}/lib/libzmq.dylib)
 	else()
-		set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib/libzmq.so)
+		set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${CMAKE_INSTALL_PREFIX}/lib/libzmq.so)
 	endif()
-	target_include_directories(libzmq INTERFACE ${CMAKE_BINARY_DIR}/include)
+	target_include_directories(libzmq INTERFACE ${CMAKE_INSTALL_PREFIX}/include)
 	target_compile_options(libzmq INTERFACE -DZMQ_BUILD_DRAFT_API=1)
 	add_dependencies(libzmq libzmq-extern)
 endif()
