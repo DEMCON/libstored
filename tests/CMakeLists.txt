@@ -80,10 +80,6 @@ macro(libstored_add_test TESTNAME)
 	gtest_discover_tests(${TESTNAME} TEST_LIST tests)
 	set_tests_properties(${tests} PROPERTIES TIMEOUT 60)
 	set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
-	if(CMAKE_GENERATOR MATCHES "Visual Studio.*")
-		# Every binary has its own output directory.
-		libstored_copy_dlls(${TESTNAME})
-	endif()
 endmacro()
 
 libstored_add_test(test_allocator test_allocator.cpp)
@@ -112,11 +108,9 @@ else()
 	libstored_add_test(test_poller test_poller.cpp)
 endif()
 
-if(CMAKE_GENERATOR MATCHES ".*Makefiles.*")
-	# All test binaries are put in the same directory.
-	# Only copy the dlls once.
-	libstored_copy_dlls(test_debugger)
-endif()
+# All test binaries are put in the same directory.
+# Only copy the dlls once.
+libstored_copy_dlls(test_debugger)
 
 if(LIBSTORED_EXAMPLES)
 	macro(libstored_example_test EXAMPLE)
