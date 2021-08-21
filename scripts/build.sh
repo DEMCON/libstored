@@ -49,7 +49,6 @@ else
 fi
 
 pushd build > /dev/null
-cmake --build . -- -j`numproc` all
 cmake --build . --target install -- -j`numproc` all
 popd > /dev/null
 
