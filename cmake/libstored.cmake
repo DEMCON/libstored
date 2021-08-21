@@ -311,9 +311,9 @@ function(libstored_generate target) # add all other models as varargs
 	libstored_copy_dlls(${target})
 endfunction()
 
-configure_file(${CMAKE_SOURCE_DIR}/cmake/libstored.cmake.in ${CMAKE_BINARY_DIR}/libstored.cmake)
+configure_file(${libstored_dir}/cmake/libstored.cmake.in ${CMAKE_BINARY_DIR}/libstored.cmake)
 install(DIRECTORY ${libstored_dir}/include/ DESTINATION include PATTERN "*.h")
 install(FILES ${libstored_dir}/include/stored DESTINATION include)
 install(EXPORT libstored DESTINATION share/libstored/cmake)
-install(FILES ${CMAKE_BINARY_DIR}/libstored.cmake DESTINATION share/libstored)
+install(FILES ${CMAKE_BINARY_DIR}/libstored.cmake DESTINATION share/cmake/libstored)
 
