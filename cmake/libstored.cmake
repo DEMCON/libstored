@@ -61,7 +61,7 @@ function(libstored_lib libprefix libpath)
 	target_include_directories(${libprefix}libstored PUBLIC
 		$<BUILD_INTERFACE:${libstored_dir}/include>
 		$<BUILD_INTERFACE:${libpath}/include>
-		$<INSTALL_INTERFACE:install>
+		$<INSTALL_INTERFACE:include>
 	)
 
 	string(REGEX REPLACE "^(.*)-$" "stored-\\1" libname ${libprefix})
@@ -311,7 +311,9 @@ function(libstored_generate target) # add all other models as varargs
 	libstored_copy_dlls(${target})
 endfunction()
 
+configure_file(${CMAKE_SOURCE_DIR}/cmake/libstored.cmake.in ${CMAKE_BINARY_DIR}/libstored.cmake)
 install(DIRECTORY ${libstored_dir}/include/ DESTINATION include PATTERN "*.h")
 install(FILES ${libstored_dir}/include/stored DESTINATION include)
-install(EXPORT libstored DESTINATION share/cmake/libstored)
+install(EXPORT libstored DESTINATION share/libstored/cmake)
+install(FILES ${CMAKE_BINARY_DIR}/libstored.cmake DESTINATION share/libstored)
 

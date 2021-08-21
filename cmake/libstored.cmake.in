@@ -1,0 +1,2 @@
+include(${CMAKE_INSTALL_PREFIX}/share/cmake/ZeroMQ/ZeroMQTargets.cmake OPTIONAL)
+include(${CMAKE_INSTALL_PREFIX}/share/libstored/cmake/libstored.cmake)

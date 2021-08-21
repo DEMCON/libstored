@@ -129,7 +129,7 @@ if(LIBSTORED_EXAMPLES)
 	add_subdirectory(examples)
 endif()
 
-option(LIBSTORED_PIP_INSTALL_USER "Run pip install --user when installing wheel files" OFF)
+option(LIBSTORED_PIP_INSTALL_USER "Run pip install with --user flag when installing wheel files" ON)
 add_subdirectory(client)
 
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0")
