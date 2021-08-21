@@ -129,7 +129,7 @@ if(LIBSTORED_EXAMPLES)
 
 		if(WIN32)
 			add_test(NAME ${EXAMPLE}-run
-				COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_INSTALL_PREFIX}/bin $ENV{ComSpec} /C "$<SHELL_PATH:$<TARGET_FILE_NAME:${EXAMPLE}>> ${ARGN} > $<SHELL_PATH:${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt>")
+				COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_INSTALL_PREFIX}/bin $ENV{ComSpec} /C "$<TARGET_FILE_NAME:${EXAMPLE}> ${ARGN} > $<SHELL_PATH:${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt>")
 		else()
 			add_test(NAME ${EXAMPLE}-run
 				COMMAND sh -c "${CMAKE_INSTALL_PREFIX}/bin/$<TARGET_FILE_NAME:${EXAMPLE}> ${ARGN} > ${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt")
