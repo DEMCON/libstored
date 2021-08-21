@@ -21,7 +21,7 @@ if "%CMAKE_BUILD_TYPE%." == "." set CMAKE_BUILD_TYPE=Debug
 pushd build
 rem Build with explicit build type
 shift
-cmake -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE% "-GMinGW Makefiles" -DCMAKE_INSTALL_PREFIX=dist .. %*
+cmake -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE% "-GMinGW Makefiles" -DCMAKE_INSTALL_PREFIX=dist .. %1 %2 %3 %4 %5 %6 %7 %8 %9
 if errorlevel 1 goto error_popd
 popd
 goto build
@@ -33,7 +33,7 @@ if "%CMAKE_BUILD_TYPE%." == "." goto build
 pushd build
 rem Override previous build type
 shift
-cmake -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE% .. %*
+cmake -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE% .. %1 %2 %3 %4 %5 %6 %7 %8 %9
 if errorlevel 1 goto error_popd
 popd
 
