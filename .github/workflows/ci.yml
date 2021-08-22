@@ -49,12 +49,12 @@ jobs:
       - name: bootstrap
         run: scripts/bootstrap.sh
       - name: build Debug
-        run: scripts/build.sh Debug
+        run: scripts/build.sh Debug -DLIBSTORED_TESTS=ON
       - name: test
         run: cmake --build . -- test
         working-directory: build
       - name: build Release
-        run: scripts/build.sh Release
+        run: scripts/build.sh Release -DLIBSTORED_TESTS=ON
       - name: test
         run: cmake --build . -- test
         working-directory: build
