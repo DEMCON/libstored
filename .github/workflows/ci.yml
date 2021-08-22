@@ -68,11 +68,13 @@ jobs:
         run: scripts\bootstrap.cmd
       - name: build Debug
         run: scripts\build.cmd Debug "-DLIBSTORED_DEV=ON"
+        shell: cmd
       - name: test
         run: cmake --build . -- test
         working-directory: build
       - name: build Release
         run: scripts\build.cmd Release "-DLIBSTORED_DEV=ON"
+        shell: cmd
       - name: test
         run: cmake --build . -- test
         working-directory: build
