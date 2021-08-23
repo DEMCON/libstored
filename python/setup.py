@@ -3,7 +3,7 @@
 import sys
 import os
 import setuptools
-import ed2
+import libstored
 
 here = os.path.dirname(os.path.realpath(__file__))
 
@@ -11,8 +11,8 @@ here = os.path.dirname(os.path.realpath(__file__))
 #    long_description = fh.read()
 
 setuptools.setup(
-    name = 'ed2',
-    version = ed2.__version__,
+    name = 'libstored',
+    version = libstored.__version__,
     description = 'Embedded Debugger protocol as used by libstored',
     author = 'Jochem Rutgers',
     author_email = 'jochem.rutgers@demcon.com',
