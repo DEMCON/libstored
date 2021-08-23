@@ -5,7 +5,6 @@ textx
 pyzmq
 pyside2
 pyserial
-lognplot
 natsort
 crcmod
 heatshrink2

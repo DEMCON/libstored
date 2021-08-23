@@ -19,14 +19,6 @@ case `uname -s` in
 			spin plantuml
 		python3 -m pip install wheel
 		python3 -m pip install -r scripts/requirements.txt
-
-		if ! python3 -V | awk '$2~/^3.[0-6]/{exit 1}'; then
-			# lognplot's server needs python 3.7+
-			pyver=3.7
-			sudo apt install -y python$pyver
-			python$pyver -m pip install pip wheel
-			 ~/.local/bin/pip$pyver install PyQt5 lognplot
-		fi
 		;;
 	Darwin*)
 		function install_or_upgrade {

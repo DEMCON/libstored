@@ -26,10 +26,10 @@ setuptools.setup(
         'pyserial',
         'argparse',
         'pyzmq',
-        'lognplot',
         'crcmod',
         'natsort',
         'heatshrink2',
+#        'lognplot', # optional
     ],
     python_requires='>=3.6',
     classifiers=[

@@ -26,7 +26,11 @@ from PySide2.QtGui import QGuiApplication, QIcon
 from PySide2.QtQml import QQmlApplicationEngine
 from PySide2.QtCore import QUrl, QAbstractListModel, QModelIndex, Qt, Slot, QSortFilterProxyModel, QCoreApplication, qInstallMessageHandler, QtMsgType
 
-from lognplot.client import LognplotTcpClient
+try:
+    from lognplot.client import LognplotTcpClient
+    haveLognplot = True
+except:
+    haveLognplot = False
 
 from ..zmq_client import ZmqClient
 from ..zmq_server import ZmqServer
@@ -106,6 +110,8 @@ class ObjectListModel(QAbstractListModel):
         }
 
 def lognplot_send(lognplot, o):
+    if not haveLognplot:
+        return
     if not o.polling:
         return
     if not o.isFixed():
@@ -140,8 +146,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='ZMQ GUI client', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
     parser.add_argument('-p', dest='port', type=int, default=ZmqServer.default_port, help='port')
-    parser.add_argument('-l', dest='lognplot', type=str, nargs='?', default=None, help='Connect to lognplot server', const='localhost')
-    parser.add_argument('-P', dest='lognplotport', type=int, default=12345, help='Lognplot port to connect to')
+    if haveLognplot:
+        parser.add_argument('-l', dest='lognplot', type=str, nargs='?', default=None, help='Connect to lognplot server', const='localhost')
+        parser.add_argument('-P', dest='lognplotport', type=int, default=12345, help='Lognplot port to connect to')
     parser.add_argument('-v', dest='verbose', default=False, help='Enable verbose output', action='store_true')
     parser.add_argument('-f', dest='csv', default=None, nargs='?',
         help='Log auto-refreshed data to csv file. ' +
@@ -186,7 +193,7 @@ if __name__ == '__main__':
     engine.rootContext().setContextProperty("objects", filteredObjects)
     engine.rootContext().setContextProperty("polledObjects", polledObjects)
 
-    if args.lognplot != None:
+    if haveLognplot and args.lognplot != None:
         print(f'Connecting to lognplot at {args.lognplot}:{args.lognplotport}...')
         lognplot = LognplotTcpClient(args.lognplot, args.lognplotport)
         lognplot.connect()
