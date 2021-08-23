@@ -1,4 +1,4 @@
-Workflow
+﻿Workflow
 ========
 
 To use libstored, this is basically what you have to do:

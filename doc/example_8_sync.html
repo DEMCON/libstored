@@ -258,7 +258,8 @@ bool b
 <span class="k">public</span><span class="o">:</span>
 	<span class="n">ExampleSync1</span><span class="p">()</span> <span class="n">is_default</span>
 
-	<span class="kt">void</span> <span class="n">__sync_ExampleSync2</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">bool</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kt">void</span> <span class="n">__sync_ExampleSync2</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">bool</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
+	<span class="p">{</span>
 		<span class="k">if</span><span class="p">(</span><span class="n">set</span><span class="p">)</span> <span class="p">{</span>
 			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Triggered synchronization of store2</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
 			<span class="n">synchronizer</span><span class="p">.</span><span class="n">process</span><span class="p">(</span><span class="n">store2</span><span class="p">);</span>
@@ -269,7 +270,8 @@ bool b
 
 <span class="k">static</span> <span class="n">ExampleSync1</span> <span class="n">store1</span><span class="p">;</span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
 	<span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span> <span class="n">debugger</span><span class="p">(</span><span class="s">&quot;8_sync&quot;</span><span class="p">);</span>
 	<span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store1</span><span class="p">);</span>
 	<span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store2</span><span class="p">);</span>

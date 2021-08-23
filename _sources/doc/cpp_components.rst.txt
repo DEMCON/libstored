@@ -1,4 +1,4 @@
-Components
+﻿Components
 ==========
 
 Components are C++ classes that use store objects for input/output/parameters/control.

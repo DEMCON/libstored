@@ -242,14 +242,16 @@
 
 	<span class="c1">// The function gets the parameter set, which indicates if the value is</span>
 	<span class="c1">// written (true) or should be returned (false).</span>
-	<span class="kt">void</span> <span class="n">__time_s</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint64_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kt">void</span> <span class="n">__time_s</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint64_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
+	<span class="p">{</span>
 		<span class="k">if</span><span class="p">(</span><span class="n">set</span><span class="p">)</span>
 			<span class="k">return</span><span class="p">;</span> <span class="c1">// read-only</span>
 
 		<span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
 	<span class="p">}</span>
 
-	<span class="kt">void</span> <span class="n">__rand</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">int32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kt">void</span> <span class="n">__rand</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">int32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
+	<span class="p">{</span>
 		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span> <span class="p">{</span>
 			<span class="kt">int32_t</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">48271</span><span class="p">;</span>
 			<span class="kt">int32_t</span> <span class="n">m</span> <span class="o">=</span> <span class="mi">2147483647</span><span class="p">;</span>
@@ -262,7 +264,8 @@
 	<span class="kt">void</span> <span class="n">__echo_1</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">int32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span> <span class="n">__echo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">set</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span> <span class="p">}</span>
 
 <span class="k">private</span><span class="o">:</span>
-	<span class="kt">void</span> <span class="n">__echo</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">int32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kt">void</span> <span class="n">__echo</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">int32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
+	<span class="p">{</span>
 		<span class="n">assert</span><span class="p">(</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="kt">size_t</span><span class="p">)</span><span class="n">i</span> <span class="o">&lt;</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">m_echo</span><span class="p">)</span> <span class="o">/</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">m_echo</span><span class="p">[</span><span class="mi">0</span><span class="p">]));</span>
 
 		<span class="k">if</span><span class="p">(</span><span class="n">set</span><span class="p">)</span>
@@ -277,7 +280,8 @@
 	<span class="kt">int32_t</span> <span class="n">m_echo</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
 <span class="p">};</span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
 	<span class="n">MyExample</span> <span class="n">e</span><span class="p">;</span>
 
 <span class="c1">//	time_t now = (time_t)e.time_s.get();</span>

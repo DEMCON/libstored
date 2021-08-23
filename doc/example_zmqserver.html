@@ -250,32 +250,41 @@ string:15 a string
 	<span class="n">ZmqServerStore</span><span class="p">()</span> <span class="o">:</span> <span class="n">m_messages</span><span class="p">(),</span> <span class="n">m_writes</span><span class="p">()</span> <span class="p">{}</span>
 
 <span class="k">protected</span><span class="o">:</span>
-	<span class="kt">void</span> <span class="n">__compute__an_int8_an_int16</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">int32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kt">void</span> <span class="n">__compute__an_int8_an_int16</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">int32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
+	<span class="p">{</span>
 		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
 			<span class="n">value</span> <span class="o">=</span> <span class="n">an_int8</span><span class="p">.</span><span class="n">get</span><span class="p">()</span> <span class="o">+</span> <span class="n">an_int16</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
 	<span class="p">}</span>
-	<span class="kt">void</span> <span class="n">__compute__circle_area_r__a_double</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">double</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="kt">void</span> <span class="n">__compute__circle_area_r__a_double</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">double</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
+	<span class="p">{</span>
 		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
 			<span class="n">value</span> <span class="o">=</span> <span class="n">M_PI</span> <span class="o">*</span> <span class="n">a_double</span><span class="p">.</span><span class="n">get</span><span class="p">()</span> <span class="o">*</span> <span class="n">a_double</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
 	<span class="p">}</span>
-	<span class="kt">void</span> <span class="n">__compute__length_of__a_string</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="kt">void</span> <span class="n">__compute__length_of__a_string</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
+	<span class="p">{</span>
 		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
 			<span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">strlen</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">a_string</span><span class="p">.</span><span class="n">buffer</span><span class="p">()));</span>
 
 	<span class="p">}</span>
-	<span class="kt">void</span> <span class="n">__stats__ZMQ_messages</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="kt">void</span> <span class="n">__stats__ZMQ_messages</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
+	<span class="p">{</span>
 		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
 			<span class="n">value</span> <span class="o">=</span> <span class="n">m_messages</span><span class="p">;</span>
 		<span class="k">else</span>
 			<span class="n">m_messages</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
 	<span class="p">}</span>
 
-	<span class="kt">void</span> <span class="n">__stats__object_writes</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kt">void</span> <span class="n">__stats__object_writes</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
+	<span class="p">{</span>
 		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
 			<span class="n">value</span> <span class="o">=</span> <span class="n">m_writes</span><span class="p">;</span>
 	<span class="p">}</span>
 
-	<span class="kt">void</span> <span class="n">__rand</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">double</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kt">void</span> <span class="n">__rand</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">double</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
+	<span class="p">{</span>
 		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span> <span class="p">{</span>
 <span class="cp">#ifdef STORED_OS_WINDOWS</span>
 			<span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="o">::</span><span class="n">rand</span><span class="p">()</span> <span class="o">/</span> <span class="n">RAND_MAX</span><span class="p">;</span>
@@ -284,7 +293,9 @@ string:15 a string
 <span class="cp">#endif</span>
 		<span class="p">}</span>
 	<span class="p">}</span>
-	<span class="kt">void</span> <span class="n">__t_us</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint64_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="kt">void</span> <span class="n">__t_us</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint64_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
+	<span class="p">{</span>
 		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span> <span class="p">{</span>
 <span class="cp">#if __cplusplus &gt;= 201103L</span>
 			<span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)(</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">duration_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">microseconds</span><span class="o">&gt;</span><span class="p">(</span>
@@ -299,7 +310,8 @@ string:15 a string
 	<span class="kt">void</span> <span class="n">__hookSet</span><span class="p">(</span><span class="n">stored</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">type</span> <span class="n">UNUSED_PAR</span><span class="p">(</span><span class="n">type</span><span class="p">),</span> <span class="kt">void</span><span class="o">*</span> <span class="n">UNUSED_PAR</span><span class="p">(</span><span class="n">buffer</span><span class="p">),</span> <span class="kt">size_t</span> <span class="n">UNUSED_PAR</span><span class="p">(</span><span class="n">len</span><span class="p">))</span> <span class="p">{</span> <span class="n">m_writes</span><span class="o">++</span><span class="p">;</span> <span class="p">}</span>
 
 <span class="k">public</span><span class="o">:</span>
-	<span class="kt">void</span> <span class="n">incMessages</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kt">void</span> <span class="n">incMessages</span><span class="p">()</span>
+	<span class="p">{</span>
 		<span class="n">m_messages</span><span class="o">++</span><span class="p">;</span>
 	<span class="p">}</span>
 
@@ -308,7 +320,8 @@ string:15 a string
 	<span class="kt">uint32_t</span> <span class="n">m_writes</span><span class="p">;</span>
 <span class="p">};</span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
 	<span class="n">ZmqServerStore</span> <span class="n">store</span><span class="p">;</span>
 	<span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span> <span class="n">debugger</span><span class="p">(</span><span class="s">&quot;zmqserver&quot;</span><span class="p">);</span>
 	<span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store</span><span class="p">);</span>

@@ -574,10 +574,11 @@ from the application.</p>
 <p>Run <code class="docutils literal notranslate"><span class="pre">scripts/bootstrap</span></code> (as Administrator under Windows) once to install all
 build dependencies.  Then run <code class="docutils literal notranslate"><span class="pre">scripts/build</span></code> to build the project. This does
 effectively:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mkdir build
-cd build
-cmake ..
-cmake --build .
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>     mkdir build
+     cd build
+     cmake .. -DCMAKE_INSTALL_PREFIX=dist
+     cmake --build .
+cmake --build . --target install
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">scripts/build</span></code> takes an optional argument, which allows you to specify the
@@ -625,6 +626,10 @@ built.</p></li>
 for your FPGA, and source the generated file <code class="docutils literal notranslate"><span class="pre">rtl/vivado.tcl</span></code>. This will add
 all relevant files to your project. Afterwards, just save the project as
 usually; the <code class="docutils literal notranslate"><span class="pre">rtl/vivado.tcl</span></code> file is not needed anymore.</p></li>
+<li><p>If you ran the <code class="docutils literal notranslate"><span class="pre">install</span></code> target, a
+<code class="docutils literal notranslate"><span class="pre">share/cmake/libstored/libstored.cmake</span></code> file is generated.  If you include
+this file in another cmake project, you import all generated libraries as
+static libraries. See the <code class="docutils literal notranslate"><span class="pre">examples/installed</span></code> example how to do this.</p></li>
 </ul>
 <p>Check out the examples of libstored, which are all independent applications
 with their own generated store.</p>

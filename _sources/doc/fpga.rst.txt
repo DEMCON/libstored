@@ -1,1 +1,1 @@
-.. include:: ../../fpga/doc/vhdl.rst
+﻿.. include:: ../../fpga/doc/vhdl.rst

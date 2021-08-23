@@ -231,29 +231,29 @@ double world
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
-    <span class="c1">// Construct the store.</span>
-    <span class="n">stored</span><span class="o">::</span><span class="n">ExampleHello</span> <span class="n">h</span><span class="p">;</span>
+	<span class="c1">// Construct the store.</span>
+	<span class="n">stored</span><span class="o">::</span><span class="n">ExampleHello</span> <span class="n">h</span><span class="p">;</span>
 
-    <span class="c1">// Print defaults.</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;hello=%&quot;</span> <span class="n">PRIi32</span> <span class="s">&quot; world=%g</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">h</span><span class="p">.</span><span class="n">hello</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">h</span><span class="p">.</span><span class="n">world</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+	<span class="c1">// Print defaults.</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;hello=%&quot;</span> <span class="n">PRIi32</span> <span class="s">&quot; world=%g</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">h</span><span class="p">.</span><span class="n">hello</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">h</span><span class="p">.</span><span class="n">world</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
 
-    <span class="c1">// Set some values.</span>
-    <span class="n">h</span><span class="p">.</span><span class="n">hello</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span>
-    <span class="n">h</span><span class="p">.</span><span class="n">world</span> <span class="o">=</span> <span class="mf">3.14</span><span class="p">;</span>
+	<span class="c1">// Set some values.</span>
+	<span class="n">h</span><span class="p">.</span><span class="n">hello</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span>
+	<span class="n">h</span><span class="p">.</span><span class="n">world</span> <span class="o">=</span> <span class="mf">3.14</span><span class="p">;</span>
 
-    <span class="c1">// Check if it worked.</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;hello=%d world=%g</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">h</span><span class="p">.</span><span class="n">hello</span><span class="p">.</span><span class="n">as</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(),</span> <span class="n">h</span><span class="p">.</span><span class="n">world</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+	<span class="c1">// Check if it worked.</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;hello=%d world=%g</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">h</span><span class="p">.</span><span class="n">hello</span><span class="p">.</span><span class="n">as</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(),</span> <span class="n">h</span><span class="p">.</span><span class="n">world</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
 
-    <span class="c1">// All variables can be accessed by name too. This is encoded in a</span>
-    <span class="c1">// directory with scopes (see later examples), but this requires to add the</span>
-    <span class="c1">// root /.</span>
+	<span class="c1">// All variables can be accessed by name too. This is encoded in a</span>
+	<span class="c1">// directory with scopes (see later examples), but this requires to add the</span>
+	<span class="c1">// root /.</span>
 	<span class="c1">// cppcheck-suppress unreadVariable</span>
-    <span class="n">h</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;/hello&quot;</span><span class="p">).</span><span class="n">variable</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="mi">43</span><span class="p">;</span>
+	<span class="n">h</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;/hello&quot;</span><span class="p">).</span><span class="n">variable</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="mi">43</span><span class="p">;</span>
 
-    <span class="c1">// Check if it changed.</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;hello=%d world=%g</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">h</span><span class="p">.</span><span class="n">hello</span><span class="p">.</span><span class="n">as</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(),</span> <span class="n">h</span><span class="p">.</span><span class="n">world</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+	<span class="c1">// Check if it changed.</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;hello=%d world=%g</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">h</span><span class="p">.</span><span class="n">hello</span><span class="p">.</span><span class="n">as</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(),</span> <span class="n">h</span><span class="p">.</span><span class="n">world</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
 
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 </div>

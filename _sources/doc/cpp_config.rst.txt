@@ -1,4 +1,4 @@
-Config
+﻿Config
 ======
 
 Static configuration of the libstored library.

@@ -255,7 +255,8 @@ uint32 injected errors
 <span class="cm">/*!</span>
 <span class="cm"> * \brief Print a buffer, for demonstration purposes.</span>
 <span class="cm"> */</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">printBuffer</span><span class="p">(</span><span class="kt">void</span> <span class="k">const</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">char</span> <span class="k">const</span><span class="o">*</span> <span class="n">prefix</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">,</span> <span class="kt">FILE</span><span class="o">*</span> <span class="n">f</span> <span class="o">=</span> <span class="n">stdout</span><span class="p">)</span> <span class="p">{</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">printBuffer</span><span class="p">(</span><span class="kt">void</span> <span class="k">const</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">char</span> <span class="k">const</span><span class="o">*</span> <span class="n">prefix</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">,</span> <span class="kt">FILE</span><span class="o">*</span> <span class="n">f</span> <span class="o">=</span> <span class="n">stdout</span><span class="p">)</span>
+<span class="p">{</span>
 	<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">s</span><span class="p">;</span>
 	<span class="k">if</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
 		<span class="n">s</span> <span class="o">+=</span> <span class="n">prefix</span><span class="p">;</span>
@@ -301,7 +302,8 @@ uint32 injected errors
 
 	<span class="k">virtual</span> <span class="o">~</span><span class="n">LossyChannel</span><span class="p">()</span> <span class="k">override</span> <span class="n">is_default</span>
 
-	<span class="k">virtual</span> <span class="kt">void</span> <span class="n">decode</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span>
+	<span class="k">virtual</span> <span class="kt">void</span> <span class="n">decode</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">)</span> <span class="k">override</span>
+	<span class="p">{</span>
 		<span class="kt">char</span><span class="o">*</span> <span class="n">buffer_</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span>
 		<span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
 			<span class="n">buffer_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">lossyByte</span><span class="p">(</span><span class="n">buffer_</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
@@ -310,7 +312,8 @@ uint32 injected errors
 		<span class="n">base</span><span class="o">::</span><span class="n">decode</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">);</span>
 	<span class="p">}</span>
 
-	<span class="k">virtual</span> <span class="kt">void</span> <span class="n">encode</span><span class="p">(</span><span class="kt">void</span> <span class="k">const</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">last</span> <span class="o">=</span> <span class="nb">true</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span>
+	<span class="k">virtual</span> <span class="kt">void</span> <span class="n">encode</span><span class="p">(</span><span class="kt">void</span> <span class="k">const</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">last</span> <span class="o">=</span> <span class="nb">true</span><span class="p">)</span> <span class="k">override</span>
+	<span class="p">{</span>
 		<span class="c1">// cppcheck-suppress allocaCalled</span>
 		<span class="kt">char</span><span class="o">*</span> <span class="n">buffer_</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">alloca</span><span class="p">(</span><span class="n">len</span><span class="p">);</span>
 		<span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
@@ -325,7 +328,8 @@ uint32 injected errors
 	<span class="c1">// Bit error rate</span>
 	<span class="kt">double</span> <span class="nf">ber</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">store</span><span class="p">.</span><span class="n">ber</span><span class="p">;</span> <span class="p">}</span>
 
-	<span class="kt">char</span> <span class="nf">lossyByte</span><span class="p">(</span><span class="kt">char</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kt">char</span> <span class="nf">lossyByte</span><span class="p">(</span><span class="kt">char</span> <span class="n">b</span><span class="p">)</span>
+	<span class="p">{</span>
 		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
 			<span class="kt">double</span> <span class="n">p</span> <span class="o">=</span>
 <span class="cp">#ifdef STORED_OS_WINDOWS</span>
@@ -345,7 +349,8 @@ uint32 injected errors
 	<span class="k">virtual</span> <span class="kt">size_t</span> <span class="nf">mtu</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span> <span class="p">{</span> <span class="k">return</span> <span class="n">store</span><span class="p">.</span><span class="n">MTU</span><span class="p">.</span><span class="n">as</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">();</span> <span class="p">}</span>
 <span class="p">};</span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
 	<span class="c1">// Demonstrate a full stack assuming a lossy channel.</span>
 	<span class="c1">// In this example, the lossy channel is simulated by LossyChannel,</span>
 	<span class="c1">// which just flips bits, depending on the set bit error rate (BER).</span>
@@ -360,7 +365,7 @@ uint32 injected errors
 <span class="cm">		    ?       Debugger: capabilities</span>
 <span class="cm">		  E         SegmentationLayer: last chunk</span>
 <span class="cm">		  z\x7fI    AsciiEscapeLayer: z&lt;tab&gt;</span>
-<span class="cm">                      Crc16Layer: CRC=0x7a09</span>
+<span class="cm">			Crc16Layer: CRC=0x7a09</span>
 <span class="cm">		\x1b\\      TerminalLayer: end of message</span>
 
 

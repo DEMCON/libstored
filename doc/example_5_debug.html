@@ -245,20 +245,23 @@
 		<span class="n">up</span><span class="p">.</span><span class="n">setDown</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
 	<span class="p">}</span>
 
-	<span class="kt">void</span> <span class="nf">decode</span><span class="p">(</span><span class="kt">char</span> <span class="k">const</span><span class="o">*</span> <span class="n">frame</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kt">void</span> <span class="nf">decode</span><span class="p">(</span><span class="kt">char</span> <span class="k">const</span><span class="o">*</span> <span class="n">frame</span><span class="p">)</span>
+	<span class="p">{</span>
 		<span class="kt">char</span><span class="o">*</span> <span class="n">s</span> <span class="o">=</span> <span class="n">strdup</span><span class="p">(</span><span class="n">frame</span><span class="p">);</span>
 		<span class="k">if</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
 			<span class="n">decode</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">s</span><span class="p">));</span>
 		<span class="n">free</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
 	<span class="p">}</span>
 
-	<span class="kt">void</span> <span class="nf">decode</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">)</span> <span class="k">final</span> <span class="p">{</span>
+	<span class="kt">void</span> <span class="nf">decode</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">)</span> <span class="k">final</span>
+	<span class="p">{</span>
 		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">m_silenced</span><span class="p">)</span>
 			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;&gt;&gt;   %.*s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">len</span><span class="p">,</span> <span class="p">(</span><span class="kt">char</span> <span class="k">const</span><span class="o">*</span><span class="p">)</span><span class="n">buffer</span><span class="p">);</span>
 		<span class="n">base</span><span class="o">::</span><span class="n">decode</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">);</span>
 	<span class="p">}</span>
 
-	<span class="kt">void</span> <span class="nf">encode</span><span class="p">(</span><span class="kt">void</span> <span class="k">const</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">last</span> <span class="o">=</span> <span class="nb">true</span><span class="p">)</span> <span class="k">final</span> <span class="p">{</span>
+	<span class="kt">void</span> <span class="nf">encode</span><span class="p">(</span><span class="kt">void</span> <span class="k">const</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">last</span> <span class="o">=</span> <span class="nb">true</span><span class="p">)</span> <span class="k">final</span>
+	<span class="p">{</span>
 		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">m_encoding</span><span class="p">)</span> <span class="p">{</span>
 			<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">m_silenced</span><span class="p">)</span>
 				<span class="n">printf</span><span class="p">(</span><span class="s">&quot;&lt;&lt;   &quot;</span><span class="p">);</span>
@@ -275,7 +278,8 @@
 		<span class="p">}</span>
 	<span class="p">}</span>
 
-	<span class="kt">void</span> <span class="nf">silence</span><span class="p">(</span><span class="kt">bool</span> <span class="n">silenced</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kt">void</span> <span class="nf">silence</span><span class="p">(</span><span class="kt">bool</span> <span class="n">silenced</span><span class="p">)</span>
+	<span class="p">{</span>
 		<span class="n">m_silenced</span> <span class="o">=</span> <span class="n">silenced</span><span class="p">;</span>
 	<span class="p">}</span>
 
@@ -295,14 +299,16 @@
 
 	<span class="k">virtual</span> <span class="o">~</span><span class="n">ExtendedDebugger</span><span class="p">()</span> <span class="k">noexcept</span> <span class="k">override</span> <span class="n">is_default</span><span class="p">;</span>
 
-	<span class="k">virtual</span> <span class="kt">void</span> <span class="nf">capabilities</span><span class="p">(</span><span class="kt">char</span><span class="o">*&amp;</span> <span class="n">caps</span><span class="p">,</span> <span class="kt">size_t</span><span class="o">&amp;</span> <span class="n">len</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">reserve</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span>
+	<span class="k">virtual</span> <span class="kt">void</span> <span class="nf">capabilities</span><span class="p">(</span><span class="kt">char</span><span class="o">*&amp;</span> <span class="n">caps</span><span class="p">,</span> <span class="kt">size_t</span><span class="o">&amp;</span> <span class="n">len</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">reserve</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">override</span>
+	<span class="p">{</span>
 		<span class="c1">// Get the default capabilities.</span>
 		<span class="n">base</span><span class="o">::</span><span class="n">capabilities</span><span class="p">(</span><span class="n">caps</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">reserve</span> <span class="o">+</span> <span class="mi">1</span> <span class="cm">/* add room for our &#39;z&#39; cmd */</span><span class="p">);</span>
 		<span class="c1">// Add our &#39;z&#39; cmd.</span>
 		<span class="n">caps</span><span class="p">[</span><span class="n">len</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;z&#39;</span><span class="p">;</span>
 	<span class="p">}</span>
 
-	<span class="k">virtual</span> <span class="kt">void</span> <span class="nf">process</span><span class="p">(</span><span class="kt">void</span> <span class="k">const</span><span class="o">*</span> <span class="n">frame</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="n">ProtocolLayer</span><span class="o">&amp;</span> <span class="n">response</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span>
+	<span class="k">virtual</span> <span class="kt">void</span> <span class="nf">process</span><span class="p">(</span><span class="kt">void</span> <span class="k">const</span><span class="o">*</span> <span class="n">frame</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="n">ProtocolLayer</span><span class="o">&amp;</span> <span class="n">response</span><span class="p">)</span> <span class="k">override</span>
+	<span class="p">{</span>
 		<span class="k">if</span><span class="p">(</span><span class="n">unlikely</span><span class="p">(</span><span class="o">!</span><span class="n">frame</span> <span class="o">||</span> <span class="n">len</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span>
 			<span class="k">return</span><span class="p">;</span>
 
@@ -320,7 +326,8 @@
 	<span class="p">}</span>
 <span class="p">};</span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
 	<span class="c1">// Create a few stores.</span>
 	<span class="n">stored</span><span class="o">::</span><span class="n">ExampleDebugSomeStore</span> <span class="n">someStore1</span><span class="p">;</span>
 	<span class="n">stored</span><span class="o">::</span><span class="n">ExampleDebugSomeStore</span> <span class="n">someStore2</span><span class="p">;</span>

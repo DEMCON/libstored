@@ -1,4 +1,4 @@
-libstored
+﻿libstored
 =========
 
 This is a generator for a C++ class (store) with your application's variables,
