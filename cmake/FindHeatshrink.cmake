@@ -51,7 +51,10 @@ endif()
 
 target_include_directories(heatshrink PUBLIC $<BUILD_INTERFACE:${SOURCE_DIR}> $<INSTALL_INTERFACE:include>)
 
-install(TARGETS heatshrink EXPORT libstored ARCHIVE PUBLIC_HEADER)
+install(TARGETS heatshrink EXPORT libstored
+	ARCHIVE DESTINATION lib
+	PUBLIC_HEADER DESTINATION include
+)
 
 set(Heatshrink_FOUND 1)
 
