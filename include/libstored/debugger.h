@@ -1,6 +1,5 @@
 #ifndef LIBSTORED_DEBUGGER_H
 #define LIBSTORED_DEBUGGER_H
-// vim:fileencoding=utf-8
 /*
  * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2021  Jochem Rutgers
@@ -58,7 +57,8 @@ namespace stored {
 
 		void decode(void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) final {}
 
-		void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
+		void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final
+		{
 			if(blocked())
 				return;
 
@@ -67,37 +67,45 @@ namespace stored {
 
 		using base::encode;
 
-		size_t mtu() const final {
+		size_t mtu() const final
+		{
 			return 0;
 		}
 
-		String::type const& buffer() const noexcept {
+		String::type const& buffer() const noexcept
+		{
 			return m_buffer;
 		}
 
-		bool flush() final {
+		bool flush() final
+		{
 			block();
 			return true;
 		}
 
-		void clear() noexcept {
+		void clear() noexcept
+		{
 			m_buffer.clear();
 			unblock();
 		}
 
-		bool empty() const noexcept {
+		bool empty() const noexcept
+		{
 			return m_buffer.empty();
 		}
 
-		void block() noexcept {
+		void block() noexcept
+		{
 			m_block = true;
 		}
 
-		void unblock() noexcept {
+		void unblock() noexcept
+		{
 			m_block = false;
 		}
 
-		bool blocked() const noexcept {
+		bool blocked() const noexcept
+		{
 			return m_block;
 		}
 
@@ -122,7 +130,8 @@ namespace stored {
 
 		void decode(void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) final {}
 
-		void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
+		void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final
+		{
 			if(blocked())
 				return;
 
@@ -131,20 +140,24 @@ namespace stored {
 
 		using base::encode;
 
-		size_t mtu() const final {
+		size_t mtu() const final
+		{
 			return 0;
 		}
 
-		bool flush() final {
+		bool flush() final
+		{
 			m_compress.encode();
 			return m_compress.flush();
 		}
 
-		void clear() noexcept {
+		void clear() noexcept
+		{
 			m_string.clear();
 		}
 
-		bool empty() const noexcept {
+		bool empty() const noexcept
+		{
 			return
 #ifdef STORED_HAVE_HEATSHRINK
 				m_compress.idle() &&
@@ -152,19 +165,23 @@ namespace stored {
 				m_string.empty();
 		}
 
-		String::type const& buffer() const noexcept {
+		String::type const& buffer() const noexcept
+		{
 			return m_string.buffer();
 		}
 
-		void block() noexcept {
+		void block() noexcept
+		{
 			m_string.block();
 		}
 
-		void unblock() noexcept {
+		void unblock() noexcept
+		{
 			m_string.unblock();
 		}
 
-		bool blocked() const noexcept {
+		bool blocked() const noexcept
+		{
 			return m_string.blocked();
 		}
 
@@ -275,16 +292,30 @@ namespace stored {
 		 */
 		DebugVariantTyped() is_default
 
-		size_t get(void* dst, size_t len = 0) const final {
-			return variant().get(dst, len); }
-		size_t set(void const* src, size_t len = 0) final {
-			return variant().set(src, len); }
-		Type::type type() const final {
-			return variant().type(); }
-		size_t size() const final {
-			return variant().size(); }
-		bool valid() const final {
-			return variant().valid(); }
+		size_t get(void* dst, size_t len = 0) const final
+		{
+			return variant().get(dst, len);
+		}
+
+		size_t set(void const* src, size_t len = 0) final
+		{
+			return variant().set(src, len);
+		}
+
+		Type::type type() const final
+		{
+			return variant().type();
+		}
+
+		size_t size() const final
+		{
+			return variant().size();
+		}
+
+		bool valid() const final
+		{
+			return variant().valid();
+		}
 
 		/*! \brief Returns the variant this object is a wrapper of. */
 		Variant<Container> const& variant() const { return m_variant; }
@@ -292,7 +323,8 @@ namespace stored {
 		Variant<Container>& variant() { return m_variant; }
 
 	protected:
-		bool operator==(DebugVariantBase const& rhs) const final {
+		bool operator==(DebugVariantBase const& rhs) const final
+		{
 			if(valid() != rhs.valid())
 				return false;
 			if(!valid())
@@ -302,7 +334,8 @@ namespace stored {
 			return variant() == static_cast<DebugVariantTyped<Container> const&>(rhs).variant();
 		}
 
-		void* container() const final {
+		void* container() const final
+		{
 			return variant().valid() ? &variant().container() : nullptr;
 		}
 
@@ -331,7 +364,8 @@ namespace stored {
 		 * \brief Constructor for an invalid #stored::Variant wrapper.
 		 */
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		DebugVariant() {
+		DebugVariant()
+		{
 			new(m_buffer) DebugVariantTyped<>();
 		}
 
@@ -340,7 +374,8 @@ namespace stored {
 		 */
 		template <typename Container>
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-		explicit DebugVariant(Variant<Container> const& variant) {
+		explicit DebugVariant(Variant<Container> const& variant)
+		{
 			// Check if the cast of variant() is valid.
 			static_assert(sizeof(DebugVariantTyped<Container>) == sizeof(DebugVariantTyped<>), "");
 
@@ -359,20 +394,40 @@ namespace stored {
 			stored_assert(static_cast<DebugVariantBase*>(reinterpret_cast<DebugVariantTyped<Container>*>(m_buffer)) == &this->variant()); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 		}
 
-		size_t get(void* dst, size_t len = 0) const final {
-			return variant().get(dst, len); }
-		size_t set(void const* src, size_t len = 0) final {
-			return variant().set(src, len); }
-		Type::type type() const final {
-			return variant().type(); }
-		size_t size() const final {
-			return variant().size(); }
-		bool valid() const final {
-			return variant().valid(); }
-		bool operator==(DebugVariant const& rhs) const {
-			return variant() == rhs.variant(); }
-		bool operator!=(DebugVariant const& rhs) const {
-			return !(*this == rhs); }
+		size_t get(void* dst, size_t len = 0) const final
+		{
+			return variant().get(dst, len);
+		}
+
+		size_t set(void const* src, size_t len = 0) final
+		{
+			return variant().set(src, len);
+		}
+
+		Type::type type() const final
+		{
+			return variant().type();
+		}
+
+		size_t size() const final
+		{
+			return variant().size();
+		}
+
+		bool valid() const final
+		{
+			return variant().valid();
+		}
+
+		bool operator==(DebugVariant const& rhs) const
+		{
+			return variant() == rhs.variant();
+		}
+
+		bool operator!=(DebugVariant const& rhs) const
+		{
+			return !(*this == rhs);
+		}
 
 	protected:
 		using base::operator==;
@@ -380,7 +435,8 @@ namespace stored {
 		/*!
 		 * \brief Returns the contained #stored::DebugVariantTyped instance.
 		 */
-		DebugVariantBase const& variant() const {
+		DebugVariantBase const& variant() const
+		{
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return *static_cast<DebugVariantBase const*>(reinterpret_cast<DebugVariantTyped<> const*>(m_buffer));
 		}
@@ -388,12 +444,14 @@ namespace stored {
 		/*!
 		 * \copydoc variant() const
 		 */
-		DebugVariantBase& variant() {
+		DebugVariantBase& variant()
+		{
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return *static_cast<DebugVariantBase*>(reinterpret_cast<DebugVariantTyped<>*>(m_buffer));
 		}
 
-		void* container() const final {
+		void* container() const final
+		{
 			return variant().container();
 		}
 
@@ -492,7 +550,8 @@ namespace stored {
 
 		char const* name() const noexcept final { return store().name(); }
 
-		DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept final {
+		DebugVariant find(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept final
+		{
 			return DebugVariant(store().find(name, len));
 		}
 
@@ -512,7 +571,8 @@ namespace stored {
 		 * properties in a #stored::DebugVariant and forward it to the callback
 		 * that was supplied to \c list().
 		 */
-		static void listCallback(void* container, char const* name, Type::type type, void* buffer, size_t len, void* arg) {
+		static void listCallback(void* container, char const* name, Type::type type, void* buffer, size_t len, void* arg)
+		{
 			DebugVariant variant(
 				Type::isFunction(type) ?
 					// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
@@ -524,7 +584,8 @@ namespace stored {
 		}
 
 	public:
-		virtual void list(DebugStoreBase::ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr) const override {
+		virtual void list(DebugStoreBase::ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr) const override
+		{
 			ListCallbackArgs args = {f, arg};
 			store().list(&listCallback, &args, prefix);
 		}
@@ -566,7 +627,8 @@ namespace stored {
 		 * Helper class to sort #StoreMap based on name.
 		 */
 		struct StorePrefixComparator {
-			bool operator()(char const* lhs, char const* rhs) const noexcept {
+			bool operator()(char const* lhs, char const* rhs) const noexcept
+			{
 				stored_assert(lhs && rhs);
 				return strcmp(lhs, rhs) < 0;
 			}
@@ -586,7 +648,8 @@ namespace stored {
 		 * the prefix supplied to #map(), or using the store's name when \p name is \c nullptr.
 		 */
 		template <typename Store>
-		void map(Store& store, char const* name = nullptr) {
+		void map(Store& store, char const* name = nullptr)
+		{
 			map(new(allocate<DebugStore<Store> >()) DebugStore<Store>(store), name);
 		}
 
@@ -633,7 +696,8 @@ namespace stored {
 		 */
 		template <typename F>
 		SFINAE_IS_FUNCTION(F, ListCallback, void)
-		list(F&& f) const {
+		list(F&& f) const
+		{
 			auto cb = [](char const* name, DebugVariant& variant, void* f_) {
 				(*static_cast<typename std::decay<F>::type*>(f_))(name, variant);
 			};
@@ -704,7 +768,8 @@ namespace stored {
 		 * \see #encodeHex(stored::Type::type, void*&, size_t&, bool)
 		 */
 		template <typename T, typename B>
-		size_t encodeHex(T value, B*& buf, bool shortest = true) {
+		size_t encodeHex(T value, B*& buf, bool shortest = true)
+		{
 			void* data = (void*)&value;
 			size_t len = sizeof(T);
 			encodeHex(toType<T>::type, data, len, shortest);

@@ -98,7 +98,8 @@ namespace stored {
 		 * If the given layer was not the bottom of the stack, this layer
 		 * injects itself in between the given layer and its wrapper.
 		 */
-		void wrap(ProtocolLayer& up) {
+		void wrap(ProtocolLayer& up)
+		{
 			if(!down()) {
 				ProtocolLayer* d = up.down();
 
@@ -117,7 +118,8 @@ namespace stored {
 		 * If the given layer was not the top of the stack, this layer injects
 		 * itself between the given layer and its stacked one.
 		 */
-		void stack(ProtocolLayer& down) {
+		void stack(ProtocolLayer& down)
+		{
 			ProtocolLayer* u = down.up();
 
 			setUp(u);
@@ -145,7 +147,8 @@ namespace stored {
 		 *
 		 * The given buffer may be decoded in-place.
 		 */
-		virtual void decode(void* buffer, size_t len) {
+		virtual void decode(void* buffer, size_t len)
+		{
 			if(up())
 				up()->decode(buffer, len);
 		}
@@ -153,7 +156,8 @@ namespace stored {
 		/*!
 		 * \brief Encodes the last part of the current frame.
 		 */
-		void encode() {
+		void encode()
+		{
 			encode(static_cast<void const*>(nullptr), 0, true);
 		}
 
@@ -163,7 +167,8 @@ namespace stored {
 		 * The given buffer will not be modified.
 		 * A new buffer is allocated when required.
 		 */
-		virtual void encode(void const* buffer, size_t len, bool last = true) {
+		virtual void encode(void const* buffer, size_t len, bool last = true)
+		{
 			if(down())
 				down()->encode(buffer, len, last);
 		}
@@ -182,7 +187,8 @@ namespace stored {
 		 *
 		 * By default, all responses are precious.
 		 */
-		virtual void setPurgeableResponse(bool purgeable = true) {
+		virtual void setPurgeableResponse(bool purgeable = true)
+		{
 			if(down())
 				down()->setPurgeableResponse(purgeable);
 		}
@@ -196,7 +202,8 @@ namespace stored {
 		 *
 		 * \return the number of bytes, or 0 for infinity
 		 */
-		virtual size_t mtu() const {
+		virtual size_t mtu() const
+		{
 			return down() ? down()->mtu() : 0;
 		}
 
@@ -209,14 +216,16 @@ namespace stored {
 		 *
 		 * \return \c true if successful and the stack is empty, or \c false if message are still blocked
 		 */
-		virtual bool flush() {
+		virtual bool flush()
+		{
 			return down() ? down()->flush() : true;
 		}
 
 		/*!
 		 * \brief Reset the stack (top-down), and drop all messages.
 		 */
-		virtual void reset() {
+		virtual void reset()
+		{
 			if(down())
 				down()->reset();
 		}
@@ -475,7 +484,8 @@ namespace stored {
 		/*!
 		 * \brief Set event callback.
 		 */
-		void setEventCallback(EventCallbackArg* cb = nullptr, void* arg = nullptr) {
+		void setEventCallback(EventCallbackArg* cb = nullptr, void* arg = nullptr)
+		{
 			m_cb = cb;
 			m_cbArg = arg;
 		}
@@ -488,7 +498,8 @@ namespace stored {
 		/*!
 		 * \brief Set event callback.
 		 */
-		void setEventCallback(EventCallbackArg* cb = nullptr, void* arg = nullptr) {
+		void setEventCallback(EventCallbackArg* cb = nullptr, void* arg = nullptr)
+		{
 			if(cb)
 				setEventCallback([arg,cb](ArqLayer& l, Event e) { cb(l, e, arg); });
 			else
@@ -505,7 +516,8 @@ namespace stored {
 		 */
 		template <typename F>
 		SFINAE_IS_FUNCTION(F, EventCallback, void)
-		setEventCallback(F&& cb) {
+		setEventCallback(F&& cb)
+		{
 			m_cb = std::forward<F>(cb);
 		}
 #endif
@@ -1073,7 +1085,8 @@ namespace stored {
 		 * \brief Registers an error code for later retrieval by #lastError().
 		 * \return \p e
 		 */
-		int setLastError(int e) {
+		int setLastError(int e)
+		{
 			return errno = m_lastError = e;
 		}
 
@@ -1355,7 +1368,8 @@ public:
 		public:
 			DecodeCallback(XsimLayer& xsim) : m_xsim(xsim) {}
 			~DecodeCallback() final is_default
-			void decode(void* UNUSED_PAR(buffer), size_t len) final {
+			void decode(void* UNUSED_PAR(buffer), size_t len) final
+			{
 				m_xsim.decoded(len);
 			}
 		private:

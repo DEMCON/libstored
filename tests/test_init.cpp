@@ -21,23 +21,27 @@
 
 namespace {
 
-TEST(Init, Decimal) {
+TEST(Init, Decimal)
+{
 	stored::TestStore store;
 	EXPECT_EQ(store.init_decimal.get(), 42);
 	EXPECT_EQ(store.init_negative.get(), -42);
 }
 
-TEST(Init, Hex) {
+TEST(Init, Hex)
+{
 	stored::TestStore store;
 	EXPECT_EQ(store.init_hex.get(), 0x54);
 }
 
-TEST(Init, Bin) {
+TEST(Init, Bin)
+{
 	stored::TestStore store;
 	EXPECT_EQ(store.init_bin.get(), 5);
 }
 
-TEST(Init, Bool) {
+TEST(Init, Bool)
+{
 	stored::TestStore store;
 	EXPECT_EQ(store.init_true.get(), true);
 	EXPECT_EQ(store.init_false.get(), false);
@@ -45,7 +49,8 @@ TEST(Init, Bool) {
 	EXPECT_EQ(store.init_bool_10.get(), true);
 }
 
-TEST(Init, Float) {
+TEST(Init, Float)
+{
 	stored::TestStore store;
 	EXPECT_FLOAT_EQ(store.init_float_1.get(), 1.0f);
 	EXPECT_FLOAT_EQ(store.init_float_3_14.get(), 3.14f);

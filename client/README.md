@@ -1,4 +1,4 @@
-# ed2 -- Embedded Debugger protocol implementation for libstored
+﻿# ed2 -- Embedded Debugger protocol implementation for libstored
 
 This package contains the client implementation of the Embedded Debugger
 protocol (version 2), and a few helper classes and modules to debug your

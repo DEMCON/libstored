@@ -1,4 +1,4 @@
-Types
+﻿Types
 =====
 
 Type utilities and generic and typed interfaces to objects in a store.

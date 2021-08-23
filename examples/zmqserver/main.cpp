@@ -18,32 +18,41 @@ public:
 	ZmqServerStore() : m_messages(), m_writes() {}
 
 protected:
-	void __compute__an_int8_an_int16(bool set, int32_t& value) {
+	void __compute__an_int8_an_int16(bool set, int32_t& value)
+	{
 		if(!set)
 			value = an_int8.get() + an_int16.get();
 	}
-	void __compute__circle_area_r__a_double(bool set, double& value) {
+
+	void __compute__circle_area_r__a_double(bool set, double& value)
+	{
 		if(!set)
 			value = M_PI * a_double.get() * a_double.get();
 	}
-	void __compute__length_of__a_string(bool set, uint32_t& value) {
+
+	void __compute__length_of__a_string(bool set, uint32_t& value)
+	{
 		if(!set)
 			value = (uint32_t)strlen(static_cast<char*>(a_string.buffer()));
 
 	}
-	void __stats__ZMQ_messages(bool set, uint32_t& value) {
+
+	void __stats__ZMQ_messages(bool set, uint32_t& value)
+	{
 		if(!set)
 			value = m_messages;
 		else
 			m_messages = value;
 	}
 
-	void __stats__object_writes(bool set, uint32_t& value) {
+	void __stats__object_writes(bool set, uint32_t& value)
+	{
 		if(!set)
 			value = m_writes;
 	}
 
-	void __rand(bool set, double& value) {
+	void __rand(bool set, double& value)
+	{
 		if(!set) {
 #ifdef STORED_OS_WINDOWS
 			value = (double)::rand() / RAND_MAX;
@@ -52,7 +61,9 @@ protected:
 #endif
 		}
 	}
-	void __t_us(bool set, uint64_t& value) {
+
+	void __t_us(bool set, uint64_t& value)
+	{
 		if(!set) {
 #if __cplusplus >= 201103L
 			value = (uint64_t)(std::chrono::duration_cast<std::chrono::microseconds>(
@@ -67,7 +78,8 @@ protected:
 	void __hookSet(stored::Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) { m_writes++; }
 
 public:
-	void incMessages() {
+	void incMessages()
+	{
 		m_messages++;
 	}
 
@@ -76,7 +88,8 @@ private:
 	uint32_t m_writes;
 };
 
-int main() {
+int main()
+{
 	ZmqServerStore store;
 	stored::Debugger debugger("zmqserver");
 	debugger.map(store);

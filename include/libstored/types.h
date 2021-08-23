@@ -94,7 +94,8 @@ namespace stored {
 		/*! \brief Returns the size of the (function argument) type, or 0 when it is not fixed. */
 		static constexpr size_t size(type t) noexcept { return !isFixed(t) ? 0u : (size_t)(t & MaskSize) + 1u; }
 		/*! \brief Checks if endianness of given type is swapped in the store's buffer. */
-		static constexpr bool isStoreSwapped(type t) noexcept {
+		static constexpr bool isStoreSwapped(type t) noexcept
+		{
 			return
 #ifdef STORED_LITTLE_ENDIAN
 				!
@@ -217,7 +218,8 @@ namespace stored {
 		 * \brief Returns the value.
 		 * \details Only call this function when it is #valid().
 		 */
-		type get() const noexcept {
+		type get() const noexcept
+		{
 			stored_assert(valid());
 			return endian_s2h(buffer());
 		}
@@ -241,7 +243,8 @@ namespace stored {
 		 * \brief Sets the value.
 		 * \details Only call this function when it is #valid().
 		 */
-		void set(type v) noexcept {
+		void set(type v) noexcept
+		{
 			stored_assert(valid());
 			buffer() = endian_h2s(v);
 		}
@@ -281,7 +284,8 @@ namespace stored {
 		 * \brief Returns the buffer this Variable points to.
 		 * \details Only call this function when it is #valid().
 		 */
-		type& buffer() const {
+		type& buffer() const
+		{
 			stored_assert(valid());
 			return *m_buffer;
 		}
@@ -371,7 +375,8 @@ namespace stored {
 		 * \copydoc stored::Variable::get()
 		 * \details #entryRO()/#exitRO() are called around the actual data retrieval.
 		 */
-		type get() const noexcept {
+		type get() const noexcept
+		{
 			entryRO();
 			type res = base::get();
 			exitRO();
@@ -394,7 +399,8 @@ namespace stored {
 		 * \copydoc stored::Variable::set()
 		 * \details #entryX()/#exitX() are called around the actual data retrieval.
 		 */
-		void set(type v) noexcept {
+		void set(type v) noexcept
+		{
 			entryX();
 
 			bool changed = false;
@@ -416,7 +422,8 @@ namespace stored {
 		}
 
 		/*! \copydoc stored::Variable::operator=(type) */
-		Variable& operator=(type v) noexcept {
+		Variable& operator=(type v) noexcept
+		{
 			set(v);
 			return *this;
 		}
@@ -425,7 +432,8 @@ namespace stored {
 		static constexpr size_t size() noexcept { return sizeof(type); }
 
 		/*! \copydoc stored::Variable::container() */
-		Container& container() const noexcept {
+		Container& container() const noexcept
+		{
 			stored_assert(this->valid());
 			return *m_container; // NOLINT(clang-analyzer-core.uninitialized.UndefReturn)
 		}
@@ -440,7 +448,8 @@ namespace stored {
 		 * \brief Calls the \c entryX() hook of the container.
 		 * \see your store's \c hookEntryX()
 		 */
-		void entryX() const noexcept {
+		void entryX() const noexcept
+		{
 #ifdef _DEBUG
 			stored_assert(m_entry == EntryNone);
 			m_entry = EntryX;
@@ -452,7 +461,8 @@ namespace stored {
 		 * \brief Calls the \c exitX() hook of the container.
 		 * \see your store's \c hookExitX()
 		 */
-		void exitX(bool changed) const noexcept {
+		void exitX(bool changed) const noexcept
+		{
 			container().hookExitX(toType<T>::type, &this->buffer(), sizeof(type), changed);
 #ifdef _DEBUG
 			stored_assert(m_entry == EntryX);
@@ -464,7 +474,8 @@ namespace stored {
 		 * \brief Calls the \c entryRO() hook of the container.
 		 * \see your store's \c hookEntryRO()
 		 */
-		void entryRO() const noexcept {
+		void entryRO() const noexcept
+		{
 #ifdef _DEBUG
 			stored_assert(m_entry == EntryNone);
 			m_entry = EntryRO;
@@ -476,7 +487,8 @@ namespace stored {
 		 * \brief Calls the \c exitRO() hook of the container.
 		 * \see your store's \c hookExitRO()
 		 */
-		void exitRO() const noexcept {
+		void exitRO() const noexcept
+		{
 			container().hookExitRO(toType<T>::type, &this->buffer(), sizeof(type));
 #ifdef _DEBUG
 			stored_assert(m_entry == EntryRO);
@@ -527,7 +539,8 @@ namespace stored {
 		 * \brief Calls the function and return its value.
 		 * \details Only call this function when it is #valid().
 		 */
-		type get() const {
+		type get() const
+		{
 			stored_assert(valid());
 			type value = type();
 			callback(false, value);
@@ -553,7 +566,8 @@ namespace stored {
 		 * \param len the length of \p dst, normally equal to #size()
 		 * \return the number of bytes written to \p dst
 		 */
-		size_t get(void* dst, size_t len) const {
+		size_t get(void* dst, size_t len) const
+		{
 			stored_assert(valid());
 			return callback(false, dst, len);
 		}
@@ -562,7 +576,8 @@ namespace stored {
 		 * \brief Call the function to write the value.
 		 * \details Only call this function when it is #valid().
 		 */
-		void set(type value) const {
+		void set(type value) const
+		{
 			stored_assert(valid());
 			callback(true, value);
 		}
@@ -574,7 +589,8 @@ namespace stored {
 		 * \param len the length of \p src, normally equal to #size()
 		 * \return the number of bytes read from \p src
 		 */
-		size_t set(void* src, size_t len) {
+		size_t set(void* src, size_t len)
+		{
 			stored_assert(valid());
 			return callback(true, src, len);
 		}
@@ -599,7 +615,8 @@ namespace stored {
 		 * \brief Returns the container this Function belongs to.
 		 * \details Only call this function when it is #valid().
 		 */
-		Container& container() const noexcept {
+		Container& container() const noexcept
+		{
 			stored_assert(valid());
 			return *m_container;
 		}
@@ -607,7 +624,8 @@ namespace stored {
 		/*!
 		 * \brief Invoke the callback at the #container().
 		 */
-		size_t callback(bool set, type& value) const {
+		size_t callback(bool set, type& value) const
+		{
 			stored_assert(valid());
 			return container().callback(set, &value, sizeof(type), id());
 		}
@@ -615,7 +633,8 @@ namespace stored {
 		/*!
 		 * \brief Invoke the callback at the #container().
 		 */
-		size_t callback(bool set, void* buffer, size_t len) const {
+		size_t callback(bool set, void* buffer, size_t len) const
+		{
 			stored_assert(valid());
 			return container().callback(set, buffer, len, id());
 		}
@@ -624,7 +643,8 @@ namespace stored {
 		 * \brief Returns the function ID.
 		 * \details Only call this function when it is #valid().
 		 */
-		unsigned int id() const noexcept {
+		unsigned int id() const noexcept
+		{
 			stored_assert(valid());
 			return m_f;
 		}
@@ -632,7 +652,8 @@ namespace stored {
 		/*!
 		 * \brief Checks if this Function points to the same Function as the given one.
 		 */
-		bool operator==(Function const& rhs) const noexcept {
+		bool operator==(Function const& rhs) const noexcept
+		{
 			if(valid() != rhs.valid())
 				return false;
 			if(!valid())
@@ -699,12 +720,14 @@ namespace stored {
 
 	public:
 		/*! \brief Returns if this variable is valid. */
-		constexpr bool valid() const noexcept {
+		constexpr bool valid() const noexcept
+		{
 			return m_offset != (offset_type)Container::BufferSize;
 		}
 
 		/*! \brief Convert this free variable into a bound one. */
-		Variable_type apply(Container& container) const noexcept {
+		Variable_type apply(Container& container) const noexcept
+		{
 			if(valid())
 				return apply_(container);
 			else
@@ -712,19 +735,22 @@ namespace stored {
 		}
 
 		/*! \brief Convert this free variable into a bound one, without validity checking. */
-		Variable_type apply_(Container& container) const noexcept {
+		Variable_type apply_(Container& container) const noexcept
+		{
 			stored_assert(valid());
 			// cppcheck-suppress invalidPointerCast
 			return Variable_type(container, *reinterpret_cast<type*>(static_cast<char*>(container.buffer()) + m_offset)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 		}
 
 		/*! \brief Check if two free variables are identical. */
-		constexpr bool operator==(FreeVariable const& other) const {
+		constexpr bool operator==(FreeVariable const& other) const
+		{
 			return m_offset == other.m_offset;
 		}
 
 		/*! \brief Check if two free variables are different. */
-		constexpr bool operator!=(FreeVariable const& other) const {
+		constexpr bool operator!=(FreeVariable const& other) const
+		{
 			return !((*this) == other);
 		}
 
@@ -779,12 +805,14 @@ namespace stored {
 
 	public:
 		/*! \brief Returns if this function is valid. */
-		constexpr bool valid() const noexcept {
+		constexpr bool valid() const noexcept
+		{
 			return m_f != 0U;
 		}
 
 		/*! \brief Convert this free function into a bound one. */
-		Function_type apply(Container& container) const noexcept {
+		Function_type apply(Container& container) const noexcept
+		{
 			if(valid())
 				return apply_(container);
 			else
@@ -792,18 +820,21 @@ namespace stored {
 		}
 
 		/*! \brief Convert this free function into a bound one, without validity checking. */
-		Function_type apply_(Container& container) const noexcept {
+		Function_type apply_(Container& container) const noexcept
+		{
 			stored_assert(valid());
 			return Function_type(container, m_f);
 		}
 
 		/*! \brief Check if two free functions are identical. */
-		constexpr bool operator==(FreeFunction const& other) const {
+		constexpr bool operator==(FreeFunction const& other) const
+		{
 			return m_f == other.m_f;
 		}
 
 		/*! \brief Check if two free functions are different. */
-		constexpr bool operator!=(FreeFunction const& other) const {
+		constexpr bool operator!=(FreeFunction const& other) const
+		{
 			return !((*this) == other);
 		}
 
@@ -907,7 +938,8 @@ namespace stored {
 		 * \param len the length of \p dst, when this is a fixed type, 0 implies the normal size
 		 * \return the number of bytes written into \p dst
 		 */
-		size_t get(void* dst, size_t len = 0) const {
+		size_t get(void* dst, size_t len = 0) const
+		{
 			if(Type::isFixed(type())) {
 				stored_assert(len == size() || len == 0);
 				len = size();
@@ -941,7 +973,8 @@ namespace stored {
 		 * \brief Wrapper for #get(void*,size_t) const that converts the type.
 		 * \details This only works for fixed types. Make sure that #type() matches \p T.
 		 */
-		template <typename T> T get() const {
+		template <typename T> T get() const
+		{
 			stored_assert(Type::isFixed(type()));
 			stored_assert(toType<T>::type == type());
 			stored_assert(sizeof(T) == size());
@@ -955,7 +988,8 @@ namespace stored {
 		 * \brief Gets the value.
 		 * \see #get(void*, size_t) const
 		 */
-		Vector<char>::type get() const {
+		Vector<char>::type get() const
+		{
 			Vector<char>::type buf(size());
 			get(&buf[0], buf.size());
 			return buf;
@@ -971,7 +1005,8 @@ namespace stored {
 		 * \param len the length of \p src, when this is a fixed type, 0 implies the normal size
 		 * \return the number of bytes read from \p src
 		 */
-		size_t set(void const* src, size_t len = 0) {
+		size_t set(void const* src, size_t len = 0)
+		{
 			if(Type::isFixed(type())) {
 				stored_assert(len == size() || len == 0);
 				len = size();
@@ -1023,7 +1058,8 @@ namespace stored {
 		 * \brief Wrapper for #set(void const*,size_t) that converts the type.
 		 * \details This only works for fixed types. Make sure that #type() matches \p T.
 		 */
-		template <typename T> void set(T value) {
+		template <typename T> void set(T value)
+		{
 			stored_assert(Type::isFixed(type()));
 			stored_assert(toType<T>::type == type());
 			stored_assert(sizeof(T) == size());
@@ -1035,7 +1071,8 @@ namespace stored {
 		 */
 		void entryX() const noexcept { entryX(size()); }
 		/*! \copydoc entryX() */
-		void entryX(size_t len) const noexcept {
+		void entryX(size_t len) const noexcept
+		{
 			if(Config::EnableHooks) {
 #ifdef _DEBUG
 				stored_assert(m_entry == EntryNone);
@@ -1050,7 +1087,8 @@ namespace stored {
 		 */
 		void exitX(bool changed) const noexcept { exitX(changed, size()); }
 		/*! \copydoc exitX() */
-		void exitX(bool changed, size_t len) const noexcept {
+		void exitX(bool changed, size_t len) const noexcept
+		{
 			if(Config::EnableHooks) {
 				container().hookExitX(type(), m_buffer, len, changed);
 #ifdef _DEBUG
@@ -1065,7 +1103,8 @@ namespace stored {
 		 */
 		void entryRO() const noexcept { entryRO(size()); }
 		/*! \copydoc entryRO() */
-		void entryRO(size_t len) const noexcept {
+		void entryRO(size_t len) const noexcept
+		{
 			if(Config::EnableHooks) {
 #ifdef _DEBUG
 				stored_assert(m_entry == EntryNone);
@@ -1080,7 +1119,8 @@ namespace stored {
 		 */
 		void exitRO() const noexcept { exitRO(size()); }
 		/*! \copydoc exitRO() */
-		void exitRO(size_t len) const noexcept {
+		void exitRO(size_t len) const noexcept
+		{
 			if(Config::EnableHooks) {
 				container().hookExitRO(type(), m_buffer, len);
 #ifdef _DEBUG
@@ -1130,7 +1170,8 @@ namespace stored {
 		 * \brief Returns a #stored::Variable that corresponds to this Variant.
 		 * \details Only call this function when it #isVariable() and the #type() matches \p T.
 		 */
-		template <typename T> Variable<T,Container> variable() const noexcept {
+		template <typename T> Variable<T,Container> variable() const noexcept
+		{
 			if(unlikely(!valid()))
 				return Variable<T,Container>();
 
@@ -1146,7 +1187,8 @@ namespace stored {
 		 * \brief Returns a #stored::Function that corresponds to this Variant.
 		 * \details Only call this function when it #isFunction() and the #type() matches \p T.
 		 */
-		template <typename T> Function<T,Container> function() const noexcept {
+		template <typename T> Function<T,Container> function() const noexcept
+		{
 			if(unlikely(!valid()))
 				return Function<T,Container>();
 
@@ -1162,7 +1204,8 @@ namespace stored {
 		 * \details Only call this function when it #isVariable().
 		 * \see your store's \c bufferToKey()
 		 */
-		typename Container::Key key() const noexcept {
+		typename Container::Key key() const noexcept
+		{
 			stored_assert(isVariable());
 			return container()->bufferToKey(m_buffer);
 		}
@@ -1170,7 +1213,8 @@ namespace stored {
 		/*!
 		 * \brief Checks if this Variant points to the same object as the given one.
 		 */
-		bool operator==(Variant const& rhs) const noexcept {
+		bool operator==(Variant const& rhs) const noexcept
+		{
 			if(valid() != rhs.valid())
 				return false;
 			if(!valid())
@@ -1244,7 +1288,8 @@ namespace stored {
 		 * \brief Apply the stored object properties to a container.
 		 */
 		template <typename Container>
-		Variant<Container> apply(Container& container) const noexcept {
+		Variant<Container> apply(Container& container) const noexcept
+		{
 			static_assert(sizeof(Variant<Container>) == sizeof(Variant<>), "");
 
 			if(!valid())
@@ -1262,7 +1307,8 @@ namespace stored {
 		 * \brief Get the typed variable corresponding to this variant.
 		 */
 		template <typename T, typename Container>
-		Variable<T,Container> variable(Container& container) const noexcept {
+		Variable<T,Container> variable(Container& container) const noexcept
+		{
 			return apply<Container>(container).template variable<T>();
 		}
 
@@ -1270,7 +1316,8 @@ namespace stored {
 		 * \brief Get the typed variable corresponding to this variant, which is not bound to a specific store yet.
 		 */
 		template <typename T, typename Container>
-		constexpr14 FreeVariable<T,Container> variable() const noexcept {
+		constexpr14 FreeVariable<T,Container> variable() const noexcept
+		{
 			if(!valid())
 				return FreeVariable<T,Container>();
 
@@ -1286,7 +1333,8 @@ namespace stored {
 		 * \brief Get the typed function corresponding to this variant.
 		 */
 		template <typename T, typename Container>
-		Variable<T,Container> function(Container& container) const noexcept {
+		Variable<T,Container> function(Container& container) const noexcept
+		{
 			return apply<Container>(container).template function<T>();
 		}
 
@@ -1294,7 +1342,8 @@ namespace stored {
 		 * \brief Get the typed function corresponding to this variant, which is not bound to a specific store yet.
 		 */
 		template <typename T, typename Container>
-		constexpr14 FreeFunction<T,Container> function() const noexcept {
+		constexpr14 FreeFunction<T,Container> function() const noexcept
+		{
 			if(!valid())
 				return FreeFunction<T,Container>();
 
@@ -1335,7 +1384,8 @@ namespace stored {
 		int& container() const noexcept { stored_assert(valid()); std::terminate(); }
 
 		/*! \copybrief Variant::operator==() */
-		bool operator==(Variant const& rhs) const noexcept {
+		bool operator==(Variant const& rhs) const noexcept
+		{
 			if(valid() != rhs.valid())
 				return false;
 			if(!valid())
@@ -1375,13 +1425,15 @@ namespace stored {
 
 	namespace impl {
 		template <typename StoreBase, typename T>
-		static constexpr inline void* objectToVoidPtr(T& o) noexcept {
+		static constexpr inline void* objectToVoidPtr(T& o) noexcept
+		{
 			static_assert(sizeof(T) == sizeof(typename StoreBase::Objects), "");
 			return (void*)&o;
 		}
 
 		template <typename StoreBase, typename T>
-		static constexpr inline StoreBase& objectToStore(T& o) noexcept {
+		static constexpr inline StoreBase& objectToStore(T& o) noexcept
+		{
 			static_assert(sizeof(T) == sizeof(typename StoreBase::Objects), "");
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return *static_cast<StoreBase*>(reinterpret_cast<typename StoreBase::Objects*>(objectToVoidPtr<StoreBase,T>(o)));
@@ -1399,18 +1451,22 @@ namespace stored {
 			typedef Variable<type,Implementation> Variable_type;
 			typedef Variant<Implementation> Variant_type;
 
-			constexpr Variable_type variable() const noexcept {
+			constexpr Variable_type variable() const noexcept
+			{
 				static_assert(size_ == sizeof(type), "");
 				return objectToStore<Store>(*this).template _variable<type>(offset);
 			}
+
 			// NOLINTNEXTLINE(hicpp-explicit-conversions)
 			constexpr operator Variable_type() const noexcept { return variable(); }
 
 			constexpr Variant_type variant() const noexcept { return Variant_type(variable()); }
+
 			// NOLINTNEXTLINE(hicpp-explicit-conversions)
 			constexpr operator Variant_type() const noexcept { return variant(); }
 
 			type get() const noexcept { return variable().get(); }
+
 			// NOLINTNEXTLINE(hicpp-explicit-conversions)
 			operator type() const noexcept { return get(); }
 
@@ -1418,8 +1474,10 @@ namespace stored {
 			U as() const noexcept { return saturated_cast<U>(get()); }
 
 			void set(type value) noexcept { variable().set(value); }
+
 			// NOLINTNEXTLINE(cppcoreguidelines-c-copy-assignment-signature,misc-unconventional-assign-operator)
-			Variable_type operator=(type value) noexcept {
+			Variable_type operator=(type value) noexcept
+			{
 				Variable_type v = variable();
 				v.set(value);
 				return v;
@@ -1443,17 +1501,21 @@ namespace stored {
 			typedef Function<type,Implementation> Function_type;
 			typedef Variant<Implementation> Variant_type;
 
-			constexpr Function_type function() const noexcept {
+			constexpr Function_type function() const noexcept
+			{
 				return objectToStore<Store>(*this).template _function<type>(F);
 			}
+
 			// NOLINTNEXTLINE(hicpp-explicit-conversions)
 			constexpr operator Function_type() const noexcept { return function(); }
 
 			constexpr Variant_type variant() const noexcept { return Variant_type(function()); }
+
 			// NOLINTNEXTLINE(hicpp-explicit-conversions)
 			constexpr operator Variant_type() const noexcept { return variant(); }
 
-			type get() const {
+			type get() const
+			{
 				type v;
 				call(false, v);
 				return v;
@@ -1467,19 +1529,23 @@ namespace stored {
 			template <typename U>
 			U as() const { return saturated_cast<U>(get()); }
 
-			size_t get(void* dst, size_t UNUSED_PAR(len)) const {
+			size_t get(void* dst, size_t UNUSED_PAR(len)) const
+			{
 				stored_assert(len == sizeof(type));
 				stored_assert(dst);
 				call(false, *static_cast<type*>(dst));
 				return sizeof(type);
 			}
+
 			type operator()() const { return get(); }
 
-			void set(type value) {
+			void set(type value)
+			{
 				call(true, value);
 			}
 
-			size_t set(void* src, size_t UNUSED_PAR(len)) {
+			size_t set(void* src, size_t UNUSED_PAR(len))
+			{
 				stored_assert(len == sizeof(type));
 				stored_assert(src);
 				call(true, *static_cast<type*>(src));
@@ -1488,7 +1554,8 @@ namespace stored {
 
 			void operator()(type value) { function()(value); }
 
-			StoreFunction& operator=(type value) {
+			StoreFunction& operator=(type value)
+			{
 				set(value);
 				return *this;
 			}
@@ -1496,11 +1563,13 @@ namespace stored {
 			static constexpr size_t size() noexcept { return sizeof(type); }
 
 		protected:
-			constexpr Implementation& implementation() const noexcept {
+			constexpr Implementation& implementation() const noexcept
+			{
 				return static_cast<Implementation&>(objectToStore<Store>(*this));
 			}
 
-			void call(bool set, type& value) const {
+			void call(bool set, type& value) const
+			{
 				FunctionMap<Implementation,F>::call(implementation(), set, value);
 			}
 		};
@@ -1515,9 +1584,11 @@ namespace stored {
 		public:
 			typedef Variant<Implementation> Variant_type;
 
-			constexpr Variant_type variant() const noexcept {
+			constexpr Variant_type variant() const noexcept
+			{
 				return objectToStore<Store>(*this)._variantv(type_, offset, size_);
 			}
+
 			// NOLINTNEXTLINE(hicpp-explicit-conversions)
 			constexpr operator Variant_type() const noexcept { return variant(); }
 
@@ -1542,9 +1613,11 @@ namespace stored {
 		public:
 			typedef Variant<Implementation> Variant_type;
 
-			constexpr Variant_type variant() const noexcept {
+			constexpr Variant_type variant() const noexcept
+			{
 				return objectToStore<Store>(*this)._variantf(type_, F, size_);
 			}
+
 			// NOLINTNEXTLINE(hicpp-explicit-conversions)
 			constexpr operator Variant_type() const noexcept { return variant(); }
 

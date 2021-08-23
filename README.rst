@@ -1,4 +1,4 @@
-.. image:: https://github.com/DEMCON/libstored/workflows/CI/badge.svg
+﻿.. image:: https://github.com/DEMCON/libstored/workflows/CI/badge.svg
    :alt: CI
    :target: https://github.com/DEMCON/libstored/actions?query=workflow%3ACI
 
@@ -408,8 +408,9 @@ effectively::
 
 	mkdir build
 	cd build
-	cmake ..
+	cmake .. -DCMAKE_INSTALL_PREFIX=dist
 	cmake --build .
+   cmake --build . --target install
 
 ``scripts/build`` takes an optional argument, which allows you to specify the
 ``CMAKE_BUILD_TYPE``.  If not specified, Debug is assumed.
@@ -458,6 +459,10 @@ generate stuff for you.  This is how to integrate it in your project:
   for your FPGA, and source the generated file ``rtl/vivado.tcl``. This will add
   all relevant files to your project. Afterwards, just save the project as
   usually; the ``rtl/vivado.tcl`` file is not needed anymore.
+- If you ran the ``install`` target, a
+  ``share/cmake/libstored/libstored.cmake`` file is generated.  If you include
+  this file in another cmake project, you import all generated libraries as
+  static libraries. See the ``examples/installed`` example how to do this.
 
 Check out the examples of libstored, which are all independent applications
 with their own generated store.

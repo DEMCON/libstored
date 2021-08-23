@@ -16,28 +16,33 @@ public:
 
 	void __some_function(bool set, int32_t& value) { if(!set) value = 42; }
 
-	void __hookEntryX(stored::Type::type type, void* buffer, size_t len) noexcept {
+	void __hookEntryX(stored::Type::type type, void* buffer, size_t len) noexcept
+	{
 		printf("entry_x(%u, %p, %zu) key=%" PRIxPTR "\n",
 			(unsigned)type, buffer, len, bufferToKey(buffer));
 	}
 
-	void __hookExitX(stored::Type::type type, void* buffer, size_t len, bool changed) noexcept {
+	void __hookExitX(stored::Type::type type, void* buffer, size_t len, bool changed) noexcept
+	{
 		printf("exit_x(%u, %p, %zu, %schanged) key=%" PRIxPTR "\n",
 			(unsigned)type, buffer, len, changed ? "" : "un", bufferToKey(buffer));
 	}
 
-	void __hookEntryRO(stored::Type::type type, void* buffer, size_t len) noexcept {
+	void __hookEntryRO(stored::Type::type type, void* buffer, size_t len) noexcept
+	{
 		printf("entry_ro(%u, %p, %zu) key=%" PRIxPTR "\n",
 			(unsigned)type, buffer, len, bufferToKey(buffer));
 	}
 
-	void __hookExitRO(stored::Type::type type, void* buffer, size_t len) noexcept {
+	void __hookExitRO(stored::Type::type type, void* buffer, size_t len) noexcept
+	{
 		printf("exit_ro(%u, %p, %zu) key=%" PRIxPTR "\n",
 			(unsigned)type, buffer, len, bufferToKey(buffer));
 	}
 };
 
-int main() {
+int main()
+{
 	SyncedExampleHooks store;
 
 	printf("Function access (no hooks)\n");

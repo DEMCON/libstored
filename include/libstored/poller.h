@@ -233,7 +233,8 @@ namespace stored {
 			HANDLE h;
 #endif
 
-			bool operator==(Event const& e) const {
+			bool operator==(Event const& e) const
+			{
 				if(type != e.type)
 					return false;
 

@@ -21,7 +21,8 @@
 
 namespace {
 
-TEST(ScrachPad, Alloc) {
+TEST(ScrachPad, Alloc)
+{
 	stored::ScratchPad<> spm;
 
 	EXPECT_EQ(spm.chunks(), 0);
@@ -52,12 +53,14 @@ TEST(ScrachPad, Alloc) {
 }
 
 template <size_t S>
-void spmInfo(stored::ScratchPad<S>& spm) {
+void spmInfo(stored::ScratchPad<S>& spm)
+{
 	printf("%p: buffer=%p size=%zu cap=%zu max=%zu chunks=%zu\n",
 		&spm, spm.template alloc<char>(0), spm.size(), spm.capacity(), spm.max(), spm.chunks());
 }
 
-TEST(ScratchPad, Reset) {
+TEST(ScratchPad, Reset)
+{
 	stored::ScratchPad<> spm;
 
 	// Empty reset.
@@ -92,7 +95,8 @@ TEST(ScratchPad, Reset) {
 	EXPECT_GE(spm.capacity(), total);
 }
 
-TEST(ScratchPad, Alignment) {
+TEST(ScratchPad, Alignment)
+{
 	stored::ScratchPad<> spm;
 	spm.reserve(sizeof(int) * 2 + sizeof(double) * 2);
 
@@ -121,7 +125,8 @@ TEST(ScratchPad, Alignment) {
 	EXPECT_EQ(spm.size(), sizeof(int) * 2 + sizeof(void*) + sizeof(double));
 }
 
-TEST(ScratchPad, Snapshot) {
+TEST(ScratchPad, Snapshot)
+{
 	stored::ScratchPad<> spm;
 	spm.reserve(sizeof(double) * 8);
 
@@ -152,7 +157,8 @@ TEST(ScratchPad, Snapshot) {
 	EXPECT_EQ(spm.chunks(), 1);
 }
 
-TEST(ScratchPad, Shrink) {
+TEST(ScratchPad, Shrink)
+{
 	stored::ScratchPad<> spm;
 
 	auto i = spm.alloc<int>();
@@ -180,7 +186,8 @@ TEST(ScratchPad, Shrink) {
 	EXPECT_EQ(spm.capacity(), 0);
 }
 
-TEST(ScratchPad, Stress) {
+TEST(ScratchPad, Stress)
+{
 	stored::ScratchPad<> spm;
 
 	srand((unsigned int)time(NULL));
@@ -198,5 +205,5 @@ TEST(ScratchPad, Stress) {
 	spmInfo(spm);
 }
 
-}
+} // namespace
 

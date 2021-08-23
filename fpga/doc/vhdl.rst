@@ -1,4 +1,4 @@
-VHDL
+﻿VHDL
 ====
 
 The generated VHDL entity for a store contains the following:

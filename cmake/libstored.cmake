@@ -21,7 +21,7 @@ set(libstored_dir "${libstored_dir_}" CACHE INTERNAL "")
 
 # Create the libstored library based on the generated files.
 function(libstored_lib libprefix libpath)
-	add_library(${libprefix}libstored
+	add_library(${libprefix}libstored STATIC
 		${libstored_dir}/include/stored
 		${libstored_dir}/include/stored.h
 		${libstored_dir}/include/stored_config.h
@@ -53,14 +53,19 @@ function(libstored_lib libprefix libpath)
 		target_sources(${libprefix}libstored PRIVATE
 			${libpath}/include/${m}.h
 			${libpath}/src/${m}.cpp)
+
+		set_property(TARGET ${libprefix}libstored APPEND PROPERTY PUBLIC_HEADER ${libpath}/include/${m}.h)
+		install(DIRECTORY ${libpath}/doc/ DESTINATION share/libstored)
 	endforeach()
 
-	target_include_directories(${libprefix}libstored
-		PUBLIC ${libstored_dir}/include
-		PUBLIC ${libpath}/include
+	target_include_directories(${libprefix}libstored PUBLIC
+		$<BUILD_INTERFACE:${libstored_dir}/include>
+		$<BUILD_INTERFACE:${libpath}/include>
+		$<INSTALL_INTERFACE:include>
 	)
 
-	set_target_properties(${libprefix}libstored PROPERTIES OUTPUT_NAME "stored")
+	string(REGEX REPLACE "^(.*)-$" "stored-\\1" libname ${libprefix})
+	set_target_properties(${libprefix}libstored PROPERTIES OUTPUT_NAME ${libname})
 
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		target_compile_definitions(${libprefix}libstored PUBLIC -D_DEBUG)
@@ -87,10 +92,7 @@ function(libstored_lib libprefix libpath)
 
 	if(LIBSTORED_HAVE_LIBZMQ)
 		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_HAVE_ZMQ)
-		target_include_directories(${libprefix}libstored
-			PRIVATE $<TARGET_PROPERTY:libzmq,INTERFACE_INCLUDE_DIRECTORIES>
-		)
-		target_link_libraries(${libprefix}libstored INTERFACE libzmq)
+		target_link_libraries(${libprefix}libstored PUBLIC libzmq)
 	endif()
 
 	if(WIN32)
@@ -98,6 +100,7 @@ function(libstored_lib libprefix libpath)
 	endif()
 
 	if(LIBSTORED_HAVE_HEATSHRINK)
+		target_compile_definitions(${libprefix}libstored PUBLIC STORED_HAVE_HEATSHRINK)
 		target_link_libraries(${libprefix}libstored PUBLIC heatshrink)
 	endif()
 
@@ -106,8 +109,8 @@ function(libstored_lib libprefix libpath)
 		if(CLANG_TIDY_EXE AND (NOT CMAKE_CXX_STANDARD OR NOT CMAKE_CXX_STANDARD EQUAL 98))
 			# It seems that if clang is not installed, clang-tidy doesn't work properly.
 			find_program(CLANG_EXE NAMES "clang" DOC "Path to clang executable")
-			if(CLANG_EXE)
-				option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ON)
+			if(CLANG_EXE AND LIBSTORED_DEV)
+				option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ${LIBSTORED_DEV_OPTION})
 			else()
 				option(LIBSTORED_CLANG_TIDY "Run clang-tidy" OFF)
 			endif()
@@ -165,8 +168,7 @@ function(libstored_lib libprefix libpath)
 				)
 				set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
 					"--extra-arg=-I${libstored_dir}/include"
-					"--extra-arg=-I${libstored_dir}/extern/libzmq/include"
-					"--extra-arg=-I${libstored_dir}/extern/heatshrink"
+					"--extra-arg=-I${CMAKE_BINARY_DIR}/include"
 					"--extra-arg=-I${libpath}/include"
 					"--header-filter=.*include/libstored.*"
 					"--warnings-as-errors=*"
@@ -210,6 +212,10 @@ function(libstored_lib libprefix libpath)
 		else()
 			target_link_libraries(${libprefix}libstored INTERFACE "-fsanitize=undefined")
 		endif()
+	endif()
+
+	if(LIBSTORED_INSTALL_STORE_LIBS)
+		install(TARGETS ${libprefix}libstored EXPORT libstored ARCHIVE PUBLIC_HEADER)
 	endif()
 endfunction()
 
@@ -304,4 +310,13 @@ function(libstored_generate target) # add all other models as varargs
 
 	libstored_copy_dlls(${target})
 endfunction()
+
+# libzth does not support installing yet...
+if(NOT TARGET libzth)
+	configure_file(${libstored_dir}/cmake/libstored.cmake.in ${CMAKE_BINARY_DIR}/libstored.cmake)
+	install(DIRECTORY ${libstored_dir}/include/ DESTINATION include FILES_MATCHING PATTERN "*.h")
+	install(FILES ${libstored_dir}/include/stored DESTINATION include)
+	install(EXPORT libstored DESTINATION share/libstored/cmake)
+	install(FILES ${CMAKE_BINARY_DIR}/libstored.cmake DESTINATION share/cmake/libstored)
+endif()
 

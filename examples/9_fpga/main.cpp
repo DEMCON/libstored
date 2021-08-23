@@ -22,7 +22,8 @@ public:
 	ExampleFpga2() is_default
 };
 
-int main() {
+int main()
+{
 	puts(stored::banner());
 
 	ExampleFpga exampleFpga;

@@ -60,7 +60,8 @@ public:
 		/*!
 		 * \brief Returns the short directory.
 		 */
-		static constexpr uint8_t const* shortDirectory() noexcept {
+		static constexpr uint8_t const* shortDirectory() noexcept
+		{
 			return (uint8_t const*)directory;
 		}
 #else
@@ -89,7 +90,8 @@ public:
 	template <typename Implementation>
 	struct {{store.name}}FunctionMap<Implementation,{{o.f}}> {
 		typedef {{o|ctype}} type;
-		static inline void call(Implementation& store, bool set, type& value) {
+		static inline void call(Implementation& store, bool set, type& value)
+		{
 			store.__{{o.cname}}(set, value);
 		}
 	};
@@ -248,7 +250,8 @@ public:
 		 * For other types, use #_variantv(Type::type, size_t, size_t).
 		 */
 		template <typename T>
-		constexpr Variable<T,Implementation> _variable(size_t offset) noexcept {
+		constexpr Variable<T,Implementation> _variable(size_t offset) noexcept
+		{
 			stored_assert(offset + sizeof(T) <= sizeof(m_data.buffer));
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			return Variable<T,Implementation>(implementation(), *reinterpret_cast<T*>(&buffer()[offset]));
@@ -264,7 +267,8 @@ public:
 		 * For other types, use #_variantf(Type::type, unsigned int, size_t).
 		 */
 		template <typename T>
-		constexpr Function<T,Implementation> _function(unsigned int f) noexcept {
+		constexpr Function<T,Implementation> _function(unsigned int f) noexcept
+		{
 			return Function<T,Implementation>(implementation(), f);
 		}
 
@@ -277,7 +281,8 @@ public:
 		/*!
 		 * \brief Returns the Variant for a variable.
 		 */
-		Variant<Implementation> _variantv(Type::type type, size_t offset, size_t len) noexcept {
+		Variant<Implementation> _variantv(Type::type type, size_t offset, size_t len) noexcept
+		{
 			stored_assert(offset + len < sizeof(m_data.buffer));
 			stored_assert(!Type::isFunction(type));
 			return Variant<Implementation>(implementation(), type, &buffer()[offset], len);
@@ -289,7 +294,8 @@ public:
 		/*!
 		 * \brief Returns the Variant for a function.
 		 */
-		Variant<Implementation> _variantf(Type::type type, unsigned int f, size_t len) noexcept {
+		Variant<Implementation> _variantf(Type::type type, unsigned int f, size_t len) noexcept
+		{
 			stored_assert(Type::isFunction(type));
 			return Variant<Implementation>(implementation(), type, f, len);
 		}
@@ -312,7 +318,8 @@ public:
 		 * call to the function identifier to an actual function call within
 		 * the Implementation.
 		 */
-		size_t callback(bool UNUSED_PAR(set), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len), unsigned int UNUSED_PAR(f)) {
+		size_t callback(bool UNUSED_PAR(set), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len), unsigned int UNUSED_PAR(f))
+		{
 {% if store.objects|hasfunction %}
 			switch(f) {
 {%   for o in store.objects %}
@@ -380,7 +387,8 @@ public:
 		 * the data format matches the expected type. However, one cannot
 		 * process data if the key is not set yet in the map.
 		 */
-		Key bufferToKey(void const* buffer) const noexcept {
+		Key bufferToKey(void const* buffer) const noexcept
+		{
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 			// cppcheck-suppress assertWithSideEffect
 			stored_assert((uintptr_t)buffer >= (uintptr_t)this->buffer() && (uintptr_t)buffer < (uintptr_t)this->buffer() + sizeof(m_data.buffer));
@@ -393,7 +401,8 @@ public:
 		 * \brief Hook when exclusive access to a given variable is to be acquired.
 		 * \details Must be followed by #hookExitX().
 		 */
-		void hookEntryX(Type::type type, void* buffer, size_t len) noexcept {
+		void hookEntryX(Type::type type, void* buffer, size_t len) noexcept
+		{
 			// This function is called by Variants, and alike, but the implementation
 			// has to friend all of them if it overrides this function.
 			// To ease integration give a default implementation that forwards the hook.
@@ -403,21 +412,24 @@ public:
 		 * \brief Hook when exclusive access to a given variable is released.
 		 * \details Must be preceded by #hookEntryX().
 		 */
-		void hookExitX(Type::type type, void* buffer, size_t len, bool changed) noexcept {
+		void hookExitX(Type::type type, void* buffer, size_t len, bool changed) noexcept
+		{
 			implementation().__hookExitX(type, buffer, len, changed); }
 
 		/*!
 		 * \brief Hook when read-only access to a given variable is to be acquired.
 		 * \details Must be followed by #hookExitRO().
 		 */
-		void hookEntryRO(Type::type type, void* buffer, size_t len) noexcept {
+		void hookEntryRO(Type::type type, void* buffer, size_t len) noexcept
+		{
 			implementation().__hookEntryRO(type, buffer, len); }
 
 		/*!
 		 * \brief Hook when read-only access to a given variable is released.
 		 * \details Must be preceded by #hookEntryRO().
 		 */
-		void hookExitRO(Type::type type, void* buffer, size_t len) noexcept {
+		void hookExitRO(Type::type type, void* buffer, size_t len) noexcept
+		{
 			implementation().__hookExitRO(type, buffer, len); }
 
 		/*!
@@ -449,7 +461,8 @@ public:
 		/*!
 		 * \brief Array-lookup accessor for {{a.name}}
 		 */
-		Variant<Implementation> {{a.c_decl()}} noexcept {
+		Variant<Implementation> {{a.c_decl()}} noexcept
+		{
 {{a.c_impl()}}		}
 
 {% endfor %}
@@ -468,7 +481,8 @@ public:
 		 * \brief Finds an object with the given name.
 		 * \return the object, or an invalid #stored::Variant if not found.
 		 */
-		Variant<Implementation> find(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
+		Variant<Implementation> find(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept
+		{
 			return stored::find(implementation(), shortDirectory(), name, len);
 		}
 
@@ -480,7 +494,8 @@ public:
 		 * store instance. This function is constexpr for C++14.
 		 */
 		template <typename T>
-		static constexpr14 FreeVariable<T,Implementation> freeVariable(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
+		static constexpr14 FreeVariable<T,Implementation> freeVariable(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept
+		{
 			return stored::impl::find({{store.name}}Data::shortDirectory(), name, len).template variable<T,Implementation>();
 		}
 
@@ -490,7 +505,8 @@ public:
 		 * The variable, when it exists, must have the given (fixed) type.
 		 */
 		template <typename T>
-		Variable<T,Implementation> variable(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
+		Variable<T,Implementation> variable(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept
+		{
 			return freeVariable(name, len).apply(*this);
 		}
 
@@ -502,7 +518,8 @@ public:
 		 * store instance. This function is constexpr for C++14.
 		 */
 		template <typename T>
-		static constexpr14 FreeFunction<T,Implementation> freeFunction(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
+		static constexpr14 FreeFunction<T,Implementation> freeFunction(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept
+		{
 			return stored::impl::find({{store.name}}Data::shortDirectory(), name, len).template function<T,Implementation>();
 		}
 
@@ -512,7 +529,8 @@ public:
 		 * The function, when it exists, must have the given (fixed) type.
 		 */
 		template <typename T>
-		Function<T,Implementation> function(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept {
+		Function<T,Implementation> function(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept
+		{
 			return freeFunction(name, len).apply(*this);
 		}
 
@@ -521,7 +539,8 @@ public:
 		 * \see stored::list()
 		 */
 		template <typename F>
-		void list(F f, void* arg, char const* prefix = nullptr) noexcept {
+		void list(F f, void* arg, char const* prefix = nullptr) noexcept
+		{
 			stored::list(&implementation(), buffer(), longDirectory(), f, arg, prefix);
 		}
 
@@ -542,7 +561,8 @@ public:
 		 *
 		 * Generating the map may be expensive and the result is not cached.
 		 */
-		ObjectMap map(char const* prefix = nullptr) {
+		ObjectMap map(char const* prefix = nullptr)
+		{
 			ObjectMap m;
 			list(&mapCallback, &m, prefix);
 			return m;
@@ -552,7 +572,8 @@ public:
 		/*!
 		 * \brief Callback for #map().
 		 */
-		static void mapCallback(void* container, char const* name, Type::type type, void* buffer, size_t len, void* arg) {
+		static void mapCallback(void* container, char const* name, Type::type type, void* buffer, size_t len, void* arg)
+		{
 			ObjectMap& m = *static_cast<ObjectMap*>(arg);
 			Implementation& impl = *static_cast<Implementation*>(container);
 			m[name] =

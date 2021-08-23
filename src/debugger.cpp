@@ -39,7 +39,8 @@ struct ListCmdCallbackArg {
 	size_t callbacks;
 
 	/*! \brief Invoke the callback. */
-	void operator()(void const* buf, size_t len) {
+	void operator()(void const* buf, size_t len)
+	{
 		response->encode(buf, len, false);
 		++callbacks;
 	}
@@ -75,7 +76,8 @@ Debugger::~Debugger() noexcept
 }
 
 /*! \copydoc stored::DebugStoreBase::find() */
-DebugVariant Debugger::find(char const* name, size_t len) const {
+DebugVariant Debugger::find(char const* name, size_t len) const
+{
 	if(unlikely(!name || !len)) {
 notfound:
 		return DebugVariant();
@@ -152,7 +154,8 @@ gotit:
  *
  * Don't use this function directly; use #map(Store&, char const*) instead.
  */
-void Debugger::map(DebugStoreBase* store, char const* name) {
+void Debugger::map(DebugStoreBase* store, char const* name)
+{
 	if(!name && store)
 		name = store->name();
 
@@ -182,7 +185,8 @@ void Debugger::map(DebugStoreBase* store, char const* name) {
  *
  * \see #map()
  */
-void Debugger::unmap(char const* name) {
+void Debugger::unmap(char const* name)
+{
 	StoreMap::iterator it = m_map.find(name);
 	if(it == m_map.end())
 		return;
@@ -194,35 +198,40 @@ void Debugger::unmap(char const* name) {
 /*!
  * \brief Returns the mapped stores.
  */
-Debugger::StoreMap const& Debugger::stores() const {
+Debugger::StoreMap const& Debugger::stores() const
+{
 	return m_map;
 }
 
 /*!
  * \brief Returns the registered aliases.
  */
-Debugger::AliasMap const& Debugger::aliases() const {
+Debugger::AliasMap const& Debugger::aliases() const
+{
 	return m_aliases;
 }
 
 /*!
  * \copydoc aliases() const
  */
-Debugger::AliasMap& Debugger::aliases() {
+Debugger::AliasMap& Debugger::aliases()
+{
 	return m_aliases;
 }
 
 /*!
  * \brief Returns the defined macros.
  */
-Debugger::MacroMap const& Debugger::macros() const {
+Debugger::MacroMap const& Debugger::macros() const
+{
 	return m_macros;
 }
 
 /*!
  * \copydoc macros() const
  */
-Debugger::MacroMap& Debugger::macros() {
+Debugger::MacroMap& Debugger::macros()
+{
 	return m_macros;
 }
 
@@ -231,7 +240,8 @@ Debugger::MacroMap& Debugger::macros() {
  * \param f the callback to invoke
  * \param arg an arbitrary argument to be passed to \p f
  */
-void Debugger::list(ListCallbackArg* f, void* arg) const {
+void Debugger::list(ListCallbackArg* f, void* arg) const
+{
 	if(!Config::DebuggerListPrefixAlways && m_map.size() == 1)
 		m_map.begin()->second->list(f, arg);
 	else
@@ -249,7 +259,8 @@ void Debugger::list(ListCallbackArg* f, void* arg) const {
  * \param len the size of the buffer of \p list
  * \param reserve when allocating memory for \p list, add this number of bytes
  */
-void Debugger::capabilities(char*& caps, size_t& len, size_t reserve) {
+void Debugger::capabilities(char*& caps, size_t& len, size_t reserve)
+{
 	size_t const maxlen = 16;
 	caps = spm().alloc<char>(maxlen + reserve);
 	len = 0;
@@ -293,7 +304,8 @@ void Debugger::capabilities(char*& caps, size_t& len, size_t reserve) {
  * \brief Returns the identification.
  * \see #setIdentification()
  */
-char const* Debugger::identification() {
+char const* Debugger::identification()
+{
 	return m_identification;
 }
 
@@ -306,7 +318,8 @@ char const* Debugger::identification() {
  *
  * \see #identification()
  */
-void Debugger::setIdentification(char const* identification) {
+void Debugger::setIdentification(char const* identification)
+{
 	m_identification = identification;
 }
 
@@ -315,7 +328,8 @@ void Debugger::setIdentification(char const* identification) {
  * \return \c true if the version is pushed, \c false if not available
  * \see #setVersions()
  */
-bool Debugger::version(ProtocolLayer& response) {
+bool Debugger::version(ProtocolLayer& response)
+{
 	char* buf = nullptr;
 	size_t len = encodeHex(Config::DebuggerVersion, buf);
 	response.encode(buf, len, false);
@@ -340,11 +354,13 @@ bool Debugger::version(ProtocolLayer& response) {
  *
  * \see #version()
  */
-void Debugger::setVersions(char const* versions) {
+void Debugger::setVersions(char const* versions)
+{
 	m_versions = versions;
 }
 
-void Debugger::decode(void* buffer, size_t len) {
+void Debugger::decode(void* buffer, size_t len)
+{
 	process(buffer, len, *this);
 }
 
@@ -354,7 +370,8 @@ void Debugger::decode(void* buffer, size_t len) {
  * \param len the length of \p frame
  * \param response the layer to push responses into
  */
-void Debugger::process(void const* frame, size_t len, ProtocolLayer& response) {
+void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
+{
 	if(unlikely(!frame || len == 0))
 		return;
 
@@ -821,7 +838,8 @@ error:
 /*!
  * \brief Helper layer to merge responses for the macro response.
  */
-class FrameMerger : public ProtocolLayer {
+class FrameMerger : public ProtocolLayer
+{
 public:
 	typedef ProtocolLayer base;
 
@@ -829,7 +847,8 @@ public:
 		: base(nullptr, &down)
 	{}
 
-	void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final {
+	void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final
+	{
 		base::encode(buffer, len, false);
 	}
 
@@ -842,7 +861,8 @@ public:
  * \brief Execute the given macro, and produce the results in the given response.
  * \return \c false when the macro does not exist
  */
-bool Debugger::runMacro(char m, ProtocolLayer& response) {
+bool Debugger::runMacro(char m, ProtocolLayer& response)
+{
 	MacroMap::iterator it = macros().find(m);
 
 	if(it == macros().end())
@@ -880,7 +900,8 @@ bool Debugger::runMacro(char m, ProtocolLayer& response) {
 /*!
  * \brief Encode the 4 LSb into ASCII hex.
  */
-static char encodeNibble(uint8_t n) {
+static char encodeNibble(uint8_t n)
+{
 	n &= 0xfu;
 	return (char)((n < 10 ? '0' : 'a' - 10) + n);
 }
@@ -898,7 +919,8 @@ static char encodeNibble(uint8_t n) {
  * \param shortest if \c true, trim the 0 from the left, if the type allows that
  * \see #decodeHex()
  */
-void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortest) {
+void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortest)
+{
 	if(len == 0)
 		return;
 
@@ -956,7 +978,8 @@ void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortes
  * \param c the nibble to decode in ASCII hex
  * \param ok will be set to \c false when decoding failed. The value is untouched when decoding was successful.
  */
-static uint8_t decodeNibble(char c, bool& ok) {
+static uint8_t decodeNibble(char c, bool& ok)
+{
 	if(c >= '0' && c <= '9')
 		return (uint8_t)(c - '0');
 	if(c >= 'A' && c <= 'F')
@@ -972,7 +995,8 @@ static uint8_t decodeNibble(char c, bool& ok) {
  * \brief Decode ASCII hex.
  * \see #encodeHex(stored::Type::type, void*&, size_t&, bool)
  */
-bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len) {
+bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len)
+{
 	if(len == 0 || !data)
 		return false;
 
@@ -1024,14 +1048,16 @@ bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len) {
 /*!
  * \brief Returns a scratch pad memory.
  */
-ScratchPad<>& Debugger::spm() const {
+ScratchPad<>& Debugger::spm() const
+{
 	return m_scratchpad;
 }
 
 /*!
  * \brief #list() callback for processing #CmdList.
  */
-void Debugger::listCmdCallback(char const* name, DebugVariant& variant, void* arg) {
+void Debugger::listCmdCallback(char const* name, DebugVariant& variant, void* arg)
+{
 	stored_assert(arg);
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 	ListCmdCallbackArg* a = (ListCmdCallbackArg*)arg;
@@ -1061,7 +1087,8 @@ void Debugger::listCmdCallback(char const* name, DebugVariant& variant, void* ar
  * \brief Adds a zero-terminated string to the given stream.
  * \see #stream(char, char const*, size_t)
  */
-size_t Debugger::stream(char s, char const* data) {
+size_t Debugger::stream(char s, char const* data)
+{
 	return stream(s, data, strlen(data));
 }
 
@@ -1076,7 +1103,8 @@ size_t Debugger::stream(char s, char const* data) {
  * \return The length that was appended. On success, this equals \p len,
  *         but may be less if the buffer was full.
  */
-size_t Debugger::stream(char s, char const* data, size_t len) {
+size_t Debugger::stream(char s, char const* data, size_t len)
+{
 	if(Config::DebuggerStreams < 1)
 		return 0;
 
@@ -1099,7 +1127,8 @@ size_t Debugger::stream(char s, char const* data, size_t len) {
  * \brief Returns the stream buffer given a stream name.
  * \return the stream or \c nullptr when there is no stream with the given name
  */
-Stream<> const* Debugger::stream(char s) const {
+Stream<> const* Debugger::stream(char s) const
+{
 	StreamMap::const_iterator it = m_streams.find(s);
 	if(it == m_streams.end())
 		return nullptr;
@@ -1112,7 +1141,8 @@ Stream<> const* Debugger::stream(char s) const {
  * \param s the stream name
  * \param alloc when set to \c true, try to allocate the stream if it does not exist yet
  */
-Stream<>* Debugger::stream(char s, bool alloc) {
+Stream<>* Debugger::stream(char s, bool alloc)
+{
 	StreamMap::iterator it = m_streams.find(s);
 
 	if(it != m_streams.end()) {
@@ -1158,7 +1188,8 @@ Stream<>* Debugger::stream(char s, bool alloc) {
  * \param len the length of the resulting \p buffer
  * \return 0-terminated string of stream names (which equals \c buffer)
  */
-char const* Debugger::streams(void const*& buffer, size_t& len) {
+char const* Debugger::streams(void const*& buffer, size_t& len)
+{
 	size_t size = m_streams.size();
 	char* b = spm().alloc<char>(size + 1);
 
@@ -1183,7 +1214,8 @@ char const* Debugger::streams(void const*& buffer, size_t& len) {
  * The output of the macro is either completely or not at all put in the stream buffer;
  * it is not truncated.
  */
-void Debugger::trace() {
+void Debugger::trace()
+{
 	if(!tracing())
 		return;
 
@@ -1219,7 +1251,8 @@ void Debugger::trace() {
 /*!
  * \brief Checks if tracing is currently enabled and configured.
  */
-bool Debugger::tracing() const {
+bool Debugger::tracing() const
+{
 	return Config::DebuggerTrace && m_traceDecimate > 0;
 }
 

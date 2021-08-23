@@ -46,12 +46,14 @@ namespace stored {
 
 		template <typename B, typename pointer, bool trivial = std::is_trivially_copyable<typename B::value_type>::value>
 		struct buffer_ops {
-			static void set(B& buffer, pointer p, typename B::value_type const* x, size_t len) noexcept {
+			static void set(B& buffer, pointer p, typename B::value_type const* x, size_t len) noexcept
+			{
 				if(len)
 					memcpy(&buffer[p], x, len);
 			}
 
-			static void move(B& buffer, pointer dst, pointer src, size_t len) noexcept {
+			static void move(B& buffer, pointer dst, pointer src, size_t len) noexcept
+			{
 				if(len)
 					memmove(&buffer[dst], &buffer[src], len);
 			}
@@ -59,12 +61,14 @@ namespace stored {
 
 		template <typename B, typename pointer>
 		struct buffer_ops<B,pointer,false> {
-			static void set(B& buffer, pointer p, typename B::value_type const* x, size_t len) noexcept {
+			static void set(B& buffer, pointer p, typename B::value_type const* x, size_t len) noexcept
+			{
 				for(pointer i = 0; i < (pointer)len; i++)
 					buffer[p + i] = x[i];
 			}
 
-			static void move(B& buffer, pointer dst, pointer src, size_t len) noexcept {
+			static void move(B& buffer, pointer dst, pointer src, size_t len) noexcept
+			{
 				if(dst == src)
 					;
 				else if(dst < src)
@@ -77,12 +81,14 @@ namespace stored {
 		};
 
 		template <typename B, typename pointer>
-		void buffer_set(B& buffer, pointer p, typename B::value_type const* x, size_t len) noexcept {
+		void buffer_set(B& buffer, pointer p, typename B::value_type const* x, size_t len) noexcept
+		{
 			buffer_ops<B,pointer>::set(buffer, p, x, len);
 		}
 
 		template <typename B, typename pointer>
-		void buffer_move(B& buffer, pointer dst, pointer src, size_t len) noexcept {
+		void buffer_move(B& buffer, pointer dst, pointer src, size_t len) noexcept
+		{
 			buffer_ops<B,pointer>::move(buffer, dst, src, len);
 		}
 	}
@@ -113,7 +119,8 @@ namespace stored {
 		type const& operator[](pointer p) const noexcept { assert((size_t)p < size()); return m_buffer[p]; }
 		type& operator[](pointer p) noexcept { assert((size_t)p < size()); return m_buffer[p]; }
 
-		void set(pointer p, type const* x, size_t len) noexcept {
+		void set(pointer p, type const* x, size_t len) noexcept
+		{
 			assert(len <= size());
 			assert(p + (pointer)len >= p);
 			assert((size_t)p + len <= size());
@@ -122,7 +129,8 @@ namespace stored {
 			impl::buffer_set(m_buffer, p, x, len);
 		}
 
-		void move(pointer dst, pointer src, size_t len) noexcept {
+		void move(pointer dst, pointer src, size_t len) noexcept
+		{
 			assert(len <= size());
 			assert(dst + (pointer)len >= dst);
 			assert(src + (pointer)len >= src);
@@ -149,7 +157,8 @@ namespace stored {
 		type const& operator[](pointer p) const noexcept { assert((size_t)p < size()); return m_buffer[p]; }
 		type& operator[](pointer p) noexcept { assert((size_t)p < size()); return m_buffer[p]; }
 
-		void set(pointer p, type const* x, size_t len) noexcept {
+		void set(pointer p, type const* x, size_t len) noexcept
+		{
 			assert(p + len >= p);
 			assert((size_t)p + len <= size());
 			assert(x);
@@ -157,7 +166,8 @@ namespace stored {
 			impl::buffer_set(m_buffer, p, x, len);
 		}
 
-		void move(pointer dst, pointer src, size_t len) noexcept {
+		void move(pointer dst, pointer src, size_t len) noexcept
+		{
 			assert(dst + (pointer)len >= dst);
 			assert(src + (pointer)len >= src);
 			assert((size_t)dst + len < size());
@@ -188,12 +198,14 @@ namespace stored {
 			: m_fifo(&fifo), m_count(fifo.available())
 		{}
 
-		decltype(std::declval<Fifo>().front()) operator*() const noexcept {
+		decltype(std::declval<Fifo>().front()) operator*() const noexcept
+		{
 			assert(m_fifo);
 			return m_fifo->front();
 		}
 
-		PopIterator& operator++() noexcept {
+		PopIterator& operator++() noexcept
+		{
 			assert(m_fifo && m_count > 0);
 			m_count--;
 			m_fifo->pop_front();
@@ -214,7 +226,8 @@ namespace stored {
 #ifdef NDEBUG
 		constexpr
 #endif
-		bool operator==(PopIterator const& rhs) const noexcept {
+		bool operator==(PopIterator const& rhs) const noexcept
+		{
 #ifndef NDEBUG
 			assert(!m_fifo || !rhs.m_fifo || m_fifo == rhs.m_fifo);
 #endif
@@ -252,49 +265,59 @@ namespace stored {
 		typedef T type;
 		typedef typename Buffer_type::pointer pointer;
 
-		constexpr bool bounded() const noexcept {
+		constexpr bool bounded() const noexcept
+		{
 			return m_buffer.bounded();
 		}
 
-		constexpr size_t capacity() const noexcept {
+		constexpr size_t capacity() const noexcept
+		{
 			return bounded() ? m_buffer.size() : std::numeric_limits<size_t>::max();
 		}
 
-		constexpr size_t size() const noexcept {
+		constexpr size_t size() const noexcept
+		{
 			return m_buffer.size();
 		}
 
-		bool empty() const noexcept {
+		bool empty() const noexcept
+		{
 			return m_wp.load(std::memory_order_relaxed) == m_rp.load(std::memory_order_relaxed);
 		}
 
-		bool full() const noexcept {
+		bool full() const noexcept
+		{
 			return space() == 0;
 		}
 
-		size_t available() const noexcept {
+		size_t available() const noexcept
+		{
 			pointer wp = m_wp.load(std::memory_order_relaxed);
 			pointer rp = m_rp.load(std::memory_order_relaxed);
 			return wp >= rp ? wp - rp : wp + m_buffer.size() - rp;
 		}
 
-		size_t space() const noexcept {
+		size_t space() const noexcept
+		{
 			return capacity() - available() - 1;
 		}
 
-		type const& front() const noexcept {
+		type const& front() const noexcept
+		{
 			assert(!empty());
 			pointer rp = m_rp.load(ThreadSafe ? std::memory_order_consume : std::memory_order_relaxed);
 			return m_buffer[rp];
 		}
 
-		type& front() noexcept {
+		type& front() noexcept
+		{
 			assert(!empty());
 			pointer rp = m_rp.load(ThreadSafe ? std::memory_order_consume : std::memory_order_relaxed);
 			return m_buffer[rp];
 		}
 
-		void pop_front() noexcept {
+		void pop_front() noexcept
+		{
 			pointer wp = m_wp.load(std::memory_order_relaxed);
 			pointer rp = m_rp.load(std::memory_order_relaxed);
 			assert(wp != rp);
@@ -313,7 +336,8 @@ namespace stored {
 			}
 		}
 
-		void push_back(T const& x) {
+		void push_back(T const& x)
+		{
 			pointer wp;
 			pointer wp_next;
 			reserve_back(wp, wp_next);
@@ -323,7 +347,8 @@ namespace stored {
 		}
 
 		template <typename... Arg>
-		void emplace_back(Arg&&... arg) {
+		void emplace_back(Arg&&... arg)
+		{
 			pointer wp;
 			pointer wp_next;
 			reserve_back(wp, wp_next);
@@ -334,12 +359,14 @@ namespace stored {
 		}
 
 		template <typename It>
-		void push_back(It start, It end) {
+		void push_back(It start, It end)
+		{
 			for(; start != end; ++start)
 				push_back(*start);
 		}
 
-		void push_back(std::initializer_list<type> init) {
+		void push_back(std::initializer_list<type> init)
+		{
 			for(auto const& x : init)
 				push_back(x);
 		}
@@ -348,7 +375,8 @@ namespace stored {
 		constexpr iterator begin() noexcept { return PopIterator<Fifo>(*this); }
 		constexpr iterator end() noexcept { return PopIterator<Fifo>(); }
 
-		void clear() {
+		void clear()
+		{
 			if(!bounded()) {
 				assert(!ThreadSafe);
 				m_wp.store(0, std::memory_order_relaxed);
@@ -363,7 +391,8 @@ namespace stored {
 			UnboundedMoveThreshold = 64,
 		};
 
-		void reserve_back(pointer& wp, pointer& wp_next) {
+		void reserve_back(pointer& wp, pointer& wp_next)
+		{
 			assert(!full());
 
 			wp = m_wp.load(std::memory_order_relaxed);
@@ -411,7 +440,8 @@ namespace stored {
 		constexpr size_t size() const noexcept { return m_length; }
 
 #if STORED_cplusplus >= 201703L
-		constexpr operator std::string_view() const noexcept {
+		constexpr operator std::string_view() const noexcept
+		{
 			return std::string_view(data(), size());
 		}
 #endif
@@ -448,7 +478,8 @@ namespace stored {
 #endif
 
 	namespace impl {
-		static constexpr size_t defaultMessages(size_t capacity) {
+		static constexpr size_t defaultMessages(size_t capacity)
+		{
 			return capacity == 0 ? 0 : std::max<size_t>(2, capacity / sizeof(void*));
 		}
 	}
@@ -487,7 +518,8 @@ namespace stored {
 		constexpr size_t size() const noexcept { return m_buffer.size(); }
 		bool full() const noexcept { return m_msg.full() || space() == 0; }
 
-		size_t space() const noexcept {
+		size_t space() const noexcept
+		{
 			if(!bounded())
 				return std::numeric_limits<size_t>::max();
 			if(m_msg.full())
@@ -506,27 +538,32 @@ namespace stored {
 				return std::max(capacity - wp, rp) - partial;
 		};
 
-		const_type front() const noexcept {
+		const_type front() const noexcept
+		{
 			Msg const& msg = m_msg.front();
 			return const_type{&m_buffer[msg.first], msg.second};
 		}
 
-		type front() noexcept {
+		type front() noexcept
+		{
 			Msg& msg = m_msg.front();
 			return type{&m_buffer[msg.first], msg.second};
 		}
 
-		void pop_front() noexcept {
+		void pop_front() noexcept
+		{
 			Msg const& msg = m_msg.front();
 			m_rp.store((buffer_pointer)(msg.first + msg.second), std::memory_order_relaxed);
 			m_msg.pop_front();
 		}
 
-		bool push_back(char const* message, size_t length) {
+		bool push_back(char const* message, size_t length)
+		{
 			return push_back(const_type{message, length});
 		}
 
-		bool push_back(const_type const& message) {
+		bool push_back(const_type const& message)
+		{
 			if(m_msg.full())
 				return false;
 
@@ -537,7 +574,8 @@ namespace stored {
 			return true;
 		}
 
-		bool push_back() {
+		bool push_back()
+		{
 			if(m_msg.full())
 				return false;
 
@@ -546,7 +584,8 @@ namespace stored {
 		}
 
 	protected:
-		void push_back_partial() {
+		void push_back_partial()
+		{
 			assert(!m_msg.full());
 			buffer_pointer wp = m_wp.load(std::memory_order_relaxed);
 			assert(m_wp_partial >= wp);
@@ -555,15 +594,18 @@ namespace stored {
 		}
 
 	public:
-		void pop_back() {
+		void pop_back()
+		{
 			m_wp_partial = m_wp.load(std::memory_order_relaxed);
 		}
 
-		bool append_back(char const* message, size_t length) {
+		bool append_back(char const* message, size_t length)
+		{
 			return append_back(const_type{message, length});
 		}
 
-		bool append_back(const_type const& message) {
+		bool append_back(const_type const& message)
+		{
 			if(!message.size())
 				return true;
 
@@ -629,7 +671,8 @@ namespace stored {
 		}
 
 		template <typename It>
-		size_t push_back(It start, It end) {
+		size_t push_back(It start, It end)
+		{
 			size_t cnt = 0;
 
 			for(; start != end; ++start, ++cnt)
@@ -639,7 +682,8 @@ namespace stored {
 			return cnt;
 		}
 
-		size_t push_back(std::initializer_list<const_type> init) {
+		size_t push_back(std::initializer_list<const_type> init)
+		{
 			size_t cnt = 0;
 
 			for(auto const& x : init) {
@@ -655,7 +699,8 @@ namespace stored {
 		constexpr iterator begin() noexcept { return PopIterator<MessageFifo>(*this); }
 		constexpr iterator end() noexcept { return PopIterator<MessageFifo>(); }
 
-		void clear() {
+		void clear()
+		{
 			m_rp.store(m_wp_partial = m_wp.load(std::memory_order_relaxed), std::memory_order_relaxed);
 			m_msg.clear();
 		}
@@ -705,7 +750,8 @@ namespace stored {
 		 * FIFO is empty.  This value is not saved in #lastError(), as that
 		 * field is only used by #encode() and is not thread-safe.
 		 */
-		virtual int recv(long UNUSED_PAR(timeout_us) = 0) override {
+		virtual int recv(long UNUSED_PAR(timeout_us) = 0) override
+		{
 			assert(timeout_us == 0);
 
 			if(m_fifo.empty())
@@ -721,7 +767,8 @@ namespace stored {
 		/*!
 		 * \brief Pass all available messages int he FIFO to #decode().
 		 */
-		virtual void recvAll() {
+		virtual void recvAll()
+		{
 			for(auto m : m_fifo)
 				decode(m.data(), m.size());
 		}
@@ -734,7 +781,8 @@ namespace stored {
 		 *
 		 * \see #setOverflowHandler()
 		 */
-		virtual void encode(void const* buffer, size_t len, bool last = true) override {
+		virtual void encode(void const* buffer, size_t len, bool last = true) override
+		{
 			bool res = false;
 
 			do {
@@ -759,7 +807,8 @@ namespace stored {
 		 *
 		 * \see #setOverflowHandler()
 		 */
-		virtual bool overflow() {
+		virtual bool overflow()
+		{
 			if(m_overflowCallback) {
 				return m_overflowCallback();
 			} else {
@@ -774,7 +823,8 @@ namespace stored {
 		 * \brief Set the handler to be called by #overflow().
 		 */
 		template <typename F = std::nullptr_t, SFINAE_IS_FUNCTION(F, OverflowCallback, int) = 0>
-		void setOverflowHandler(F&& cb = nullptr) {
+		void setOverflowHandler(F&& cb = nullptr)
+		{
 			m_overflowCallback = std::forward<F>(cb);
 		}
 
@@ -782,12 +832,14 @@ namespace stored {
 		using base::encode;
 #endif
 
-		virtual void reset() override {
+		virtual void reset() override
+		{
 			base::reset();
 			setLastError(0);
 		}
 
-		virtual size_t mtu() const override {
+		virtual size_t mtu() const override
+		{
 			size_t res = base::mtu();
 			return res ? std::min(Capacity, res) : Capacity;
 		}

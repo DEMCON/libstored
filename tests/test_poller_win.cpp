@@ -26,7 +26,8 @@
 
 namespace {
 
-TEST(Poller, Win) {
+TEST(Poller, Win)
+{
 	puts(stored::banner());
 
 	EXPECT_TRUE(true);
@@ -67,7 +68,8 @@ TEST(Poller, Win) {
 }
 
 #if defined(STORED_HAVE_ZMQ)
-TEST(Poller, Zmq) {
+TEST(Poller, Zmq)
+{
 	void* context = zmq_ctx_new();
 	ASSERT_NE(context, nullptr);
 	void* rep = zmq_socket(context, ZMQ_REP);

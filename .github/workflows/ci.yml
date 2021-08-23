@@ -23,12 +23,12 @@ jobs:
           scripts/bootstrap.sh
           sudo apt install clang-tidy clang
       - name: build Debug
-        run: scripts/build.sh Debug
+        run: scripts/build.sh Debug -DLIBSTORED_DEV=ON
       - name: test
         run: cmake --build . -- test
         working-directory: build
       - name: build Release
-        run: scripts/build.sh Release
+        run: scripts/build.sh Release -DLIBSTORED_DEV=ON
       - name: test
         run: cmake --build . -- test
         working-directory: build
@@ -49,12 +49,12 @@ jobs:
       - name: bootstrap
         run: scripts/bootstrap.sh
       - name: build Debug
-        run: scripts/build.sh Debug
+        run: scripts/build.sh Debug -DLIBSTORED_TESTS=ON
       - name: test
         run: cmake --build . -- test
         working-directory: build
       - name: build Release
-        run: scripts/build.sh Release
+        run: scripts/build.sh Release -DLIBSTORED_TESTS=ON
       - name: test
         run: cmake --build . -- test
         working-directory: build
@@ -67,12 +67,14 @@ jobs:
       - name: bootstrap
         run: scripts\bootstrap.cmd
       - name: build Debug
-        run: scripts\build.cmd Debug
+        run: scripts\build.cmd Debug "-DLIBSTORED_DEV=ON"
+        shell: cmd
       - name: test
         run: cmake --build . -- test
         working-directory: build
       - name: build Release
-        run: scripts\build.cmd Release
+        run: scripts\build.cmd Release "-DLIBSTORED_DEV=ON"
+        shell: cmd
       - name: test
         run: cmake --build . -- test
         working-directory: build
@@ -91,8 +93,8 @@ jobs:
           call scripts\env.cmd
           mkdir build-msvc
           cd build-msvc
-          cmake -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Debug ..
-          cmake --build . --config Debug
+          cmake -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Debug -DLIBSTORED_DEV=ON ..
+          cmake --build . --config Debug --target install -- -m
         shell: cmd
       - name: test
         run: cmake --build . --target RUN_TESTS --config Debug
@@ -100,8 +102,8 @@ jobs:
       - name: build Release
         run: |
           call ..\scripts\env.cmd
-          cmake -DCMAKE_BUILD_TYPE=Release ..
-          cmake --build . --config Release
+          cmake -DCMAKE_BUILD_TYPE=Release -DLIBSTORED_DEV=ON ..
+          cmake --build . --config Release --target install -- -m
         shell: cmd
         working-directory: build-msvc
       - name: test
@@ -116,12 +118,12 @@ jobs:
       - name: bootstrap
         run: scripts/bootstrap.sh
       - name: build Debug
-        run: scripts/build.sh Debug
+        run: scripts/build.sh Debug -DLIBSTORED_DEV=ON
       - name: test
         run: cmake --build . -- test
         working-directory: build
       - name: build Release
-        run: scripts/build.sh Release
+        run: scripts/build.sh Release -DLIBSTORED_DEV=ON
       - name: test
         run: cmake --build . -- test
         working-directory: build

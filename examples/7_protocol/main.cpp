@@ -46,7 +46,8 @@ static stored::ExampleProtocol store;
 /*!
  * \brief Print a buffer, for demonstration purposes.
  */
-static void printBuffer(void const* buffer, size_t len, char const* prefix = nullptr, FILE* f = stdout) {
+static void printBuffer(void const* buffer, size_t len, char const* prefix = nullptr, FILE* f = stdout)
+{
 	std::string s;
 	if(prefix)
 		s += prefix;
@@ -92,7 +93,8 @@ public:
 
 	virtual ~LossyChannel() override is_default
 
-	virtual void decode(void* buffer, size_t len) override {
+	virtual void decode(void* buffer, size_t len) override
+	{
 		char* buffer_ = static_cast<char*>(buffer);
 		for(size_t i = 0; i < len; i++)
 			buffer_[i] = lossyByte(buffer_[i]);
@@ -101,7 +103,8 @@ public:
 		base::decode(buffer, len);
 	}
 
-	virtual void encode(void const* buffer, size_t len, bool last = true) override {
+	virtual void encode(void const* buffer, size_t len, bool last = true) override
+	{
 		// cppcheck-suppress allocaCalled
 		char* buffer_ = (char*)alloca(len);
 		for(size_t i = 0; i < len; i++)
@@ -116,7 +119,8 @@ public:
 	// Bit error rate
 	double ber() const { return store.ber; }
 
-	char lossyByte(char b) {
+	char lossyByte(char b)
+	{
 		for(int i = 0; i < 8; i++) {
 			double p =
 #ifdef STORED_OS_WINDOWS
@@ -136,7 +140,8 @@ public:
 	virtual size_t mtu() const override { return store.MTU.as<size_t>(); }
 };
 
-int main() {
+int main()
+{
 	// Demonstrate a full stack assuming a lossy channel.
 	// In this example, the lossy channel is simulated by LossyChannel,
 	// which just flips bits, depending on the set bit error rate (BER).
@@ -151,7 +156,7 @@ int main() {
 		    ?       Debugger: capabilities
 		  E         SegmentationLayer: last chunk
 		  z\x7fI    AsciiEscapeLayer: z<tab>
-                      Crc16Layer: CRC=0x7a09
+			Crc16Layer: CRC=0x7a09
 		\x1b\\      TerminalLayer: end of message
 
 

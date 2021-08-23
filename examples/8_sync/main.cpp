@@ -37,7 +37,8 @@ class ExampleSync1 : public STORE_SYNC_BASE_CLASS(ExampleSync1Base, ExampleSync1
 public:
 	ExampleSync1() is_default
 
-	void __sync_ExampleSync2(bool set, bool& value) {
+	void __sync_ExampleSync2(bool set, bool& value)
+	{
 		if(set) {
 			printf("Triggered synchronization of store2\n");
 			synchronizer.process(store2);
@@ -48,7 +49,8 @@ public:
 
 static ExampleSync1 store1;
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
 	stored::Debugger debugger("8_sync");
 	debugger.map(store1);
 	debugger.map(store2);

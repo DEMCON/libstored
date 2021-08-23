@@ -1,7 +1,24 @@
+# libstored, distributed debuggable data stores.
+# Copyright (C) 2020-2021  Jochem Rutgers
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 # The value will be appended to a STORED_POLL_ define.
 set(LIBSTORED_POLL "AUTO" CACHE STRING "Poll method")
 
 set(LIBSTORED_CLANG_TIDY "OFF")
+set(LIBSTORED_INSTALL_STORE_LIBS "OFF")
 
 if(MSVC)
 	add_compile_options(/W1 /WX)
@@ -21,6 +38,11 @@ else()
 		set(LIBSTORED_ENABLE_UBSAN ON)
 		add_compile_options(-fno-sanitize-recover=undefined)
 	endif()
+endif()
+
+if(APPLE)
+	set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib)
+	set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 endif()
 
 set(CMAKE_CXX_STANDARD 14)
@@ -58,10 +80,6 @@ macro(libstored_add_test TESTNAME)
 	gtest_discover_tests(${TESTNAME} TEST_LIST tests)
 	set_tests_properties(${tests} PROPERTIES TIMEOUT 60)
 	set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
-	if(CMAKE_GENERATOR MATCHES "Visual Studio.*")
-		# Every binary has its own output directory.
-		libstored_copy_dlls(${TESTNAME})
-	endif()
 endmacro()
 
 libstored_add_test(test_allocator test_allocator.cpp)
@@ -90,11 +108,9 @@ else()
 	libstored_add_test(test_poller test_poller.cpp)
 endif()
 
-if(CMAKE_GENERATOR MATCHES ".*Makefiles.*")
-	# All test binaries are put in the same directory.
-	# Only copy the dlls once.
-	libstored_copy_dlls(test_debugger)
-endif()
+# All test binaries are put in the same directory.
+# Only copy the dlls once.
+libstored_copy_dlls(test_debugger)
 
 if(LIBSTORED_EXAMPLES)
 	macro(libstored_example_test EXAMPLE)
@@ -107,10 +123,10 @@ if(LIBSTORED_EXAMPLES)
 
 		if(WIN32)
 			add_test(NAME ${EXAMPLE}-run
-				COMMAND ${CMAKE_COMMAND} -E chdir $<TARGET_FILE_DIR:${EXAMPLE}> $ENV{ComSpec} /C "$<SHELL_PATH:$<TARGET_FILE:${EXAMPLE}>> ${ARGN} > $<SHELL_PATH:${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt>")
+				COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_INSTALL_PREFIX}/bin $ENV{ComSpec} /C "$<TARGET_FILE_NAME:${EXAMPLE}> ${ARGN} > $<SHELL_PATH:${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt>")
 		else()
 			add_test(NAME ${EXAMPLE}-run
-				COMMAND sh -c "$<TARGET_FILE:${EXAMPLE}> ${ARGN} > ${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt")
+				COMMAND sh -c "${CMAKE_INSTALL_PREFIX}/bin/$<TARGET_FILE_NAME:${EXAMPLE}> ${ARGN} > ${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt")
 		endif()
 
 		if(EXISTS ${PROJECT_SOURCE_DIR}/examples/${EXAMPLE}/output.txt)
@@ -165,7 +181,7 @@ if(LIBSTORED_HAVE_LIBZMQ)
 		COMMAND ${CMAKE_COMMAND} -E env
 			PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/../client
 			"PATH=$<SHELL_PATH:$<TARGET_FILE_DIR:libzmq>>${ENV_PATH_SEP}$ENV{PATH}"
-			${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_ZmqClient.py $<TARGET_FILE:zmqserver>
+			${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_ZmqClient.py ${CMAKE_INSTALL_PREFIX}/bin/$<TARGET_FILE_NAME:zmqserver>
 	)
 
 	set_tests_properties(ZmqClient PROPERTIES TIMEOUT 60)

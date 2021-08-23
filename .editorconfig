@@ -4,21 +4,28 @@ root = true
 end_of_line = lf
 insert_final_newline = true
 charset = utf-8
-indent_size = 4
+indent_size = 8
 indent_style = tab
 trim_trailing_whitespace = true
 
 [*.{py,qml}]
 indent_style = space
+indent_size = 4
 
 [*.yml]
 indent_style = space
 indent_size = 2
 
-[*.{diff,md}]
+[*.md]
 trim_trailing_whitespace = false
+charset = utf-8-bom
+
+[*.diff]
+trim_trailing_whitespace = false
+end_of_line = unset
 
 [*.rst]
 indent_style = space
 indent_size = 3
+charset = utf-8-bom
 

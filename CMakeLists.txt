@@ -18,19 +18,44 @@ cmake_minimum_required(VERSION 3.1)
 project(libstored)
 
 if(NOT CMAKE_BUILD_TYPE)
-   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
+	set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
 endif()
 
 message(STATUS "CMAKE_BUILD_TYPE is ${CMAKE_BUILD_TYPE}")
 
 if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
-  message(FATAL_ERROR "CMake generation is not allowed within the source directory! \
-	Remove the CMakeCache.txt file and try again from another folder, e.g.: \
-	\
-	  rm CMakeCache.txt \
-	  mkdir build \
-	  cd build \
-	  cmake ..")
+	message(FATAL_ERROR "CMake generation is not allowed within the source directory! \
+		Remove the CMakeCache.txt file and try again from another folder, e.g.: \
+		\
+		  rm CMakeCache.txt \
+		  mkdir build \
+		  cd build \
+		  cmake ..")
+endif()
+
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+	set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/dist" CACHE PATH "Override default install path" FORCE)
+endif()
+
+message(STATUS "Install prefix set to ${CMAKE_INSTALL_PREFIX}")
+if(APPLE)
+	list(APPEND CMAKE_INSTALL_RPATH "@executable_path/../lib")
+	if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.8")
+		list(APPEND CMAKE_BUILD_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+	else()
+		set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+	endif()
+elseif(UNIX)
+	list(APPEND CMAKE_INSTALL_RPATH "\$ORIGIN/../lib")
+endif()
+
+option(LIBSTORED_INSTALL_STORE_LIBS "Install generated static libstored libraries" ON)
+
+option(LIBSTORED_DEV "Enable by default development related build options" OFF)
+if(LIBSTORED_DEV)
+	set(LIBSTORED_DEV_OPTION ON)
+else()
+	set(LIBSTORED_DEV_OPTION OFF)
 endif()
 
 option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" OFF)
@@ -66,14 +91,19 @@ else()
 	message(STATUS "Using python ${PYTHON_EXECUTABLE}")
 endif()
 
-option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
-option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
-
 set(LIBSTORED_SOURCE_DIR ${PROJECT_SOURCE_DIR} CACHE STRING "Path to the libstored sources" FORCE)
 list(APPEND CMAKE_MODULE_PATH ${LIBSTORED_SOURCE_DIR}/cmake)
 
+option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
+
 if(LIBSTORED_HAVE_HEATSHRINK)
 	find_package(Heatshrink)
+endif()
+
+option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
+
+if(LIBSTORED_HAVE_LIBZMQ)
+	find_package(ZeroMQ)
 endif()
 
 add_subdirectory(extern)
@@ -106,14 +136,14 @@ if(LIBSTORED_EXAMPLES)
 	add_subdirectory(examples)
 endif()
 
-option(LIBSTORED_PIP_INSTALL_USER "Run pip install --user when installing wheel files" OFF)
+option(LIBSTORED_PIP_INSTALL_USER "Run pip install with --user flag when installing wheel files" ON)
 add_subdirectory(client)
 
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0")
 	if(CMAKE_CROSSCOMPILING)
 		set(LIBSTORED_TESTS_DEFAULT OFF)
 	else()
-		set(LIBSTORED_TESTS_DEFAULT ON)
+		set(LIBSTORED_TESTS_DEFAULT ${LIBSTORED_DEV_OPTION})
 	endif()
 
 	option(LIBSTORED_TESTS "Build the tests" ${LIBSTORED_TESTS_DEFAULT})
@@ -133,37 +163,26 @@ endif()
 find_program(CPPCHECK_CMD NAMES cppcheck)
 if(CPPCHECK_CMD)
 	if(LIBSTORED_EXAMPLES)
-		set(CPPCHECK_EXAMPLES
-			-I examples/1_hello/libstored/include
-			-I examples/2_basic/libstored/include
-			-I examples/3_scope/libstored/include
-			-I examples/4_function/libstored/include
-			-I examples/5_debug/libstored/include
-			-I examples/6_hooks/libstored/include
-			-I examples/7_protocol/libstored/include
-			-I examples/8_sync/libstored/include
-			-I examples/9_fpga/libstored/include
-			-I examples/components/libstored/include
-			-I examples/concurrency/libstored/include
-			-I examples/terminal/libstored/include
-			-I examples/zmqserver/libstored/include
-			examples
-		)
-		set(CPPCHECK_DEPENDS
-			1_hello-libstored-generate
-			2_basic-libstored-generate
-			3_scope-libstored-generate
-			4_function-libstored-generate
-			5_debug-libstored-generate
-			6_hooks-libstored-generate
-			7_protocol-libstored-generate
-			8_sync-libstored-generate
-			9_fpga-libstored-generate
-			components-libstored-generate
-			concurrency-libstored-generate
-			terminal-libstored-generate
-			zmqserver-libstored-generate
-		)
+		macro(cppcheck_add app)
+			if(TARGET ${app}-libstored-generate)
+				set(CPPCHECK_EXAMPLES ${CPPCHECK_EXAMPLES} -I examples/${app}/libstored/include examples/${app})
+				set(CPPCHECK_DEPENDS ${CPPCHECK_DEPENDS} ${app}-libstored-generate)
+			endif()
+		endmacro()
+
+		cppcheck_add(1_hello)
+		cppcheck_add(2_basic)
+		cppcheck_add(3_scope)
+		cppcheck_add(4_function)
+		cppcheck_add(5_debug)
+		cppcheck_add(6_hooks)
+		cppcheck_add(7_protocol)
+		cppcheck_add(8_sync)
+		cppcheck_add(9_fpga)
+		cppcheck_add(components)
+		cppcheck_add(concurrency)
+		cppcheck_add(terminal)
+		cppcheck_add(zmqserver)
 	endif()
 
 	add_custom_target(libstored-cppcheck
@@ -188,9 +207,8 @@ if(CPPCHECK_CMD)
 		add_dependencies(libstored-cppcheck ${CPPCHECK_DEPENDS})
 	endif()
 
-	option(LIBSTORED_CPPCHECK "Run cppcheck by default" ON)
+	option(LIBSTORED_CPPCHECK "Run cppcheck by default" ${LIBSTORED_DEV_OPTION})
 	if(LIBSTORED_CPPCHECK)
 		add_custom_target(libstored-cppcheck-all ALL DEPENDS libstored-cppcheck)
 	endif()
 endif()
-

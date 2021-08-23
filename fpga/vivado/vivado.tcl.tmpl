@@ -34,19 +34,19 @@ if {[string equal "@RELOCATE_LIBSTORED@" "1"]} {
 
 # Create 'sources_1' fileset (if not found)
 if {[string equal [get_filesets -quiet sources_1] ""]} {
-  create_fileset -srcset sources_1
+	create_fileset -srcset sources_1
 }
 
 # Set 'sources_1' fileset object
 set obj [get_filesets sources_1]
 set files [list \
- "[file normalize "$libstored_fpga_dir/rtl/pkg.vhd"]"\
- "[file normalize "$libstored_fpga_dir/rtl/util.vhd"]"\
- "[file normalize "$libstored_fpga_dir/rtl/variable.vhd"]"\
- "[file normalize "$libstored_fpga_dir/rtl/protocol.vhd"]"\
+	"[file normalize "$libstored_fpga_dir/rtl/pkg.vhd"]"\
+	"[file normalize "$libstored_fpga_dir/rtl/util.vhd"]"\
+	"[file normalize "$libstored_fpga_dir/rtl/variable.vhd"]"\
+	"[file normalize "$libstored_fpga_dir/rtl/protocol.vhd"]"\
 {% for m in models %}
- "[file normalize "$store_dir/rtl/{{m}}.vhd"]"\
- "[file normalize "$store_dir/rtl/{{m}}_pkg.vhd"]"\
+	"[file normalize "$store_dir/rtl/{{m}}.vhd"]"\
+	"[file normalize "$store_dir/rtl/{{m}}_pkg.vhd"]"\
 {% endfor %}
 ]
 add_files -norecurse -fileset $obj $files
@@ -80,13 +80,13 @@ set_property "file_type" "VHDL" $file_obj
 {% endfor %}
 # Create 'sim_1' fileset (if not found)
 if {[string equal [get_filesets -quiet sim_1] ""]} {
-  create_fileset -simset sim_1
+	create_fileset -simset sim_1
 }
 
 # Set 'sim_1' fileset object
 set obj [get_filesets sim_1]
 set files [list \
- "[file normalize "$libstored_fpga_dir/tb/tb_pkg.vhd"]"\
+	"[file normalize "$libstored_fpga_dir/tb/tb_pkg.vhd"]"\
 ]
 add_files -norecurse -fileset $obj $files
 

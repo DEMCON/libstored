@@ -7,7 +7,8 @@
 
 #include <cstdio>
 
-int main() {
+int main()
+{
 	stored::ExampleScope e;
 
 	// Notice how the scope separator gets replaced by two underscores.

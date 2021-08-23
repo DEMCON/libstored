@@ -1,3 +1,19 @@
+# libstored, distributed debuggable data stores.
+# Copyright (C) 2020-2021  Jochem Rutgers
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 if(MSVC)
 	add_compile_options(/Wall /WX)
 else()
@@ -26,6 +42,7 @@ add_subdirectory(8_sync)
 add_subdirectory(9_fpga)
 add_subdirectory(terminal)
 add_subdirectory(components)
+add_subdirectory(installed)
 
 if(NOT MINGW AND NOT CMAKE_CXX_STANDARD EQUAL 98)
 	# std::thread is not supported by MinGW.

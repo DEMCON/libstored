@@ -41,7 +41,8 @@ Poller::Poller()
 }
 
 // NOLINTNEXTLINE(hicpp-use-equals-default)
-Poller::~Poller() {
+Poller::~Poller()
+{
 #ifdef STORED_POLL_ZMQ
 	zmq_poller_destroy(&m_poller);
 	m_poller = nullptr;
@@ -49,7 +50,8 @@ Poller::~Poller() {
 }
 
 #ifdef STORED_OS_WINDOWS
-static int setEvents(SOCKET s, HANDLE h, Poller::events_t events) {
+static int setEvents(SOCKET s, HANDLE h, Poller::events_t events)
+{
 	stored_assert(s != INVALID_SOCKET); // NOLINT(hicpp-signed-bitwise)
 	stored_assert(h);
 
@@ -68,7 +70,8 @@ static int setEvents(SOCKET s, HANDLE h, Poller::events_t events) {
 	return 0;
 }
 
-static int SOCKET_to_HANDLE(SOCKET UNUSED_PAR(s), HANDLE& h) {
+static int SOCKET_to_HANDLE(SOCKET UNUSED_PAR(s), HANDLE& h)
+{
 	stored_assert(s != INVALID_SOCKET); // NOLINT(hicpp-signed-bitwise)
 
 	if(!h)
@@ -78,34 +81,41 @@ static int SOCKET_to_HANDLE(SOCKET UNUSED_PAR(s), HANDLE& h) {
 	return 0;
 }
 
-int Poller::add(SOCKET socket, void* user_data, events_t events) {
+int Poller::add(SOCKET socket, void* user_data, events_t events)
+{
 	return add(Event(Event::TypeWinSock, socket), user_data, events);
 }
 
-int Poller::modify(SOCKET socket, events_t events) {
+int Poller::modify(SOCKET socket, events_t events)
+{
 	return modify(Event(Event::TypeWinSock, socket), events);
 }
 
-int Poller::remove(SOCKET socket) {
+int Poller::remove(SOCKET socket)
+{
 	return remove(Event(Event::TypeWinSock, socket));
 }
 
-int Poller::addh(HANDLE handle, void* user_data, events_t events) {
+int Poller::addh(HANDLE handle, void* user_data, events_t events)
+{
 	return add(Event(Event::TypeHandle, handle), user_data, events);
 }
 
-int Poller::modifyh(HANDLE handle, events_t events) {
+int Poller::modifyh(HANDLE handle, events_t events)
+{
 	return modify(Event(Event::TypeHandle, handle), events);
 }
 
-int Poller::removeh(HANDLE handle) {
+int Poller::removeh(HANDLE handle)
+{
 	return remove(Event(Event::TypeHandle, handle));
 }
 
 static HANDLE dummyEventSet; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 static HANDLE dummyEventReset; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
-static int fd_to_HANDLE(int fd, HANDLE& h) {
+static int fd_to_HANDLE(int fd, HANDLE& h)
+{
 	intptr_t res = _get_osfhandle(fd);
 
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,performance-no-int-to-ptr)
@@ -134,109 +144,132 @@ static int fd_to_HANDLE(int fd, HANDLE& h) {
 	}
 }
 
-int Poller::add(int fd, void* user_data, events_t events) {
+int Poller::add(int fd, void* user_data, events_t events)
+{
 	Event e(Event::TypeFd, fd);
 	int res = fd_to_HANDLE(fd, e.h);
 	return res ? res : add(e, user_data, events);
 }
 
-int Poller::modify(int fd, events_t events) {
+int Poller::modify(int fd, events_t events)
+{
 	Event e(Event::TypeFd, fd);
 	int res = fd_to_HANDLE(fd, e.h);
 	return res ? res : modify(e, events);
 }
 
-int Poller::remove(int fd) {
+int Poller::remove(int fd)
+{
 	Event e(Event::TypeFd, fd);
 	int res = fd_to_HANDLE(fd, e.h);
 	return res ? res : remove(e);
 }
 
 #  ifdef STORED_HAVE_ZMQ
-static int socket_to_SOCKET(void* zmq, SOCKET& win) {
+static int socket_to_SOCKET(void* zmq, SOCKET& win)
+{
 	size_t len = sizeof(win);
 	return zmq_getsockopt(zmq, ZMQ_FD, &win, &len) ? errno : 0;
 }
 
-int Poller::add(void* socket, void* user_data, events_t events) {
+int Poller::add(void* socket, void* user_data, events_t events)
+{
 	return add(Event(Event::TypeZmqSock, socket), user_data, events);
 }
 
-int Poller::modify(void* socket, events_t events) {
+int Poller::modify(void* socket, events_t events)
+{
 	return modify(Event(Event::TypeZmqSock, socket), events);
 }
 
-int Poller::remove(void* socket) {
+int Poller::remove(void* socket)
+{
 	return remove(Event(Event::TypeZmqSock, socket));
 }
 
-int Poller::add(ZmqLayer& layer, void* user_data, events_t events) {
+int Poller::add(ZmqLayer& layer, void* user_data, events_t events)
+{
 	return add(Event(Event::TypeZmq, &layer), user_data, events);
 }
 
-int Poller::modify(ZmqLayer& layer, events_t events) {
+int Poller::modify(ZmqLayer& layer, events_t events)
+{
 	return modify(Event(Event::TypeZmq, &layer), events);
 }
 
-int Poller::remove(ZmqLayer& layer) {
+int Poller::remove(ZmqLayer& layer)
+{
 	return remove(Event(Event::TypeZmq, &layer));
 }
 #  endif // STORED_HAVE_ZMQ
 #else // !STORED_OS_WINDOWS
 
-int Poller::add(int fd, void* user_data, events_t events) {
+int Poller::add(int fd, void* user_data, events_t events)
+{
 	return add(Event(Event::TypeFd, fd), user_data, events);
 }
 
-int Poller::modify(int fd, events_t events) {
+int Poller::modify(int fd, events_t events)
+{
 	return modify(Event(Event::TypeFd, fd), events);
 }
 
-int Poller::remove(int fd) {
+int Poller::remove(int fd)
+{
 	return remove(Event(Event::TypeFd, fd));
 }
 
 #  ifdef STORED_HAVE_ZMQ
-int Poller::add(void* socket, void* user_data, events_t events) {
+int Poller::add(void* socket, void* user_data, events_t events)
+{
 	return add(Event(Event::TypeZmqSock, socket), user_data, events);
 }
 
-int Poller::modify(void* socket, events_t events) {
+int Poller::modify(void* socket, events_t events)
+{
 	return modify(Event(Event::TypeZmqSock, socket), events);
 }
 
-int Poller::remove(void* socket) {
+int Poller::remove(void* socket)
+{
 	return remove(Event(Event::TypeZmqSock, socket));
 }
 
-int Poller::add(ZmqLayer& layer, void* user_data, events_t events) {
+int Poller::add(ZmqLayer& layer, void* user_data, events_t events)
+{
 	return add(Event(Event::TypeZmq, &layer), user_data, events);
 }
 
-int Poller::modify(ZmqLayer& layer, events_t events) {
+int Poller::modify(ZmqLayer& layer, events_t events)
+{
 	return modify(Event(Event::TypeZmq, &layer), events);
 }
 
-int Poller::remove(ZmqLayer& layer) {
+int Poller::remove(ZmqLayer& layer)
+{
 	return remove(Event(Event::TypeZmq, &layer));
 }
 #  endif // STORED_HAVE_ZMQ
 #endif // !STORED_OS_WINDOWS
 
-int Poller::add(PolledFileLayer& layer, void* user_data, events_t events) {
+int Poller::add(PolledFileLayer& layer, void* user_data, events_t events)
+{
 	return add(Event(Event::TypePolledFileLayer, &layer), user_data, events);
 }
 
-int Poller::modify(PolledFileLayer& layer, events_t events) {
+int Poller::modify(PolledFileLayer& layer, events_t events)
+{
 	return modify(Event(Event::TypePolledFileLayer, &layer), events);
 }
 
-int Poller::remove(PolledFileLayer& layer) {
+int Poller::remove(PolledFileLayer& layer)
+{
 	return remove(Event(Event::TypePolledFileLayer, &layer));
 }
 
 #ifdef STORED_POLL_ZMQ
-int Poller::add(Poller::Event const& e, void* user_data, events_t events) {
+int Poller::add(Poller::Event const& e, void* user_data, events_t events)
+{
 	switch(e.type) {
 	case Event::TypeFd:
 		return zmq_poller_add_fd(m_poller, e.fd, user_data, (short)events) == -1 ? zmq_errno() : 0;
@@ -251,7 +284,8 @@ int Poller::add(Poller::Event const& e, void* user_data, events_t events) {
 	}
 }
 
-int Poller::modify(Poller::Event const& e, events_t events) {
+int Poller::modify(Poller::Event const& e, events_t events)
+{
 	switch(e.type) {
 	case Event::TypeFd:
 		return zmq_poller_modify_fd(m_poller, e.fd, (short)events) == -1 ? zmq_errno() : 0;
@@ -266,7 +300,8 @@ int Poller::modify(Poller::Event const& e, events_t events) {
 	}
 }
 
-int Poller::remove(Poller::Event const& e) {
+int Poller::remove(Poller::Event const& e)
+{
 	switch(e.type) {
 	case Event::TypeFd:
 		return zmq_poller_remove_fd(m_poller, e.fd) == -1 ? zmq_errno() : 0;
@@ -282,7 +317,8 @@ int Poller::remove(Poller::Event const& e) {
 }
 #else // !STORED_POLL_ZMQ
 
-int Poller::add(Poller::Event const& e, void* user_data, events_t events) {
+int Poller::add(Poller::Event const& e, void* user_data, events_t events)
+{
 #ifdef STORED_POLL_WFMO
 	if(m_events.size() == MAXIMUM_WAIT_OBJECTS)
 		return EINVAL;
@@ -337,7 +373,8 @@ int Poller::add(Poller::Event const& e, void* user_data, events_t events) {
 	return 0;
 }
 
-int Poller::modify(Poller::Event const& e, events_t events) {
+int Poller::modify(Poller::Event const& e, events_t events)
+{
 	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it)
 		if(*it == e) {
 			if(it->events == events)
@@ -368,7 +405,8 @@ int Poller::modify(Poller::Event const& e, events_t events) {
 	return EINVAL;
 }
 
-int Poller::remove(Poller::Event const& e) {
+int Poller::remove(Poller::Event const& e)
+{
 	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end();)
 		if(*it == e) {
 			m_events.erase(it);
@@ -391,7 +429,8 @@ int Poller::remove(Poller::Event const& e) {
 	return EINVAL;
 }
 
-Poller::Event* Poller::find(Poller::Event const& e) {
+Poller::Event* Poller::find(Poller::Event const& e)
+{
 	for(std::deque<Event>::iterator it = m_events.begin(); it != m_events.end(); ++it)
 		if(*it == e)
 			return &*it;
@@ -401,7 +440,8 @@ Poller::Event* Poller::find(Poller::Event const& e) {
 #endif // !STORED_POLL_ZMQ
 
 #ifdef STORED_POLL_ZTH_WFMO
-Poller::Result const& Poller::poll(long UNUSED_PAR(timeout_us), bool UNUSED_PAR(suspend)) {
+Poller::Result const& Poller::poll(long UNUSED_PAR(timeout_us), bool UNUSED_PAR(suspend))
+{
 	// TODO
 	errno = EAGAIN;
 	return m_lastEvents;
@@ -409,7 +449,8 @@ Poller::Result const& Poller::poll(long UNUSED_PAR(timeout_us), bool UNUSED_PAR(
 #endif
 
 #ifdef STORED_POLL_WFMO
-Poller::Result const& Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
+Poller::Result const& Poller::poll(long timeout_us, bool UNUSED_PAR(suspend))
+{
 	errno = 0;
 
 	m_lastEvents.clear();
@@ -505,7 +546,8 @@ Poller::Result const& Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
 #endif
 
 #ifdef STORED_POLL_ZMQ
-Poller::Result const& Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
+Poller::Result const& Poller::poll(long timeout_us, bool UNUSED_PAR(suspend))
+{
 	m_lastEvents.resize(16); // Some arbitrary number. re-poll() to get the rest.
 
 	int res = zmq_poller_wait_all(m_poller, &m_lastEvents[0], (int)m_lastEvents.size(), timeout_us >= 0 ? (timeout_us + 999L) / 1000L : -1L);
@@ -526,7 +568,8 @@ Poller::Result const& Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
 #endif
 
 #if defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH)
-Poller::Result const& Poller::poll(long timeout_us, bool suspend) {
+Poller::Result const& Poller::poll(long timeout_us, bool suspend)
+{
 	m_lastEvents.clear();
 	if(m_events.empty()) {
 		errno = EFAULT;
@@ -617,7 +660,8 @@ retry:
 #endif
 
 #if defined(STORED_POLL_LOOP) || defined(STORED_POLL_ZTH_LOOP)
-bool Poller::poll_once() {
+bool Poller::poll_once()
+{
 	if(!m_lastEvents.empty())
 		return true;
 
@@ -638,7 +682,8 @@ bool Poller::poll_once() {
 #endif
 
 #ifdef STORED_POLL_LOOP
-Poller::Result const& Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
+Poller::Result const& Poller::poll(long timeout_us, bool UNUSED_PAR(suspend))
+{
 	m_lastEvents.clear();
 
 	if(m_events.empty()) {
@@ -660,7 +705,8 @@ Poller::Result const& Poller::poll(long timeout_us, bool UNUSED_PAR(suspend)) {
 #endif
 
 #ifdef STORED_POLL_ZTH_LOOP
-bool Poller::zth_poll_once() {
+bool Poller::zth_poll_once()
+{
 	return poll_once() || zth::Timestamp::now() > m_timeout;
 }
 
@@ -713,7 +759,8 @@ Poller::Result const& Poller::poll(long timeout_us, bool suspend) {
 	 * handles weak symbols also differently.  However, you probably do not use
 	 * poll_once() on Windows/OS X. So, this probably covers the most cases.
 	 */
-	__attribute__((weak)) int poll_once(Poller::Event const& UNUSED_PAR(e), Poller::events_t& UNUSED_PAR(revents)) {
+	__attribute__((weak)) int poll_once(Poller::Event const& UNUSED_PAR(e), Poller::events_t& UNUSED_PAR(revents))
+	{
 		stored_assert(false);
 		return ENOSYS;
 	}

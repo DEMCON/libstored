@@ -1,4 +1,4 @@
-Protocol
+﻿Protocol
 ========
 
 Protocol layers, to be wrapped around a :cpp:class:`stored::Debugger` or

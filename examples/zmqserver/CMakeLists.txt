@@ -1,5 +1,6 @@
 add_executable(zmqserver main.cpp)
 libstored_generate(zmqserver ZmqServerStore.st)
+install(TARGETS zmqserver RUNTIME)
 
 if(WIN32)
 	# Copy libzmq.dll to here, to allow starting zmqserver.exe without deploying.

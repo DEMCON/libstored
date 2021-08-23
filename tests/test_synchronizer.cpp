@@ -30,7 +30,8 @@ class SyncTestStore : public stored::Synchronizable<stored::TestStoreBase<SyncTe
 
 namespace {
 
-TEST(Synchronizer, Endianness) {
+TEST(Synchronizer, Endianness)
+{
 	EXPECT_EQ(stored::swap_endian<uint8_t>(1), 1);
 	EXPECT_EQ(stored::swap_endian<uint16_t>(0x1234), 0x3412);
 	EXPECT_EQ(stored::swap_endian<uint32_t>(0x12345678), 0x78563412);
@@ -47,7 +48,8 @@ TEST(Synchronizer, Endianness) {
 	EXPECT_EQ(b[2], 1);
 }
 
-TEST(Synchronizer, Instantiate) {
+TEST(Synchronizer, Instantiate)
+{
 	SyncTestStore store1;
 	SyncTestStore store2;
 
@@ -66,7 +68,8 @@ public:
 	FRIEND_TEST(Synchronizer, ShortSeq);
 };
 
-TEST(Synchronizer, ShortSeq) {
+TEST(Synchronizer, ShortSeq)
+{
 	TestJournal j("123", nullptr, 0u);
 
 	EXPECT_EQ(j.seq(), 1);
@@ -105,7 +108,8 @@ TEST(Synchronizer, ShortSeq) {
 	EXPECT_FALSE(j.hasChanged(1, j.seq() - TestJournal::ShortSeqWindow + TestJournal::SeqLowerMargin * 2u));
 }
 
-TEST(Synchronizer, Changes) {
+TEST(Synchronizer, Changes)
+{
 	SyncTestStore store;
 
 	auto now = store.journal().seq();
@@ -168,7 +172,8 @@ TEST(Synchronizer, Changes) {
 		EXPECT_FALSE(_synced); \
 	} while(0)
 
-TEST(Synchronizer, Sync2) {
+TEST(Synchronizer, Sync2)
+{
 	SyncTestStore store1;
 	SyncTestStore store2;
 
@@ -216,7 +221,8 @@ TEST(Synchronizer, Sync2) {
 		printBuffer(s, "< ");
 }
 
-TEST(Synchronizer, Sync5) {
+TEST(Synchronizer, Sync5)
+{
 	SyncTestStore store[5];
 	stored::Synchronizer s[5];
 

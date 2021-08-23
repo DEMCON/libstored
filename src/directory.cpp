@@ -92,7 +92,8 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
  *
  * This function is not reentrant. Do not call it recursively.
  */
-void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg, char const* prefix) {
+void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg, char const* prefix)
+{
 	static String::type name;
 	if(Config::AvoidDynamicMemory)
 		name.reserve((prefix ? strlen(prefix) * 2U : 0U) + 128U); // Some arbitrary buffer, which should usually be sufficient.

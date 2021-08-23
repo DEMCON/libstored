@@ -33,7 +33,8 @@ namespace stored {
 /*!
  * \brief Like \c ::strncpy(), but without padding and returning the length of the string.
  */
-size_t strncpy(char* __restrict__ dst, char const* __restrict__ src, size_t len) noexcept {
+size_t strncpy(char* __restrict__ dst, char const* __restrict__ src, size_t len) noexcept
+{
 	if(len == 0)
 		return 0;
 
@@ -50,7 +51,8 @@ size_t strncpy(char* __restrict__ dst, char const* __restrict__ src, size_t len)
 /*!
  * \brief Like \c ::strncmp(), but handles non zero-terminated strings.
  */
-int strncmp(char const* __restrict__ str1, size_t len1, char const* __restrict__ str2, size_t len2) noexcept {
+int strncmp(char const* __restrict__ str1, size_t len1, char const* __restrict__ str2, size_t len2) noexcept
+{
 	stored_assert(str1);
 	stored_assert(str2);
 
@@ -82,7 +84,8 @@ int strncmp(char const* __restrict__ str1, size_t len1, char const* __restrict__
 /*!
  * \brief Swap endianness of the given buffer.
  */
-void swap_endian(void* buffer, size_t len) noexcept {
+void swap_endian(void* buffer, size_t len) noexcept
+{
 	char* buffer_ = static_cast<char*>(buffer);
 	for(size_t i = 0; i < len / 2; i++) {
 		char c = buffer_[i];
@@ -94,7 +97,8 @@ void swap_endian(void* buffer, size_t len) noexcept {
 /*!
  * \brief \c memcpy() with endianness swapping.
  */
-void memcpy_swap(void* __restrict__ dst, void const* __restrict__ src, size_t len) noexcept {
+void memcpy_swap(void* __restrict__ dst, void const* __restrict__ src, size_t len) noexcept
+{
 	char* dst_ = static_cast<char*>(dst);
 	char const* src_ = static_cast<char const*>(src);
 
@@ -105,7 +109,8 @@ void memcpy_swap(void* __restrict__ dst, void const* __restrict__ src, size_t le
 /*!
  * \brief memcmp() with endianness swapping.
  */
-int memcmp_swap(void const* a, void const* b, size_t len) noexcept {
+int memcmp_swap(void const* a, void const* b, size_t len) noexcept
+{
 	unsigned char const* a_ = static_cast<unsigned char const*>(a);
 	unsigned char const* b_ = static_cast<unsigned char const*>(b);
 
@@ -125,7 +130,8 @@ diff:
  *
  * This comes in handy for verbose output of binary data, like protocol messages.
  */
-String::type string_literal(void const* buffer, size_t len, char const* prefix) {
+String::type string_literal(void const* buffer, size_t len, char const* prefix)
+{
 	String::type s;
 	if(Config::AvoidDynamicMemory)
 		s.reserve((prefix ? strlen(prefix) : 0U) + len * 4U);
@@ -161,7 +167,8 @@ String::type string_literal(void const* buffer, size_t len, char const* prefix) 
 /*!
  * \brief Return a single-line string that contains relevant configuration information of libstored.
  */
-char const* banner() noexcept {
+char const* banner() noexcept
+{
 	return
 		"libstored " STORED_VERSION
 #if STORED_cplusplus < 201103L

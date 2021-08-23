@@ -67,7 +67,8 @@ ZmqLayer::ZmqLayer(void* context, int type, ProtocolLayer* up, ProtocolLayer* do
  * The sockets are closed (which may block).
  * If a ZeroMQ context was allocated, it is terminated here.
  */
-ZmqLayer::~ZmqLayer() {
+ZmqLayer::~ZmqLayer()
+{
 	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc)
 	free(m_buffer);
 
@@ -80,7 +81,8 @@ ZmqLayer::~ZmqLayer() {
 /*!
  * \brief The ZeroMQ context.
  */
-void* ZmqLayer::context() const {
+void* ZmqLayer::context() const
+{
 	return m_context;
 }
 
@@ -89,7 +91,8 @@ void* ZmqLayer::context() const {
  *
  * Do not use this function to manipulate the socket, only for calls like \c zmq_poll().
  */
-void* ZmqLayer::socket() const {
+void* ZmqLayer::socket() const
+{
 	return m_socket;
 }
 
@@ -98,7 +101,8 @@ void* ZmqLayer::socket() const {
  *
  * Use this socket to determine if recv() would block.
  */
-ZmqLayer::fd_type ZmqLayer::fd() const {
+ZmqLayer::fd_type ZmqLayer::fd() const
+{
 	fd_type socket; // NOLINT(cppcoreguidelines-init-variables)
 	size_t size = sizeof(socket);
 
@@ -113,7 +117,8 @@ ZmqLayer::fd_type ZmqLayer::fd() const {
 	return socket;
 }
 
-int ZmqLayer::block(fd_type UNUSED_PAR(fd), bool forReading, long timeout_us, bool suspend) {
+int ZmqLayer::block(fd_type UNUSED_PAR(fd), bool forReading, long timeout_us, bool suspend)
+{
 	// Just use our socket.
 	return block(forReading, timeout_us, suspend);
 }
@@ -121,7 +126,8 @@ int ZmqLayer::block(fd_type UNUSED_PAR(fd), bool forReading, long timeout_us, bo
 /*!
  * \brief Like #block(fd_type,bool,long,bool), but using the #socket() by default.
  */
-int ZmqLayer::block(bool forReading, long timeout_us, bool suspend) {
+int ZmqLayer::block(bool forReading, long timeout_us, bool suspend)
+{
 	setLastError(0);
 
 	Poller& poller = this->poller();
@@ -165,7 +171,8 @@ done:
  * \brief Try to receive a message from the ZeroMQ REP socket, and decode() it.
  * \param timeout_us if zero, this function does not block. -1 blocks indefinitely.
  */
-int ZmqLayer::recv1(long timeout_us) {
+int ZmqLayer::recv1(long timeout_us)
+{
 	int res = 0;
 	int more = 0;
 
@@ -245,7 +252,8 @@ error_msg:
  * \brief Try to receive all available data from the ZeroMQ REP socket, and decode() it.
  * \param timeout_us if zero, this function does not block. -1 blocks indefinitely.
  */
-int ZmqLayer::recv(long timeout_us) {
+int ZmqLayer::recv(long timeout_us)
+{
 	bool first = true;
 
 	while(true) {
@@ -274,7 +282,8 @@ int ZmqLayer::recv(long timeout_us) {
  * \copydoc stored::ProtocolLayer::encode(void const*, size_t, bool)
  * \details Encoded data is send as REP over the ZeroMQ socket.
  */
-void ZmqLayer::encode(void const* buffer, size_t len, bool last) {
+void ZmqLayer::encode(void const* buffer, size_t len, bool last)
+{
 	// First try, assume we are writable.
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	if(likely(zmq_send(m_socket, buffer, len, ZMQ_DONTWAIT | (last ? 0 : ZMQ_SNDMORE)) != -1)) {
@@ -326,7 +335,8 @@ DebugZmqLayer::DebugZmqLayer(void* context, int port, ProtocolLayer* up, Protoco
 		setLastError(errno);
 }
 
-int DebugZmqLayer::recv(long timeout_us) {
+int DebugZmqLayer::recv(long timeout_us)
+{
 	int res = base::recv(timeout_us);
 
 	if(res == EFSM) {

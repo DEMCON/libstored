@@ -131,7 +131,8 @@ namespace stored {
 		 */
 		template <typename F>
 		SFINAE_IS_FUNCTION(F, void(Key), void)
-		iterateChanged(Seq since, F&& cb) const {
+		iterateChanged(Seq since, F&& cb) const
+		{
 			iterateChanged(since,
 				[](Key key, void* cb_) {
 					(*static_cast<typename std::decay<F>::type*>(cb_))(key); },
@@ -169,7 +170,8 @@ namespace stored {
 		 * \brief Comparator to sort \c m_changes based on the key.
 		 */
 		struct ObjectInfoComparator {
-			bool operator()(ObjectInfo const& a, ObjectInfo const& b) const {
+			bool operator()(ObjectInfo const& a, ObjectInfo const& b) const
+			{
 				return a.key < b.key;
 			}
 		};
@@ -288,7 +290,8 @@ namespace stored {
 		 * heap, which makes it possible to use it in a not-async-signal-safe context,
 		 * like an interrupt handler.
 		 */
-		void reserveHeap() {
+		void reserveHeap()
+		{
 			journal().reserveHeap(Base::VariableCount);
 		}
 
@@ -314,7 +317,8 @@ namespace stored {
 #undef MAX2
 
 	protected:
-		void __hookExitX(Type::type type, void* buffer, size_t len, bool changed) {
+		void __hookExitX(Type::type type, void* buffer, size_t len, bool changed)
+		{
 			if(changed) {
 				StoreJournal::Key key = (StoreJournal::Key)this->bufferToKey(buffer);
 
@@ -463,7 +467,8 @@ private:
 		 * \brief Register a store in this Synchronizer.
 		 */
 		template <typename Store>
-		void map(Synchronizable<Store>& store) {
+		void map(Synchronizable<Store>& store)
+		{
 			m_storeMap.insert(std::make_pair(store.hash(), &store.journal()));
 		}
 
@@ -471,7 +476,8 @@ private:
 		 * \brief Deregister a store from this Synchronizer.
 		 */
 		template <typename Store>
-		void unmap(Synchronizable<Store>& store) {
+		void unmap(Synchronizable<Store>& store)
+		{
 			m_storeMap.erase(store.hash());
 
 			for(Connections::iterator it = m_connections.begin(); it != m_connections.end(); ++it)
@@ -491,7 +497,8 @@ private:
 		 * Afterwards, updates and exchanged bidirectionally.
 		 */
 		template <typename Store>
-		void syncFrom(Synchronizable<Store>& store, ProtocolLayer& connection) {
+		void syncFrom(Synchronizable<Store>& store, ProtocolLayer& connection)
+		{
 			StoreJournal* j = toJournal(store.hash());
 			SyncConnection* c = toConnection(connection);
 			if(!c || !j)
@@ -503,7 +510,8 @@ private:
 		 * \brief Process updates for the given store on all connections.
 		 */
 		template <typename Store>
-		void process(Synchronizable<Store>& store) {
+		void process(Synchronizable<Store>& store)
+		{
 			process(store.journal());
 		}
 
@@ -511,7 +519,8 @@ private:
 		 * \brief Process updates for the given store on the given connection.
 		 */
 		template <typename Store>
-		StoreJournal::Seq process(ProtocolLayer& connection, Synchronizable<Store>& store) {
+		StoreJournal::Seq process(ProtocolLayer& connection, Synchronizable<Store>& store)
+		{
 			return process(connection, store.journal());
 		}
 
@@ -531,7 +540,8 @@ private:
 		 * \brief Comparator based on the hash string.
 		 */
 		struct HashComparator {
-			bool operator()(char const* a, char const* b) const {
+			bool operator()(char const* a, char const* b) const
+			{
 				return strcmp(a, b) < 0;
 			}
 		};

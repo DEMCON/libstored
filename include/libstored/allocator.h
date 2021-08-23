@@ -43,7 +43,8 @@ namespace stored {
 	 * \brief Wrapper for Config::Allocator::type::allocate().
 	 */
 	template <typename T>
-	__attribute__((warn_unused_result)) static inline T* allocate(size_t n = 1) {
+	__attribute__((warn_unused_result)) static inline T* allocate(size_t n = 1)
+	{
 #if STORED_cplusplus >= 201103L
 		using Allocator = typename Config::Allocator<T>::type;
 		Allocator a;
@@ -58,7 +59,8 @@ namespace stored {
 	 * \brief Wrapper for Config::Allocator::type::deallocate().
 	 */
 	template <typename T>
-	static inline void deallocate(T* p, size_t n = 1) noexcept {
+	static inline void deallocate(T* p, size_t n = 1) noexcept
+	{
 #if STORED_cplusplus >= 201103L
 		using Allocator = typename Config::Allocator<T>::type;
 		Allocator a;
@@ -73,7 +75,8 @@ namespace stored {
 	 * \brief Wrapper for Config::Allocator::type::deallocate() after destroying the given object.
 	 */
 	template <typename T>
-	static inline void cleanup(T* p) noexcept {
+	static inline void cleanup(T* p) noexcept
+	{
 		if(!p)
 			return;
 
@@ -126,14 +129,16 @@ namespace stored {
 				// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
 				~Reset() noexcept final = default;
 
-				R operator()(typename CallableArgType<Args>::type... UNUSED_PAR(args)) const final {
+				R operator()(typename CallableArgType<Args>::type... UNUSED_PAR(args)) const final
+				{
 					throw std::bad_function_call();
 				}
 
 				// NOLINTNEXTLINE(hicpp-explicit-conversions)
 				operator bool() const final { return false; }
 
-				void clone(void* buffer) const final {
+				void clone(void* buffer) const final
+				{
 					new(buffer) Reset;
 				}
 			};
@@ -148,15 +153,18 @@ namespace stored {
 				// NOLINTNEXTLINE(misc-forwarding-reference-overload,bugprone-forwarding-reference-overload)
 				explicit Wrapper(F_&& f) : m_f{std::forward<F_>(f)} {}
 
-				R operator()(typename CallableArgType<Args>::type... args) const final {
+				R operator()(typename CallableArgType<Args>::type... args) const final
+				{
 					return m_f(std::forward<typename CallableArgType<Args>::type>(args)...);
 				}
 
-				void clone(void* buffer) const final {
+				void clone(void* buffer) const final
+				{
 					new(buffer) Wrapper(m_f);
 				}
 
-				void move(void* buffer) final {
+				void move(void* buffer) final
+				{
 					new(buffer) Wrapper(std::move(m_f));
 				}
 
@@ -173,11 +181,13 @@ namespace stored {
 				template <typename F_>
 				explicit Wrapper(R(*f)(Args...)) noexcept : m_f{f} {}
 
-				R operator()(typename CallableArgType<Args>::type... args) const final {
+				R operator()(typename CallableArgType<Args>::type... args) const final
+				{
 					return m_f(std::forward<typename CallableArgType<Args>::type>(args)...);
 				}
 
-				void clone(void* buffer) const final {
+				void clone(void* buffer) const final
+				{
 					new(buffer) Wrapper(m_f);
 				}
 
@@ -193,11 +203,13 @@ namespace stored {
 
 				explicit Wrapper(T& obj) noexcept : m_obj{&obj} {}
 
-				R operator()(typename CallableArgType<Args>::type... args) const final {
+				R operator()(typename CallableArgType<Args>::type... args) const final
+				{
 					return (*m_obj)(std::forward<typename CallableArgType<Args>::type>(args)...);
 				}
 
-				void clone(void* buffer) const final {
+				void clone(void* buffer) const final
+				{
 					new(buffer) Wrapper(*m_obj);
 				}
 
@@ -224,7 +236,8 @@ namespace stored {
 					(*this) = std::move(f);
 				}
 
-				Forwarder& operator=(Forwarder&& f) noexcept {
+				Forwarder& operator=(Forwarder&& f) noexcept
+				{
 					cleanup(m_w);
 					m_w = f.m_w;
 					f.m_w = nullptr;
@@ -237,7 +250,8 @@ namespace stored {
 					(*this) = f;
 				}
 
-				Forwarder& operator=(Forwarder const& f) {
+				Forwarder& operator=(Forwarder const& f)
+				{
 					if(&f != this) {
 						auto w = allocate<Wrapper<F>>();
 						try {
@@ -255,15 +269,18 @@ namespace stored {
 					cleanup(m_w);
 				}
 
-				R operator()(typename CallableArgType<Args>::type... args) const final {
+				R operator()(typename CallableArgType<Args>::type... args) const final
+				{
 					return (*m_w)(std::forward<typename CallableArgType<Args>::type>(args)...);
 				}
 
-				void clone(void* buffer) const final {
+				void clone(void* buffer) const final
+				{
 					new(buffer) Forwarder(*this);
 				}
 
-				void move(void* buffer) final {
+				void move(void* buffer) final
+				{
 					new(buffer) Forwarder(std::move(*this));
 				}
 			private:
@@ -277,21 +294,25 @@ namespace stored {
 			})>;
 
 		public:
-			explicit Callable() {
+			explicit Callable()
+			{
 				construct<Reset>();
 			}
 
 			template <typename G, typename std::enable_if<!std::is_same<typename std::decay<G>::type, Callable>::value, int>::type = 0>
 			// NOLINTNEXTLINE(misc-forwarding-reference-overload,bugprone-forwarding-reference-overload)
-			explicit Callable(G&& g) {
+			explicit Callable(G&& g)
+			{
 				assign(std::forward<G>(g));
 			}
 
-			Callable(Callable const& c) {
+			Callable(Callable const& c)
+			{
 				c.get().clone(m_buffer.data());
 			}
 
-			Callable(Callable&& c) noexcept {
+			Callable(Callable&& c) noexcept
+			{
 				c.get().move(m_buffer.data());
 				c = nullptr;
 			}
@@ -300,22 +321,26 @@ namespace stored {
 				get().~Base();
 			}
 
-			R operator()(typename CallableArgType<Args>::type... args) const {
+			R operator()(typename CallableArgType<Args>::type... args) const
+			{
 				return get()(std::forward<typename CallableArgType<Args>::type>(args)...);
 			}
 
 			// NOLINTNEXTLINE(hicpp-explicit-conversions)
-			operator bool() const noexcept {
+			operator bool() const noexcept
+			{
 				return get();
 			}
 
 			template <typename G, typename std::enable_if<!std::is_same<typename std::decay<G>::type, Callable>::value, int>::type = 0>
-			Callable& operator=(G&& g) {
+			Callable& operator=(G&& g)
+			{
 				replace(std::forward<G>(g));
 				return *this;
 			}
 
-			Callable& operator=(Callable const& c) {
+			Callable& operator=(Callable const& c)
+			{
 				if(&c != this) {
 					destroy();
 					try {
@@ -328,7 +353,8 @@ namespace stored {
 				return *this;
 			}
 
-			Callable& operator=(Callable&& c) noexcept {
+			Callable& operator=(Callable&& c) noexcept
+			{
 				destroy();
 				c.get().move(m_buffer.data());
 				c = nullptr;
@@ -336,53 +362,60 @@ namespace stored {
 			}
 
 		protected:
-			Base const& get() const noexcept {
+			Base const& get() const noexcept
+			{
 				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 				return *reinterpret_cast<Base const*>(m_buffer.data());
 			}
 
-			Base& get() noexcept {
+			Base& get() noexcept
+			{
 				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 				return *reinterpret_cast<Base*>(m_buffer.data());
 			}
 
 			template <typename G,
-					typename F_ = typename CallableType<G>::type>
+				typename F_ = typename CallableType<G>::type>
 			typename std::enable_if<(sizeof(Wrapper<F_>) > std::tuple_size<Buffer>::value)>::type
 			/* void */ assign(G&& g) {
 				construct<Forwarder<F_>>(std::forward<G>(g));
 			}
 
 			template <typename G,
-					typename F_ = typename CallableType<G>::type>
+				typename F_ = typename CallableType<G>::type>
 			typename std::enable_if<(sizeof(Wrapper<F_>) <= std::tuple_size<Buffer>::value)>::type
 			/* void */ assign(G&& g) {
 				construct<Wrapper<F_>>(std::forward<G>(g));
 			}
 
-			void assign(R(*g)(Args...)) {
+			void assign(R(*g)(Args...))
+			{
 				if(g)
 					construct<Wrapper<R(*)(Args...)>>(g);
 				else
 					construct<Reset>();
 			}
 
-			void assign(std::nullptr_t) {
+			void assign(std::nullptr_t)
+			{
 				construct<Reset>();
 			}
 
 			template <typename T, typename... TArgs>
-			void construct(TArgs&&... args) {
+			void construct(TArgs&&... args)
+			{
 				static_assert(sizeof(T) <= std::tuple_size<Buffer>::value, "");
 				new(m_buffer.data()) T{std::forward<TArgs>(args)...};
 			}
 
-			void destroy() noexcept {
+			void destroy() noexcept
+			{
 				get().~Base();
 			}
 
 			template <typename G>
-			void replace(G&& g) {
+			void replace(G&& g)
+			{
 				destroy();
 				try {
 					assign(std::forward<G>(g));
