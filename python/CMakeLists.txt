@@ -41,6 +41,7 @@ list(APPEND pylibstored_src
 	libstored/visu/__main__.py
 	libstored/visu/example/example.qrc
 	libstored/visu/example/main.qml
+	ed2/__init__.py
 	setup.py
 )
 
@@ -54,12 +55,14 @@ execute_process(
 add_subdirectory(libstored/visu)
 
 set(pylibstored_wheel_file "libstored-${pylibstored_version}-py3-none-any.whl" CACHE INTERNAL "")
-set(pylibstored_wheel "${CMAKE_CURRENT_SOURCE_DIR}/dist/${pylibstored_wheel_file}" CACHE INTERNAL "")
+set(pylibstored_wheel "${CMAKE_CURRENT_BINARY_DIR}/dist/${pylibstored_wheel_file}" CACHE INTERNAL "")
 
 add_custom_command(
 	OUTPUT ${pylibstored_wheel}
 	DEPENDS visu-example ${pylibstored_src}
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/setup.py -q sdist bdist_wheel
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/setup.py -q
+		sdist -d ${CMAKE_CURRENT_BINARY_DIR}/dist
+		bdist_wheel -b ${CMAKE_CURRENT_BINARY_DIR}/build -d ${CMAKE_CURRENT_BINARY_DIR}/dist
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	COMMENT "Generate pylibstored distributables"
 	VERBATIM

@@ -1031,9 +1031,9 @@ class Tracing(Macro):
 class ZmqClient(QObject):
     """A ZMQ client.
 
-    This client can connect to either the ed2.zmq_server.ZmqServer and stored::DebugZmqLayer.
+    This client can connect to either the libstored.zmq_server.ZmqServer and stored::DebugZmqLayer.
 
-    Instantiate as ed2.ZmqClient().
+    Instantiate as libstored.ZmqClient().
     """
 
     traceThreshold_s = 0.1

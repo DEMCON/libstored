@@ -53,14 +53,14 @@ function(libstored_visu target rcc)
 	add_custom_command(
 		OUTPUT ${rcc}
 		DEPENDS
-			${LIBSTORED_SOURCE_DIR}/client/ed2/visu/visu.qrc
-			${LIBSTORED_SOURCE_DIR}/client/ed2/visu/Components/Input.qml
-			${LIBSTORED_SOURCE_DIR}/client/ed2/visu/Components/Measurement.qml
-			${LIBSTORED_SOURCE_DIR}/client/ed2/visu/Components/StoreObject.qml
-			${LIBSTORED_SOURCE_DIR}/client/ed2/visu/Components/qmldir
+			${LIBSTORED_SOURCE_DIR}/python/libstored/visu/visu.qrc
+			${LIBSTORED_SOURCE_DIR}/python/libstored/visu/Components/Input.qml
+			${LIBSTORED_SOURCE_DIR}/python/libstored/visu/Components/Measurement.qml
+			${LIBSTORED_SOURCE_DIR}/python/libstored/visu/Components/StoreObject.qml
+			${LIBSTORED_SOURCE_DIR}/python/libstored/visu/Components/qmldir
 			${ARGN}
 			${rcc}.qrc
-		COMMAND ${RCC_EXE} $<SHELL_PATH:${LIBSTORED_SOURCE_DIR}/client/ed2/visu/visu.qrc> $<SHELL_PATH:${rcc}.qrc> -o $<SHELL_PATH:${rcc}>
+		COMMAND ${RCC_EXE} $<SHELL_PATH:${LIBSTORED_SOURCE_DIR}/python/libstored/visu/visu.qrc> $<SHELL_PATH:${rcc}.qrc> -o $<SHELL_PATH:${rcc}>
 		COMMENT "Generating ${target} visu"
 		VERBATIM
 	)
