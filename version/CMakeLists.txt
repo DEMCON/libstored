@@ -47,7 +47,7 @@ configure_file(
 	@ONLY ESCAPE_QUOTES)
 
 configure_file(
-	${PROJECT_SOURCE_DIR}/client/ed2/version.py.in
-	${PROJECT_SOURCE_DIR}/client/ed2/version.py
+	${PROJECT_SOURCE_DIR}/python/libstored/version.py.in
+	${PROJECT_SOURCE_DIR}/python/libstored/version.py
 	@ONLY ESCAPE_QUOTES)
 

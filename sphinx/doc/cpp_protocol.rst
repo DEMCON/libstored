@@ -17,15 +17,16 @@ required. Different configurations may be possible:
   application, such that the application binds to a REP socket.  A client can
   connect to the application directly.
 - Terminal application with only stdin/stdout: use escape sequences in the
-  stdin/stdout stream. ``client/ed2.wrapper.stdio`` is provided to inject/extract
-  these messages from those streams and prove a ZeroMQ interface.
-- Application over CAN: like a ``client/ed2.wrapper.stdio``, a CAN extractor to
-  ZeroMQ bridge is required.
+  stdin/stdout stream. ``python/libstored.wrapper.stdio`` is provided to
+  inject/extract these messages from those streams and prove a ZeroMQ
+  interface.
+- Application over CAN: like a ``python/libstored.wrapper.stdio``, a CAN
+  extractor to ZeroMQ bridge is required.
 
 Then, the client_ can be connected to the ZeroMQ interface.
 
 Test it using the ``terminal`` example, started using the
-``client/ed2.wrapper.stdio``. Then connect one of the clients to it.
+``python/libstored.wrapper.stdio``. Then connect one of the clients to it.
 
 libstored suggests to use the protocol layers below, where applicable.
 Standard layer implementations can be used to construct the following stacks (top-down):

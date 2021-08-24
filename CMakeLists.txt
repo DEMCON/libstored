@@ -137,7 +137,7 @@ if(LIBSTORED_EXAMPLES)
 endif()
 
 option(LIBSTORED_PIP_INSTALL_USER "Run pip install with --user flag when installing wheel files" ON)
-add_subdirectory(client)
+add_subdirectory(python)
 
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0")
 	if(CMAKE_CROSSCOMPILING)

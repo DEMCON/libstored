@@ -215,7 +215,10 @@ function(libstored_lib libprefix libpath)
 	endif()
 
 	if(LIBSTORED_INSTALL_STORE_LIBS)
-		install(TARGETS ${libprefix}libstored EXPORT libstored ARCHIVE PUBLIC_HEADER)
+		install(TARGETS ${libprefix}libstored EXPORT libstored
+			ARCHIVE DESTINATION lib
+			PUBLIC_HEADER DESTINATION include
+		)
 	endif()
 endfunction()
 

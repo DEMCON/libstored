@@ -7,7 +7,7 @@ Base classes
 Stream2Zmq
 ``````````
 
-.. autoclass:: ed2.Stream2Zmq
+.. autoclass:: libstored.Stream2Zmq
    :members:
    :undoc-members:
    :inherited-members:
@@ -15,7 +15,7 @@ Stream2Zmq
 Stdio2Zmq
 `````````
 
-.. autoclass:: ed2.Stdio2Zmq
+.. autoclass:: libstored.Stdio2Zmq
    :members:
    :undoc-members:
    :inherited-members:
@@ -23,7 +23,7 @@ Stdio2Zmq
 Serial2Zmq
 ``````````
 
-.. autoclass:: ed2.Serial2Zmq
+.. autoclass:: libstored.Serial2Zmq
    :members:
    :undoc-members:
    :inherited-members:
@@ -31,19 +31,19 @@ Serial2Zmq
 ZmqServer
 `````````
 
-.. autoclass:: ed2.ZmqServer
+.. autoclass:: libstored.ZmqServer
    :members:
    :undoc-members:
    :inherited-members:
 
 
-ed2.wrapper.stdio
------------------
+libstored.wrapper.stdio
+-----------------------
 
 A stdin/stdout frame grabber to ZmqServer wrapper for a to-be-started process.
 
-ed2.wrapper.serial
-------------------
+libstored.wrapper.serial
+------------------------
 
 A frame grabber to ZmqServer wrapper for a serial port.
 

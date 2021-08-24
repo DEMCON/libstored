@@ -1,0 +1,2 @@
+include libstored/gui/gui_client.qml
+include libstored/gui/twotone_bug_report_black_48dp.png

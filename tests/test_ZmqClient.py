@@ -18,7 +18,7 @@
 
 import unittest
 import subprocess
-import ed2
+import libstored
 import sys
 import logging
 from PySide2.QtCore import QCoreApplication
@@ -36,7 +36,7 @@ class ZmqClientTest(unittest.TestCase):
             stdin=subprocess.DEVNULL, stdout=sys.stdout, stderr=sys.stdout)
 
         cls.logger.info(f'Connecting...')
-        cls.c = ed2.ZmqClient()
+        cls.c = libstored.ZmqClient()
 
         cls.logger.info(f'Connected')
 
@@ -49,8 +49,8 @@ class ZmqClientTest(unittest.TestCase):
     def test_dummy(self):
         self.assertTrue(True)
 
-    def test_ed2_version(self):
-        print(f'Library version {ed2.__version__}')
+    def test_version(self):
+        print(f'Library version {libstored.__version__}')
 
     def test_identification(self):
         self.assertEqual(self.c.identification(), 'zmqserver')

@@ -1,4 +1,6 @@
-﻿.. image:: https://github.com/DEMCON/libstored/workflows/CI/badge.svg
+﻿
+
+.. image:: https://github.com/DEMCON/libstored/workflows/CI/badge.svg
    :alt: CI
    :target: https://github.com/DEMCON/libstored/actions?query=workflow%3ACI
 
@@ -47,7 +49,7 @@ Table of contents
    - `Example`_
    - `Embedded Debugger protocol`_
 - `How to build`_
-	- `How to integrate in your build`_
+   - `How to integrate in your build`_
 - `License`_
 
 
@@ -95,28 +97,28 @@ libstored - Store by description
 The store is described in a simple grammar.  See the examples_ directory for
 more explanation. This is just an impression of the syntax::
 
-	// Comment
-	// Grammar: type:size[array]=initializer long name with any character
+   // Comment
+   // Grammar: type:size[array]=initializer long name with any character
 
-	uint32 some int
-	int8=42 another int, which is initialized
-	(uint64) time (s)
+   uint32 some int
+   int8=42 another int, which is initialized
+   (uint64) time (s)
 
-	{
-		bool=true b
-		double[2] numbers
-		string:16 s
-	} scope
+   {
+      bool=true b
+      double[2] numbers
+      string:16 s
+   } scope
 
 The generated store (C++ class) has variables that can be accessed like this::
 
-	mystore.some_int = 10;
-	int i = mystore.another_int_which_is_initialized;
-	mystore.time_s.get();
-	mystore.scope__b = false;
-	mystore.scope__numbers_0.set(0.1);
-	mystore.scope__numbers_1.set(1.1);
-	mystore.scope__s.set("hello");
+   mystore.some_int = 10;
+   int i = mystore.another_int_which_is_initialized;
+   mystore.time_s.get();
+   mystore.scope__b = false;
+   mystore.scope__numbers_0.set(0.1);
+   mystore.scope__numbers_1.set(1.1);
+   mystore.scope__s.set("hello");
 
 The store has a few other interesting properties:
 
@@ -160,11 +162,11 @@ The topology is arbitrary, as long as every store instance has one root, where
 it gets its initial copy from. You could, for example, construct the following
 topology::
 
-	B--A--C
-	   |
-	G--D--E--F
-	   |
-	   H
+   B--A--C
+      |
+   G--D--E--F
+      |
+      H
 
 Assume that A is the first node, of all other nodes gets the initial copy from.
 So, D registers at A, then E gets it from D, F from E, etc. After setup, any
@@ -230,17 +232,17 @@ Debugger instance. The connect to this C++ bridge.
 Example
 ```````
 
-The host tools to debug your application are written in python, as the ``ed2``
-package, and are located the ``client`` directory. You can run the example below
-by running python from the ``client`` directory, but you can also install the
-``ed2`` package on your system. To do this, execute the ``ed2-install`` cmake
-target, such as::
+The host tools to debug your application are written in python, as the
+``libstored`` package, and are located the ``python`` directory. You can run
+the example below by running python from the ``python`` directory, but you can
+also install the ``libstored`` package on your system. To do this, execute the
+``pylibstored-install`` cmake target, such as::
 
-	cd build
-	make ed2-install
+   cd build
+   make pylibstored-install
 
-This builds a wheel from the ``client`` directory and installs it locally using
-``pip``.  Now you can just fire up python and do ``import ed2``.
+This builds a wheel from the ``python`` directory and installs it locally using
+``pip``.  Now you can just fire up python and do ``import libstored``.
 
 To get a grasp how debugging feels like, try the following.
 
@@ -251,23 +253,24 @@ To get a grasp how debugging feels like, try the following.
 - Run ``examples/zmqserver/zmqserver``. This starts an application with a store
   with all kinds of object types, and provides a ZeroMQ server interface for
   debugging.
-- Run ``python3 -m ed2.gui -l`` within the ``client`` directory. This GUI connects
-  to both the ``zmqserver`` application via ZeroMQ, and to the ``lognplot`` instance.
+- Run ``python3 -m libstored.gui -l`` within the ``python`` directory. This GUI
+  connects to both the ``zmqserver`` application via ZeroMQ, and to the
+  ``lognplot`` instance.
 - The GUI window will pop up and show the objects of the ``zmqserver`` example.
   If polling is enabled of one of the objects, the values are forwarded to
   ``lognplot``.
 
 The structure of this setup is::
 
-	+---------+        +----------+
-	| ed2.gui | -----> | lognplot |
-	+---------+        +----------+
-	      |
-	      | ZeroMQ REQ/REP channel
-	      |
-	+-----------+
-	| zmqserver |
-	+-----------+
+   +---------------+        +----------+
+   | libstored.gui | -----> | lognplot |
+   +---------------+        +----------+
+         |
+         | ZeroMQ REQ/REP channel
+         |
+   +-----------+
+   | zmqserver |
+   +-----------+
 
 .. image:: examples/zmqserver/zmqserver_screenshot.png
    :alt: zmqserver debugging screenshot
@@ -276,36 +279,36 @@ The Embedded Debugger client connects via ZeroMQ.
 If you application does not have it, you must implement is somehow.
 The ``examples/terminal/terminal`` application could be debugged as follows:
 
-- Run ``python3 -m ed2.wrapper.stdio ../build/examples/terminal/terminal`` from
-  the ``client`` directory.  This starts the ``terminal`` example, and extracts
-  escaped debugger frames from ``stdout``, which are forwarded to a ZeroMQ
-  interface.
-- Connect a client, such as ``python3 -m ed2.gui``.
-  Instead of using ``lognplot``, the GUI can also write all auto-refreshed data
-  to a CSV file when the ``-f log.csv`` is passed on the command line. Then,
-  Kst_ can be used for live viewing the file.
+- Run ``python3 -m libstored.wrapper.stdio
+  ../build/examples/terminal/terminal`` from the ``python`` directory.  This
+  starts the ``terminal`` example, and extracts escaped debugger frames from
+  ``stdout``, which are forwarded to a ZeroMQ interface.
+- Connect a client, such as ``python3 -m libstored.gui``.  Instead of using
+  ``lognplot``, the GUI can also write all auto-refreshed data to a CSV file
+  when the ``-f log.csv`` is passed on the command line. Then, Kst_ can be used
+  for live viewing the file.
 
 The structure of this setup is::
 
-	+---------+        +---------+           +-----+
-	| ed2.gui | -----> | log.csv | --------> | Kst |
-	+---------+        +---------+           +-----+
-	      |
-	      | ZeroMQ REQ/REP channel
-	      |
-	+-------------------+
-	| ed2.wrapper.stdio | ---------- terminal interface
-	+-------------------+
-	      |
-	      | stdin/stdout (mixed terminal interface
-	      | with Embedded Debugger messages)
-	      |
-	+----------+
-	| terminal |
-	+----------+
+   +---------------+        +---------+           +-----+
+   | libstored.gui | -----> | log.csv | --------> | Kst |
+   +---------------+        +---------+           +-----+
+         |
+         | ZeroMQ REQ/REP channel
+         |
+   +-------------------------+
+   | libstored.wrapper.stdio | ---------- terminal interface
+   +-------------------------+
+         |
+         | stdin/stdout (mixed terminal interface
+         | with Embedded Debugger messages)
+         |
+   +----------+
+   | terminal |
+   +----------+
 
-There are some more ready-to-use clients, and a Python module in the
-client_ directory.
+There are some more ready-to-use clients, and a Python module in the python_
+directory.
 
 
 Embedded Debugger protocol
@@ -325,7 +328,7 @@ having auto retransmit on packet loss, CRC-8/16, segmentation, buffering, MTU
 size, ASCII escaping and encapsulation. See also ``examples/7_protocol``.
 
 To get a grasp about the protocol, I had a short chat with the ``zmqserver``
-example using the ``ed2.cli``.  See the transcript below. Lines starting
+example using the ``libstored.cli``.  See the transcript below. Lines starting
 with ``>`` are requests, entered by me, lines starting with ``<`` are responses
 from the application.
 
@@ -343,60 +346,60 @@ Refer to the documentation for the details about these and other commands.
 
 ::
 
-	>  ?
-	<  ?rwelamivRWst
-	>  l
-	<  0110/a blob
-	201/a bool
-	2b4/a float
-	2f8/a double
-	02f/a string
-	312/a uint16
-	334/a uint32
-	301/a uint8
-	378/a uint64
-	234/a ptr32
-	278/a ptr64
-	392/an int16
-	3b4/an int32
-	381/an int8
-	3f8/an int64
-	7b4/compute/an int8 + an int16
-	734/compute/length of /a string
-	6f8/compute/circle area (r = /a double)
-	734/stats/ZMQ messages
-	734/stats/object writes
-	778/t (us)
-	6f8/rand
+   >  ?
+   <  ?rwelamivRWst
+   >  l
+   <  0110/a blob
+   201/a bool
+   2b4/a float
+   2f8/a double
+   02f/a string
+   312/a uint16
+   334/a uint32
+   301/a uint8
+   378/a uint64
+   234/a ptr32
+   278/a ptr64
+   392/an int16
+   3b4/an int32
+   381/an int8
+   3f8/an int64
+   7b4/compute/an int8 + an int16
+   734/compute/length of /a string
+   6f8/compute/circle area (r = /a double)
+   734/stats/ZMQ messages
+   734/stats/object writes
+   778/t (us)
+   6f8/rand
 
-	>  i
-	<  zmqserver
-	>  r/a bool
-	<  0
-	>  w1/a bool
-	<  !
-	>  r/a bool
-	<  1
-	>  r/s/Z
-	<  14
-	>  r/s/Z
-	<  15
-	>  r/rand
-	<  3d26000000000000
-	>  r/rand
-	<  3f50250b79ae8000
-	>  r/rand
-	<  3fa550a89cb27a00
-	>  v
-	<  2
-	>  ar/rand
-	<  !
-	>  rr
-	<  3fc69c39e2668200
-	>  rr
-	<  3fd755a4ab38afc0
-	>  rr
-	<  3fb7617168255e00
+   >  i
+   <  zmqserver
+   >  r/a bool
+   <  0
+   >  w1/a bool
+   <  !
+   >  r/a bool
+   <  1
+   >  r/s/Z
+   <  14
+   >  r/s/Z
+   <  15
+   >  r/rand
+   <  3d26000000000000
+   >  r/rand
+   <  3f50250b79ae8000
+   >  r/rand
+   <  3fa550a89cb27a00
+   >  v
+   <  2
+   >  ar/rand
+   <  !
+   >  rr
+   <  3fc69c39e2668200
+   >  rr
+   <  3fd755a4ab38afc0
+   >  rr
+   <  3fb7617168255e00
 
 
 How to build
@@ -406,10 +409,10 @@ Run ``scripts/bootstrap`` (as Administrator under Windows) once to install all
 build dependencies.  Then run ``scripts/build`` to build the project. This does
 effectively::
 
-	mkdir build
-	cd build
-	cmake .. -DCMAKE_INSTALL_PREFIX=dist
-	cmake --build .
+   mkdir build
+   cd build
+   cmake .. -DCMAKE_INSTALL_PREFIX=dist
+   cmake --build .
    cmake --build . --target install
 
 ``scripts/build`` takes an optional argument, which allows you to specify the
@@ -422,8 +425,8 @@ generated under ``examples/1_hello``, while the example itself is built in the
 
 To run all tests, use one of::
 
-	cmake --build . --target test
-	cmake --build . --target RUN_TESTS
+   cmake --build . --target test
+   cmake --build . --target RUN_TESTS
 
 
 How to integrate in your build
@@ -437,10 +440,10 @@ generate stuff for you.  This is how to integrate it in your project:
   dependencies.
 - Include libstored to your cmake project. For example::
 
-		set(LIBSTORED_EXAMPLES OFF CACHE BOOL "Disable libstored examples" FORCE)
-		set(LIBSTORED_TESTS OFF CACHE BOOL "Disable libstored tests" FORCE)
-		set(LIBSTORED_DOCUMENTATION OFF CACHE BOOL "Disable libstored documentation" FORCE)
-		add_subdirectory(libstored)
+      set(LIBSTORED_EXAMPLES OFF CACHE BOOL "Disable libstored examples" FORCE)
+      set(LIBSTORED_TESTS OFF CACHE BOOL "Disable libstored tests" FORCE)
+      set(LIBSTORED_DOCUMENTATION OFF CACHE BOOL "Disable libstored documentation" FORCE)
+      add_subdirectory(libstored)
 
 - Optional: install ``scripts/st.vim`` in ``$HOME/.vim/syntax`` to have proper
   syntax highlighting in vim.
@@ -450,8 +453,8 @@ generate stuff for you.  This is how to integrate it in your project:
   the sources in the ``libstored`` subdirectory of the current source directory,
   a library named ``app-libstored``, and set all the dependencies right::
 
-		add_executable(app main.cpp)
-		libstored_generate(app MyStore.st)
+      add_executable(app main.cpp)
+      libstored_generate(app MyStore.st)
 
 - Now, build your ``app``. The generated libstored library is automatically
   built.
@@ -494,5 +497,5 @@ along with this program.  If not, see https://www.gnu.org/licenses/.
 .. _8_sync: https://github.com/DEMCON/libstored/tree/master/examples/8_sync
 .. _heatshrink: https://github.com/atomicobject/heatshrink
 .. _Kst: https://kst-plot.kde.org/
-.. _client: https://github.com/DEMCON/libstored/tree/master/client
+.. _python: https://github.com/DEMCON/libstored/tree/master/python
 

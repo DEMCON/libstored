@@ -1,11 +1,10 @@
-setuptools
-wheel
+setuptools >= 38.6.0
+wheel >= 0.31.0
 jinja2
 textx
 pyzmq
 pyside2
 pyserial
-lognplot
 natsort
 crcmod
 heatshrink2
