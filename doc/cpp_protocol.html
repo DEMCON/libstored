@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Protocol &mdash; libstored 1.0.0-rc documentation</title>
+  <title>Protocol &mdash; libstored 1.0.0 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                1.0.0.dev0
+                1.0.0
               </div>
             
           
@@ -229,14 +229,15 @@ required. Different configurations may be possible:</p>
 application, such that the application binds to a REP socket.  A client can
 connect to the application directly.</p></li>
 <li><p>Terminal application with only stdin/stdout: use escape sequences in the
-stdin/stdout stream. <code class="docutils literal notranslate"><span class="pre">client/ed2.wrapper.stdio</span></code> is provided to inject/extract
-these messages from those streams and prove a ZeroMQ interface.</p></li>
-<li><p>Application over CAN: like a <code class="docutils literal notranslate"><span class="pre">client/ed2.wrapper.stdio</span></code>, a CAN extractor to
-ZeroMQ bridge is required.</p></li>
+stdin/stdout stream. <code class="docutils literal notranslate"><span class="pre">python/libstored.wrapper.stdio</span></code> is provided to
+inject/extract these messages from those streams and prove a ZeroMQ
+interface.</p></li>
+<li><p>Application over CAN: like a <code class="docutils literal notranslate"><span class="pre">python/libstored.wrapper.stdio</span></code>, a CAN
+extractor to ZeroMQ bridge is required.</p></li>
 </ul>
 <p>Then, the <a class="reference external" href="py.html">client</a> can be connected to the ZeroMQ interface.</p>
 <p>Test it using the <code class="docutils literal notranslate"><span class="pre">terminal</span></code> example, started using the
-<code class="docutils literal notranslate"><span class="pre">client/ed2.wrapper.stdio</span></code>. Then connect one of the clients to it.</p>
+<code class="docutils literal notranslate"><span class="pre">python/libstored.wrapper.stdio</span></code>. Then connect one of the clients to it.</p>
 <p>libstored suggests to use the protocol layers below, where applicable.
 Standard layer implementations can be used to construct the following stacks (top-down):</p>
 <ul class="simple">
@@ -1065,7 +1066,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dt class="sig sig-object cpp" id="_CPPv4N6stored13DebugZmqLayer13DebugZmqLayerEPviP13ProtocolLayerP13ProtocolLayer">
 <span id="_CPPv3N6stored13DebugZmqLayer13DebugZmqLayerEPviP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored13DebugZmqLayer13DebugZmqLayerEPviP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::DebugZmqLayer::DebugZmqLayer__voidP.i.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_debug_zmq_layer_1a53d99c8a2bf36828686aec34b9175999"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DebugZmqLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">context</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">port</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored13DebugZmqLayerUt2_3711DefaultPortE" title="stored::DebugZmqLayer::[anonymous]::DefaultPort"><span class="n"><span class="pre">DefaultPort</span></span></a>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored13DebugZmqLayer13DebugZmqLayerEPviP13ProtocolLayerP13ProtocolLayer" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Constructor. </p>
-<p>The given <code class="docutils literal notranslate"><span class="pre">port</span></code> used for a REQ/REP socket over TCP. This is the listening side, where a client like the <code class="docutils literal notranslate"><span class="pre">ed2.gui</span></code> can connect to.</p>
+<p>The given <code class="docutils literal notranslate"><span class="pre">port</span></code> used for a REQ/REP socket over TCP. This is the listening side, where a client like the <code class="docutils literal notranslate"><span class="pre">libstored.gui</span></code> can connect to.</p>
 <p><dl class="simple">
 <dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a> </p>
 </dd>

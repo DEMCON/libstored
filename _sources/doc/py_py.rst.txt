@@ -4,43 +4,43 @@
 ZmqClient
 ---------
 
-.. autoclass:: ed2.ZmqClient
+.. autoclass:: libstored.ZmqClient
    :members:
    :undoc-members:
 
 Protocol layers
 ---------------
 
-.. autoclass:: ed2.protocol.ProtocolLayer
+.. autoclass:: libstored.protocol.ProtocolLayer
    :members:
    :undoc-members:
 
-.. autoclass:: ed2.protocol.AsciiEscapeLayer
+.. autoclass:: libstored.protocol.AsciiEscapeLayer
 
-.. autoclass:: ed2.protocol.TerminalLayer
+.. autoclass:: libstored.protocol.TerminalLayer
 
-.. autoclass:: ed2.protocol.PubTerminalLayer
+.. autoclass:: libstored.protocol.PubTerminalLayer
 
-.. autoclass:: ed2.protocol.SegmentationLayer
+.. autoclass:: libstored.protocol.SegmentationLayer
 
-.. autoclass:: ed2.protocol.DebugArqLayer
+.. autoclass:: libstored.protocol.DebugArqLayer
 
-.. autoclass:: ed2.protocol.Crc8Layer
+.. autoclass:: libstored.protocol.Crc8Layer
 
-.. autoclass:: ed2.protocol.Crc16Layer
+.. autoclass:: libstored.protocol.Crc16Layer
 
-.. autoclass:: ed2.protocol.LoopbackLayer
+.. autoclass:: libstored.protocol.LoopbackLayer
 
-.. autoclass:: ed2.protocol.RawLayer
+.. autoclass:: libstored.protocol.RawLayer
 
 Protocol stack
 --------------
 
-.. autoclass:: ed2.protocol.ProtocolStack
+.. autoclass:: libstored.protocol.ProtocolStack
    :members:
    :undoc-members:
 
-.. autofunction:: ed2.protocol.registerLayerType
+.. autofunction:: libstored.protocol.registerLayerType
 
-.. autofunction:: ed2.protocol.buildStack
+.. autofunction:: libstored.protocol.buildStack
 

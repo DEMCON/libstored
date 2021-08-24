@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>8_sync &mdash; libstored 1.0.0-rc documentation</title>
+  <title>8_sync &mdash; libstored 1.0.0 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                1.0.0.dev0
+                1.0.0
               </div>
             
           
@@ -227,8 +227,8 @@ bool b
 <span class="cm"> *</span>
 <span class="cm"> * - Run first instance: `8_sync -i inst1 -d ipc://libstored/example -p 2222`</span>
 <span class="cm"> * - Run second instance: `8_sync -i inst2 -u ipc://libstored/example -p 2223`</span>
-<span class="cm"> * - Run a debugger for first instance: `python3 -m ed2.gui -p 2222`</span>
-<span class="cm"> * - Run a debugger for second instance: `python3 -m ed2.gui -p 2223`</span>
+<span class="cm"> * - Run a debugger for first instance: `python3 -m libstored.gui -p 2222`</span>
+<span class="cm"> * - Run a debugger for second instance: `python3 -m libstored.gui -p 2223`</span>
 <span class="cm"> * - Enable tracing on all variables. You will notice that when you change a</span>
 <span class="cm"> *   value within /ExampleSync1, it will be synchronized immediately.</span>
 <span class="cm"> *   Changes within /ExampleSync2 are only synchronized once you write to</span>

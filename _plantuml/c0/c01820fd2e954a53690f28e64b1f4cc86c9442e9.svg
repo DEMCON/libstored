@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="710px" preserveAspectRatio="none" style="width:1071px;height:710px;" version="1.1" viewBox="0 0 1071 710" width="1071px" zoomAndPan="magnify"><defs><filter height="300%" id="f1r7yitzxdv33g" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><!--cluster Microcontroller--><polygon fill="#FFFFFF" filter="url(#f1r7yitzxdv33g)" points="500,34,510,24,1049,24,1049,407.5,1039,417.5,500,417.5,500,34" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="1039" x2="1048" y1="34" y2="25"/><line style="stroke: #000000; stroke-width: 1.5;" x1="500" x2="1039" y1="34" y2="34"/><line style="stroke: #000000; stroke-width: 1.5;" x1="1039" x2="1039" y1="34" y2="417.5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="120" x="710.5" y="49.9951">Microcontroller</text><!--cluster PC--><polygon fill="#FFFFFF" filter="url(#f1r7yitzxdv33g)" points="22,226,32,216,471,216,471,663.5,461,673.5,22,673.5,22,226" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="461" x2="470" y1="226" y2="217"/><line style="stroke: #000000; stroke-width: 1.5;" x1="22" x2="461" y1="226" y2="226"/><line style="stroke: #000000; stroke-width: 1.5;" x1="461" x2="461" y1="226" y2="673.5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="21" x="232" y="241.9951">PC</text><!--cluster FPGA--><polygon fill="#FFFFFF" filter="url(#f1r7yitzxdv33g)" points="595,451.5,605,441.5,896,441.5,896,688,886,698,595,698,595,451.5" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="886" x2="895" y1="451.5" y2="442.5"/><line style="stroke: #000000; stroke-width: 1.5;" x1="595" x2="886" y1="451.5" y2="451.5"/><line style="stroke: #000000; stroke-width: 1.5;" x1="886" x2="886" y1="451.5" y2="698"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="42" x="720.5" y="467.4951">FPGA</text><!--entity storeA1--><rect fill="#FEFECE" filter="url(#f1r7yitzxdv33g)" height="36.2969" style="stroke: #000000; stroke-width: 1.5;" width="118" x="733" y="64"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="98" x="743" y="86.9951">Store A (C++)</text><!--entity storeB1--><rect fill="#FEFECE" filter="url(#f1r7yitzxdv33g)" height="36.2969" style="stroke: #000000; stroke-width: 1.5;" width="119" x="578.5" y="64"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="99" x="588.5" y="86.9951">Store B (C++)</text><!--entity app1--><path d="M593.5,167 C593.5,164 595.5,162 598.5,162 C601.5,162 603.5,164 603.5,167 C603.5,164 605.5,162 608.5,162 C611.5,162 613.5,164 613.5,167 C613.5,164 615.5,162 618.5,162 C621.5,162 623.5,164 623.5,167 C623.5,164 625.5,162 628.5,162 C631.5,162 633.5,164 633.5,167 C633.5,164 635.5,162 638.5,162 C641.5,162 643.5,164 643.5,167 C643.5,164 645.5,162 648.5,162 C651.5,162 653.5,164 653.5,167 C653.5,164 655.5,162 658.5,162 C661.5,162 663.5,164 663.5,167 C663.5,164 665.5,162 668.5,162 C671.5,162 673.5,164 673.5,167 C673.5,164 675.5,162 678.5,162 C681.5,162 683.5,164 683.5,167 C686.5,167 688.5,169 688.5,172 C688.5,175 686.5,177 683.5,177 C686.5,177 688.5,179 688.5,182 C688.5,185 686.5,187 683.5,187 C683.5,190 680.5,192 678.5,192 C675.5,192 673.5,190 673.5,187 C673.5,190 670.5,192 668.5,192 C665.5,192 663.5,190 663.5,187 C663.5,190 660.5,192 658.5,192 C655.5,192 653.5,190 653.5,187 C653.5,190 650.5,192 648.5,192 C645.5,192 643.5,190 643.5,187 C643.5,190 640.5,192 638.5,192 C635.5,192 633.5,190 633.5,187 C633.5,190 630.5,192 628.5,192 C625.5,192 623.5,190 623.5,187 C623.5,190 620.5,192 618.5,192 C615.5,192 613.5,190 613.5,187 C613.5,190 610.5,192 608.5,192 C605.5,192 603.5,190 603.5,187 C603.5,190 600.5,192 598.5,192 C595.5,192 593.5,190 593.5,187 C590.5,187 588.5,185 588.5,182 C588.5,179 590.5,177 593.5,177 C590.5,177 588.5,175 588.5,172 C588.5,169 590.5,167 593.5,167 " fill="#FEFECE" filter="url(#f1r7yitzxdv33g)" style="stroke: #000000; stroke-width: 1.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="75" x="600.5" y="182.9951">Application</text><!--entity debugger--><rect fill="#FEFECE" filter="url(#f1r7yitzxdv33g)" height="36.2969" style="stroke: #000000; stroke-width: 1.5;" width="90" x="721" y="160"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="70" x="731" y="182.9951">Debugger</text><!--entity debugstack--><rect fill="#FEFECE" filter="url(#f1r7yitzxdv33g)" height="133.4844" style="stroke: #000000; stroke-width: 1.5;" width="150" x="516" y="268.5"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="106" x="526" y="291.4951">DebugArqLayer</text><line style="stroke: #000000; stroke-width: 1.0;" x1="517" x2="665" y1="294.7969" y2="294.7969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="77" x="532" y="311.792">Crc16Layer</text><line style="stroke: #000000; stroke-width: 1.0;" x1="517" x2="665" y1="319.0938" y2="319.0938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="118" x="532" y="336.0889">AsciiEscapeLayer</text><line style="stroke: #000000; stroke-width: 1.0;" x1="517" x2="665" y1="343.3906" y2="343.3906"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="95" x="532" y="360.3857">TerminalLayer</text><line style="stroke: #000000; stroke-width: 1.0;" x1="517" x2="665" y1="367.6875" y2="367.6875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="71" x="532" y="384.6826">StdioLayer</text><path d="M700.5,315 L700.5,331 L666.3,335 L700.5,339 L700.5,355.2656 A0,0 0 0 0 700.5,355.2656 L859.5,355.2656 A0,0 0 0 0 859.5,355.2656 L859.5,325 L849.5,315 L700.5,315 A0,0 0 0 0 700.5,315 " fill="#FBFB77" filter="url(#f1r7yitzxdv33g)" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M849.5,315 L849.5,325 L859.5,325 L849.5,315 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="138" x="706.5" y="332.0669">Any stack as required</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="138" x="706.5" y="347.1997">for you infrastructure.</text><!--entity sync1--><rect fill="#FEFECE" filter="url(#f1r7yitzxdv33g)" height="36.2969" style="stroke: #000000; stroke-width: 1.5;" width="110" x="877" y="160"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="90" x="887" y="182.9951">Synchronizer</text><!--entity syncstack--><rect fill="#FEFECE" filter="url(#f1r7yitzxdv33g)" height="84.8906" style="stroke: #000000; stroke-width: 1.5;" width="138" x="895" y="292.5"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="118" x="905" y="315.4951">AsciiEscapeLayer</text><line style="stroke: #000000; stroke-width: 1.0;" x1="896" x2="1032" y1="318.7969" y2="318.7969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="95" x="911" y="335.792">TerminalLayer</text><line style="stroke: #000000; stroke-width: 1.0;" x1="896" x2="1032" y1="343.0938" y2="343.0938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="59" x="911" y="360.0889">FileLayer</text><!--entity wrapper--><rect fill="#FEFECE" filter="url(#f1r7yitzxdv33g)" height="157.7813" style="stroke: #000000; stroke-width: 1.5;" width="192" x="38" y="256"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="140" x="48" y="278.9951">libstored.ZmqServer</text><line style="stroke: #000000; stroke-width: 1.0;" x1="39" x2="229" y1="282.2969" y2="282.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="106" x="54" y="299.292">DebugArqLayer</text><line style="stroke: #000000; stroke-width: 1.0;" x1="39" x2="229" y1="306.5938" y2="306.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="77" x="54" y="323.5889">Crc16Layer</text><line style="stroke: #000000; stroke-width: 1.0;" x1="39" x2="229" y1="330.8906" y2="330.8906"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="118" x="54" y="347.8857">AsciiEscapeLayer</text><line style="stroke: #000000; stroke-width: 1.0;" x1="39" x2="229" y1="355.1875" y2="355.1875"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="95" x="54" y="372.1826">TerminalLayer</text><line style="stroke: #000000; stroke-width: 1.0;" x1="39" x2="229" y1="379.4844" y2="379.4844"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="160" x="54" y="396.4795">libstored.wrapper.serial</text><path d="M265,307.5 L265,331 L230.23,335 L265,339 L265,362.8984 A0,0 0 0 0 265,362.8984 L455,362.8984 A0,0 0 0 0 455,362.8984 L455,317.5 L445,307.5 L265,307.5 A0,0 0 0 0 265,307.5 " fill="#FBFB77" filter="url(#f1r7yitzxdv33g)" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M445,307.5 L445,317.5 L455,317.5 L445,307.5 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="169" x="271" y="324.5669">The configured stack must</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="136" x="271" y="339.6997">match the one at the</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="103" x="271" y="354.8325">embedded side.</text><!--entity ZMQ--><ellipse cx="134" cy="508" fill="#FEFECE" filter="url(#f1r7yitzxdv33g)" rx="8" ry="8" style="stroke: #A80036; stroke-width: 2.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="33" x="117.5" y="537.9951">ZMQ</text><!--entity gui--><rect fill="#FEFECE" filter="url(#f1r7yitzxdv33g)" height="36.2969" style="stroke: #000000; stroke-width: 1.5;" width="105" x="60.5" y="621.5"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="85" x="70.5" y="644.4951">libstored.gui</text><!--entity visu--><rect fill="#FEFECE" filter="url(#f1r7yitzxdv33g)" height="36.2969" style="stroke: #000000; stroke-width: 1.5;" width="111" x="200.5" y="621.5"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="91" x="210.5" y="644.4951">libstored.visu</text><!--entity storeA2--><rect fill="#FEFECE" filter="url(#f1r7yitzxdv33g)" height="52.5938" style="stroke: #000000; stroke-width: 1.5;" width="172" x="659" y="481.5"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="101" x="669" y="504.4951">Store A (VHDL)</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="152" x="669" y="520.792">includes Synchronizer</text><!--entity fpgastack--><rect fill="#FEFECE" filter="url(#f1r7yitzxdv33g)" height="84.8906" style="stroke: #000000; stroke-width: 1.5;" width="138" x="742" y="597"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="118" x="752" y="619.9951">AsciiEscapeLayer</text><line style="stroke: #000000; stroke-width: 1.0;" x1="743" x2="879" y1="623.2969" y2="623.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="95" x="758" y="640.292">TerminalLayer</text><line style="stroke: #000000; stroke-width: 1.0;" x1="743" x2="879" y1="647.5938" y2="647.5938"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="74" x="758" y="664.5889">UARTLayer</text><!--entity app2--><path d="M614.5,628.5 C614.5,625.5 616.5,623.5 619.5,623.5 C622.5,623.5 624.5,625.5 624.5,628.5 C624.5,625.5 626.5,623.5 629.5,623.5 C632.5,623.5 634.5,625.5 634.5,628.5 C634.5,625.5 636.5,623.5 639.5,623.5 C642.5,623.5 644.5,625.5 644.5,628.5 C644.5,625.5 646.5,623.5 649.5,623.5 C652.5,623.5 654.5,625.5 654.5,628.5 C654.5,625.5 656.5,623.5 659.5,623.5 C662.5,623.5 664.5,625.5 664.5,628.5 C664.5,625.5 666.5,623.5 669.5,623.5 C672.5,623.5 674.5,625.5 674.5,628.5 C674.5,625.5 676.5,623.5 679.5,623.5 C682.5,623.5 684.5,625.5 684.5,628.5 C684.5,625.5 686.5,623.5 689.5,623.5 C692.5,623.5 694.5,625.5 694.5,628.5 C694.5,625.5 696.5,623.5 699.5,623.5 C702.5,623.5 704.5,625.5 704.5,628.5 C707.5,628.5 709.5,630.5 709.5,633.5 C709.5,636.5 707.5,638.5 704.5,638.5 C707.5,638.5 709.5,640.5 709.5,643.5 C709.5,646.5 707.5,648.5 704.5,648.5 C704.5,651.5 701.5,653.5 699.5,653.5 C696.5,653.5 694.5,651.5 694.5,648.5 C694.5,651.5 691.5,653.5 689.5,653.5 C686.5,653.5 684.5,651.5 684.5,648.5 C684.5,651.5 681.5,653.5 679.5,653.5 C676.5,653.5 674.5,651.5 674.5,648.5 C674.5,651.5 671.5,653.5 669.5,653.5 C666.5,653.5 664.5,651.5 664.5,648.5 C664.5,651.5 661.5,653.5 659.5,653.5 C656.5,653.5 654.5,651.5 654.5,648.5 C654.5,651.5 651.5,653.5 649.5,653.5 C646.5,653.5 644.5,651.5 644.5,648.5 C644.5,651.5 641.5,653.5 639.5,653.5 C636.5,653.5 634.5,651.5 634.5,648.5 C634.5,651.5 631.5,653.5 629.5,653.5 C626.5,653.5 624.5,651.5 624.5,648.5 C624.5,651.5 621.5,653.5 619.5,653.5 C616.5,653.5 614.5,651.5 614.5,648.5 C611.5,648.5 609.5,646.5 609.5,643.5 C609.5,640.5 611.5,638.5 614.5,638.5 C611.5,638.5 609.5,636.5 609.5,633.5 C609.5,630.5 611.5,628.5 614.5,628.5 " fill="#FEFECE" filter="url(#f1r7yitzxdv33g)" style="stroke: #000000; stroke-width: 1.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="75" x="621.5" y="644.4951">Application</text><!--entity UART--><ellipse cx="533" cy="508" fill="#FEFECE" filter="url(#f1r7yitzxdv33g)" rx="8" ry="8" style="stroke: #A80036; stroke-width: 2.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="77" x="494.5" y="537.9951">lossy UART</text><!--entity UARTsync--><ellipse cx="969" cy="508" fill="#FEFECE" filter="url(#f1r7yitzxdv33g)" rx="8" ry="8" style="stroke: #A80036; stroke-width: 2.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="98" x="920" y="537.9951">lossless UART</text><!--link storeA1 to app1--><path d="M764.11,100.02 C736.29,117.01 693.78,142.95 665.94,159.95 " fill="none" id="storeA1-app1" style="stroke: #A80036; stroke-width: 1.0;"/><!--link storeB1 to app1--><path d="M638,100.24 C638,117.2 638,142.95 638,159.87 " fill="none" id="storeB1-app1" style="stroke: #A80036; stroke-width: 1.0;"/><!--link storeA1 to debugger--><path d="M787.23,100.24 C782.54,117.2 775.42,142.95 770.74,159.87 " fill="none" id="storeA1-debugger" style="stroke: #A80036; stroke-width: 1.0;"/><!--link storeB1 to debugger--><path d="M661.18,100.02 C684.23,116.95 719.42,142.79 742.56,159.79 " fill="none" id="storeB1-debugger" style="stroke: #A80036; stroke-width: 1.0;"/><!--link debugger to debugstack--><path d="M720.91,189.3 C707.87,193.67 694.16,199.73 683,208 C661.35,224.05 642.64,246.66 627.84,268.31 " fill="none" id="debugger-debugstack" style="stroke: #A80036; stroke-width: 1.0;"/><!--link storeA1 to sync1--><path d="M817.35,100.02 C842.57,116.95 881.05,142.79 906.36,159.79 " fill="none" id="storeA1-sync1" style="stroke: #A80036; stroke-width: 1.0;"/><!--link sync1 to syncstack--><path d="M935.55,196.18 C940.3,219.2 948.88,260.79 955.39,292.28 " fill="none" id="sync1-syncstack" style="stroke: #A80036; stroke-width: 1.0;"/><!--link debugstack to UART--><path d="M568.74,401.62 C556.09,438.92 541.63,481.56 535.72,498.97 " fill="none" id="debugstack-UART" style="stroke: #A80036; stroke-width: 1.0;"/><!--link syncstack to UARTsync--><path d="M965.22,377.83 C966.41,418.57 968.13,477.38 968.76,498.8 " fill="none" id="syncstack-UARTsync" style="stroke: #A80036; stroke-width: 1.0;"/><!--link wrapper to UART--><path d="M222.86,414.17 C230.7,418.6 238.78,422.47 247,425.5 C270.37,434.1 448.61,422.6 471,433.5 C500.12,447.67 520.71,482.57 528.98,498.65 " fill="none" id="wrapper-UART" style="stroke: #A80036; stroke-width: 1.0;"/><!--link wrapper to ZMQ--><path d="M134,414.49 C134,448.21 134,483.39 134,498.87 " fill="none" id="wrapper-ZMQ" style="stroke: #A80036; stroke-width: 1.0;"/><!--link ZMQ to gui--><path d="M132.69,517.1 C129.33,537.81 120.37,593.04 115.79,621.31 " fill="none" id="ZMQ-gui" style="stroke: #A80036; stroke-width: 1.0;"/><!--link ZMQ to visu--><path d="M141.63,517.1 C161.14,537.81 213.17,593.04 239.81,621.31 " fill="none" id="ZMQ-visu" style="stroke: #A80036; stroke-width: 1.0;"/><!--link storeA2 to fpgastack--><path d="M758.04,534.59 C767.09,552.35 779.36,576.41 789.8,596.91 " fill="none" id="storeA2-fpgastack" style="stroke: #A80036; stroke-width: 1.0;"/><!--link storeA2 to app2--><path d="M728.01,534.59 C710.97,560.24 685.22,599.02 670.46,621.24 " fill="none" id="storeA2-app2" style="stroke: #A80036; stroke-width: 1.0;"/><!--link UARTsync to fpgastack--><path d="M959.59,516.71 C940.72,532.18 897.07,567.96 861.93,596.76 " fill="none" id="UARTsync-fpgastack" style="stroke: #A80036; stroke-width: 1.0;"/><!--
+@startuml
+node "Microcontroller" {
+   rectangle storeA1 [
+   Store A (C++)
+   ]
+
+   rectangle storeB1 [
+   Store B (C++)
+   ]
+
+   cloud app1 [
+      Application
+   ]
+   storeA1 - - app1
+   storeB1 - - app1
+
+   rectangle debugger [
+   Debugger
+   ]
+   storeA1 - - debugger
+   storeB1 - - debugger
+
+   rectangle debugstack [
+   DebugArqLayer
+   - - - -
+   Crc16Layer
+   - - - -
+   AsciiEscapeLayer
+   - - - -
+   TerminalLayer
+   - - - -
+   StdioLayer
+   ]
+   debugger - - debugstack
+
+   note right of debugstack
+      Any stack as required
+      for you infrastructure.
+   end note
+
+   rectangle sync1 [
+   Synchronizer
+   ]
+
+   storeA1 - - sync1
+
+   rectangle syncstack [
+   AsciiEscapeLayer
+   - - - -
+   TerminalLayer
+   - - - -
+   FileLayer
+   ]
+   sync1 - - syncstack
+}
+
+() "lossy UART" as UART
+debugstack - - UART
+
+() "lossless UART" as UARTsync
+syncstack - - UARTsync
+
+node "PC" {
+   rectangle wrapper [
+      libstored.ZmqServer
+      - - - -
+      DebugArqLayer
+      - - - -
+      Crc16Layer
+      - - - -
+      AsciiEscapeLayer
+      - - - -
+      TerminalLayer
+      - - - -
+      libstored.wrapper.serial
+   ]
+   wrapper - - UART
+
+   note right of wrapper
+      The configured stack must
+      match the one at the
+      embedded side.
+   end note
+
+   () ZMQ
+   wrapper - - ZMQ
+
+   rectangle gui [
+      libstored.gui
+   ]
+   ZMQ - - gui
+
+   rectangle visu [
+      libstored.visu
+   ]
+   ZMQ - - visu
+}
+
+node "FPGA" {
+   rectangle storeA2 [
+   Store A (VHDL)
+   includes Synchronizer
+   ]
+
+   rectangle fpgastack [
+   AsciiEscapeLayer
+   - - - -
+   TerminalLayer
+   - - - -
+   UARTLayer
+   ]
+   storeA2 - - fpgastack
+
+   cloud app2 [
+      Application
+   ]
+   storeA2 - - app2
+}
+
+UARTsync - - fpgastack
+
+@enduml
+
+PlantUML version 1.2018.13(Mon Nov 26 17:11:51 UTC 2018)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Java Version: 11.0.11+9
+Operating System: Linux
+OS Version: 5.8.0-1039-azure
+Default Encoding: UTF-8
+Language: en
+Country: null
+--></g></svg>
