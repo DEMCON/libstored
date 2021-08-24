@@ -6,8 +6,8 @@
  *
  * - Run first instance: `8_sync -i inst1 -d ipc://libstored/example -p 2222`
  * - Run second instance: `8_sync -i inst2 -u ipc://libstored/example -p 2223`
- * - Run a debugger for first instance: `python3 -m ed2.gui -p 2222`
- * - Run a debugger for second instance: `python3 -m ed2.gui -p 2223`
+ * - Run a debugger for first instance: `python3 -m libstored.gui -p 2222`
+ * - Run a debugger for second instance: `python3 -m libstored.gui -p 2223`
  * - Enable tracing on all variables. You will notice that when you change a
  *   value within /ExampleSync1, it will be synchronized immediately.
  *   Changes within /ExampleSync2 are only synchronized once you write to

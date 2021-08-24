@@ -99,7 +99,7 @@ The resulting architecture of your application could look like this:
 
    node "PC" {
       rectangle wrapper [
-         ed2.ZmqServer
+         libstored.ZmqServer
          ----
          DebugArqLayer
          ----
@@ -109,7 +109,7 @@ The resulting architecture of your application could look like this:
          ----
          TerminalLayer
          ----
-         ed2.wrapper.serial
+         libstored.wrapper.serial
       ]
       wrapper -- UART
 
@@ -123,12 +123,12 @@ The resulting architecture of your application could look like this:
       wrapper -- ZMQ
 
       rectangle gui [
-         ed2.gui
+         libstored.gui
       ]
       ZMQ -- gui
 
       rectangle visu [
-         ed2.visu
+         libstored.visu
       ]
       ZMQ -- visu
    }

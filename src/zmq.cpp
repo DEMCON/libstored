@@ -316,7 +316,7 @@ void ZmqLayer::encode(void const* buffer, size_t len, bool last)
  * \brief Constructor.
  *
  * The given \p port used for a REQ/REP socket over TCP.
- * This is the listening side, where a client like the \c ed2.gui can connect to.
+ * This is the listening side, where a client like the \c libstored.gui can connect to.
  *
  * \see #stored::Debugger
  */

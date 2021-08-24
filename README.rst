@@ -232,17 +232,17 @@ Debugger instance. The connect to this C++ bridge.
 Example
 ```````
 
-The host tools to debug your application are written in python, as the ``ed2``
-package, and are located the ``client`` directory. You can run the example below
-by running python from the ``client`` directory, but you can also install the
-``ed2`` package on your system. To do this, execute the ``ed2-install`` cmake
-target, such as::
+The host tools to debug your application are written in python, as the
+``libstored`` package, and are located the ``python`` directory. You can run
+the example below by running python from the ``python`` directory, but you can
+also install the ``libstored`` package on your system. To do this, execute the
+``pylibstored-install`` cmake target, such as::
 
 	cd build
-	make ed2-install
+	make pylibstored-install
 
-This builds a wheel from the ``client`` directory and installs it locally using
-``pip``.  Now you can just fire up python and do ``import ed2``.
+This builds a wheel from the ``python`` directory and installs it locally using
+``pip``.  Now you can just fire up python and do ``import libstored``.
 
 To get a grasp how debugging feels like, try the following.
 
@@ -253,17 +253,18 @@ To get a grasp how debugging feels like, try the following.
 - Run ``examples/zmqserver/zmqserver``. This starts an application with a store
   with all kinds of object types, and provides a ZeroMQ server interface for
   debugging.
-- Run ``python3 -m ed2.gui -l`` within the ``client`` directory. This GUI connects
-  to both the ``zmqserver`` application via ZeroMQ, and to the ``lognplot`` instance.
+- Run ``python3 -m libstored.gui -l`` within the ``python`` directory. This GUI
+  connects to both the ``zmqserver`` application via ZeroMQ, and to the
+  ``lognplot`` instance.
 - The GUI window will pop up and show the objects of the ``zmqserver`` example.
   If polling is enabled of one of the objects, the values are forwarded to
   ``lognplot``.
 
 The structure of this setup is::
 
-	+---------+        +----------+
-	| ed2.gui | -----> | lognplot |
-	+---------+        +----------+
+	+---------------+        +----------+
+	| libstored.gui | -----> | lognplot |
+	+---------------+        +----------+
 	      |
 	      | ZeroMQ REQ/REP channel
 	      |
@@ -278,26 +279,26 @@ The Embedded Debugger client connects via ZeroMQ.
 If you application does not have it, you must implement is somehow.
 The ``examples/terminal/terminal`` application could be debugged as follows:
 
-- Run ``python3 -m ed2.wrapper.stdio ../build/examples/terminal/terminal`` from
-  the ``client`` directory.  This starts the ``terminal`` example, and extracts
-  escaped debugger frames from ``stdout``, which are forwarded to a ZeroMQ
-  interface.
-- Connect a client, such as ``python3 -m ed2.gui``.
-  Instead of using ``lognplot``, the GUI can also write all auto-refreshed data
-  to a CSV file when the ``-f log.csv`` is passed on the command line. Then,
-  Kst_ can be used for live viewing the file.
+- Run ``python3 -m libstored.wrapper.stdio
+  ../build/examples/terminal/terminal`` from the ``python`` directory.  This
+  starts the ``terminal`` example, and extracts escaped debugger frames from
+  ``stdout``, which are forwarded to a ZeroMQ interface.
+- Connect a client, such as ``python3 -m libstored.gui``.  Instead of using
+  ``lognplot``, the GUI can also write all auto-refreshed data to a CSV file
+  when the ``-f log.csv`` is passed on the command line. Then, Kst_ can be used
+  for live viewing the file.
 
 The structure of this setup is::
 
-	+---------+        +---------+           +-----+
-	| ed2.gui | -----> | log.csv | --------> | Kst |
-	+---------+        +---------+           +-----+
+	+---------------+        +---------+           +-----+
+	| libstored.gui | -----> | log.csv | --------> | Kst |
+	+---------------+        +---------+           +-----+
 	      |
 	      | ZeroMQ REQ/REP channel
 	      |
-	+-------------------+
-	| ed2.wrapper.stdio | ---------- terminal interface
-	+-------------------+
+	+-------------------------+
+	| libstored.wrapper.stdio | ---------- terminal interface
+	+-------------------------+
 	      |
 	      | stdin/stdout (mixed terminal interface
 	      | with Embedded Debugger messages)
@@ -306,8 +307,8 @@ The structure of this setup is::
 	| terminal |
 	+----------+
 
-There are some more ready-to-use clients, and a Python module in the
-client_ directory.
+There are some more ready-to-use clients, and a Python module in the python_
+directory.
 
 
 Embedded Debugger protocol
@@ -327,7 +328,7 @@ having auto retransmit on packet loss, CRC-8/16, segmentation, buffering, MTU
 size, ASCII escaping and encapsulation. See also ``examples/7_protocol``.
 
 To get a grasp about the protocol, I had a short chat with the ``zmqserver``
-example using the ``ed2.cli``.  See the transcript below. Lines starting
+example using the ``libstored.cli``.  See the transcript below. Lines starting
 with ``>`` are requests, entered by me, lines starting with ``<`` are responses
 from the application.
 
@@ -496,5 +497,5 @@ along with this program.  If not, see https://www.gnu.org/licenses/.
 .. _8_sync: https://github.com/DEMCON/libstored/tree/master/examples/8_sync
 .. _heatshrink: https://github.com/atomicobject/heatshrink
 .. _Kst: https://kst-plot.kde.org/
-.. _client: https://github.com/DEMCON/libstored/tree/master/client
+.. _python: https://github.com/DEMCON/libstored/tree/master/python
 

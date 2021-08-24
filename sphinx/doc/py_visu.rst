@@ -1,6 +1,6 @@
 ﻿Visu
 ====
 
-ed2.visu
---------
+libstored.visu
+--------------
 

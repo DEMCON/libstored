@@ -166,7 +166,7 @@ int main()
 	*/
 
 	printf("Demo of a lossy channel.\n");
-	printf("Run this example using ed2.wrapper.stdio with the flag\n");
+	printf("Run this example using libstored.wrapper.stdio with the flag\n");
 	printf("  -S segment,arq,crc16,ascii,term\n\n");
 
 	stored::Debugger debugger("7_protocol");
