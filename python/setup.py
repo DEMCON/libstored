@@ -8,8 +8,8 @@ import libstored
 
 here = os.path.dirname(os.path.realpath(__file__))
 
-#with open(os.path.join(here, "README.md"), "r") as fh:
-#    long_description = fh.read()
+with open(os.path.join(here, "README.md"), "r") as fh:
+    long_description = fh.read()
 
 packages = setuptools.find_packages(here)
 packages += list(map(lambda p: re.sub(r'^libstored\b', 'ed2', p), packages))
@@ -20,8 +20,8 @@ setuptools.setup(
     description = 'Embedded Debugger client for libstored\'s debug protocol',
     author = 'Jochem Rutgers',
     author_email = 'jochem.rutgers@demcon.com',
-#    long_description=long_description,
-#    long_description_content_type="text/markdown",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     url = 'https://github.com/DEMCON/libstored',
     license = 'LGPL3+',
     packages = packages,

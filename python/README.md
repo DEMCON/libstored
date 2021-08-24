@@ -11,7 +11,7 @@ See the [documentation](https://demcon.github.io/libstored/doc/py.html).
 
 ## Interesting modules
 
-Execute these modules like `python3 -m libstored.gui`, optionally with `-?`
+Execute these modules like `python3 -m libstored.gui`, optionally with `-h`
 argument to get some more help:
 
 - `libstored.gui`: a GUI that connects to a debug target.  The GUI has by
@@ -21,10 +21,10 @@ argument to get some more help:
 - `libstored.cli`: a command line interface that connects to a debug target.
 - `libstored.wrapper.stdio`: a stdin/stdout wrapper, which is a bridge between
   Embedded Debugger messages within the stdin/stdout streams of the application
-  to a ZeroMQ socket interface, which in turn can be used to connect `libstored.gui`
-  or `libstored.cli` to.
-- `libstored.wrapper.serial`: like `libstored.wrapper.stdio`, but using `pyserial` instead
-  of stdin/stdout.
+  to a ZeroMQ socket interface, which in turn can be used to connect
+  `libstored.gui` or `libstored.cli` to.
+- `libstored.wrapper.serial`: like `libstored.wrapper.stdio`, but using
+  `pyserial` instead of stdin/stdout.
 
 ## Interesting classes
 
