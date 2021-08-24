@@ -41,7 +41,6 @@ list(APPEND pylibstored_src
 	libstored/visu/__main__.py
 	libstored/visu/example/example.qrc
 	libstored/visu/example/main.qml
-	ed2/__init__.py
 	setup.py
 )
 

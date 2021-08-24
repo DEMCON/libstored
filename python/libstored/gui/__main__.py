@@ -143,7 +143,7 @@ if __name__ == '__main__':
         pass
     app = QGuiApplication(sys.argv)
 
-    parser = argparse.ArgumentParser(description='ZMQ GUI client', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(prog=sys.modules[__name__].__package__, description='ZMQ GUI client', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
     parser.add_argument('-p', dest='port', type=int, default=ZmqServer.default_port, help='port')
     if haveLognplot:
