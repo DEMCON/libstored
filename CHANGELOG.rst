@@ -12,6 +12,11 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 `Unreleased`_
 -------------
 
+Added
+`````
+
+- Add support for ninja, and default to it in build scripts
+
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.0.0...HEAD
 
 

@@ -13,7 +13,7 @@ case `uname -s` in
 	Linux*)
 		sudo apt update
 		sudo apt install -y build-essential valgrind git-core gcc-multilib cmake \
-			gdb-multiarch cppcheck doxygen pkg-config \
+			gdb-multiarch cppcheck doxygen pkg-config ninja-build \
 			python3 python3-pip python3-setuptools \
 			python3-pyqt5 python3-pyqt5.qtquick \
 			spin plantuml
@@ -35,6 +35,7 @@ case `uname -s` in
 		install_or_upgrade gnutls
 		install_or_upgrade doxygen
 		install_or_upgrade plantuml
+		install_or_upgrade ninja
 		pip3 install wheel
 		pip3 install -r scripts/requirements.txt
 		;;
