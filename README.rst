@@ -239,7 +239,7 @@ also install the ``libstored`` package on your system. To do this, execute the
 ``pylibstored-install`` cmake target, such as::
 
    cd build
-   make pylibstored-install
+   ninja pylibstored-install
 
 This builds a wheel from the ``python`` directory and installs it locally using
 ``pip``.  Now you can just fire up python and do ``import libstored``.

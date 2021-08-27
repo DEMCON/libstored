@@ -24,7 +24,7 @@ echo Chocolatey not installed. Install from here: https://chocolatey.org/docs/in
 goto error
 :have_choco
 
-set pkg=python3 tortoisegit git cmake make pkgconfiglite mingw doxygen.install plantuml
+set pkg=python3 tortoisegit git cmake ninja pkgconfiglite mingw doxygen.install plantuml
 choco install -y --no-progress %pkg%
 if errorlevel 1 goto error
 
@@ -46,16 +46,13 @@ call refreshenv
 python.exe -m ensurepip
 if errorlevel 1 goto error
 
-python.exe -m pip install --upgrade setuptools
+python.exe -m pip install --upgrade setuptools pip
 if errorlevel 1 goto error
 
-python.exe -m pip install wheel
+python.exe -m pip install --upgrade wheel
 if errorlevel 1 goto error
 
-python.exe -m pip install -r scripts\requirements.txt
-if errorlevel 1 goto error
-
-python.exe -m pip install PyQt5
+python.exe -m pip install --upgrade -r scripts\requirements.txt
 if errorlevel 1 goto error
 
 :done

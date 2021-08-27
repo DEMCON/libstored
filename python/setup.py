@@ -13,6 +13,10 @@ with open(os.path.join(here, "README.md"), "r") as fh:
 
 packages = setuptools.find_packages(here)
 packages += list(map(lambda p: re.sub(r'^libstored\b', 'ed2', p), packages))
+package_data = [
+    'gui/gui_client.qml',
+    'gui/twotone_bug_report_black_48dp.png',
+]
 
 setuptools.setup(
     name = 'libstored',
@@ -26,6 +30,7 @@ setuptools.setup(
     license = 'LGPL3+',
     packages = packages,
     package_dir = {'libstored': 'libstored', 'ed2': 'libstored'},
+    package_data = {'libstored': package_data, 'ed2': package_data},
     install_requires = [
         'pyside2',
         'pyserial',

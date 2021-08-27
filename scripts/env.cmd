@@ -9,9 +9,10 @@ call refreshenv
 echo Looking for cmake...
 where /q cmake > NUL 2> NUL
 if errorlevel 1 goto find_cmake
-goto have_cmake
+goto show_cmake
 :find_cmake
 set PATH=C:\Program Files\CMake\bin;%PATH%
+:show_cmake
 where cmake 2> NUL | cmd /e /v /q /c"set/p.=&&echo(^!.^!"
 if errorlevel 1 goto need_bootstrap
 :have_cmake
@@ -24,8 +25,8 @@ echo Looking for gcc...
 where gcc 2> NUL | cmd /e /v /q /c"set/p.=&&echo(^!.^!"
 if errorlevel 1 goto need_bootstrap
 
-echo Looking for make...
-where make 2> NUL | cmd /e /v /q /c"set/p.=&&echo(^!.^!"
+echo Looking for ninja...
+where ninja 2> NUL | cmd /e /v /q /c"set/p.=&&echo(^!.^!"
 if errorlevel 1 goto need_bootstrap
 
 echo Looking for python3...

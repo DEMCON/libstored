@@ -7,7 +7,6 @@
 if(EXISTS ${CMAKE_INSTALL_PREFIX}/share/cmake/libstored/libstored.cmake)
 	add_custom_command(
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/1_hello_again.timestamp
-		DEPENDS ${CMAKE_INSTALL_PREFIX}/share/cmake/libstored/libstored.cmake
 		COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/1_hello_again
 		COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_BINARY_DIR}/1_hello_again
 			${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/1_hello_again -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}

@@ -25,13 +25,18 @@ pushd "$( cd "$(dirname "$0")"/..; pwd -P )" > /dev/null
 
 git submodule update --init --recursive
 
+GENERATOR=
+if which ninja > /dev/null; then
+	GENERATOR='-G Ninja'
+fi
+
 if [ -e build ]; then
 	if [ ! -z "$1" ]; then
 		# Override build type
 		pushd build > /dev/null
 		BUILD_TYPE="$1"
 		shift || true
-		cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" .. "$@"
+		cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" $GENERATOR .. "$@"
 		popd > /dev/null
 	fi
 else
@@ -44,7 +49,7 @@ else
 	mkdir build
 	pushd build > /dev/null
 	shift || true
-	cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCMAKE_INSTALL_PREFIX=dist .. "$@"
+	cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" $GENERATOR -DCMAKE_INSTALL_PREFIX=dist .. "$@"
 	popd > /dev/null
 fi
 

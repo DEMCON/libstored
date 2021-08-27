@@ -90,5 +90,13 @@ set(ed2_wheel ${pylibstored_wheel_file})
 add_custom_target(ed2-dist DEPENDS pylistored-dist)
 add_custom_target(ed2-install DEPENDS pylistored-install)
 
-install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target pylibstored-install)")
+install(CODE "
+	execute_process(
+		COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target pylibstored-install
+		RESULT_VARIABLE _res
+	)
+	if(NOT \${_res} EQUAL 0)
+		message(FATAL_ERROR \"pylibstored-install failed\")
+	endif()
+")
 
