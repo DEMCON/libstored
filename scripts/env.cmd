@@ -26,7 +26,7 @@ where gcc 2> NUL | cmd /e /v /q /c"set/p.=&&echo(^!.^!"
 if errorlevel 1 goto need_bootstrap
 
 echo Looking for ninja...
-where make 2> NUL | cmd /e /v /q /c"set/p.=&&echo(^!.^!"
+where ninja 2> NUL | cmd /e /v /q /c"set/p.=&&echo(^!.^!"
 if errorlevel 1 goto need_bootstrap
 
 echo Looking for python3...
