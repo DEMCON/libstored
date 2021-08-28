@@ -13,6 +13,7 @@
    example_9_fpga
    example_components
    example_concurrency
+   example_control
    example_terminal
    example_zmqserver
 
