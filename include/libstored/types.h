@@ -1446,7 +1446,10 @@ namespace stored {
 		 */
 		template <typename Store, typename Implementation, typename T, size_t offset, size_t size_>
 		class StoreVariable {
+			CLASS_NOCOPY(StoreVariable)
 		public:
+			~StoreVariable() is_default
+
 			typedef T type;
 			typedef Variable<type,Implementation> Variable_type;
 			typedef Variant<Implementation> Variant_type;
@@ -1496,7 +1499,10 @@ namespace stored {
 			template <typename, unsigned int> class FunctionMap,
 			unsigned int F>
 		class StoreFunction {
+			CLASS_NOCOPY(StoreFunction)
 		public:
+			~StoreFunction() is_default
+
 			typedef typename FunctionMap<Implementation,F>::type type;
 			typedef Function<type,Implementation> Function_type;
 			typedef Variant<Implementation> Variant_type;
@@ -1581,7 +1587,10 @@ namespace stored {
 		 */
 		template <typename Store, typename Implementation, Type::type type_, size_t offset, size_t size_>
 		class StoreVariantV {
+			CLASS_NOCOPY(StoreVariantV)
 		public:
+			~StoreVariantV() is_default
+
 			typedef Variant<Implementation> Variant_type;
 
 			constexpr Variant_type variant() const noexcept
@@ -1610,7 +1619,10 @@ namespace stored {
 		 */
 		template <typename Store, typename Implementation, Type::type type_, unsigned int F, size_t size_>
 		class StoreVariantF {
+			CLASS_NOCOPY(StoreVariantF)
 		public:
+			~StoreVariantF() is_default
+
 			typedef Variant<Implementation> Variant_type;
 
 			constexpr Variant_type variant() const noexcept
