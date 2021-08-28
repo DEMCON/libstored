@@ -478,6 +478,12 @@ class Object(QObject):
     tString = _Property(str, _tString_get, notify=tStringChanged)
 
     def _interpret_float(self, value):
+        # Remove all group separators. They are irrelevant, but prevent
+        # parsing when not at the right place.
+        gs = self.locale.groupSeparator()
+        if gs != '':
+            value = value.replace(gs, '')
+
         x, ok = self.locale.toDouble(value)
         if not ok:
             raise ValueError(f'Cannot convert "{value}" to float')
