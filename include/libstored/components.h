@@ -1157,7 +1157,7 @@ namespace stored {
 	template <typename Container, typename T=float>
 	using PIDObjects = FreeObjectsList<
 		FreeFunctions<float, Container, 'f'>,
-		FreeVariables<T, Container, 'y', 's', 'p', 'i', 'd', 'k', 'I', 'L', 'H', 'l', 'h', 'F', 'u'>,
+		FreeVariables<T, Container, 'y', 's', 'p', 'i', 'd', 'k', 'I', 'L', 'H', 'l', 'h', '3', 'F', 'u'>,
 		FreeVariables<bool, Container, 'e', 'r'>>;
 
 	/*!
@@ -1180,6 +1180,7 @@ namespace stored {
 	 *     float=inf int high
 	 *     float=-inf low
 	 *     float=inf high
+	 *     float=inf epsilon
 	 *     bool reset
 	 *     float=nan override
 	 *     float u
@@ -1223,7 +1224,8 @@ namespace stored {
 		{
 			return PIDObjects<Container,type>::template create<OnlyId...>(prefix,
 				"frequency", "y", "setpoint", "Kp", "Ti", "Td", "Kff", "int",
-				"int low", "int high", "low", "high", "override", "u", "enable", "reset");
+				"int low", "int high", "low", "high", "epsilon", "override", "u",
+				"enable", "reset");
 		}
 
 		decltype(auto) frequencyObject() const noexcept { return m_o.template get<'f'>(); }
@@ -1252,7 +1254,7 @@ namespace stored {
 
 		decltype(auto) intObject() const noexcept { return m_o.template get<'I'>(); }
 		decltype(auto) intObject() noexcept { return m_o.template get<'I'>(); }
-		type int_() const noexcept { m_int; }
+		type int_() const noexcept { return m_int; }
 
 		decltype(auto) intLowObject() const noexcept { return m_o.template get<'L'>(); }
 		type intLow() const noexcept { decltype(auto) o = intLowObject(); return o.valid() ? o.get() : -std::numeric_limits<type>::infinity(); }
@@ -1265,6 +1267,9 @@ namespace stored {
 
 		decltype(auto) highObject() const noexcept { return m_o.template get<'h'>(); }
 		type high() const noexcept { decltype(auto) o = highObject(); return o.valid() ? o.get() : std::numeric_limits<type>::infinity(); }
+
+		decltype(auto) epsilonObject() const noexcept { return m_o.template get<'3'>(); }
+		type epsilon() const noexcept { decltype(auto) o = epsilonObject(); return o.valid() ? o.get() : std::numeric_limits<type>::infinity(); }
 
 		decltype(auto) overrideObject() const noexcept { return m_o.template get<'F'>(); }
 		type override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : std::numeric_limits<type>::quiet_NaN(); }
@@ -1294,15 +1299,50 @@ namespace stored {
 			return run(y());
 		}
 
+		/*!
+		 * \brief Check numerical stability.
+		 *
+		 * #epsilon() is the smallest change in error (#setpoint() -
+		 * #y()) that must have influence the output #u().  If the
+		 * error is smaller, the output may remain the same. This
+		 * function checks if that is still the case.
+		 *
+		 * The integrator is especially interesting. If it becomes too
+		 * large, successive (small) errors may not be able to reduce
+		 * it anymore, because of rounding. If that is the case, it is
+		 * considered unhealthy.
+		 *
+		 * This value can optionally be defined in the store. If
+		 * omitted, this function always returns \c true.
+		 *
+		 * You may want to check (or assert on) this function once in a
+		 * while, like once per second or after every run, to detect a
+		 * stuck controller within reasonable time for your
+		 * application.
+		 */
+		bool isHealthy() const noexcept
+		{
+			auto k = Ki();
+			if(k == 0)
+				return true;
+
+			auto e = epsilon();
+			auto i = std::fabs(int_());
+
+			// If the result is true, the integrator is not too
+			// large, such that smallest error can still reduce it.
+			return i - e * k < i;
+		}
+
 	protected:
 		type run(type y)
 		{
-			if(!enabled())
-				return m_u;
-
 			type u = override_();
 
 			if(likely(std::isnan(u))) {
+				if(!enabled())
+					return m_u;
+
 				bool doReset = false;
 				decltype(auto) reset_o = resetObject();
 				if(reset_o.valid()) {
@@ -1334,7 +1374,7 @@ namespace stored {
 				u = Kp() * e + m_int + Kff() * sp;
 
 				type di = Ki() * e;
-				if((u >= low() || di > 0) && (u <= high() || di < 0)) {
+				if(likely((u >= low() || di > 0) && (u <= high() || di < 0))) {
 					// Anti-windup: only update m_int when we are within output
 					// bounds, or if we get back into those bounds.
 					type i = std::max(intLow(), std::min(intHigh(), m_int + di));
@@ -1351,7 +1391,7 @@ namespace stored {
 					m_y_prev = y;
 				}
 
-				u = std::max(low(), std::min(high(), u));
+				m_u = u = std::max(low(), std::min(high(), u));
 			}
 
 			decltype(auto) uo = uObject();
