@@ -22,6 +22,12 @@ public:
 		if(!set)
 			value = frequency_Hz.get();
 	}
+
+	void __sine__sample_frequency_Hz(bool set, float& value)
+	{
+		if(!set)
+			value = frequency_Hz.get();
+	}
 };
 
 static ExampleControlStore store;
@@ -65,13 +71,26 @@ static void amp()
 		x_output.set(amp_v.output());
 }
 
+static void sine()
+{
+	constexpr auto sine_o = stored::Sine<ExampleControlStore>::objects("/sine/");
+	static stored::Sine<ExampleControlStore, sine_o.flags()> sine_v{sine_o, store};
+
+	auto y = sine_v();
+
+	auto x_y = store.interconnect__x_a(store.sine__x_y.get());
+	if(x_y.valid())
+		x_y.set(y);
+}
+
 static void control()
 {
 	using f_type = std::pair<void(*)(), stored::Variable<uint8_t, ExampleControlStore>>;
 
-	static std::array<f_type, 2> fs = {
+	static std::array<f_type, 3> fs = {
 		f_type{&pid, store.pid__evaluation_order},
 		f_type{&amp, store.amp__evaluation_order},
+		f_type{&sine, store.sine__evaluation_order},
 	};
 
 	std::stable_sort(fs.begin(), fs.end(),

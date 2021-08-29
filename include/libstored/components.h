@@ -1193,7 +1193,7 @@ namespace stored {
 	 * \code
 	 * // Construct a compile-time object, which resolves all fields in your store.
 	 * constexpr auto pid_o = stored::PID<stored::YourStore>::objects("/pid/");
-	 * // Instantiate an PID, tailored to the available fields in the store.
+	 * // Instantiate a PID, tailored to the available fields in the store.
 	 * stored::PID<stored::YourStore, pid_o.flags()> pid{pid_o, yourStore};
 	 * \endcode
 	 */
@@ -1276,7 +1276,11 @@ namespace stored {
 
 		decltype(auto) uObject() const noexcept { return m_o.template get<'u'>(); }
 		decltype(auto) uObject() noexcept { return m_o.template get<'u'>(); }
-		type u() const noexcept { return m_u; }
+		type u() const noexcept
+		{
+			type o = override_();
+			return std::isnan(o) ? m_u : o;
+		}
 
 		decltype(auto) enableObject() const noexcept { return m_o.template get<'e'>(); }
 		bool enabled() const noexcept { decltype(auto) o = enableObject(); return !o.valid() || o.get(); }
@@ -1285,7 +1289,7 @@ namespace stored {
 		decltype(auto) resetObject() noexcept { return m_o.template get<'r'>(); }
 		bool reset() const noexcept { decltype(auto) o = resetObject(); return !o.valid() || o.get(); }
 
-		type operator()(type y)
+		type operator()(type y) noexcept
 		{
 			decltype(auto) o = yObject();
 			if(o.valid())
@@ -1294,7 +1298,7 @@ namespace stored {
 			return run(y);
 		}
 
-		type operator()()
+		type operator()() noexcept
 		{
 			return run(y());
 		}
@@ -1335,7 +1339,7 @@ namespace stored {
 		}
 
 	protected:
-		type run(type y)
+		type run(type y) noexcept
 		{
 			type u = override_();
 
@@ -1408,6 +1412,139 @@ namespace stored {
 		type m_Kd{};
 		type m_int{};
 		type m_u{};
+	};
+
+	template <typename T>
+	constexpr T pi = T(3.141592653589793238462643383279502884L);
+
+	template <typename Container, typename T=float>
+	using SineObjects = FreeObjectsList<
+		FreeFunctions<float, Container, 's'>,
+		FreeVariables<T, Container, 'A', 'f', 'p', 'F', 'y'>,
+		FreeVariables<bool, Container, 'e'>>;
+
+	/*!
+	 * \brief Sine wave generator, based on store variables.
+	 *
+	 * To use this class, add a scope to your store, like:
+	 *
+	 * \code
+	 * {
+	 *     (float) sample frequency (Hz)
+	 *     float=1 amplitude
+	 *     float=1 frequency (Hz)
+	 *     float=0 phase (rad)
+	 *     bool=true enable
+	 *     float=nan override
+	 *     float y
+	 * } sine
+	 *
+	 * Only <tt>sample frequency (Hz)</tt> is mandatory.
+	 * Then, instantiate the controller like this:
+	 *
+	 * \code
+	 * // Construct a compile-time object, which resolves all fields in your store.
+	 * constexpr auto sine_o = stored::Sine<stored::YourStore>::objects("/sine/");
+	 * // Instantiate the generator, tailored to the available fields in the store.
+	 * stored::Sine<stored::YourStore, sine_o.flags()> sine{sine_o, yourStore};
+	 * \endcode
+	 */
+	template <typename Container, unsigned long long flags = 0, typename T = float>
+	class Sine {
+	public:
+		using type = T;
+		using Bound = typename SineObjects<Container,type>::template Bound<flags>;
+
+		constexpr Sine() noexcept = default;
+
+		constexpr Sine(SineObjects<Container,type> const& o, Container& container)
+			: m_o{Bound::create(o, container)}
+		{
+			static_assert(Bound::template valid<'s'>(), "'sample frequency' function is mandatory");
+		}
+
+		template <char... OnlyId, size_t N>
+		static constexpr auto objects(char const(&prefix)[N]) noexcept
+		{
+			return SineObjects<Container,type>::template create<OnlyId...>(prefix,
+				"sample frequency", "amplitude", "frequency", "phase",
+				"override", "y", "enable");
+		}
+
+		decltype(auto) sampleFrequencyObject() const noexcept { return m_o.template get<'s'>(); }
+		float sampleFrequency() const noexcept { return sampleFrequencyObject()(); }
+
+		decltype(auto) amplitudeObject() const noexcept { return m_o.template get<'A'>(); }
+		type amplitude() const noexcept { decltype(auto) o = amplitudeObject(); return o.valid() ? o.get() : (type)1; }
+
+		decltype(auto) frequencyObject() const noexcept { return m_o.template get<'f'>(); }
+		type frequency() const noexcept { decltype(auto) o = frequencyObject(); return o.valid() ? o.get() : (type)1; }
+
+		decltype(auto) phaseObject() const noexcept { return m_o.template get<'p'>(); }
+		type phase() const noexcept { decltype(auto) o = phaseObject(); return o.valid() ? o.get() : (type)0; }
+
+		decltype(auto) overrideObject() const noexcept { return m_o.template get<'F'>(); }
+		type override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : std::numeric_limits<type>::quiet_NaN(); }
+
+		decltype(auto) yObject() const noexcept { return m_o.template get<'y'>(); }
+		decltype(auto) yObject() noexcept { return m_o.template get<'y'>(); }
+		type y() const noexcept { decltype(auto) o = yObject(); return o.valid() ? o.get() : type(); }
+
+		decltype(auto) enableObject() const noexcept { return m_o.template get<'e'>(); }
+		bool enabled() const noexcept { decltype(auto) o = enableObject(); return !o.valid() || o.get(); }
+
+		type operator()() noexcept
+		{
+			type y = override_();
+
+			if(likely(std::isnan(y))) {
+				y = std::numeric_limits<type>::quiet_NaN();
+
+				auto sf = sampleFrequency();
+				auto f = frequency();
+
+				if(sf > 0 && f > 0) {
+					auto dt = 1.0f / sf;
+					auto period = (type)1 / f;
+
+					type t = m_t;
+					y = amplitude() * std::sin((type)2 * pi<type> * f * t + phase());
+
+					if(likely(enabled()))
+						m_t = t = std::fmod(t + dt, period);
+				}
+			}
+
+			decltype(auto) yo = yObject();
+			if(yo.valid())
+				yo = y;
+
+			return y;
+		}
+
+		bool isHealthy() const noexcept
+		{
+			auto sf = sampleFrequency();
+			if(sf <= 0)
+				return true;
+
+			auto f = frequency();
+			if(f <= 0)
+				return true;
+
+			auto dt = 1.0f / sf;
+			auto period = (type)1 / f;
+			if(period + dt == period)
+				return false;
+
+			auto ph = phase();
+			auto ph_test = (type)10 * f * dt;
+			return ph_test + ph != ph;
+		}
+
+	private:
+		Bound m_o;
+		type m_t{};
 	};
 
 } // namespace

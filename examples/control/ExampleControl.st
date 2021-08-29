@@ -59,3 +59,17 @@ float=1 frequency (Hz)
 	int8=3 x output
 } amp
 
+{
+	(float) sample frequency (Hz)
+	float=1 amplitude
+	float=0.159 frequency (Hz)
+	float=0 phase (rad)
+	bool=true enable
+	float=nan override
+	float y
+
+	// Interconnections
+	uint8=0 evaluation order
+	int8=4 x y
+} sine
+
