@@ -30,6 +30,7 @@ import random
 
 from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, QLocale, \
     QEvent, QCoreApplication, QStandardPaths, QSocketNotifier, QEventLoop, SIGNAL
+from PySide2.QtGui import QKeyEvent
 
 from .zmq_server import ZmqServer
 from .csv import CsvExport
@@ -476,6 +477,14 @@ class Object(QObject):
             return datetime.datetime.fromtimestamp(self._t).strftime('%Y-%m-%d %H:%M:%S.%f')
 
     tString = _Property(str, _tString_get, notify=tStringChanged)
+
+    @Slot('QVariant')
+    def injectDecimalPoint(self, recv):
+        p = self.locale.decimalPoint()
+        ev = QKeyEvent(QKeyEvent.KeyPress,
+            Qt.Key_Comma if p == ',' else Qt.Key_Period, Qt.NoModifier,
+            ',' if p == ',' else '.')
+        QCoreApplication.sendEvent(recv, ev)
 
     def _interpret_float(self, value):
         # Remove all group separators. They are irrelevant, but prevent

@@ -169,6 +169,17 @@ Window {
                     bottomPadding: 0
                     leftPadding: 0
 
+                    Keys.forwardTo: decimalPointConversion
+                    Item {
+                        id: decimalPointConversion
+                        Keys.onPressed: {
+                            if(obj !== null && event.key == Qt.Key_Period && (event.modifiers & Qt.KeypadModifier)) {
+                                event.accepted = true
+                                obj.injectDecimalPoint(parent)
+                            }
+                        }
+                    }
+
                     onAccepted: {
                         obj.valueString = displayText
                         Qt.callLater(function() { text = obj.valueString })
