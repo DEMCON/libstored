@@ -4,8 +4,8 @@
  *
  * You can build any topology you want, but as an example with two parties:
  *
- * - Run first instance: `8_sync -i inst1 -d ipc://libstored/example -p 2222`
- * - Run second instance: `8_sync -i inst2 -u ipc://libstored/example -p 2223`
+ * - Run first instance: `8_sync -i inst1 -d ipc:///tmp/8_sync_pipe -p 2222`
+ * - Run second instance: `8_sync -i inst2 -u ipc:///tmp/8_sync_pipe -p 2223`
  * - Run a debugger for first instance: `python3 -m libstored.gui -p 2222`
  * - Run a debugger for second instance: `python3 -m libstored.gui -p 2223`
  * - Enable tracing on all variables. You will notice that when you change a
@@ -51,6 +51,8 @@ static ExampleSync1 store1;
 
 int main(int argc, char** argv)
 {
+	int ret = 0;
+
 	stored::Debugger debugger("8_sync");
 	debugger.map(store1);
 	debugger.map(store2);
@@ -64,7 +66,7 @@ int main(int argc, char** argv)
 	bool verbose = false;
 
 	int c;
-	while((c = getopt(argc, argv, "i:d:u:p:v")) != -1)
+	while(ret == 0 && (c = getopt(argc, argv, "i:d:u:p:v")) != -1)
 		switch(c) {
 		case 'i':
 			printf("This is %s\n", optarg);
@@ -81,6 +83,11 @@ int main(int argc, char** argv)
 			printf("Listen at %s for downstream sync\n", optarg);
 			stored::SyncZmqLayer* z = new stored::SyncZmqLayer(nullptr, optarg, true);
 			connections.push_back(z);
+			if((errno = z->lastError())) {
+				printf("Cannot initialize ZMQ, got error %d; %s\n", errno, zmq_strerror(errno));
+				ret = 1;
+				break;
+			}
 			stored::ProtocolLayer* l = z;
 			if(verbose) {
 				l = new stored::BufferLayer();
@@ -97,6 +104,11 @@ int main(int argc, char** argv)
 			printf("Connect to %s for upstream sync\n", optarg);
 			stored::SyncZmqLayer* z = new stored::SyncZmqLayer(nullptr, optarg, false);
 			connections.push_back(z);
+			if((errno = z->lastError())) {
+				printf("Cannot initialize ZMQ, got error %d; %s\n", errno, zmq_strerror(errno));
+				ret = 1;
+				break;
+			}
 			stored::ProtocolLayer* l = z;
 			if(verbose) {
 				l = new stored::BufferLayer();
@@ -121,10 +133,14 @@ int main(int argc, char** argv)
 			printf("  -v   Verbose output of sync connections. Applies only to\n");
 			printf("       -u and -d options after -v.\n");
 			printf("Specify -i and -u as often as required.\n\n");
-			return 1;
+			ret = 1;
 		}
 
 	stored::DebugZmqLayer debugLayer(nullptr, debug_port);
+	if((errno = debugLayer.lastError())) {
+		printf("Cannot initialize ZMQ for debugging, got error %d; %s\n", errno, zmq_strerror(errno));
+		ret = 1;
+	}
 	debugLayer.wrap(debugger);
 
 	std::vector<zmq_pollitem_t> fds;
@@ -144,7 +160,7 @@ int main(int argc, char** argv)
 		fds.push_back(fd);
 	}
 
-	while(true) {
+	while(ret == 0) {
 		// Go sync store1 on all connections.
 		synchronizer.process(store1);
 
@@ -188,11 +204,13 @@ int main(int argc, char** argv)
 	}
 
 done:
-	for(std::list<stored::SyncZmqLayer*>::iterator it = connections.begin(); it != connections.end(); ++it)
+	for(std::list<stored::SyncZmqLayer*>::iterator it = connections.begin(); it != connections.end(); ++it) {
+		synchronizer.disconnect(**it);
 		delete *it;
+	}
 	for(std::list<stored::ProtocolLayer*>::iterator it = otherLayers.begin(); it != otherLayers.end(); ++it)
 		delete *it;
 
-	return 0;
+	return ret;
 }
 
