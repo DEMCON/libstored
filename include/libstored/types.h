@@ -1446,10 +1446,16 @@ namespace stored {
 		 */
 		template <typename Store, typename Implementation, typename T, size_t offset, size_t size_>
 		class StoreVariable {
-			CLASS_NOCOPY(StoreVariable)
+#if STORED_cplusplus >= 201103L
+			// Prevent accidental copying this object.  This only
+			// works for C++11, as these special functions must be
+			// trivial otherwise being used as union member.
+			StoreVariable(StoreVariable const&) = delete;
+			StoreVariable(StoreVariable&&) = delete;
+			void operator=(StoreVariable const&) = delete;
+			void operator=(StoreVariable&&) = delete;
+#endif
 		public:
-			~StoreVariable() is_default
-
 			typedef T type;
 			typedef Variable<type,Implementation> Variable_type;
 			typedef Variant<Implementation> Variant_type;
@@ -1499,10 +1505,13 @@ namespace stored {
 			template <typename, unsigned int> class FunctionMap,
 			unsigned int F>
 		class StoreFunction {
-			CLASS_NOCOPY(StoreFunction)
+#if STORED_cplusplus >= 201103L
+			StoreFunction(StoreFunction const&) = delete;
+			StoreFunction(StoreFunction&&) = delete;
+			void operator=(StoreFunction const&) = delete;
+			void operator=(StoreFunction&&) = delete;
+#endif
 		public:
-			~StoreFunction() is_default
-
 			typedef typename FunctionMap<Implementation,F>::type type;
 			typedef Function<type,Implementation> Function_type;
 			typedef Variant<Implementation> Variant_type;
@@ -1587,10 +1596,13 @@ namespace stored {
 		 */
 		template <typename Store, typename Implementation, Type::type type_, size_t offset, size_t size_>
 		class StoreVariantV {
-			CLASS_NOCOPY(StoreVariantV)
+#if STORED_cplusplus >= 201103L
+			StoreVariantV(StoreVariantV const&) = delete;
+			StoreVariantV(StoreVariantV&&) = delete;
+			void operator=(StoreVariantV const&) = delete;
+			void operator=(StoreVariantV&&) = delete;
+#endif
 		public:
-			~StoreVariantV() is_default
-
 			typedef Variant<Implementation> Variant_type;
 
 			constexpr Variant_type variant() const noexcept
@@ -1619,10 +1631,13 @@ namespace stored {
 		 */
 		template <typename Store, typename Implementation, Type::type type_, unsigned int F, size_t size_>
 		class StoreVariantF {
-			CLASS_NOCOPY(StoreVariantF)
+#if STORED_cplusplus >= 201103L
+			StoreVariantF(StoreVariantF const&) = delete;
+			StoreVariantF(StoreVariantF&&) = delete;
+			void operator=(StoreVariantF const&) = delete;
+			void operator=(StoreVariantF&&) = delete;
+#endif
 		public:
-			~StoreVariantF() is_default
-
 			typedef Variant<Implementation> Variant_type;
 
 			constexpr Variant_type variant() const noexcept
