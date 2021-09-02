@@ -175,7 +175,7 @@ else()
 	set(ENV_PATH_SEP ":")
 endif()
 
-if(LIBSTORED_HAVE_LIBZMQ)
+if(LIBSTORED_HAVE_LIBZMQ AND LIBSTORED_EXAMPLES)
 	add_test(
 		NAME ZmqClient
 		COMMAND ${CMAKE_COMMAND} -E env

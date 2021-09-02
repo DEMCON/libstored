@@ -68,5 +68,7 @@ function(libstored_visu target rcc)
 	add_custom_target(${target} DEPENDS ${rcc})
 endfunction()
 
-libstored_visu(visu-example ${CMAKE_CURRENT_SOURCE_DIR}/visu_example.py example/main.qml)
+if(LIBSTORED_EXAMPLES)
+	libstored_visu(visu-example ${CMAKE_CURRENT_SOURCE_DIR}/visu_example.py example/main.qml)
+endif()
 

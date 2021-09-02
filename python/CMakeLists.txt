@@ -39,10 +39,15 @@ list(APPEND pylibstored_src
 	libstored/zmq_server.py
 	libstored/visu/__init__.py
 	libstored/visu/__main__.py
-	libstored/visu/example/example.qrc
-	libstored/visu/example/main.qml
 	setup.py
 )
+
+if(LIBSTORED_EXAMPLES)
+	list(APPEND pylibstored_src
+		libstored/visu/example/example.qrc
+		libstored/visu/example/main.qml
+	)
+endif()
 
 execute_process(
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/setup.py -V
@@ -56,9 +61,15 @@ add_subdirectory(libstored/visu)
 set(pylibstored_wheel_file "libstored-${pylibstored_version}-py3-none-any.whl" CACHE INTERNAL "")
 set(pylibstored_wheel "${CMAKE_CURRENT_BINARY_DIR}/dist/${pylibstored_wheel_file}" CACHE INTERNAL "")
 
+set(_wheel_deps ${pylistored_src})
+
+if(LIBSTORED_EXAMPLES)
+	set(_wheel_deps ${_wheel_deps} visu-example)
+endif()
+
 add_custom_command(
 	OUTPUT ${pylibstored_wheel}
-	DEPENDS visu-example ${pylibstored_src}
+	DEPENDS ${_wheel_deps}
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/setup.py -q
 		sdist -d ${CMAKE_CURRENT_BINARY_DIR}/dist
 		bdist_wheel -b ${CMAKE_CURRENT_BINARY_DIR}/build -d ${CMAKE_CURRENT_BINARY_DIR}/dist
