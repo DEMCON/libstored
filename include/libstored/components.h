@@ -789,7 +789,8 @@ namespace stored {
 	 * } amp
 	 * \endcode
 	 *
-	 * All fields are optional.
+	 * All fields are optional.  All variables of type \c float can be any
+	 * other type, as long as it matches the template parameter \p T.
 	 *
 	 * The amplifier basically does:
 	 *
@@ -1187,7 +1188,10 @@ namespace stored {
 	 * } pid
 	 * \endcode
 	 *
-	 * Only \c frequency, \c setpoint, and \c Kp are mandatory.
+	 * Only \c frequency, \c setpoint, and \c Kp are mandatory.  All
+	 * variables of type \c float, except for \c frequency, can be any
+	 * other type, as long as it matches the template parameter \p T.
+	 *
 	 * Then, instantiate the controller like this:
 	 *
 	 * \code
@@ -1287,7 +1291,7 @@ namespace stored {
 
 		decltype(auto) resetObject() const noexcept { return m_o.template get<'r'>(); }
 		decltype(auto) resetObject() noexcept { return m_o.template get<'r'>(); }
-		bool reset() const noexcept { decltype(auto) o = resetObject(); return !o.valid() || o.get(); }
+		bool reset() const noexcept { decltype(auto) o = resetObject(); return o.valid() && o.get(); }
 
 		type operator()(type y) noexcept
 		{
@@ -1439,7 +1443,10 @@ namespace stored {
 	 *     float y
 	 * } sine
 	 *
-	 * Only <tt>sample frequency (Hz)</tt> is mandatory.
+	 * Only <tt>sample frequency</tt> is mandatory.  All variables of type
+	 * \c float, except for <tt>sample frequency</tt>, can be any other
+	 * type, as long as it matches the template parameter \p T.
+	 *
 	 * Then, instantiate the controller like this:
 	 *
 	 * \code
@@ -1545,6 +1552,156 @@ namespace stored {
 	private:
 		Bound m_o;
 		type m_t{};
+	};
+
+	template <typename Container, typename T=float>
+	using LowPassObjects = FreeObjectsList<
+		FreeFunctions<float, Container, 's'>,
+		FreeVariables<T, Container, 'I', 'c', 'F', 'O'>,
+		FreeVariables<bool, Container, 'e', 'r'>>;
+
+	/*!
+	 * \brief Low-pass filter, based on store variables.
+	 *
+	 * To use this class, add a scope to your store, like:
+	 *
+	 * \code
+	 * {
+	 *     (float) sample frequency (Hz)
+	 *     float input
+	 *     float cutoff frequency (Hz)
+	 *     bool=true enable
+	 *     bool reset
+	 *     float=nan override
+	 *     float output
+	 * } lowpass
+	 *
+	 * Only <tt>sample frequency</tt> and <tt>cutoff frequency</tt> are
+	 * mandatory.  All variables of type \c float, except for <tt>sample
+	 * frequency</tt>, can be any other type, as long as it matches the
+	 * template parameter \p T.
+	 *
+	 * Then, instantiate the controller like this:
+	 *
+	 * \code
+	 * // Construct a compile-time object, which resolves all fields in your store.
+	 * constexpr auto lowpass_o = stored::Sine<stored::YourStore>::objects("/lowpass/");
+	 * // Instantiate the generator, tailored to the available fields in the store.
+	 * stored::LowPass<stored::YourStore, lowpass_o.flags()> lowpass{lowpass_o, yourStore};
+	 * \endcode
+	 */
+	template <typename Container, unsigned long long flags = 0, typename T = float>
+	class LowPass {
+	public:
+		using type = T;
+		using Bound = typename LowPassObjects<Container,type>::template Bound<flags>;
+
+		constexpr LowPass() noexcept = default;
+
+		constexpr LowPass(LowPassObjects<Container,type> const& o, Container& container)
+			: m_o{Bound::create(o, container)}
+		{
+			static_assert(Bound::template valid<'s'>(), "'sample frequency' function is mandatory");
+			static_assert(Bound::template valid<'c'>(), "'cutoff frequency' function is mandatory");
+		}
+
+		template <char... OnlyId, size_t N>
+		static constexpr auto objects(char const(&prefix)[N]) noexcept
+		{
+			return LowPassObjects<Container,type>::template create<OnlyId...>(prefix,
+				"sample frequency", "input", "cutoff frequency", "override", "output", "enable", "reset");
+		}
+
+		decltype(auto) sampleFrequencyObject() const noexcept { return m_o.template get<'s'>(); }
+		float sampleFrequency() const noexcept { return sampleFrequencyObject()(); }
+
+		decltype(auto) inputObject() const noexcept { return m_o.template get<'I'>(); }
+		decltype(auto) inputObject() noexcept { return m_o.template get<'I'>(); }
+		type input() const noexcept { decltype(auto) o = inputObject(); return o.valid() ? o.get() : type(); }
+
+		decltype(auto) cutoffFrequencyObject() const noexcept { return m_o.template get<'c'>(); }
+		decltype(auto) cutoffFrequencyObject() noexcept { return m_o.template get<'c'>(); }
+		type cutoffFrequency() const noexcept { return cutoffFrequencyObject().get(); }
+
+		decltype(auto) overrideObject() const noexcept { return m_o.template get<'F'>(); }
+		decltype(auto) overrideObject() noexcept { return m_o.template get<'F'>(); }
+		type override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : std::numeric_limits<type>::quiet_NaN(); }
+
+		decltype(auto) outputObject() const noexcept { return m_o.template get<'O'>(); }
+		decltype(auto) outputObject() noexcept { return m_o.template get<'O'>(); }
+		type output() const noexcept { decltype(auto) o = outputObject(); return o.valid() ? o.get() : type(); }
+
+		decltype(auto) enableObject() const noexcept { return m_o.template get<'e'>(); }
+		decltype(auto) enableObject() noexcept { return m_o.template get<'e'>(); }
+		bool enabled() const noexcept { decltype(auto) o = enableObject(); return !o.valid() || o.get(); }
+		void enable(bool value) noexcept { decltype(auto) o = enableObject(); if(o.valid()) o = value; }
+		void disable() noexcept { enable(false); }
+
+		decltype(auto) resetObject() const noexcept { return m_o.template get<'r'>(); }
+		decltype(auto) resetObject() noexcept { return m_o.template get<'r'>(); }
+		bool reset() const noexcept { decltype(auto) o = resetObject(); return o.valid() && o.get(); }
+
+		type operator()(type input) noexcept
+		{
+			decltype(auto) o = inputObject();
+			if(o.valid())
+				o = input;
+
+			return run(input);
+		}
+
+		type operator()() noexcept
+		{
+			return run(input());
+		}
+
+	protected:
+		type run(type input) noexcept
+		{
+			type output = override_();
+
+			if(likely(std::isnan(output))) {
+				if(!enabled()) {
+					m_prev = output = input;
+				} else {
+					bool doReset = false;
+
+					decltype(auto) ro = resetObject();
+					if(unlikely(ro.valid() && ro.get())) {
+						doReset = true;
+						ro = false;
+					}
+
+					if(unlikely(std::isnan(m_alpha))) {
+						doReset = true;
+						m_prev = input;
+					}
+
+					if(unlikely(doReset)) {
+						type cutoff = cutoffFrequency();
+						type rc = cutoff > 0 ? (type)1 / ((type)2 * pi<type> * cutoff) : 0;
+						auto sf = sampleFrequency();
+						type dt = sf > 0 ? (type)(1.0f / sampleFrequency()) : 0;
+						m_alpha = dt > 0 ? dt / (rc + dt) : 1;
+					}
+
+					m_prev = output = m_alpha * input + ((type)1 - m_alpha) * m_prev;
+				}
+			} else {
+				m_prev = input;
+			}
+
+			decltype(auto) oo = outputObject();
+			if(oo.valid())
+				oo = output;
+
+			return output;
+		}
+
+	private:
+		Bound m_o;
+		type m_alpha{std::numeric_limits<type>::quiet_NaN()};
+		type m_prev{};
 	};
 
 } // namespace

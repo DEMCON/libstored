@@ -73,3 +73,18 @@ float=1 frequency (Hz)
 	int8=4 x y
 } sine
 
+{
+	(float) sample frequency (Hz)
+	float input
+	float=1 cutoff frequency (Hz)
+	bool=true enable
+	bool reset
+	float=nan override
+	float output
+
+	// Interconnections
+	uint8=0 evaluation order
+	int8=5 x input
+	int8=6 x output
+} lowpass
+

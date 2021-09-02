@@ -28,6 +28,12 @@ public:
 		if(!set)
 			value = frequency_Hz.get();
 	}
+
+	void __lowpass__sample_frequency_Hz(bool set, float& value)
+	{
+		if(!set)
+			value = frequency_Hz.get();
+	}
 };
 
 static ExampleControlStore store;
@@ -46,13 +52,13 @@ static void pid()
 	if(x_y.valid())
 		store.pid__y = x_y.get<value_type>();
 
-	pid_v();
+	auto u = pid_v();
 	if(!pid_v.isHealthy())
 		std::cout << "/pid not healthy" << std::endl;
 
 	auto x_u = store.interconnect__x_a(store.pid__x_u.get());
 	if(x_u.valid())
-		x_u.set(pid_v.u());
+		x_u.set(u);
 }
 
 static void amp()
@@ -64,11 +70,11 @@ static void amp()
 	if(x_input.valid())
 		store.amp__input = x_input.get<value_type>();
 
-	amp_v();
+	auto output = amp_v();
 
 	auto x_output = store.interconnect__x_a(store.amp__x_output.get());
 	if(x_output.valid())
-		x_output.set(amp_v.output());
+		x_output.set(output);
 }
 
 static void sine()
@@ -83,14 +89,33 @@ static void sine()
 		x_y.set(y);
 }
 
+static void lowpass()
+{
+	constexpr auto lowpass_o = stored::LowPass<ExampleControlStore>::objects("/lowpass/");
+	static stored::LowPass<ExampleControlStore, lowpass_o.flags()> lowpass_v{lowpass_o, store};
+
+	auto x_input = store.interconnect__x_a(store.lowpass__x_input.get());
+	if(x_input.valid())
+		store.lowpass__input = x_input.get<value_type>();
+
+	auto output = lowpass_v();
+
+	auto x_output = store.interconnect__x_a(store.lowpass__x_output.get());
+	if(x_output.valid())
+		x_output.set(output);
+}
+
 static void control()
 {
+	printf("tick\n");
+
 	using f_type = std::pair<void(*)(), stored::Variable<uint8_t, ExampleControlStore>>;
 
-	static std::array<f_type, 3> fs = {
+	static std::array<f_type, 4> fs = {
 		f_type{&pid, store.pid__evaluation_order},
 		f_type{&amp, store.amp__evaluation_order},
 		f_type{&sine, store.sine__evaluation_order},
+		f_type{&lowpass, store.lowpass__evaluation_order},
 	};
 
 	std::stable_sort(fs.begin(), fs.end(),
@@ -108,8 +133,8 @@ int main()
 	debugger.map(store);
 
 	stored::DebugZmqLayer zmqLayer;
-	if(zmqLayer.lastError()) {
-		perror("Cannot initialize ZMQ layer");
+	if((errno = zmqLayer.lastError())) {
+		printf("Cannot initialize ZMQ layer; %s (error %d)\n", zmq_strerror(errno), errno);
 		exit(1);
 	}
 	zmqLayer.wrap(debugger);
@@ -117,13 +142,11 @@ int main()
 	stored::Poller poller;
 
 	if((errno = poller.add(zmqLayer, nullptr, stored::Poller::PollIn))) {
-		perror("Cannot add to poller");
+		printf("Cannot add to poller; %s (error %d)\n", zmq_strerror(errno), errno);
 		exit(1);
 	}
 
-	// Determine polling/control interval.
-	auto dt = std::chrono::milliseconds((long long)(1.0e3f / store.pid__frequency_Hz()));
-	auto t = std::chrono::system_clock::now() + dt;
+	auto t = std::chrono::system_clock::now();
 
 	while(true) {
 		auto now = std::chrono::system_clock::now();
@@ -131,13 +154,13 @@ int main()
 		auto rem_us = rem.count();
 
 		if(rem_us <= 0) {
-			t += std::chrono::milliseconds((long long)(1.0e3f / store.pid__frequency_Hz()));
+			t += std::chrono::milliseconds((long long)(1.0e3f / store.frequency_Hz.get()));
 			// This is where the magic takes place.
 			control();
 			continue;
 		}
 
-		if(poller.poll((long)rem_us).empty()) {
+		if(poller.poll(std::max(0L, (long)rem_us)).empty()) {
 			switch(errno) {
 			case EINTR:
 			case EAGAIN:
@@ -147,7 +170,7 @@ int main()
 				exit(1);
 			} // else timeout
 		} else if((errno = zmqLayer.recv())) {
-			perror("Cannot recv");
+			printf("Cannot recv; %s (error %d)\n", zmq_strerror(errno), errno);
 			exit(1);
 		}
 	}
