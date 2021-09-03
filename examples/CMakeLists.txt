@@ -40,9 +40,8 @@ add_subdirectory(6_hooks)
 add_subdirectory(7_protocol)
 add_subdirectory(8_sync)
 add_subdirectory(9_fpga)
-add_subdirectory(terminal)
-add_subdirectory(components)
 add_subdirectory(installed)
+add_subdirectory(terminal)
 
 if(NOT MINGW AND NOT CMAKE_CXX_STANDARD EQUAL 98)
 	# std::thread is not supported by MinGW.
@@ -50,6 +49,8 @@ if(NOT MINGW AND NOT CMAKE_CXX_STANDARD EQUAL 98)
 endif()
 
 if(LIBSTORED_HAVE_LIBZMQ)
+	add_subdirectory(components)
+	add_subdirectory(control)
 	add_subdirectory(zmqserver)
 endif()
 

@@ -374,7 +374,7 @@ SyncZmqLayer::SyncZmqLayer(void* context, char const* endpoint, bool listen, Pro
 		res = zmq_connect(socket(), endpoint);
 
 	if(res)
-		setLastError(res);
+		setLastError(errno);
 }
 
 } // namespace

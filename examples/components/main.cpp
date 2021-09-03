@@ -29,7 +29,8 @@ public:
 	ExampleComponentsStore() = default;
 
 	// You can change the control frequency dynamically.
-	void __pid__frequency_Hz(bool set, float& value) {
+	void __pid__frequency_Hz(bool set, float& value)
+	{
 		if(set) {
 			if(std::isnan(value) || value <= 0.1f)
 				value = 0.1f;
@@ -129,6 +130,10 @@ int main()
 	debugger.map(store);
 
 	stored::DebugZmqLayer zmqLayer;
+	if(zmqLayer.lastError()) {
+		perror("Cannot initialize ZMQ layer");
+		exit(1);
+	}
 	zmqLayer.wrap(debugger);
 
 	stored::Poller poller;
@@ -151,6 +156,8 @@ int main()
 			t += std::chrono::milliseconds((long long)(1.0e3f / store.pid__frequency_Hz()));
 			// This is where the magic takes place.
 			store.pid__y = fly(pid());
+			if(!pid.isHealthy())
+				std::cout << "Warning: numerically unstable" << std::endl;
 			continue;
 		}
 

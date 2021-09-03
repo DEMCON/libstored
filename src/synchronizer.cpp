@@ -671,6 +671,9 @@ void SyncConnection::drop(StoreJournal& store)
  */
 void SyncConnection::bye()
 {
+	if(m_store.empty())
+		return;
+
 	encodeCmd(Bye, true);
 	m_store.clear();
 	m_idIn.clear();

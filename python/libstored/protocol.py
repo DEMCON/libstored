@@ -274,7 +274,7 @@ class SegmentationLayer(ProtocolLayer):
         self._buffer += data[:-1]
         self.activity()
         if data[-1:] == self.end:
-            self.logger.debug('reassembled %s' + bytes(self._buffer))
+            self.logger.debug('reassembled %s', bytes(self._buffer))
             super().decode(self._buffer)
             self._buffer = bytearray()
 

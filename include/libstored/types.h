@@ -1445,8 +1445,19 @@ namespace stored {
 		 * Do not use. Only the *Objects class is allowed to use it.
 		 */
 		template <typename Store, typename Implementation, typename T, size_t offset, size_t size_>
+		// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 		class StoreVariable {
 		public:
+#if STORED_cplusplus >= 201103L
+			// Prevent accidental copying this object.  This only
+			// works for C++11, as these special functions must be
+			// trivial otherwise being used as union member.
+			StoreVariable(StoreVariable const&) = delete;
+			StoreVariable(StoreVariable&&) = delete;
+			void operator=(StoreVariable const&) = delete;
+			void operator=(StoreVariable&&) = delete;
+#endif
+
 			typedef T type;
 			typedef Variable<type,Implementation> Variable_type;
 			typedef Variant<Implementation> Variant_type;
@@ -1495,8 +1506,16 @@ namespace stored {
 			typename Store, typename Implementation,
 			template <typename, unsigned int> class FunctionMap,
 			unsigned int F>
+		// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 		class StoreFunction {
 		public:
+#if STORED_cplusplus >= 201103L
+			StoreFunction(StoreFunction const&) = delete;
+			StoreFunction(StoreFunction&&) = delete;
+			void operator=(StoreFunction const&) = delete;
+			void operator=(StoreFunction&&) = delete;
+#endif
+
 			typedef typename FunctionMap<Implementation,F>::type type;
 			typedef Function<type,Implementation> Function_type;
 			typedef Variant<Implementation> Variant_type;
@@ -1580,8 +1599,16 @@ namespace stored {
 		 * Do not use. Only the *Objects class is allowed to use it.
 		 */
 		template <typename Store, typename Implementation, Type::type type_, size_t offset, size_t size_>
+		// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 		class StoreVariantV {
 		public:
+#if STORED_cplusplus >= 201103L
+			StoreVariantV(StoreVariantV const&) = delete;
+			StoreVariantV(StoreVariantV&&) = delete;
+			void operator=(StoreVariantV const&) = delete;
+			void operator=(StoreVariantV&&) = delete;
+#endif
+
 			typedef Variant<Implementation> Variant_type;
 
 			constexpr Variant_type variant() const noexcept
@@ -1609,8 +1636,16 @@ namespace stored {
 		 * Do not use. Only the *Objects class is allowed to use it.
 		 */
 		template <typename Store, typename Implementation, Type::type type_, unsigned int F, size_t size_>
+		// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 		class StoreVariantF {
 		public:
+#if STORED_cplusplus >= 201103L
+			StoreVariantF(StoreVariantF const&) = delete;
+			StoreVariantF(StoreVariantF&&) = delete;
+			void operator=(StoreVariantF const&) = delete;
+			void operator=(StoreVariantF&&) = delete;
+#endif
+
 			typedef Variant<Implementation> Variant_type;
 
 			constexpr Variant_type variant() const noexcept

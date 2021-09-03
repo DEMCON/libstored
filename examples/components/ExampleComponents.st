@@ -41,6 +41,7 @@
 	// Bounds on the output
 	float=0 low
 	float=1 high
+	float=0.1 epsilon
 
 	// Misc control
 	bool=true reset
