@@ -216,7 +216,7 @@ all store lookups in the directory are done at compile-time. You need C++14 (or 
 </pre></div>
 </div>
 </p>
-<p>All fields are optional.</p>
+<p>All fields are optional. All variables of type <code class="docutils literal notranslate"><span class="pre">float</span></code> can be any other type, as long as it matches the template parameter <code class="docutils literal notranslate"><span class="pre">T</span></code>.</p>
 <p>The amplifier basically does:</p>
 <p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if(override is nan)
     output = min(high, max(low, input * gain + offset))
@@ -667,6 +667,7 @@ stored::PinOut&lt;stored::YourStore, pin_o.flags()&gt; pin{pin_o, yourStore};
     float=inf int high
     float=-inf low
     float=inf high
+    float=inf epsilon
     bool reset
     float=nan override
     float u
@@ -674,10 +675,11 @@ stored::PinOut&lt;stored::YourStore, pin_o.flags()&gt; pin{pin_o, yourStore};
 </pre></div>
 </div>
 </p>
-<p>Only <code class="docutils literal notranslate"><span class="pre">frequency</span></code>, <code class="docutils literal notranslate"><span class="pre">setpoint</span></code>, and <code class="docutils literal notranslate"><span class="pre">Kp</span></code> are mandatory. Then, instantiate the controller like this:</p>
+<p>Only <code class="docutils literal notranslate"><span class="pre">frequency</span></code>, <code class="docutils literal notranslate"><span class="pre">setpoint</span></code>, and <code class="docutils literal notranslate"><span class="pre">Kp</span></code> are mandatory. All variables of type <code class="docutils literal notranslate"><span class="pre">float</span></code>, except for <code class="docutils literal notranslate"><span class="pre">frequency</span></code>, can be any other type, as long as it matches the template parameter <code class="docutils literal notranslate"><span class="pre">T</span></code>.</p>
+<p>Then, instantiate the controller like this:</p>
 <p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
 constexpr auto pid_o = stored::PID&lt;stored::YourStore&gt;::objects(&quot;/pid/&quot;);
-// Instantiate an PID, tailored to the available fields in the store.
+// Instantiate a PID, tailored to the available fields in the store.
 stored::PID&lt;stored::YourStore, pid_o.flags()&gt; pid{pid_o, yourStore};
 </pre></div>
 </div>
@@ -715,6 +717,16 @@ stored::PID&lt;stored::YourStore, pid_o.flags()&gt; pid{pid_o, yourStore};
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID12enableObjectEv">
 <span id="_CPPv3NK6stored3PID12enableObjectEv"></span><span id="_CPPv2NK6stored3PID12enableObjectEv"></span><span id="stored::PID::enableObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1aaaf3a56a599c60ef71cdd852977b9b31"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">enableObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID12enableObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID7epsilonEv">
+<span id="_CPPv3NK6stored3PID7epsilonEv"></span><span id="_CPPv2NK6stored3PID7epsilonEv"></span><span id="stored::PID::epsilonC"></span><span class="target" id="classstored_1_1_p_i_d_1ab0d06bdaff497b7c5f2609873d0a8181"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">epsilon</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID7epsilonEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID13epsilonObjectEv">
+<span id="_CPPv3NK6stored3PID13epsilonObjectEv"></span><span id="_CPPv2NK6stored3PID13epsilonObjectEv"></span><span id="stored::PID::epsilonObjectC"></span><span class="target" id="classstored_1_1_p_i_d_1ab723c0a719bfa6f1b5c70f8c0535aa53"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">epsilonObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID13epsilonObjectEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
@@ -773,6 +785,16 @@ stored::PID&lt;stored::YourStore, pid_o.flags()&gt; pid{pid_o, yourStore};
 <dd></dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID9isHealthyEv">
+<span id="_CPPv3NK6stored3PID9isHealthyEv"></span><span id="_CPPv2NK6stored3PID9isHealthyEv"></span><span id="stored::PID::isHealthyC"></span><span class="target" id="classstored_1_1_p_i_d_1a3b76b3bd1de9a90cf65be71615957e4d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isHealthy</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID9isHealthyEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check numerical stability. </p>
+<p><a class="reference internal" href="#classstored_1_1_p_i_d_1ab0d06bdaff497b7c5f2609873d0a8181"><span class="std std-ref">epsilon()</span></a> is the smallest change in error (<a class="reference internal" href="#classstored_1_1_p_i_d_1ac35bfd87b7f20ddfce36743de5479a47"><span class="std std-ref">setpoint()</span></a> - <a class="reference internal" href="#classstored_1_1_p_i_d_1a18775e96f20c09966ca30cfd3e06eb9d"><span class="std std-ref">y()</span></a>) that must have influence the output <a class="reference internal" href="#classstored_1_1_p_i_d_1ab5af3d82c6e29164df055137a3966311"><span class="std std-ref">u()</span></a>. If the error is smaller, the output may remain the same. This function checks if that is still the case.</p>
+<p>The integrator is especially interesting. If it becomes too large, successive (small) errors may not be able to reduce it anymore, because of rounding. If that is the case, it is considered unhealthy.</p>
+<p>This value can optionally be defined in the store. If omitted, this function always returns <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
+<p>You may want to check (or assert on) this function once in a while, like once per second or after every run, to detect a stuck controller within reasonable time for your application. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored3PID2KdEv">
 <span id="_CPPv3NK6stored3PID2KdEv"></span><span id="_CPPv2NK6stored3PID2KdEv"></span><span id="stored::PID::KdC"></span><span class="target" id="classstored_1_1_p_i_d_1a847162a6e38ee0ff226740c7263d71c2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Kd</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored3PID2KdEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
@@ -814,12 +836,12 @@ stored::PID&lt;stored::YourStore, pid_o.flags()&gt; pid{pid_o, yourStore};
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored3PIDclEv">
-<span id="_CPPv3N6stored3PIDclEv"></span><span id="_CPPv2N6stored3PIDclEv"></span><span id="stored::PID::call-operator"></span><span class="target" id="classstored_1_1_p_i_d_1a2f9308a9b38d608d696fd4db01853551"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored3PIDclEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored3PIDclEv"></span><span id="_CPPv2N6stored3PIDclEv"></span><span id="stored::PID::call-operator"></span><span class="target" id="classstored_1_1_p_i_d_1a58f5dc1abeaacdd57ce39041094ef157"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored3PIDclEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored3PIDclE4type">
-<span id="_CPPv3N6stored3PIDclE4type"></span><span id="_CPPv2N6stored3PIDclE4type"></span><span id="stored::PID::call-operator__type"></span><span class="target" id="classstored_1_1_p_i_d_1ad936b07ef1ca4a5d854d0e988afd109c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored3PIDclE4type" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6stored3PIDclE4type"></span><span id="_CPPv2N6stored3PIDclE4type"></span><span id="stored::PID::call-operator__type"></span><span class="target" id="classstored_1_1_p_i_d_1a03dc9865a30221cf4d16066dd052ae84"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored3PID4typeE" title="stored::PID::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored3PIDclE4type" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
