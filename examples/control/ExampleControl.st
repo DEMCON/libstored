@@ -1,4 +1,4 @@
-float=1 frequency (Hz)
+(float) frequency (Hz)
 
 {
 	float[10] x
@@ -14,9 +14,9 @@ float=1 frequency (Hz)
 	bool=true enable
 
 	// Coefficients
-	float=0.1 Kp
-	float=10 Ti (s)
-	float=0 Td (s)
+	float=0.5 Kp
+	float=0.25 Ti (s)
+	float=0.05 Td (s)
 	float=0 Kff
 
 	// Ti integrator
@@ -75,6 +75,21 @@ float=1 frequency (Hz)
 
 {
 	(float) sample frequency (Hz)
+	float=1 amplitude
+	float=0.159 frequency (Hz)
+	float=0 phase (rad)
+	float=0.25 duty cycle
+	bool=true enable
+	float=nan override
+	float y
+
+	// Interconnections
+	uint8=0 evaluation order
+	int8=0 x y
+} pulse
+
+{
+	(float) sample frequency (Hz)
 	float input
 	float=1 cutoff frequency (Hz)
 	bool=true enable
@@ -84,7 +99,7 @@ float=1 frequency (Hz)
 
 	// Interconnections
 	uint8=0 evaluation order
-	int8=5 x input
-	int8=6 x output
+	int8=3 x input
+	int8=1 x output
 } lowpass
 

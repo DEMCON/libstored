@@ -1,6 +1,18 @@
 /*!
  * \file
  * \brief libstored's control example.
+ *
+ * This example instantiates several control related components.  All inputs
+ * and output are mapped onto <tt>/interconnect/x</tt>, and this mapping can be
+ * changed dynamically.  This allows you to play around with the sequence of
+ * the components.
+ *
+ * The default configuration is:
+ *
+ * - pulse as setpoint to PID
+ * - PID output via amplifier and lowpass filter to PID input
+ *
+ * C++14 is required for this example, as stored/components.h requires it.
  */
 
 #include "ExampleControl.h"
@@ -17,23 +29,51 @@ public:
 	ExampleControlStore() = default;
 
 	// You can change the control frequency dynamically.
+	void __frequency_Hz(bool set, float& value)
+	{
+		if(!set) {
+			value = m_frequency_Hz;
+		} else {
+			m_frequency_Hz = std::max(0.1f, value);
+			pid__reset = true;
+			lowpass__reset = true;
+		}
+	}
+
 	void __pid__frequency_Hz(bool set, float& value)
 	{
 		if(!set)
 			value = frequency_Hz.get();
+		else
+			frequency_Hz = value;
 	}
 
 	void __sine__sample_frequency_Hz(bool set, float& value)
 	{
 		if(!set)
 			value = frequency_Hz.get();
+		else
+			frequency_Hz = value;
+	}
+
+	void __pulse__sample_frequency_Hz(bool set, float& value)
+	{
+		if(!set)
+			value = frequency_Hz.get();
+		else
+			frequency_Hz = value;
 	}
 
 	void __lowpass__sample_frequency_Hz(bool set, float& value)
 	{
 		if(!set)
 			value = frequency_Hz.get();
+		else
+			frequency_Hz = value;
 	}
+
+private:
+	float m_frequency_Hz{10.0f};
 };
 
 static ExampleControlStore store;
@@ -89,6 +129,18 @@ static void sine()
 		x_y.set(y);
 }
 
+static void pulse()
+{
+	constexpr auto pulse_o = stored::PulseWave<ExampleControlStore>::objects("/pulse/");
+	static stored::PulseWave<ExampleControlStore, pulse_o.flags()> pulse_v{pulse_o, store};
+
+	auto y = pulse_v();
+
+	auto x_y = store.interconnect__x_a(store.pulse__x_y.get());
+	if(x_y.valid())
+		x_y.set(y);
+}
+
 static void lowpass()
 {
 	constexpr auto lowpass_o = stored::LowPass<ExampleControlStore>::objects("/lowpass/");
@@ -107,14 +159,13 @@ static void lowpass()
 
 static void control()
 {
-	printf("tick\n");
-
 	using f_type = std::pair<void(*)(), stored::Variable<uint8_t, ExampleControlStore>>;
 
-	static std::array<f_type, 4> fs = {
+	static std::array<f_type, 5> fs = {
 		f_type{&pid, store.pid__evaluation_order},
 		f_type{&amp, store.amp__evaluation_order},
 		f_type{&sine, store.sine__evaluation_order},
+		f_type{&pulse, store.pulse__evaluation_order},
 		f_type{&lowpass, store.lowpass__evaluation_order},
 	};
 
@@ -127,6 +178,8 @@ static void control()
 
 int main()
 {
+	printf("Dynamically change the interconnections between the components\n");
+	printf("by modifying the /<component>/x <variable>.\n");
 
 	// Construct the protocol stack.
 	stored::Debugger debugger{"control"};
