@@ -1438,7 +1438,7 @@ namespace stored {
 	template <typename Container, typename T=float>
 	using SineObjects = FreeObjectsList<
 		FreeFunctions<float, Container, 's'>,
-		FreeVariables<T, Container, 'A', 'f', 'p', 'F', 'y'>,
+		FreeVariables<T, Container, 'A', 'f', 'p', 'F', 'O'>,
 		FreeVariables<bool, Container, 'e'>>;
 
 	/*!
@@ -1454,7 +1454,7 @@ namespace stored {
 	 *     float=0 phase (rad)
 	 *     bool=true enable
 	 *     float=nan override
-	 *     float y
+	 *     float output
 	 * } sine
 	 *
 	 * Only <tt>sample frequency</tt> is mandatory.  All variables of type
@@ -1489,7 +1489,7 @@ namespace stored {
 		{
 			return SineObjects<Container,type>::template create<OnlyId...>(prefix,
 				"sample frequency", "amplitude", "frequency", "phase",
-				"override", "y", "enable");
+				"override", "output", "enable");
 		}
 
 		decltype(auto) sampleFrequencyObject() const noexcept { return m_o.template get<'s'>(); }
@@ -1511,9 +1511,9 @@ namespace stored {
 		decltype(auto) overrideObject() noexcept { return m_o.template get<'F'>(); }
 		type override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : std::numeric_limits<type>::quiet_NaN(); }
 
-		decltype(auto) yObject() const noexcept { return m_o.template get<'y'>(); }
-		decltype(auto) yObject() noexcept { return m_o.template get<'y'>(); }
-		type y() const noexcept { decltype(auto) o = yObject(); return o.valid() ? o.get() : type(); }
+		decltype(auto) outputObject() const noexcept { return m_o.template get<'O'>(); }
+		decltype(auto) outputObject() noexcept { return m_o.template get<'O'>(); }
+		type output() const noexcept { decltype(auto) o = outputObject(); return o.valid() ? o.get() : type(); }
 
 		decltype(auto) enableObject() const noexcept { return m_o.template get<'e'>(); }
 		decltype(auto) enableObject() noexcept { return m_o.template get<'e'>(); }
@@ -1526,13 +1526,13 @@ namespace stored {
 			auto f = frequency();
 			type period = f > 0 ? (type)1 / f : 0;
 
-			type y = override_();
+			type output = override_();
 
-			if(likely(std::isnan(y))) {
+			if(likely(std::isnan(output))) {
 				if(likely(enabled()))
-					y = amplitude() * std::sin((type)2 * pi<type> * f * m_t + phase());
+					output = amplitude() * std::sin((type)2 * pi<type> * f * m_t + phase());
 				else
-					y = 0;
+					output = 0;
 			}
 
 			if(likely(period > 0)) {
@@ -1543,11 +1543,11 @@ namespace stored {
 				}
 			}
 
-			decltype(auto) yo = yObject();
-			if(yo.valid())
-				yo = y;
+			decltype(auto) oo = outputObject();
+			if(oo.valid())
+				oo = output;
 
-			return y;
+			return output;
 		}
 
 		bool isHealthy() const noexcept
@@ -1578,7 +1578,7 @@ namespace stored {
 	template <typename Container, typename T=float>
 	using PulseWaveObjects = FreeObjectsList<
 		FreeFunctions<float, Container, 's'>,
-		FreeVariables<T, Container, 'A', 'f', 'p', 'd', 'F', 'y'>,
+		FreeVariables<T, Container, 'A', 'f', 'p', 'd', 'F', 'O'>,
 		FreeVariables<bool, Container, 'e'>>;
 
 	/*!
@@ -1595,7 +1595,7 @@ namespace stored {
 	 *     float=0.5 duty cycle
 	 *     bool=true enable
 	 *     float=nan override
-	 *     float y
+	 *     float output
 	 * } pulse
 	 *
 	 * Only <tt>sample frequency</tt> is mandatory.  All variables of type
@@ -1630,7 +1630,7 @@ namespace stored {
 		{
 			return PulseWaveObjects<Container,type>::template create<OnlyId...>(prefix,
 				"sample frequency", "amplitude", "frequency", "phase", "duty cycle",
-				"override", "y", "enable");
+				"override", "output", "enable");
 		}
 
 		decltype(auto) sampleFrequencyObject() const noexcept { return m_o.template get<'s'>(); }
@@ -1656,9 +1656,9 @@ namespace stored {
 		decltype(auto) overrideObject() noexcept { return m_o.template get<'F'>(); }
 		type override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : std::numeric_limits<type>::quiet_NaN(); }
 
-		decltype(auto) yObject() const noexcept { return m_o.template get<'y'>(); }
-		decltype(auto) yObject() noexcept { return m_o.template get<'y'>(); }
-		type y() const noexcept { decltype(auto) o = yObject(); return o.valid() ? o.get() : type(); }
+		decltype(auto) outputObject() const noexcept { return m_o.template get<'O'>(); }
+		decltype(auto) outputObject() noexcept { return m_o.template get<'O'>(); }
+		type output() const noexcept { decltype(auto) o = outputObject(); return o.valid() ? o.get() : type(); }
 
 		decltype(auto) enableObject() const noexcept { return m_o.template get<'e'>(); }
 		decltype(auto) enableObject() noexcept { return m_o.template get<'e'>(); }
@@ -1671,9 +1671,9 @@ namespace stored {
 			auto f = frequency();
 			type period = f > 0 ? (type)1 / f : 0;
 
-			type y = override_();
+			type output = override_();
 
-			if(likely(std::isnan(y))) {
+			if(likely(std::isnan(output))) {
 				if(likely(enabled())) {
 					type pulse = period * dutyCycle();
 
@@ -1683,11 +1683,11 @@ namespace stored {
 						t = std::fmod(t + phase() * ((type)1 / ((type)2 * pi<type>)) * period, period);
 
 					if(t < pulse)
-						y = amplitude();
+						output = amplitude();
 					else
-						y = 0;
+						output = 0;
 				} else {
-					y = 0;
+					output = 0;
 				}
 			}
 
@@ -1699,11 +1699,11 @@ namespace stored {
 				}
 			}
 
-			decltype(auto) yo = yObject();
-			if(yo.valid())
-				yo = y;
+			decltype(auto) oo = outputObject();
+			if(oo.valid())
+				oo = output;
 
-			return y;
+			return output;
 		}
 
 		bool isHealthy() const noexcept
@@ -1879,6 +1879,168 @@ namespace stored {
 		Bound m_o;
 		type m_alpha{std::numeric_limits<type>::quiet_NaN()};
 		type m_prev{};
+	};
+
+	template <typename Container, typename T=float>
+	using RampObjects = FreeObjectsList<
+		FreeFunctions<float, Container, 's'>,
+		FreeVariables<T, Container, 'I', 'r', 'a', 'F', 'O'>,
+		FreeVariables<bool, Container, 'e'>>;
+
+	/*!
+	 * \brief Ramping setpoints, based on store variables.
+	 *
+	 * To use this class, add a scope to your store, like:
+	 *
+	 * \code
+	 * {
+	 *     (float) sample frequency (Hz)
+	 *     float input
+	 *     float=inf speed limit
+	 *     float=inf acceleration limit
+	 *     bool=true enable
+	 *     float=nan override
+	 *     float output
+	 * } ramp
+	 *
+	 * Only <tt>sample frequency</tt> is mandatory.  All variables of type
+	 * \c float, except for <tt>sample frequency</tt>, can be any other
+	 * type, as long as it matches the template parameter \p T.
+	 *
+	 * Then, instantiate the controller like this:
+	 *
+	 * \code
+	 * // Construct a compile-time object, which resolves all fields in your store.
+	 * constexpr auto ramp_o = stored::Ramp<stored::YourStore>::objects("/ramp/");
+	 * // Instantiate the generator, tailored to the available fields in the store.
+	 * stored::rampWave<stored::YourStore, ramp_o.flags()> ramp{ramp_o, yourStore};
+	 * \endcode
+	 */
+	template <typename Container, unsigned long long flags = 0, typename T = float>
+	class Ramp {
+	public:
+		using type = T;
+		using Bound = typename RampObjects<Container,type>::template Bound<flags>;
+
+		constexpr Ramp() noexcept = default;
+
+		constexpr Ramp(RampObjects<Container,type> const& o, Container& container)
+			: m_o{Bound::create(o, container)}
+		{
+			static_assert(Bound::template valid<'s'>(), "'sample frequency' function is mandatory");
+		}
+
+		template <char... OnlyId, size_t N>
+		static constexpr auto objects(char const(&prefix)[N]) noexcept
+		{
+			return RampObjects<Container,type>::template create<OnlyId...>(prefix,
+				"sample frequency", "input", "speed limit", "acceleration limit",
+				"override", "output", "enable");
+		}
+
+		decltype(auto) sampleFrequencyObject() const noexcept { return m_o.template get<'s'>(); }
+		float sampleFrequency() const noexcept { return sampleFrequencyObject()(); }
+
+		decltype(auto) inputObject() const noexcept { return m_o.template get<'I'>(); }
+		decltype(auto) inputObject() noexcept { return m_o.template get<'I'>(); }
+		type input() const noexcept { decltype(auto) o = inputObject(); return o.valid() ? o.get() : type(); }
+
+		decltype(auto) speedLimitObject() const noexcept { return m_o.template get<'r'>(); }
+		decltype(auto) speedLimitObject() noexcept { return m_o.template get<'r'>(); }
+		type speedLimit() const noexcept { decltype(auto) o = speedLimitObject(); return o.valid() ? o.get() : std::numeric_limits<type>::infinity(); }
+
+		decltype(auto) accelerationLimitObject() const noexcept { return m_o.template get<'a'>(); }
+		decltype(auto) accelerationLimitObject() noexcept { return m_o.template get<'a'>(); }
+		type accelerationLimit() const noexcept { decltype(auto) o = accelerationLimitObject(); return o.valid() ? o.get() : std::numeric_limits<type>::infinity(); }
+
+		decltype(auto) overrideObject() const noexcept { return m_o.template get<'F'>(); }
+		decltype(auto) overrideObject() noexcept { return m_o.template get<'F'>(); }
+		type override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : std::numeric_limits<type>::quiet_NaN(); }
+
+		decltype(auto) enableObject() const noexcept { return m_o.template get<'e'>(); }
+		decltype(auto) enableObject() noexcept { return m_o.template get<'e'>(); }
+		bool enabled() const noexcept { decltype(auto) o = enableObject(); return !o.valid() || o.get(); }
+		void enable(bool value = true) noexcept { decltype(auto) o = enableObject(); if(o.valid()) o = value; }
+		void disable() noexcept { enable(false); }
+
+		decltype(auto) outputObject() const noexcept { return m_o.template get<'O'>(); }
+		decltype(auto) outputObject() noexcept { return m_o.template get<'O'>(); }
+		type output() const noexcept { decltype(auto) o = outputObject(); return o.valid() ? o.get() : type(); }
+
+		type operator()(type input) noexcept
+		{
+			decltype(auto) o = inputObject();
+			if(o.valid())
+				o = input;
+
+			return run(input);
+		}
+
+		type operator()() noexcept
+		{
+			return run(input());
+		}
+
+	protected:
+		type run(type input) noexcept
+		{
+			type output = override_();
+
+			if(likely(std::isnan(output))) {
+				auto f = sampleFrequency();
+				type dt = f > 0 ? (type)1 / f : 0;
+
+				if(unlikely(dt <= 0)) {
+					output = input;
+					m_speed = 0;
+				} else if(unlikely(!enabled())) {
+					output = input;
+					m_speed = (output - m_position) / dt;
+				} else {
+					auto a_ = accelerationLimit();
+					auto a = a_ * dt;
+					auto sl_ = speedLimit();
+					auto sl = sl_ * dt;
+					auto al = std::min(sl * 2, a);
+					auto err = input - m_position;
+					auto dx = m_speed * dt;
+
+					type startBreaking = m_speed * m_speed / a_ + std::fabs(dx);
+
+					if(std::fabs(m_position + dx - input) <= std::min(sl, a)) {
+						// Close enough. Stop.
+						m_position = input;
+						m_speed = 0;
+					} else if(std::fabs(err) <= startBreaking && ((err > 0 && dx > 0) || (err < 0 && dx < 0))) {
+						// Getting close, start breaking.
+						if(dx > 0)
+							m_speed = std::max<type>(0, m_speed - al);
+						else
+							m_speed = std::min<type>(0, m_speed + al);
+					} else if(err < 0) {
+						m_speed = std::max(-sl_, m_speed - al);
+					} else {
+						m_speed = std::min(sl_, m_speed + al);
+					}
+
+					output = m_position + m_speed * dt;
+				}
+			} else {
+				m_speed = 0;
+			}
+
+			decltype(auto) oo = outputObject();
+			if(oo.valid())
+				oo = output;
+
+			m_position = output;
+			return output;
+		}
+
+	private:
+		Bound m_o;
+		type m_position{};
+		type m_speed{};
 	};
 
 } // namespace

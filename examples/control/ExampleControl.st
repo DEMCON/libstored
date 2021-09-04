@@ -66,11 +66,11 @@
 	float=0 phase (rad)
 	bool=true enable
 	float=nan override
-	float y
+	float output
 
 	// Interconnections
 	uint8=0 evaluation order
-	int8=4 x y
+	int8=4 x output
 } sine
 
 {
@@ -81,11 +81,12 @@
 	float=0.25 duty cycle
 	bool=true enable
 	float=nan override
-	float y
+	float output
 
 	// Interconnections
 	uint8=0 evaluation order
-	int8=0 x y
+	int8=6 x duty cycle
+	int8=0 x output
 } pulse
 
 {
@@ -102,4 +103,19 @@
 	int8=3 x input
 	int8=1 x output
 } lowpass
+
+{
+	(float) sample frequency (Hz)
+	float input
+	float=1 speed limit
+	float=0.1 acceleration limit
+	bool=true enable
+	float=nan override
+	float output
+
+	// Interconnections
+	uint8=0 evaluation order
+	int8=7 x input
+	int8=8 x output
+} ramp
 

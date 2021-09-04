@@ -72,6 +72,14 @@ public:
 			frequency_Hz = value;
 	}
 
+	void __ramp__sample_frequency_Hz(bool set, float& value)
+	{
+		if(!set)
+			value = frequency_Hz.get();
+		else
+			frequency_Hz = value;
+	}
+
 private:
 	float m_frequency_Hz{10.0f};
 };
@@ -123,10 +131,12 @@ static void sine()
 	static stored::Sine<ExampleControlStore, sine_o.flags()> sine_v{sine_o, store};
 
 	auto y = sine_v();
+	if(!sine_v.isHealthy())
+		std::cout << "/sine not healthy" << std::endl;
 
-	auto x_y = store.interconnect__x_a(store.sine__x_y.get());
-	if(x_y.valid())
-		x_y.set(y);
+	auto x_output = store.interconnect__x_a(store.sine__x_output.get());
+	if(x_output.valid())
+		x_output.set(y);
 }
 
 static void pulse()
@@ -134,11 +144,17 @@ static void pulse()
 	constexpr auto pulse_o = stored::PulseWave<ExampleControlStore>::objects("/pulse/");
 	static stored::PulseWave<ExampleControlStore, pulse_o.flags()> pulse_v{pulse_o, store};
 
-	auto y = pulse_v();
+	auto x_duty_cycle = store.interconnect__x_a(store.pulse__x_duty_cycle.get());
+	if(x_duty_cycle.valid())
+		store.pulse__duty_cycle = x_duty_cycle.get<value_type>();
 
-	auto x_y = store.interconnect__x_a(store.pulse__x_y.get());
-	if(x_y.valid())
-		x_y.set(y);
+	auto y = pulse_v();
+	if(!pulse_v.isHealthy())
+		std::cout << "/pulse not healthy" << std::endl;
+
+	auto x_output = store.interconnect__x_a(store.pulse__x_output.get());
+	if(x_output.valid())
+		x_output.set(y);
 }
 
 static void lowpass()
@@ -157,16 +173,33 @@ static void lowpass()
 		x_output.set(output);
 }
 
+static void ramp()
+{
+	constexpr auto ramp_o = stored::Ramp<ExampleControlStore>::objects("/ramp/");
+	static stored::Ramp<ExampleControlStore, ramp_o.flags()> ramp_v{ramp_o, store};
+
+	auto x_input = store.interconnect__x_a(store.ramp__x_input.get());
+	if(x_input.valid())
+		store.ramp__input = x_input.get<value_type>();
+
+	auto output = ramp_v();
+
+	auto x_output = store.interconnect__x_a(store.ramp__x_output.get());
+	if(x_output.valid())
+		x_output.set(output);
+}
+
 static void control()
 {
 	using f_type = std::pair<void(*)(), stored::Variable<uint8_t, ExampleControlStore>>;
 
-	static std::array<f_type, 5> fs = {
+	static std::array<f_type, 6> fs = {
 		f_type{&pid, store.pid__evaluation_order},
 		f_type{&amp, store.amp__evaluation_order},
 		f_type{&sine, store.sine__evaluation_order},
 		f_type{&pulse, store.pulse__evaluation_order},
 		f_type{&lowpass, store.lowpass__evaluation_order},
+		f_type{&ramp, store.ramp__evaluation_order},
 	};
 
 	std::stable_sort(fs.begin(), fs.end(),
