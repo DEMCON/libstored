@@ -1884,8 +1884,8 @@ namespace stored {
 	template <typename Container, typename T=float>
 	using RampObjects = FreeObjectsList<
 		FreeFunctions<float, Container, 's'>,
-		FreeVariables<T, Container, 'I', 'r', 'a', 'F', 'O'>,
-		FreeVariables<bool, Container, 'e'>>;
+		FreeVariables<T, Container, 'I', 'v', 'a', 'F', 'O'>,
+		FreeVariables<bool, Container, 'r', 'e'>>;
 
 	/*!
 	 * \brief Ramping setpoints, based on store variables.
@@ -1898,6 +1898,7 @@ namespace stored {
 	 *     float input
 	 *     float=inf speed limit
 	 *     float=inf acceleration limit
+	 *     bool reset
 	 *     bool=true enable
 	 *     float=nan override
 	 *     float output
@@ -1920,6 +1921,7 @@ namespace stored {
 	class Ramp {
 	public:
 		using type = T;
+		using type_ = long;
 		using Bound = typename RampObjects<Container,type>::template Bound<flags>;
 
 		constexpr Ramp() noexcept = default;
@@ -1935,7 +1937,7 @@ namespace stored {
 		{
 			return RampObjects<Container,type>::template create<OnlyId...>(prefix,
 				"sample frequency", "input", "speed limit", "acceleration limit",
-				"override", "output", "enable");
+				"override", "output", "reset", "enable");
 		}
 
 		decltype(auto) sampleFrequencyObject() const noexcept { return m_o.template get<'s'>(); }
@@ -1945,8 +1947,8 @@ namespace stored {
 		decltype(auto) inputObject() noexcept { return m_o.template get<'I'>(); }
 		type input() const noexcept { decltype(auto) o = inputObject(); return o.valid() ? o.get() : type(); }
 
-		decltype(auto) speedLimitObject() const noexcept { return m_o.template get<'r'>(); }
-		decltype(auto) speedLimitObject() noexcept { return m_o.template get<'r'>(); }
+		decltype(auto) speedLimitObject() const noexcept { return m_o.template get<'v'>(); }
+		decltype(auto) speedLimitObject() noexcept { return m_o.template get<'v'>(); }
 		type speedLimit() const noexcept { decltype(auto) o = speedLimitObject(); return o.valid() ? o.get() : std::numeric_limits<type>::infinity(); }
 
 		decltype(auto) accelerationLimitObject() const noexcept { return m_o.template get<'a'>(); }
@@ -1956,6 +1958,10 @@ namespace stored {
 		decltype(auto) overrideObject() const noexcept { return m_o.template get<'F'>(); }
 		decltype(auto) overrideObject() noexcept { return m_o.template get<'F'>(); }
 		type override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : std::numeric_limits<type>::quiet_NaN(); }
+
+		decltype(auto) resetObject() const noexcept { return m_o.template get<'r'>(); }
+		decltype(auto) resetObject() noexcept { return m_o.template get<'r'>(); }
+		bool reset() const noexcept { decltype(auto) o = resetObject(); return o.valid() && o.get(); }
 
 		decltype(auto) enableObject() const noexcept { return m_o.template get<'e'>(); }
 		decltype(auto) enableObject() noexcept { return m_o.template get<'e'>(); }
@@ -1987,60 +1993,111 @@ namespace stored {
 			type output = override_();
 
 			if(likely(std::isnan(output))) {
-				auto f = sampleFrequency();
-				type dt = f > 0 ? (type)1 / f : 0;
+				decltype(auto) ro = resetObject();
+				if(unlikely(ro.valid() && ro.get() || std::isnan(m_a))) {
+					type v = m_a > 0 ? m_v_ * m_a : 0;
 
-				if(unlikely(dt <= 0)) {
-					output = input;
-					m_speed = 0;
-				} else if(unlikely(!enabled())) {
-					output = input;
-					m_speed = (output - m_position) / dt;
-				} else {
-					auto a_ = accelerationLimit();
-					auto a = a_ * dt;
-					auto sl_ = speedLimit();
-					auto sl = sl_ * dt;
-					auto al = std::min(sl * 2, a);
-					auto err = input - m_position;
-					auto dx = m_speed * dt;
+					if(ro.valid())
+						ro = false;
 
-					type startBreaking = m_speed * m_speed / a_ + std::fabs(dx);
+					float f = sampleFrequency();
+					type dt = f > 0 ? (type)(1.0f / f) : 0;
 
-					if(std::fabs(m_position + dx - input) <= std::min(sl, a)) {
-						// Close enough. Stop.
-						m_position = input;
-						m_speed = 0;
-					} else if(std::fabs(err) <= startBreaking && ((err > 0 && dx > 0) || (err < 0 && dx < 0))) {
-						// Getting close, start breaking.
-						if(dx > 0)
-							m_speed = std::max<type>(0, m_speed - al);
-						else
-							m_speed = std::min<type>(0, m_speed + al);
-					} else if(err < 0) {
-						m_speed = std::max(-sl_, m_speed - al);
-					} else {
-						m_speed = std::min(sl_, m_speed + al);
+					auto sl = speedLimit();
+					if(std::isnan(sl) || sl < 0)
+						sl = 0;
+
+					auto a = accelerationLimit();
+					if(std::isnan(a) || a < 0)
+						a = 0;
+
+					a = std::min(sl, a * dt);
+
+					if(a > 0) {
+						auto v_steps = std::lround(sl / a);
+						a = sl / v_steps;
 					}
 
-					output = m_position + m_speed * dt;
+					m_a = a;
+					m_v_ = (type_)std::lround(v / a);
+					m_v_max_ = (type_)std::floor(sl / a);
+					m_x_ = 0;
+					m_x_stop_ = m_v_ * (std::abs(m_v_) + 1) / 2;
+
+					printf("reset: sl=%g a=%g dt=%g v_=%ld v_max_=%ld x_=%ld x_stop_=%ld\n",
+						(double)sl, (double)a, (double)dt, m_v_, m_v_max_, m_x_, m_x_stop_);
 				}
+
+				if(unlikely(!(m_a > 0))) {
+					output = input;
+				} else if(unlikely(!enabled())) {
+					m_start = output = input;
+					m_v_ = (type_)std::lround((output - m_x) / m_a);
+				} else {
+					auto err = input - m_x;
+
+					if(std::fabs(err) < m_a && (m_v_ >= -1 && m_v_ <= 1)) {
+						// Close enough. Stop.
+						m_x_ = m_x_stop_ = m_v_ = 0;
+						output = m_start = input;
+					} else if(err > 0) {
+						// Should be moving up towards target.
+
+						if(m_v_ > 0 && err < m_x_stop_ * m_a) {
+							// Break.
+							m_x_stop_ -= m_v_--;
+						} else if(m_v_ < m_v_max_) {
+							// Speed up towards target.
+							if(m_v_ >= 0)
+								m_x_stop_ += ++m_v_;
+							else
+								m_x_stop_ -= m_v_++;
+						}
+					} else {
+						// Should be moving down towards target.
+
+						if(m_v_ < 0 && err > m_x_stop_ * m_a) {
+							// Break.
+							m_x_stop_ -= m_v_++;
+						} else if(m_v_ > -m_v_max_) {
+							// Speed up towards target.
+							if(m_v_ >= 0)
+								m_x_stop_ -= m_v_--;
+							else
+								m_x_stop_ += --m_v_;
+						}
+					}
+
+					m_x_ += m_v_;
+					output = m_start + (type)(m_x_ * m_a);
+				}
+
+				printf("run: a=%g v_=%ld v_max_=%ld x_=%ld x_stop_=%ld\n",
+					(double)m_a, m_v_, m_v_max_, m_x_, m_x_stop_);
+
+				m_x = output;
 			} else {
-				m_speed = 0;
+				m_v_ = m_x_stop_ = 0;
 			}
 
 			decltype(auto) oo = outputObject();
 			if(oo.valid())
 				oo = output;
 
-			m_position = output;
 			return output;
 		}
 
+
+
 	private:
 		Bound m_o;
-		type m_position{};
-		type m_speed{};
+		type m_a{std::numeric_limits<type>::quiet_NaN()};
+		type_ m_v_{};
+		type_ m_v_max_{};
+		type_ m_x_{};
+		type_ m_x_stop_{};
+		type m_start{};
+		type m_x{};
 	};
 
 } // namespace
