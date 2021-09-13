@@ -1158,7 +1158,7 @@ namespace stored {
 	template <typename Container, typename T=float>
 	using PIDObjects = FreeObjectsList<
 		FreeFunctions<float, Container, 'f'>,
-		FreeVariables<T, Container, 'y', 's', 'p', 'i', 'd', 'k', 'I', 'L', 'H', 'l', 'h', '3', 'F', 'u'>,
+		FreeVariables<T, Container, 'y', 's', 'p', 'i', 'd', 'K', 'I', 'L', 'H', 'l', 'h', '3', 'F', 'u'>,
 		FreeVariables<bool, Container, 'e', 'r'>>;
 
 	/*!
@@ -1370,6 +1370,7 @@ namespace stored {
 					m_Ki = 0;
 					m_Kd = 0;
 					m_y_prev = y;
+					m_int = 0;
 
 					if(!std::isnan(f) && f > 0) {
 						float dt = 1.0f / frequency();
