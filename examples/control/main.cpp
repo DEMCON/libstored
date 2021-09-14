@@ -9,7 +9,8 @@
  *
  * The default configuration is:
  *
- * - pulse as setpoint to PID
+ * - sine wave sets the duty cycle of pulse
+ * - pulse via ramp as setpoint to PID
  * - PID output via amplifier and lowpass filter to PID input
  *
  * C++14 is required for this example, as stored/components.h requires it.
@@ -37,6 +38,7 @@ public:
 			m_frequency_Hz = std::max(0.1f, value);
 			pid__reset = true;
 			lowpass__reset = true;
+			ramp__reset = true;
 		}
 	}
 
@@ -183,6 +185,8 @@ static void ramp()
 		store.ramp__input = x_input.get<value_type>();
 
 	auto output = ramp_v();
+	if(!ramp_v.isHealthy())
+		std::cout << "/ramp not healthy" << std::endl;
 
 	auto x_output = store.interconnect__x_a(store.ramp__x_output.get());
 	if(x_output.valid())
