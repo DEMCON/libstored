@@ -19,6 +19,7 @@ set(LIBSTORED_POLL "AUTO" CACHE STRING "Poll method")
 
 set(LIBSTORED_CLANG_TIDY "OFF")
 set(LIBSTORED_INSTALL_STORE_LIBS "OFF")
+set(LIBSTORED_DRAFT_API "ON")
 
 if(MSVC)
 	add_compile_options(/W1 /WX)

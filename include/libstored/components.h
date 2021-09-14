@@ -22,6 +22,7 @@
 
 #include <libstored/macros.h>
 
+#ifdef STORED_DRAFT_API
 #if STORED_cplusplus >= 201402L
 
 #if defined(_MSC_VER) && _MSC_VER < 1910
@@ -1257,8 +1258,8 @@ namespace stored {
 		type Td() const noexcept { decltype(auto) o = TdObject(); return o.valid() ? o.get() : (type)0; }
 		type Kd() const noexcept { return m_Kd; }
 
-		decltype(auto) KffObject() const noexcept { return m_o.template get<'K'>(); }
-		decltype(auto) KffObject() noexcept { return m_o.template get<'K'>(); }
+		decltype(auto) KffObject() const noexcept { return m_o.template get<'k'>(); }
+		decltype(auto) KffObject() noexcept { return m_o.template get<'k'>(); }
 		type Kff() const noexcept { decltype(auto) o = KffObject(); return o.valid() ? o.get() : (type)0; }
 
 		decltype(auto) intObject() const noexcept { return m_o.template get<'I'>(); }
@@ -2103,5 +2104,6 @@ namespace stored {
 } // namespace
 
 #endif // C++14
+#endif // STORED_DRAFT_API
 #endif // __cplusplus
 #endif // LIBSTORED_COMPONENTS_H

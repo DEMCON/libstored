@@ -79,6 +79,10 @@ function(libstored_lib libprefix libpath)
 		target_compile_options(${libprefix}libstored PRIVATE -Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion -ffunction-sections -fdata-sections)
 	endif()
 
+	if(LIBSTORED_DRAFT_API)
+		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_DRAFT_API)
+	endif()
+
 	CHECK_INCLUDE_FILE_CXX("valgrind/memcheck.h" LIBSTORED_HAVE_VALGRIND)
 	if(LIBSTORED_HAVE_VALGRIND)
 		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_HAVE_VALGRIND)

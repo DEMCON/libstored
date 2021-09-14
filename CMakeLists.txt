@@ -58,6 +58,12 @@ else()
 	set(LIBSTORED_DEV_OPTION OFF)
 endif()
 
+# Should be defaulted to OFF some day.
+option(LIBSTORED_DRAFT_API "Enable draft API" ON)
+if(LIBSTORED_DRAFT_API)
+	message(STATUS "Enable libstored draft API")
+endif()
+
 option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" OFF)
 option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" OFF)
 option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" OFF)
