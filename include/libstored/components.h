@@ -1988,6 +1988,41 @@ namespace stored {
 			return run(input());
 		}
 
+		/*!
+		 * \brief Check numerical stability.
+		 *
+		 * The #Ramp is considered healthy when the configured
+		 * acceleration and speed values are within the floating point
+		 * precision.
+		 *
+		 * You may want to check (or assert on) this function once in a
+		 * while, like once per second or after every run, to detect a
+		 * stuck ramp within reasonable time for your application.
+		 */
+		bool isHealthy() const noexcept
+		{
+			if(std::isnan(m_a))
+				// No ramping configured.
+				return true;
+
+			if(!(accelerationLimit() > 0))
+				// No limit set.
+				return true;
+
+			if(!(m_a > 0))
+				// That's not good. Numbers are probably already to far apart.
+				return false;
+
+			// m_a is the smallest value that should be able to influence the position.
+			if(m_x + m_a == m_x)
+				return false;
+
+			if(m_start + m_a == m_start)
+				return false;
+
+			return true;
+		}
+
 	protected:
 		type run(type input) noexcept
 		{
@@ -2020,13 +2055,11 @@ namespace stored {
 					}
 
 					m_a = a;
-					m_v_ = (type_)std::lround(v / a);
-					m_v_max_ = (type_)std::floor(sl / a);
+					m_v_ = (type_)std::lround(v * dt / a);
+					m_v_max_ = (type_)std::lround(sl * dt / a);
 					m_x_ = 0;
-					m_x_stop_ = m_v_ * (std::abs(m_v_) + 1) / 2;
-
-					printf("reset: sl=%g a=%g dt=%g v_=%ld v_max_=%ld x_=%ld x_stop_=%ld\n",
-						(double)sl, (double)a, (double)dt, m_v_, m_v_max_, m_x_, m_x_stop_);
+					m_x_stop_ = m_v_ * std::abs(m_v_) / 2;
+					m_start = m_x;
 				}
 
 				if(unlikely(!(m_a > 0))) {
@@ -2043,38 +2076,53 @@ namespace stored {
 						output = m_start = input;
 					} else if(err > 0) {
 						// Should be moving up towards target.
+						auto x_stop_ = m_x_stop_;
+						auto v_ = m_v_;
 
-						if(m_v_ > 0 && err < m_x_stop_ * m_a) {
-							// Break.
-							m_x_stop_ -= m_v_--;
-						} else if(m_v_ < m_v_max_) {
+						if(v_ < m_v_max_) {
 							// Speed up towards target.
-							if(m_v_ >= 0)
-								m_x_stop_ += ++m_v_;
+							if(v_ >= 0)
+								x_stop_ += v_++;
 							else
-								m_x_stop_ -= m_v_++;
+								x_stop_ -= ++v_;
+						}
+
+						if(m_v_ > 0 && err < (x_stop_ + v_ + 1) * m_a) {
+							if(err < (m_x_stop_ + m_v_) * m_a)
+								// Break.
+								m_x_stop_ -= --m_v_;
+							// else hold speed.
+						} else {
+							m_x_stop_ = x_stop_;
+							m_v_ = v_;
 						}
 					} else {
 						// Should be moving down towards target.
+						auto x_stop_ = m_x_stop_;
+						auto v_ = m_v_;
 
-						if(m_v_ < 0 && err > m_x_stop_ * m_a) {
-							// Break.
-							m_x_stop_ -= m_v_++;
-						} else if(m_v_ > -m_v_max_) {
+						if(v_ > -m_v_max_) {
 							// Speed up towards target.
-							if(m_v_ >= 0)
-								m_x_stop_ -= m_v_--;
+							if(v_ <= 0)
+								x_stop_ += v_--;
 							else
-								m_x_stop_ += --m_v_;
+								x_stop_ -= --v_;
+						}
+
+						if(m_v_ < 0 && err > (x_stop_ + v_ - 1) * m_a) {
+							if(err > (m_x_stop_ + m_v_) * m_a)
+								// Break.
+								m_x_stop_ -= ++m_v_;
+							// else hold speed.
+						} else {
+							m_x_stop_ = x_stop_;
+							m_v_ = v_;
 						}
 					}
 
 					m_x_ += m_v_;
 					output = m_start + (type)(m_x_ * m_a);
 				}
-
-				printf("run: a=%g v_=%ld v_max_=%ld x_=%ld x_stop_=%ld\n",
-					(double)m_a, m_v_, m_v_max_, m_x_, m_x_stop_);
 
 				m_x = output;
 			} else {
@@ -2087,8 +2135,6 @@ namespace stored {
 
 			return output;
 		}
-
-
 
 	private:
 		Bound m_o;
