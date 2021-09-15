@@ -1480,20 +1480,32 @@ namespace stored {
 	 *
 	 * The \c get function is not used/provided by this \c PinIn. Implement
 	 * this store function such that it calls and returns \c pin(). When
-	 * applications read the \c get function, they will always get the actual
-	 * pin value.
+	 * applications read the \c get function, they will always get the
+	 * appropriate/actual pin value.
 	 */
 	template <typename Container, unsigned long long flags = 0>
 	class PinIn {
 	public:
 		using Bound = typename PinInObjects<Container>::template Bound<flags>;
 
+		/*!
+		 * \brief Default ctor.
+		 *
+		 * Use this when initialization is postponed. You can assign
+		 * another instance later on.
+		 */
 		constexpr PinIn() noexcept = default;
 
+		/*!
+		 * \brief Initialize the pin, given a list of objects and a container.
+		 */
 		constexpr PinIn(PinInObjects<Container> const& o, Container& container)
 			: m_o{Bound::create(o, container)}
 		{}
 
+		/*!
+		 * \brief Create the list of objects in the store, used to compute the \p flags parameter.
+		 */
 		template <char... OnlyId, size_t N>
 		static constexpr auto objects(char const(&prefix)[N]) noexcept
 		{
@@ -1501,22 +1513,37 @@ namespace stored {
 				"pin", "override", "input");
 		}
 
+		/*! \brief Return the \c pin object. */
 		decltype(auto) pinObject() const noexcept { return m_o.template get<'p'>(); }
+		/*!
+		 * \brief Return the hardware pin value.
+		 *
+		 * By default, it calls the \c pin function in the store.
+		 * Override in a subclass to implement other behavior.
+		 */
 		virtual bool pin() const noexcept { decltype(auto) o = pinObject(); return o.valid() ? o() : false; }
 
+		/*! \brief Return the \c override object. */
 		decltype(auto) overrideObject() const noexcept { return m_o.template get<'F'>(); }
+		/*! \brief Return the \c override object. */
 		decltype(auto) overrideObject() noexcept { return m_o.template get<'F'>(); }
+		/*! \brief Return the \c override value, or -1 when the object is not available. */
 		int8_t override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : -1; }
 
+		/*! \brief Return the \c input object. */
 		decltype(auto) inputObject() const noexcept { return m_o.template get<'i'>(); }
+		/*! \brief Return the \c input object. */
 		decltype(auto) inputObject() noexcept { return m_o.template get<'i'>(); }
+		/*! \brief Return the last computed \c input value, or compute the pin state when the object is not available. */
 		bool input() const noexcept { decltype(auto) o = inputObject(); return o.valid() ? o.get() : (*this)(); }
 
+		/*! \brief Determine pin input, given the current hardware state. */
 		bool operator()() noexcept
 		{
 			return (*this)(pin());
 		}
 
+		/*! \brief Determine pin input, given the provided hardware state. */
 		bool operator()(bool pin) noexcept
 		{
 			bool i;
@@ -1608,14 +1635,26 @@ namespace stored {
 	public:
 		using Bound = typename PinOutObjects<Container>::template Bound<flags>;
 
+		/*!
+		 * \brief Default ctor.
+		 *
+		 * Use this when initialization is postponed. You can assign
+		 * another instance later on.
+		 */
 		constexpr PinOut() noexcept = default;
 
+		/*!
+		 * \brief Initialize the pin, given a list of objects and a container.
+		 */
 		constexpr PinOut(PinOutObjects<Container> const& o, Container& container)
 			: m_o{Bound::create(o, container)}
 		{
 			static_assert(Bound::template valid<'o'>(), "'output' variable is mandatory");
 		}
 
+		/*!
+		 * \brief Create the list of objects in the store, used to compute the \p flags parameter.
+		 */
 		template <char... OnlyId, size_t N>
 		static constexpr auto objects(char const(&prefix)[N]) noexcept
 		{
@@ -1623,21 +1662,40 @@ namespace stored {
 				"output", "pin");
 		}
 
+		/*! \brief Return the \c output object. */
 		decltype(auto) outputObject() const noexcept { return m_o.template get<'o'>(); }
+		/*! \brief Return the \c output object. */
 		decltype(auto) outputObject() noexcept { return m_o.template get<'o'>(); }
+		/*! \brief Return the \c output value. */
 		bool output() const noexcept { return outputObject().get(); }
 
+		/*! \brief Return the override value. */
 		int8_t override_() const noexcept { return m_override; }
+		/*! \brief Set the override value. */
 		void override_(int8_t x) noexcept { m_override = x; (*this)(); }
 
+		/*! \brief Return the \c pin object. */
 		decltype(auto) pinObject() noexcept { return m_o.template get<'p'>(); }
+		/*!
+		 * \brief Set the hardware pin state.
+		 *
+		 * The default implementation calls the store's \c pin
+		 * function.  Override in a subclass to implement custom
+		 * behavior.
+		 */
 		virtual void pin(bool value) noexcept { decltype(auto) o = pinObject(); if(o.valid()) o(value); }
 
+		/*!
+		 * \brief Compute and set the hardware pin status, given the last provided application's output value.
+		 */
 		bool operator()() noexcept
 		{
 			return (*this)(output());
 		}
 
+		/*!
+		 * \brief Compute and set the hardware pin status, given the application's output value.
+		 */
 		bool operator()(bool output) noexcept
 		{
 			outputObject() = output;
@@ -1645,6 +1703,9 @@ namespace stored {
 		}
 
 	protected:
+		/*!
+		 * \brief Compute and set the output pin value.
+		 */
 		bool run(bool output) noexcept
 		{
 			bool p;
