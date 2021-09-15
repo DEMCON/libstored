@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+include(ExternalProject)
+
 if(TARGET libzmq)
 	# Target already exists.
 	set(ZeroMQ_FOUND 1)
@@ -21,20 +23,23 @@ if(TARGET libzmq)
 endif()
 
 # However, we are using the zmq_poller draft API, which is not included by default. Should be fixed...
-if(NOT TARGET libzmq)
+if(NOT TARGET libzmq AND NOT CMAKE_CROSSCOMPILING)
 	# Try pkg-config
 	find_package(PkgConfig)
 
 	if(PkgConfig_FOUND)
-		pkg_check_modules(ZeroMQ libzmq>=4.3)
+		pkg_check_modules(ZeroMQ libzmq>=4.3 IMPORTED_TARGET)
 
 		if(ZeroMQ_FOUND)
-			if(ZeroMQ_CFLAGS MATCHES "-DZMQ_BUILD_DRAFT_API=1")
+			if(NOT ZeroMQ_LINK_LIBRARIES)
+				set(ZeroMQ_LINK_LIBRARIES ${pkgcfg_lib_ZeroMQ_zmq})
+			endif()
+			if(ZeroMQ_LINK_LIBRARIES AND ZeroMQ_CFLAGS MATCHES "-DZMQ_BUILD_DRAFT_API=1")
 				message(STATUS "Found ZeroMQ via pkg-config at ${ZeroMQ_LINK_LIBRARIES}")
 				add_library(libzmq SHARED IMPORTED GLOBAL)
 				set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${ZeroMQ_LINK_LIBRARIES})
-				target_include_directories(libzmq INTERFACE ${ZeroMQ_INCLUDE_DIRS})
-				target_compile_options(libzmq INTERFACE ${ZeroMQ_CFLAGS})
+				set_property(TARGET libzmq PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${ZeroMQ_INCLUDE_DIRS})
+				set_property(TARGET libzmq PROPERTY INTERFACE_COMPILE_OPTIONS ${ZeroMQ_CFLAGS})
 				target_link_libraries(libzmq INTERFACE ${ZeroMQ_LDFLAGS})
 			endif()
 		endif()
@@ -50,6 +55,7 @@ if(NOT TARGET libzmq)
 		-DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}
 		-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
 		-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
 	)
 
 	if(MINGW)
@@ -109,7 +115,7 @@ if(NOT TARGET libzmq)
 		set_property(TARGET libzmq PROPERTY IMPORTED_IMPLIB ${_libzmq_implib})
 	endif()
 
-	target_include_directories(libzmq INTERFACE ${CMAKE_INSTALL_PREFIX}/include)
+	set_property(TARGET libzmq PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_INSTALL_PREFIX}/include)
 	target_compile_options(libzmq INTERFACE -DZMQ_BUILD_DRAFT_API=1)
 	add_dependencies(libzmq libzmq-extern)
 endif()
