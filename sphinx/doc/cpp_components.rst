@@ -8,12 +8,22 @@ The instances of these classes are tuned at compile-time to reflect the objects 
 Especially, no resources are used for (optional) fields that do not exist in the store, and
 all store lookups in the directory are done at compile-time. You need C++14 (or later), though.
 
-Check out the ``components`` example.
+Check out the ``components`` and ``control`` examples.
 
 stored::Amplifier
 -----------------
 
 .. doxygenclass:: stored::Amplifier
+
+stored::LowPass
+---------------
+
+.. doxygenclass:: stored::LowPass
+
+stored::PID
+-----------
+
+.. doxygenclass:: stored::PID
 
 stored::PinIn
 -------------
@@ -25,8 +35,18 @@ stored::PinOut
 
 .. doxygenclass:: stored::PinOut
 
-stored::PID
------------
+stored::PulseWave
+-----------------
 
-.. doxygenclass:: stored::PID
+.. doxygenclass:: stored::PulseWave
+
+stored::Ramp
+------------
+
+.. doxygenclass:: stored::Ramp
+
+stored::Sine
+------------
+
+.. doxygenclass:: stored::Sine
 

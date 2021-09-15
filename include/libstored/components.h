@@ -45,7 +45,16 @@
 
 namespace stored {
 
+	//////////////////////////////////////////////////////////
+	// Store lookup and free/bound variables processing
+	//////////////////////////////////////////////////////////
+
 	namespace impl {
+		/*!
+		 * \brief Find the index of the given \p Id in \p Ids.
+		 *
+		 * The member \c value will be set to the index, if it can be found.
+		 */
 		template <char Id, size_t index0, char... Ids>
 		struct find_index {};
 
@@ -59,6 +68,11 @@ namespace stored {
 			enum { value = index0 };
 		};
 
+		/*!
+		 * \brief Check if the given \p Id is in the list \p Ids.
+		 *
+		 * The member \c value is set to non-zero when it is in the list.
+		 */
 		template <char Id, char... Ids>
 		struct has_id { enum { value = 0 }; };
 
@@ -68,9 +82,19 @@ namespace stored {
 		template <char Id, char Id0, char... Ids>
 		struct has_id<Id,Id0,Ids...> { enum { value = has_id<Id,Ids...>::value }; };
 
+		/*!
+		 * \brief Container to hold a list of \c Ids.
+		 *
+		 * The member \c size is set to the length of the list.
+		 */
 		template <char... Id>
 		struct ids { enum { size = sizeof...(Id) }; };
 
+		/*!
+		 * \brief Concatenate two \c Id lists.
+		 *
+		 * The member \c type will be set to the new #stored::impl::ids list.
+		 */
 		template <typename A, typename B>
 		struct merge_ids {};
 
@@ -79,18 +103,33 @@ namespace stored {
 			using type = ids<A..., B...>;
 		};
 
+		/*!
+		 * \brief Check if there are no duplicates in the list of \p Ids.
+		 *
+		 * The member \c value is set to 1 if that is the case.
+		 */
 		template <char... Id>
 		struct is_unique { enum { value = 1 }; };
 
 		template <char Id0, char... Id>
 		struct is_unique<Id0, Id...> { enum { value = !has_id<Id0, Id...>::value && is_unique<Id...>::value }; };
 
+		/*!
+		 * \brief Check if there are no duplicates in the list of T, which must be \c ids.
+		 *
+		 * The member \c value is set to 1 when that is the case.
+		 */
 		template <typename T>
 		struct is_unique_ids {};
 
 		template <char... Id>
 		struct is_unique_ids<ids<Id...>> { enum { value = is_unique<Id...>::value }; };
 
+		/*!
+		 * \brief Check if all members of the \p Subset #stored::impl::ids exist in the \p Set #stored::impl::ids.
+		 *
+		 * The member \c value is set to 1 if that is the case.
+		 */
 		template <typename Subset, typename Set>
 		struct is_subset {};
 
@@ -102,6 +141,12 @@ namespace stored {
 			enum { value = has_id<S0, Set...>::value && is_subset<ids<Subset...>, ids<Set...>>::value };
 		};
 
+		/*!
+		 * \brief Either return the specified subset, or the whole set, if no subset was given.
+		 *
+		 * \p Select and \p All must be #stored::impl::ids.
+		 * The member \c type will be set to \p All if \p Select is empty, or \p Select otherwise.
+		 */
 		template <typename Select, typename All>
 		struct optional_subset {};
 
@@ -123,6 +168,27 @@ namespace stored {
 	template <typename FreeObjects_, typename FreeObjects_::Flags flags_, bool PostponedBind = true>
 	class BoundObjects;
 
+	/*!
+	 * \brief A list of free objects with the same type.
+	 *
+	 * A free object is of type \p ObjectType, which must be a
+	 * #stored::FreeVariable or #stored::FreeFunction.  This class does a
+	 * lookup in the store's directory, and saves the offset of the
+	 * variable, or index of the function, without saving the instance of
+	 * the store. In that sense, the object is free; it is not bound to a
+	 * specific store instance, it only holds the metadata of the object.
+	 *
+	 * This class holds a list of such objects, which must be all of the
+	 * same type.  Lookup and analysis can be done at compile time.
+	 *
+	 * Objects may not exist in the store. A set of flags is created, which
+	 * indicate which variables exist and which do not. Based on this set
+	 * of flags, a #stored::BoundObjects list can be constructed, tailored
+	 * to which variables actually exist. For this, the #flags() must be
+	 * passed as template parameter to #stored::BoundObjects.
+	 *
+	 * The \p Id list aliases the members of elements passed to #create().
+	 */
 	template <typename ObjectType, char... Id>
 	class FreeObjects {
 	public:
@@ -139,14 +205,25 @@ namespace stored {
 		static_assert(impl::is_unique<Id...>::value, "");
 
 	private:
+		/*! \brief The list of free objects. */
 		FreeObject m_objects[sizeof...(Id) == 0 ? 1 : sizeof...(Id)] {};
 
+		/*!
+		 * \brief Initialize the given \p Id_, which does not exist in this list of free variables.
+		 */
 		template <char Id_, typename... Args, std::enable_if_t<!impl::has_id<Id_, Id...>::value, int> = 0>
 		constexpr size_t init(Args&&...) noexcept
 		{
 			return 0;
 		}
 
+		/*!
+		 * \brief Initialize the given \p Id_ with a name in the store.
+		 *
+		 * The name of \p Id_ consists of \p prefix and \p name.
+		 *
+		 * \return the index of this variable in #m_objects.
+		 */
 		template <char Id_, size_t PN, size_t NN, std::enable_if_t<impl::has_id<Id_, Id...>::value, int> = 0>
 		constexpr size_t init(char const (&prefix)[PN], char const (&name)[NN]) noexcept
 		{
@@ -172,12 +249,18 @@ namespace stored {
 			return ix;
 		}
 
+		/*!
+		 * \brief Finds the given variable name in the store.
+		 */
 		template <size_t N>
 		static constexpr auto find(char const (&name)[N], FreeVariable<type,Container>) noexcept
 		{
 			return Container::template freeVariable<type>(name, N);
 		}
 
+		/*!
+		 * \brief Finds the given function name in the store.
+		 */
 		template <size_t N>
 		static constexpr auto find(char const (&name)[N], FreeFunction<type,Container>) noexcept
 		{
@@ -185,6 +268,13 @@ namespace stored {
 		}
 
 	public:
+		/*!
+		 * \brief Create the list of free objects.
+		 *
+		 * The list of \p longNames are appended to the \p prefix.
+		 * The \p longNames must match the \p IdMap in length and order.
+		 * It only initializes the \p OnlyId subset of \p IdMap.
+		 */
 		template <size_t N, char... OnlyId, char... IdMap, typename... LongNames,
 			std::enable_if_t<sizeof...(IdMap) == sizeof...(LongNames), int> = 0>
 		static constexpr FreeObjects create(char const (&prefix)[N], ids<OnlyId...>, ids<IdMap...>, LongNames&&... longNames) noexcept
@@ -197,6 +287,12 @@ namespace stored {
 			return fo;
 		}
 
+		/*!
+		 * \brief Create the list of free objects.
+		 *
+		 * This overload requires an explicit list of ids, which is also used as name.
+		 * For this, the names must be unambiguous and correspond to the id.
+		 */
 		template <char... OnlyId, size_t N>
 		static constexpr FreeObjects create(char const (&prefix)[N]) noexcept
 		{
@@ -204,6 +300,16 @@ namespace stored {
 			return create(prefix, typename impl::optional_subset<ids<OnlyId...>, ids<Id...>>::type(), ids<Id...>(), Name{Id}...);
 		}
 
+		/*!
+		 * \brief Create the list of free objects.
+		 *
+		 * When called without explicit list of \p OnlyId, all names
+		 * are processed.  The names in the store should not be
+		 * ambiguous.
+		 *
+		 * If they are ambiguous, specify \p OnlyId to force only
+		 * looking for specific subset of variables.
+		 */
 		template <char... OnlyId, size_t N, typename... LongNames,
 			std::enable_if_t<(sizeof...(LongNames) > 0 && sizeof...(LongNames) == sizeof...(Id)), int> = 0>
 		static constexpr FreeObjects create(char const (&prefix)[N], LongNames&&... longNames) noexcept
@@ -211,23 +317,44 @@ namespace stored {
 			return create(prefix, typename impl::optional_subset<ids<OnlyId...>, ids<Id...>>::type(), ids<Id...>(), std::forward<LongNames>(longNames)...);
 		}
 
+		/*!
+		 * \brief Return the number of free variables.
+		 */
 		static constexpr size_t size() noexcept
 		{
 			return sizeof...(Id);
 		}
 
+		/*!
+		 * \brief Check if the given \p Id_ exists in this list of free variables.
+		 *
+		 * This does not mean that it also exists in the store.
+		 *
+		 * \see #valid()
+		 */
 		template <char Id_>
 		static constexpr bool has() noexcept
 		{
 			return (bool)impl::has_id<Id_, Id...>::value;
 		}
 
+		/*!
+		 * \brief Return the index of the given \p Id_.
+		 *
+		 * The \p Id_ must exist in \p Id.
+		 */
 		template <char Id_>
 		static constexpr size_t index() noexcept
 		{
 			return impl::find_index<Id_, 0, Id...>::value;
 		}
 
+		/*!
+		 * \brief Return the flags.
+		 *
+		 * The flags indicate which free objects exist in the store.
+		 * The order of the flags correspond to #m_objects.
+		 */
 		constexpr Flags flags() const noexcept
 		{
 			Flags f = 0;
@@ -240,24 +367,36 @@ namespace stored {
 			return f;
 		}
 
+		/*!
+		 * \brief Check if the given \p Id_ exists in the store.
+		 */
 		template <char Id_>
 		constexpr bool valid() const noexcept
 		{
 			return m_objects[index<Id_>()].valid();
 		}
 
+		/*!
+		 * \brief Check if the given \p Id_ exists in the store, based on a set of \p flags.
+		 */
 		template <char Id_>
 		static constexpr decltype(std::enable_if_t<has<Id_>(), bool>()) valid(Flags flags) noexcept
 		{
 			return flags & (1ULL << index<Id_>());
 		}
 
+		/*!
+		 * \brief Check if the given \p Id_ exists in the store, based on a set of \p flags.
+		 */
 		template <char Id_>
 		static constexpr decltype(std::enable_if_t<!has<Id_>(), bool>()) valid(Flags) noexcept
 		{
 			return false;
 		}
 
+		/*!
+		 * \brief Return the number of valid objects in the store.
+		 */
 		constexpr size_t validSize() const noexcept
 		{
 			size_t cnt = 0;
@@ -269,6 +408,9 @@ namespace stored {
 			return cnt;
 		}
 
+		/*!
+		 * \brief Return the number of valid objects in the store, based on the given \p flags.
+		 */
 		static constexpr size_t validSize(Flags flags) noexcept
 		{
 			size_t count = 0;
@@ -280,6 +422,9 @@ namespace stored {
 			return count;
 		}
 
+		/*!
+		 * \brief Return the index of the given \p Id_ in the list of valid objects.
+		 */
 		template <char Id_>
 		constexpr size_t validIndex() const noexcept
 		{
@@ -292,6 +437,9 @@ namespace stored {
 			return vi;
 		}
 
+		/*!
+		 * \brief Return the index of the given \p Id_ in the list of valid objects, given a set of \p flags.
+		 */
 		template <char Id_>
 		static constexpr decltype(std::enable_if_t<has<Id_>(), size_t>()) validIndex(Flags flags) noexcept
 		{
@@ -304,18 +452,29 @@ namespace stored {
 			return count;
 		}
 
+		/*!
+		 * \brief Return the index of the given \p Id_ in the list of valid objects, given a set of \p flags.
+		 *
+		 * This overload covers the case that \p Id_ is not in this list of free variables.
+		 */
 		template <char Id_>
 		static constexpr decltype(std::enable_if_t<!has<Id_>(), size_t>()) validIndex(Flags) noexcept
 		{
 			return 0;
 		}
 
+		/*!
+		 * \brief Return the free object corresponding to the given \p Id_.
+		 */
 		template <char Id_>
 		constexpr FreeObject object() const noexcept
 		{
 			return m_objects[index<Id_>()];
 		}
 
+		/*!
+		 * \brief Return the bound object corresponding to the given \p Id_.
+		 */
 		template <char Id_>
 		auto object(Container& container) const noexcept
 		{
@@ -323,6 +482,8 @@ namespace stored {
 		}
 	};
 
+	// We only have free variables and free functions.  Create a few
+	// convenience types for them.
 	template <typename T, typename Container, char... Id>
 	using FreeVariables = FreeObjects<FreeVariable<T, Container>, Id...>;
 
@@ -332,9 +493,26 @@ namespace stored {
 	template <typename... B>
 	class BoundObjectsList;
 
+	/*!
+	 * \brief Create a list of #stored::FreeObjects, holding any type of free objects.
+	 *
+	 * A #stored::FreeObjects can only hold a list of objects of the same
+	 * type.  A \c FreeObjectsList is a recursive data structure, which
+	 * links multiple #stored::FreeObjects with different types. So, it is
+	 * a list of lists of free objects.
+	 *
+	 * The list has a \c Head, which is just a FreeObjects, and a \c Tail
+	 * that is a FreeObjectsList with the remaining types. The \c Tail can
+	 * be \c void to indicate the end.
+	 *
+	 * The API of the FreeObjectsList corresponds to a FreeObjects, but
+	 * combines all remaining FreeObjects of the list, such as the total
+	 * size, or doing a id lookup.
+	 */
 	template <typename... F>
 	class FreeObjectsList {};
 
+	// This is the end of the list.
 	template <typename F0>
 	class FreeObjectsList<F0> : public F0 {
 	public:
@@ -352,6 +530,7 @@ namespace stored {
 		{}
 	};
 
+	// The non-last (init) part of the list.
 	template <typename F0, typename... F>
 	class FreeObjectsList<F0, F...> {
 	public:
@@ -377,11 +556,19 @@ namespace stored {
 	public:
 		constexpr FreeObjectsList() noexcept = default;
 
+		/*!
+		 * \brief Return the total number of objects in this list of lists.
+		 */
 		static constexpr size_t size() noexcept
 		{
 			return Head::size() + Tail::size();
 		}
 
+		/*!
+		 * \brief Create the list of free variables.
+		 *
+		 * It is like #stored::FreeObjects::create(), but it combines all ids and names of all chained FreeObjects.
+		 */
 		template <size_t N, char... OnlyId, char... IdMap, typename... LongNames,
 			std::enable_if_t<sizeof...(IdMap) == sizeof...(LongNames), int> = 0>
 		static constexpr FreeObjectsList create(char const (&prefix)[N], ids<OnlyId...>, ids<IdMap...>, LongNames&&... longNames) noexcept
@@ -394,6 +581,10 @@ namespace stored {
 			};
 		}
 
+		/*!
+		 * \brief Create the list of free variables.
+		 * \see #stored::FreeObjects::create()
+		 */
 		template <char... OnlyId, size_t N>
 		static constexpr FreeObjectsList create(char const (&prefix)[N]) noexcept
 		{
@@ -404,6 +595,10 @@ namespace stored {
 			};
 		}
 
+		/*!
+		 * \brief Create the list of free variables.
+		 * \see #stored::FreeObjects::create()
+		 */
 		template <char... OnlyId, size_t N, typename... LongNames,
 			std::enable_if_t<(sizeof...(LongNames) > 0 && sizeof...(LongNames) == Ids::size), int> = 0>
 		static constexpr FreeObjectsList create(char const (&prefix)[N], LongNames&&... longNames) noexcept
@@ -415,111 +610,216 @@ namespace stored {
 			};
 		}
 
+		/*!
+		 * \brief Checks if the given \p Id is in one of the free objects lists.
+		 */
 		template <char Id>
 		static constexpr bool has() noexcept
 		{
 			return Head::template has<Id>() || Tail::template has<Id>();
 		}
 
+		/*!
+		 * \brief Returns the index of the free object of the given \p Id.
+		 *
+		 * This overload covers the indices of the head.
+		 */
 		template <char Id>
 		static constexpr decltype(std::enable_if_t<Head::template has<Id>(), size_t>()) index() noexcept
 		{
 			return Head::template index<Id>();
 		}
 
+		/*!
+		 * \brief Returns the index of the free object of the given \p Id.
+		 *
+		 * This overload covers the indices of the tail.
+		 * The offset of the indices is the size of the head.
+		 */
 		template <char Id>
 		static constexpr decltype(std::enable_if_t<!Head::template has<Id>(), size_t>()) index() noexcept
 		{
 			return Tail::template index<Id>();
 		}
 
+		/*!
+		 * \brief Return the combined flags of all lists of free objects.
+		 *
+		 * The flags may be passed to a BoundObjectsLists's template
+		 * parameter.  Therefore, the type must be primitive type.  So,
+		 * it is bounded in size (typically 64 bit, so 64 objects).
+		 */
 		constexpr Flags flags() const noexcept
 		{
 			static_assert(size() <= sizeof(Flags) * 8, "");
 			return m_head.flags() | (m_tail.flags() << m_head.size());
 		}
 
+		/*!
+		 * \brief Check if the given \p Id is a valid object in the store.
+		 *
+		 * This overload covers the case that \p Id is in the head.
+		 */
 		template <char Id>
 		static constexpr decltype(std::enable_if_t<Head::template has<Id>(), bool>()) valid(Flags flags) noexcept
 		{
 			return Head::template valid<Id>(flags);
 		}
 
+		/*!
+		 * \brief Check if the given \p Id is a valid object in the store.
+		 *
+		 * This overload covers the case that \p Id is in the tail.
+		 */
 		template <char Id>
 		static constexpr decltype(std::enable_if_t<!Head::template has<Id>(), bool>()) valid(Flags flags) noexcept
 		{
 			return Tail::template valid<Id>(flags >> Head::size());
 		}
 
+		/*!
+		 * \brief Return the total number of valid free objects.
+		 */
 		constexpr size_t validSize() noexcept
 		{
 			return m_head.validSize() + m_tail.validSize();
 		}
 
+		/*!
+		 * \brief Return the total number of valid free objects, given a set of \p flags.
+		 */
 		static constexpr size_t validSize(Flags flags) noexcept
 		{
 			return Head::validSize(flags) + Tail::validSize(flags >> Head::size());
 		}
 
+		/*!
+		 * \brief Return the index within the list of valid objects, given an \p Id.
+		 *
+		 * This overload covers the case that it is in the head.
+		 */
 		template <char Id>
 		constexpr decltype(std::enable_if_t<Head::template has<Id>(), size_t>()) validIndex() const noexcept
 		{
 			return m_head.template validIndex<Id>();
 		}
 
+		/*!
+		 * \brief Return the index within the list of valid objects, given an \p Id.
+		 *
+		 * This overload covers the case that it is in the tail.
+		 */
 		template <char Id>
 		constexpr decltype(std::enable_if_t<!Head::template has<Id>(), size_t>()) validIndex() const noexcept
 		{
 			return m_tail.template validIndex<Id>() + m_head.validSize();
 		}
 
+		/*!
+		 * \brief Return the index within the list of valid objects, given an \p Id, given a set of \p flags.
+		 *
+		 * This overload covers the case that it is in the head.
+		 */
 		template <char Id>
 		static constexpr decltype(std::enable_if_t<Head::template has<Id>(), size_t>()) validIndex(Flags flags) noexcept
 		{
 			return Head::template validIndex<Id>(flags);
 		}
 
+		/*!
+		 * \brief Return the index within the list of valid objects, given an \p Id, given a set of \p flags.
+		 *
+		 * This overload covers the case that it is in the tail.
+		 */
 		template <char Id>
 		static constexpr decltype(std::enable_if_t<!Head::template has<Id>(), size_t>()) validIndex(Flags flags) noexcept
 		{
 			return Tail::template validIndex<Id>(flags >> Head::size()) + Head::validSize(flags);
 		}
 
+		/*!
+		 * \brief Return the free object, given an \c Id.
+		 *
+		 * This overload covers the case that it is in the head.
+		 */
 		template <char Id>
 		constexpr auto object(decltype(std::enable_if_t<Head::template has<Id>(), int>()) = 0) const noexcept
 		{
 			return m_head.template object<Id>();
 		}
 
+		/*!
+		 * \brief Return the free object, given an \c Id.
+		 *
+		 * This overload covers the case that it is in the tail.
+		 */
 		template <char Id>
 		constexpr auto object(decltype(std::enable_if_t<!Head::template has<Id>(), int>()) = 0) const noexcept
 		{
 			return m_tail.template object<Id>();
 		}
 
+		/*!
+		 * \brief Return the bound object, given an \c Id.
+		 *
+		 * This overload covers the case that it is in the head.
+		 */
 		template <char Id>
 		constexpr auto object(Container& container, decltype(std::enable_if_t<Head::template has<Id>(), int>()) = 0) const noexcept
 		{
 			return m_head.template object<Id>(container);
 		}
 
+		/*!
+		 * \brief Return the bound object, given an \c Id.
+		 *
+		 * This overload covers the case that it is in the tail.
+		 */
 		template <char Id>
 		constexpr auto object(Container& container, decltype(std::enable_if_t<!Head::template has<Id>(), int>()) = 0) const noexcept
 		{
 			return m_tail.template object<Id>(container);
 		}
 
+		/*!
+		 * \brief Return the head of the list of lists of free objects.
+		 */
 		constexpr Head const& head() const noexcept
 		{
 			return m_head;
 		}
 
+		/*!
+		 * \brief Return the tail of the list of lists of free objects.
+		 */
 		constexpr Tail const& tail() const noexcept
 		{
 			return m_tail;
 		}
 	};
 
+	/*!
+	 * \brief A bound list of objects.
+	 *
+	 * The #stored::FreeObjects hold only store-instance-independent
+	 * metadata of the objects.  The BoundObjects lists is the same list,
+	 * but tailored towards only having #stored::Variable and
+	 * #stored::Function that are actually in the store. So, only exactly
+	 * enough memory is allocated to hold the administration of the
+	 * variables/functions that actually exist.
+	 *
+	 * During construction, it takes only processes the objects from \p
+	 * FreeObjects_, for which the corresponding \p flags_ are set.
+	 *
+	 * Variables and Functions are almost free to construct, given a
+	 * FreeVariable and FreeFunction and a store reference.  Therefore,
+	 * BoundObjects can implement \p PostponedBind; when \c true, it holds
+	 * a free object and applies the store when the bound object is
+	 * required, when \c false, it holds the bound objects.  Depending on
+	 * which object is smaller (a FreeVariable or just a Variable), one or
+	 * both strategies are chosen.
+	 */
+	// This is the implementation of the bound objects.
 	template <typename FreeObjects_, typename FreeObjects_::Flags flags_, bool PostponedBind>
 	class BoundObjects {
 	public:
@@ -531,8 +831,12 @@ namespace stored {
 		enum { flags = flags_ };
 
 	private:
+		/*! \brief The list of bound objects. */
 		BoundObject m_objects[std::max<size_t>(1, FreeObjects::validSize(flags))] {};
 
+		/*!
+		 * \brief Initialize the object with the given \p Id.
+		 */
 		template <char Id>
 		static size_t init(Container& container, FreeObjects const& fo, BoundObjects& bo) noexcept
 		{
@@ -545,6 +849,9 @@ namespace stored {
 			return ix;
 		}
 
+		/*!
+		 * \brief Helper function to invoke #init() for every \p Id.
+		 */
 		template <char... Id>
 		static BoundObjects create(FreeObjects const& fo, Container& container, ids<Id...>) noexcept
 		{
@@ -555,40 +862,71 @@ namespace stored {
 		}
 
 	public:
+		/*!
+		 * \brief Initialize the list of bound objects, given a list of free objects and a concrete container.
+		 *
+		 * Make sure that \p fo's flags correspond to \p flags_.
+		 */
 		static BoundObjects create(FreeObjects const& fo, Container& container) noexcept
 		{
 			return create(fo, container, Ids());
 		}
 
+		/*!
+		 * \brief Check if the given \p Id exists in the list of free objects.
+		 */
 		template <char Id>
 		static constexpr bool has() noexcept
 		{
 			return FreeObjects::template has<Id>();
 		}
 
+		/*!
+		 * \brief Check if this bound list is initialized and valid.
+		 */
 		bool valid() const noexcept
 		{
+			// All objects are valid by definition, so only check the first one.
 			return m_objects[0].valid();
 		}
 
+		/*!
+		 * \brief Check if the given \p Id is valid.
+		 *
+		 * If so, it can be accessed using #get().
+		 */
 		template <char Id>
 		static constexpr bool valid() noexcept
 		{
 			return FreeObjects::template valid<Id>(flags);
 		}
 
+		/*!
+		 * \brief Return the object with the given \p Id.
+		 */
 		template <char Id>
 		auto& get(std::enable_if_t<valid<Id>(), int> = 0) noexcept
 		{
 			return m_objects[FreeObjects::template validIndex<Id>(flags)];
 		}
 
+		/*!
+		 * \brief Return the object with the given \p Id.
+		 */
 		template <char Id>
 		auto const& get(std::enable_if_t<valid<Id>(), int> = 0) const noexcept
 		{
 			return m_objects[FreeObjects::template validIndex<Id>(flags)];
 		}
 
+		/*!
+		 * \brief Return the object with the given \p Id.
+		 *
+		 * This overload covers the case that the given \p Id does not
+		 * correspond to a valid object.  Note that this overload does
+		 * not return a reference.  So, always use \c decltype(auto) to
+		 * save the returned object in.
+		 */
 		template <char Id>
 		auto get(decltype(std::enable_if_t<!valid<Id>(), int>()) = 0) const noexcept
 		{
@@ -596,6 +934,8 @@ namespace stored {
 		}
 	};
 
+	// This is the implementation of BoundObjects, where only free objects
+	// are saved and bound upon request.
 	template <typename FreeObjects_, typename FreeObjects_::Flags flags_>
 	class BoundObjects<FreeObjects_, flags_, true> {
 	public:
@@ -608,9 +948,14 @@ namespace stored {
 		enum { flags = flags_ };
 
 	private:
+		/*! \brief The container. */
 		Container* m_container{};
+		/*! \brief The free objects, which can be bound to #m_container. */
 		FreeObject m_objects[std::max<size_t>(1, FreeObjects::validSize(flags))];
 
+		/*!
+		 * \brief Initialize the given free object.
+		 */
 		template <char Id>
 		static constexpr size_t init(FreeObjects const& fo, BoundObjects& bo) noexcept
 		{
@@ -623,6 +968,9 @@ namespace stored {
 			return ix;
 		}
 
+		/*!
+		 * \brief Helper to call #init() for every \p Id.
+		 */
 		template <char... Id>
 		static constexpr BoundObjects create(FreeObjects const& fo, Container& container, ids<Id...>) noexcept
 		{
@@ -634,35 +982,59 @@ namespace stored {
 		}
 
 	public:
+		/*!
+		 * \brief Initialize the list of bound objects, given a list of free objects and a concrete container.
+		 *
+		 * Make sure that \p fo's flags correspond to \p flags_.
+		 */
 		static constexpr BoundObjects create(FreeObjects const& fo, Container& container) noexcept
 		{
 			return create(fo, container, Ids());
 		}
 
+		/*!
+		 * \brief Check if the given \p Id exists in the list of free objects.
+		 */
 		template <char Id>
 		static constexpr bool has() noexcept
 		{
 			return FreeObjects::template has<Id>();
 		}
 
+		/*!
+		 * \brief Check if this bound list is initialized and valid.
+		 */
 		constexpr bool valid() const noexcept
 		{
 			return m_container;
 		}
 
+		/*!
+		 * \brief Check if the given \p Id is valid.
+		 *
+		 * If so, it can be accessed using #get().
+		 */
 		template <char Id>
 		static constexpr bool valid() noexcept
 		{
 			return FreeObjects_::template valid<Id>(flags);
 		}
 
+		/*!
+		 * \brief Return the object with the given \p Id.
+		 */
 		template <char Id>
 		auto get(decltype(std::enable_if_t<valid<Id>(), int>()) = 0) const noexcept
 		{
 			stored_assert(m_container);
+			// It might sound expensive, but it is really only like
+			// saving m_container + offset in a Variable.
 			return m_objects[FreeObjects::template validIndex<Id>(flags)].apply_(*m_container);
 		}
 
+		/*!
+		 * \brief Return the object with the given \p Id.
+		 */
 		template <char Id>
 		auto get(decltype(std::enable_if_t<!valid<Id>(), int>()) = 0) const noexcept
 		{
@@ -670,9 +1042,21 @@ namespace stored {
 		}
 	};
 
+	/*!
+	 * \brief A list of bound objects.
+	 *
+	 * Like BoundObjects binds a FreeObjects to a store, similarly binds
+	 * BoundObjectsLists a FreeObjectsLists to a store.  It is, like
+	 * FreeObjectsLists, a recursive data type, which links BoundObjects
+	 * with different object types into a single list.
+	 *
+	 * The API is the same as a BoundObjects, but with all ids and indices
+	 * combined into a single interface.
+	 */
 	template <typename... B>
 	class BoundObjectsList {};
 
+	// This is the end of the list.
 	template <typename B0>
 	class BoundObjectsList<B0> : public B0 {
 	public:
@@ -690,6 +1074,7 @@ namespace stored {
 		{}
 	};
 
+	// This is the all-but-last (init) of the list.
 	template <typename B0, typename... B>
 	class BoundObjectsList<B0,B...> {
 	public:
@@ -709,8 +1094,14 @@ namespace stored {
 		{}
 
 	public:
+		/*!
+		 * \brief Default ctor to create a non-initialized list.
+		 */
 		constexpr BoundObjectsList() noexcept = default;
 
+		/*!
+		 * \brief Binds a free list to a store.
+		 */
 		template <typename FreeObjectsList>
 		static constexpr std::enable_if_t<std::is_same<BoundObjectsList, typename FreeObjectsList::template Bound<flags>>::value, BoundObjectsList>
 		create(FreeObjectsList const& fo, Container& container) noexcept
@@ -721,41 +1112,64 @@ namespace stored {
 			};
 		}
 
+		/*!
+		 * \brief Check if the given \p Id exists in the list of free objects.
+		 */
 		template <char Id>
 		static constexpr bool has() noexcept
 		{
 			return Head::template has<Id>() || Tail::template has<Id>();
 		}
 
+		/*!
+		 * \brief Check if this bound list is initialized and valid.
+		 */
 		bool valid() const noexcept
 		{
 			return m_head.valid();
 		}
 
+		/*!
+		 * \brief Check if the given \p Id is valid.
+		 *
+		 * If so, it can be accessed using #get().
+		 */
 		template <char Id>
 		static constexpr bool valid() noexcept
 		{
 			return Head::template valid<Id>() || Tail::template valid<Id>();
 		}
 
+		/*!
+		 * \brief Return the object with the given \p Id.
+		 */
 		template <char Id>
 		decltype(auto) get(decltype(std::enable_if_t<Head::template has<Id>(), int>()) = 0) const noexcept
 		{
 			return m_head.template get<Id>();
 		}
 
+		/*!
+		 * \brief Return the object with the given \p Id.
+		 */
 		template <char Id>
 		decltype(auto) get(std::enable_if_t<Head::template has<Id>(), int> = 0) noexcept
 		{
 			return m_head.template get<Id>();
 		}
 
+		/*!
+		 * \brief Return the object with the given \p Id.
+		 */
 		template <char Id>
 		decltype(auto) get(decltype(std::enable_if_t<!Head::template has<Id>(), int>()) = 0) const noexcept
 		{
 			return m_tail.template get<Id>();
 		}
 
+		/*!
+		 * \brief Return the object with the given \p Id.
+		 */
 		template <char Id>
 		decltype(auto) get(decltype(std::enable_if_t<!Head::template has<Id>(), int>()) = 0) noexcept
 		{
@@ -763,6 +1177,13 @@ namespace stored {
 		}
 	};
 
+
+
+	//////////////////////////////////////////////////////////
+	// Amplifier
+	//////////////////////////////////////////////////////////
+
+	// Definition of the Amplifier objects.
 	template <typename Container, typename T = float>
 	using AmplifierObjects = FreeObjectsList<
 		FreeVariables<T, Container, 'I', 'g', 'o', 'l', 'h', 'F', 'O'>,
@@ -793,6 +1214,23 @@ namespace stored {
 	 * All fields are optional.  All variables of type \c float can be any
 	 * other type, as long as it matches the template parameter \p T.
 	 *
+	 * When not all fields are in the store, names may become ambiguous.
+	 * For example, if override and output are not there, the store's
+	 * directory may resolve \c o to any of the three fields. In this case,
+	 * you have to specify which fields are to be processed. For this, use
+	 * the following ids:
+	 *
+	 * field    | id
+	 * -------- | ----
+	 * input    | \c I
+	 * enable   | \c e
+	 * gain     | \c g
+	 * offset   | \c o
+	 * low      | \c l
+	 * high     | \c h
+	 * override | \c F
+	 * output   | \c O
+	 *
 	 * The amplifier basically does:
 	 *
 	 * \code
@@ -811,7 +1249,16 @@ namespace stored {
 	 * stored::Amplifier<stored::YourStore, amp_o.flags()> amp{amp_o, yourStore};
 	 * \endcode
 	 *
-	 * Calling \c amp() now uses the \c input and produces the a value in \c
+	 * Or, for example when you know there are only the offset and gain
+	 * fields in the store, and ambiguity must be resolved:
+	 *
+	 * \code
+	 * // Construct a compile-time object, which resolves only two fields in your store.
+	 * constexpr auto amp_o = stored::Amplifier<stored::YourStore>::objects<'o','g'>("/amp/");
+	 * stored::Amplifier<stored::YourStore, amp_o.flags()> amp{amp_o, yourStore};
+	 * \endcode
+	 *
+	 * Calling \c amp() now uses the \c input and produces the value in \c
 	 * output.  Alternatively, or when the \c input field is absent in the
 	 * store, call \c amp(x), where \c x is the input.
 	 */
@@ -821,12 +1268,26 @@ namespace stored {
 		using type = T;
 		using Bound = typename AmplifierObjects<Container, type>::template Bound<flags>;
 
+		/*!
+		 * \brief Default ctor.
+		 *
+		 * Use this when initialization is postponed.  Do not access or
+		 * run the Amplifier instance, as it does not hold proper
+		 * references to a store.  You can just assign another
+		 * Amplifier instance.
+		 */
 		constexpr Amplifier() noexcept = default;
 
+		/*!
+		 * \brief Initialize the Amplifier, given a list of objects and a container.
+		 */
 		constexpr Amplifier(AmplifierObjects<Container,type> const& o, Container& container)
 			: m_o{Bound::create(o, container)}
 		{}
 
+		/*!
+		 * \brief Create the list of objects in the store, used to compute the \p flags parameter.
+		 */
 		template <char... OnlyId, size_t N>
 		static constexpr auto objects(char const(&prefix)[N]) noexcept
 		{
@@ -834,20 +1295,32 @@ namespace stored {
 				"input", "gain", "offset", "low", "high", "override", "output", "enable");
 		}
 
+		/*! \brief Return the \c input object. */
 		decltype(auto) inputObject() const noexcept { return m_o.template get<'I'>(); }
+		/*! \brief Return the \c input object. */
 		decltype(auto) inputObject() noexcept { return m_o.template get<'I'>(); }
+		/*! \brief Return the \c input value, or 0 when not available. */
 		type input() const noexcept { decltype(auto) o = inputObject(); return o.valid() ? o.get() : type(); }
 
+		/*! \brief Return the \c gain object. */
 		decltype(auto) gainObject() const noexcept { return m_o.template get<'g'>(); }
+		/*! \brief Return the \c gain object. */
 		decltype(auto) gainObject() noexcept { return m_o.template get<'g'>(); }
+		/*! \brief Return the \c gain value, or 1 when not available. */
 		type gain() const noexcept { decltype(auto) o = gainObject(); return o.valid() ? o.get() : type(1); }
 
+		/*! \brief Return the \c offset object. */
 		decltype(auto) offsetObject() const noexcept { return m_o.template get<'o'>(); }
+		/*! \brief Return the \c offset object. */
 		decltype(auto) offsetObject() noexcept { return m_o.template get<'o'>(); }
+		/*! \brief Return the \c offset value, or 1 when not available. */
 		type offset() const noexcept { decltype(auto) o = offsetObject(); return o.valid() ? o.get() : type(); }
 
+		/*! \brief Return the \c low object. */
 		decltype(auto) lowObject() const noexcept { return m_o.template get<'l'>(); }
+		/*! \brief Return the \c low object. */
 		decltype(auto) lowObject() noexcept { return m_o.template get<'l'>(); }
+		/*! \brief Return the \c low value, or -inf when not available. */
 		type low() const noexcept
 		{
 			decltype(auto) o = lowObject();
@@ -858,8 +1331,11 @@ namespace stored {
 			return std::numeric_limits<type>::lowest();
 		}
 
+		/*! \brief Return the \c high object. */
 		decltype(auto) highObject() const noexcept { return m_o.template get<'h'>(); }
+		/*! \brief Return the \c high object. */
 		decltype(auto) highObject() noexcept { return m_o.template get<'h'>(); }
+		/*! \brief Return the \c high value, or inf when not available. */
 		type high() const noexcept
 		{
 			decltype(auto) o = highObject();
@@ -870,25 +1346,42 @@ namespace stored {
 			return std::numeric_limits<type>::max();
 		}
 
+		/*! \brief Return the \c override object. */
 		decltype(auto) overrideObject() const noexcept { return m_o.template get<'F'>(); }
+		/*! \brief Return the \c override object. */
 		decltype(auto) overrideObject() noexcept { return m_o.template get<'F'>(); }
+		/*! \brief Return the \c override value, or NaN when not available. */
 		type override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : std::numeric_limits<type>::quiet_NaN(); }
 
+		/*! \brief Return the \c output object. */
 		decltype(auto) outputObject() const noexcept { return m_o.template get<'O'>(); }
+		/*! \brief Return the \c output object. */
 		decltype(auto) outputObject() noexcept { return m_o.template get<'O'>(); }
+		/*! \brief Return the \c output value, or 0 when not available. */
 		type output() const noexcept { decltype(auto) o = outputObject(); return o.valid() ? o.get() : type(); }
 
+		/*! \brief Return the \c enable object. */
 		decltype(auto) enableObject() const noexcept { return m_o.template get<'e'>(); }
+		/*! \brief Return the \c enable object. */
 		decltype(auto) enableObject() noexcept { return m_o.template get<'e'>(); }
+		/*! \brief Return the \c enable value, which is \c true when not available. */
 		bool enabled() const noexcept { decltype(auto) o = enableObject(); return !o.valid() || o.get(); }
+		/*! \brief Enable (or disable) the Amplifier. Ignored when the \c enable object is not available. */
 		void enable(bool value = true) noexcept { decltype(auto) o = enableObject(); if(o.valid()) o = value; }
+		/*! \brief Disable the Amplifier. Ignored when the \c enable object is not available. */
 		void disable() noexcept { enable(false); }
 
+		/*!
+		 * \brief Compute the Amplifier output, given the input as stored in the store.
+		 */
 		type operator()() noexcept
 		{
 			return run(input());
 		}
 
+		/*!
+		 * \brief Compute the Amplifier output, given an input.
+		 */
 		type operator()(type input) noexcept
 		{
 			decltype(auto) o = inputObject();
@@ -899,6 +1392,9 @@ namespace stored {
 		}
 
 	protected:
+		/*!
+		 * \brief Compute the Amplifier output.
+		 */
 		type run(type input) noexcept
 		{
 			type output = override_();
@@ -924,6 +1420,12 @@ namespace stored {
 	private:
 		Bound m_o;
 	};
+
+
+
+	//////////////////////////////////////////////////////////
+	// PinIn
+	//////////////////////////////////////////////////////////
 
 	template <typename Container>
 	using PinInObjects = FreeObjectsList<
@@ -1036,6 +1538,13 @@ namespace stored {
 	private:
 		Bound m_o;
 	};
+
+
+
+
+	//////////////////////////////////////////////////////////
+	// PinOut
+	//////////////////////////////////////////////////////////
 
 	template <typename Container>
 	using PinOutObjects = FreeObjectsList<
@@ -1155,6 +1664,13 @@ namespace stored {
 		Bound m_o;
 		int8_t m_override{-1};
 	};
+
+
+
+
+	//////////////////////////////////////////////////////////
+	// PID
+	//////////////////////////////////////////////////////////
 
 	template <typename Container, typename T=float>
 	using PIDObjects = FreeObjectsList<
@@ -1433,6 +1949,13 @@ namespace stored {
 		type m_u{};
 	};
 
+
+
+
+	//////////////////////////////////////////////////////////
+	// Sine
+	//////////////////////////////////////////////////////////
+
 	template <typename T>
 	constexpr T pi = T(3.141592653589793238462643383279502884L);
 
@@ -1575,6 +2098,14 @@ namespace stored {
 		Bound m_o;
 		type m_t{};
 	};
+
+
+
+
+
+	//////////////////////////////////////////////////////////
+	// PulseWave
+	//////////////////////////////////////////////////////////
 
 	template <typename Container, typename T=float>
 	using PulseWaveObjects = FreeObjectsList<
@@ -1732,6 +2263,13 @@ namespace stored {
 		type m_t{};
 	};
 
+
+
+
+	//////////////////////////////////////////////////////////
+	// LowPass
+	//////////////////////////////////////////////////////////
+
 	template <typename Container, typename T=float>
 	using LowPassObjects = FreeObjectsList<
 		FreeFunctions<float, Container, 's'>,
@@ -1753,6 +2291,7 @@ namespace stored {
 	 *     float=nan override
 	 *     float output
 	 * } lowpass
+	 * \endcode
 	 *
 	 * Only <tt>sample frequency</tt> and <tt>cutoff frequency</tt> are
 	 * mandatory.  All variables of type \c float, except for <tt>sample
@@ -1881,6 +2420,13 @@ namespace stored {
 		type m_alpha{std::numeric_limits<type>::quiet_NaN()};
 		type m_prev{};
 	};
+
+
+
+
+	//////////////////////////////////////////////////////////
+	// Ramp
+	//////////////////////////////////////////////////////////
 
 	template <typename Container, typename T=float>
 	using RampObjects = FreeObjectsList<
