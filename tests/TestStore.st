@@ -53,3 +53,31 @@ float value with unit (km/s)
 float value with complex unit (J/s/m^2)
 float value with abiguous unit (m/s)
 float value with abiguous unit (m/h)
+
+{
+	float input
+	bool=true enable
+	float=2 gain
+	float=0.5 offset
+	float=-1 low
+	float=10 high
+	float=nan override
+	float output
+} amp
+
+{
+	float=3.5 gain
+	float=nan override
+	float output
+} small amp
+
+{
+	float=-1 gain
+	bool=false enable
+	float output
+} ambiguous amp
+
+{
+	double=-3 gain
+} double amp
+

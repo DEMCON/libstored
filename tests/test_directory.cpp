@@ -41,7 +41,7 @@ TEST(Directory, FullMatch)
 TEST(Directory, ShortMatch)
 {
 	stored::TestStore store;
-	EXPECT_TRUE(store.find("/d.......f").valid());
+	EXPECT_TRUE(store.find("/de......f").valid());
 	EXPECT_TRUE(store.find("/f.r.../").valid());
 	EXPECT_TRUE(store.find("/f.r...-").valid());
 	EXPECT_TRUE(store.find("/init float 3").valid());

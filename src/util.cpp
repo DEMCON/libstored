@@ -243,6 +243,9 @@ char const* banner() noexcept
 #ifdef STORED_POLL_POLL
 		" poll=poll"
 #endif
+#ifdef STORED_DRAFT_API
+		" draft"
+#endif
 #ifdef STORED_ENABLE_ASAN
 		" asan"
 #endif
