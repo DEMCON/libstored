@@ -2637,8 +2637,8 @@ namespace stored {
 
 			if(likely(std::isnan(output))) {
 				decltype(auto) ro = resetObject();
-				if(unlikely(ro.valid() && ro.get() || std::isnan(m_a))) {
-					type v = m_a > 0 ? m_v_ * m_a : 0;
+				if(unlikely((ro.valid() && ro.get()) || std::isnan(m_a))) {
+					type v = m_a > 0 ? (type)m_v_ * m_a : 0;
 
 					if(ro.valid())
 						ro = false;
@@ -2658,7 +2658,7 @@ namespace stored {
 
 					if(a > 0) {
 						auto v_steps = std::lround(sl / a);
-						a = sl / v_steps;
+						a = sl / (type)v_steps;
 					}
 
 					m_a = a;
@@ -2694,8 +2694,8 @@ namespace stored {
 								x_stop_ -= ++v_;
 						}
 
-						if(m_v_ > 0 && err < (x_stop_ + v_ + 1) * m_a) {
-							if(err < (m_x_stop_ + m_v_) * m_a)
+						if(m_v_ > 0 && err < (type)(x_stop_ + v_ + 1) * m_a) {
+							if(err < (type)(m_x_stop_ + m_v_) * m_a)
 								// Break.
 								m_x_stop_ -= --m_v_;
 							// else hold speed.
@@ -2716,8 +2716,8 @@ namespace stored {
 								x_stop_ -= --v_;
 						}
 
-						if(m_v_ < 0 && err > (x_stop_ + v_ - 1) * m_a) {
-							if(err > (m_x_stop_ + m_v_) * m_a)
+						if(m_v_ < 0 && err > (type)(x_stop_ + v_ - 1) * m_a) {
+							if(err > (type)(m_x_stop_ + m_v_) * m_a)
 								// Break.
 								m_x_stop_ -= ++m_v_;
 							// else hold speed.
@@ -2728,7 +2728,7 @@ namespace stored {
 					}
 
 					m_x_ += m_v_;
-					output = m_start + (type)(m_x_ * m_a);
+					output = m_start + (type)m_x_ * m_a;
 				}
 
 				m_x = output;
