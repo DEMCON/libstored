@@ -1770,6 +1770,29 @@ namespace stored {
 	 * variables of type \c float, except for \c frequency, can be any
 	 * other type, as long as it matches the template parameter \p T.
 	 *
+	 * It has the following objects:
+	 * - \c frequency: the control frequency; the application must invoke
+	 *   the PID controller at this frequency
+	 * - \c y: the process variable (output of the plant)
+	 * - \c setpoint: the setpoint to control \c y to
+	 * - \c Kp: P coefficient
+	 * - \c Ti: I time constant
+	 * - \c Td: D time constant
+	 * - \c Kff: feed-forward coefficient
+	 * - \c int: current integral value (cannot be changed via the store)
+	 * - <tt>int low</tt>: lower bound for \c int
+	 * - <tt>int high</tt>: upper bound for \c int
+	 * - \c low: lower bound for computed \c u
+	 * - \c high: upper bound for computed \c u
+	 * - \c epsilon: minimum value of the error ( | \c setpoint - \c y | ),
+	 *   which must result in a change of the output \c u. Otherwise,
+	 *   numerical stability is compromised. See #isHealthy().
+	 * - \c reset: when set to \c true, recompute and apply changed control
+	 *   parameters
+	 * - \c override: when not NaN, force \c u to this value, without \c
+	 *   low and \c high applied
+	 * - \c u: control output (input for the plant)
+	 *
 	 * Then, instantiate the controller like this:
 	 *
 	 * \code
@@ -1778,6 +1801,14 @@ namespace stored {
 	 * // Instantiate a PID, tailored to the available fields in the store.
 	 * stored::PID<stored::YourStore, pid_o.flags()> pid{pid_o, yourStore};
 	 * \endcode
+	 *
+	 * The PID controller has the following properties:
+	 *
+	 * - The parameters specify a serial PID.
+	 * - The integral windup prevention stops the integral when the output clips.
+	 * - Changing Ti is implemented smoothly; changing the parameters (and
+	 *   setting \c reset afterwards) can be done while running.
+	 * - #isHealthy() checks for numerical stability.
 	 */
 	template <typename Container, unsigned long long flags = 0, typename T = float>
 	class PID {
@@ -1785,8 +1816,17 @@ namespace stored {
 		using type = T;
 		using Bound = typename PIDObjects<Container,type>::template Bound<flags>;
 
+		/*!
+		 * \brief Default ctor.
+		 *
+		 * Use this when initialization is postponed. You can assign
+		 * another instance later on.
+		 */
 		constexpr PID() noexcept = default;
 
+		/*!
+		 * \brief Initialize the pin, given a list of objects and a container.
+		 */
 		constexpr PID(PIDObjects<Container,type> const& o, Container& container)
 			: m_o{Bound::create(o, container)}
 		{
@@ -1801,6 +1841,9 @@ namespace stored {
 				m_u = std::max<type>(low(), 0);
 		}
 
+		/*!
+		 * \brief Create the list of objects in the store, used to compute the \p flags parameter.
+		 */
 		template <char... OnlyId, size_t N>
 		static constexpr auto objects(char const(&prefix)[N]) noexcept
 		{
@@ -1810,81 +1853,145 @@ namespace stored {
 				"enable", "reset");
 		}
 
+		/*! \brief Return the \c frequency object. */
 		decltype(auto) frequencyObject() const noexcept { return m_o.template get<'f'>(); }
+		/*! \brief Return the control frequency. */
 		float frequency() const noexcept { return frequencyObject()(); }
 
+		/*! \brief Return the \c y object. */
 		decltype(auto) yObject() const noexcept { return m_o.template get<'y'>(); }
+		/*! \brief Return the \c y object. */
 		decltype(auto) yObject() noexcept { return m_o.template get<'y'>(); }
+		/*! \brief Return the \c y value, or 0 when not available. */
 		type y() const noexcept { decltype(auto) o = yObject(); return o.valid() ? o.get() : type(); }
 
+		/*! \brief Return the \c setpoint object. */
 		decltype(auto) setpointObject() const noexcept { return m_o.template get<'s'>(); }
+		/*! \brief Return the \c setpoint object. */
 		decltype(auto) setpointObject() noexcept { return m_o.template get<'s'>(); }
+		/*! \brief Return the \c setpoint value. */
 		type setpoint() const noexcept { return setpointObject().get(); }
 
+		/*! \brief Return the \c Kp object. */
 		decltype(auto) KpObject() const noexcept { return m_o.template get<'p'>(); }
+		/*! \brief Return the \c Kp object. */
 		decltype(auto) KpObject() noexcept { return m_o.template get<'p'>(); }
+		/*! \brief Return the \c Kp value. */
 		type Kp() const noexcept { return KpObject().get(); }
 
+		/*! \brief Return the \c Ti object. */
 		decltype(auto) TiObject() const noexcept { return m_o.template get<'i'>(); }
+		/*! \brief Return the \c Ti object. */
 		decltype(auto) TiObject() noexcept { return m_o.template get<'i'>(); }
+		/*! \brief Return the \c Ti value, or inf when not available. */
 		type Ti() const noexcept { decltype(auto) o = TiObject(); return o.valid() ? o.get() : std::numeric_limits<type>::infinity(); }
+		/*! \brief Return the computed Ki value. */
 		type Ki() const noexcept { return m_Ki; }
 
+		/*! \brief Return the \c Td object. */
 		decltype(auto) TdObject() const noexcept { return m_o.template get<'d'>(); }
+		/*! \brief Return the \c Td object. */
 		decltype(auto) TdObject() noexcept { return m_o.template get<'d'>(); }
+		/*! \brief Return the \c Td value, or 0 when not available. */
 		type Td() const noexcept { decltype(auto) o = TdObject(); return o.valid() ? o.get() : (type)0; }
+		/*! \brief Return the computed Kd value. */
 		type Kd() const noexcept { return m_Kd; }
 
+		/*! \brief Return the \c Kff object. */
 		decltype(auto) KffObject() const noexcept { return m_o.template get<'k'>(); }
+		/*! \brief Return the \c Kff object. */
 		decltype(auto) KffObject() noexcept { return m_o.template get<'k'>(); }
+		/*! \brief Return the \c Kff value, or 0 when not available. */
 		type Kff() const noexcept { decltype(auto) o = KffObject(); return o.valid() ? o.get() : (type)0; }
 
+		/*! \brief Return the \c int object. */
 		decltype(auto) intObject() const noexcept { return m_o.template get<'I'>(); }
+		/*! \brief Return the \c int object. */
 		decltype(auto) intObject() noexcept { return m_o.template get<'I'>(); }
+		/*!
+		 * \brief Return the current integral value.
+		 *
+		 * This is the integral of the <tt>(setpoint - y) * Ki</tt>.
+		 * So, when Ti (and there fore Ki) changes, it may take a while
+		 * till the new Ti is in effect, depending on the current
+		 * integral value.
+		 */
 		type int_() const noexcept { return m_int; }
 
+		/*! \brief Return the <tt>int low</tt> object. */
 		decltype(auto) intLowObject() const noexcept { return m_o.template get<'L'>(); }
+		/*! \brief Return the <tt>int low</tt> object. */
 		decltype(auto) intLowObject() noexcept { return m_o.template get<'L'>(); }
+		/*! \brief Return the <tt>int low</tt> value, or -inf when not available. */
 		type intLow() const noexcept { decltype(auto) o = intLowObject(); return o.valid() ? o.get() : -std::numeric_limits<type>::infinity(); }
 
+		/*! \brief Return the <tt>int high</tt> object. */
 		decltype(auto) intHighObject() const noexcept { return m_o.template get<'H'>(); }
+		/*! \brief Return the <tt>int high</tt> object. */
 		decltype(auto) intHighObject() noexcept { return m_o.template get<'H'>(); }
+		/*! \brief Return the <tt>int high</tt> vale, or inf when not available. */
 		type intHigh() const noexcept { decltype(auto) o = intHighObject(); return o.valid() ? o.get() : std::numeric_limits<type>::infinity(); }
 
+		/*! \brief Return the \c low object. */
 		decltype(auto) lowObject() const noexcept { return m_o.template get<'l'>(); }
+		/*! \brief Return the \c low object. */
 		decltype(auto) lowObject() noexcept { return m_o.template get<'l'>(); }
+		/*! \brief Return the \c low value, or -inf when not available. */
 		type low() const noexcept { decltype(auto) o = lowObject(); return o.valid() ? o.get() : -std::numeric_limits<type>::infinity(); }
 
+		/*! \brief Return the \c high object. */
 		decltype(auto) highObject() const noexcept { return m_o.template get<'h'>(); }
+		/*! \brief Return the \c high object. */
 		decltype(auto) highObject() noexcept { return m_o.template get<'h'>(); }
+		/*! \brief Return the \c high value, or inf when not available. */
 		type high() const noexcept { decltype(auto) o = highObject(); return o.valid() ? o.get() : std::numeric_limits<type>::infinity(); }
 
+		/*! \brief Return the \c epsilon object. */
 		decltype(auto) epsilonObject() const noexcept { return m_o.template get<'3'>(); }
+		/*! \brief Return the \c epsilon object. */
 		decltype(auto) epsilonObject() noexcept { return m_o.template get<'3'>(); }
+		/*! \brief Return the \c epsilon value, or inf when not available. */
 		type epsilon() const noexcept { decltype(auto) o = epsilonObject(); return o.valid() ? o.get() : std::numeric_limits<type>::infinity(); }
 
+		/*! \brief Return the \c override object. */
 		decltype(auto) overrideObject() const noexcept { return m_o.template get<'F'>(); }
+		/*! \brief Return the \c override object. */
 		decltype(auto) overrideObject() noexcept { return m_o.template get<'F'>(); }
+		/*! \brief Return the \c override value, or NaN when not available. */
 		type override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : std::numeric_limits<type>::quiet_NaN(); }
 
+		/*! \brief Return the \c u object. */
 		decltype(auto) uObject() const noexcept { return m_o.template get<'u'>(); }
+		/*! \brief Return the \c u object. */
 		decltype(auto) uObject() noexcept { return m_o.template get<'u'>(); }
+		/*! \brief Return the \c u value, with the override applied. */
 		type u() const noexcept
 		{
 			type o = override_();
 			return std::isnan(o) ? m_u : o;
 		}
 
+		/*! \brief Return the \c enable object. */
 		decltype(auto) enableObject() const noexcept { return m_o.template get<'e'>(); }
+		/*! \brief Return the \c enable object. */
 		decltype(auto) enableObject() noexcept { return m_o.template get<'e'>(); }
+		/*! \brief Return the \c enable value, or \c true when not available. */
 		bool enabled() const noexcept { decltype(auto) o = enableObject(); return !o.valid() || o.get(); }
+		/*! \brief Enable (or disable) the PID. Ignored when the \c enable object is not available. */
 		void enable(bool value = true) noexcept { decltype(auto) o = enableObject(); if(o.valid()) o = value; }
+		/*! \brief Disable the PID. Ignored when the \c enable object is not available. */
 		void disable() noexcept { enable(false); }
 
+		/*! \brief Return the \c reset object. */
 		decltype(auto) resetObject() const noexcept { return m_o.template get<'r'>(); }
+		/*! \brief Return the \c reset object. */
 		decltype(auto) resetObject() noexcept { return m_o.template get<'r'>(); }
+		/*! \brief Return the \c reset value, or \c false when not available. */
 		bool reset() const noexcept { decltype(auto) o = resetObject(); return o.valid() && o.get(); }
 
+		/*!
+		 * \brief Compute the PID output, given a \c y.
+		 */
 		type operator()(type y) noexcept
 		{
 			decltype(auto) o = yObject();
@@ -1894,6 +2001,9 @@ namespace stored {
 			return run(y);
 		}
 
+		/*!
+		 * \brief Compute the PID output, given the \c y as stored in the store.
+		 */
 		type operator()() noexcept
 		{
 			return run(y());
@@ -1902,8 +2012,8 @@ namespace stored {
 		/*!
 		 * \brief Check numerical stability.
 		 *
-		 * #epsilon() is the smallest change in error (#setpoint() -
-		 * #y()) that must have influence the output #u().  If the
+		 * #epsilon() is the smallest change in error ( | #setpoint() -
+		 * #y() | ) that must have influence the output #u().  If the
 		 * error is smaller, the output may remain the same. This
 		 * function checks if that is still the case.
 		 *
@@ -1935,6 +2045,9 @@ namespace stored {
 		}
 
 	protected:
+		/*!
+		 * \brief Compute control output.
+		 */
 		type run(type y) noexcept
 		{
 			type u = override_();
