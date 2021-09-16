@@ -300,7 +300,7 @@ namespace stored {
 			if(Config::EnableAssert)
 				for(size_t i = 0; i < sizeof...(Id); i++) {
 					// Check if name resolution is unique.
-					stored_assert(!o.valid() || m_objects[i] != o);
+					stored_assert(!o.valid() || m_objects[i] != o); // If this fails, the names are not unique. Provide the ids of the objects that are in the store.
 				}
 
 			constexpr size_t ix = index<Id_>();
@@ -1261,10 +1261,10 @@ namespace stored {
 	 * {
 	 *     float input
 	 *     bool=true enable
-	 *     float=2 gain
-	 *     float=0.5 offset
-	 *     float=-1 low
-	 *     float=10 high
+	 *     float=1 gain
+	 *     float=0 offset
+	 *     float=-inf low
+	 *     float=inf high
 	 *     float=nan override
 	 *     float output
 	 * } amp
