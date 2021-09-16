@@ -32,7 +32,7 @@
 // However, even with VS 2017, using constexpr calls in an std::enable_if_t
 // template parameter still does not work similar to gcc. As a workaround,
 // these enable_if_ts are wrapped in a decltype and used as return type or
-// dummy parameter. Not every readable, but it works at least.
+// dummy parameter. Not very readable, but it works at least.
 #endif
 
 #include <libstored/config.h>
