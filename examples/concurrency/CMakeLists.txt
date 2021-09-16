@@ -9,5 +9,5 @@ libstored_generate(concurrency ExampleConcurrencyMain.st ExampleConcurrencyContr
 
 find_package(Threads)
 target_link_libraries(concurrency PUBLIC ${CMAKE_THREAD_LIBS_INIT})
-install(TARGETS concurrency RUNTIME)
+install(TARGETS concurrency RUNTIME DESTINATION bin)
 

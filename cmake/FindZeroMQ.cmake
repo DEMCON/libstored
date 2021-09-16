@@ -116,7 +116,7 @@ if(NOT TARGET libzmq)
 	endif()
 
 	set_property(TARGET libzmq PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_INSTALL_PREFIX}/include)
-	target_compile_options(libzmq INTERFACE -DZMQ_BUILD_DRAFT_API=1)
+	set_property(TARGET libzmq PROPERTY INTERFACE_COMPILE_OPTIONS -DZMQ_BUILD_DRAFT_API=1)
 	add_dependencies(libzmq libzmq-extern)
 endif()
 
