@@ -49,6 +49,65 @@ namespace stored {
 	// Store lookup and free/bound variables processing
 	//////////////////////////////////////////////////////////
 
+	/*
+	 * This is how it works:
+	 *
+	 * The directory can be searched at compile time.  So, given a name of
+	 * an object, the meta data (offset of a variable, or function number)
+	 * can be determined.  This results in a FreeVariable or FreeFunction.
+	 * Free objects hold the meta data, but are not bound to a specific
+	 * store instance.
+	 *
+	 * A component (Amplifier, PID, LowPass, etc.) consists of multiple
+	 * objects of different types.  For every set of objects of the same
+	 * type, a FreeObjects list is constructed, which holds an array of
+	 * FreeVariables or FreeFunctions as returned by the directory lookup.
+	 *
+	 * To create a single thing that holds all objects of a component, the
+	 * FreeObjects are chained together as a FreeObjectsList. This is a
+	 * recursive data type, which is in fact a list of FreeObjects.
+	 *
+	 * Objects may not be in the store. In that case, the FreeVariables or
+	 * FreeFunctions are invalid.  As we know this at compile time, it
+	 * would be waste of memory to allocate components with all objects, as
+	 * we could also leave the invalid ones out. Moreover, if we know which
+	 * objects are not there and do not contribute to the component output,
+	 * the implementation may be optimized.
+	 *
+	 * So, the analysis of the free objects must be passed to a concrete
+	 * implementation that leaves out instances of the bound objects.  For
+	 * this, we must pass this analysis as a template parameter to the
+	 * concrete implementation. Bit flags (unsigned long long) are used for
+	 * this; every object has a specific index in the flags.
+	 *
+	 * When the free objects are to be bound to a store instance, the flags
+	 * indicate which objects must be processed.  The component has a
+	 * BoundObjectsList, which mirrors the FreeObjectsList, but does not
+	 * instantiate a Variable or Function for the masked out objects by the
+	 * flags.
+	 *
+	 * The reason for using arrays is because leaving objects out won't
+	 * consume memory in that case.  You could create a class that either
+	 * holds the object, or is empty, but the empty object must consume at
+	 * least one byte, which may become a word after alignment in another
+	 * class. If bound objects are organized in an array, this byte
+	 * overhead is gone, except for the case when the whole array is empty.
+	 *
+	 * Summarized:
+	 *
+	 * - constexpr directory find results in a free object, which is
+	 *   combined into a FreeObjectsList, which flags indicating which
+	 *   objects are in the store.  It holds an array of FreeObjects.
+	 * - construct a BoundObjectsList type, given the flags of the
+	 *   FreeObjectsList.  It holds an array of Variables or Functions, but
+	 *   only those in the flags.
+	 * - During run-time, construct the BoundObjectLists and bind the valid
+	 *   free functions to a specific store.
+	 *
+	 * Objects have an index in the flags. This is not really manageable.
+	 * Therefore, every object has a char alias, which maps to the index.
+	 */
+
 	namespace impl {
 		/*!
 		 * \brief Find the index of the given \p Id in \p Ids.
@@ -1245,6 +1304,7 @@ namespace stored {
 	 * \code
 	 * // Construct a compile-time object, which resolves all fields in your store.
 	 * constexpr auto amp_o = stored::Amplifier<stored::YourStore>::objects("/amp/");
+	 *
 	 * // Instantiate an Amplifier, tailored to the available fields in the store.
 	 * stored::Amplifier<stored::YourStore, amp_o.flags()> amp{amp_o, yourStore};
 	 * \endcode
@@ -1471,6 +1531,7 @@ namespace stored {
 	 * \code
 	 * // Construct a compile-time object, which resolves all fields in your store.
 	 * constexpr auto pin_o = stored::PinIn<stored::YourStore>::objects("/pin/");
+	 *
 	 * // Instantiate an PinIn, tailored to the available fields in the store.
 	 * stored::PinIn<stored::YourStore, pin_o.flags()> pin{pin_o, yourStore};
 	 * \endcode
@@ -1617,6 +1678,7 @@ namespace stored {
 	 * \code
 	 * // Construct a compile-time object, which resolves all fields in your store.
 	 * constexpr auto pin_o = stored::PinOut<stored::YourStore>::objects("/pin/");
+	 *
 	 * // Instantiate an PinOut, tailored to the available fields in the store.
 	 * stored::PinOut<stored::YourStore, pin_o.flags()> pin{pin_o, yourStore};
 	 * \endcode
@@ -1798,6 +1860,7 @@ namespace stored {
 	 * \code
 	 * // Construct a compile-time object, which resolves all fields in your store.
 	 * constexpr auto pid_o = stored::PID<stored::YourStore>::objects("/pid/");
+	 *
 	 * // Instantiate a PID, tailored to the available fields in the store.
 	 * stored::PID<stored::YourStore, pid_o.flags()> pid{pid_o, yourStore};
 	 * \endcode
@@ -2148,25 +2211,44 @@ namespace stored {
 	 * {
 	 *     (float) sample frequency (Hz)
 	 *     float=1 amplitude
-	 *     float=1 frequency (Hz)
+	 *     float=0.159 frequency (Hz)
 	 *     float=0 phase (rad)
 	 *     bool=true enable
 	 *     float=nan override
 	 *     float output
 	 * } sine
+	 * \endcode
 	 *
 	 * Only <tt>sample frequency</tt> is mandatory.  All variables of type
 	 * \c float, except for <tt>sample frequency</tt>, can be any other
 	 * type, as long as it matches the template parameter \p T.
 	 *
-	 * Then, instantiate the controller like this:
+	 * When either \c override or \c output is omitted, names may become
+	 * ambiguous.  In that case, provide the ids of the fields that are in
+	 * the store, as template parameters to #objects():
+	 *
+	 * field            | id
+	 * ---------------- | ----
+	 * sample frequency | \c s
+	 * amplitude        | \c A
+	 * frequency        | \c f
+	 * phase            | \c p
+	 * enable           | \c e
+	 * override         | \c F
+	 * output           | \c O
+	 *
+	 * Then, instantiate the sine wave generator like this:
 	 *
 	 * \code
 	 * // Construct a compile-time object, which resolves all fields in your store.
 	 * constexpr auto sine_o = stored::Sine<stored::YourStore>::objects("/sine/");
+	 *
 	 * // Instantiate the generator, tailored to the available fields in the store.
 	 * stored::Sine<stored::YourStore, sine_o.flags()> sine{sine_o, yourStore};
 	 * \endcode
+	 *
+	 * When the parameters of the sine wave are changed while running, they
+	 * are applied immediately, without a smooth transition.
 	 */
 	template <typename Container, unsigned long long flags = 0, typename T = float>
 	class Sine {
@@ -2174,14 +2256,26 @@ namespace stored {
 		using type = T;
 		using Bound = typename SineObjects<Container,type>::template Bound<flags>;
 
+		/*!
+		 * \brief Default ctor.
+		 *
+		 * Use this when initialization is postponed. You can assign
+		 * another instance later on.
+		 */
 		constexpr Sine() noexcept = default;
 
+		/*!
+		 * \brief Initialize the sine, given a list of objects and a container.
+		 */
 		constexpr Sine(SineObjects<Container,type> const& o, Container& container)
 			: m_o{Bound::create(o, container)}
 		{
 			static_assert(Bound::template valid<'s'>(), "'sample frequency' function is mandatory");
 		}
 
+		/*!
+		 * \brief Create the list of objects in the store, used to compute the \p flags parameter.
+		 */
 		template <char... OnlyId, size_t N>
 		static constexpr auto objects(char const(&prefix)[N]) noexcept
 		{
@@ -2190,35 +2284,60 @@ namespace stored {
 				"override", "output", "enable");
 		}
 
+		/*! \brief Return the <tt>sample frequency</tt> object. */
 		decltype(auto) sampleFrequencyObject() const noexcept { return m_o.template get<'s'>(); }
+		/*! \brief Return the sample frequency. */
 		float sampleFrequency() const noexcept { return sampleFrequencyObject()(); }
 
+		/*! \brief Return the \c amplitude object. */
 		decltype(auto) amplitudeObject() const noexcept { return m_o.template get<'A'>(); }
+		/*! \brief Return the \c amplitude object. */
 		decltype(auto) amplitudeObject() noexcept { return m_o.template get<'A'>(); }
+		/*! \brief Return the \c amplitude value, or 1 when not available. */
 		type amplitude() const noexcept { decltype(auto) o = amplitudeObject(); return o.valid() ? o.get() : (type)1; }
 
+		/*! \brief Return the \c frequency object. */
 		decltype(auto) frequencyObject() const noexcept { return m_o.template get<'f'>(); }
+		/*! \brief Return the \c frequency object. */
 		decltype(auto) frequencyObject() noexcept { return m_o.template get<'f'>(); }
-		type frequency() const noexcept { decltype(auto) o = frequencyObject(); return o.valid() ? o.get() : (type)1; }
+		/*! \brief Return the \c frequency value, or 1/2pi when not specified. */
+		type frequency() const noexcept { decltype(auto) o = frequencyObject(); return o.valid() ? o.get() : (type)0.5 / pi<type>; }
 
+		/*! \brief Return the \c phase object. */
 		decltype(auto) phaseObject() const noexcept { return m_o.template get<'p'>(); }
+		/*! \brief Return the \c phase object. */
 		decltype(auto) phaseObject() noexcept { return m_o.template get<'p'>(); }
+		/*! \brief Return the \c phase value, or 0 when not available. */
 		type phase() const noexcept { decltype(auto) o = phaseObject(); return o.valid() ? o.get() : (type)0; }
 
+		/*! \brief Return the \c override object. */
 		decltype(auto) overrideObject() const noexcept { return m_o.template get<'F'>(); }
+		/*! \brief Return the \c override object. */
 		decltype(auto) overrideObject() noexcept { return m_o.template get<'F'>(); }
+		/*! \brief Return the \c override value, or NaN when not available. */
 		type override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : std::numeric_limits<type>::quiet_NaN(); }
 
+		/*! \brief Return the \c output object. */
 		decltype(auto) outputObject() const noexcept { return m_o.template get<'O'>(); }
+		/*! \brief Return the \c output object. */
 		decltype(auto) outputObject() noexcept { return m_o.template get<'O'>(); }
+		/*! \brief Return the \c output value, or 0 when not available. */
 		type output() const noexcept { decltype(auto) o = outputObject(); return o.valid() ? o.get() : type(); }
 
+		/*! \brief Return the \c enable object. */
 		decltype(auto) enableObject() const noexcept { return m_o.template get<'e'>(); }
+		/*! \brief Return the \c enable object. */
 		decltype(auto) enableObject() noexcept { return m_o.template get<'e'>(); }
+		/*! \brief Return the \c enable value, or \c true when not available. */
 		bool enabled() const noexcept { decltype(auto) o = enableObject(); return !o.valid() || o.get(); }
+		/*! \brief Enable (or disable) the sine wave. Ignored when the \c enable object is not available. */
 		void enable(bool value = true) noexcept { decltype(auto) o = enableObject(); if(o.valid()) o = value; }
+		/*! \brief Disable the sine wave. Ignored when the \c enable object is not available. */
 		void disable() noexcept { enable(false); }
 
+		/*!
+		 * \brief Compute the sine output.
+		 */
 		type operator()() noexcept
 		{
 			auto f = frequency();
@@ -2248,6 +2367,19 @@ namespace stored {
 			return output;
 		}
 
+		/*!
+		 * \brief Check numerical stability.
+		 *
+		 * This function checks if for every control interval (1 /
+		 * #sampleFrequency()), the output is actually updated.
+		 * Especially the period and phase values are checked if they
+		 * are not too big.
+		 *
+		 * You may want to check (or assert on) this function once in a
+		 * while, like once per second or after every run, to detect a
+		 * stuck controller within reasonable time for your
+		 * application.
+		 */
 		bool isHealthy() const noexcept
 		{
 			auto sf = sampleFrequency();
@@ -2303,16 +2435,33 @@ namespace stored {
 	 *     float=nan override
 	 *     float output
 	 * } pulse
+	 * \endcode
 	 *
 	 * Only <tt>sample frequency</tt> is mandatory.  All variables of type
 	 * \c float, except for <tt>sample frequency</tt>, can be any other
 	 * type, as long as it matches the template parameter \p T.
+	 *
+	 * When either \c override or \c output is omitted, names may become
+	 * ambiguous.  In that case, provide the ids of the fields that are in
+	 * the store, as template parameters to #objects():
+	 *
+	 * field            | id
+	 * ---------------- | ----
+	 * sample frequency | \c s
+	 * amplitude        | \c A
+	 * frequency        | \c f
+	 * phase            | \c p
+	 * duty cycle       | \c d
+	 * enable           | \c e
+	 * override         | \c F
+	 * output           | \c O
 	 *
 	 * Then, instantiate the controller like this:
 	 *
 	 * \code
 	 * // Construct a compile-time object, which resolves all fields in your store.
 	 * constexpr auto pulse_o = stored::PulseWave<stored::YourStore>::objects("/pulse/");
+	 *
 	 * // Instantiate the generator, tailored to the available fields in the store.
 	 * stored::PulseWave<stored::YourStore, pulse_o.flags()> pulse{pulse_o, yourStore};
 	 * \endcode
@@ -2323,14 +2472,26 @@ namespace stored {
 		using type = T;
 		using Bound = typename PulseWaveObjects<Container,type>::template Bound<flags>;
 
+		/*!
+		 * \brief Default ctor.
+		 *
+		 * Use this when initialization is postponed. You can assign
+		 * another instance later on.
+		 */
 		constexpr PulseWave() noexcept = default;
 
+		/*!
+		 * \brief Initialize the pulse wave, given a list of objects and a container.
+		 */
 		constexpr PulseWave(PulseWaveObjects<Container,type> const& o, Container& container)
 			: m_o{Bound::create(o, container)}
 		{
 			static_assert(Bound::template valid<'s'>(), "'sample frequency' function is mandatory");
 		}
 
+		/*!
+		 * \brief Create the list of objects in the store, used to compute the \p flags parameter.
+		 */
 		template <char... OnlyId, size_t N>
 		static constexpr auto objects(char const(&prefix)[N]) noexcept
 		{
@@ -2339,39 +2500,67 @@ namespace stored {
 				"override", "output", "enable");
 		}
 
+		/*! \brief Return the <tt>sample frequency</tt> object. */
 		decltype(auto) sampleFrequencyObject() const noexcept { return m_o.template get<'s'>(); }
+		/*! \brief Return the sample frequency. */
 		float sampleFrequency() const noexcept { return sampleFrequencyObject()(); }
 
+		/*! \brief Return the \c amplitude object. */
 		decltype(auto) amplitudeObject() const noexcept { return m_o.template get<'A'>(); }
+		/*! \brief Return the \c amplitude object. */
 		decltype(auto) amplitudeObject() noexcept { return m_o.template get<'A'>(); }
+		/*! \brief Return the \c amplitude value, or 1 when not available. */
 		type amplitude() const noexcept { decltype(auto) o = amplitudeObject(); return o.valid() ? o.get() : (type)1; }
 
+		/*! \brief Return the \c frequency object. */
 		decltype(auto) frequencyObject() const noexcept { return m_o.template get<'f'>(); }
+		/*! \brief Return the \c frequency object. */
 		decltype(auto) frequencyObject() noexcept { return m_o.template get<'f'>(); }
+		/*! \brief Return the \c frequency value, or 1 when not specified. */
 		type frequency() const noexcept { decltype(auto) o = frequencyObject(); return o.valid() ? o.get() : (type)1; }
 
+		/*! \brief Return the \c phase object. */
 		decltype(auto) phaseObject() const noexcept { return m_o.template get<'p'>(); }
+		/*! \brief Return the \c phase object. */
 		decltype(auto) phaseObject() noexcept { return m_o.template get<'p'>(); }
+		/*! \brief Return the \c phase value, or 0 when not available. */
 		type phase() const noexcept { decltype(auto) o = phaseObject(); return o.valid() ? o.get() : (type)0; }
 
+		/*! \brief Return the <tt>duty cycle</tt> object. */
 		decltype(auto) dutyCycleObject() const noexcept { return m_o.template get<'d'>(); }
+		/*! \brief Return the <tt>duty cycle</tt> object. */
 		decltype(auto) dutyCycleObject() noexcept { return m_o.template get<'d'>(); }
+		/*! \brief Return the <tt>duty cycle</tt> value, or 0.5 when not available. */
 		type dutyCycle() const noexcept { decltype(auto) o = dutyCycleObject(); return o.valid() ? o.get() : (type)0.5; }
 
+		/*! \brief Return the \c override object. */
 		decltype(auto) overrideObject() const noexcept { return m_o.template get<'F'>(); }
+		/*! \brief Return the \c override object. */
 		decltype(auto) overrideObject() noexcept { return m_o.template get<'F'>(); }
+		/*! \brief Return the \c override value, or NaN when not available. */
 		type override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : std::numeric_limits<type>::quiet_NaN(); }
 
+		/*! \brief Return the \c output object. */
 		decltype(auto) outputObject() const noexcept { return m_o.template get<'O'>(); }
+		/*! \brief Return the \c output object. */
 		decltype(auto) outputObject() noexcept { return m_o.template get<'O'>(); }
+		/*! \brief Return the \c output value, or 0 when not available. */
 		type output() const noexcept { decltype(auto) o = outputObject(); return o.valid() ? o.get() : type(); }
 
+		/*! \brief Return the \c enable object. */
 		decltype(auto) enableObject() const noexcept { return m_o.template get<'e'>(); }
+		/*! \brief Return the \c enable object. */
 		decltype(auto) enableObject() noexcept { return m_o.template get<'e'>(); }
+		/*! \brief Return the \c enable value, or \c true when not available. */
 		bool enabled() const noexcept { decltype(auto) o = enableObject(); return !o.valid() || o.get(); }
+		/*! \brief Enable (or disable) the pulse wave. Ignored when the \c enable object is not available. */
 		void enable(bool value = true) noexcept { decltype(auto) o = enableObject(); if(o.valid()) o = value; }
+		/*! \brief Disable the pulse wave. Ignored when the \c enable object is not available. */
 		void disable() noexcept { enable(false); }
 
+		/*!
+		 * \brief Compute the pulse wave output.
+		 */
 		type operator()() noexcept
 		{
 			auto f = frequency();
@@ -2412,6 +2601,19 @@ namespace stored {
 			return output;
 		}
 
+		/*!
+		 * \brief Check numerical stability.
+		 *
+		 * This function checks if for every control interval (1 /
+		 * #sampleFrequency()), the output is actually updated.
+		 * Especially the period and phase values are checked if they
+		 * are not too big.
+		 *
+		 * You may want to check (or assert on) this function once in a
+		 * while, like once per second or after every run, to detect a
+		 * stuck controller within reasonable time for your
+		 * application.
+		 */
 		bool isHealthy() const noexcept
 		{
 			auto sf = sampleFrequency();
@@ -2451,7 +2653,7 @@ namespace stored {
 		FreeVariables<bool, Container, 'e', 'r'>>;
 
 	/*!
-	 * \brief Low-pass filter, based on store variables.
+	 * \brief First-order low-pass filter, based on store variables.
 	 *
 	 * To use this class, add a scope to your store, like:
 	 *
@@ -2477,9 +2679,14 @@ namespace stored {
 	 * \code
 	 * // Construct a compile-time object, which resolves all fields in your store.
 	 * constexpr auto lowpass_o = stored::LowPass<stored::YourStore>::objects("/lowpass/");
-	 * // Instantiate the generator, tailored to the available fields in the store.
+	 *
+	 * // Instantiate the filter, tailored to the available fields in the store.
 	 * stored::LowPass<stored::YourStore, lowpass_o.flags()> lowpass{lowpass_o, yourStore};
 	 * \endcode
+	 *
+	 * The cutoff frequency can be changed while running (by setting \c
+	 * reset to \c true).  It will applied smoothly; the output will
+	 * gradually take the new cutoff frequency into account.
 	 */
 	template <typename Container, unsigned long long flags = 0, typename T = float>
 	class LowPass {
@@ -2487,8 +2694,17 @@ namespace stored {
 		using type = T;
 		using Bound = typename LowPassObjects<Container,type>::template Bound<flags>;
 
+		/*!
+		 * \brief Default ctor.
+		 *
+		 * Use this when initialization is postponed. You can assign
+		 * another instance later on.
+		 */
 		constexpr LowPass() noexcept = default;
 
+		/*!
+		 * \brief Initialize the filter, given a list of objects and a container.
+		 */
 		constexpr LowPass(LowPassObjects<Container,type> const& o, Container& container)
 			: m_o{Bound::create(o, container)}
 		{
@@ -2496,6 +2712,9 @@ namespace stored {
 			static_assert(Bound::template valid<'c'>(), "'cutoff frequency' function is mandatory");
 		}
 
+		/*!
+		 * \brief Create the list of objects in the store, used to compute the \p flags parameter.
+		 */
 		template <char... OnlyId, size_t N>
 		static constexpr auto objects(char const(&prefix)[N]) noexcept
 		{
@@ -2503,35 +2722,60 @@ namespace stored {
 				"sample frequency", "input", "cutoff frequency", "override", "output", "enable", "reset");
 		}
 
+		/*! \brief Return the <tt>sample frequency</tt> object. */
 		decltype(auto) sampleFrequencyObject() const noexcept { return m_o.template get<'s'>(); }
+		/*! \brief Return the sample frequency. */
 		float sampleFrequency() const noexcept { return sampleFrequencyObject()(); }
 
+		/*! \brief Return the \c input object. */
 		decltype(auto) inputObject() const noexcept { return m_o.template get<'I'>(); }
+		/*! \brief Return the \c input object. */
 		decltype(auto) inputObject() noexcept { return m_o.template get<'I'>(); }
+		/*! \brief Return the \c input value, or 0 when not available. */
 		type input() const noexcept { decltype(auto) o = inputObject(); return o.valid() ? o.get() : type(); }
 
+		/*! \brief Return the <tt>cutoff frequency</tt> object. */
 		decltype(auto) cutoffFrequencyObject() const noexcept { return m_o.template get<'c'>(); }
+		/*! \brief Return the <tt>cutoff frequency</tt> object. */
 		decltype(auto) cutoffFrequencyObject() noexcept { return m_o.template get<'c'>(); }
+		/*! \brief Return the <tt>cutoff frequency</tt> value. */
 		type cutoffFrequency() const noexcept { return cutoffFrequencyObject().get(); }
 
+		/*! \brief Return the \c override object. */
 		decltype(auto) overrideObject() const noexcept { return m_o.template get<'F'>(); }
+		/*! \brief Return the \c override object. */
 		decltype(auto) overrideObject() noexcept { return m_o.template get<'F'>(); }
+		/*! \brief Return the \c override value, or NaN when not available. */
 		type override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : std::numeric_limits<type>::quiet_NaN(); }
 
+		/*! \brief Return the \c output object. */
 		decltype(auto) outputObject() const noexcept { return m_o.template get<'O'>(); }
+		/*! \brief Return the \c output object. */
 		decltype(auto) outputObject() noexcept { return m_o.template get<'O'>(); }
+		/*! \brief Return the \c output value, or 0 when not available. */
 		type output() const noexcept { decltype(auto) o = outputObject(); return o.valid() ? o.get() : type(); }
 
+		/*! \brief Return the \c enable object. */
 		decltype(auto) enableObject() const noexcept { return m_o.template get<'e'>(); }
+		/*! \brief Return the \c enable object. */
 		decltype(auto) enableObject() noexcept { return m_o.template get<'e'>(); }
+		/*! \brief Return the \c enable value, or \c true when not available. */
 		bool enabled() const noexcept { decltype(auto) o = enableObject(); return !o.valid() || o.get(); }
+		/*! \brief Enable (or disable) the pulse wave. Ignored when the \c enable object is not available. */
 		void enable(bool value = true) noexcept { decltype(auto) o = enableObject(); if(o.valid()) o = value; }
+		/*! \brief Disable the pulse wave. Ignored when the \c enable object is not available. */
 		void disable() noexcept { enable(false); }
 
+		/*! \brief Return the \c reset object. */
 		decltype(auto) resetObject() const noexcept { return m_o.template get<'r'>(); }
+		/*! \brief Return the \c reset object. */
 		decltype(auto) resetObject() noexcept { return m_o.template get<'r'>(); }
+		/*! \brief Return the \c reset value, or \c false when not available. */
 		bool reset() const noexcept { decltype(auto) o = resetObject(); return o.valid() && o.get(); }
 
+		/*!
+		 * \brief Compute filter output, given an \p input.
+		 */
 		type operator()(type input) noexcept
 		{
 			decltype(auto) o = inputObject();
@@ -2541,12 +2785,18 @@ namespace stored {
 			return run(input);
 		}
 
+		/*!
+		 * \brief Compute filter output, given the input stored in the store.
+		 */
 		type operator()() noexcept
 		{
 			return run(input());
 		}
 
 	protected:
+		/*!
+		 * \brief Compute filter output.
+		 */
 		type run(type input) noexcept
 		{
 			type output = override_();
@@ -2611,6 +2861,10 @@ namespace stored {
 	/*!
 	 * \brief Ramping setpoints, based on store variables.
 	 *
+	 * This is a quadratic path planner, that creates a smooth path from
+	 * the current output towards the provided input. The speed and
+	 * acceleration can be limited.
+	 *
 	 * To use this class, add a scope to your store, like:
 	 *
 	 * \code
@@ -2624,6 +2878,7 @@ namespace stored {
 	 *     float=nan override
 	 *     float output
 	 * } ramp
+	 * \endcode
 	 *
 	 * Only <tt>sample frequency</tt> is mandatory.  All variables of type
 	 * \c float, except for <tt>sample frequency</tt>, can be any other
@@ -2634,9 +2889,13 @@ namespace stored {
 	 * \code
 	 * // Construct a compile-time object, which resolves all fields in your store.
 	 * constexpr auto ramp_o = stored::Ramp<stored::YourStore>::objects("/ramp/");
+	 *
 	 * // Instantiate the generator, tailored to the available fields in the store.
 	 * stored::rampWave<stored::YourStore, ramp_o.flags()> ramp{ramp_o, yourStore};
 	 * \endcode
+	 *
+	 * The parameters can be changed while running (when \c reset is set to
+	 * \c true).  The change will be applied smoothly to the path.
 	 */
 	template <typename Container, unsigned long long flags = 0, typename T = float>
 	class Ramp {
@@ -2645,14 +2904,26 @@ namespace stored {
 		using type_ = long;
 		using Bound = typename RampObjects<Container,type>::template Bound<flags>;
 
+		/*!
+		 * \brief Default ctor.
+		 *
+		 * Use this when initialization is postponed. You can assign
+		 * another instance later on.
+		 */
 		constexpr Ramp() noexcept = default;
 
+		/*!
+		 * \brief Initialize the ramp, given a list of objects and a container.
+		 */
 		constexpr Ramp(RampObjects<Container,type> const& o, Container& container)
 			: m_o{Bound::create(o, container)}
 		{
 			static_assert(Bound::template valid<'s'>(), "'sample frequency' function is mandatory");
 		}
 
+		/*!
+		 * \brief Create the list of objects in the store, used to compute the \p flags parameter.
+		 */
 		template <char... OnlyId, size_t N>
 		static constexpr auto objects(char const(&prefix)[N]) noexcept
 		{
@@ -2661,39 +2932,67 @@ namespace stored {
 				"override", "output", "reset", "enable");
 		}
 
+		/*! \brief Return the <tt>sample frequency</tt> object. */
 		decltype(auto) sampleFrequencyObject() const noexcept { return m_o.template get<'s'>(); }
+		/*! \brief Return the sample frequency. */
 		float sampleFrequency() const noexcept { return sampleFrequencyObject()(); }
 
+		/*! \brief Return the \c input object. */
 		decltype(auto) inputObject() const noexcept { return m_o.template get<'I'>(); }
+		/*! \brief Return the \c input object. */
 		decltype(auto) inputObject() noexcept { return m_o.template get<'I'>(); }
+		/*! \brief Return the \c input value, or 0 when not available. */
 		type input() const noexcept { decltype(auto) o = inputObject(); return o.valid() ? o.get() : type(); }
 
+		/*! \brief Return the <tt>speed limit</tt> object. */
 		decltype(auto) speedLimitObject() const noexcept { return m_o.template get<'v'>(); }
+		/*! \brief Return the <tt>speed limit</tt> object. */
 		decltype(auto) speedLimitObject() noexcept { return m_o.template get<'v'>(); }
+		/*! \brief Return the <tt>speed limit</tt> value, or inf when not available. */
 		type speedLimit() const noexcept { decltype(auto) o = speedLimitObject(); return o.valid() ? o.get() : std::numeric_limits<type>::infinity(); }
 
+		/*! \brief Return the <tt>acceleration limit</tt> object. */
 		decltype(auto) accelerationLimitObject() const noexcept { return m_o.template get<'a'>(); }
+		/*! \brief Return the <tt>acceleration limit</tt> object. */
 		decltype(auto) accelerationLimitObject() noexcept { return m_o.template get<'a'>(); }
+		/*! \brief Return the <tt>acceleration limit</tt> value, or inf when not available. */
 		type accelerationLimit() const noexcept { decltype(auto) o = accelerationLimitObject(); return o.valid() ? o.get() : std::numeric_limits<type>::infinity(); }
 
+		/*! \brief Return the \c override object. */
 		decltype(auto) overrideObject() const noexcept { return m_o.template get<'F'>(); }
+		/*! \brief Return the \c override object. */
 		decltype(auto) overrideObject() noexcept { return m_o.template get<'F'>(); }
+		/*! \brief Return the \c override value, or NaN when not available. */
 		type override_() const noexcept { decltype(auto) o = overrideObject(); return o.valid() ? o.get() : std::numeric_limits<type>::quiet_NaN(); }
 
+		/*! \brief Return the \c reset object. */
 		decltype(auto) resetObject() const noexcept { return m_o.template get<'r'>(); }
+		/*! \brief Return the \c reset object. */
 		decltype(auto) resetObject() noexcept { return m_o.template get<'r'>(); }
+		/*! \brief Return the \c reset value, or \c false when not available. */
 		bool reset() const noexcept { decltype(auto) o = resetObject(); return o.valid() && o.get(); }
 
+		/*! \brief Return the \c enable object. */
 		decltype(auto) enableObject() const noexcept { return m_o.template get<'e'>(); }
+		/*! \brief Return the \c enable object. */
 		decltype(auto) enableObject() noexcept { return m_o.template get<'e'>(); }
+		/*! \brief Return the \c enable value, or \c true when not available. */
 		bool enabled() const noexcept { decltype(auto) o = enableObject(); return !o.valid() || o.get(); }
+		/*! \brief Enable (or disable) the ramp. Ignored when the \c enable object is not available. */
 		void enable(bool value = true) noexcept { decltype(auto) o = enableObject(); if(o.valid()) o = value; }
+		/*! \brief Disable the pulse wave. Ignored when the \c enable object is not available. */
 		void disable() noexcept { enable(false); }
 
+		/*! \brief Return the \c output object. */
 		decltype(auto) outputObject() const noexcept { return m_o.template get<'O'>(); }
+		/*! \brief Return the \c output object. */
 		decltype(auto) outputObject() noexcept { return m_o.template get<'O'>(); }
+		/*! \brief Return the \c output value, or 0 when not available. */
 		type output() const noexcept { decltype(auto) o = outputObject(); return o.valid() ? o.get() : type(); }
 
+		/*!
+		 * \brief Compute the next ramp output, given an input.
+		 */
 		type operator()(type input) noexcept
 		{
 			decltype(auto) o = inputObject();
@@ -2703,6 +3002,9 @@ namespace stored {
 			return run(input);
 		}
 
+		/*!
+		 * \brief Compute the next ramp output, given the \c input in the store.
+		 */
 		type operator()() noexcept
 		{
 			return run(input());
@@ -2744,6 +3046,18 @@ namespace stored {
 		}
 
 	protected:
+		/*!
+		 * \brief Compute the output of the ramp.
+		 *
+		 * The implementation uses integers to determine the current
+		 * speed.  Acceleration is always +/- 1 (times m_a) per tick.
+		 * So, the actual speed is <tt>m_v_ * m_a</tt>, and the
+		 * position is an discrete offset <tt>m_x_ * m_a</tt> from \c
+		 * m_start.
+		 *
+		 * By using this discrete approach, the distance to stop can be
+		 * determined easily.
+		 */
 		type run(type input) noexcept
 		{
 			type output = override_();
@@ -2769,14 +3083,17 @@ namespace stored {
 
 					a = std::min(sl, a * dt);
 
-					if(a > 0) {
+					if(a == std::numeric_limits<type>::infinity()) {
+						// No speed and acceleration limit. Disable ramping.
+						a = 0;
+					} else if(a > 0) {
 						auto v_steps = std::lround(sl / a);
 						a = sl / (type)v_steps;
 					}
 
 					m_a = a;
-					m_v_ = (type_)std::lround(v * dt / a);
-					m_v_max_ = (type_)std::lround(sl * dt / a);
+					m_v_ = a > 0 ? (type_)std::lround(v * dt / a) : 0;
+					m_v_max_ = a > 0 ? (type_)std::lround(sl * dt / a) : 0;
 					m_x_ = 0;
 					m_x_stop_ = m_v_ * std::abs(m_v_) / 2;
 					m_start = m_x;
