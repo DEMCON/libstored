@@ -456,6 +456,13 @@ generate stuff for you.  This is how to integrate it in your project:
       add_executable(app main.cpp)
       libstored_generate(app MyStore.st)
 
+- To override the default configuration, provide a ``stored_config.h`` file.
+  Add this to the build by either setting ``LIBSTORED_PREPEND_INCLUDE_DIRECTORIES``
+  to a space-separated list with application-specific include directories,
+  containing the header file, or by setting the include directory using::
+
+      target_include_directories(app-libstored BEFORE PUBLIC path/to/my/include)
+
 - Now, build your ``app``. The generated libstored library is automatically
   built.
 - If you want to use the VHDL store in your Vivado project, create a project
