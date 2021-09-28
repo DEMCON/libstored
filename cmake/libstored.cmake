@@ -59,6 +59,7 @@ function(libstored_lib libprefix libpath)
 	endforeach()
 
 	target_include_directories(${libprefix}libstored PUBLIC
+		$<BUILD_INTERFACE:${LIBSTORED_PREPEND_INCLUDE_DIRECTORIES}>
 		$<BUILD_INTERFACE:${libstored_dir}/include>
 		$<BUILD_INTERFACE:${libpath}/include>
 		$<INSTALL_INTERFACE:include>
@@ -66,11 +67,12 @@ function(libstored_lib libprefix libpath)
 
 	string(REGEX REPLACE "^(.*)-$" "stored-\\1" libname ${libprefix})
 	set_target_properties(${libprefix}libstored PROPERTIES OUTPUT_NAME ${libname})
+	target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_NAME=${libname})
 
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		target_compile_definitions(${libprefix}libstored PUBLIC -D_DEBUG)
+		target_compile_definitions(${libprefix}libstored PUBLIC -D_DEBUG=1)
 	else()
-		target_compile_definitions(${libprefix}libstored PUBLIC -DNDEBUG)
+		target_compile_definitions(${libprefix}libstored PUBLIC -DNDEBUG=1)
 	endif()
 
 	if(MSVC)
@@ -80,22 +82,22 @@ function(libstored_lib libprefix libpath)
 	endif()
 
 	if(LIBSTORED_DRAFT_API)
-		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_DRAFT_API)
+		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_DRAFT_API=1)
 	endif()
 
 	CHECK_INCLUDE_FILE_CXX("valgrind/memcheck.h" LIBSTORED_HAVE_VALGRIND)
 	if(LIBSTORED_HAVE_VALGRIND)
-		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_HAVE_VALGRIND)
+		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_HAVE_VALGRIND=1)
 	endif()
 
 	if(TARGET libzth)
 		message(STATUS "Enable Zth integration for ${libprefix}libstored")
-		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_HAVE_ZTH)
+		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_HAVE_ZTH=1)
 		target_link_libraries(${libprefix}libstored PUBLIC libzth)
 	endif()
 
 	if(LIBSTORED_HAVE_LIBZMQ)
-		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_HAVE_ZMQ)
+		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_HAVE_ZMQ=1)
 		target_link_libraries(${libprefix}libstored PUBLIC libzmq)
 	endif()
 
@@ -104,7 +106,7 @@ function(libstored_lib libprefix libpath)
 	endif()
 
 	if(LIBSTORED_HAVE_HEATSHRINK)
-		target_compile_definitions(${libprefix}libstored PUBLIC STORED_HAVE_HEATSHRINK)
+		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_HAVE_HEATSHRINK=1)
 		target_link_libraries(${libprefix}libstored PUBLIC heatshrink)
 	endif()
 
@@ -190,7 +192,7 @@ function(libstored_lib libprefix libpath)
 
 	if(LIBSTORED_ENABLE_ASAN)
 		target_compile_options(${libprefix}libstored PRIVATE -fsanitize=address -fno-omit-frame-pointer)
-		target_compile_definitions(${libprefix}libstored PRIVATE -DSTORED_ENABLE_ASAN)
+		target_compile_definitions(${libprefix}libstored PRIVATE -DSTORED_ENABLE_ASAN=1)
 		if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
 			target_link_options(${libprefix}libstored INTERFACE -fsanitize=address)
 		else()
@@ -200,7 +202,7 @@ function(libstored_lib libprefix libpath)
 
 	if(LIBSTORED_ENABLE_LSAN)
 		target_compile_options(${libprefix}libstored PRIVATE -fsanitize=leak -fno-omit-frame-pointer)
-		target_compile_definitions(${libprefix}libstored PRIVATE -DSTORED_ENABLE_LSAN)
+		target_compile_definitions(${libprefix}libstored PRIVATE -DSTORED_ENABLE_LSAN=1)
 		if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
 			target_link_options(${libprefix}libstored INTERFACE -fsanitize=leak)
 		else()
@@ -210,7 +212,7 @@ function(libstored_lib libprefix libpath)
 
 	if(LIBSTORED_ENABLE_UBSAN)
 		target_compile_options(${libprefix}libstored PRIVATE -fsanitize=undefined -fno-omit-frame-pointer)
-		target_compile_definitions(${libprefix}libstored PRIVATE -DSTORED_ENABLE_UBSAN)
+		target_compile_definitions(${libprefix}libstored PRIVATE -DSTORED_ENABLE_UBSAN=1)
 		if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
 			target_link_options(${libprefix}libstored INTERFACE -fsanitize=undefined)
 		else()

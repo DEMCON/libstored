@@ -133,7 +133,7 @@ typedef SSIZE_T ssize_t;
 #ifdef STORED_HAVE_ZMQ
 // For the poller.
 #  ifndef ZMQ_BUILD_DRAFT_API
-#    define ZMQ_BUILD_DRAFT_API
+#    define ZMQ_BUILD_DRAFT_API 1
 #  endif
 #endif
 
@@ -185,7 +185,7 @@ typedef SSIZE_T ssize_t;
 #endif
 
 #if !defined(STORED_HAVE_VALGRIND) && defined(ZTH_HAVE_VALGRIND)
-#  define STORED_HAVE_VALGRIND
+#  define STORED_HAVE_VALGRIND 1
 #endif
 
 #ifdef CLANG_TIDY
