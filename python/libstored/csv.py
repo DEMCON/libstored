@@ -21,7 +21,7 @@ import queue
 import logging
 import os
 
-from PySide2.QtCore import QObject, Signal, Slot, Property
+from PySide6.QtCore import QObject, Signal, Slot, Property
 
 def generateFilename(filename=None, base=None, addTimestamp=False, ext='.csv', now=None):
     if filename is None and base is None:

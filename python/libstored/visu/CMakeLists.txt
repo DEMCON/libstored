@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-find_program(RCC_EXE pyside2-rcc PATHS $ENV{HOME}/.local/bin REQUIRED)
+find_program(RCC_EXE pyside6-rcc PATHS $ENV{HOME}/.local/bin REQUIRED)
 
 function(libstored_visu target rcc)
 	foreach(f IN LISTS ARGN)

@@ -3,7 +3,7 @@ wheel >= 0.31.0
 jinja2
 textx
 pyzmq
-pyside2
+PySide6
 pyserial
 natsort
 crcmod

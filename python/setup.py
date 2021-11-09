@@ -32,7 +32,7 @@ setuptools.setup(
     package_dir = {'libstored': 'libstored', 'ed2': 'libstored'},
     package_data = {'libstored': package_data, 'ed2': package_data},
     install_requires = [
-        'pyside2',
+        'PySide6',
         'pyserial',
         'argparse',
         'pyzmq',

@@ -28,9 +28,9 @@ import keyword
 import weakref
 import random
 
-from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, QLocale, \
+from PySide6.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, QLocale, \
     QEvent, QCoreApplication, QStandardPaths, QSocketNotifier, QEventLoop, SIGNAL
-from PySide2.QtGui import QKeyEvent
+from PySide6.QtGui import QKeyEvent
 
 from .zmq_server import ZmqServer
 from .csv import CsvExport
@@ -579,9 +579,9 @@ class Object(QObject):
         elif f == 'bytes':
             self._formatter = self._formatBytes
         elif self._type & ~self.FlagFunction == self.Float:
-            self._formatter = lambda x: self.locale.toString(x, 'g', prec=6)
+            self._formatter = lambda x: self.locale.toString(x, 'g', 6)
         elif self._type & ~self.FlagFunction == self.Double:
-            self._formatter = lambda x: self.locale.toString(x, 'g', prec=15)
+            self._formatter = lambda x: self.locale.toString(x, 'g', 15)
         else:
             self._formatter = str
 

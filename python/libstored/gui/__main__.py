@@ -22,9 +22,9 @@ import os
 import natsort
 import logging
 
-from PySide2.QtGui import QGuiApplication, QIcon
-from PySide2.QtQml import QQmlApplicationEngine
-from PySide2.QtCore import QUrl, QAbstractListModel, QModelIndex, Qt, Slot, QSortFilterProxyModel, QCoreApplication, qInstallMessageHandler, QtMsgType
+from PySide6.QtGui import QGuiApplication, QIcon
+from PySide6.QtQml import QQmlApplicationEngine
+from PySide6.QtCore import QUrl, QAbstractListModel, QModelIndex, Qt, Slot, QSortFilterProxyModel, QCoreApplication, qInstallMessageHandler, QtMsgType
 
 try:
     from lognplot.client import LognplotTcpClient
@@ -133,8 +133,6 @@ if __name__ == '__main__':
     logger = logging.getLogger('gui')
     qInstallMessageHandler(msgHandler)
 
-    QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     QCoreApplication.setApplicationName("Embedded Debugger")
     QCoreApplication.setApplicationVersion(__version__)
     try:
@@ -144,6 +142,7 @@ if __name__ == '__main__':
     app = QGuiApplication(sys.argv)
 
     parser = argparse.ArgumentParser(prog=sys.modules[__name__].__package__, description='ZMQ GUI client', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-V', action='version', version=__version__)
     parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
     parser.add_argument('-p', dest='port', type=int, default=ZmqServer.default_port, help='port')
     if haveLognplot:
@@ -210,7 +209,7 @@ if __name__ == '__main__':
         # do overwrite it afterwards.
         client.restoreState()
 
-    res = app.exec_()
+    res = app.exec()
 
     client.saveState()
     sys.exit(res)

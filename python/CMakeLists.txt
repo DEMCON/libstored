@@ -61,7 +61,7 @@ add_subdirectory(libstored/visu)
 set(pylibstored_wheel_file "libstored-${pylibstored_version}-py3-none-any.whl" CACHE INTERNAL "")
 set(pylibstored_wheel "${CMAKE_CURRENT_BINARY_DIR}/dist/${pylibstored_wheel_file}" CACHE INTERNAL "")
 
-set(_wheel_deps ${pylistored_src})
+set(_wheel_deps ${pylibstored_src})
 
 if(LIBSTORED_EXAMPLES)
 	set(_wheel_deps ${_wheel_deps} visu-example)

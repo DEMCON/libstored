@@ -16,10 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.12
-import QtQuick.Layouts 1.12
-import QtQuick.Window 2.12
-import QtQuick.Controls 2.12
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Window
+import QtQuick.Controls
 
 Window {
     id: root
@@ -39,6 +39,8 @@ Window {
     visible: true
     width: 800
     height: 600
+
+    readonly property color toolTipBase: "#ffffe0"
 
     Component.onCompleted: {
         var text = "Embedded Debugger"
@@ -90,6 +92,7 @@ Window {
                         delay: 1000
                         font.pixelSize: root.fontSize
                         background.antialiasing: true
+                        palette.toolTipBase: root.toolTipBase
                         contentItem: Label {
                             text: obj.name + (obj.alias ? "\nAlias: " + obj.alias : "")
                         }
@@ -163,6 +166,7 @@ Window {
                     horizontalAlignment: TextInput.AlignRight
                     text: obj.valueString
                     placeholderText: obj && obj.t ? "" : "value?"
+                    placeholderTextColor: "#808080"
                     readOnly: format.currentText === 'bytes'
                     background.antialiasing: true
                     topPadding: 0
@@ -172,7 +176,7 @@ Window {
                     Keys.forwardTo: decimalPointConversion
                     Item {
                         id: decimalPointConversion
-                        Keys.onPressed: {
+                        Keys.onPressed: (event) => {
                             if(obj !== null && event.key == Qt.Key_Period && (event.modifiers & Qt.KeypadModifier)) {
                                 event.accepted = true
                                 obj.injectDecimalPoint(parent)
@@ -216,6 +220,7 @@ Window {
                         delay: 1000
                         font.pixelSize: root.fontSize
                         background.antialiasing: true
+                        palette.toolTipBase: root.toolTipBase
                         contentItem: Label {
                             text: obj ? obj.name + "\nLast update: " + obj.tString : ""
                         }
@@ -256,6 +261,7 @@ Window {
                         delay: 1000
                         font.pixelSize: root.fontSize
                         background.antialiasing: true
+                        palette.toolTipBase: root.toolTipBase
                     }
 
                     checked: obj.polling
@@ -279,7 +285,7 @@ Window {
             MouseArea {
                 anchors.fill: parent
                 propagateComposedEvents: true
-                onPressed: {
+                onPressed: (mouse) => {
                     objectList.currentIndex = -1
                     polledObjectList.currentIndex = -1
                     row.ListView.view.currentIndex = index
@@ -294,7 +300,7 @@ Window {
                 text: obj.name
             }
 
-            Keys.onPressed: {
+            Keys.onPressed: (event) => {
                 if(event.matches(StandardKey.Copy)) {
                     objNameCopy.selectAll()
                     objNameCopy.copy()
@@ -316,6 +322,7 @@ Window {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 placeholderText: "enter regex filter"
+                placeholderTextColor: "#808080"
                 onTextChanged: regexTimer.restart()
                 background.antialiasing: true
                 topPadding: 0
@@ -335,6 +342,7 @@ Window {
                 Layout.fillHeight: true
                 Layout.preferredWidth: root.fontSize * 5
                 placeholderText: "poll interval (s)"
+                placeholderTextColor: "#808080"
                 horizontalAlignment: Text.AlignRight
                 background.antialiasing: true
                 topPadding: 0
@@ -347,6 +355,7 @@ Window {
                     delay: 1000
                     font.pixelSize: root.fontSize
                     background.antialiasing: true
+                    palette.toolTipBase: root.toolTipBase
                     contentItem: Label {
                         text: "poll interval (s).\nThis value is used when auto-refresh is (re)enabled."
                     }
@@ -425,6 +434,7 @@ Window {
             font.pixelSize: root.fontSize
             Layout.fillWidth: true
             placeholderText: "enter command"
+            placeholderTextColor: "#808080"
             background.antialiasing: true
             topPadding: 0
             bottomPadding: 0
@@ -459,18 +469,18 @@ Window {
         anchors.fill: parent
         propagateComposedEvents: true
 
-        onWheel: {
+        onWheel: (wheel) => {
             if(wheel.modifiers & Qt.ControlModifier)
                 root.fontSize = root.fontSize * (1 + wheel.angleDelta.y * 0.0002)
             else
                 wheel.accepted = false
         }
 
-        onClicked: mouse.accepted = false
-        onDoubleClicked: mouse.accepted = false
-        onPositionChanged: mouse.accepted = false
-        onPressAndHold: mouse.accepted = false
-        onPressed: mouse.accepted = false
-        onReleased: mouse.accepted = false
+        onClicked: (mouse) => mouse.accepted = false
+        onDoubleClicked: (mouse) => mouse.accepted = false
+        onPositionChanged: (mouse) => mouse.accepted = false
+        onPressAndHold: (mouse) => mouse.accepted = false
+        onPressed: (mouse) => mouse.accepted = false
+        onReleased: (mouse) => mouse.accepted = false
     }
 }
