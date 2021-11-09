@@ -486,6 +486,16 @@ class Object(QObject):
             ',' if p == ',' else '.')
         QCoreApplication.sendEvent(recv, ev)
 
+    def _interpret_int(self, value):
+        # Remove all group separators. They are irrelevant, but prevent
+        # parsing.
+        gs = self.locale.groupSeparator()
+        if gs != '':
+            value = value.replace(gs, '')
+
+        x = int(value, 0)
+        return x
+
     def _interpret_float(self, value):
         # Remove all group separators. They are irrelevant, but prevent
         # parsing when not at the right place.
@@ -501,14 +511,14 @@ class Object(QObject):
     def interpret(self, value):
         if isinstance(value,str):
             value = {
-                self.Int8: lambda x: int(x,0),
-                self.Uint8: lambda x: int(x,0),
-                self.Int16: lambda x: int(x,0),
-                self.Uint16: lambda x: int(x,0),
-                self.Int32: lambda x: int(x,0),
-                self.Uint32: lambda x: int(x,0),
-                self.Int64: lambda x: int(x,0),
-                self.Uint64: lambda x: int(x,0),
+                self.Int8: self._interpret_int,
+                self.Uint8: self._interpret_int,
+                self.Int16: self._interpret_int,
+                self.Uint16: self._interpret_int,
+                self.Int32: self._interpret_int,
+                self.Uint32: self._interpret_int,
+                self.Int64: self._interpret_int,
+                self.Uint64: self._interpret_int,
                 self.Float: self._interpret_float,
                 self.Double: self._interpret_float,
                 self.Pointer32: lambda x: int(x,0),
