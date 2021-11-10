@@ -23,7 +23,6 @@ list(APPEND pylibstored_src
 	libstored/cli/__main__.py
 	libstored/gui/__init__.py
 	libstored/gui/__main__.py
-	libstored/gui/main.qml
 	libstored/gui/gui_qrc.py
 	libstored/csv.py
 	libstored/protocol.py

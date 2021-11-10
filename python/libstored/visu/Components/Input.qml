@@ -16,8 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import QtQuick.Controls 2.12
-import QtQuick 2.12
+import QtQuick.Controls
+import QtQuick
 
 Measurement {
     readOnly: false
@@ -61,7 +61,7 @@ Measurement {
     Keys.forwardTo: decimalPointConversion
     Item {
         id: decimalPointConversion
-        Keys.onPressed: {
+        Keys.onPressed: (event) => {
             if(obj !== null && event.key == Qt.Key_Period && (event.modifiers & Qt.KeypadModifier)) {
                 event.accepted = true
                 obj.injectDecimalPoint(parent)

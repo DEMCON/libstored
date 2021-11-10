@@ -16,8 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import QtQuick.Controls 2.12
-import QtQuick 2.12
+import QtQuick.Controls
+import QtQuick
 
 TextField {
     id: comp
@@ -38,6 +38,7 @@ TextField {
     property alias refreshed: o.refreshed
     property alias value: o.value
     property bool connected: o.obj !== null
+    property alias autoReadOnInit: o.autoReadOnInit
 
     property var o: StoreObject {
         id: o
