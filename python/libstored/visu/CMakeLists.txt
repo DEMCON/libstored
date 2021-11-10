@@ -16,11 +16,15 @@
 
 find_program(RCC_EXE pyside6-rcc PATHS $ENV{HOME}/.local/bin REQUIRED)
 
+cmake_policy(SET CMP0058 NEW)
+
 function(libstored_visu target rcc)
 	foreach(f IN LISTS ARGN)
-		if(f MATCHES "^(.*/)?main\\.qml$")
-			set(qrc_main "${f}")
-			string(REGEX REPLACE "^(.*/)?main.qml$" "\\1" qrc_prefix ${f})
+		get_filename_component(f_abs ${f} ABSOLUTE)
+
+		if(f_abs MATCHES "^(.*/)?main\\.qml$")
+			set(qrc_main "${f_abs}")
+			string(REGEX REPLACE "^(.*/)?main.qml$" "\\1" qrc_prefix ${f_abs})
 		endif()
 	endforeach()
 
@@ -34,9 +38,9 @@ function(libstored_visu target rcc)
 	foreach(f IN LISTS ARGN)
 		get_filename_component(f_abs ${f} ABSOLUTE)
 		if(qrc_prefix_len GREATER 0)
-			string(SUBSTRING "${f}" 0 ${qrc_prefix_len} f_prefix)
+			string(SUBSTRING "${f_abs}" 0 ${qrc_prefix_len} f_prefix)
 			if(f_prefix STREQUAL qrc_prefix)
-				string(SUBSTRING "${f}" ${qrc_prefix_len} -1 f_alias)
+				string(SUBSTRING "${f_abs}" ${qrc_prefix_len} -1 f_alias)
 				set(qrc "${qrc}<file alias=\"${f_alias}\">${f_abs}</file>\n")
 			else()
 				set(qrc "${qrc}<file>${f_abs}</file>\n")

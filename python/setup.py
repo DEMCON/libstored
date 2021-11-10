@@ -14,8 +14,6 @@ with open(os.path.join(here, "README.md"), "r") as fh:
 packages = setuptools.find_packages(here)
 packages += list(map(lambda p: re.sub(r'^libstored\b', 'ed2', p), packages))
 package_data = [
-    'gui/gui_client.qml',
-    'gui/twotone_bug_report_black_48dp.png',
 ]
 
 setuptools.setup(

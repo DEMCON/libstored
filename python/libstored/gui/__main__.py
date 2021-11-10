@@ -26,6 +26,8 @@ from PySide6.QtGui import QGuiApplication, QIcon
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtCore import QUrl, QAbstractListModel, QModelIndex, Qt, Slot, QSortFilterProxyModel, QCoreApplication, qInstallMessageHandler, QtMsgType
 
+from . import gui_qrc
+
 try:
     from lognplot.client import LognplotTcpClient
     haveLognplot = True
@@ -164,7 +166,7 @@ if __name__ == '__main__':
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
 
-    app.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "twotone_bug_report_black_48dp.png")))
+    app.setWindowIcon(QIcon(":/twotone_bug_report_black_48dp.png"))
     engine = QQmlApplicationEngine(parent=app)
 
     csv = None
@@ -200,7 +202,8 @@ if __name__ == '__main__':
             if o.isFixed():
                 o.valueUpdated.connect(lambda o=o: lognplot_send(lognplot, o))
 
-    engine.load(QUrl.fromLocalFile(os.path.join(os.path.dirname(os.path.realpath(__file__)), "gui_client.qml")))
+    engine.addImportPath("qrc:/");
+    engine.load('qrc:/main.qml')
     if not engine.rootObjects():
         sys.exit(-1)
 
