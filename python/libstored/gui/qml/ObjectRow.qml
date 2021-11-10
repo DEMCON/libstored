@@ -1,3 +1,21 @@
+/*
+ * libstored, distributed debuggable data stores.
+ * Copyright (C) 2020-2021  Jochem Rutgers
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
@@ -6,7 +24,9 @@ import libstored.Components as Libstored
 
 Rectangle {
     required property var obj
+    required property var model
     required property int index
+    property bool showPlot: false
 
     id: row
     width: objectList.width
@@ -42,6 +62,20 @@ Rectangle {
                 anchors.fill: parent
                 hoverEnabled: true
             }
+        }
+
+        CheckBox {
+            id: plotbox
+            Layout.fillHeight: true
+            Layout.preferredWidth: parent.height
+
+            ToolTip {
+                text: "Enable plot"
+            }
+
+            checked: model.plot
+            onCheckedChanged: model.plot = checked
+            visible: showPlot
         }
 
         Controls.ComboBox {
@@ -119,40 +153,16 @@ Rectangle {
             }
         }
 
-        Controls.CheckBox {
+        CheckBox {
             id: autoRefresh
             Layout.fillHeight: true
             Layout.preferredWidth: parent.height
-
-            indicator: Rectangle {
-                height: autoRefresh.height * 0.618
-                width: autoRefresh.height * 0.618
-                antialiasing: true
-
-                x: autoRefresh.leftPadding + (autoRefresh.availableWidth - width) / 2
-                y: autoRefresh.topPadding + (autoRefresh.availableHeight - height) / 2
-
-                color: autoRefresh.down ? autoRefresh.palette.light : autoRefresh.palette.base
-                border.width: autoRefresh.visualFocus ? 2 : 1
-                border.color: autoRefresh.visualFocus ? autoRefresh.palette.highlight : autoRefresh.palette.mid
-
-                Rectangle {
-                    width: parent.width * 0.618
-                    height: parent.width * 0.618
-                    antialiasing: true
-                    x: (parent.width - width) / 2
-                    y: (parent.height - height) / 2
-                    color: autoRefresh.palette.text
-                    visible: autoRefresh.checkState === Qt.Checked
-                }
-            }
 
             ToolTip {
                 text: "Enable auto-refresh"
             }
 
             checked: obj.polling
-
             onCheckedChanged: obj.polling = checked
         }
 

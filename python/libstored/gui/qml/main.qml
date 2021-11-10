@@ -143,8 +143,7 @@ Window {
             Layout.fillWidth: true
             id: objectList
             model: objects
-//            delegate: objectRow
-            delegate: ObjectRow {}//{ _obj: obj; _index: index }
+            delegate: ObjectRow {}
             spacing: 3
             highlightFollowsCurrentItem: false
             Controls.ScrollBar.vertical: Controls.ScrollBar {}
@@ -168,8 +167,7 @@ Window {
             Layout.fillWidth: true
             id: polledObjectList
             model: polledObjects
-//            delegate: objectRow
-            delegate: ObjectRow {}
+            delegate: ObjectRow { showPlot: true }
             spacing: 3
             highlightFollowsCurrentItem: false
             currentIndex: -1

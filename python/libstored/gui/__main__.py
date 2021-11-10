@@ -71,10 +71,12 @@ class ObjectListModel(QAbstractListModel):
     NameRole = Qt.UserRole + 1000
     ObjectRole = Qt.UserRole + 1001
     PollingRole = Qt.UserRole + 1002
+    PlotRole = Qt.UserRole + 1003
 
     def __init__(self, objects, parent=None):
         super().__init__(parent)
         self._objects = objects
+        self._plot = set()
         for i in range(0, len(objects)):
             objects[i].pollingChanged.connect(lambda i=i: self._pollingChanged(i))
 
@@ -97,6 +99,34 @@ class ObjectListModel(QAbstractListModel):
                 return o
             elif role == self.PollingRole:
                 return o.polling
+            elif role == self.PlotRole:
+                return o in self._plot
+
+    def setData(self, index, value, role=Qt.EditRole):
+        if 0 <= index.row() < self.rowCount() and index.isValid():
+            o = self._objects[index.row()]
+            assert o != None
+
+            if role != self.PlotRole:
+                return False
+
+            if value and o not in self._plot:
+                self._plot.add(o)
+                self.addPlot(o)
+            elif not value and o in self._plot:
+                self.removePlot(o)
+                self._plot.remove(o)
+            else:
+                return False
+
+            self.dataChanged.emit(index,index, [role])
+            return True
+
+    def addPlot(self, o):
+        print('TODO: plot ' + o.name)
+
+    def removePlot(self, o):
+        print('TODO: !plot ' + o.name)
 
     @Slot(int, result='QVariant')
     def at(self, index):
@@ -109,6 +139,7 @@ class ObjectListModel(QAbstractListModel):
             self.NameRole: b'name',
             self.ObjectRole: b'obj',
             self.PollingRole: b'polling',
+            self.PlotRole: b'plot',
         }
 
 def lognplot_send(lognplot, o):
