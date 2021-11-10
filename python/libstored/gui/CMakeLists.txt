@@ -3,5 +3,5 @@ libstored_visu(gui-qrc
 	qml/main.qml
 	qml/ObjectRow.qml
 	qml/ToolTip.qml
-	twotone_bug_report_black_48dp.png
+	qml/twotone_bug_report_black_48dp.png
 )
