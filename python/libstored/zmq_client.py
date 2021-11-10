@@ -582,6 +582,8 @@ class Object(QObject):
             self._formatter = lambda x: self.locale.toString(x, 'g', 6)
         elif self._type & ~self.FlagFunction == self.Double:
             self._formatter = lambda x: self.locale.toString(x, 'g', 15)
+        elif self._type & self.FlagInt:
+            self._formatter = lambda x: self.locale.toString(x)
         else:
             self._formatter = str
 
