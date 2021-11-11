@@ -21,12 +21,22 @@ import argparse
 import os
 import natsort
 import logging
+import time
 
 from PySide6.QtGui import QGuiApplication, QIcon
 from PySide6.QtQml import QQmlApplicationEngine
-from PySide6.QtCore import QUrl, QAbstractListModel, QModelIndex, Qt, Slot, QSortFilterProxyModel, QCoreApplication, qInstallMessageHandler, QtMsgType
+from PySide6.QtCore import QUrl, QAbstractListModel, QModelIndex, Qt, Slot, \
+    QSortFilterProxyModel, QCoreApplication, qInstallMessageHandler, QtMsgType, \
+    QObject, QTimer, Property, Signal
 
 from . import gui_qrc
+
+try:
+    import matplotlib.pyplot as plt
+    from PySide6.QtWidgets import QApplication
+    haveMpl = True
+except:
+    haveMpl = False
 
 try:
     from lognplot.client import LognplotTcpClient
@@ -66,6 +76,200 @@ class NatSort(QSortFilterProxyModel):
 
         sorted_data = natsort.natsorted([left_data, right_data], alg=alg)
         return left_data == sorted_data[0]
+
+class Data:
+    WINDOW_s = 30
+
+    def __init__(self):
+        self.t = []
+        self.values = []
+
+    def append(self, value, t=time.time()):
+        self.t.append(t)
+        self.values.append(value)
+
+    def cleanup(self):
+        if self.t == []:
+            return
+
+        drop = 0
+        threshold = self.t[-1] - self.WINDOW_s
+
+        for t in self.t:
+            if t < threshold:
+                drop += 1
+            else:
+                break
+
+        if drop == 0:
+            return
+
+        self.t = self.t[drop:]
+        self.values = self.values[drop:]
+
+
+class Plotter(QObject):
+    _instance = None
+    _available = haveMpl
+    title = None
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.__class__._instance = self
+        self._data = {}
+        self._fig = None
+        self._ax = None
+        self._first = True
+        self._changed = set()
+        self._timer = QTimer(parent=self)
+        self._timer.setInterval(100)
+        self._timer.timeout.connect(self._update_plot)
+        self._paused = False
+
+    @classmethod
+    def instance(cls):
+        if cls._instance is None:
+            cls._instance = Plotter()
+
+        return cls._instance
+
+    @classmethod
+    def add(cls, o):
+        if not cls._available:
+            return
+
+        cls.instance()._add(o)
+
+    def _add(self, o):
+        if o in self._data:
+            return
+
+        if not o.isFixed:
+            return
+
+        if self._fig is None:
+            self._fig, self._ax = plt.subplots()
+
+        data = Data()
+        self._data[o] = data
+
+        value = o.value
+        if value is not None:
+            self._data[o].append(value, o.t)
+
+        data.connection = o.valueUpdated.connect(lambda: self._update(o, o.value, o.t))
+
+        data.line = self._ax.plot([], [], label=o.name)[0]
+        self.update_legend()
+
+        self.show()
+
+        if len(self._data) == 1:
+            self.plottingChanged.emit()
+            self._timer.start()
+
+    def _update(self, o, value, t=time.time()):
+        if o not in self._data:
+            return
+        if value is None:
+            return
+
+        data = self._data[o]
+        data.append(value, t)
+        self._changed.add(data)
+
+    def _update_plot(self):
+        if len(self._changed) == 0 or self._paused:
+            return
+
+        for data in self._changed:
+            data.cleanup()
+            data.line.set_data(data.t, data.values)
+
+        self._changed.clear()
+
+        self._ax.relim()
+        self._ax.autoscale()
+        self._fig.canvas.draw()
+
+    @classmethod
+    def remove(cls, o):
+        if not cls._available:
+            return
+
+        cls.instance()._remove(o)
+
+    def _remove(self, o):
+        if o not in self._data:
+            return
+
+        data = self._data[o]
+        QObject.disconnect(data.connection)
+        self._ax.lines.remove(data.line)
+        del self._data[o]
+
+        if len(self._data) > 0:
+            self.update_legend()
+        else:
+            self.plottingChanged.emit()
+            self._timer.stop()
+
+    def show(self):
+        if self._first:
+            if self.title is not None:
+                self._ax.set_title(self.title)
+                self._fig.canvas.manager.set_window_title(f'Embedded Debugger plots: {self.title}')
+            else:
+                self._fig.canvas.manager.set_window_title(f'Embedded Debugger plots')
+
+            self._ax.grid(True)
+            self._ax.set_xlabel('t (s)')
+            self.update_legend()
+            plt.show(block=False)
+            self._first = False
+        else:
+            self._fig.show()
+
+    def update_legend(self):
+        self._ax.legend().set_draggable(True)
+
+    pausedChanged = Signal()
+
+    @Slot()
+    @Slot(bool)
+    def pause(self, paused=True):
+        if self._paused == paused:
+            return
+
+        self._paused = paused
+        self.pausedChanged.emit()
+
+    @Slot()
+    def resume(self):
+        self.pause(False)
+
+    @Slot()
+    def togglePause(self):
+        self.pause(not self._paused)
+
+    def _paused_get(self):
+        return self._paused
+
+    paused = Property(bool, _paused_get, notify=pausedChanged)
+
+    def _available_get(self):
+        return self._available
+
+    available = Property(bool, _available_get, constant=True)
+
+    plottingChanged = Signal()
+
+    def _plotting_get(self):
+        return len(self._data) != 0
+
+    plotting = Property(bool, _plotting_get, notify=plottingChanged)
+
+
 
 class ObjectListModel(QAbstractListModel):
     NameRole = Qt.UserRole + 1000
@@ -123,10 +327,10 @@ class ObjectListModel(QAbstractListModel):
             return True
 
     def addPlot(self, o):
-        print('TODO: plot ' + o.name)
+        Plotter.add(o)
 
     def removePlot(self, o):
-        print('TODO: !plot ' + o.name)
+        Plotter.remove(o)
 
     @Slot(int, result='QVariant')
     def at(self, index):
@@ -172,7 +376,12 @@ if __name__ == '__main__':
         QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     except:
         pass
-    app = QGuiApplication(sys.argv)
+
+    if haveMpl:
+        # Need to have widgets for matplotlib
+        app = QApplication(sys.argv)
+    else:
+        app = QGuiApplication(sys.argv)
 
     parser = argparse.ArgumentParser(prog=sys.modules[__name__].__package__, description='ZMQ GUI client', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-V', action='version', version=__version__)
@@ -205,7 +414,14 @@ if __name__ == '__main__':
         csv = generateFilename(args.csv, addTimestamp=args.timestamp)
 
     client = ZmqClient(args.server, args.port, csv=csv, multi=args.multi)
+    Plotter.title = client.identification()
+
     engine.rootContext().setContextProperty("client", client)
+
+    if haveLognplot and args.lognplot != None:
+        Plotter._available = False
+    plotter = Plotter(parent=app)
+    engine.rootContext().setContextProperty("plotter", plotter)
 
     model = ObjectListModel(client.list(), parent=app)
     filteredObjects = NatSort(parent=app)

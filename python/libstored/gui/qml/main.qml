@@ -91,6 +91,24 @@ Window {
                 }
             }
 
+            Controls.Button {
+                id: plotterPause
+                font.pixelSize: root.fontSize
+                Layout.fillHeight: true
+                Layout.preferredWidth: root.fontSize * 5
+                background.antialiasing: true
+
+                text: "Plot"
+                checked: plotter.paused
+                visible: plotter.available
+                enabled: plotter.plotting
+                onClicked: { plotter.togglePause() }
+
+                ToolTip {
+                    text: "Toggles whether the plots are automatically updated"
+                }
+            }
+
             Controls.TextField {
                 id: defaultPollField
                 Layout.fillHeight: true
@@ -167,7 +185,7 @@ Window {
             Layout.fillWidth: true
             id: polledObjectList
             model: polledObjects
-            delegate: ObjectRow { showPlot: true }
+            delegate: ObjectRow { showPlot: plotter.available }
             spacing: 3
             highlightFollowsCurrentItem: false
             currentIndex: -1
@@ -229,5 +247,9 @@ Window {
         onPressAndHold: (mouse) => mouse.accepted = false
         onPressed: (mouse) => mouse.accepted = false
         onReleased: (mouse) => mouse.accepted = false
+    }
+
+    onClosing: {
+        Qt.callLater(Qt.quit)
     }
 }

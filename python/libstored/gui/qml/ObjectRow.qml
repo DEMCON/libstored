@@ -163,7 +163,11 @@ Rectangle {
             }
 
             checked: obj.polling
-            onCheckedChanged: obj.polling = checked
+            onCheckedChanged: {
+                obj.polling = checked
+                if(!checked && model.plot)
+                    model.plot = false
+            }
         }
 
         Controls.Button {
