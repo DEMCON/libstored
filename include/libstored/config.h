@@ -189,6 +189,9 @@ namespace stored {
 		template <typename T>
 		struct Allocator {
 			typedef std::allocator<T> type;
+
+			// This corresponds to std::allocator_traits.
+			typedef type allocator_type;
 		};
 	};
 } // namespace
