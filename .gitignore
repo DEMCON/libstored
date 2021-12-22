@@ -1,5 +1,5 @@
 *.swp
 *.swo
-build*
+/build*/
 *.pyc
 *~

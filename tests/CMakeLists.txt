@@ -78,9 +78,8 @@ macro(libstored_add_test TESTNAME)
 	add_executable(${TESTNAME} ${ARGN} test_base.cpp)
 	target_include_directories(${TESTNAME} BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 	target_link_libraries(${TESTNAME} gtest gmock gtest_main teststore-libstored)
-	gtest_discover_tests(${TESTNAME} TEST_LIST tests)
-	set_tests_properties(${tests} PROPERTIES TIMEOUT 60)
 	set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
+	gtest_discover_tests(${TESTNAME} PROPERTIES TIMEOUT 60)
 endmacro()
 
 libstored_add_test(test_allocator test_allocator.cpp)
@@ -177,7 +176,7 @@ else()
 	set(ENV_PATH_SEP ":")
 endif()
 
-if(LIBSTORED_HAVE_LIBZMQ AND LIBSTORED_EXAMPLES)
+if(LIBSTORED_HAVE_LIBZMQ AND LIBSTORED_EXAMPLES AND LIBSTORED_PYLIBSTORED)
 	add_test(
 		NAME ZmqClient
 		COMMAND ${CMAKE_COMMAND} -E env

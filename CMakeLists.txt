@@ -34,7 +34,7 @@ if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-	set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/dist" CACHE PATH "Override default install path" FORCE)
+	set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/deploy" CACHE PATH "Override default install path" FORCE)
 endif()
 
 message(STATUS "Install prefix set to ${CMAKE_INSTALL_PREFIX}")
@@ -58,6 +58,18 @@ else()
 	set(LIBSTORED_DEV_OPTION OFF)
 endif()
 
+option(LIBSTORED_VENV "Create a python venv" ON)
+if(LIBSTORED_VENV)
+	if(UNIX)
+		execute_process(COMMAND ${PROJECT_SOURCE_DIR}/dist/common/venv.sh check)
+	elseif(WIN32)
+		execute_process(COMMAND ${PROJECT_SOURCE_DIR}/dist/common/venv.cmd check)
+	else()
+		message(FATAL_ERROR "Don't know how to create a venv.")
+	endif()
+	list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_SOURCE_DIR}/dist/.venv/bin")
+endif()
+
 # Should be defaulted to OFF some day.
 option(LIBSTORED_DRAFT_API "Enable draft API" ON)
 if(LIBSTORED_DRAFT_API)
@@ -67,6 +79,8 @@ endif()
 option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" OFF)
 option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" OFF)
 option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" OFF)
+
+option(LIBSTORED_PYLIBSTORED "Build python libstored package" ON)
 
 add_subdirectory(version)
 
@@ -80,7 +94,7 @@ else()
 	option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" ON)
 endif()
 
-if(LIBSTORED_DOCUMENTATION)
+if(LIBSTORED_DOCUMENTATION AND LIBSTORED_PYLIBSTORED)
 	add_subdirectory(sphinx)
 endif()
 
@@ -143,7 +157,9 @@ if(LIBSTORED_EXAMPLES)
 endif()
 
 option(LIBSTORED_PIP_INSTALL_USER "Run pip install with --user flag when installing wheel files" ON)
-add_subdirectory(python)
+if(LIBSTORED_PYLIBSTORED)
+	add_subdirectory(python)
+endif()
 
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0")
 	if(CMAKE_CROSSCOMPILING)
@@ -218,4 +234,8 @@ if(CPPCHECK_CMD)
 	if(LIBSTORED_CPPCHECK)
 		add_custom_target(libstored-cppcheck-all ALL DEPENDS libstored-cppcheck)
 	endif()
+endif()
+
+if(LIBSTORED_DIST_DIR)
+	add_subdirectory(${LIBSTORED_DIST_DIR})
 endif()

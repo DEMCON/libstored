@@ -11,7 +11,6 @@ pushd "$( cd "$(dirname "$0")"/..; pwd -P )" > /dev/null
 
 case `uname -s` in
 	Linux*)
-		sudo apt update
 		sudo apt install -y build-essential valgrind git-core gcc-multilib cmake \
 			gdb-multiarch cppcheck doxygen pkg-config ninja-build \
 			python3 python3-pip python3-setuptools \
