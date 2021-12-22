@@ -22,9 +22,16 @@ Added
 Changed
 ```````
 
+- Restructured ``scripts`` directory into ``dist``.
 - Replace poller API.
 
+Removed
+```````
+
+- Ubuntu 18.04 support. PySide6 requires Ubuntu 20.04 or later.
+
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.0.0...HEAD
+
 
 
 `1.0.0`_ - 2021-08-25

@@ -95,7 +95,9 @@ libstored - Store by description
 --------------------------------
 
 The store is described in a simple grammar.  See the examples_ directory for
-more explanation. This is just an impression of the syntax::
+more explanation. This is just an impression of the syntax:
+
+.. code:: raw
 
    // Comment
    // Grammar: type:size[array]=initializer long name with any character
@@ -110,7 +112,9 @@ more explanation. This is just an impression of the syntax::
       string:16 s
    } scope
 
-The generated store (C++ class) has variables that can be accessed like this::
+The generated store (C++ class) has variables that can be accessed like this:
+
+.. code:: cpp
 
    mystore.some_int = 10;
    int i = mystore.another_int_which_is_initialized;
@@ -236,7 +240,9 @@ The host tools to debug your application are written in python, as the
 ``libstored`` package, and are located the ``python`` directory. You can run
 the example below by running python from the ``python`` directory, but you can
 also install the ``libstored`` package on your system. To do this, execute the
-``pylibstored-install`` cmake target, such as::
+``pylibstored-install`` cmake target, such as:
+
+.. code:: bash
 
    cd build
    ninja pylibstored-install
@@ -247,7 +253,7 @@ This builds a wheel from the ``python`` directory and installs it locally using
 To get a grasp how debugging feels like, try the following.
 
 - Build the examples, as discussed above.
-- If you use Windows, execute ``scripts/env.cmd`` to set your environment
+- If you use Windows, execute ``dist/win32/env.cmd`` to set your environment
   properly.  In the instructions below, use ``python`` instead of ``python3``.
 - Run your favorite ``lognplot`` instance, e.g., by running ``python3 -m lognplot``.
 - Run ``examples/zmqserver/zmqserver``. This starts an application with a store
@@ -405,25 +411,29 @@ Refer to the documentation for the details about these and other commands.
 How to build
 ------------
 
-Run ``scripts/bootstrap`` (as Administrator under Windows) once to install all
-build dependencies.  Then run ``scripts/build`` to build the project. This does
-effectively::
+Run ``dist/<platform>/bootstrap`` (as Administrator under Windows) once to
+install all build dependencies.  Then run ``dist/<platform>/build`` to build
+the project. This does effectively:
+
+.. code:: bash
 
    mkdir build
    cd build
-   cmake .. -DCMAKE_INSTALL_PREFIX=dist
+   cmake ../../.. -DCMAKE_INSTALL_PREFIX=dist
    cmake --build .
    cmake --build . --target install
 
-``scripts/build`` takes an optional argument, which allows you to specify the
-``CMAKE_BUILD_TYPE``.  If not specified, Debug is assumed.
+``dist/<platform>/build`` takes an optional argument, which allows you to
+specify the ``CMAKE_BUILD_TYPE``.  If not specified, Debug is assumed.
 
 By default, all examples are built.  For example, notice that sources are
 generated under ``examples/1_hello``, while the example itself is built in the
 ``build`` directory. The documentation can be viewed at
 ``sphinx/html/index.html``.
 
-To run all tests, use one of::
+To run all tests, use one of:
+
+.. code:: bash
 
    cmake --build . --target test
    cmake --build . --target RUN_TESTS
@@ -436,22 +446,26 @@ Building libstored on itself is not too interesting, it is about how it can
 generate stuff for you.  This is how to integrate it in your project:
 
 - Add libstored to your source repository, for example as a submodule.
-- Run ``scripts/bootstrap`` in the libstored directory once to install all
-  dependencies.
-- Include libstored to your cmake project. For example::
+- Run ``dist/<platform>/bootstrap`` in the libstored directory once to install
+  all dependencies.
+- Include libstored to your cmake project. For example:
+
+.. code:: cmake
 
       set(LIBSTORED_EXAMPLES OFF CACHE BOOL "Disable libstored examples" FORCE)
       set(LIBSTORED_TESTS OFF CACHE BOOL "Disable libstored tests" FORCE)
       set(LIBSTORED_DOCUMENTATION OFF CACHE BOOL "Disable libstored documentation" FORCE)
       add_subdirectory(libstored)
 
-- Optional: install ``scripts/st.vim`` in ``$HOME/.vim/syntax`` to have proper
-  syntax highlighting in vim.
+- Optional: install ``dist/common/st.vim`` in ``$HOME/.vim/syntax`` to have
+  proper syntax highlighting in vim.
 - Add some store definition file to your project, let's say ``MyStore.st``.
   Assume you have a target ``app`` (which can be any type of cmake target), which
   is going to use ``MyStore.st``, generate all required files. This will generate
   the sources in the ``libstored`` subdirectory of the current source directory,
-  a library named ``app-libstored``, and set all the dependencies right::
+  a library named ``app-libstored``, and set all the dependencies right:
+
+.. code:: cmake
 
       add_executable(app main.cpp)
       libstored_generate(app MyStore.st)
@@ -459,7 +473,9 @@ generate stuff for you.  This is how to integrate it in your project:
 - To override the default configuration, provide a ``stored_config.h`` file.
   Add this to the build by either setting ``LIBSTORED_PREPEND_INCLUDE_DIRECTORIES``
   to a space-separated list with application-specific include directories,
-  containing the header file, or by setting the include directory using::
+  containing the header file, or by setting the include directory using:
+
+.. code:: cmake
 
       target_include_directories(app-libstored BEFORE PUBLIC path/to/my/include)
 
