@@ -4,9 +4,6 @@ set -e
 
 pushd "$( cd "$(dirname "${BASH_SOURCE[0]}")"; pwd -P )" > /dev/null
 
-[[ ! -z ${CC:-} ]]  || CC=gcc
-[[ ! -z ${CXX:-} ]] || CXX=g++
-
 cmake_opts=
 
 if [[ `lsb_release -r -s | sed 's/\..*//'` -lt 20 ]]; then
