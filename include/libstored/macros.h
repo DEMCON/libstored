@@ -238,4 +238,9 @@ typedef SSIZE_T ssize_t;
 #  endif
 #endif
 
+#if defined(STORED_cplusplus) && !defined(__cpp_exceptions)
+#  define try if(true)
+#  define catch(...) if(false)
+#endif
+
 #endif // LIBSTORED_MACROS_H
