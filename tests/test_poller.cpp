@@ -16,8 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "libstored/poller_new.h"
 #include "TestStore.h"
-#include "libstored/poller.h"
+//#include "libstored/poller.h"
 #include "gtest/gtest.h"
 
 #include "LoggingLayer.h"
@@ -29,6 +30,7 @@
 #  include <zmq.h>
 #endif
 
+#if 0
 namespace {
 
 TEST(Poller, Pipe)
@@ -153,3 +155,19 @@ TEST(Poller, Zmq)
 #endif // STORED_HAVE_ZMQ
 
 } // namespace
+#endif
+
+TEST(Poller, a)
+{
+	int count = 0;
+	auto p1 = stored::pollable([&](stored::Pollable const& p) {
+		count++;
+		return p.events;
+	}, stored::Pollable::PollIn);
+
+	stored::CustomPoller<stored::LoopPoller> poller = {p1};
+
+	auto res = poller.poll();
+	EXPECT_EQ(res.size(), 1U);
+}
+
