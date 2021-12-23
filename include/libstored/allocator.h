@@ -1,5 +1,3 @@
-#include <libstored/util.h>
-
 #ifndef LIBSTORED_ALLOCATOR_H
 #define LIBSTORED_ALLOCATOR_H
 /*
@@ -34,6 +32,7 @@
 #include <vector>
 
 #if STORED_cplusplus >= 201103L
+#  include <functional>
 #  include <utility>
 #endif
 
@@ -70,6 +69,29 @@ namespace stored {
 		allocator.deallocate(p, n);
 #endif
 	}
+
+	/*!
+	 * \brief Define new/delete operators for a class, which are allocator-aware.
+	 *
+	 * Put a call to this macro in the private section of your class
+	 * definition.  Additionally, make sure to have a virtual destructor to
+	 * deallocate subclasses properly.
+	 *
+	 * \param T the type of the class for which the operators are to be defined
+	 */
+#	define STORED_CLASS_NEW_DELETE(T)				    \
+		public:                                                     \
+			void* operator new(std::size_t UNUSED_PAR(n))       \
+			{                                                   \
+				stored_assert(n == sizeof(T));              \
+				return ::stored::allocate<T>();             \
+			}                                                   \
+			void operator delete(void* ptr)                     \
+			{                                                   \
+				::stored::deallocate<T>(static_cast<T*>(ptr)); \
+			}                                                   \
+									    \
+		private:
 
 	/*!
 	 * \brief Wrapper for Config::Allocator::type::deallocate() after destroying the given object.
@@ -489,4 +511,8 @@ namespace stored {
 
 } // namespace
 #endif // __cplusplus
+
+// STORED_CLASS_NEW_DELETE uses stored_assert, so we need util.h.
+#include <libstored/util.h>
+
 #endif // LIBSTORED_ALLOCATOR_H
