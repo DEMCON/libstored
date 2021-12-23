@@ -139,11 +139,16 @@ struct Pollable {
 	/*! \brief Type of #events and #revents. */
 	typedef std::bitset<FlagCount> Events;
 
-	static unsigned long const PollIn = 1UL << PollInIndex;
-	static unsigned long const PollOut = 1UL << PollOutIndex;
-	static unsigned long const PollErr = 1UL << PollErrIndex;
-	static unsigned long const PollPri = 1UL << PollPriIndex;
-	static unsigned long const PollHup = 1UL << PollHupIndex;
+#if STORED_cplusplus >= 201103L
+	typedef unsigned long long Events_value;
+#else
+	typedef unsigned long Events_value;
+#endif
+	static Events_value const PollIn = 1UL << PollInIndex;
+	static Events_value const PollOut = 1UL << PollOutIndex;
+	static Events_value const PollErr = 1UL << PollErrIndex;
+	static Events_value const PollPri = 1UL << PollPriIndex;
+	static Events_value const PollHup = 1UL << PollHupIndex;
 
 	/*!
 	 * \brief Ctor.
@@ -504,6 +509,7 @@ protected:
 		else
 			return EINVAL;
 
+		item.events = 0;
 		if((tp.events.test(Pollable::PollInIndex)))
 			item.events |= ZMQ_POLLIN;
 		if((tp.events.test(Pollable::PollOutIndex)))
@@ -525,7 +531,7 @@ protected:
 			zmq_pollitem_t& item = items[i];
 			Pollable::Events revents = 0;
 
-			if(!item.revents) {
+			if(item.revents) {
 				res--;
 
 				if(item.revents & ZMQ_POLLIN)
@@ -603,6 +609,7 @@ protected:
 		else
 			return EINVAL;
 
+		item.events = 0;
 		if((tp.events.test(Pollable::PollInIndex)))
 			item.events |= POLLIN;
 		if((tp.events.test(Pollable::PollOutIndex)))
@@ -807,8 +814,8 @@ protected:
 
 #		ifdef STORED_POLL_OLD
 	struct OldResult {
-		unsigned long events;
-		unsigned long revents;
+		Pollable::Events_value events;
+		Pollable::Events_value revents;
 		void* user_data;
 		Pollable* p;
 
@@ -991,6 +998,9 @@ public:
 		if((errno = this->doPoll(timeout_ms, m_items)))
 			m_result.clear();
 
+		if(m_result.empty() && !errno)
+			errno = EAGAIN;
+
 		return m_result;
 	}
 
@@ -1067,14 +1077,14 @@ public:
 	using base::remove;
 	using base::Result;
 
-	typedef unsigned long events_t;
-	static unsigned long const PollIn = Pollable::PollIn;
-	static unsigned long const PollOut = Pollable::PollOut;
-	static unsigned long const PollErr = Pollable::PollErr;
-	static unsigned long const PollPri = Pollable::PollPri;
-	static unsigned long const PollHup = Pollable::PollHup;
+	typedef Pollable::Events_value events_t;
+	static Pollable::Events_value const PollIn = Pollable::PollIn;
+	static Pollable::Events_value const PollOut = Pollable::PollOut;
+	static Pollable::Events_value const PollErr = Pollable::PollErr;
+	static Pollable::Events_value const PollPri = Pollable::PollPri;
+	static Pollable::Events_value const PollHup = Pollable::PollHup;
 
-	//	STORED_DEPRECATED("Use the new Pollables instead")
+	STORED_DEPRECATED("Use the new Pollables instead")
 	Result const& poll(long timeout_us, bool UNUSED_PAR(suspend) = false)
 	{
 		return base::poll((int)(timeout_us / 1000L));
@@ -1087,7 +1097,7 @@ public:
 		}
 	};
 
-	//	STORED_DEPRECATED("Use the new Pollables instead")
+	STORED_DEPRECATED("Use the new Pollables instead")
 	int add(int fd, void* user_data, events_t events)
 	{
 		return add<PollableFd>(fd, user_data, events);
@@ -1110,7 +1120,7 @@ public:
 		}
 	};
 
-	//	STORED_DEPRECATED("Use the new Pollables instead")
+	STORED_DEPRECATED("Use the new Pollables instead")
 	int add(PolledFileLayer& layer, void* user_data, events_t events)
 	{
 		return add<PollableFileLayer, PolledFileLayer&>(layer, user_data, events);
@@ -1135,7 +1145,7 @@ public:
 		}
 	};
 
-	//	STORED_DEPRECATED("Use the new Pollables instead")
+	STORED_DEPRECATED("Use the new Pollables instead")
 	int add(SOCKET socket, void* user_data, events_t events)
 	{
 		return add<PollableSocket>(socket, user_data, events);
@@ -1158,7 +1168,7 @@ public:
 		}
 	};
 
-	//	STORED_DEPRECATED("Use the new Pollables instead")
+	STORED_DEPRECATED("Use the new Pollables instead")
 	int addh(HANDLE handle, void* user_data, events_t events)
 	{
 		return add<PollableHandle>(handle, user_data, events);
@@ -1183,7 +1193,7 @@ public:
 		}
 	};
 
-	//	STORED_DEPRECATED("Use the new Pollables instead")
+	STORED_DEPRECATED("Use the new Pollables instead")
 	int add(void* socket, void* user_data, events_t events)
 	{
 		return add<PollableZmqSocket>(socket, user_data, events);
@@ -1206,7 +1216,7 @@ public:
 		}
 	};
 
-	//	STORED_DEPRECATED("Use the new Pollables instead")
+	STORED_DEPRECATED("Use the new Pollables instead")
 	int add(ZmqLayer& layer, void* user_data, events_t events)
 	{
 		return add<PollableZmqLayer, ZmqLayer&>(layer, user_data, events);

@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#define STORED_NO_DEPRECATED
+
 #include "TestStore.h"
 #include "libstored/poller.h"
 #include "gtest/gtest.h"

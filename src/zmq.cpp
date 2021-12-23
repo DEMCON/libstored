@@ -126,40 +126,41 @@ int ZmqLayer::block(fd_type UNUSED_PAR(fd), bool forReading, long timeout_us, bo
 /*!
  * \brief Like #block(fd_type,bool,long,bool), but using the #socket() by default.
  */
-int ZmqLayer::block(bool forReading, long timeout_us, bool suspend)
+int ZmqLayer::block(bool forReading, long timeout_us, bool UNUSED_PAR(suspend))
 {
 	setLastError(0);
 
 	Poller& poller = this->poller();
 
-	Poller::events_t events = forReading ? Poller::PollIn : Poller::PollOut;
+	Pollable::Events events = forReading ? Pollable::PollIn : Pollable::PollOut;
 
 	int err = 0;
 	int res = 0;
-	if((res = poller.add(*this, nullptr, events))) {
+	PollableZmqLayer pollable(*this, events);
+	if((res = poller.add(pollable))) {
 		err = res;
 		goto done;
 	}
 
 	while(true) {
-		Poller::Result const& pres = poller.poll(timeout_us, suspend);
+		Poller::Result const& pres = poller.poll((int)(timeout_us / 1000L));
 
 		if(pres.empty()) {
 			if(!(err = errno))
 				// Should not happen.
 				err = EINVAL;
 			break;
-		} else if(((Poller::events_t)pres[0].events) & (Poller::events_t)(Poller::PollErr | Poller::PollHup)) {
+		} else if((pres[0]->events & (Pollable::Events)(Pollable::PollErr | Pollable::PollHup)).any()) {
 			// Something is wrong with the socket.
 			err = EIO;
 			break;
-		} else if(((Poller::events_t)pres[0].events) & events) {
+		} else if((pres[0]->events & events).any()) {
 			// Got it.
 			break;
 		}
 	}
 
-	if((res = poller.remove(*this)))
+	if((res = poller.remove(pollable)))
 		if(!err)
 			err = res;
 

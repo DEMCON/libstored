@@ -1591,7 +1591,7 @@ PolledLayer::~PolledLayer()
 Poller& PolledLayer::poller()
 {
 	if(!m_poller)
-		m_poller = new(allocate<Poller>()) Poller(); // NOLINT(cppcoreguidelines-owning-memory)
+		m_poller = new Poller(); // NOLINT(cppcoreguidelines-owning-memory)
 
 	return *m_poller;
 }
@@ -1618,20 +1618,21 @@ PolledFileLayer::~PolledFileLayer() is_default
  * \param suspend if \c true, do a suspend of the thread while blocking, otherwise allow fiber switching (when using Zth)
  * \return 0 on success, otherwise an \c errno
  */
-int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, long timeout_us, bool suspend)
+int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, long timeout_us, bool UNUSED_PAR(suspend))
 {
 	setLastError(0);
 
 	Poller& poller = this->poller();
 
-	Poller::events_t events = forReading ? Poller::PollIn : Poller::PollOut;
+	Pollable::Events events = forReading ? Pollable::PollIn : Pollable::PollOut;
 
 	int err = 0;
 #ifdef STORED_OS_WINDOWS
-	int res = poller.addh(fd, nullptr, events);
+	PollableHandle pollable(fd, events);
 #else
-	int res = poller.add(fd, nullptr, events);
+	PollableFd pollable(fd, events);
 #endif
+	int res = poller.add(pollable);
 
 	if(res) {
 		err = res;
@@ -1639,7 +1640,7 @@ int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, long ti
 	}
 
 	while(true) {
-		Poller::Result const& pres = poller.poll(timeout_us, suspend);
+		Poller::Result const& pres = poller.poll((int)(timeout_us / 1000L));
 
 		if(pres.empty()) {
 			if(timeout_us <= 0 && errno == EINTR)
@@ -1650,21 +1651,18 @@ int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, long ti
 				// Should not happen.
 				err = EINVAL;
 			break;
-		} else if(((Poller::events_t)pres[0].events) & (Poller::events_t)(Poller::PollErr | Poller::PollHup)) {
+		} else if((pres[0]->events & (Pollable::Events)(Poller::PollErr | Poller::PollHup)).any()) {
 			// Something is wrong with the pipe/socket.
 			err = EIO;
 			break;
-		} else if(((Poller::events_t)pres[0].events) & events) {
+		} else if((pres[0]->events & events).any()) {
 			// Got it.
 			break;
 		}
 	}
 
-#ifdef STORED_OS_WINDOWS
-	res = poller.removeh(fd);
-#else
-	res = poller.remove(fd);
-#endif
+	res = poller.remove(pollable);
+
 	if(res && !err)
 		err = res;
 
