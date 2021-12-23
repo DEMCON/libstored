@@ -57,7 +57,7 @@ TEST(Synchronizer, Instantiate)
 }
 
 class TestJournal : public stored::StoreJournal {
-	CLASS_NOCOPY(TestJournal)
+	STORED_CLASS_NOCOPY(TestJournal)
 public:
 	template <typename... Arg>
 	TestJournal(Arg&&... arg)

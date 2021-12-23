@@ -193,8 +193,8 @@ struct Pollable {
 class TypedPollable : public Pollable {
 	STORED_CLASS_NEW_DELETE(TypedPollable)
 public:
-	explicit constexpr TypedPollable(Events const& events, void* user = nullptr) noexcept
-		: Pollable(events, user)
+	explicit constexpr TypedPollable(Events const& e, void* user = nullptr) noexcept
+		: Pollable(e, user)
 	{}
 
 	virtual ~TypedPollable() is_default
@@ -256,8 +256,8 @@ public:
 class PollableCallbackBase : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableCallbackBase)
 protected:
-	explicit constexpr PollableCallbackBase(Events const& events, void* user = nullptr) noexcept
-		: TypedPollable(events, user)
+	explicit constexpr PollableCallbackBase(Events const& e, void* user = nullptr) noexcept
+		: TypedPollable(e, user)
 	{}
 
 	virtual ~PollableCallbackBase() override is_default;
@@ -279,16 +279,16 @@ class PollableCallback final : public PollableCallbackBase {
 public:
 	typedef Events(f_type)(Pollable const&);
 
-	PollableCallback(F f, Events const& events, void* user = nullptr)
-		: PollableCallbackBase(events, user)
-		, f(f)
+	PollableCallback(F f_, Events const& e, void* user = nullptr)
+		: PollableCallbackBase(e, user)
+		, f(f_)
 	{}
 
 #	if STORED_cplusplus >= 201103L
 	template <typename F_>
-	PollableCallback(F_&& f, Events const& events, void* user = nullptr)
-		: PollableCallbackBase{events, user}
-		, f{std::forward<F_>(f)}
+	PollableCallback(F_&& f_, Events const& e, void* user = nullptr)
+		: PollableCallbackBase{e, user}
+		, f{std::forward<F_>(f_)}
 	{}
 #	endif
 
@@ -330,9 +330,9 @@ PollableCallback<F> pollable(F const& f, Pollable::Events const& events, void* u
 class PollableFd final : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableFd)
 public:
-	constexpr PollableFd(int fd, Events const& events, void* user = nullptr) noexcept
-		: TypedPollable(events, user)
-		, fd(fd)
+	constexpr PollableFd(int f, Events const& e, void* user = nullptr) noexcept
+		: TypedPollable(e, user)
+		, fd(f)
 	{}
 
 	virtual ~PollableFd() override is_default
@@ -344,9 +344,9 @@ class PollableFileLayer final : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableFileLayer)
 public:
 	constexpr PollableFileLayer(
-		PolledFileLayer& layer, Events const& events, void* user = nullptr) noexcept
-		: TypedPollable(events, user)
-		, layer(&layer)
+		PolledFileLayer& l, Events const& e, void* user = nullptr) noexcept
+		: TypedPollable(e, user)
+		, layer(&l)
 	{}
 
 	virtual ~PollableFileLayer() override is_default
@@ -387,9 +387,9 @@ class PollableZmqSocket : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableZmqSocket)
 public:
 	constexpr PollableZmqSocket(
-		void* socket, Events const& events, void* user = nullptr) noexcept
-		: TypedPollable(events, user)
-		, socket(socket)
+		void* s, Events const& e, void* user = nullptr) noexcept
+		: TypedPollable(e, user)
+		, socket(s)
 	{}
 
 	virtual ~PollableZmqSocket() override is_default
@@ -401,9 +401,9 @@ class PollableZmqLayer : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableZmqLayer)
 public:
 	constexpr PollableZmqLayer(
-		ZmqLayer& layer, Events const& events, void* user = nullptr) noexcept
-		: TypedPollable(events, user)
-		, layer(&layer)
+		ZmqLayer& l, Events const& e, void* user = nullptr) noexcept
+		: TypedPollable(e, user)
+		, layer(&l)
 	{}
 
 	virtual ~PollableZmqLayer() override is_default
@@ -846,13 +846,13 @@ public:
 protected:
 	virtual void event(Pollable::Events revents, size_t index) noexcept override
 	{
-		if(revents.none())
-			return;
-
 		stored_assert(index < m_items.size());
 
 		Pollable* p = m_pollables[index];
 		p->revents = revents;
+
+		if(revents.none())
+			return;
 
 #		ifdef STORED_POLL_OLD
 		OldResult r = {p->events.to_ulong(), revents.to_ulong(), p->user_data, p};
