@@ -16,9 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "libstored/poller_new.h"
 #include "TestStore.h"
-//#include "libstored/poller.h"
+#include "libstored/poller.h"
 #include "gtest/gtest.h"
 
 #include "LoggingLayer.h"
@@ -30,7 +29,6 @@
 #  include <zmq.h>
 #endif
 
-#if 0
 namespace {
 
 TEST(Poller, Pipe)
@@ -58,7 +56,6 @@ TEST(Poller, Pipe)
 	EXPECT_EQ(write(fd[1], "2", 1), 1);
 	res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
-	EXPECT_EQ(res->at(0).fd, fd[0]);
 	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollIn);
 	EXPECT_EQ(res->at(0).user_data, (void*)1);
 
@@ -73,7 +70,6 @@ TEST(Poller, Pipe)
 	EXPECT_EQ(poller.add(fd[1], (void*)2, stored::Poller::PollOut), 0);
 	res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
-	EXPECT_EQ(res->at(0).fd, fd[1]);
 	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollOut);
 	EXPECT_EQ(res->at(0).user_data, (void*)2);
 
@@ -81,18 +77,14 @@ TEST(Poller, Pipe)
 	res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 2);
 	// The order is undefined.
-	if(res->at(0).fd == fd[0]) {
-		EXPECT_EQ(res->at(1).fd, fd[1]);
+	if(res->at(0).user_data == (void*)1) {
 		EXPECT_EQ(res->at(1).events, (stored::Poller::events_t)stored::Poller::PollOut);
 		EXPECT_EQ(res->at(1).user_data, (void*)2);
-		EXPECT_EQ(res->at(0).fd, fd[0]);
 		EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollIn);
 		EXPECT_EQ(res->at(0).user_data, (void*)1);
 	} else {
-		EXPECT_EQ(res->at(0).fd, fd[1]);
 		EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollOut);
 		EXPECT_EQ(res->at(0).user_data, (void*)2);
-		EXPECT_EQ(res->at(1).fd, fd[0]);
 		EXPECT_EQ(res->at(1).events, (stored::Poller::events_t)stored::Poller::PollIn);
 		EXPECT_EQ(res->at(1).user_data, (void*)1);
 	}
@@ -102,7 +94,6 @@ TEST(Poller, Pipe)
 	EXPECT_EQ(buf, '3');
 	res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
-	EXPECT_EQ(res->at(0).fd, fd[1]);
 	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollOut);
 	EXPECT_EQ(res->at(0).user_data, (void*)2);
 
@@ -111,7 +102,6 @@ TEST(Poller, Pipe)
 	close(fd[0]);
 	res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
-	EXPECT_EQ(res->at(0).fd, fd[1]);
 	EXPECT_NE(res->at(0).events, 0);
 	EXPECT_EQ(res->at(0).user_data, (void*)2);
 }
@@ -155,7 +145,6 @@ TEST(Poller, Zmq)
 #endif // STORED_HAVE_ZMQ
 
 } // namespace
-#endif
 
 TEST(Poller, a)
 {

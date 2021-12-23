@@ -83,6 +83,7 @@
 #      define UNUSED_PAR(name)	name __attribute__((unused))
 #    endif
 #  endif
+#  define STORED_DEPRECATED(msg)	__attribute__((deprecated(msg)))
 #elif defined(_MSC_VER)
 #  define STORED_COMPILER_MSVC
 // MSVC always defines __cplusplus as 199711L, even though it actually compiles a different language version.
@@ -112,6 +113,7 @@ typedef SSIZE_T ssize_t;
 #  ifndef __restrict__
 #    define __restrict__ __restrict
 #  endif
+#  define STORED_DEPRECATED(msg)	__declspec((deprecated(msg)))
 #else
 #  error Unsupported compiler.
 #endif
@@ -250,6 +252,19 @@ typedef SSIZE_T ssize_t;
 #      endif
 #    endif
 #  endif
+#endif
+
+#if defined(STORED_cplusplus) && STORED_cplusplus >= 201402L
+#  undef STORED_DEPRECATED
+#  define STORED_DEPRECATED(msg)	[[deprecated(msg)]]
+#endif
+#ifndef STORED_DEPRECATED
+#  define STORED_DEPRECATED(msg)
+#endif
+
+#ifdef STORED_NO_DEPRECATED
+#  undef STORED_DEPRECATED
+#  define STORED_DEPRECATED(msg)
 #endif
 
 #endif // LIBSTORED_MACROS_H

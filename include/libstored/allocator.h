@@ -86,6 +86,10 @@ namespace stored {
 				stored_assert(n == sizeof(T));              \
 				return ::stored::allocate<T>();             \
 			}                                                   \
+			void* operator new(std::size_t UNUSED_PAR(n), void* ptr) { \
+				stored_assert(n == sizeof(T));              \
+				return ptr;                                 \
+			}                                                   \
 			void operator delete(void* ptr)                     \
 			{                                                   \
 				::stored::deallocate<T>(static_cast<T*>(ptr)); \
