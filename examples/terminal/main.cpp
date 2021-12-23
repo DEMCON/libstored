@@ -76,7 +76,11 @@ int main()
 	setvbuf(stdout, NULL, _IONBF, 0);
 
 	stored::Poller poller;
-	poller.add(stdio, nullptr, stored::Poller::PollIn);
+	stored::PollableFileLayer pollable(stdio, stored::Pollable::PollIn);
+	if((errno = poller.add(pollable))) {
+		perror("Cannot add pollable");
+		return 1;
+	}
 
 	while(stdio.isOpen()) {
 		poller.poll();

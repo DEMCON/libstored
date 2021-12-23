@@ -230,8 +230,9 @@ int main()
 	zmqLayer.wrap(debugger);
 
 	stored::Poller poller;
+	stored::PollableZmqLayer pollableZmq(zmqLayer, stored::Pollable::PollIn);
 
-	if((errno = poller.add(zmqLayer, nullptr, stored::Poller::PollIn))) {
+	if((errno = poller.add(pollableZmq))) {
 		printf("Cannot add to poller; %s (error %d)\n", zmq_strerror(errno), errno);
 		exit(1);
 	}
@@ -250,7 +251,7 @@ int main()
 			continue;
 		}
 
-		if(poller.poll(std::max(0L, (long)rem_us)).empty()) {
+		if(poller.poll(std::max<int>(0, (int)(rem_us / 1000L))).empty()) {
 			switch(errno) {
 			case EINTR:
 			case EAGAIN:

@@ -165,7 +165,8 @@ int main(int argc, char** argv)
 	// We need a poller to check for ZeroMQ (debugger) messages.
 	stored::Poller poller;
 #ifdef STORED_HAVE_ZMQ
-	if(poller.add(zmq, nullptr, stored::Poller::PollIn)) {
+	stored::PollableZmqLayer pollableZmq(zmq, stored::Pollable::PollIn);
+	if((errno = poller.add(pollableZmq))) {
 		perror("Cannot register zmq to poller");
 		return 1;
 	}
@@ -194,7 +195,7 @@ int main(int argc, char** argv)
 	// Main loop.
 	while(!demo || controlStore.run) {
 		// Check for ZeroMQ input.
-		auto const& res = poller.poll(100000L);
+		auto const& res = poller.poll(100);
 		if(res.empty()) {
 			if(errno != EAGAIN)
 				perror("Cannot poll");

@@ -100,8 +100,9 @@ int main()
 	printf("Connect via ZMQ to debug this application.\n");
 
 	stored::Poller poller;
+	stored::PollableZmqLayer pollableZmq(zmqLayer, stored::Pollable::PollIn);
 
-	if((errno = poller.add(zmqLayer, nullptr, stored::Poller::PollIn))) {
+	if((errno = poller.add(pollableZmq))) {
 		perror("Cannot add to poller");
 		exit(1);
 	}
@@ -109,7 +110,7 @@ int main()
 	time_t t = time(NULL);
 
 	while(true) {
-		if(poller.poll(100000).empty()) { // 100 ms
+		if(poller.poll(100).empty()) { // 100 ms
 			switch(errno) {
 			case EINTR:
 			case EAGAIN:
