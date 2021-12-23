@@ -228,20 +228,23 @@ char const* banner() noexcept
 #ifdef STORED_POLL_WFMO
 		" poll=wfmo"
 #endif
-#ifdef STORED_POLL_ZTH
-		" poll=zth"
+#ifdef STORED_POLL_ZTH_ZMQ
+		" poll=zth-zmq"
 #endif
 #ifdef STORED_POLL_ZMQ
 		" poll=zmq"
 #endif
-#ifdef STORED_POLL_LOOP
-		" poll=loop"
+#ifdef STORED_POLL_ZTH_POLL
+		" poll=zth-poll"
+#endif
+#ifdef STORED_POLL_POLL
+		" poll=poll"
 #endif
 #ifdef STORED_POLL_ZTH_LOOP
 		" poll=zth-loop"
 #endif
-#ifdef STORED_POLL_POLL
-		" poll=poll"
+#ifdef STORED_POLL_LOOP
+		" poll=loop"
 #endif
 #ifdef STORED_DRAFT_API
 		" draft"
