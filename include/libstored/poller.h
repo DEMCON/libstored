@@ -115,7 +115,7 @@ namespace stored {
 // base our types on Zth's types.
 using zth::Pollable;
 
-#	else  // !STORED_HAVE_ZTH
+#	else // !STORED_HAVE_ZTH
 
 // We don't have Zth, but we still want to have an equivalent interface. Define
 // it here.
@@ -139,11 +139,11 @@ struct Pollable {
 	/*! \brief Type of #events and #revents. */
 	typedef std::bitset<FlagCount> Events;
 
-#if STORED_cplusplus >= 201103L
+#		if STORED_cplusplus >= 201103L
 	typedef unsigned long long Events_value;
-#else
+#		else
 	typedef unsigned long Events_value;
-#endif
+#		endif
 	static Events_value const PollIn = 1UL << PollInIndex;
 	static Events_value const PollOut = 1UL << PollOutIndex;
 	static Events_value const PollErr = 1UL << PollErrIndex;
@@ -490,64 +490,11 @@ private:
 #		else
 protected:
 #		endif
-	virtual int init(Pollable const& p, zmq_pollitem_t& item) noexcept final
-	{
-		// We only have TypedPollables.
-		TypedPollable const& tp = static_cast<TypedPollable const&>(p);
-
-		item.socket = 0;
-		item.fd = -1;
-
-		if(tp.type() == PollableFd::staticType())
-			item.fd = static_cast<PollableFd const&>(tp).fd;
-		else if(tp.type() == PollableFileLayer::staticType())
-			item.fd = static_cast<PollableFileLayer const&>(tp).layer->fd();
-		else if(tp.type() == PollableZmqSocket::staticType())
-			item.socket = static_cast<PollableZmqSocket const&>(tp).socket;
-		else if(tp.type() == PollableZmqLayer::staticType())
-			item.socket = static_cast<PollableZmqLayer const&>(tp).layer->socket();
-		else
-			return EINVAL;
-
-		item.events = 0;
-		if((tp.events.test(Pollable::PollInIndex)))
-			item.events |= ZMQ_POLLIN;
-		if((tp.events.test(Pollable::PollOutIndex)))
-			item.events |= ZMQ_POLLOUT;
-
-		return 0;
-	}
+	virtual int init(Pollable const& p, zmq_pollitem_t& item) noexcept final;
 
 #		ifndef STORED_POLL_ZTH_ZMQ
-	virtual int doPoll(int timeout_ms, PollItemList& items) noexcept final
-	{
-		int res = ::zmq_poll(&items[0], (int)items.size(), (long)timeout_ms);
-
-		if(res < 0)
-			// Error.
-			return errno;
-
-		for(size_t i = 0; res > 0 && i < items.size(); i++) {
-			zmq_pollitem_t& item = items[i];
-			Pollable::Events revents = 0;
-
-			if(item.revents) {
-				res--;
-
-				if(item.revents & ZMQ_POLLIN)
-					revents.set(Pollable::PollInIndex);
-				if(item.revents & ZMQ_POLLOUT)
-					revents.set(Pollable::PollOutIndex);
-				if(item.revents & ZMQ_POLLERR)
-					revents.set(Pollable::PollErr);
-			}
-
-			event(revents, i);
-		}
-
-		return 0;
-	}
-#		endif // !STORED_POLL_ZTH_ZMQ
+	virtual int doPoll(int timeout_ms, PollItemList& items) noexcept final;
+#		endif
 };
 
 #		ifdef STORED_POLL_ZMQ
@@ -597,64 +544,10 @@ private:
 #		else
 protected:
 #		endif
-	virtual int init(Pollable const& p, struct pollfd& item) noexcept final
-	{
-		// We only have TypedPollables.
-		TypedPollable const& tp = static_cast<TypedPollable const&>(p);
-
-		if(tp.type() == PollableFd::staticType())
-			item.fd = static_cast<PollableFd const&>(tp).fd;
-		else if(tp.type() == PollableFileLayer::staticType())
-			item.fd = static_cast<PollableFileLayer const&>(tp).layer->fd();
-		else
-			return EINVAL;
-
-		item.events = 0;
-		if((tp.events.test(Pollable::PollInIndex)))
-			item.events |= POLLIN;
-		if((tp.events.test(Pollable::PollOutIndex)))
-			item.events |= POLLOUT;
-		if((tp.events.test(Pollable::PollPriIndex)))
-			item.events |= POLLPRI;
-		if((tp.events.test(Pollable::PollHupIndex)))
-			item.events |= POLLHUP;
-
-		return 0;
-	}
+	virtual int init(Pollable const& p, struct pollfd& item) noexcept final;
 
 #		ifndef STORED_POLL_ZTH_POLL
-	virtual int doPoll(int timeout_ms, PollItemList& items) noexcept final
-	{
-		int res = ::poll(&items[0], items.size(), timeout_ms);
-
-		if(res < 0)
-			// Error.
-			return errno;
-
-		for(size_t i = 0; res > 0 && i < items.size(); i++) {
-			struct pollfd& item = items[i];
-			Pollable::Events revents = 0;
-
-			if(item.revents) {
-				res--;
-
-				if(item.revents & POLLIN)
-					revents.set(Pollable::PollInIndex);
-				if(item.revents & POLLOUT)
-					revents.set(Pollable::PollOutIndex);
-				if(item.revents & POLLERR)
-					revents.set(Pollable::PollErrIndex);
-				if(item.revents & POLLPRI)
-					revents.set(Pollable::PollPriIndex);
-				if(item.revents & POLLHUP)
-					revents.set(Pollable::PollHupIndex);
-			}
-
-			event(revents, i);
-		}
-
-		return 0;
-	}
+	virtual int doPoll(int timeout_ms, PollItemList& items) noexcept final;
 #		endif // !STORED_POLL_ZTH_POLL
 };
 
@@ -688,22 +581,6 @@ extern "C"
 	int
 	poll_once(TypedPollable const& p, Pollable::Events& revents) noexcept;
 
-#	if defined(STORED_COMPILER_MSVC)
-#		pragma comment(linker, "/alternatename:_poll_once=_poll_once_weak")
-inline int poll_once_weak(TypedPollable const& p, Pollable::Events& revents) noexcept
-#	elif defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG)
-inline int poll_once(TypedPollable const& p, Pollable::Events& revents) noexcept
-#	endif
-{
-	if(p.type() == PollableCallbackBase::staticType()) {
-		revents = static_cast<PollableCallbackBase const&>(p)();
-		return 0;
-	} else {
-		// Not supported by default poll_once().
-		return EINVAL;
-	}
-}
-
 #	ifdef STORED_HAVE_ZTH
 typedef zth::PollerServer<Pollable const*> LoopPollerBase;
 #	else
@@ -726,47 +603,8 @@ private:
 #	else
 protected:
 #	endif
-	virtual int init(Pollable const& p, Pollable const*& item) noexcept final
-	{
-		item = &p;
-		return 0;
-	}
-
-	virtual int doPoll(int timeout_ms, PollItemList& items) noexcept final
-	{
-		do {
-			int res = 0;
-			bool gotSomething = false;
-
-			for(size_t i = 0; i < items.size(); i++) {
-				Pollable const& p = *items[i];
-				Pollable::Events revents = 0;
-
-				int e = poll_once(static_cast<TypedPollable const&>(p), revents);
-
-				switch(e) {
-				case 0:
-					if(revents.any())
-						gotSomething = true;
-
-					event(revents, i);
-					break;
-				case EAGAIN:
-					break;
-				default:
-					if(!res)
-						res = e;
-				}
-			}
-
-			if(res)
-				return res;
-			if(gotSomething)
-				return 0;
-		} while(timeout_ms < 0);
-
-		return EAGAIN;
-	}
+	virtual int init(Pollable const& p, Pollable const*& item) noexcept final;
+	virtual int doPoll(int timeout_ms, PollItemList& items) noexcept final;
 };
 
 #	ifdef STORED_POLL_LOOP
@@ -823,6 +661,7 @@ protected:
 		{
 			return p;
 		}
+
 		Pollable& operator*() const
 		{
 			return *p;
@@ -1057,10 +896,7 @@ public:
 
 	Poller() is_default
 
-	virtual ~Poller() override
-	{
-		clear();
-	}
+	virtual ~Poller() override;
 
 #		if STORED_cplusplus >= 201103L
 	Poller(std::initializer_list<std::reference_wrapper<Pollable>> l)
@@ -1244,6 +1080,8 @@ public:
 	}
 
 private:
+	typedef Vector<TypedPollable*>::type Pollables;
+
 	template <typename T, typename A>
 	int add(A a, void* user_data, events_t events)
 	{
@@ -1261,10 +1099,12 @@ private:
 	template <typename T, typename A, typename C>
 	int modify(A a, events_t events, C const& c)
 	{
-		T* p = find<T, A, C>(a, c);
-		if(!p)
+		Pollables::iterator it = find<T, A, C>(a, c);
+		if(it == m_pollables.end())
 			return ESRCH;
 
+		T* p = static_cast<T*>(*it);
+		stored_assert(p);
 		void* user_data = p->user_data;
 		remove(*p);
 		return add<T, A>(a, user_data, events);
@@ -1273,31 +1113,38 @@ private:
 	template <typename T, typename A, typename C>
 	int remove(A a, C const& c)
 	{
-		T* p = find<T, A, C>(a, c);
-		if(!p)
+		Pollables::iterator it = find<T, A, C>(a, c);
+		if(it == m_pollables.end())
 			return ESRCH;
+
+		T* p = static_cast<T*>(*it);
+		stored_assert(p);
 
 		int res = remove(*p);
 		delete p;
+
+		*it = m_pollables.back();
+		m_pollables.pop_back();
+
 		return res;
 	}
 
 	template <typename T, typename A, typename C>
-	T* find(A a, C const& cmp)
+	Pollables::iterator find(A a, C const& cmp)
 	{
 		for(decltype(m_pollables.begin()) it = m_pollables.begin(); it != m_pollables.end();
 		    ++it)
 			if((*it)->type() == T::staticType()) {
 				T* p = static_cast<T*>(*it);
 				if(cmp(*p, a))
-					return p;
+					return it;
 			}
 
-		return nullptr;
+		return m_pollables.end();
 	}
 
 private:
-	Vector<TypedPollable*>::type m_pollables;
+	Pollables m_pollables;
 #		endif
 };
 #	endif // !STORED_HAVE_ZTH
