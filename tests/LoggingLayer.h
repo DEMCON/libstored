@@ -28,7 +28,7 @@
 #ifdef __cplusplus
 
 class LoggingLayer : public stored::ProtocolLayer {
-	CLASS_NOCOPY(LoggingLayer)
+	STORED_CLASS_NOCOPY(LoggingLayer)
 public:
 	typedef stored::ProtocolLayer base;
 

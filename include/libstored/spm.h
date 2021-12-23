@@ -51,7 +51,7 @@ namespace stored {
 	 */
 	template <size_t MaxSize=0xffff>
 	class ScratchPad {
-		CLASS_NOCOPY(ScratchPad)
+		STORED_CLASS_NOCOPY(ScratchPad)
 	public:
 		enum {
 			/*! \brief Maximum total size of allocated memory. */

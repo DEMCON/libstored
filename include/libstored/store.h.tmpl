@@ -189,7 +189,7 @@ public:
 	 */
 	template <typename Implementation_>
 	class {{store.name}}Base : public {{store.name}}Objects<{{store.name}}Base<Implementation_> , Implementation_> {
-		CLASS_NOCOPY({{store.name}}Base)
+		STORED_CLASS_NOCOPY({{store.name}}Base)
 	protected:
 		/*! \brief Default constructor. */
 		{{store.name}}Base() is_default

@@ -127,7 +127,7 @@ namespace stored {
 	 * \endcode
 	 */
 	class Poller {
-		CLASS_NOCOPY(Poller)
+		STORED_CLASS_NOCOPY(Poller)
 	public:
 		typedef unsigned short events_t;
 

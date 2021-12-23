@@ -210,37 +210,46 @@ typedef SSIZE_T ssize_t;
 #  endif
 #endif
 
-#if defined(STORED_cplusplus) && STORED_cplusplus < 201103L
-#  ifndef STORED_COMPILER_MSVC
-#    ifndef constexpr
-#      define constexpr
+#if defined(STORED_cplusplus)
+// All C++
+#  if !defined(__cpp_exceptions)
+#    define try if(true)
+#    define catch(...) if(false)
+#  endif
+
+#  if STORED_cplusplus < 201103L // < C++11
+#    ifndef STORED_COMPILER_MSVC
+#      ifndef constexpr
+#        define constexpr
+#      endif
+#      ifndef override
+#        define override
+#      endif
+#      ifndef final
+#        define final
+#      endif
+#      ifndef nullptr
+#        define nullptr NULL
+#      endif
+#      ifndef noexcept
+#        define noexcept throw()
+#      endif
 #    endif
-#    ifndef override
-#      define override
+#    ifndef is_default
+#      define is_default {}
 #    endif
-#    ifndef final
-#      define final
+#  else // C++11 or higher
+#    ifndef is_default
+#      define is_default = default;
 #    endif
-#    ifndef nullptr
-#      define nullptr NULL
-#    endif
-#    ifndef noexcept
-#      define noexcept throw()
+#    ifndef constexpr14
+#      if STORED_cplusplus >= 201402L
+#        define constexpr14 constexpr
+#      else
+#        define constexpr14 inline
+#      endif
 #    endif
 #  endif
-#endif
-
-#ifndef constexpr14
-#  if STORED_cplusplus >= 201402L
-#    define constexpr14 constexpr
-#  else
-#    define constexpr14 inline
-#  endif
-#endif
-
-#if defined(STORED_cplusplus) && !defined(__cpp_exceptions)
-#  define try if(true)
-#  define catch(...) if(false)
 #endif
 
 #endif // LIBSTORED_MACROS_H

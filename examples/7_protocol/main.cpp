@@ -82,7 +82,7 @@ static void printBuffer(void const* buffer, size_t len, char const* prefix = nul
  * Moreover, it allows to set an MTU via the store.
  */
 class LossyChannel : public stored::ProtocolLayer {
-	CLASS_NOCOPY(LossyChannel)
+	STORED_CLASS_NOCOPY(LossyChannel)
 public:
 	typedef stored::ProtocolLayer base;
 

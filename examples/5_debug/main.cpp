@@ -16,7 +16,7 @@
 
 // A 'physical layer' that sends the outgoing (encoded) data to print().
 class PrintfPhysical : public stored::ProtocolLayer {
-	CLASS_NOCOPY(PrintfPhysical)
+	STORED_CLASS_NOCOPY(PrintfPhysical)
 public:
 	typedef stored::ProtocolLayer base;
 
@@ -73,7 +73,7 @@ private:
 
 // Extend the capabilities with the 'z' command.
 class ExtendedDebugger : public stored::Debugger {
-	CLASS_NOCOPY(ExtendedDebugger)
+	STORED_CLASS_NOCOPY(ExtendedDebugger)
 public:
 	typedef stored::Debugger base;
 	explicit ExtendedDebugger(char const* identification = nullptr)

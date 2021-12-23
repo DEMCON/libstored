@@ -64,7 +64,7 @@ namespace stored {
 	 * \see #stored::Synchronizable
 	 */
 	class StoreJournal {
-		CLASS_NOCOPY(StoreJournal)
+		STORED_CLASS_NOCOPY(StoreJournal)
 	public:
 		/*!
 		 * \brief Timestamp of a change.
@@ -229,7 +229,7 @@ namespace stored {
 	 *
 	 * \code
 	 * class ActualStore : public stored::Synchronizable<stored::MyStoreBase<ActualStore> > {
-	 *     CLASS_NOCOPY(ActualStore)
+	 *     STORED_CLASS_NOCOPY(ActualStore)
 	 * public:
 	 *     typedef stored::Synchronizable<stored::MyStoreBase<ActualStore> > base;
 	 *     using typename base::Implementation;
@@ -254,7 +254,7 @@ namespace stored {
 	 */
 	template <typename Base>
 	class Synchronizable : public Base {
-		CLASS_NOCOPY(Synchronizable<Base>)
+		STORED_CLASS_NOCOPY(Synchronizable<Base>)
 	public:
 		typedef Base base;
 		typedef typename base::Objects Objects;
@@ -343,7 +343,7 @@ namespace stored {
 #define STORE_SYNC_BASE_CLASS(Base, Impl) ::stored::Synchronizable< ::stored::Base< Impl > >
 
 #define STORE_SYNC_CLASS_BODY(Base, Impl) \
-	CLASS_NOCOPY(Impl) \
+	STORED_CLASS_NOCOPY(Impl) \
 public: \
 	typedef STORE_SYNC_BASE_CLASS(Base, Impl) base; \
 	using typename base::Implementation; \
@@ -375,7 +375,7 @@ private:
 	 * \see #stored::Synchronizer
 	 */
 	class SyncConnection : public ProtocolLayer {
-		CLASS_NOCOPY(SyncConnection)
+		STORED_CLASS_NOCOPY(SyncConnection)
 	public:
 		typedef ProtocolLayer base;
 		typedef uint16_t Id;
@@ -455,7 +455,7 @@ private:
 	 * A store can be synchronized over multiple connections simultaneously.
 	 */
 	class Synchronizer {
-		CLASS_NOCOPY(Synchronizer)
+		STORED_CLASS_NOCOPY(Synchronizer)
 	public:
 		/*!
 		 * \brief Ctor.

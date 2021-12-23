@@ -727,7 +727,7 @@ namespace stored {
 	 */
 	template <size_t Capacity, size_t Messages = impl::defaultMessages(Capacity)>
 	class FifoLoopback1 : public PolledLayer {
-		CLASS_NOCOPY(FifoLoopback1)
+		STORED_CLASS_NOCOPY(FifoLoopback1)
 	public:
 		static_assert(Capacity > 0, "Only bounded fifos are supported");
 
@@ -864,7 +864,7 @@ namespace stored {
 	 */
 	template <size_t Capacity, size_t Messages = impl::defaultMessages(Capacity)>
 	class FifoLoopback {
-		CLASS_NOCOPY(FifoLoopback)
+		STORED_CLASS_NOCOPY(FifoLoopback)
 	public:
 		using FifoLoopback1_type = FifoLoopback1<Capacity, Messages>;
 

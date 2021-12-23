@@ -51,7 +51,7 @@ namespace stored {
 	 * When heatshrink is not available, this layer is just a pass-through.
 	 */
 	class CompressLayer : public ProtocolLayer {
-		CLASS_NOCOPY(CompressLayer)
+		STORED_CLASS_NOCOPY(CompressLayer)
 	public:
 		typedef ProtocolLayer base;
 

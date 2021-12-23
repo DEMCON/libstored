@@ -66,7 +66,7 @@ namespace stored {
 	 * Override encode() and decode() in a subclass.
 	 */
 	class ProtocolLayer {
-		CLASS_NOCOPY(ProtocolLayer)
+		STORED_CLASS_NOCOPY(ProtocolLayer)
 	public:
 		/*!
 		 * \brief Constructor.
@@ -243,7 +243,7 @@ namespace stored {
 	 * This is required to encapsulate messages within #stored::TerminalLayer, for example.
 	 */
 	class AsciiEscapeLayer : public ProtocolLayer {
-		CLASS_NOCOPY(AsciiEscapeLayer)
+		STORED_CLASS_NOCOPY(AsciiEscapeLayer)
 	public:
 		typedef ProtocolLayer base;
 
@@ -277,7 +277,7 @@ namespace stored {
 	 * The frame's boundaries are marked with APC and ST C1 control characters.
 	 */
 	class TerminalLayer : public ProtocolLayer {
-		CLASS_NOCOPY(TerminalLayer)
+		STORED_CLASS_NOCOPY(TerminalLayer)
 	public:
 		typedef ProtocolLayer base;
 
@@ -348,7 +348,7 @@ namespace stored {
 	 * the #stored::DebugArqLayer or #stored::ArqLayer.
 	 */
 	class SegmentationLayer : public ProtocolLayer {
-		CLASS_NOCOPY(SegmentationLayer)
+		STORED_CLASS_NOCOPY(SegmentationLayer)
 	public:
 		typedef ProtocolLayer base;
 
@@ -417,7 +417,7 @@ namespace stored {
 	 * correct. Determine for you application what is wise to do.
 	 */
 	class ArqLayer : public ProtocolLayer {
-		CLASS_NOCOPY(ArqLayer)
+		STORED_CLASS_NOCOPY(ArqLayer)
 	public:
 		typedef ProtocolLayer base;
 
@@ -644,7 +644,7 @@ namespace stored {
 	 * This protocol is verified by the Promela model in tests/DebugArqLayer.pml.
 	 */
 	class DebugArqLayer : public ProtocolLayer {
-		CLASS_NOCOPY(DebugArqLayer)
+		STORED_CLASS_NOCOPY(DebugArqLayer)
 	public:
 		typedef ProtocolLayer base;
 
@@ -701,7 +701,7 @@ namespace stored {
 	 * this. Consider using stored::Crc16Layer instead.
 	 */
 	class Crc8Layer : public ProtocolLayer {
-		CLASS_NOCOPY(Crc8Layer)
+		STORED_CLASS_NOCOPY(Crc8Layer)
 	public:
 		typedef ProtocolLayer base;
 
@@ -733,7 +733,7 @@ namespace stored {
 	 * Like #stored::Crc8Layer, but using a 0xbaad as polynomial.
 	 */
 	class Crc16Layer : public ProtocolLayer {
-		CLASS_NOCOPY(Crc16Layer)
+		STORED_CLASS_NOCOPY(Crc16Layer)
 	public:
 		typedef ProtocolLayer base;
 
@@ -768,7 +768,7 @@ namespace stored {
 	 * maximum buffer capacity is reached, or the \c last flag is encountered.
 	 */
 	class BufferLayer : public ProtocolLayer {
-		CLASS_NOCOPY(BufferLayer)
+		STORED_CLASS_NOCOPY(BufferLayer)
 	public:
 		typedef ProtocolLayer base;
 
@@ -800,7 +800,7 @@ namespace stored {
 	 * Mainly for debugging purposes.
 	 */
 	class PrintLayer : public ProtocolLayer {
-		CLASS_NOCOPY(PrintLayer)
+		STORED_CLASS_NOCOPY(PrintLayer)
 	public:
 		typedef ProtocolLayer base;
 
@@ -832,7 +832,7 @@ namespace stored {
 	 * communication channels.
 	 */
 	class IdleCheckLayer : public ProtocolLayer {
-		CLASS_NOCOPY(IdleCheckLayer)
+		STORED_CLASS_NOCOPY(IdleCheckLayer)
 	public:
 		typedef ProtocolLayer base;
 
@@ -989,7 +989,7 @@ namespace stored {
 
 	namespace impl {
 		class Loopback1 final : public ProtocolLayer {
-			CLASS_NOCOPY(Loopback1)
+			STORED_CLASS_NOCOPY(Loopback1)
 		public:
 			typedef ProtocolLayer base;
 			enum { ExtraAlloc = 32 };
@@ -1013,7 +1013,7 @@ namespace stored {
 	 * \brief Loopback between two protocol stacks.
 	 */
 	class Loopback {
-		CLASS_NOCOPY(Loopback)
+		STORED_CLASS_NOCOPY(Loopback)
 	public:
 		Loopback(ProtocolLayer& a, ProtocolLayer& b);
 		~Loopback() is_default
@@ -1032,7 +1032,7 @@ namespace stored {
 	 * \c recv() reads data, and passes the data upstream.
 	 */
 	class PolledLayer : public ProtocolLayer {
-		CLASS_NOCOPY(PolledLayer)
+		STORED_CLASS_NOCOPY(PolledLayer)
 	public:
 		typedef ProtocolLayer base;
 
@@ -1099,7 +1099,7 @@ namespace stored {
 	 * \brief A generalized layer that reads from and writes to a file descriptor.
 	 */
 	class PolledFileLayer : public PolledLayer {
-		CLASS_NOCOPY(PolledFileLayer)
+		STORED_CLASS_NOCOPY(PolledFileLayer)
 	public:
 		typedef PolledLayer base;
 
@@ -1137,7 +1137,7 @@ namespace stored {
 	 * \brief A generalized layer that reads from and writes to a SOCKET.
 	 */
 	class PolledSocketLayer : public PolledLayer {
-		CLASS_NOCOPY(PolledSocketLayer)
+		STORED_CLASS_NOCOPY(PolledSocketLayer)
 	public:
 		typedef PolledLayer base;
 		typedef SOCKET fd_type;
@@ -1177,7 +1177,7 @@ namespace stored {
 	 * #stored::Poller does when blocking).
 	 */
 	class FileLayer : public PolledFileLayer {
-		CLASS_NOCOPY(FileLayer)
+		STORED_CLASS_NOCOPY(FileLayer)
 	public:
 		typedef PolledFileLayer base;
 		using base::fd_type;
@@ -1252,7 +1252,7 @@ public:
 	 * The client end is easier; it is just a file-like create/open/write/close API.
 	 */
 	class NamedPipeLayer : public FileLayer {
-		CLASS_NOCOPY(NamedPipeLayer)
+		STORED_CLASS_NOCOPY(NamedPipeLayer)
 	public:
 		typedef FileLayer base;
 
@@ -1296,7 +1296,7 @@ public:
 	 * instead of one bidirectional.
 	 */
 	class DoublePipeLayer : public PolledFileLayer {
-		CLASS_NOCOPY(DoublePipeLayer)
+		STORED_CLASS_NOCOPY(DoublePipeLayer)
 	public:
 		typedef PolledFileLayer base;
 
@@ -1337,7 +1337,7 @@ public:
 	 * this counter, keep alive bytes may be injected.
 	 */
 	class XsimLayer : public DoublePipeLayer {
-		CLASS_NOCOPY(XsimLayer)
+		STORED_CLASS_NOCOPY(XsimLayer)
 	public:
 		typedef DoublePipeLayer base;
 
@@ -1364,7 +1364,7 @@ public:
 		 * \brief Helper to call XsimLayer::decoded() when data arrives on the req channel.
 		 */
 		class DecodeCallback : public ProtocolLayer {
-			CLASS_NOCOPY(DecodeCallback)
+			STORED_CLASS_NOCOPY(DecodeCallback)
 		public:
 			DecodeCallback(XsimLayer& xsim) : m_xsim(xsim) {}
 			~DecodeCallback() final is_default
@@ -1395,7 +1395,7 @@ public:
 	 * file descriptors.
 	 */
 	class StdioLayer : public PolledFileLayer {
-		CLASS_NOCOPY(StdioLayer)
+		STORED_CLASS_NOCOPY(StdioLayer)
 	public:
 		typedef PolledFileLayer base;
 		using base::fd_type;
@@ -1442,7 +1442,7 @@ public:
 	 * This is just a FileLayer, with predefined stdin/stdout as file descriptors.
 	 */
 	class StdioLayer : public FileLayer {
-		CLASS_NOCOPY(StdioLayer)
+		STORED_CLASS_NOCOPY(StdioLayer)
 	public:
 		typedef FileLayer base;
 		explicit StdioLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
@@ -1459,7 +1459,7 @@ public:
 	 * parameters during construction.
 	 */
 	class SerialLayer : public FileLayer {
-		CLASS_NOCOPY(SerialLayer)
+		STORED_CLASS_NOCOPY(SerialLayer)
 	public:
 		typedef FileLayer base;
 		explicit SerialLayer(char const* name, unsigned long baud, bool rtscts = false, bool xonxoff = false, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);

@@ -39,7 +39,7 @@ namespace stored {
 	 * #stored::DebugZmqLayer or #stored::SyncZmqLayer instead.
 	 */
 	class ZmqLayer : public PolledSocketLayer {
-		CLASS_NOCOPY(ZmqLayer)
+		STORED_CLASS_NOCOPY(ZmqLayer)
 	public:
 		typedef PolledSocketLayer base;
 		using base::fd_type;
@@ -82,7 +82,7 @@ namespace stored {
 	 * \brief Constructs a protocol stack on top of a REQ/REP ZeroMQ socket, specifically for the #stored::Debugger.
 	 */
 	class DebugZmqLayer : public ZmqLayer {
-		CLASS_NOCOPY(DebugZmqLayer)
+		STORED_CLASS_NOCOPY(DebugZmqLayer)
 	public:
 		typedef ZmqLayer base;
 
@@ -101,7 +101,7 @@ namespace stored {
 	 * \brief Constructs a protocol stack on top of a PAIR ZeroMQ socket, specifically for the #stored::Synchronizer.
 	 */
 	class SyncZmqLayer : public ZmqLayer {
-		CLASS_NOCOPY(SyncZmqLayer)
+		STORED_CLASS_NOCOPY(SyncZmqLayer)
 	public:
 		typedef ZmqLayer base;
 

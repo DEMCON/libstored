@@ -41,7 +41,7 @@ namespace stored {
 
 	template <bool Compress = Config::CompressStreams>
 	class Stream final : public ProtocolLayer {
-		CLASS_NOCOPY(Stream)
+		STORED_CLASS_NOCOPY(Stream)
 		friend class Stream<true>;
 	public:
 		typedef ProtocolLayer base;
@@ -116,7 +116,7 @@ namespace stored {
 
 	template<>
 	class Stream<true> final : public ProtocolLayer {
-		CLASS_NOCOPY(Stream)
+		STORED_CLASS_NOCOPY(Stream)
 	public:
 		typedef ProtocolLayer base;
 
@@ -479,7 +479,7 @@ namespace stored {
 	 * \see #stored::DebugStore
 	 */
 	class DebugStoreBase {
-		CLASS_NOCOPY(DebugStoreBase)
+		STORED_CLASS_NOCOPY(DebugStoreBase)
 		CLASS_NO_WEAK_VTABLE
 	protected:
 		/*! \brief Constructor. */
@@ -533,7 +533,7 @@ namespace stored {
 	 */
 	template <typename Store>
 	class DebugStore : public DebugStoreBase {
-		CLASS_NOCOPY(DebugStore)
+		STORED_CLASS_NOCOPY(DebugStore)
 	public:
 		/*!
 		 * \brief Constuctor.
@@ -614,7 +614,7 @@ namespace stored {
 	 * #process().
 	 */
 	class Debugger : public ProtocolLayer {
-		CLASS_NOCOPY(Debugger)
+		STORED_CLASS_NOCOPY(Debugger)
 	public:
 		explicit Debugger(char const* identification = nullptr, char const* versions = nullptr);
 		virtual ~Debugger() noexcept override;

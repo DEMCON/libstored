@@ -115,26 +115,30 @@
 #  define static_assert(expr, msg)	do { typedef __attribute__((unused)) int static_assert_[(expr) ? 1 : -1]; } while(0)
 #endif
 
-#ifndef CLASS_NOCOPY
+#ifndef STORED_CLASS_NOCOPY
 /*!
- * \def CLASS_NOCOPY
- * \brief Emits the copy/move constructor/assignment such that copy/move is not allowed.
- * \details Put this macro inside the private section of your class.
+ * \def STORED_CLASS_NOCOPY
+ * \brief Emits the copy/move constructor/assignment such that copy is not allowed.
+ *
+ * Move is allowed anyway.
+ *
+ * Put this macro inside the private section of your class.
+ *
  * \param Class the class this macro is embedded in
  */
 #  if STORED_cplusplus >= 201103L
-#    define CLASS_NOCOPY(Class) \
+#    define STORED_CLASS_NOCOPY(Class) \
 	public: \
 		/*! \brief Deleted copy constructor. */ \
 		Class(Class const&) = delete; \
-		/*! \brief Deleted move constructor. */ \
-		Class(Class&&) = delete; /* NOLINT(misc-macro-parentheses,bugprone-macro-parentheses) */ \
+		/*! \brief Default move constructor. */ \
+		Class(Class&&) noexcept = default; /* NOLINT(misc-macro-parentheses,bugprone-macro-parentheses) */ \
 		/*! \brief Deleted assignment operator. */ \
 		void operator=(Class const&) = delete; \
 		/*! \brief Deleted move assignment operator. */ \
-		void operator=(Class&&) = delete; /* NOLINT(misc-macro-parentheses,bugprone-macro-parentheses) */
+		Class& operator=(Class&&) noexcept = default; /* NOLINT(misc-macro-parentheses,bugprone-macro-parentheses) */
 #  else
-#    define CLASS_NOCOPY(Class) \
+#    define STORED_CLASS_NOCOPY(Class) \
 	private: \
 		/*! \brief Deleted copy constructor. */ \
 		Class(Class const&); \
@@ -157,14 +161,6 @@
 #  define CLASS_NO_WEAK_VTABLE_DEF(Class) \
 	/*! \brief Dummy function to force the vtable of this class to this translation unit. Don't call. */ \
 	void Class::force_to_translation_unit() { abort(); }
-#endif
-
-#ifndef is_default
-#  if STORED_cplusplus >= 201103L
-#    define is_default = default;
-#  else
-#    define is_default {}
-#  endif
 #endif
 
 namespace stored {
@@ -495,7 +491,7 @@ __attribute__((pure)) R saturated_cast(T value) noexcept { return stored::impl::
 #define STORE_BASE_CLASS(Base, Impl) ::stored::Base< Impl >
 
 #define STORE_CLASS_BODY(Base, Impl) \
-	CLASS_NOCOPY(Impl) \
+	STORED_CLASS_NOCOPY(Impl) \
 public: \
 	typedef STORE_BASE_CLASS(Base, Impl) base; \
 	using typename base::Implementation; \
