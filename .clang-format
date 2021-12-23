@@ -68,10 +68,10 @@ ForEachMacros:
   - BOOST_FOREACH
 IncludeBlocks:   Preserve
 IncludeCategories:
-  - Regex:           '^["<]libzth/macros.h[">]$'
+  - Regex:           '^["<]libstored/macros.h[">]$'
     Priority:        -1
     SortPriority:    0
-  - Regex:           '^["<]libzth/'
+  - Regex:           '^["<]libstored/'
     Priority:        1
     SortPriority:    0
   - Regex:           '.*'
@@ -130,6 +130,7 @@ Standard:        c++17
 StatementMacros:
   - Q_UNUSED
   - QT_REQUIRE_VERSION
+  - is_default
 TabWidth:        8
 UseCRLF:         false
 UseTab:          Always
