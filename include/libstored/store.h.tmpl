@@ -52,7 +52,7 @@ namespace stored {
 
 #if STORED_cplusplus >= 201402L
 private:
-		static constexpr uint8_t directory[{{store.directory.data|len}}] = {
+		static constexpr14 uint8_t directory[{{store.directory.data|len}}] = {
 			{{store.directory.data|carray|tab_indent(3)}}
 		};
 
@@ -60,7 +60,7 @@ public:
 		/*!
 		 * \brief Returns the short directory.
 		 */
-		static constexpr uint8_t const* shortDirectory() noexcept
+		static constexpr14 uint8_t const* shortDirectory() noexcept
 		{
 			return (uint8_t const*)directory;
 		}
@@ -199,7 +199,7 @@ public:
 		/*! \brief Type of the actual implementation, which is the (lowest) subclass. */
 		typedef Implementation_ Implementation;
 		/*! \brief Returns the name of store, which can be used as prefix for #stored::Debugger. */
-		constexpr char const* name() const noexcept { return "/{{store.name}}"; }
+		char const* name() const noexcept { return "/{{store.name}}"; }
 		/*! \brief Returns a unique hash of the store. */
 		static constexpr char const* hash() noexcept { return "{{store.hash}}"; }
 
@@ -215,21 +215,21 @@ public:
 		};
 
 		/*! \brief Returns the reference to the implementation.*/
-		constexpr Implementation const& implementation() const noexcept { return *static_cast<Implementation const*>(this); }
+		Implementation const& implementation() const noexcept { return *static_cast<Implementation const*>(this); }
 		/*! \copydoc stored::{{store.name}}Base::implementation() const */
-		constexpr Implementation& implementation() noexcept { return *static_cast<Implementation*>(this); }
+		Implementation& implementation() noexcept { return *static_cast<Implementation*>(this); }
 
 	protected:
 		/*! \brief The type of the data structure. */
 		typedef {{store.name}}Data Data;
 		/*! \brief Returns the container for all the store's data. */
-		constexpr Data const& data() const noexcept { return m_data; }
+		Data const& data() const noexcept { return m_data; }
 		/*! \copydoc stored::{{store.name}}Base::data() const */
-		constexpr Data& data() noexcept { return m_data; }
+		Data& data() noexcept { return m_data; }
 		/*! \brief Returns the buffer with all variable data. */
-		constexpr char const* buffer() const noexcept { return data().buffer; }
+		char const* buffer() const noexcept { return data().buffer; }
 		/*! \copydoc stored::{{store.name}}Base::buffer() const */
-		constexpr char* buffer() noexcept { return data().buffer; }
+		char* buffer() noexcept { return data().buffer; }
 
 		friend class stored::Variant<void>;
 
@@ -250,7 +250,7 @@ public:
 		 * For other types, use #_variantv(Type::type, size_t, size_t).
 		 */
 		template <typename T>
-		constexpr Variable<T,Implementation> _variable(size_t offset) noexcept
+		Variable<T,Implementation> _variable(size_t offset) noexcept
 		{
 			stored_assert(offset + sizeof(T) <= sizeof(m_data.buffer));
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -267,7 +267,7 @@ public:
 		 * For other types, use #_variantf(Type::type, unsigned int, size_t).
 		 */
 		template <typename T>
-		constexpr Function<T,Implementation> _function(unsigned int f) noexcept
+		Function<T,Implementation> _function(unsigned int f) noexcept
 		{
 			return Function<T,Implementation>(implementation(), f);
 		}

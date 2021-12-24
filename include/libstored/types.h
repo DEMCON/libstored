@@ -713,7 +713,10 @@ namespace stored {
 		explicit constexpr FreeVariable(size_t offset) noexcept
 			: m_offset(static_cast<offset_type>(offset))
 		{
+#if STORED_cplusplus < 201103L || STORED_cplusplus >= 201402L
+			// For C++11, the body must be empty.
 			stored_assert(offset < std::numeric_limits<offset_type>::max());
+#endif
 		}
 
 		friend class Variant<void>;
@@ -798,7 +801,10 @@ namespace stored {
 		explicit constexpr FreeFunction(unsigned int f) noexcept
 			: m_f(static_cast<f_type>(f))
 		{
+#if STORED_cplusplus < 201103L || STORED_cplusplus >= 201402L
+			// For C++11, the body must be empty.
 			stored_assert(f < std::numeric_limits<f_type>::max());
+#endif
 		}
 
 		friend class Variant<void>;

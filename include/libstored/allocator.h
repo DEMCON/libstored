@@ -22,7 +22,6 @@
 
 #ifdef __cplusplus
 #include <algorithm>
-#include <array>
 #include <deque>
 #include <list>
 #include <map>
@@ -32,6 +31,7 @@
 #include <vector>
 
 #if STORED_cplusplus >= 201103L
+#  include <array>
 #  include <functional>
 #  include <utility>
 #endif
@@ -127,6 +127,19 @@ namespace stored {
 	};
 #else // STORED_cplusplus >= 201103L
 	namespace impl {
+		// std::max() is not constexpr in C++11. So, implement it here (for what we need).
+		template <typename T>
+		constexpr T max(T a, T b) noexcept
+		{
+			return b < a ? a : b;
+		}
+
+		template <typename T>
+		constexpr T max(T a, T b, T c) noexcept
+		{
+			return max<T>(a, max<T>(b, c));
+		}
+
 		template <typename T> struct CallableType { using type = typename std::decay<T>::type; };
 		template <typename T> struct CallableType<T&> { using type = T&; };
 		template <> struct CallableType<std::nullptr_t> {};
@@ -313,11 +326,11 @@ namespace stored {
 				Wrapper<F>* m_w;
 			};
 
-			using Buffer = std::array<char, std::max({
+			using Buffer = std::array<char, max(
 				sizeof(Reset),
 				sizeof(Forwarder<R(*)(Args...)>),
 				sizeof(Wrapper<R(*)(Args...)>) + sizeof(void*)
-			})>;
+			)>;
 
 		public:
 			explicit Callable()
