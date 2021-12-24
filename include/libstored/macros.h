@@ -222,7 +222,7 @@ typedef SSIZE_T ssize_t;
 #  if STORED_cplusplus < 201103L // < C++11
 #    ifndef STORED_COMPILER_MSVC
 #      ifndef constexpr
-#        define constexpr
+#        define constexpr inline
 #      endif
 #      ifndef override
 #        define override
@@ -239,6 +239,9 @@ typedef SSIZE_T ssize_t;
 #    endif
 #    ifndef is_default
 #      define is_default {}
+#    endif
+#    ifndef constexpr14
+#      define constexpr14 inline
 #    endif
 #  else // C++11 or higher
 #    ifndef is_default

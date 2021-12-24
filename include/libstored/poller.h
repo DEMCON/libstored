@@ -75,7 +75,7 @@
 // Use zmq_poll().
 #				define STORED_POLL_ZMQ
 #			endif
-#		elif define(STORED_OS_POSIX)
+#		elif defined(STORED_OS_POSIX)
 #			ifdef STORED_HAVE_ZTH
 // Use poll() via zth::Waiter.
 #				define STORED_POLL_ZTH_POLL
@@ -95,7 +95,7 @@
 #	if defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH_POLL)
 #		include <poll.h>
 #	endif
-#	if STORED_HAVE_ZMQ
+#	ifdef STORED_HAVE_ZMQ
 #		include <zmq.h>
 #	endif
 
@@ -276,7 +276,6 @@ public:
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 template <typename F = Pollable::Events (*)(Pollable const&)>
 class PollableCallback final : public PollableCallbackBase {
-	STORED_CLASS_NOCOPY(PollableCallback)
 	STORED_CLASS_NEW_DELETE(PollableCallback)
 public:
 	typedef Events(f_type)(Pollable const&);
