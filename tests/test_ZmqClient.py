@@ -21,7 +21,7 @@ import subprocess
 import libstored
 import sys
 import logging
-from PySide2.QtCore import QCoreApplication
+from PySide6.QtCore import QCoreApplication
 
 class ZmqClientTest(unittest.TestCase):
 
