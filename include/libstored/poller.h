@@ -273,8 +273,8 @@ public:
  * The function type \p F must be compatible with
  * <tt>Pollable::Events& (Pollable const&)</tt>.
  */
-// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 template <typename F = Pollable::Events (*)(Pollable const&)>
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class PollableCallback final : public PollableCallbackBase {
 	STORED_CLASS_NEW_DELETE(PollableCallback)
 public:
