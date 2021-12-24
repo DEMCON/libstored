@@ -37,7 +37,7 @@ function venv_just_activate {
 		fi
 		if [[ `${readlink} -f \`which python3\`` != `${readlink} -f ${venv_dir}/bin/python3` ]]; then
 			echo "activate failed" >&2
-			return 1
+			return 2
 		fi
 	fi
 }
@@ -90,7 +90,7 @@ function venv_help {
 	echo "Usage:"
 	echo "    $0 install|check|clean"
 	echo "    source $0 activate|deactivate"
-	return 1
+	return 2
 }
 
 case "$#" in
