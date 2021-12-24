@@ -1629,11 +1629,11 @@ int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, long ti
 
 	int err = 0;
 #ifdef STORED_OS_WINDOWS
-	PollableHandle pollable(fd, events);
+	PollableHandle pollbl(fd, events);
 #else
-	PollableFd pollable(fd, events);
+	PollableFd pollbl(fd, events);
 #endif
-	int res = poller.add(pollable);
+	int res = poller.add(pollbl);
 
 	if(res) {
 		err = res;
@@ -1662,7 +1662,7 @@ int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, long ti
 		}
 	}
 
-	res = poller.remove(pollable);
+	res = poller.remove(pollbl);
 
 	if(res && !err)
 		err = res;
