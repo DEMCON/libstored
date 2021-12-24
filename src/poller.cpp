@@ -122,7 +122,7 @@ int PollPoller::init(Pollable const& p, struct pollfd& item) noexcept
 #	ifndef STORED_POLL_ZTH_POLL
 int PollPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 {
-	int res = ::poll(&items[0], items.size(), timeout_ms);
+	int res = ::poll(&items[0], (nfds_t)items.size(), timeout_ms);
 
 	if(res < 0)
 		// Error.
