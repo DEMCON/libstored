@@ -62,6 +62,8 @@ while [[ ! -z ${1:-} ]]; do
 			cmake_opts="${cmake_opts} -DLIBSTORED_DEV=ON"
 			do_test=1
 			;;
+		nodev)
+			cmake_opts="${cmake_opts} -DLIBSTORED_DEV=OFF";;
 		test)
 			do_test=1;;
 		notest)
@@ -70,6 +72,10 @@ while [[ ! -z ${1:-} ]]; do
 			cmake_opts="${cmake_opts} -DLIBSTORED_HAVE_LIBZMQ=ON";;
 		nozmq)
 			cmake_opts="${cmake_opts} -DLIBSTORED_HAVE_LIBZMQ=OFF";;
+		heatshrink)
+			cmake_opts="${cmake_opts} -DLIBSTORED_HAVE_HEATSHRINK=ON";;
+		noheatshrink)
+			cmake_opts="${cmake_opts} -DLIBSTORED_HAVE_HEATSHRINK=OFF";;
 		san)
 			cmake_opts="${cmake_opts} -DLIBSTORED_ENABLE_ASAN=ON -DLIBSTORED_ENABLE_LSAN=ON -DLIBSTORED_ENABLE_UBSAN=ON";;
 		nosan)
@@ -139,7 +145,7 @@ cmake --build . "${par}"
 cmake --build . --target install "${par}"
 
 if [[ ${do_test} == 1 ]]; then
-	cmake --build . --target test
+	CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target test
 fi
 
 popd > /dev/null
