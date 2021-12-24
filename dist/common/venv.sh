@@ -29,7 +29,13 @@ function venv_just_activate {
 		set +u
 		source "${venv_dir}/bin/activate"
 		set -u
-		if [ `readlink -f \`which python3\`` != `readlink -f ${venv_dir}/bin/python3` ]; then
+		if which greadlink > /dev/null; then
+			# For macOS, with coreutils
+			readlink=greadlink
+		else
+			readlink=readlink
+		fi
+		if [[ `${readlink} -f \`which python3\`` != `${readlink} -f ${venv_dir}/bin/python3` ]]; then
 			echo "activate failed" >&2
 			return 1
 		fi
