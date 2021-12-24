@@ -23,3 +23,6 @@ brew_install doxygen
 brew_install plantuml
 brew_install ninja
 brew_install coreutils
+brew_install git
+brew_install zeromq
+brew_install jq
