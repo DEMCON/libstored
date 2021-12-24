@@ -70,6 +70,7 @@ ProtocolLayer::~ProtocolLayer()
 
 /*!
  * \copydoc stored::ProtocolLayer::ProtocolLayer()
+ * \param all when \c true, convert all control characters, instead of only those that conflict with other protocols
  */
 AsciiEscapeLayer::AsciiEscapeLayer(bool all, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
