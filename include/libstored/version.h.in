@@ -41,7 +41,7 @@ namespace stored {
 	/*!
 	 * \brief Returns the version of libstored.
 	 */
-	constexpr inline char const* version() noexcept
+	constexpr char const* version() noexcept
 	{
 		return STORED_VERSION;
 	}

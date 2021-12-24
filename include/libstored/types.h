@@ -105,7 +105,7 @@ namespace stored {
 		}
 	};
 
-	static constexpr inline Type::type operator|(Type::type a, Type::type b) noexcept { return (Type::type)((uint8_t)a | (uint8_t)b); }
+	static constexpr Type::type operator|(Type::type a, Type::type b) noexcept { return (Type::type)((uint8_t)a | (uint8_t)b); }
 
 	namespace impl {
 		/*! \brief Returns the #stored::Type::type of the given \c int type. */
@@ -1431,14 +1431,14 @@ namespace stored {
 
 	namespace impl {
 		template <typename StoreBase, typename T>
-		static constexpr inline void* objectToVoidPtr(T& o) noexcept
+		static constexpr void* objectToVoidPtr(T& o) noexcept
 		{
 			static_assert(sizeof(T) == sizeof(typename StoreBase::Objects), "");
 			return (void*)&o;
 		}
 
 		template <typename StoreBase, typename T>
-		static constexpr inline StoreBase& objectToStore(T& o) noexcept
+		static constexpr StoreBase& objectToStore(T& o) noexcept
 		{
 			static_assert(sizeof(T) == sizeof(typename StoreBase::Objects), "");
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
