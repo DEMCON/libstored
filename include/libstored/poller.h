@@ -616,6 +616,8 @@ extern "C"
 	int
 	poll_once(TypedPollable const& p, Pollable::Events& revents) noexcept;
 
+int poll_once_default(TypedPollable const& p, Pollable::Events& revents) noexcept;
+
 #	ifdef STORED_HAVE_ZTH
 typedef zth::PollerServer<Pollable const*> LoopPollerBase;
 #	else

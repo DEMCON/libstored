@@ -30,6 +30,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	add_compile_options(-Wno-defaulted-function-deleted)
 endif()
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 11)
+	# gcc's updated -Warray-bounds seem to give a lot of bogus errors.
+	# In this case, assigning to uint64_t& value in __time_s() seems to trip it.
+	# Ignore this warning, for now.
+	add_compile_options(-Wno-array-bounds)
+endif()
+
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT APPLE)
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections")
 endif()

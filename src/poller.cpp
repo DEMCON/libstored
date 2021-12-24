@@ -164,12 +164,26 @@ int PollPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 #if defined(STORED_COMPILER_MSVC)
 #	pragma comment(linker, "/alternatename:_poll_once=_poll_once_weak")
 int poll_once_weak(TypedPollable const& p, Pollable::Events& revents) noexcept
+{
+	return poll_once_default(p, revents);
+}
+#elif defined(STORED_OS_OSX)
+// This is not weak, but somehow, it does not seem to work properly on macOS.
+// Should be fixed some day. However, you are probably not using it anyway, as
+// (zmq_)poll() is available for polling.
+int poll_once(TypedPollable const& p, Pollable::Events& revents) noexcept
+{
+	return poll_once_default(p, revents);
+}
 #elif defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG) \
 	|| defined(STORED_COMPILER_ARMCC)
 __attribute__((weak)) int poll_once(TypedPollable const& p, Pollable::Events& revents) noexcept
-#else
-int poll_once_default(TypedPollable const& p, Pollable::Events& revents) noexcept
+{
+	return poll_once_default(p, revents);
+}
 #endif
+
+int poll_once_default(TypedPollable const& p, Pollable::Events& revents) noexcept
 {
 	if(p.type() == PollableCallbackBase::staticType()) {
 		revents = down_cast<PollableCallbackBase const&>(p)();

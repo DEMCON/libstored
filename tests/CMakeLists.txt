@@ -40,8 +40,13 @@ else()
 		add_compile_options(-fno-sanitize-recover=undefined)
 	endif()
 endif()
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	add_compile_options(-Wno-defaulted-function-deleted)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 11)
+	add_compile_options(-Wno-array-bounds)
 endif()
 
 if(APPLE)

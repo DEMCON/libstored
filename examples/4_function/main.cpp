@@ -32,7 +32,7 @@ public:
 		if(set)
 			return; // read-only
 
-		value = (uint64_t)time(NULL);
+		value = (uint64_t)time(nullptr);
 	}
 
 	void __rand(bool set, int32_t& value)

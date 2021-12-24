@@ -113,7 +113,7 @@ typedef SSIZE_T ssize_t;
 #  ifndef __restrict__
 #    define __restrict__ __restrict
 #  endif
-#  define STORED_DEPRECATED(msg)	__declspec((deprecated(msg)))
+#  define STORED_DEPRECATED(msg)	__declspec(deprecated(msg))
 #else
 #  error Unsupported compiler.
 #endif

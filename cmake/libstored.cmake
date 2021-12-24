@@ -43,6 +43,7 @@ function(libstored_lib libprefix libpath)
 		${libstored_dir}/src/directory.cpp
 		${libstored_dir}/src/debugger.cpp
 		${libstored_dir}/src/poller.cpp
+		${libstored_dir}/src/poller.cpp
 		${libstored_dir}/src/protocol.cpp
 		${libstored_dir}/src/synchronizer.cpp
 		${libstored_dir}/src/util.cpp
