@@ -55,9 +55,9 @@ while [[ ! -z ${1:-} ]]; do
 		C++14)
 			cmake_opts="${cmake_opts} -DCMAKE_CXX_STANDARD=14 -DCMAKE_C_STANDARD=11";;
 		C++17)
-			cmake_opts="${cmake_opts} -DCMAKE_CXX_STANDARD=17 -DCMAKE_C_STANDARD=17";;
+			cmake_opts="${cmake_opts} -DCMAKE_CXX_STANDARD=17 -DCMAKE_C_STANDARD=11";;
 		C++20)
-			cmake_opts="${cmake_opts} -DCMAKE_CXX_STANDARD=20 -DCMAKE_C_STANDARD=17";;
+			cmake_opts="${cmake_opts} -DCMAKE_CXX_STANDARD=20 -DCMAKE_C_STANDARD=11";;
 		dev)
 			cmake_opts="${cmake_opts} -DLIBSTORED_DEV=ON"
 			do_test=1
@@ -68,6 +68,10 @@ while [[ ! -z ${1:-} ]]; do
 			do_test=1;;
 		notest)
 			do_test=0;;
+		examples)
+			cmake_opts="${cmake_opts} -DLIBSTORED_EXAMPLES=ON";;
+		noexamples)
+			cmake_opts="${cmake_opts} -DLIBSTORED_EXAMPLES=OFF";;
 		zmq)
 			cmake_opts="${cmake_opts} -DLIBSTORED_HAVE_LIBZMQ=ON";;
 		nozmq)

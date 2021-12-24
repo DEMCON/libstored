@@ -34,5 +34,7 @@ config Release nodev C++14 test
 config Release nodev C++17 test
 config Debug nodev noheatshrink test
 config Release noheatshrink test
+config Debug nodev noexamples test
+config Release nodev noexamples test
 
 popd > /dev/null
