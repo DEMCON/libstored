@@ -160,7 +160,14 @@ if(LIBSTORED_EXAMPLES)
 	add_subdirectory(examples)
 endif()
 
-option(LIBSTORED_PIP_INSTALL_USER "Run pip install with --user flag when installing wheel files" ON)
+if(LIBSTORED_VENV)
+	set(LIBSTORED_PIP_INSTALL_USER_DEFAULT OFF)
+else()
+	set(LIBSTORED_PIP_INSTALL_USER_DEFAULT ON)
+endif()
+
+option(LIBSTORED_PIP_INSTALL_USER "Run pip install with --user flag when installing wheel files" ${LIBSTORED_PIP_INSTALL_USER_DEFAULT})
+
 if(LIBSTORED_PYLIBSTORED)
 	add_subdirectory(python)
 endif()
