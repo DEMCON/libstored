@@ -54,6 +54,7 @@ option(LIBSTORED_INSTALL_STORE_LIBS "Install generated static libstored librarie
 option(LIBSTORED_DEV "Enable by default development related build options" OFF)
 if(LIBSTORED_DEV)
 	set(LIBSTORED_DEV_OPTION ON)
+	set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE)
 else()
 	set(LIBSTORED_DEV_OPTION OFF)
 endif()
