@@ -199,10 +199,10 @@ namespace stored {
 		void iterateChanged(Seq since, IterateChangedCallback* cb, void* arg, size_t lower, size_t upper) const;
 
 	private:
-		char const* const m_hash;
-		void* const m_buffer;
-		size_t const m_bufferSize;
-		uint8_t const m_keySize;
+		char const* m_hash;
+		void* m_buffer;
+		size_t m_bufferSize;
+		uint8_t m_keySize;
 		Seq m_seq;
 		Seq m_seqLower;
 		bool m_partialSeq;
@@ -426,7 +426,7 @@ private:
 		void helloAgain(StoreJournal& store);
 
 	private:
-		Synchronizer& m_synchronizer;
+		Synchronizer* m_synchronizer;
 
 		struct StoreInfo {
 			StoreInfo() : seq(), idOut(), source() {}

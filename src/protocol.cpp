@@ -1482,7 +1482,7 @@ bool PrintLayer::enabled() const
  * \brief Constructor.
  */
 impl::Loopback1::Loopback1(ProtocolLayer& from, ProtocolLayer& to)
-	: m_to(to)
+	: m_to(&to)
 	, m_buffer()
 	, m_capacity()
 	, m_len()
@@ -1538,7 +1538,7 @@ void impl::Loopback1::encode(void const* buffer, size_t len, bool last)
 	}
 
 	if(last) {
-		m_to.decode(m_buffer, m_len);
+		m_to->decode(m_buffer, m_len);
 		m_len = 0;
 	}
 }

@@ -156,7 +156,6 @@ struct Pollable {
 	explicit constexpr Pollable(Events const& e, void* user = nullptr) noexcept
 		: user_data(user)
 		, events(e)
-		, revents()
 	{}
 
 	/*!
@@ -190,6 +189,7 @@ struct Pollable {
  * A subclass must use \c STORED_POLLABLE_TYPE(subclass_type) in its
  * definition.
  */
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TypedPollable : public Pollable {
 	STORED_CLASS_NEW_DELETE(TypedPollable)
 public:
@@ -253,6 +253,7 @@ public:
 			STORED_CLASS_NEW_DELETE(T)
 #	endif // !__cpp_rtti
 
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class PollableCallbackBase : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableCallbackBase)
 protected:
@@ -272,6 +273,7 @@ public:
  * The function type \p F must be compatible with
  * <tt>Pollable::Events& (Pollable const&)</tt>.
  */
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 template <typename F = Pollable::Events (*)(Pollable const&)>
 class PollableCallback final : public PollableCallbackBase {
 	STORED_CLASS_NOCOPY(PollableCallback)
@@ -327,6 +329,7 @@ PollableCallback<F> pollable(F const& f, Pollable::Events const& events, void* u
 }
 #	endif
 
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class PollableFd final : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableFd)
 public:
@@ -340,6 +343,12 @@ public:
 	int fd;
 };
 
+inline PollableFd pollable(int fd, Pollable::Events const& events, void* user = nullptr)
+{
+	return PollableFd(fd, events, user);
+}
+
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class PollableFileLayer final : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableFileLayer)
 public:
@@ -354,13 +363,19 @@ public:
 	PolledFileLayer* layer;
 };
 
+inline PollableFileLayer pollable(PolledFileLayer& l, Pollable::Events const& events, void* user = nullptr)
+{
+	return PollableFileLayer(l, events, user);
+}
+
 #	ifdef STORED_OS_WINDOWS
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class PollableSocket final : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableSocket)
 public:
-	constexpr PollableSocket(SOCKET socket, Events const& events, void* user = nullptr) noexcept
-		: TypedPollable(events, user)
-		, socket(socket)
+	constexpr PollableSocket(SOCKET s, Events const& e, void* user = nullptr) noexcept
+		: TypedPollable(e, user)
+		, socket(s)
 	{}
 
 	virtual ~PollableSocket() override is_default
@@ -368,26 +383,37 @@ public:
 	SOCKET socket;
 };
 
+inline PollableSocket pollable(SOCKET s, Pollable::Events const& events, void* user = nullptr)
+{
+	return PollableSocket(s, events, user);
+}
+
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class PollableHandle final : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableHandle)
 public:
-	constexpr PollableHandle(HANDLE handle, Events const& events, void* user = nullptr) noexcept
-		: TypedPollable(events, user)
-		, handle(handle)
+	constexpr PollableHandle(HANDLE h, Events const& e, void* user = nullptr) noexcept
+		: TypedPollable(e, user)
+		, handle(h)
 	{}
 
 	virtual ~PollableHandle() override is_default
 
 	HANDLE handle;
 };
+
+inline PollableHandle pollable(HANDLE h, Pollable::Events const& events, void* user = nullptr)
+{
+	return PollableHandle(h, events, user);
+}
 #	endif // STORED_OS_WINDOWS
 
 #	ifdef STORED_HAVE_ZMQ
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class PollableZmqSocket : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableZmqSocket)
 public:
-	constexpr PollableZmqSocket(
-		void* s, Events const& e, void* user = nullptr) noexcept
+	constexpr PollableZmqSocket(void* s, Events const& e, void* user = nullptr) noexcept
 		: TypedPollable(e, user)
 		, socket(s)
 	{}
@@ -397,11 +423,16 @@ public:
 	void* socket;
 };
 
+inline PollableZmqSocket pollable(void* s, Pollable::Events const& events, void* user = nullptr)
+{
+	return PollableZmqSocket(s, events, user);
+}
+
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class PollableZmqLayer : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableZmqLayer)
 public:
-	constexpr PollableZmqLayer(
-		ZmqLayer& l, Events const& e, void* user = nullptr) noexcept
+	constexpr PollableZmqLayer(ZmqLayer& l, Events const& e, void* user = nullptr) noexcept
 		: TypedPollable(e, user)
 		, layer(&l)
 	{}
@@ -410,6 +441,11 @@ public:
 
 	ZmqLayer* layer;
 };
+
+inline PollableZmqLayer pollable(ZmqLayer& l, Pollable::Events const& events, void* user = nullptr)
+{
+	return PollableZmqLayer(l, events, user);
+}
 #	endif // STORED_HAVE_ZMQ
 
 
@@ -1073,7 +1109,7 @@ public:
 	{
 		for(decltype(m_pollables.begin()) it = m_pollables.begin(); it != m_pollables.end();
 		    ++it)
-			delete *it;
+			delete *it; // NOLINT(cppcoreguidelines-owning-memory)
 
 		m_pollables.clear();
 		base::clear();
@@ -1085,11 +1121,11 @@ private:
 	template <typename T, typename A>
 	int add(A a, void* user_data, events_t events)
 	{
-		T* p = new T(a, events, user_data);
+		T* p = new T(a, events, user_data); // NOLINT(cppcoreguidelines-owning-memory)
 		int res = add(*p);
 
 		if(res)
-			delete p;
+			delete p; // NOLINT(cppcoreguidelines-owning-memory)
 		else
 			m_pollables.push_back(p);
 
@@ -1121,7 +1157,7 @@ private:
 		stored_assert(p);
 
 		int res = remove(*p);
-		delete p;
+		delete p; // NOLINT(cppcoreguidelines-owning-memory)
 
 		*it = m_pollables.back();
 		m_pollables.pop_back();

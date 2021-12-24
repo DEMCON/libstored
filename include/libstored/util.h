@@ -132,11 +132,11 @@
 		/*! \brief Deleted copy constructor. */ \
 		Class(Class const&) = delete; \
 		/*! \brief Default move constructor. */ \
-		Class(Class&&) noexcept = default; /* NOLINT(misc-macro-parentheses,bugprone-macro-parentheses) */ \
+		Class(Class&&) = default; /* NOLINT(misc-macro-parentheses,bugprone-macro-parentheses,hicpp-noexcept-move,performance-noexcept-move-constructor) */ \
 		/*! \brief Deleted assignment operator. */ \
 		void operator=(Class const&) = delete; \
 		/*! \brief Deleted move assignment operator. */ \
-		Class& operator=(Class&&) noexcept = default; /* NOLINT(misc-macro-parentheses,bugprone-macro-parentheses) */
+		Class& operator=(Class&&) = default; /* NOLINT(misc-macro-parentheses,bugprone-macro-parentheses,hicpp-noexcept-move,performance-noexcept-move-constructor) */
 #  else
 #    define STORED_CLASS_NOCOPY(Class) \
 	private: \
@@ -487,6 +487,34 @@ namespace stored {
  */
 template <typename R, typename T>
 __attribute__((pure)) R saturated_cast(T value) noexcept { return stored::impl::saturated_cast_helper<R>::cast(value); }
+
+template <typename Sub, typename Base
+#if STORED_cplusplus >= 201103L
+	, typename std::enable_if<std::is_base_of<Base, typename std::remove_pointer<Sub>::type>::value, int>::type = 0
+#endif
+>
+Sub down_cast(Base* p) noexcept
+{
+#ifdef __cpp_rtti
+	stored_assert(dynamic_cast<Sub>(p) != nullptr);
+#endif
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
+	return static_cast<Sub>(p);
+}
+
+template <typename Sub, typename Base
+#if STORED_cplusplus >= 201103L
+	, typename std::enable_if<std::is_base_of<Base, typename std::remove_reference<Sub>::type>::value, int>::type = 0
+#endif
+>
+Sub down_cast(Base& p) noexcept
+{
+#ifdef __cpp_rtti
+	stored_assert(((void)dynamic_cast<Sub>(p), true)); // This may throw.
+#endif
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
+	return static_cast<Sub>(p);
+}
 
 #define STORE_BASE_CLASS(Base, Impl) ::stored::Base< Impl >
 

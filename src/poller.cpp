@@ -28,27 +28,28 @@ namespace stored {
 int ZmqPoller::init(Pollable const& p, zmq_pollitem_t& item) noexcept
 {
 	// We only have TypedPollables.
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
 	TypedPollable const& tp = static_cast<TypedPollable const&>(p);
 
-	item.socket = 0;
+	item.socket = nullptr;
 	item.fd = -1;
 
 	if(tp.type() == PollableFd::staticType())
-		item.fd = static_cast<PollableFd const&>(tp).fd;
+		item.fd = down_cast<PollableFd const&>(tp).fd;
 	else if(tp.type() == PollableFileLayer::staticType())
-		item.fd = static_cast<PollableFileLayer const&>(tp).layer->fd();
+		item.fd = down_cast<PollableFileLayer const&>(tp).layer->fd();
 	else if(tp.type() == PollableZmqSocket::staticType())
-		item.socket = static_cast<PollableZmqSocket const&>(tp).socket;
+		item.socket = down_cast<PollableZmqSocket const&>(tp).socket;
 	else if(tp.type() == PollableZmqLayer::staticType())
-		item.socket = static_cast<PollableZmqLayer const&>(tp).layer->socket();
+		item.socket = down_cast<PollableZmqLayer const&>(tp).layer->socket();
 	else
 		return EINVAL;
 
 	item.events = 0;
 	if((tp.events.test(Pollable::PollInIndex)))
-		item.events |= ZMQ_POLLIN;
+		item.events |= ZMQ_POLLIN; // NOLINT(hicpp-signed-bitwise)
 	if((tp.events.test(Pollable::PollOutIndex)))
-		item.events |= ZMQ_POLLOUT;
+		item.events |= ZMQ_POLLOUT; // NOLINT(hicpp-signed-bitwise)
 
 	return 0;
 }
@@ -69,11 +70,11 @@ int ZmqPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 		if(item.revents) {
 			res--;
 
-			if(item.revents & ZMQ_POLLIN)
+			if(item.revents & ZMQ_POLLIN) // NOLINT(hicpp-signed-bitwise)
 				revents.set(Pollable::PollInIndex);
-			if(item.revents & ZMQ_POLLOUT)
+			if(item.revents & ZMQ_POLLOUT) // NOLINT(hicpp-signed-bitwise)
 				revents.set(Pollable::PollOutIndex);
-			if(item.revents & ZMQ_POLLERR)
+			if(item.revents & ZMQ_POLLERR) // NOLINT(hicpp-signed-bitwise)
 				revents.set(Pollable::PollErrIndex);
 		}
 
@@ -95,24 +96,25 @@ int ZmqPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 int PollPoller::init(Pollable const& p, struct pollfd& item) noexcept
 {
 	// We only have TypedPollables.
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
 	TypedPollable const& tp = static_cast<TypedPollable const&>(p);
 
 	if(tp.type() == PollableFd::staticType())
-		item.fd = static_cast<PollableFd const&>(tp).fd;
+		item.fd = down_cast<PollableFd const&>(tp).fd;
 	else if(tp.type() == PollableFileLayer::staticType())
-		item.fd = static_cast<PollableFileLayer const&>(tp).layer->fd();
+		item.fd = down_cast<PollableFileLayer const&>(tp).layer->fd();
 	else
 		return EINVAL;
 
 	item.events = 0;
 	if((tp.events.test(Pollable::PollInIndex)))
-		item.events |= POLLIN;
+		item.events |= POLLIN; // NOLINT(hicpp-signed-bitwise)
 	if((tp.events.test(Pollable::PollOutIndex)))
-		item.events |= POLLOUT;
+		item.events |= POLLOUT; // NOLINT(hicpp-signed-bitwise)
 	if((tp.events.test(Pollable::PollPriIndex)))
-		item.events |= POLLPRI;
+		item.events |= POLLPRI; // NOLINT(hicpp-signed-bitwise)
 	if((tp.events.test(Pollable::PollHupIndex)))
-		item.events |= POLLHUP;
+		item.events |= POLLHUP; // NOLINT(hicpp-signed-bitwise)
 
 	return 0;
 }
@@ -133,15 +135,15 @@ int PollPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 		if(item.revents) {
 			res--;
 
-			if(item.revents & POLLIN)
+			if(item.revents & POLLIN) // NOLINT(hicpp-signed-bitwise)
 				revents.set(Pollable::PollInIndex);
-			if(item.revents & POLLOUT)
+			if(item.revents & POLLOUT) // NOLINT(hicpp-signed-bitwise)
 				revents.set(Pollable::PollOutIndex);
-			if(item.revents & POLLERR)
+			if(item.revents & POLLERR) // NOLINT(hicpp-signed-bitwise)
 				revents.set(Pollable::PollErrIndex);
-			if(item.revents & POLLPRI)
+			if(item.revents & POLLPRI) // NOLINT(hicpp-signed-bitwise)
 				revents.set(Pollable::PollPriIndex);
-			if(item.revents & POLLHUP)
+			if(item.revents & POLLHUP) // NOLINT(hicpp-signed-bitwise)
 				revents.set(Pollable::PollHupIndex);
 		}
 
@@ -170,7 +172,7 @@ int poll_once_default(TypedPollable const& p, Pollable::Events& revents) noexcep
 #endif
 {
 	if(p.type() == PollableCallbackBase::staticType()) {
-		revents = static_cast<PollableCallbackBase const&>(p)();
+		revents = down_cast<PollableCallbackBase const&>(p)();
 		return 0;
 	} else {
 		// Not supported by default poll_once().
@@ -194,6 +196,7 @@ int LoopPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 			Pollable const& p = *items[i];
 			Pollable::Events revents = 0;
 
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
 			int e = poll_once(static_cast<TypedPollable const&>(p), revents);
 
 			switch(e) {

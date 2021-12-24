@@ -268,7 +268,7 @@ namespace stored {
 		char needEscape(char c) const;
 
 	private:
-		bool const m_all;
+		bool m_all;
 	};
 
 	/*!
@@ -291,6 +291,7 @@ namespace stored {
 
 		template <typename F,
 			SFINAE_IS_FUNCTION(F, NonDebugDecodeCallback, int) = 0>
+		// NOLINTNEXTLINE(misc-forwarding-reference-overload)
 		explicit TerminalLayer(F&& cb, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
 			: TerminalLayer(up, down)
 		{
@@ -549,7 +550,7 @@ namespace stored {
 		Callable<EventCallback>::type m_cb;
 #endif
 
-		size_t const m_maxEncodeBuffer;
+		size_t m_maxEncodeBuffer;
 		Deque<String::type*>::type m_encodeQueue;
 		Deque<String::type*>::type m_spare;
 		size_t m_encodeQueueSize;
@@ -678,7 +679,7 @@ namespace stored {
 		uint32_t m_encodeSeq;
 		bool m_encodeSeqReset;
 
-		size_t const m_maxEncodeBuffer;
+		size_t m_maxEncodeBuffer;
 		Vector<String::type>::type m_encodeBuffer;
 		size_t m_encodeBufferSize;
 	};
@@ -784,7 +785,7 @@ namespace stored {
 		virtual void reset() override;
 
 	private:
-		size_t const m_size;
+		size_t m_size;
 		String::type m_buffer;
 	};
 
@@ -821,7 +822,7 @@ namespace stored {
 
 	private:
 		FILE* m_f;
-		char const* const m_name;
+		char const* m_name;
 		bool m_enable;
 	};
 
@@ -1002,7 +1003,7 @@ namespace stored {
 			void reset() override final;
 			void reserve(size_t capacity);
 		private:
-			ProtocolLayer& m_to;
+			ProtocolLayer* m_to;
 			char* m_buffer;
 			size_t m_capacity;
 			size_t m_len;

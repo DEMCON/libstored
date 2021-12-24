@@ -554,7 +554,7 @@ void StoreJournal::reserveHeap(size_t storeVariableCount)
  * \param connection the protocol stack that is to wrap this SyncConnection
  */
 SyncConnection::SyncConnection(Synchronizer& synchronizer, ProtocolLayer& connection)
-	: m_synchronizer(synchronizer)
+	: m_synchronizer(&synchronizer)
 	, m_idInNext(1)
 {
 	connection.wrap(*this);
@@ -582,7 +582,7 @@ void SyncConnection::reset()
  */
 Synchronizer& SyncConnection::synchronizer() const
 {
-	return m_synchronizer;
+	return *m_synchronizer;
 }
 
 /*!

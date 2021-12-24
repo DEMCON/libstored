@@ -155,6 +155,7 @@ function(libstored_lib libprefix libpath)
 					"misc-*,"
 					"-misc-no-recursion,"
 					"-misc-non-private-member-variables-in-classes,"
+					"-misc-macro-parentheses,"
 
 					"readability-*,"
 					"-readability-braces-around-statements,"
@@ -313,7 +314,7 @@ function(libstored_generate target) # add all other models as varargs
 		endif()
 	endif()
 
-	if(LIBSTORED_DOCUMENTATION)
+	if(LIBSTORED_DOCUMENTATION AND TARGET doc)
 		add_dependencies(doc ${target}-libstored-generate)
 	endif()
 
