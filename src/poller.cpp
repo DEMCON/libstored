@@ -50,7 +50,11 @@ int ZmqPoller::init(Pollable const& p, zmq_pollitem_t& item) noexcept
 	TypedPollable const& tp = static_cast<TypedPollable const&>(p);
 
 	item.socket = nullptr;
+#	ifdef STORED_OS_WINDOWS
+	item.fd = INVALID_SOCKET;
+#	else
 	item.fd = -1;
+#	endif
 
 	if(tp.type() == PollableZmqSocket::staticType())
 		item.socket = down_cast<PollableZmqSocket const&>(tp).socket;
@@ -183,7 +187,7 @@ int PollPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 
 #if defined(STORED_COMPILER_MSVC)
 #	pragma comment(linker, "/alternatename:_poll_once=_poll_once_weak")
-int poll_once_weak(TypedPollable const& p, Pollable::Events& revents) noexcept
+extern "C" int poll_once_weak(TypedPollable const& p, Pollable::Events& revents) noexcept
 {
 	return poll_once_default(p, revents);
 }
