@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#define STORED_NO_DEPRECATED
+
 #include "TestStore.h"
 #include "libstored/poller.h"
 #include "gtest/gtest.h"
@@ -47,7 +49,6 @@ TEST(Poller, Win)
 	EXPECT_EQ(SetEvent(e), TRUE);
 	res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
-	EXPECT_EQ(res->at(0).handle, e);
 	EXPECT_EQ(res->at(0).user_data, (void*)1);
 
 	// Test fd (non-socket)

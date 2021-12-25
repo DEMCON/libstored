@@ -68,12 +68,17 @@ int main()
 		"Use a Debugger client to see interaction with the VHDL simulation.\n");
 
 	stored::Poller poller;
-	poller.add(xsim, nullptr, stored::Poller::PollIn);
-	poller.add(xsim.req(), nullptr, stored::Poller::PollIn);
-	poller.add(zmq, nullptr, stored::Poller::PollIn);
+
+	stored::PollableFileLayer xsimp(xsim, stored::Pollable::PollIn);
+	stored::PollableFileLayer xsimreqp(xsim.req(), stored::Pollable::PollIn);
+	stored::PollableZmqLayer zmqp(zmq, stored::Pollable::PollIn);
+	if((errno = poller.add(xsimp)) || (errno = poller.add(xsimreqp)) || (errno = poller.add(zmqp))) {
+		perror("Cannot initialize poller");
+		return 1;
+	}
 
 	while(true) {
-		// 1 s timeout, to force keep alives once in a while.
+		// 1 s timeout, to force keep alive once in a while.
 		if(poller.poll(1000000).empty()) {
 			switch(errno) {
 			case EAGAIN:
