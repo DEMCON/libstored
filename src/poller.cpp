@@ -21,6 +21,24 @@
 namespace stored {
 
 //////////////////////////////////////////////
+// WfmoPoller
+//
+
+int WfmoPoller::init(Pollable const& UNUSED_PAR(p), HANDLE& UNUSED_PAR(item)) noexcept
+{
+	// TODO
+	return ENOSYS;
+}
+
+void WfmoPoller::deinit(Pollable const& UNUSED_PAR(p), HANDLE& UNUSED_PAR(item)) noexcept {}
+
+int WfmoPoller::doPoll(int UNUSED_PAR(timeout_ms), PollItemList& UNUSED_PAR(items)) noexcept
+{
+	return ENOSYS;
+}
+
+
+//////////////////////////////////////////////
 // ZmqPoller
 //
 
@@ -34,14 +52,16 @@ int ZmqPoller::init(Pollable const& p, zmq_pollitem_t& item) noexcept
 	item.socket = nullptr;
 	item.fd = -1;
 
-	if(tp.type() == PollableFd::staticType())
-		item.fd = down_cast<PollableFd const&>(tp).fd;
-	else if(tp.type() == PollableFileLayer::staticType())
-		item.fd = down_cast<PollableFileLayer const&>(tp).layer->fd();
-	else if(tp.type() == PollableZmqSocket::staticType())
+	if(tp.type() == PollableZmqSocket::staticType())
 		item.socket = down_cast<PollableZmqSocket const&>(tp).socket;
 	else if(tp.type() == PollableZmqLayer::staticType())
 		item.socket = down_cast<PollableZmqLayer const&>(tp).layer->socket();
+#	ifndef STORED_OS_WINDOWS
+	else if(tp.type() == PollableFd::staticType())
+		item.fd = down_cast<PollableFd const&>(tp).fd;
+	else if(tp.type() == PollableFileLayer::staticType())
+		item.fd = down_cast<PollableFileLayer const&>(tp).layer->fd();
+#	endif
 	else
 		return EINVAL;
 

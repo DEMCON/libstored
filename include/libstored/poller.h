@@ -362,7 +362,8 @@ public:
 	PolledFileLayer* layer;
 };
 
-inline PollableFileLayer pollable(PolledFileLayer& l, Pollable::Events const& events, void* user = nullptr)
+inline PollableFileLayer
+pollable(PolledFileLayer& l, Pollable::Events const& events, void* user = nullptr)
 {
 	return PollableFileLayer(l, events, user);
 }
@@ -401,10 +402,12 @@ public:
 	HANDLE handle;
 };
 
+#		if 0 // Ambiguous with pollable(ZeroMQ socket), as they are both void*.
 inline PollableHandle pollable(HANDLE h, Pollable::Events const& events, void* user = nullptr)
 {
 	return PollableHandle(h, events, user);
 }
+#		endif
 #	endif // STORED_OS_WINDOWS
 
 #	ifdef STORED_HAVE_ZMQ
@@ -482,8 +485,52 @@ protected:
 //////////////////////////////////////////////
 // Polling using WaitForMultipleObjects()
 //
+// Without Zth:			With Zth:
+//
+// stored::PollerBase		zth::PollerServer
+//	^				^
+//	|				|
+// stored::WfmoPoller		stored::WfmoPoller
+// = stored::PollerImpl		= stored::PollerServer
+//	^
+//	|
+// stored::Poller		zth::PollerClient
+//				= stored::Poller
 
-// TODO
+#	ifdef STORED_OS_WINDOWS
+#		ifdef STORED_HAVE_ZTH
+typedef zth::PollerServer<HANDLE> WfmoPollerBase;
+#		else
+typedef PollerBase<HANDLE> WfmoPollerBase;
+#		endif
+
+class WfmoPoller : public WfmoPollerBase {
+	STORED_CLASS_NOCOPY(WfmoPoller)
+	STORED_CLASS_NEW_DELETE(WfmoPoller)
+public:
+	virtual ~WfmoPoller() override is_default
+
+#		ifndef STORED_HAVE_ZTH
+protected:
+#		endif
+	WfmoPoller() is_default
+
+#		ifdef STORED_HAVE_ZTH
+private:
+#		else
+protected:
+#		endif
+	virtual int init(Pollable const& p, HANDLE& item) noexcept final;
+	virtual void deinit(Pollable const& p, HANDLE& item) noexcept final;
+	virtual int doPoll(int timeout_ms, PollItemList& items) noexcept final;
+};
+
+#		ifdef STORED_POLL_WFMO
+typedef WfmoPoller PollerImpl;
+#		elif defined(STORED_POLL_ZTH_WFMO)
+typedef WfmoPoller PollerServer;
+#		endif
+#	endif // STORED_OS_WINDOWS
 
 
 
@@ -1014,7 +1061,7 @@ public:
 	struct compare_SOCKET {
 		bool operator()(PollableSocket const& p, SOCKET s) const
 		{
-			return p.socket == socket;
+			return p.socket == s;
 		}
 	};
 
