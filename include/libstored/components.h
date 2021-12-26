@@ -150,6 +150,17 @@ namespace stored {
 		struct ids { enum { size = sizeof...(Id) }; };
 
 		/*!
+		 * \brief Check if the given \p Id is in the \c ids list.
+		 *
+		 * The member \c value is set to non-zero when it is in the list.
+		 */
+		template <char Id, typename Ids>
+		struct has_id_in_ids {};
+
+		template <char Id, char... Ids>
+		struct has_id_in_ids<Id,ids<Ids...>> { enum { value = has_id<Id,Ids...>::value }; };
+
+		/*!
 		 * \brief Concatenate two \c Id lists.
 		 *
 		 * The member \c type will be set to the new #stored::impl::ids list.
@@ -341,7 +352,8 @@ namespace stored {
 			static_assert(impl::is_unique<OnlyId...>::value, "");
 			static_assert(impl::is_unique<IdMap...>::value, "");
 			FreeObjects fo;
-			size_t dummy[] = {0, (impl::has_id<IdMap,OnlyId...>::value ? fo.init<IdMap>(prefix, std::forward<LongNames>(longNames)) : 0)...};
+			using onlyIds = ids<OnlyId...>;
+			size_t dummy[] = {0, (impl::has_id_in_ids<IdMap,onlyIds>::value ? fo.init<IdMap>(prefix, std::forward<LongNames>(longNames)) : 0)...};
 			(void)dummy;
 			return fo;
 		}
