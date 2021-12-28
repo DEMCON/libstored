@@ -498,10 +498,14 @@ protected:
 //				= stored::Poller
 
 #	ifdef STORED_OS_WINDOWS
+struct WfmoPollerItem {
+	TypedPollable const* pollable;
+	HANDLE h;
+};
 #		ifdef STORED_HAVE_ZTH
-typedef zth::PollerServer<HANDLE> WfmoPollerBase;
+typedef zth::PollerServer<WfmoPollerItem> WfmoPollerBase;
 #		else
-typedef PollerBase<HANDLE> WfmoPollerBase;
+typedef PollerBase<WfmoPollerItem> WfmoPollerBase;
 #		endif
 
 class WfmoPoller : public WfmoPollerBase {
@@ -520,9 +524,12 @@ private:
 #		else
 protected:
 #		endif
-	virtual int init(Pollable const& p, HANDLE& item) noexcept final;
-	virtual void deinit(Pollable const& p, HANDLE& item) noexcept final;
+	virtual int init(Pollable const& p, WfmoPollerItem& item) noexcept final;
+	virtual void deinit(Pollable const& p, WfmoPollerItem& item) noexcept final;
 	virtual int doPoll(int timeout_ms, PollItemList& items) noexcept final;
+private:
+	Vector<HANDLE>::type m_handles;
+	Vector<size_t>::type m_indexMap;
 };
 
 #		ifdef STORED_POLL_WFMO
@@ -1155,12 +1162,13 @@ public:
 
 	virtual void clear() noexcept override
 	{
+		base::clear();
+
 		for(decltype(m_pollables.begin()) it = m_pollables.begin(); it != m_pollables.end();
 		    ++it)
 			delete *it; // NOLINT(cppcoreguidelines-owning-memory)
 
 		m_pollables.clear();
-		base::clear();
 	}
 
 private:

@@ -24,18 +24,262 @@ namespace stored {
 // WfmoPoller
 //
 
-int WfmoPoller::init(Pollable const& UNUSED_PAR(p), HANDLE& UNUSED_PAR(item)) noexcept
+#ifdef STORED_OS_WINDOWS
+static HANDLE dummyEventSet;   // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+static HANDLE dummyEventReset; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+
+static int fd_to_HANDLE(int fd, HANDLE& h)
 {
-	// TODO
-	return ENOSYS;
+	intptr_t res = _get_osfhandle(fd);
+
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,performance-no-int-to-ptr)
+	if((HANDLE)res == INVALID_HANDLE_VALUE) {
+		return EBADF;
+	} else if(res == -2) {
+		// stdin/stdout/stderr has no stream associated
+		// Always block.
+		if(!dummyEventReset)
+			if(!(dummyEventReset = CreateEvent(nullptr, TRUE, FALSE, nullptr)))
+				return EIO;
+
+		h = dummyEventReset;
+		return 0;
+	} else if(fd == _fileno(stdout) || fd == _fileno(stderr)) {
+		// Cannot WaitFor... on stdout/stderr. Always return immediately using a dummy
+		// event.
+		if(!dummyEventSet)
+			if(!(dummyEventSet = CreateEvent(nullptr, TRUE, TRUE, nullptr)))
+				return EIO;
+
+		h = dummyEventSet;
+		return 0;
+	} else if(fd == _fileno(stdin)) {
+		// We can wait for stdin's HANDLE.
+		h = (HANDLE)res;
+		return 0;
+	} else {
+		// Although res is a HANDLE, it cannot be used for WaitForMultipleObjects.
+		return EBADF;
+	}
 }
 
-void WfmoPoller::deinit(Pollable const& UNUSED_PAR(p), HANDLE& UNUSED_PAR(item)) noexcept {}
+#	ifdef STORED_HAVE_ZMQ
+static int socket_to_SOCKET(void* zmq, SOCKET& win)
+{
+	size_t len = sizeof(win);
+	return zmq_getsockopt(zmq, ZMQ_FD, &win, &len) ? errno : 0;
+}
+#	endif // STORED_HAVE_ZMQ
+
+static int SOCKET_to_HANDLE(SOCKET UNUSED_PAR(s), HANDLE& h)
+{
+	stored_assert(s != INVALID_SOCKET); // NOLINT(hicpp-signed-bitwise)
+
+	if(!h) {
+		// Note that this is just an Event, unrelated to the SOCKET.
+		// Use setEvents() for that.
+		if(!(h = WSACreateEvent()))
+			return ENOMEM;
+	}
+
+	return 0;
+}
+
+static int setEvents(SOCKET s, HANDLE h, Pollable::Events events)
+{
+	stored_assert(s != INVALID_SOCKET); // NOLINT(hicpp-signed-bitwise)
+	stored_assert(h);
+
+	long e = FD_CLOSE; // NOLINT(hicpp-signed-bitwise)
+	if(events.test(Pollable::PollIn))
+		e |= FD_READ | FD_ACCEPT | FD_OOB; // NOLINT(hicpp-signed-bitwise)
+	if(events.test(Pollable::PollOut))
+		e |= FD_WRITE; // NOLINT(hicpp-signed-bitwise)
+
+	if(WSAEventSelect(s, h, e))
+		return EIO;
+
+	return 0;
+}
+
+int WfmoPoller::init(Pollable const& p, WfmoPollerItem& item) noexcept
+{
+	// We only have TypedPollables.
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
+	TypedPollable const& tp = static_cast<TypedPollable const&>(p);
+	item.pollable = &tp;
+	item.h = nullptr;
+
+	int res = 0;
+
+	if(tp.type() == PollableFd::staticType()) {
+		if((res = fd_to_HANDLE(down_cast<PollableFd const*>(item.pollable)->fd, item.h)))
+			return res;
+	} else if(tp.type() == PollableFileLayer::staticType()) {
+		// fd() is actually an Event related to the overlapped read.
+		// Checking for PollOut wouldn't make sense.
+		item.h = down_cast<PollableFileLayer const*>(item.pollable)->layer->fd();
+	} else if(tp.type() == PollableHandle::staticType()) {
+		// Not every HANDLE can be waited for. However, we don't check its type.
+		item.h = down_cast<PollableHandle const*>(item.pollable)->handle;
+	} else if(tp.type() == PollableSocket::staticType()) {
+		PollableSocket const* ps = down_cast<PollableSocket const*>(item.pollable);
+		if((res = SOCKET_to_HANDLE(ps->socket, item.h)))
+			return res;
+		if((res = setEvents(ps->socket, item.h, tp.events))) {
+			WSACloseEvent(item.h);
+			return res;
+		}
+	}
+#	ifdef STORED_HAVE_ZMQ
+	else if(tp.type() == PollableZmqSocket::staticType()) {
+		SOCKET s = INVALID_SOCKET; // NOLINT(hicpp-signed-bitwise)
+		if((res = socket_to_SOCKET(down_cast<PollableZmqSocket const&>(tp).socket, s)))
+			return res;
+		if((res = SOCKET_to_HANDLE(s, item.h)))
+			return res;
+		if((res = setEvents(s, item.h, tp.events))) {
+			WSACloseEvent(item.h);
+			return res;
+		}
+	} else if(tp.type() == PollableZmqLayer::staticType()) {
+		SOCKET s = down_cast<PollableZmqLayer const&>(tp).layer->fd();
+		if((res = SOCKET_to_HANDLE(s, item.h)))
+			return res;
+		if((res = setEvents(s, item.h, tp.events))) {
+			WSACloseEvent(item.h);
+			return res;
+		}
+	}
+#	endif
+
+	return 0;
+}
+
+void WfmoPoller::deinit(Pollable const& p, WfmoPollerItem& item) noexcept
+{
+	// We only have TypedPollables.
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
+	TypedPollable const& tp = static_cast<TypedPollable const&>(p);
+
+	if(
+#	ifdef STORED_HAVE_ZMQ
+		tp.type() == PollableZmqSocket::staticType()
+		|| tp.type() == PollableZmqLayer::staticType() ||
+#	endif
+		tp.type() == PollableSocket::staticType())
+		WSACloseEvent(item.h);
+}
 
 int WfmoPoller::doPoll(int UNUSED_PAR(timeout_ms), PollItemList& UNUSED_PAR(items)) noexcept
 {
-	return ENOSYS;
+	if(items.size() > MAXIMUM_WAIT_OBJECTS)
+		return EINVAL;
+
+	m_handles.clear();
+	m_indexMap.clear();
+
+	m_handles.reserve(items.size());
+	m_indexMap.reserve(items.size());
+
+	for(size_t i = 0; i < items.size(); i++) {
+		m_handles.push_back(items[i].h);
+		m_indexMap.push_back(i);
+	}
+
+	// First try.
+	DWORD res = WaitForMultipleObjectsEx(
+		(DWORD)m_handles.size(), &m_handles[0], FALSE,
+		timeout_ms >= 0 ? timeout_ms : INFINITE, TRUE);
+
+	DWORD index = 0;
+	Pollable::Events revents = 0;
+	bool gotSomething = false;
+	int ret = EAGAIN;
+
+	while(true) {
+		WfmoPollerItem* item = nullptr;
+		revents = 0;
+
+		if(res == WAIT_TIMEOUT) {
+			break;
+		} else if(res == WAIT_IO_COMPLETION) {
+			// Completion routine is executed.
+			// Just retry.
+			ret = EINTR;
+			break;
+		} else if(res >= WAIT_OBJECT_0 && res < WAIT_OBJECT_0 + m_handles.size()) {
+			index = res - WAIT_OBJECT_0;
+			item = &items[m_indexMap[index]];
+			Pollable::Events const& events = item->pollable->events;
+			if(events.test(Pollable::PollInIndex))
+				revents.set(Pollable::PollInIndex);
+			if(events.test(Pollable::PollOutIndex))
+				revents.set(Pollable::PollOutIndex);
+		} else if(res >= WAIT_ABANDONED_0 && res < WAIT_ABANDONED_0 + m_handles.size()) {
+			index = res - WAIT_ABANDONED_0;
+			item = &items[m_indexMap[index]];
+			revents.set(Pollable::PollErrIndex);
+		} else {
+			ret = EINVAL;
+			break;
+		}
+
+		if(item->pollable->type() == PollableSocket::staticType())
+			WSAResetEvent(item->h);
+#	ifdef STORED_HAVE_ZMQ
+		else if(item->pollable->type() == PollableZmqSocket::staticType()
+			|| item->pollable->type() == PollableZmqLayer::staticType()) {
+			int zmq_events = ZMQ_POLLIN | ZMQ_POLLOUT; // NOLINT(hicpp-signed-bitwise)
+			size_t len = sizeof(zmq_events);
+			void* socket = nullptr;
+
+			if(item->pollable->type() == PollableZmqSocket::staticType())
+				socket =
+					down_cast<PollableZmqSocket const*>(item->pollable)->socket;
+			else
+				socket = down_cast<PollableZmqLayer const*>(item->pollable)
+						 ->layer->socket();
+
+			if(zmq_getsockopt(socket, ZMQ_EVENTS, &zmq_events, &len))
+				revents = 0;
+			if((zmq_events & ZMQ_POLLIN) == 0)
+				revents.reset(Pollable::PollInIndex);
+			if((zmq_events & ZMQ_POLLOUT) == 0)
+				revents.reset(Pollable::PollOutIndex);
+
+			WSAResetEvent(item->h);
+		}
+#	endif
+
+		gotSomething = true;
+		event(revents, m_indexMap[index]);
+
+		// WaitForMultipleObjects() only returns the first handle that was finished.
+		// But we would like to return them all. Check the rest too.
+		m_handles[index] = m_handles.back();
+		m_indexMap[index] = m_indexMap.back();
+
+		m_handles.pop_back();
+		m_indexMap.pop_back();
+
+		if(m_handles.empty())
+			break;
+
+		res = WaitForMultipleObjects((DWORD)m_handles.size(), &m_handles[0], FALSE, 0);
+	}
+
+	stored_assert(m_handles.size() == m_indexMap.size());
+
+	// Do report also all other pollables's events.
+	for(size_t i = 0; i < m_indexMap.size(); i++)
+		event(0, m_indexMap[index]);
+
+	return gotSomething ? 0 : ret;
 }
+
+#endif // STORED_OS_WINDOWS
+
 
 
 //////////////////////////////////////////////
