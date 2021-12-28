@@ -129,6 +129,8 @@ function(libstored_lib libprefix libpath)
 
 				string(CONCAT CLANG_TIDY_CHECKS "-checks="
 					"bugprone-*,"
+					"-bugprone-macro-parentheses,"
+
 					"clang-analyzer-*,"
 					"concurrency-*,"
 

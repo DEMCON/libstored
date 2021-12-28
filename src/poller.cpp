@@ -32,8 +32,7 @@ static int fd_to_HANDLE(int fd, HANDLE& h)
 {
 	intptr_t res = _get_osfhandle(fd);
 
-	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,performance-no-int-to-ptr)
-	if((HANDLE)res == INVALID_HANDLE_VALUE) {
+	if((HANDLE)res == INVALID_HANDLE_VALUE) { // NOLINT
 		return EBADF;
 	} else if(res == -2) {
 		// stdin/stdout/stderr has no stream associated
@@ -55,7 +54,7 @@ static int fd_to_HANDLE(int fd, HANDLE& h)
 		return 0;
 	} else if(fd == _fileno(stdin)) {
 		// We can wait for stdin's HANDLE.
-		h = (HANDLE)res;
+		h = (HANDLE)res; // NOLINT
 		return 0;
 	} else {
 		// Although res is a HANDLE, it cannot be used for WaitForMultipleObjects.
@@ -190,7 +189,7 @@ int WfmoPoller::doPoll(int UNUSED_PAR(timeout_ms), PollItemList& UNUSED_PAR(item
 	// First try.
 	DWORD res = WaitForMultipleObjectsEx(
 		(DWORD)m_handles.size(), &m_handles[0], FALSE,
-		timeout_ms >= 0 ? timeout_ms : INFINITE, TRUE);
+		timeout_ms >= 0 ? (DWORD)timeout_ms : INFINITE, TRUE);
 
 	DWORD index = 0;
 	Pollable::Events revents = 0;
@@ -243,9 +242,9 @@ int WfmoPoller::doPoll(int UNUSED_PAR(timeout_ms), PollItemList& UNUSED_PAR(item
 
 			if(zmq_getsockopt(socket, ZMQ_EVENTS, &zmq_events, &len))
 				revents = 0;
-			if((zmq_events & ZMQ_POLLIN) == 0)
+			if((zmq_events & ZMQ_POLLIN) == 0) // NOLINT
 				revents.reset(Pollable::PollInIndex);
-			if((zmq_events & ZMQ_POLLOUT) == 0)
+			if((zmq_events & ZMQ_POLLOUT) == 0) // NOLINT
 				revents.reset(Pollable::PollOutIndex);
 
 			WSAResetEvent(item->h);
@@ -273,7 +272,7 @@ int WfmoPoller::doPoll(int UNUSED_PAR(timeout_ms), PollItemList& UNUSED_PAR(item
 
 	// Do report also all other pollables's events.
 	for(size_t i = 0; i < m_indexMap.size(); i++)
-		event(0, m_indexMap[index]);
+		event(0, m_indexMap[i]);
 
 	return gotSomething ? 0 : ret;
 }
@@ -295,7 +294,7 @@ int ZmqPoller::init(Pollable const& p, zmq_pollitem_t& item) noexcept
 
 	item.socket = nullptr;
 #	ifdef STORED_OS_WINDOWS
-	item.fd = INVALID_SOCKET;
+	item.fd = INVALID_SOCKET; // NOLINT(hicpp-signed-bitwise)
 #	else
 	item.fd = -1;
 #	endif
