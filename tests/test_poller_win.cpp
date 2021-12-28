@@ -18,12 +18,12 @@
 
 #define STORED_NO_DEPRECATED
 
-#include "TestStore.h"
 #include "libstored/poller.h"
+#include "TestStore.h"
 #include "gtest/gtest.h"
 
 #ifdef STORED_HAVE_ZMQ
-#  include <zmq.h>
+#	include <zmq.h>
 #endif
 
 namespace {
@@ -40,7 +40,7 @@ TEST(Poller, Win)
 	stored::Poller poller;
 
 	// Test HANDLE
-	poller.addh(e, (void*)1, stored::Poller::PollIn);
+	EXPECT_EQ(poller.addh(e, (void*)1, stored::Poller::PollIn), 0);
 
 	auto const* res = &poller.poll(0);
 	EXPECT_NE(errno, 0);
@@ -85,7 +85,7 @@ TEST(Poller, Zmq)
 	auto const* res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
 	EXPECT_EQ(res->at(0).user_data, (void*)2);
-	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollOut);
+	EXPECT_EQ(res->at(0).revents, (stored::Poller::events_t)stored::Poller::PollOut);
 
 	zmq_send(req, "Hi", 2, 0);
 
@@ -107,4 +107,3 @@ TEST(Poller, Zmq)
 #endif // STORED_HAVE_ZMQ
 
 } // namespace
-
