@@ -170,7 +170,34 @@ void WfmoPoller::deinit(Pollable const& p, WfmoPollerItem& item) noexcept
 		WSACloseEvent(item.h);
 }
 
-int WfmoPoller::doPoll(int UNUSED_PAR(timeout_ms), PollItemList& UNUSED_PAR(items)) noexcept
+#	ifdef STORED_HAVE_ZMQ
+static Pollable::Events zmqCheckSocket(WfmoPollerItem& item) noexcept
+{
+	void* socket = nullptr;
+
+	if(item.pollable->type() == PollableZmqSocket::staticType())
+		socket = down_cast<PollableZmqSocket const*>(item.pollable)->socket;
+	else if(item.pollable->type() == PollableZmqLayer::staticType())
+		socket = down_cast<PollableZmqLayer const*>(item.pollable)->layer->socket();
+	else
+		return 0;
+
+	int zmq_events = 0;
+	size_t len = sizeof(zmq_events);
+	Pollable::Events revents;
+
+	if(zmq_getsockopt(socket, ZMQ_EVENTS, &zmq_events, &len))
+		revents = 0;
+	if((zmq_events & ZMQ_POLLIN)) // NOLINT
+		revents.set(Pollable::PollInIndex);
+	if((zmq_events & ZMQ_POLLOUT) == 0) // NOLINT
+		revents.set(Pollable::PollOutIndex);
+
+	return revents & item.pollable->events;
+}
+#	endif
+
+int WfmoPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 {
 	if(items.size() > MAXIMUM_WAIT_OBJECTS)
 		return EINVAL;
@@ -181,10 +208,38 @@ int WfmoPoller::doPoll(int UNUSED_PAR(timeout_ms), PollItemList& UNUSED_PAR(item
 	m_handles.reserve(items.size());
 	m_indexMap.reserve(items.size());
 
+	Pollable::Events revents = 0;
+	bool gotSomething = false;
+
 	for(size_t i = 0; i < items.size(); i++) {
+#	ifdef STORED_HAVE_ZMQ
+		if((revents = zmqCheckSocket(items[i])).any()) {
+			// The socket is already triggered, so skip the WFMO,
+			// as the corresponding SOCKET may not be triggered at
+			// the moment.  See ZeroMQ documentation regarding edge
+			// triggered events.
+
+			// Report immediately...
+			event(revents, i);
+			gotSomething = true;
+			// ...and make sure that the WMFO will not block...
+			timeout_ms = 0;
+			// ...and skip this Pollable for the WFMO.
+			continue;
+		}
+#	endif
 		m_handles.push_back(items[i].h);
 		m_indexMap.push_back(i);
 	}
+
+#	ifdef STORED_HAVE_ZMQ
+	if(m_handles.empty()) {
+		// Apparently, all items have already been passed through
+		// even() because of the zmqCheckSocket(). No need to proceed
+		// to WFMO.
+		return 0;
+	}
+#	endif
 
 	// First try.
 	DWORD res = WaitForMultipleObjectsEx(
@@ -192,8 +247,6 @@ int WfmoPoller::doPoll(int UNUSED_PAR(timeout_ms), PollItemList& UNUSED_PAR(item
 		timeout_ms >= 0 ? (DWORD)timeout_ms : INFINITE, TRUE);
 
 	DWORD index = 0;
-	Pollable::Events revents = 0;
-	bool gotSomething = false;
 	int ret = EAGAIN;
 
 	while(true) {
@@ -229,24 +282,7 @@ int WfmoPoller::doPoll(int UNUSED_PAR(timeout_ms), PollItemList& UNUSED_PAR(item
 #	ifdef STORED_HAVE_ZMQ
 		else if(item->pollable->type() == PollableZmqSocket::staticType()
 			|| item->pollable->type() == PollableZmqLayer::staticType()) {
-			int zmq_events = ZMQ_POLLIN | ZMQ_POLLOUT; // NOLINT(hicpp-signed-bitwise)
-			size_t len = sizeof(zmq_events);
-			void* socket = nullptr;
-
-			if(item->pollable->type() == PollableZmqSocket::staticType())
-				socket =
-					down_cast<PollableZmqSocket const*>(item->pollable)->socket;
-			else
-				socket = down_cast<PollableZmqLayer const*>(item->pollable)
-						 ->layer->socket();
-
-			if(zmq_getsockopt(socket, ZMQ_EVENTS, &zmq_events, &len))
-				revents = 0;
-			if((zmq_events & ZMQ_POLLIN) == 0) // NOLINT
-				revents.reset(Pollable::PollInIndex);
-			if((zmq_events & ZMQ_POLLOUT) == 0) // NOLINT
-				revents.reset(Pollable::PollOutIndex);
-
+			revents = zmqCheckSocket(*item);
 			WSAResetEvent(item->h);
 		}
 #	endif
