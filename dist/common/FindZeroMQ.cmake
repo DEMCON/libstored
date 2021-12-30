@@ -50,7 +50,8 @@ if(NOT TARGET libzmq)
 	message(STATUS "Building ZeroMQ from source")
 	set(ZeroMQ_FOUND 1)
 
-	set(libzmq_flags -DCMAKE_BUILD_TYPE=Release -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+	set(libzmq_flags -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPES=Release
+		-DCMAKE_GENERATOR=${CMAKE_GENERATOR}
 		-DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}
 		-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
 		-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
@@ -75,11 +76,7 @@ if(NOT TARGET libzmq)
 			else()
 				set(MSVC_TOOLSET "")
 			endif()
-			if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-				set(dllname "${MSVC_TOOLSET}-mt-gd")
-			else()
-				set(dllname "${MSVC_TOOLSET}-mt")
-			endif()
+			set(dllname "${MSVC_TOOLSET}-mt")
 			set(_libzmq_loc ${CMAKE_INSTALL_PREFIX}/bin/libzmq${dllname}-4_3_1.dll)
 			set(_libzmq_implib ${CMAKE_INSTALL_PREFIX}/lib/libzmq${dllname}-4_3_1.lib)
 		else()
@@ -92,15 +89,32 @@ if(NOT TARGET libzmq)
 		set(_libzmq_loc ${CMAKE_INSTALL_PREFIX}/lib/libzmq.so)
 	endif()
 
-	ExternalProject_Add(
-		libzmq-extern
-		GIT_REPOSITORY https://github.com/zeromq/libzmq.git
-		GIT_TAG v4.3.1
-		CMAKE_ARGS ${libzmq_flags}
-		INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-		BUILD_BYPRODUCTS ${_libzmq_loc} ${_libzmq_implib}
-		UPDATE_DISCONNECTED 1
-	)
+	set(libzmq_repo "https://github.com/zeromq/libzmq.git")
+	set(libzmq_tag "v4.3.1")
+
+	if(MSVC)
+		ExternalProject_Add(
+			libzmq-extern
+			GIT_REPOSITORY ${libzmq_repo}
+			GIT_TAG ${libzmq_tag}
+			CMAKE_ARGS ${libzmq_flags}
+			INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+			BUILD_BYPRODUCTS ${_libzmq_loc} ${_libzmq_implib}
+			UPDATE_DISCONNECTED 1
+			BUILD_COMMAND ""
+			INSTALL_COMMAND "${CMAKE_COMMAND}" --build . --target install --config Release
+		)
+	else()
+		ExternalProject_Add(
+			libzmq-extern
+			GIT_REPOSITORY ${libzmq_repo}
+			GIT_TAG ${libzmq_tag}
+			CMAKE_ARGS ${libzmq_flags}
+			INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+			BUILD_BYPRODUCTS ${_libzmq_loc} ${_libzmq_implib}
+			UPDATE_DISCONNECTED 1
+		)
+	endif()
 
 	file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/include)
 	file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/lib)
