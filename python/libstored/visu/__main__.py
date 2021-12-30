@@ -25,6 +25,7 @@ import importlib.util
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtCore import Qt, QCoreApplication, qInstallMessageHandler, QtMsgType
+from PySide6.QtQuickControls2 import QQuickStyle
 
 from ..zmq_client import ZmqClient
 from ..zmq_server import ZmqServer
@@ -69,6 +70,7 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.DEBUG)
 
     app = QGuiApplication(sys.argv)
+    QQuickStyle.setStyle("Basic")
 
     csv = args.csv
     if csv != None:

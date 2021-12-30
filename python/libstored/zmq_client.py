@@ -27,6 +27,7 @@ import heatshrink2
 import keyword
 import weakref
 import random
+import locale
 
 from PySide6.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, QLocale, \
     QEvent, QCoreApplication, QStandardPaths, QSocketNotifier, QEventLoop, SIGNAL
@@ -563,6 +564,12 @@ class Object(QObject):
 
     valueString = _Property(str, _valueString_get, _valueString_set, notify=valueStringChanged)
 
+    def _format_int(self, x):
+        # QLocale does not support ints larger than 32-bit, so fallback to
+        # python locale formatting.  It should be the same, though.
+        locale.setlocale(locale.LC_NUMERIC, '')
+        return f'{x:n}'
+
     def _format_get(self):
         return self._format
 
@@ -583,7 +590,7 @@ class Object(QObject):
         elif self._type & ~self.FlagFunction == self.Double:
             self._formatter = lambda x: self.locale.toString(x, 'g', 15)
         elif self._type & self.FlagInt:
-            self._formatter = lambda x: self.locale.toString(x)
+            self._formatter = self._format_int
         else:
             self._formatter = str
 

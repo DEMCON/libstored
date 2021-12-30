@@ -28,6 +28,7 @@ from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtCore import QUrl, QAbstractListModel, QModelIndex, Qt, Slot, \
     QSortFilterProxyModel, QCoreApplication, qInstallMessageHandler, QtMsgType, \
     QObject, QTimer, Property, Signal
+from PySide6.QtQuickControls2 import QQuickStyle
 
 from . import gui_qrc
 
@@ -382,6 +383,8 @@ if __name__ == '__main__':
         app = QApplication(sys.argv)
     else:
         app = QGuiApplication(sys.argv)
+
+    QQuickStyle.setStyle("Basic")
 
     parser = argparse.ArgumentParser(prog=sys.modules[__name__].__package__, description='ZMQ GUI client', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-V', action='version', version=__version__)
