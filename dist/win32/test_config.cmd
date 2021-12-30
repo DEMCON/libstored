@@ -61,8 +61,10 @@ echo.
 echo ============================
 echo == Running config: %*
 echo.
-if exist "%here%build" rmdir /s /q "%here%build"
+if not exist "%here%build" goto build
+rmdir /s /q "%here%build"
 if errorlevel 1 goto error
+:build
 call "%here%build.cmd" %*
 if errorlevel 1 goto silent_error
 goto done
