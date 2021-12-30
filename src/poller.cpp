@@ -199,6 +199,13 @@ static Pollable::Events zmqCheckSocket(WfmoPollerItem& item) noexcept
 
 int WfmoPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 {
+	if(items.size() == 0) {
+		// Nothing to poll. Mimic the timeout anyway.
+		if(timeout_ms > 0)
+			Sleep((DWORD)timeout_ms);
+		return EAGAIN;
+	}
+
 	if(items.size() > MAXIMUM_WAIT_OBJECTS)
 		return EINVAL;
 
