@@ -1,6 +1,11 @@
 #!/bin/bash
 
-set -euo pipefail
+set -uo pipefail
+
+function gotErr {
+	echo -e "\nError occurred, stopping\n"
+	exit 2
+}
 
 dir="$( cd "$(dirname "${BASH_SOURCE[0]}")"/..; pwd -P )"
 venv_dir="${dir}/.venv"
@@ -12,12 +17,12 @@ function venv_install {
 	if [[ ! -e ${venv_dir} ]]; then
 		if [[ ${in_venv} == 1 ]]; then
 			echo "Preparing current venv with `which python3`..."
-			python3 -m pip install --prefer-binary --upgrade wheel pip
-			mkdir -p "${venv_dir}"
+			python3 -m pip install --upgrade wheel pip || gotErr
+			mkdir -p "${venv_dir}" || gotErr
 		else
 			echo Installing venv in "${venv_dir}"...
-			python3 -m venv "${venv_dir}"
-			"${venv_dir}/bin/python3" -m pip install --prefer-binary --upgrade wheel pip
+			python3 -m venv "${venv_dir}" || gotErr
+			"${venv_dir}/bin/python3" -m pip install --upgrade wheel pip || gotErr
 		fi
 	fi
 }
@@ -42,17 +47,40 @@ function venv_just_activate {
 	fi
 }
 
+function venv_requirements_minimal {
+	venv_just_activate
+	echo "Installing minimal dependencies in "${venv_dir}" using `which python3`..."
+	python3 -m pip install --prefer-binary --upgrade \
+		-r "${dir}/common/requirements-minimal.txt" || gotErr
+
+	touch "${venv_dir}/.timestamp-minimal" || gotErr
+}
+
 function venv_requirements {
 	venv_just_activate
 	echo "Installing dependencies in "${venv_dir}" using `which python3`..."
 	python3 -m pip install --prefer-binary --upgrade \
-		-r "${dir}/common/requirements.txt"
+		-r "${dir}/common/requirements.txt" || gotErr
 
-	touch "${venv_dir}/.timestamp"
+	touch "${venv_dir}/.timestamp-minimal" || gotErr
+	touch "${venv_dir}/.timestamp" || gotErr
+}
+
+function venv_check_minimal {
+	if [[	-e "${venv_dir}" &&
+		"${dir}/common/requirements-minimal.txt" -ot "${venv_dir}/.timestamp-minimal"
+	]]; then
+		# Nothing to do
+		return 0
+	else
+		venv_requirements_minimal
+		return 1
+	fi
 }
 
 function venv_check {
 	if [[	-e "${venv_dir}" &&
+		"${dir}/common/requirements-minimal.txt" -ot "${venv_dir}/.timestamp-minimal" &&
 		"${dir}/common/requirements.txt" -ot "${venv_dir}/.timestamp"
 	]]; then
 		# Nothing to do
@@ -82,7 +110,7 @@ function venv_deactivate {
 function venv_clean {
 	venv_deactivate
 	if [[ -e ${venv_dir} ]]; then
-		rm -rf "${venv_dir}"
+		rm -rf "${venv_dir}" || gotErr
 	fi
 }
 
@@ -104,12 +132,16 @@ case "${op}" in
 		venv_just_activate;;
 	"install")
 		venv_requirements;;
+	"install-minimal")
+		venv_requirements_minimal;;
 	"activate")
 		venv_activate;;
 	"deactivate")
 		venv_deactivate;;
 	"check")
 		venv_check;;
+	"check-minimal")
+		venv_check_minimal;;
 	"clean")
 		venv_clean;;
 	*)

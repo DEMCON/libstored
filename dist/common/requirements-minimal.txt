@@ -1,0 +1,4 @@
+# Only the packages required for the generator.
+jinja2
+textx
+argparse

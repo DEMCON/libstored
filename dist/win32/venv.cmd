@@ -47,7 +47,7 @@ if exist "%venv_dir%" goto :eof
 if %in_venv% == 0 goto do_install
 
 echo Preparing current venv with %python%...
-"%python%" -m pip install --prefer-binary --upgrade wheel pip
+"%python%" -m pip install --upgrade wheel pip
 if errorlevel 1 goto error
 mkdir "%venv_dir%"
 if errorlevel 1 goto error

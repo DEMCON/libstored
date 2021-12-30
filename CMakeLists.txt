@@ -59,10 +59,27 @@ else()
 	set(LIBSTORED_DEV_OPTION OFF)
 endif()
 
+option(LIBSTORED_PYLIBSTORED "Build python libstored package" ON)
+
+if(WIN32 OR NOT LIBSTORED_PYLIBSTORED)
+	# The documentation needs wavedrom (via sphinx), but sphinxcontrib-wavedrom
+	# needs cairo.  In turn, that package needs libcairo-2.dll (64-bit,
+	# matching python's word size), which cannot be installed automatically by
+	# bootstrap.cmd. So, by default, leave it out.
+	option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" OFF)
+else()
+	option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" ON)
+endif()
+
 option(LIBSTORED_VENV "Create a python venv" ON)
 if(LIBSTORED_VENV)
 	if(UNIX)
-		execute_process(COMMAND ${PROJECT_SOURCE_DIR}/dist/common/venv.sh check RESULT_VARIABLE ret)
+		if(LIBSTORED_PYLIBSTORED OR LIBSTORED_DOCUMENTATION)
+			set(venv_check "check")
+		else()
+			set(venv_check "check-minimal")
+		endif()
+		execute_process(COMMAND ${PROJECT_SOURCE_DIR}/dist/common/venv.sh ${venv_check} RESULT_VARIABLE ret)
 		list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_SOURCE_DIR}/dist/.venv/bin")
 	elseif(WIN32)
 		execute_process(COMMAND ${PROJECT_SOURCE_DIR}/dist/win32/venv.cmd check RESULT_VARIABLE ret)
@@ -85,19 +102,7 @@ option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" OFF)
 option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" OFF)
 option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" OFF)
 
-option(LIBSTORED_PYLIBSTORED "Build python libstored package" ON)
-
 add_subdirectory(version)
-
-if(WIN32)
-	# The documentation needs wavedrom (via sphinx), but sphinxcontrib-wavedrom
-	# needs cairo.  In turn, that package needs libcairo-2.dll (64-bit,
-	# matching python's word size), which cannot be installed automatically by
-	# bootstrap.cmd. So, by default, leave it out.
-	option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" OFF)
-else()
-	option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" ON)
-endif()
 
 if(LIBSTORED_DOCUMENTATION AND LIBSTORED_PYLIBSTORED)
 	add_subdirectory(sphinx)

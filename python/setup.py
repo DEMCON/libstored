@@ -37,7 +37,7 @@ setuptools.setup(
         'crcmod',
         'natsort',
         'heatshrink2',
-        'matplotlib>=3.5.0rc1', # PySide6 support starts from 3.5.0
+        'matplotlib>=3.5.0', # PySide6 support starts from 3.5.0
 #        'lognplot', # optional
     ],
     python_requires='>=3.6',
