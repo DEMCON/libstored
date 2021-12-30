@@ -90,9 +90,9 @@ static int setEvents(SOCKET s, HANDLE h, Pollable::Events events)
 	stored_assert(h);
 
 	long e = FD_CLOSE; // NOLINT(hicpp-signed-bitwise)
-	if(events.test(Pollable::PollIn))
+	if(events.test(Pollable::PollInIndex))
 		e |= FD_READ | FD_ACCEPT | FD_OOB; // NOLINT(hicpp-signed-bitwise)
-	if(events.test(Pollable::PollOut))
+	if(events.test(Pollable::PollOutIndex))
 		e |= FD_WRITE; // NOLINT(hicpp-signed-bitwise)
 
 	if(WSAEventSelect(s, h, e))
@@ -199,7 +199,7 @@ static Pollable::Events zmqCheckSocket(WfmoPollerItem& item) noexcept
 
 int WfmoPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 {
-	if(items.size() == 0) {
+	if(items.empty()) {
 		// Nothing to poll. Mimic the timeout anyway.
 		if(timeout_ms > 0)
 			Sleep((DWORD)timeout_ms);
