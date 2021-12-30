@@ -190,7 +190,7 @@ static Pollable::Events zmqCheckSocket(WfmoPollerItem& item) noexcept
 		revents = 0;
 	if((zmq_events & ZMQ_POLLIN)) // NOLINT
 		revents.set(Pollable::PollInIndex);
-	if((zmq_events & ZMQ_POLLOUT) == 0) // NOLINT
+	if((zmq_events & ZMQ_POLLOUT)) // NOLINT
 		revents.set(Pollable::PollOutIndex);
 
 	return revents & item.pollable->events;
