@@ -5,6 +5,7 @@ textx
 pyzmq
 PySide6
 pyserial
+argparse
 natsort
 crcmod
 heatshrink2
@@ -13,3 +14,4 @@ sphinx-rtd-theme
 sphinxcontrib-plantuml
 breathe
 sphinxcontrib-wavedrom
+matplotlib>=3.5.0rc1
