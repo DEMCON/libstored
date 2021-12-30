@@ -22,8 +22,7 @@ echo -e "  sudo apt install -y ninja-build spin gdb-multiarch cppcheck \\"
 echo -e "                      clang-tidy clang-format libzmq3-dev\n"
 
 if [[ `lsb_release -r -s | sed 's/\..*//'` -lt 20 ]]; then
-	echo -e "\nQt6 (and therefore PySide6) require Ubuntu 20.04 or later."
+	echo -e "\nQt6 (and therefore PySide6) requires Ubuntu 20.04 or later."
 	echo -e "You seem to have an older version (`lsb_release -r -s`)."
-	echo -e "Python packages will not be aviable in this build."
+	echo -e "Python packages will not be available in this build."
 fi
-
