@@ -9,37 +9,30 @@ on:
       - master
   workflow_dispatch:
 
-env:
-  CTEST_OUTPUT_ON_FAILURE: 1
-
 jobs:
   build-ubuntu:
+    strategy:
+      matrix:
+        gcc: [9, 10]
+        cxx: [C++03, C++11, C++14, C++17]
+        zmq: [zmq, nozmq]
     runs-on: ubuntu-latest
+    env:
+      CC: gcc-${{matrix.gcc}}
+      CXX: g++-${{matrix.gcc}}
     steps:
       - name: checkout
         uses: actions/checkout@v2
       - name: bootstrap
         run: |
-          scripts/bootstrap.sh
+          dist/ubuntu/bootstrap.sh
           sudo apt install clang-tidy clang
       - name: build Debug
-        run: scripts/build.sh Debug -DLIBSTORED_DEV=ON
-      - name: test
-        run: cmake --build . -- test
-        working-directory: build
+        run: dist/ubuntu/build.sh Debug dev ${{matrix.cxx}} ${{matrix.zmq}} test
       - name: build Release
-        run: scripts/build.sh Release -DLIBSTORED_DEV=ON
-      - name: test
-        run: cmake --build . -- test
-        working-directory: build
-
-      # If everything is OK, publish documentation
-      - name: deploy
-        if: github.ref == 'refs/heads/master'
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./sphinx/_build/html
+        run: |
+          rm -rf dist/ubuntu/build
+          dist/ubuntu/build.sh Release ${{matrix.cxx}} ${{matrix.zmq}} test
 
   build-ubuntu-prev:
     runs-on: ubuntu-18.04
@@ -47,68 +40,37 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: bootstrap
-        run: scripts/bootstrap.sh
+        run: |
+          dist/ubuntu/bootstrap.sh
+          sudo apt install clang-tidy clang
       - name: build Debug
-        run: scripts/build.sh Debug -DLIBSTORED_TESTS=ON
-      - name: test
-        run: cmake --build . -- test
-        working-directory: build
+        run: dist/ubuntu/build.sh Debug dev test
       - name: build Release
-        run: scripts/build.sh Release -DLIBSTORED_TESTS=ON
-      - name: test
-        run: cmake --build . -- test
-        working-directory: build
+        run: |
+          rm -rf dist/ubuntu/build
+          dist/ubuntu/build.sh Release test
 
-  build-windows-gcc:
+  build-windows:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        compiler: [msvc, gcc]
+        cxx: [C++03, C++11, C++14, C++17]
+        zmq: [zmq, nozmq]
+        exclude:
+          - compiler: msvc
+            cxx: C++03
     steps:
       - name: checkout
         uses: actions/checkout@v2
       - name: bootstrap
-        run: scripts\bootstrap.cmd
+        run: dist\win32\bootstrap.cmd
       - name: build Debug
-        run: scripts\build.cmd Debug "-DLIBSTORED_DEV=ON"
-        shell: cmd
-      - name: test
-        run: cmake --build . -- test
-        working-directory: build
-      - name: build Release
-        run: scripts\build.cmd Release "-DLIBSTORED_DEV=ON"
-        shell: cmd
-      - name: test
-        run: cmake --build . -- test
-        working-directory: build
-
-  build-windows-msvc:
-    runs-on: windows-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v2
-      - name: bootstrap
-        run: |
-          scripts\bootstrap.cmd
-          git submodule update --init --recursive
-      - name: build Debug
-        run: |
-          call scripts\env.cmd
-          mkdir build-msvc
-          cd build-msvc
-          cmake -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Debug -DLIBSTORED_DEV=ON ..
-          cmake --build . --config Debug --target install -- -m
-        shell: cmd
-      - name: test
-        run: cmake --build . --target RUN_TESTS --config Debug
-        working-directory: build-msvc
+        run: dist\win32\build.cmd Debug dev ${{matrix.compiler}} ${{matrix.cxx}} ${{matrix.zmq}} test
       - name: build Release
         run: |
-          call ..\scripts\env.cmd
-          cmake -DCMAKE_BUILD_TYPE=Release -DLIBSTORED_DEV=ON ..
-          cmake --build . --config Release --target install -- -m
-        shell: cmd
-        working-directory: build-msvc
-      - name: test
-        run: cmake --build . --target RUN_TESTS --config Release
-        working-directory: build-msvc
+          Remove-Item -path dist\win32\build -recurse -force
+          dist\win32\build.cmd Release ${{matrix.compiler}} ${{matrix.cxx}} ${{matrix.zmq}} test
 
   build-mac:
     runs-on: macos-latest
@@ -116,15 +78,28 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: bootstrap
-        run: scripts/bootstrap.sh
+        run: dist/macos/bootstrap.sh
       - name: build Debug
-        run: scripts/build.sh Debug -DLIBSTORED_DEV=ON
-      - name: test
-        run: cmake --build . -- test
-        working-directory: build
+        run: dist/macos/build.sh Debug dev test
       - name: build Release
-        run: scripts/build.sh Release -DLIBSTORED_DEV=ON
-      - name: test
-        run: cmake --build . -- test
-        working-directory: build
+        run: |
+          rm -rf dist/macos/build
+          dist/macos/build.sh Release test
 
+  # If everything is OK, publish documentation
+  documentation:
+    if: github.ref == 'refs/heads/master'
+    needs: [build-ubuntu, build-ubuntu-prev, build-windows, build-mac]
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: bootstrap
+        run: dist/ubuntu/bootstrap.sh
+      - name: build
+        run: dist/ubuntu/build.sh -DLIBSTORED_DOCUMENTATION=ON -DLIBSTORED_PYLIBSTORED=ON
+      - name: deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./sphinx/_build/html

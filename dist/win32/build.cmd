@@ -39,12 +39,21 @@ if %1 == Release (
 	set cmake_opts=%cmake_opts% -DCMAKE_BUILD_TYPE=%1
 	goto next_param
 )
+if %1 == msvc (
+	set msvc=1
+	goto next_param
+)
 if %1 == gcc (
 	set cmake_opts=%cmake_opts% -GNinja -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
 	set msvc=0
 	goto next_param
 )
 if %1 == C++98 (
+	set cmake_opts=%cmake_opts% -DCMAKE_CXX_STANDARD=98 -DCMAKE_C_STANDARD=99
+	set support_test=0
+	goto next_param
+)
+if %1 == C++03 (
 	set cmake_opts=%cmake_opts% -DCMAKE_CXX_STANDARD=98 -DCMAKE_C_STANDARD=99
 	set support_test=0
 	goto next_param
