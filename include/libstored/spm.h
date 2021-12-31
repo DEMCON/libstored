@@ -408,7 +408,7 @@ private:
 		 * \brief Returns the chunk from the current buffer.
 		 * \details The chunk is the actual piece of memory on the heap, which is the buffer with a header.
 		 */
-		constexpr void* chunk() noexcept
+		constexpr void* chunk() const noexcept
 		{
 			return m_buffer ? chunk(m_buffer) : nullptr;
 		}
@@ -424,7 +424,7 @@ private:
 		/*!
 		 * \brief Returns the current buffer.
 		 */
-		constexpr char* buffer() noexcept
+		constexpr char* buffer() const noexcept
 		{
 			return m_buffer;
 		}

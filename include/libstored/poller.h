@@ -850,7 +850,7 @@ public:
 		int res = 0;
 		size_t count = 0;
 
-		for(auto& p : l) {
+		for(auto const& p : l) {
 			if((res = add(p))) {
 				// Rollback.
 				for(auto const* it = l.begin(); it != l.end() && count > 0;

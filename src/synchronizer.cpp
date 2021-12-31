@@ -103,7 +103,7 @@ StoreJournal::Seq StoreJournal::bumpSeq(bool force)
 
 	if(unlikely(m_seq - m_seqLower > safeRange)) {
 		Seq seqLower = m_seq;
-		m_seqLower = m_seq - ShortSeqWindow + 2u * SeqLowerMargin;
+		m_seqLower = m_seq - ShortSeqWindow + (Seq)2u * SeqLowerMargin;
 
 		for(size_t i = 0; i < m_changes.size(); i++) {
 			ObjectInfo& o = m_changes[i];
@@ -232,6 +232,7 @@ StoreJournal::Seq StoreJournal::regenerate(size_t lower, size_t upper)
  *
  * The sequence number is the value returned by #encodeUpdates().
  */
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 bool StoreJournal::hasChanged(Key key, Seq since) const
 {
 	size_t lower = 0;
@@ -483,6 +484,7 @@ void StoreJournal::encodeKey(ProtocolLayer& p, StoreJournal::Key key)
 /*!
  * \brief Decode a key from a #stored::Synchronizer message.
  */
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 StoreJournal::Key StoreJournal::decodeKey(uint8_t*& buffer, size_t& len, bool& ok)
 {
 	size_t i = keySize();
