@@ -195,7 +195,7 @@ TEST(ScratchPad, Stress)
 	for(int j = 0; j < 100; j++) {
 		spm.reset();
 		for(int i = 0; i < 1000; i++) {
-			auto c = spm.alloc<char>(rand() % 19, rand() % 31);
+			auto c = spm.alloc<char>((size_t)(rand() % 19), (size_t)(rand() % 31));
 			EXPECT_NE(c, nullptr);
 			if(rand() % 128 == 0)
 				spm.reset();

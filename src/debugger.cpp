@@ -53,6 +53,7 @@ struct ListCmdCallbackArg {
  * \see #setIdentification()
  * \see #setVersions()
  */
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 Debugger::Debugger(char const* identification, char const* versions)
 	: m_identification(identification)
 	, m_versions(versions)

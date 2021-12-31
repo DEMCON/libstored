@@ -1482,6 +1482,7 @@ bool PrintLayer::enabled() const
 /*!
  * \brief Constructor.
  */
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 impl::Loopback1::Loopback1(ProtocolLayer& from, ProtocolLayer& to)
 	: m_to(&to)
 	, m_buffer()
@@ -2322,6 +2323,7 @@ error:
  * If the write was incomplete (which is unlikely, but not guaranteed),
  * it will issue a new overlapped write to continue with the rest of the write buffer.
  */
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 void FileLayer::writeCompletionRoutine(DWORD dwErrorCode, DWORD UNUSED_PAR(dwNumberOfBytesTransfered), LPOVERLAPPED lpOverlapped)
 {
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)

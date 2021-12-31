@@ -543,6 +543,7 @@ public:
 			(void)VALGRIND_MAKE_MEM_UNDEFINED(p, alloc_size);
 #else
 			if(Config::Debug)
+				// NOLINTNEXTLINE(clang-analyzer-core.NonNullParamChecker)
 				memset(p, 0xef, alloc_size);
 #endif
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)

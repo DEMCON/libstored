@@ -291,7 +291,7 @@ namespace stored {
 
 		template <typename F,
 			SFINAE_IS_FUNCTION(F, NonDebugDecodeCallback, int) = 0>
-		// NOLINTNEXTLINE(misc-forwarding-reference-overload)
+		// NOLINTNEXTLINE(misc-forwarding-reference-overload,bugprone-forwarding-reference-overload)
 		explicit TerminalLayer(F&& cb, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
 			: TerminalLayer(up, down)
 		{
