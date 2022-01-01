@@ -19,7 +19,19 @@
 -#}
 
 cmake_minimum_required(VERSION 3.1)
+project({{libprefix}}-libstored)
+cmake_policy(VERSION 3.1)
+
 include(CheckIncludeFileCXX)
+
+option(LIBSTORED_INSTALL_STORE_LIBS "Install generated static libstored libraries" ON)
+option(LIBSTORED_DRAFT_API "Enable draft API" OFF)
+option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" OFF)
+option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" OFF)
+option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" OFF)
+option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
+option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
+option(LIBSTORED_CLANG_TIDY "Run clang-tidy" OFF)
 
 file(TO_CMAKE_PATH "{{libstored_dir|escapebs}}" libstored_dir)
 list(APPEND CMAKE_MODULE_PATH ${libstored_dir}/cmake)

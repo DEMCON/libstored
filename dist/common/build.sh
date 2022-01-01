@@ -30,6 +30,7 @@ dist_dir="$(pwd -P)"
 
 build_type=
 do_test=
+do_test_run=${do_test_run:-1}
 use_ninja=1
 support_test=1
 par=-j`nproc`
@@ -68,6 +69,8 @@ while [[ ! -z ${1:-} ]]; do
 			do_test=1;;
 		notest)
 			do_test=0;;
+		notestrun)
+			do_test_run=0;;
 		examples)
 			cmake_opts="${cmake_opts} -DLIBSTORED_EXAMPLES=ON";;
 		noexamples)
@@ -148,7 +151,7 @@ cmake -DCMAKE_MODULE_PATH="${repo}/dist/common" \
 cmake --build . "${par}"
 cmake --build . --target install "${par}"
 
-if [[ ${do_test} == 1 ]]; then
+if [[ ${do_test} == 1 ]] && [[ ${do_test_run} == 1 ]]; then
 	CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target test
 fi
 

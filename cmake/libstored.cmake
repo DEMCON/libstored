@@ -115,84 +115,74 @@ function(libstored_lib libprefix libpath)
 
 	if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 		find_program(CLANG_TIDY_EXE NAMES "clang-tidy" DOC "Path to clang-tidy executable")
-		if(CLANG_TIDY_EXE AND (NOT CMAKE_CXX_STANDARD OR NOT CMAKE_CXX_STANDARD EQUAL 98))
-			# It seems that if clang is not installed, clang-tidy doesn't work properly.
-			find_program(CLANG_EXE NAMES "clang" DOC "Path to clang executable")
-			if(CLANG_EXE AND LIBSTORED_DEV)
-				option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ${LIBSTORED_DEV_OPTION})
-			else()
-				option(LIBSTORED_CLANG_TIDY "Run clang-tidy" OFF)
-			endif()
+		if(CLANG_TIDY_EXE AND LIBSTORED_CLANG_TIDY)
+			message(STATUS "Enabled clang-tidy for ${libprefix}libstored")
 
-			if(LIBSTORED_CLANG_TIDY)
-				message(STATUS "Enabled clang-tidy for ${libprefix}libstored")
+			string(CONCAT CLANG_TIDY_CHECKS "-checks="
+				"bugprone-*,"
+				"-bugprone-macro-parentheses,"
 
-				string(CONCAT CLANG_TIDY_CHECKS "-checks="
-					"bugprone-*,"
-					"-bugprone-macro-parentheses,"
+				"clang-analyzer-*,"
+				"concurrency-*,"
 
-					"clang-analyzer-*,"
-					"concurrency-*,"
+				"cppcoreguidelines-*,"
+				"-cppcoreguidelines-avoid-c-arrays,"
+				"-cppcoreguidelines-avoid-goto,"
+				"-cppcoreguidelines-avoid-magic-numbers,"
+				"-cppcoreguidelines-explicit-virtual-functions,"
+				"-cppcoreguidelines-macro-usage,"
+				"-cppcoreguidelines-pro-bounds-array-to-pointer-decay,"
+				"-cppcoreguidelines-pro-bounds-pointer-arithmetic,"
+				"-cppcoreguidelines-pro-type-union-access,"
+				"-cppcoreguidelines-pro-type-vararg,"
 
-					"cppcoreguidelines-*,"
-					"-cppcoreguidelines-avoid-c-arrays,"
-					"-cppcoreguidelines-avoid-goto,"
-					"-cppcoreguidelines-avoid-magic-numbers,"
-					"-cppcoreguidelines-explicit-virtual-functions,"
-					"-cppcoreguidelines-macro-usage,"
-					"-cppcoreguidelines-pro-bounds-array-to-pointer-decay,"
-					"-cppcoreguidelines-pro-bounds-pointer-arithmetic,"
-					"-cppcoreguidelines-pro-type-union-access,"
-					"-cppcoreguidelines-pro-type-vararg,"
+				"hicpp-*,"
+				"-hicpp-avoid-c-arrays,"
+				"-hicpp-avoid-goto,"
+				"-hicpp-braces-around-statements,"
+				"-hicpp-member-init,"
+				"-hicpp-no-array-decay,"
+				"-hicpp-no-malloc,"
+				"-hicpp-uppercase-literal-suffix,"
+				"-hicpp-use-auto,"
+				"-hicpp-use-override,"
+				"-hicpp-vararg,"
 
-					"hicpp-*,"
-					"-hicpp-avoid-c-arrays,"
-					"-hicpp-avoid-goto,"
-					"-hicpp-braces-around-statements,"
-					"-hicpp-member-init,"
-					"-hicpp-no-array-decay,"
-					"-hicpp-no-malloc,"
-					"-hicpp-uppercase-literal-suffix,"
-					"-hicpp-use-auto,"
-					"-hicpp-use-override,"
-					"-hicpp-vararg,"
+				"misc-*,"
+				"-misc-no-recursion,"
+				"-misc-non-private-member-variables-in-classes,"
+				"-misc-macro-parentheses,"
 
-					"misc-*,"
-					"-misc-no-recursion,"
-					"-misc-non-private-member-variables-in-classes,"
-					"-misc-macro-parentheses,"
+				"readability-*,"
+				"-readability-braces-around-statements,"
+				"-readability-convert-member-functions-to-static,"
+				"-readability-else-after-return,"
+				"-readability-function-cognitive-complexity,"
+				"-readability-implicit-bool-conversion,"
+				"-readability-magic-numbers,"
+				"-readability-make-member-function-const,"
+				"-readability-redundant-access-specifiers,"
+				"-readability-uppercase-literal-suffix,"
 
-					"readability-*,"
-					"-readability-braces-around-statements,"
-					"-readability-convert-member-functions-to-static,"
-					"-readability-else-after-return,"
-					"-readability-function-cognitive-complexity,"
-					"-readability-implicit-bool-conversion,"
-					"-readability-magic-numbers,"
-					"-readability-make-member-function-const,"
-					"-readability-redundant-access-specifiers,"
-					"-readability-uppercase-literal-suffix,"
+				"performance-*,"
+				"-performance-no-int-to-ptr," # Especially on WIN32 HANDLEs.
 
-					"performance-*,"
-					"-performance-no-int-to-ptr," # Especially on WIN32 HANDLEs.
+				"portability-*,"
+			)
+			set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
+				"--extra-arg=-I${libstored_dir}/include"
+				"--extra-arg=-I${CMAKE_BINARY_DIR}/include"
+				"--extra-arg=-I${libpath}/include"
+				"--header-filter=.*include/libstored.*"
+				"--warnings-as-errors=*"
+				"--extra-arg=-Wno-unknown-warning-option"
+			)
 
-					"portability-*,"
-				)
-				set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
-					"--extra-arg=-I${libstored_dir}/include"
-					"--extra-arg=-I${CMAKE_BINARY_DIR}/include"
-					"--extra-arg=-I${libpath}/include"
-					"--header-filter=.*include/libstored.*"
-					"--warnings-as-errors=*"
-					"--extra-arg=-Wno-unknown-warning-option"
-				)
-
-				set_target_properties(${libprefix}libstored
-					PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}" )
-			else()
-				set_target_properties(${libprefix}libstored
-					PROPERTIES CXX_CLANG_TIDY "")
-			endif()
+			set_target_properties(${libprefix}libstored
+				PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}" )
+		else()
+			set_target_properties(${libprefix}libstored
+				PROPERTIES CXX_CLANG_TIDY "")
 		endif()
 	endif()
 

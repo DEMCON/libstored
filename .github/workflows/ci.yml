@@ -92,7 +92,9 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: bootstrap
-        run: dist/mingw/bootstrap.sh
+        run: |
+          dist/mingw/bootstrap.sh
+          sudo apt install libegl1
       - name: build Debug
         run: dist/mingw/build.sh Debug dev
       - name: build Release

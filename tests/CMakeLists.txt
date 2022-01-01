@@ -17,6 +17,7 @@
 # The value will be appended to a STORED_POLL_ define.
 set(LIBSTORED_POLL "AUTO" CACHE STRING "Poll method")
 
+				option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ${LIBSTORED_DEV_OPTION})
 set(LIBSTORED_CLANG_TIDY "OFF")
 set(LIBSTORED_INSTALL_STORE_LIBS "OFF")
 set(LIBSTORED_DRAFT_API "ON")
@@ -45,7 +46,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	add_compile_options(-Wno-defaulted-function-deleted)
 endif()
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 11)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10)
 	add_compile_options(-Wno-array-bounds)
 endif()
 
@@ -82,13 +83,14 @@ if(LIBSTORED_ENABLE_UBSAN AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	target_compile_options(teststore-libstored PUBLIC -fno-sanitize=vptr)
 endif()
 
-macro(libstored_add_test TESTNAME)
+function(libstored_add_test TESTNAME)
 	add_executable(${TESTNAME} ${ARGN} test_base.cpp)
 	target_include_directories(${TESTNAME} BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 	target_link_libraries(${TESTNAME} gtest gmock gtest_main teststore-libstored)
 	set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
-	gtest_discover_tests(${TESTNAME} PROPERTIES TIMEOUT 60)
-endmacro()
+	gtest_add_tests(TARGET ${TESTNAME} TEST_LIST tests)
+	set_tests_properties(${tests} PROPERTIES TIMEOUT 60)
+endfunction()
 
 libstored_add_test(test_allocator test_allocator.cpp)
 libstored_add_test(test_types test_types.cpp)

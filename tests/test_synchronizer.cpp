@@ -65,7 +65,8 @@ public:
 	{
 	}
 
-	FRIEND_TEST(Synchronizer, ShortSeq);
+	FRIEND_TEST(Synchronizer, // fmt
+		ShortSeq);
 };
 
 TEST(Synchronizer, ShortSeq)

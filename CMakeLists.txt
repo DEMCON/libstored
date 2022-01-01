@@ -125,6 +125,27 @@ option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" ${LIBSTORED_ENABLE_A
 option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" ${LIBSTORED_ENABLE_LSAN_DEFAULT})
 option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" ${LIBSTORED_ENABLE_UBSAN_DEFAULT})
 
+set(LIBSTORED_CLANG_TIDY_DEFAULT OFF)
+
+if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
+	find_program(CLANG_TIDY_EXE NAMES "clang-tidy" DOC "Path to clang-tidy executable")
+	if(	# We must have clang-tidy.
+		CLANG_TIDY_EXE AND
+		# We must compile for C++11 or later...
+		(NOT CMAKE_CXX_STANDARD OR NOT CMAKE_CXX_STANDARD EQUAL 98) AND
+		# ...except when running in Windows, which only supports C++14 or later.
+		(NOT WIN32 OR NOT CMAKE_CXX_STANDARD EQUAL 11)
+	)
+		# It seems that if clang is not installed, clang-tidy doesn't work properly.
+		find_program(CLANG_EXE NAMES "clang" DOC "Path to clang executable")
+		if(CLANG_EXE AND LIBSTORED_DEV)
+			set(LIBSTORED_CLANG_TIDY_DEFAULT ${LIBSTORED_DEV_OPTION})
+		endif()
+	endif()
+endif()
+
+option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ${LIBSTORED_CLANG_TIDY_DEFAULT})
+
 add_subdirectory(version)
 
 if(LIBSTORED_DOCUMENTATION AND LIBSTORED_PYLIBSTORED)
