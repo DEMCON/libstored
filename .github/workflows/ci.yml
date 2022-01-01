@@ -59,7 +59,7 @@ jobs:
         zmq: [zmq, nozmq]
         exclude:
           - compiler: msvc
-            cxx: C++03
+            cxx: [C++03, C++11]
     steps:
       - name: checkout
         uses: actions/checkout@v2
