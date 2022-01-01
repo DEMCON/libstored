@@ -17,6 +17,8 @@
 cmake_minimum_required(VERSION 3.1)
 project(libstored)
 
+cmake_policy(VERSION 3.1)
+
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
 endif()
@@ -106,7 +108,12 @@ if(LIBSTORED_DRAFT_API)
 endif()
 
 option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" ${LIBSTORED_DEV_OPTION})
-option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" ${LIBSTORED_DEV_OPTION})
+if(CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
+	# Not supported.
+	option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" NO)
+else()
+	option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" ${LIBSTORED_DEV_OPTION})
+endif()
 option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" ${LIBSTORED_DEV_OPTION})
 
 add_subdirectory(version)

@@ -71,9 +71,9 @@ Debugger::Debugger(char const* identification, char const* versions)
 Debugger::~Debugger() noexcept
 {
 	for(StoreMap::iterator it = m_map.begin(); it != m_map.end(); ++it)
-		delete it->second;
+		delete it->second; // NOLINT(cppcoreguidelines-owning-memory)
 	for(StreamMap::iterator it = m_streams.begin(); it != m_streams.end(); ++it)
-		delete it->second;
+		delete it->second; // NOLINT(cppcoreguidelines-owning-memory)
 }
 
 /*! \copydoc stored::DebugStoreBase::find() */
@@ -173,6 +173,7 @@ void Debugger::map(DebugStoreBase* store, char const* name)
 		m_map.insert(StoreMap::value_type(name, store));
 	} else {
 		// Replace previous mapping.
+		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		delete it->second;
 		it->second = store;
 	}
@@ -192,6 +193,7 @@ void Debugger::unmap(char const* name)
 	if(it == m_map.end())
 		return;
 
+	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 	delete it->second;
 	m_map.erase(it);
 }
@@ -1158,10 +1160,12 @@ Stream<>* Debugger::stream(char s, bool alloc)
 			for(StreamMap::iterator it2 = m_streams.begin(); it2 != m_streams.end(); ++it2)
 				if(it2->second->empty()) {
 					// Got one.
-					if(!recycle)
+					if(!recycle) {
 						recycle = it2->second;
-					else
+					} else {
+						// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 						delete it2->second;
+					}
 
 					m_streams.erase(it2);
 					cleaned = true;
