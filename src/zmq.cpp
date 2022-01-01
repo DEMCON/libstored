@@ -380,5 +380,5 @@ SyncZmqLayer::SyncZmqLayer(void* context, char const* endpoint, bool listen, Pro
 
 } // namespace
 #else // !STORED_HAVE_ZMQ
-char const dummy_char_to_make_zmq_cpp_non_empty = 0;
+char const dummy_char_to_make_zmq_cpp_non_empty = 0; // NOLINT
 #endif // STORED_HAVE_ZMQ
