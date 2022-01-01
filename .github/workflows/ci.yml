@@ -86,10 +86,24 @@ jobs:
           rm -rf dist/macos/build
           dist/macos/build.sh Release test
 
+  build-mingw:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: bootstrap
+        run: dist/mingw/bootstrap.sh
+      - name: build Debug
+        run: dist/mingw/build.sh Debug dev
+      - name: build Release
+        run: |
+          rm -rf dist/mingw/build
+          dist/mingw/build.sh Release
+
   # If everything is OK, publish documentation
   documentation:
     if: github.ref == 'refs/heads/master'
-    needs: [build-ubuntu, build-ubuntu-prev, build-windows, build-mac]
+    needs: [build-ubuntu, build-ubuntu-prev, build-windows, build-mac, build-mingw]
     runs-on: ubuntu-latest
     steps:
       - name: checkout

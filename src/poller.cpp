@@ -478,7 +478,8 @@ extern "C" int poll_once_weak(TypedPollable const& p, Pollable::Events& revents)
 	return poll_once_default(p, revents);
 }
 #elif defined(STORED_OS_OSX)
-__attribute__((weak,visibility("hidden"))) int poll_once(TypedPollable const& p, Pollable::Events& revents) noexcept
+__attribute__((weak, visibility("hidden"))) int
+poll_once(TypedPollable const& p, Pollable::Events& revents) noexcept
 {
 	return poll_once_default(p, revents);
 }
@@ -553,7 +554,11 @@ int LoopPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 #ifndef STORED_HAVE_ZTH
 Poller::~Poller()
 {
+#	ifndef CPPCHECK
+	// cppcheck trips on this virtual call, even though the class is final.
+	// Suppressing it here does not work, so hide it from cppcheck.
 	clear();
+#	endif
 }
 #endif // !STORED_HAVE_ZTH
 

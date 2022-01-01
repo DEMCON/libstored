@@ -97,6 +97,7 @@ void swap_endian(void* buffer, size_t len) noexcept
 /*!
  * \brief \c memcpy() with endianness swapping.
  */
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 void memcpy_swap(void* __restrict__ dst, void const* __restrict__ src, size_t len) noexcept
 {
 	char* dst_ = static_cast<char*>(dst);
@@ -109,6 +110,7 @@ void memcpy_swap(void* __restrict__ dst, void const* __restrict__ src, size_t le
 /*!
  * \brief memcmp() with endianness swapping.
  */
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 int memcmp_swap(void const* a, void const* b, size_t len) noexcept
 {
 	unsigned char const* a_ = static_cast<unsigned char const*>(a);

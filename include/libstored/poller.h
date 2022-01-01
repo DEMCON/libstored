@@ -987,7 +987,7 @@ public:
 
 	Poller() is_default
 
-	virtual ~Poller() override;
+	virtual ~Poller() final;
 
 #		if STORED_cplusplus >= 201103L
 	Poller(std::initializer_list<std::reference_wrapper<Pollable>> l)

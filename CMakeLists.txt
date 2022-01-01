@@ -61,7 +61,7 @@ endif()
 
 option(LIBSTORED_PYLIBSTORED "Build python libstored package" ON)
 
-if(WIN32 OR NOT LIBSTORED_PYLIBSTORED)
+if(CMAKE_HOST_WIN32 OR NOT LIBSTORED_PYLIBSTORED)
 	# The documentation needs wavedrom (via sphinx), but sphinxcontrib-wavedrom
 	# needs cairo.  In turn, that package needs libcairo-2.dll (64-bit,
 	# matching python's word size), which cannot be installed automatically by
@@ -73,7 +73,7 @@ endif()
 
 option(LIBSTORED_VENV "Create a python venv" ON)
 if(LIBSTORED_VENV)
-	if(UNIX)
+	if(CMAKE_HOST_UNIX)
 		if(LIBSTORED_PYLIBSTORED OR LIBSTORED_DOCUMENTATION)
 			set(venv_check "check")
 		else()
@@ -81,7 +81,7 @@ if(LIBSTORED_VENV)
 		endif()
 		execute_process(COMMAND ${PROJECT_SOURCE_DIR}/dist/common/venv.sh ${venv_check} RESULT_VARIABLE ret)
 		list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_SOURCE_DIR}/dist/.venv/bin")
-	elseif(WIN32)
+	elseif(CMAKE_HOST_WIN32)
 		execute_process(COMMAND ${PROJECT_SOURCE_DIR}/dist/win32/venv.cmd check RESULT_VARIABLE ret)
 		list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_SOURCE_DIR}/dist/.venv/Scripts")
 	else()
@@ -108,7 +108,7 @@ if(LIBSTORED_DOCUMENTATION AND LIBSTORED_PYLIBSTORED)
 	add_subdirectory(sphinx)
 endif()
 
-if(WIN32)
+if(CMAKE_HOST_WIN32)
 	find_program(PYTHON_EXECUTABLE python)
 else()
 	find_program(PYTHON_EXECUTABLE python3)
@@ -234,6 +234,7 @@ if(CPPCHECK_CMD)
 			--quiet
 			--suppressions-list=${CMAKE_CURRENT_SOURCE_DIR}/.cppcheck_suppr
 			--error-exitcode=1
+			-DCPPCHECK
 #			--xml
 			-I include
 			${CPPCHECK_EXAMPLES}
