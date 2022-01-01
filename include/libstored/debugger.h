@@ -42,6 +42,7 @@ namespace stored {
 	template <bool Compress = Config::CompressStreams>
 	class Stream final : public ProtocolLayer {
 		STORED_CLASS_NOCOPY(Stream)
+		STORED_CLASS_NEW_DELETE(Stream)
 		friend class Stream<true>;
 	public:
 		typedef ProtocolLayer base;
@@ -117,6 +118,7 @@ namespace stored {
 	template<>
 	class Stream<true> final : public ProtocolLayer {
 		STORED_CLASS_NOCOPY(Stream)
+		STORED_CLASS_NEW_DELETE(Stream)
 	public:
 		typedef ProtocolLayer base;
 
@@ -480,6 +482,7 @@ namespace stored {
 	 */
 	class DebugStoreBase {
 		STORED_CLASS_NOCOPY(DebugStoreBase)
+		STORED_CLASS_NEW_DELETE(DebugStoreBase)
 		CLASS_NO_WEAK_VTABLE
 	protected:
 		/*! \brief Constructor. */
@@ -534,6 +537,7 @@ namespace stored {
 	template <typename Store>
 	class DebugStore : public DebugStoreBase {
 		STORED_CLASS_NOCOPY(DebugStore)
+		STORED_CLASS_NEW_DELETE(DebugStore)
 	public:
 		/*!
 		 * \brief Constuctor.

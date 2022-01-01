@@ -71,9 +71,9 @@ Debugger::Debugger(char const* identification, char const* versions)
 Debugger::~Debugger() noexcept
 {
 	for(StoreMap::iterator it = m_map.begin(); it != m_map.end(); ++it)
-		cleanup(it->second);
+		delete it->second;
 	for(StreamMap::iterator it = m_streams.begin(); it != m_streams.end(); ++it)
-		cleanup(it->second);
+		delete it->second;
 }
 
 /*! \copydoc stored::DebugStoreBase::find() */
@@ -162,7 +162,7 @@ void Debugger::map(DebugStoreBase* store, char const* name)
 
 	if(!name || name[0] != '/' || strchr(name + 1, '/') || !store) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-		cleanup(store);
+		delete store;
 		return;
 	}
 
@@ -173,7 +173,7 @@ void Debugger::map(DebugStoreBase* store, char const* name)
 		m_map.insert(StoreMap::value_type(name, store));
 	} else {
 		// Replace previous mapping.
-		cleanup(it->second);
+		delete it->second;
 		it->second = store;
 	}
 }
@@ -192,7 +192,7 @@ void Debugger::unmap(char const* name)
 	if(it == m_map.end())
 		return;
 
-	cleanup(it->second);
+	delete it->second;
 	m_map.erase(it);
 }
 
@@ -1161,7 +1161,7 @@ Stream<>* Debugger::stream(char s, bool alloc)
 					if(!recycle)
 						recycle = it2->second;
 					else
-						cleanup(it2->second);
+						delete it2->second;
 
 					m_streams.erase(it2);
 					cleaned = true;
@@ -1172,8 +1172,7 @@ Stream<>* Debugger::stream(char s, bool alloc)
 		if(m_streams.size() < Config::DebuggerStreams) {
 			// Add a new stream.
 			return m_streams.insert(std::make_pair(s,
-				recycle ? recycle :	new(allocate<Stream<> >()) Stream<>()
-				)).first->second;
+				recycle ? recycle : new Stream<>())).first->second;
 		} else {
 			// Out of buffers.
 			stored_assert(!recycle);
