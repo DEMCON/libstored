@@ -73,16 +73,23 @@ endif()
 
 option(LIBSTORED_VENV "Create a python venv" ON)
 if(LIBSTORED_VENV)
+	message(STATUS "Checking venv...")
 	if(CMAKE_HOST_UNIX)
 		if(LIBSTORED_PYLIBSTORED OR LIBSTORED_DOCUMENTATION)
 			set(venv_check "check")
 		else()
 			set(venv_check "check-minimal")
 		endif()
-		execute_process(COMMAND ${PROJECT_SOURCE_DIR}/dist/common/venv.sh ${venv_check} RESULT_VARIABLE ret)
+		# Force CC and CXX to default, in case we are cross-compiling
+		# and compiling wheels for the venv...
+		execute_process(
+			COMMAND ${CMAKE_COMMAND} -E env --unset=CC --unset=CXX ${PROJECT_SOURCE_DIR}/dist/common/venv.sh ${venv_check}
+			RESULT_VARIABLE ret)
 		list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_SOURCE_DIR}/dist/.venv/bin")
 	elseif(CMAKE_HOST_WIN32)
-		execute_process(COMMAND ${PROJECT_SOURCE_DIR}/dist/win32/venv.cmd check RESULT_VARIABLE ret)
+		execute_process(
+			COMMAND ${CMAKE_COMMAND} -E env --unset=CC --unset=CXX ${PROJECT_SOURCE_DIR}/dist/win32/venv.cmd check
+			RESULT_VARIABLE ret)
 		list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_SOURCE_DIR}/dist/.venv/Scripts")
 	else()
 		message(FATAL_ERROR "Don't know how to create a venv.")
@@ -98,9 +105,9 @@ if(LIBSTORED_DRAFT_API)
 	message(STATUS "Enable libstored draft API")
 endif()
 
-option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" OFF)
-option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" OFF)
-option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" OFF)
+option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" ${LIBSTORED_DEV_OPTION})
+option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" ${LIBSTORED_DEV_OPTION})
+option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" ${LIBSTORED_DEV_OPTION})
 
 add_subdirectory(version)
 
