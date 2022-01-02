@@ -5,13 +5,13 @@
 
 #include <stored>
 
-#include "ExampleDebugSomeStore.h"
 #include "ExampleDebugAnotherStore.h"
+#include "ExampleDebugSomeStore.h"
 
 #include <cstdio>
 
 #ifdef STORED_COMPILER_MSVC
-#  define strdup(s) _strdup(s)
+#	define strdup(s) _strdup(s)
 #endif
 
 // A 'physical layer' that sends the outgoing (encoded) data to print().
@@ -199,4 +199,3 @@ int main()
 
 	return 0;
 }
-

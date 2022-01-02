@@ -6,9 +6,9 @@
  * simulation and a Debugger client, using named pipes.
  */
 
-#include <stored>
 #include "ExampleFpga.h"
 #include "ExampleFpga2.h"
+#include <stored>
 
 class ExampleFpga : public STORE_SYNC_BASE_CLASS(ExampleFpgaBase, ExampleFpga) {
 	STORE_SYNC_CLASS_BODY(ExampleFpgaBase, ExampleFpga)
@@ -64,15 +64,16 @@ int main()
 	}
 
 	printf("\n"
-		"Start XSIM with the 9_fpga example. It connects to this application.\n"
-		"Use a Debugger client to see interaction with the VHDL simulation.\n");
+	       "Start XSIM with the 9_fpga example. It connects to this application.\n"
+	       "Use a Debugger client to see interaction with the VHDL simulation.\n");
 
 	stored::Poller poller;
 
 	stored::PollableFileLayer xsimp(xsim, stored::Pollable::PollIn);
 	stored::PollableFileLayer xsimreqp(xsim.req(), stored::Pollable::PollIn);
 	stored::PollableZmqLayer zmqp(zmq, stored::Pollable::PollIn);
-	if((errno = poller.add(xsimp)) || (errno = poller.add(xsimreqp)) || (errno = poller.add(zmqp))) {
+	if((errno = poller.add(xsimp)) || (errno = poller.add(xsimreqp))
+	   || (errno = poller.add(zmqp))) {
 		perror("Cannot initialize poller");
 		return 1;
 	}
@@ -98,4 +99,3 @@ int main()
 		xsim.keepAlive();
 	}
 }
-

@@ -20,8 +20,8 @@
 #include "gtest/gtest.h"
 
 #include <algorithm>
-#include <list>
 #include <functional>
+#include <list>
 
 namespace {
 
@@ -69,8 +69,14 @@ TEST(Directory, Bogus)
 }
 
 static int objects;
-static void list_cb_templ(stored::TestStore*, char const*, stored::Type::type, void*, size_t) { objects++; }
-static void list_cb_arg(void*, char const*, stored::Type::type, void*, size_t, void*) { objects++; }
+static void list_cb_templ(stored::TestStore*, char const*, stored::Type::type, void*, size_t)
+{
+	objects++;
+}
+static void list_cb_arg(void*, char const*, stored::Type::type, void*, size_t, void*)
+{
+	objects++;
+}
 
 TEST(Directory, ListFunctions)
 {
@@ -78,19 +84,25 @@ TEST(Directory, ListFunctions)
 
 	// list() using an rvalue lambda (>= C++11)
 	objects = 0;
-	store.list([&](stored::TestStore*, char const*, stored::Type::type, void*, size_t) { objects++; });
+	store.list([&](stored::TestStore*, char const*, stored::Type::type, void*, size_t) {
+		objects++;
+	});
 	EXPECT_GT(objects, 1);
 
 	// list() using an lvalue lambda (>= C++11)
 	objects = 0;
-	auto l = [&](stored::TestStore*, char const*, stored::Type::type, void*, size_t) { objects++; };
+	auto l = [&](stored::TestStore*, char const*, stored::Type::type, void*, size_t) {
+		objects++;
+	};
 	store.list(l);
 	EXPECT_GT(objects, 1);
 
 	// list() using an std::function (>= C++11)
 	objects = 0;
 	std::function<void(stored::TestStore*, char const*, stored::Type::type, void*, size_t)> f =
-		[&](stored::TestStore*, char const*, stored::Type::type, void*, size_t) { objects++; };
+		[&](stored::TestStore*, char const*, stored::Type::type, void*, size_t) {
+			objects++;
+		};
 	store.list(f);
 	EXPECT_GT(objects, 1);
 
@@ -110,7 +122,9 @@ TEST(Directory, List)
 	stored::TestStore store;
 
 	std::list<std::string> names;
-	store.list([&](stored::TestStore*, char const* name, stored::Type::type, void*, size_t) { names.push_back(name); });
+	store.list([&](stored::TestStore*, char const* name, stored::Type::type, void*, size_t) {
+		names.push_back(name);
+	});
 
 	// We should find something.
 	EXPECT_GT(names.size(), 10);
@@ -132,14 +146,23 @@ TEST(Directory, Constexpr)
 {
 	static_assert(stored::TestStoreData::shortDirectory() != nullptr, "");
 
-	constexpr auto v = stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int8");
+	constexpr auto v =
+		stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int8");
 	static_assert(v.valid(), "");
 	EXPECT_TRUE(v.valid());
 
-	static_assert(!stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int7").valid(), "");
-	static_assert(!stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int9").valid(), "");
-	static_assert(!stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int8", 1).valid(), "");
+	static_assert(
+		!stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int7")
+			 .valid(),
+		"");
+	static_assert(
+		!stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int9")
+			 .valid(),
+		"");
+	static_assert(
+		!stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int8", 1)
+			 .valid(),
+		"");
 }
 
 } // namespace
-

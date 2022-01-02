@@ -16,17 +16,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "libstored/protocol.h"
 #include "libstored/compress.h"
 #include "libstored/fifo.h"
-#include "gtest/gtest.h"
+#include "libstored/protocol.h"
 #include "LoggingLayer.h"
+#include "gtest/gtest.h"
 
-#include <fcntl.h>
 #include <chrono>
+#include <fcntl.h>
 #include <thread>
 
-#define DECODE(stack, str)	do { char msg_[] = "" str; (stack).decode(msg_, sizeof(msg_) - 1); } while(0)
+#define DECODE(stack, str)                              \
+	do {                                            \
+		char msg_[] = "" str;                   \
+		(stack).decode(msg_, sizeof(msg_) - 1); \
+	} while(0)
 
 namespace {
 
@@ -47,9 +51,15 @@ TEST(AsciiEscapeLayer, Encode)
 	EXPECT_EQ(ll.encoded().at(0), "123\x7f@");
 
 	ll.encoded().clear();
-	l.encode("123\r""4", 5);
+	l.encode(
+		"123\r"
+		"4",
+		5);
 	EXPECT_EQ(ll.encoded().size(), 1);
-	EXPECT_EQ(ll.encoded().at(0), "123\x7f""M4");
+	EXPECT_EQ(
+		ll.encoded().at(0),
+		"123\x7f"
+		"M4");
 
 	ll.encoded().clear();
 	l.encode("123\x7f", 4);
@@ -57,9 +67,15 @@ TEST(AsciiEscapeLayer, Encode)
 	EXPECT_EQ(ll.encoded().at(0), "123\x7f\x7f");
 
 	ll.encoded().clear();
-	l.encode("\x7f""123\r", 5);
+	l.encode(
+		"\x7f"
+		"123\r",
+		5);
 	EXPECT_EQ(ll.encoded().size(), 1);
-	EXPECT_EQ(ll.encoded().at(0), "\x7f\x7f""123\x7f\x4d");
+	EXPECT_EQ(
+		ll.encoded().at(0),
+		"\x7f\x7f"
+		"123\x7f\x4d");
 }
 
 TEST(AsciiEscapeLayer, Decode)
@@ -69,7 +85,9 @@ TEST(AsciiEscapeLayer, Decode)
 	l.wrap(ll);
 
 	ll.decoded().clear();
-	DECODE(l, "123\x7f""F");
+	DECODE(l,
+	       "123\x7f"
+	       "F");
 	EXPECT_EQ(ll.decoded().size(), 1);
 	EXPECT_EQ(ll.decoded().at(0), "123\x06");
 
@@ -79,9 +97,14 @@ TEST(AsciiEscapeLayer, Decode)
 	EXPECT_EQ(ll.decoded().at(0), "123\x7f");
 
 	ll.decoded().clear();
-	DECODE(l, "\x7f""A12\r3");
+	DECODE(l,
+	       "\x7f"
+	       "A12\r3");
 	EXPECT_EQ(ll.decoded().size(), 1);
-	EXPECT_EQ(ll.decoded().at(0), "\x01""123");
+	EXPECT_EQ(
+		ll.decoded().at(0),
+		"\x01"
+		"123");
 }
 
 TEST(SegmentationLayer, SingleChunkEncode)
@@ -223,44 +246,67 @@ TEST(DebugArqLayer, SingleChunk)
 
 	top.decoded().clear();
 	bottom.encoded().clear();
-	DECODE(l, "\x01""123");
+	DECODE(l,
+	       "\x01"
+	       "123");
 	EXPECT_EQ(top.decoded().size(), 1);
 	EXPECT_EQ(top.decoded().at(0), "123");
 	top.encode("abc", 3);
 	EXPECT_EQ(bottom.encoded().size(), 1);
-	EXPECT_EQ(bottom.encoded().at(0), std::string("\x81""abc", 4));
+	EXPECT_EQ(
+		bottom.encoded().at(0), std::string(
+						"\x81"
+						"abc",
+						4));
 
 	top.decoded().clear();
 	bottom.encoded().clear();
-	DECODE(l, "\x02""123");
+	DECODE(l,
+	       "\x02"
+	       "123");
 	EXPECT_EQ(top.decoded().size(), 1);
 	EXPECT_EQ(top.decoded().at(0), "123");
 	top.encode("abc", 3);
 	EXPECT_EQ(bottom.encoded().size(), 1);
-	EXPECT_EQ(bottom.encoded().at(0), std::string("\x02""abc", 4));
+	EXPECT_EQ(
+		bottom.encoded().at(0), std::string(
+						"\x02"
+						"abc",
+						4));
 
 	top.decoded().clear();
 	bottom.encoded().clear();
 	DECODE(l, "\x80");
-	DECODE(l, "\x01""123");
+	DECODE(l,
+	       "\x01"
+	       "123");
 	EXPECT_EQ(top.decoded().size(), 1);
 	EXPECT_EQ(top.decoded().at(0), "123");
 	top.encode("abc", 3);
 	EXPECT_EQ(bottom.encoded().size(), 2);
 	EXPECT_EQ(bottom.encoded().at(0), std::string("\x80", 1));
-	EXPECT_EQ(bottom.encoded().at(1), std::string("\x01""abc", 4));
+	EXPECT_EQ(
+		bottom.encoded().at(1), std::string(
+						"\x01"
+						"abc",
+						4));
 
 	top.decoded().clear();
 	bottom.encoded().clear();
 	DECODE(l, "\xc0\x12");
-	DECODE(l, "\x40\x13""123");
+	DECODE(l,
+	       "\x40\x13"
+	       "123");
 	EXPECT_EQ(top.decoded().size(), 1);
 	EXPECT_EQ(top.decoded().at(0), "123");
 	top.encode("abc", 3, false);
 	top.encode("def", 3);
 	EXPECT_EQ(bottom.encoded().size(), 2);
 	EXPECT_EQ(bottom.encoded().at(0), "\x80");
-	EXPECT_EQ(bottom.encoded().at(1), "\x01""abcdef");
+	EXPECT_EQ(
+		bottom.encoded().at(1),
+		"\x01"
+		"abcdef");
 }
 
 TEST(DebugArqLayer, MultiChunk)
@@ -274,8 +320,12 @@ TEST(DebugArqLayer, MultiChunk)
 	top.decoded().clear();
 	bottom.encoded().clear();
 	DECODE(l, "\x82");
-	DECODE(l, "\x03""123");
-	DECODE(l, "\x04""456");
+	DECODE(l,
+	       "\x03"
+	       "123");
+	DECODE(l,
+	       "\x04"
+	       "456");
 	EXPECT_EQ(top.decoded().size(), 2);
 	EXPECT_EQ(top.decoded().at(0), "123");
 	EXPECT_EQ(top.decoded().at(1), "456");
@@ -283,13 +333,23 @@ TEST(DebugArqLayer, MultiChunk)
 	top.encode("defg", 4);
 	EXPECT_EQ(bottom.encoded().size(), 3);
 	EXPECT_EQ(bottom.encoded().at(0), "\x80");
-	EXPECT_EQ(bottom.encoded().at(1), "\x01""abc");
-	EXPECT_EQ(bottom.encoded().at(2), "\x02""defg");
+	EXPECT_EQ(
+		bottom.encoded().at(1),
+		"\x01"
+		"abc");
+	EXPECT_EQ(
+		bottom.encoded().at(2),
+		"\x02"
+		"defg");
 
 	top.decoded().clear();
 	bottom.encoded().clear();
-	DECODE(l, "\x05""123");
-	DECODE(l, "\x06""456");
+	DECODE(l,
+	       "\x05"
+	       "123");
+	DECODE(l,
+	       "\x06"
+	       "456");
 	EXPECT_EQ(top.decoded().size(), 2);
 	EXPECT_EQ(top.decoded().at(0), "123");
 	EXPECT_EQ(top.decoded().at(1), "456");
@@ -297,8 +357,15 @@ TEST(DebugArqLayer, MultiChunk)
 	top.encode("defg", 4);
 	top.encode("hi", 2);
 	EXPECT_EQ(bottom.encoded().size(), 2);
-	EXPECT_EQ(bottom.encoded().at(0), std::string("\x03""abcdefg", 8));
-	EXPECT_EQ(bottom.encoded().at(1), "\x04""hi");
+	EXPECT_EQ(
+		bottom.encoded().at(0), std::string(
+						"\x03"
+						"abcdefg",
+						8));
+	EXPECT_EQ(
+		bottom.encoded().at(1),
+		"\x04"
+		"hi");
 }
 
 TEST(DebugArqLayer, LostRequest)
@@ -311,24 +378,40 @@ TEST(DebugArqLayer, LostRequest)
 
 	top.decoded().clear();
 	bottom.encoded().clear();
-	DECODE(l, "\x01""123");
-	DECODE(l, "\x02""456");
+	DECODE(l,
+	       "\x01"
+	       "123");
+	DECODE(l,
+	       "\x02"
+	       "456");
 	EXPECT_EQ(top.decoded().size(), 2);
 	EXPECT_EQ(top.decoded().at(0), "123");
 	EXPECT_EQ(top.decoded().at(1), "456");
 	// Assume last part is lost.
 	// Retransmit random packets.
-	DECODE(l, "\x02""456");
+	DECODE(l,
+	       "\x02"
+	       "456");
 	EXPECT_EQ(top.decoded().size(), 2);
-	DECODE(l, "\x04""zzz");
+	DECODE(l,
+	       "\x04"
+	       "zzz");
 	EXPECT_EQ(top.decoded().size(), 2);
-	DECODE(l, "\x20""...");
+	DECODE(l,
+	       "\x20"
+	       "...");
 	EXPECT_EQ(top.decoded().size(), 2);
 	// Reset and retransmit full request
 	DECODE(l, "\x80");
-	DECODE(l, "\x01""123");
-	DECODE(l, "\x02""456");
-	DECODE(l, "\x03""789");
+	DECODE(l,
+	       "\x01"
+	       "123");
+	DECODE(l,
+	       "\x02"
+	       "456");
+	DECODE(l,
+	       "\x03"
+	       "789");
 	EXPECT_EQ(top.decoded().size(), 5);
 	EXPECT_EQ(top.decoded().at(2), "123");
 	EXPECT_EQ(top.decoded().at(3), "456");
@@ -337,24 +420,42 @@ TEST(DebugArqLayer, LostRequest)
 	top.encode("abc", 3);
 	EXPECT_EQ(bottom.encoded().size(), 2);
 	EXPECT_EQ(bottom.encoded().at(0), "\x80");
-	EXPECT_EQ(bottom.encoded().at(1), std::string("\x01""abc", 4));
+	EXPECT_EQ(
+		bottom.encoded().at(1), std::string(
+						"\x01"
+						"abc",
+						4));
 
 	top.decoded().clear();
 	bottom.encoded().clear();
 	DECODE(l, "\x80");
 	EXPECT_EQ(bottom.encoded().size(), 1);
 	EXPECT_EQ(bottom.encoded().at(0), "\x80");
-	DECODE(l, "\x01""123");
-	DECODE(l, "\x02""456");
+	DECODE(l,
+	       "\x01"
+	       "123");
+	DECODE(l,
+	       "\x02"
+	       "456");
 	EXPECT_EQ(top.decoded().size(), 2);
 	EXPECT_EQ(top.decoded().at(0), "123");
 	EXPECT_EQ(top.decoded().at(1), "456");
 	// Do some retransmit
-	DECODE(l, "\x02""456");
-	DECODE(l, "\x33""zzz");
-	DECODE(l, "\x01""123");
-	DECODE(l, "\x02""456");
-	DECODE(l, "\x03""567");
+	DECODE(l,
+	       "\x02"
+	       "456");
+	DECODE(l,
+	       "\x33"
+	       "zzz");
+	DECODE(l,
+	       "\x01"
+	       "123");
+	DECODE(l,
+	       "\x02"
+	       "456");
+	DECODE(l,
+	       "\x03"
+	       "567");
 	EXPECT_EQ(top.decoded().size(), 3);
 	EXPECT_EQ(top.decoded().at(2), "567");
 }
@@ -373,33 +474,63 @@ TEST(DebugArqLayer, LostResponse)
 	EXPECT_EQ(bottom.encoded().size(), 1);
 	EXPECT_EQ(bottom.encoded().at(0), "\x80");
 	bottom.encoded().clear();
-	DECODE(l, "\x10""123");
+	DECODE(l,
+	       "\x10"
+	       "123");
 	EXPECT_EQ(top.decoded().size(), 1);
 	EXPECT_EQ(top.decoded().at(0), "123");
 
 	top.encode("abc", 3);
 	EXPECT_EQ(bottom.encoded().size(), 1);
-	EXPECT_EQ(bottom.encoded().at(0), std::string("\x01""abc", 4));
+	EXPECT_EQ(
+		bottom.encoded().at(0), std::string(
+						"\x01"
+						"abc",
+						4));
 
 	// Assume response was lost. Retransmit request.
-	DECODE(l, "\x10""123");
+	DECODE(l,
+	       "\x10"
+	       "123");
 	EXPECT_EQ(top.decoded().size(), 1);
 	EXPECT_EQ(bottom.encoded().size(), 2);
-	EXPECT_EQ(bottom.encoded().at(1), std::string("\x01""abc", 4));
+	EXPECT_EQ(
+		bottom.encoded().at(1), std::string(
+						"\x01"
+						"abc",
+						4));
 
-	DECODE(l, "\x11""456");
+	DECODE(l,
+	       "\x11"
+	       "456");
 	EXPECT_EQ(top.decoded().size(), 2);
 	EXPECT_EQ(top.decoded().at(1), "456");
 	top.encode("def", 3, false);
 	top.encode("g", 1);
 	top.encode("hi", 2);
 	EXPECT_EQ(bottom.encoded().size(), 4);
-	EXPECT_EQ(bottom.encoded().at(2), std::string("\x02""defg", 5));
-	EXPECT_EQ(bottom.encoded().at(3), "\x03""hi");
-	DECODE(l, "\x11""456");
+	EXPECT_EQ(
+		bottom.encoded().at(2), std::string(
+						"\x02"
+						"defg",
+						5));
+	EXPECT_EQ(
+		bottom.encoded().at(3),
+		"\x03"
+		"hi");
+	DECODE(l,
+	       "\x11"
+	       "456");
 	EXPECT_EQ(bottom.encoded().size(), 6);
-	EXPECT_EQ(bottom.encoded().at(4), std::string("\x02""defg", 5));
-	EXPECT_EQ(bottom.encoded().at(5), "\x03""hi");
+	EXPECT_EQ(
+		bottom.encoded().at(4), std::string(
+						"\x02"
+						"defg",
+						5));
+	EXPECT_EQ(
+		bottom.encoded().at(5),
+		"\x03"
+		"hi");
 }
 
 TEST(DebugArqLayer, Purgeable)
@@ -416,45 +547,75 @@ TEST(DebugArqLayer, Purgeable)
 	EXPECT_EQ(bottom.encoded().size(), 1);
 	EXPECT_EQ(bottom.encoded().at(0), "\x80");
 	bottom.encoded().clear();
-	DECODE(l, "\x01""123");
+	DECODE(l,
+	       "\x01"
+	       "123");
 	EXPECT_EQ(top.decoded().size(), 1);
 	EXPECT_EQ(top.decoded().at(0), "123");
 
 	top.setPurgeableResponse();
 	top.encode("abc", 3);
 	EXPECT_EQ(bottom.encoded().size(), 1);
-	EXPECT_EQ(bottom.encoded().at(0), std::string("\x01""abc", 4));
+	EXPECT_EQ(
+		bottom.encoded().at(0), std::string(
+						"\x01"
+						"abc",
+						4));
 
 	// Retransmit response, expect decoded again.
-	DECODE(l, "\x01""123");
+	DECODE(l,
+	       "\x01"
+	       "123");
 	EXPECT_EQ(top.decoded().size(), 2);
 	EXPECT_EQ(top.decoded().at(1), "123");
 	top.setPurgeableResponse();
 	top.encode("def", 3);
 	EXPECT_EQ(bottom.encoded().size(), 2);
-	EXPECT_EQ(bottom.encoded().at(1), std::string("\x82""def", 4));
+	EXPECT_EQ(
+		bottom.encoded().at(1), std::string(
+						"\x82"
+						"def",
+						4));
 
 	// Retransmit response, expect decoded again.
-	DECODE(l, "\x01""123");
+	DECODE(l,
+	       "\x01"
+	       "123");
 	EXPECT_EQ(top.decoded().size(), 3);
 	EXPECT_EQ(top.decoded().at(2), "123");
 	// Default to precious, but reset flag remains.
 	top.encode("ghi", 3);
 	EXPECT_EQ(bottom.encoded().size(), 3);
-	EXPECT_EQ(bottom.encoded().at(2), std::string("\x83""ghi", 4));
+	EXPECT_EQ(
+		bottom.encoded().at(2), std::string(
+						"\x83"
+						"ghi",
+						4));
 
-	DECODE(l, "\x01""123");
+	DECODE(l,
+	       "\x01"
+	       "123");
 	EXPECT_EQ(top.decoded().size(), 3);
 	// Default to precious, but reset flag remains.
 	EXPECT_EQ(bottom.encoded().size(), 4);
-	EXPECT_EQ(bottom.encoded().at(3), std::string("\x83""ghi", 4));
+	EXPECT_EQ(
+		bottom.encoded().at(3), std::string(
+						"\x83"
+						"ghi",
+						4));
 
-	DECODE(l, "\x02""123");
+	DECODE(l,
+	       "\x02"
+	       "123");
 	EXPECT_EQ(top.decoded().size(), 4);
 	// Default to precious.
 	top.encode("jkl", 3);
 	EXPECT_EQ(bottom.encoded().size(), 5);
-	EXPECT_EQ(bottom.encoded().at(4), std::string("\x04""jkl", 4));
+	EXPECT_EQ(
+		bottom.encoded().at(4), std::string(
+						"\x04"
+						"jkl",
+						4));
 }
 
 TEST(DebugArqLayer, Overflow)
@@ -471,29 +632,53 @@ TEST(DebugArqLayer, Overflow)
 	EXPECT_EQ(bottom.encoded().size(), 1);
 	EXPECT_EQ(bottom.encoded().at(0), "\x80");
 	bottom.encoded().clear();
-	DECODE(l, "\x01""123");
+	DECODE(l,
+	       "\x01"
+	       "123");
 	EXPECT_EQ(top.decoded().size(), 1);
 	top.encode("abcde", 5);
 	EXPECT_EQ(bottom.encoded().size(), 1);
-	EXPECT_EQ(bottom.encoded().at(0), std::string("\x01""abcde", 6));
+	EXPECT_EQ(
+		bottom.encoded().at(0), std::string(
+						"\x01"
+						"abcde",
+						6));
 
-	DECODE(l, "\x01""123");
+	DECODE(l,
+	       "\x01"
+	       "123");
 	// Behave like purgeable.
 	EXPECT_EQ(top.decoded().size(), 2);
 	top.encode("fghij", 5);
 	EXPECT_EQ(bottom.encoded().size(), 2);
-	EXPECT_EQ(bottom.encoded().at(1), std::string("\x82""fghij", 6));
+	EXPECT_EQ(
+		bottom.encoded().at(1), std::string(
+						"\x82"
+						"fghij",
+						6));
 
-	DECODE(l, "\x02""456");
+	DECODE(l,
+	       "\x02"
+	       "456");
 	EXPECT_EQ(top.decoded().size(), 3);
 	top.encode("klm", 3);
 	EXPECT_EQ(bottom.encoded().size(), 3);
-	EXPECT_EQ(bottom.encoded().at(2), std::string("\x03""klm", 4));
+	EXPECT_EQ(
+		bottom.encoded().at(2), std::string(
+						"\x03"
+						"klm",
+						4));
 
-	DECODE(l, "\x02""456");
+	DECODE(l,
+	       "\x02"
+	       "456");
 	EXPECT_EQ(top.decoded().size(), 3);
 	EXPECT_EQ(bottom.encoded().size(), 4);
-	EXPECT_EQ(bottom.encoded().at(3), std::string("\x03""klm", 4));
+	EXPECT_EQ(
+		bottom.encoded().at(3), std::string(
+						"\x03"
+						"klm",
+						4));
 }
 
 TEST(Crc8Layer, Encode)
@@ -554,7 +739,9 @@ TEST(Crc8Layer, Decode)
 	EXPECT_EQ(ll.decoded().size(), 0);
 
 	ll.decoded().clear();
-	DECODE(l, "\x00""123\xfc");
+	DECODE(l,
+	       "\x00"
+	       "123\xfc");
 	EXPECT_EQ(ll.decoded().size(), 0);
 }
 
@@ -616,7 +803,9 @@ TEST(Crc16Layer, Decode)
 	EXPECT_EQ(ll.decoded().size(), 0);
 
 	ll.decoded().clear();
-	DECODE(l, "\x00""123\x1c\x84");
+	DECODE(l,
+	       "\x00"
+	       "123\x1c\x84");
 	EXPECT_EQ(ll.decoded().size(), 0);
 }
 
@@ -1021,7 +1210,10 @@ TEST(FifoLoopback, FifoLoopback)
 	EXPECT_EQ(l.a2b().lastError(), 0);
 
 	bool overflow = false;
-	l.a2b().setOverflowHandler([&](){ overflow = true; return false; });
+	l.a2b().setOverflowHandler([&]() {
+		overflow = true;
+		return false;
+	});
 	a.encode("in ", 3);
 	a.encode("their ", 6);
 	a.encode("eyes", 4);
@@ -1055,8 +1247,7 @@ TEST(CallbackLayer, CallbackLayer)
 	bool down = false;
 
 	auto cb = ::stored::make_callback(
-			[&](void*,size_t){ up = true; },
-			[&](void const*,size_t,bool){ down = true; });
+		[&](void*, size_t) { up = true; }, [&](void const*, size_t, bool) { down = true; });
 
 	cb.encode("down", 4);
 	EXPECT_TRUE(down);
@@ -1084,7 +1275,8 @@ TEST(TerminalLayer, Encode)
 TEST(TerminalLayer, Decode)
 {
 	std::string nonDebug;
-	stored::TerminalLayer l([&](void* buf, size_t len){ nonDebug.append((char const*)buf, len); });
+	stored::TerminalLayer l(
+		[&](void* buf, size_t len) { nonDebug.append((char const*)buf, len); });
 	LoggingLayer ll;
 	l.wrap(ll);
 

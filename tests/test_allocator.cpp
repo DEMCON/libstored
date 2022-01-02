@@ -16,8 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "TestStore.h"
 #include "libstored/allocator.h"
+#include "TestStore.h"
 #include "gtest/gtest.h"
 
 #include <new>
@@ -81,7 +81,7 @@ TEST(Callable, FunctionPointer)
 	stored::Callable<void()>::type h;
 	h = callable;
 	EXPECT_TRUE((bool)h);
-	h = (void(*)())nullptr;
+	h = (void (*)()) nullptr;
 	EXPECT_FALSE((bool)h);
 }
 
@@ -89,7 +89,7 @@ TEST(Callable, Lambda)
 {
 	// Decays to normal function pointer.
 	callable_flag = false;
-	stored::Callable<void()>::type f{[](){ callable_flag = true; }};
+	stored::Callable<void()>::type f{[]() { callable_flag = true; }};
 
 	EXPECT_TRUE((bool)f);
 	f();
@@ -97,18 +97,24 @@ TEST(Callable, Lambda)
 
 	// Lambda with one capture.
 	bool flag = false;
-	f = [&](){ flag = true; };
+	f = [&]() { flag = true; };
 	EXPECT_TRUE((bool)f);
 	f();
 	EXPECT_TRUE(flag);
 
-	bool flag0 = false, flag1 = false, flag2 = false, flag3 = false,
-		 flag4 = false, flag5 = false, flag6 = false, flag7 = false;
+	bool flag0 = false, flag1 = false, flag2 = false, flag3 = false, flag4 = false,
+	     flag5 = false, flag6 = false, flag7 = false;
 
 	// This lamba is larger than what fits in the Callable.
 	auto lambda = [&]() {
-		flag0 = true; flag1 = true; flag2 = true; flag3 = true;
-		flag4 = true; flag5 = true; flag6 = true; flag7 = true;
+		flag0 = true;
+		flag1 = true;
+		flag2 = true;
+		flag3 = true;
+		flag4 = true;
+		flag5 = true;
+		flag6 = true;
+		flag7 = true;
 	};
 	EXPECT_GE(sizeof(lambda), sizeof(bool*) * 8U);
 	EXPECT_GT(sizeof(lambda), sizeof(f));
@@ -128,7 +134,10 @@ TEST(Callable, Lambda)
 TEST(Callable, Functor)
 {
 	struct C {
-		void operator()() { count++; }
+		void operator()()
+		{
+			count++;
+		}
 		int count = 0;
 	};
 
@@ -143,7 +152,7 @@ TEST(Callable, Functor)
 TEST(Callable, Move)
 {
 	bool flag = false;
-	stored::Callable<void()>::type f{[&](){ flag = true; }};
+	stored::Callable<void()>::type f{[&]() { flag = true; }};
 	f();
 	EXPECT_TRUE(flag);
 
@@ -161,12 +170,18 @@ TEST(Callable, Move)
 	f();
 	EXPECT_TRUE(flag);
 
-	bool flag0 = false, flag1 = false, flag2 = false, flag3 = false,
-		 flag4 = false, flag5 = false, flag6 = false, flag7 = false;
+	bool flag0 = false, flag1 = false, flag2 = false, flag3 = false, flag4 = false,
+	     flag5 = false, flag6 = false, flag7 = false;
 
 	auto lambda = [&]() {
-		flag0 = true; flag1 = true; flag2 = true; flag3 = true;
-		flag4 = true; flag5 = true; flag6 = true; flag7 = true;
+		flag0 = true;
+		flag1 = true;
+		flag2 = true;
+		flag3 = true;
+		flag4 = true;
+		flag5 = true;
+		flag6 = true;
+		flag7 = true;
 	};
 	EXPECT_GT(sizeof(lambda), sizeof(f));
 	f = lambda;
@@ -188,7 +203,7 @@ TEST(Callable, Move)
 TEST(Callable, Copy)
 {
 	bool flag = false;
-	stored::Callable<void()>::type f{[&](){ flag = true; }};
+	stored::Callable<void()>::type f{[&]() { flag = true; }};
 	f();
 	EXPECT_TRUE(flag);
 
@@ -214,12 +229,18 @@ TEST(Callable, Copy)
 	g();
 	EXPECT_TRUE(flag);
 
-	bool flag0 = false, flag1 = false, flag2 = false, flag3 = false,
-		 flag4 = false, flag5 = false, flag6 = false, flag7 = false;
+	bool flag0 = false, flag1 = false, flag2 = false, flag3 = false, flag4 = false,
+	     flag5 = false, flag6 = false, flag7 = false;
 
 	auto lambda = [&]() {
-		flag0 = true; flag1 = true; flag2 = true; flag3 = true;
-		flag4 = true; flag5 = true; flag6 = true; flag7 = true;
+		flag0 = true;
+		flag1 = true;
+		flag2 = true;
+		flag3 = true;
+		flag4 = true;
+		flag5 = true;
+		flag6 = true;
+		flag7 = true;
 	};
 	EXPECT_GT(sizeof(lambda), sizeof(f));
 	f = lambda;
@@ -243,21 +264,24 @@ TEST(Callable, Copy)
 static int copies = 0;
 struct C {
 	C() = default;
-	C(C const&) { copies++; }
+	C(C const&)
+	{
+		copies++;
+	}
 };
 
 TEST(Callable, Args)
 {
 	int v = 0;
-	stored::Callable<void(int)>::type f{[&](int x){ v = x; }};
+	stored::Callable<void(int)>::type f{[&](int x) { v = x; }};
 	f(1);
 	EXPECT_EQ(v, 1);
 
-	stored::Callable<void(int,int)>::type g{[&](int a, int b){ v = a + b; }};
+	stored::Callable<void(int, int)>::type g{[&](int a, int b) { v = a + b; }};
 	g(2, 3);
 	EXPECT_EQ(v, 5);
 
-	stored::Callable<void(C)>::type h{[](C){}};
+	stored::Callable<void(C)>::type h{[](C) {}};
 	copies = 0;
 	C c;
 	h(c);
@@ -265,12 +289,12 @@ TEST(Callable, Args)
 	h(C());
 	EXPECT_EQ(copies, 2);
 
-	stored::Callable<void(C&)>::type i{[](C&){}};
+	stored::Callable<void(C&)>::type i{[](C&) {}};
 	copies = 0;
 	i(c);
 	EXPECT_EQ(copies, 0);
 
-	stored::Callable<void(C&&)>::type j{[](C&&){}};
+	stored::Callable<void(C &&)>::type j{[](C&&) {}};
 	copies = 0;
 	j(std::move(c));
 	EXPECT_EQ(copies, 0);
@@ -278,7 +302,7 @@ TEST(Callable, Args)
 
 TEST(Callable, Return)
 {
-	stored::Callable<int(int*)>::type f{[](int* x){ return *x; }};
+	stored::Callable<int(int*)>::type f{[](int* x) { return *x; }};
 
 	int i = 4;
 	EXPECT_EQ(f(&i), 4);
@@ -315,4 +339,3 @@ TEST_F(Allocator, Store)
 	// No non-allocator allocations are expected.
 	EXPECT_EQ(new_count, 0u);
 }
-

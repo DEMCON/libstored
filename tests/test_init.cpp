@@ -61,4 +61,3 @@ TEST(Init, Float)
 }
 
 } // namespace
-

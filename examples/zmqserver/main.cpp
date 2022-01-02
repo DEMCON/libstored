@@ -3,19 +3,22 @@
  * \brief A stored::ZmqServer interface for a lot of different types of objects.
  */
 
-#include <stored>
 #include "ZmqServerStore.h"
 #include <cmath>
+#include <stored>
 #include <time.h>
 
 #if STORED_cplusplus >= 201103L
-#  include <chrono>
+#	include <chrono>
 #endif
 
 class ZmqServerStore : public STORE_BASE_CLASS(ZmqServerStoreBase, ZmqServerStore) {
 	STORE_CLASS_BODY(ZmqServerStoreBase, ZmqServerStore)
 public:
-	ZmqServerStore() : m_messages(), m_writes() {}
+	ZmqServerStore()
+		: m_messages()
+		, m_writes()
+	{}
 
 protected:
 	void __compute__an_int8_an_int16(bool set, int32_t& value)
@@ -34,7 +37,6 @@ protected:
 	{
 		if(!set)
 			value = (uint32_t)strlen(static_cast<char*>(a_string.buffer()));
-
 	}
 
 	void __stats__ZMQ_messages(bool set, uint32_t& value)
@@ -66,8 +68,10 @@ protected:
 	{
 		if(!set) {
 #if __cplusplus >= 201103L
-			value = (uint64_t)(std::chrono::duration_cast<std::chrono::microseconds>(
-				std::chrono::system_clock::now().time_since_epoch()).count());
+			value = (uint64_t)(
+				std::chrono::duration_cast<std::chrono::microseconds>(
+					std::chrono::system_clock::now().time_since_epoch())
+					.count());
 #else
 			// There is no portable implementation here...
 			value = (uint64_t)time(NULL) * 1000000ULL;
@@ -75,7 +79,12 @@ protected:
 		}
 	}
 
-	void __hookSet(stored::Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) { m_writes++; }
+	void __hookSet(
+		stored::Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer),
+		size_t UNUSED_PAR(len))
+	{
+		m_writes++;
+	}
 
 public:
 	void incMessages()
@@ -134,4 +143,3 @@ int main()
 		}
 	}
 }
-

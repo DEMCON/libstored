@@ -136,12 +136,12 @@ TEST(Fifo, IterateFifo)
 	EXPECT_TRUE(f.empty());
 }
 
-#define EXPECT_EQ_MSG(msg, str) \
-	do { \
-		auto m_ = (msg); \
-		EXPECT_NE(m_.data(), nullptr); \
-		std::string s_(m_.data(), m_.size());\
-		EXPECT_EQ(s_, "" str); \
+#define EXPECT_EQ_MSG(msg, str)                       \
+	do {                                          \
+		auto m_ = (msg);                      \
+		EXPECT_NE(m_.data(), nullptr);        \
+		std::string s_(m_.data(), m_.size()); \
+		EXPECT_EQ(s_, "" str);                \
 	} while(0)
 
 TEST(Fifo, UnboundedMessageFifo)
@@ -264,7 +264,7 @@ TEST(Fifo, ProducerConsumer)
 	char const msg[17] = "abcdefghijklmnop";
 
 	long pcs = 0;
-	std::thread p([&](){
+	std::thread p([&]() {
 		for(int l = 0; l < 1000; l++) {
 			size_t len = (size_t)(rand() % 16) + 1;
 			for(size_t i = 0; i < len; i++)
@@ -276,7 +276,7 @@ TEST(Fifo, ProducerConsumer)
 	});
 
 	long ccs = 0;
-	std::thread c([&](){
+	std::thread c([&]() {
 		for(int l = 0; l < 1000; l++) {
 			while(f.empty())
 				std::this_thread::yield();
@@ -297,4 +297,3 @@ TEST(Fifo, ProducerConsumer)
 #endif // STORED_COMPILER_MINGW
 
 } // namespace
-

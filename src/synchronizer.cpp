@@ -168,7 +168,7 @@ void StoreJournal::changed(StoreJournal::Key key, size_t len, bool insertIfNew)
 #else
 			push_back
 #endif
-				(ObjectInfo(key, (Size)len, toShort(seq())));
+			(ObjectInfo(key, (Size)len, toShort(seq())));
 		regenerate();
 	}
 }
@@ -178,7 +178,8 @@ void StoreJournal::changed(StoreJournal::Key key, size_t len, bool insertIfNew)
  * \details This function does a binary search through \c m_changes, limited by [lower,upper[.
  * \return \c true of successful, \c false if key is unknown
  */
-bool StoreJournal::update(StoreJournal::Key key, size_t len, StoreJournal::Seq seq, size_t lower, size_t upper)
+bool StoreJournal::update(
+	StoreJournal::Key key, size_t len, StoreJournal::Seq seq, size_t lower, size_t upper)
 {
 	if(lower >= upper)
 		return false;
@@ -219,9 +220,8 @@ StoreJournal::Seq StoreJournal::regenerate(size_t lower, size_t upper)
 	size_t pivot = (upper - lower) / 2 + lower;
 	ObjectInfo& o = m_changes[pivot];
 
-	Seq highest =
-		std::max(toLong(o.seq),
-		std::max(regenerate(lower, pivot), regenerate(pivot + 1, upper)));
+	Seq highest = std::max(
+		toLong(o.seq), std::max(regenerate(lower, pivot), regenerate(pivot + 1, upper)));
 
 	o.highest = toShort(highest);
 	return highest;
@@ -277,7 +277,8 @@ bool StoreJournal::hasChanged(Seq since) const
  * The callback \p will receive the Key of the object that has changed
  * since the given seq, and the supplied \p arg.
  */
-void StoreJournal::iterateChanged(StoreJournal::Seq since, IterateChangedCallback* cb, void* arg) const
+void StoreJournal::iterateChanged(
+	StoreJournal::Seq since, IterateChangedCallback* cb, void* arg) const
 {
 	if(!cb)
 		return;
@@ -288,7 +289,9 @@ void StoreJournal::iterateChanged(StoreJournal::Seq since, IterateChangedCallbac
 /*!
  * \brief Implementation of #iterateChanged()
  */
-void StoreJournal::iterateChanged(StoreJournal::Seq since, IterateChangedCallback* cb, void* arg, size_t lower, size_t upper) const
+void StoreJournal::iterateChanged(
+	StoreJournal::Seq since, IterateChangedCallback* cb, void* arg, size_t lower,
+	size_t upper) const
 {
 	if(lower >= upper)
 		return;
@@ -306,7 +309,8 @@ void StoreJournal::iterateChanged(StoreJournal::Seq since, IterateChangedCallbac
 
 /*!
  * \brief Remove all elements from the administration older than the given threshold.
- * \param oldest seq of oldest element to remain. If 0, use older than #SeqCleanThreshold before #seq().
+ * \param oldest seq of oldest element to remain. If 0, use older than #SeqCleanThreshold before
+ *	#seq().
  */
 void StoreJournal::clean(StoreJournal::Seq oldest)
 {
@@ -339,7 +343,8 @@ void StoreJournal::encodeHash(ProtocolLayer& p, bool last) const
 void StoreJournal::encodeHash(ProtocolLayer& p, char const* hash, bool last)
 {
 	size_t len = strlen(hash) + 1;
-	stored_assert(len > sizeof(SyncConnection::Id)); // Otherwise SyncConnection::Bye cannot see the difference.
+	stored_assert(len > sizeof(SyncConnection::Id)); // Otherwise SyncConnection::Bye cannot see
+							 // the difference.
 	p.encode(hash, len, last);
 }
 
@@ -351,7 +356,8 @@ char const* StoreJournal::decodeHash(void*& buffer, size_t& len)
 {
 	char* buffer_ = static_cast<char*>(buffer);
 	size_t i = 0;
-	for(; i < len && buffer_[i]; i++);
+	for(; i < len && buffer_[i]; i++)
+		;
 
 	if(i == len) {
 		// \0 not found
@@ -395,9 +401,11 @@ StoreJournal::Seq StoreJournal::decodeBuffer(void*& buffer, size_t& len)
 
 /*!
  * \brief Encode all updates of changed objects since the given update sequence number (inclusive).
- * \return The sequence number of the most recent update, to be passed to the next invocation of \c encodeUpdates().
+ * \return The sequence number of the most recent update, to be passed to the next invocation of \c
+ *	encodeUpdates().
  */
-StoreJournal::Seq StoreJournal::encodeUpdates(ProtocolLayer& p, StoreJournal::Seq sinceSeq, bool last)
+StoreJournal::Seq
+StoreJournal::encodeUpdates(ProtocolLayer& p, StoreJournal::Seq sinceSeq, bool last)
 {
 	encodeUpdates(p, sinceSeq, 0, m_changes.size());
 	if(last)
@@ -408,7 +416,8 @@ StoreJournal::Seq StoreJournal::encodeUpdates(ProtocolLayer& p, StoreJournal::Se
 /*!
  * \brief Implementation of #encodeUpdates().
  */
-void StoreJournal::encodeUpdates(ProtocolLayer& p, StoreJournal::Seq sinceSeq, size_t lower, size_t upper)
+void StoreJournal::encodeUpdates(
+	ProtocolLayer& p, StoreJournal::Seq sinceSeq, size_t lower, size_t upper)
 {
 	if(lower >= upper)
 		return;
@@ -470,12 +479,20 @@ void StoreJournal::encodeKey(ProtocolLayer& p, StoreJournal::Key key)
 	uint8_t buf[4] = {};
 
 	switch(keysize) {
-	case 1: buf[0] = (uint8_t)key; break;
-	case 2: *reinterpret_cast<uint16_t*>(buf) = endian_h2s((uint16_t)key); break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-	case 4: *reinterpret_cast<uint32_t*>(buf) = endian_h2s(key); break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+	case 1:
+		buf[0] = (uint8_t)key;
+		break;
+	case 2:
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+		*reinterpret_cast<uint16_t*>(buf) = endian_h2s((uint16_t)key);
+		break;
+	case 4:
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+		*reinterpret_cast<uint32_t*>(buf) = endian_h2s(key);
+		break;
 	default:
-			stored_assert(false); // NOLINT(hicpp-static-assert,misc-static-assert)
-			return;
+		stored_assert(false); // NOLINT(hicpp-static-assert,misc-static-assert)
+		return;
 	}
 
 	p.encode(buf, keysize, false);
@@ -496,13 +513,19 @@ StoreJournal::Key StoreJournal::decodeKey(uint8_t*& buffer, size_t& len, bool& o
 	Key key = 0;
 
 	switch(i) {
-	case 1: key = (Key)*buffer; break;
-	case 2: key = (Key)endian_s2h<uint16_t>(buffer); break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-	case 4: key = (Key)endian_s2h<uint32_t>(buffer); break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+	case 1:
+		key = (Key)*buffer;
+		break;
+	case 2:
+		key = (Key)endian_s2h<uint16_t>(buffer);
+		break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+	case 4:
+		key = (Key)endian_s2h<uint32_t>(buffer);
+		break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 	default:
-			stored_assert(false); // NOLINT(hicpp-static-assert,misc-static-assert)
-			ok = false;
-			return 0;
+		stored_assert(false); // NOLINT(hicpp-static-assert,misc-static-assert)
+		ok = false;
+		return 0;
 	}
 
 	len -= i;
@@ -513,15 +536,24 @@ StoreJournal::Key StoreJournal::decodeKey(uint8_t*& buffer, size_t& len, bool& o
 /*!
  * \brief Return the buffer of the store.
  */
-void* StoreJournal::buffer() const { return m_buffer; }
+void* StoreJournal::buffer() const
+{
+	return m_buffer;
+}
 /*!
  * \brief Return the size of #buffer().
  */
-size_t StoreJournal::bufferSize() const { return m_bufferSize; }
+size_t StoreJournal::bufferSize() const
+{
+	return m_bufferSize;
+}
 /*!
  * \brief Return the key size applicable to this store.
  */
-size_t StoreJournal::keySize() const { return m_keySize; }
+size_t StoreJournal::keySize() const
+{
+	return m_keySize;
+}
 
 /*!
  * \brief Return the buffer of an object corresponding to the given key.
@@ -752,7 +784,8 @@ void SyncConnection::eraseIn(SyncConnection::Id id)
 }
 
 /*!
- * \brief Erase the store from this connection that uses the given ID to send updates to the other party.
+ * \brief Erase the store from this connection that uses the given ID to send updates to the other
+ * party.
  */
 void SyncConnection::eraseOut(SyncConnection::Id id)
 {
@@ -871,9 +904,8 @@ void SyncConnection::decode(void* buffer, size_t len)
 
 		StoreJournal::Seq seq = 0;
 
-		if(!welcome_id || j == m_idIn.end() ||
-			!(seq = j->second->decodeBuffer(buffer, len)))
-		{
+		if(!welcome_id || j == m_idIn.end()
+		   || !(seq = j->second->decodeBuffer(buffer, len))) {
 			bye(id);
 			break;
 		}
@@ -1050,7 +1082,6 @@ void SyncConnection::helloAgain(StoreJournal& store)
 
 
 
-
 /////////////////////////////
 // Synchronizer
 //
@@ -1193,5 +1224,4 @@ bool Synchronizer::isSynchronizing(StoreJournal& j, SyncConnection& notOverConne
 	return false;
 }
 
-} // namespace
-
+} // namespace stored

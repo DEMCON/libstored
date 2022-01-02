@@ -14,31 +14,31 @@
 #include <stored>
 
 #ifdef STORED_COMPILER_MSVC
-#  include <io.h>
-#  define read(fd, buffer, len) _read(fd, buffer, (unsigned int)(len))
-#  define STDERR_FILENO		_fileno(stderr)
-#  define STDOUT_FILENO		_fileno(stdout)
-#  define STDIN_FILENO		_fileno(stdin)
+#	include <io.h>
+#	define read(fd, buffer, len) _read(fd, buffer, (unsigned int)(len))
+#	define STDERR_FILENO	_fileno(stderr)
+#	define STDOUT_FILENO	_fileno(stdout)
+#	define STDIN_FILENO	_fileno(stdin)
 #else
-#  include <unistd.h>
+#	include <unistd.h>
 #endif
 
 #ifdef STORED_OS_WINDOWS
-#  include <malloc.h>
-#  ifndef alloca
-#    define alloca(x) _alloca(x)
-#  endif
+#	include <malloc.h>
+#	ifndef alloca
+#		define alloca(x) _alloca(x)
+#	endif
 #else
-#  include <alloca.h>
+#	include <alloca.h>
 #endif
 
 #include <cstdio>
 #include <ctime>
 
 #if STORED_cplusplus < 201103L
-#  include <inttypes.h>
+#	include <inttypes.h>
 #else
-#  include <cinttypes>
+#	include <cinttypes>
 #endif
 
 static stored::ExampleProtocol store;
@@ -46,7 +46,8 @@ static stored::ExampleProtocol store;
 /*!
  * \brief Print a buffer, for demonstration purposes.
  */
-static void printBuffer(void const* buffer, size_t len, char const* prefix = nullptr, FILE* f = stdout)
+static void
+printBuffer(void const* buffer, size_t len, char const* prefix = nullptr, FILE* f = stdout)
 {
 	std::string s;
 	if(prefix)
@@ -56,11 +57,21 @@ static void printBuffer(void const* buffer, size_t len, char const* prefix = nul
 	char buf[16];
 	for(size_t i = 0; i < len; i++) {
 		switch(b[i]) {
-		case '\0': s += "\\0"; break;
-		case '\r': s += "\\r"; break;
-		case '\n': s += "\\n"; break;
-		case '\t': s += "\\t"; break;
-		case '\\': s += "\\\\"; break;
+		case '\0':
+			s += "\\0";
+			break;
+		case '\r':
+			s += "\\r";
+			break;
+		case '\n':
+			s += "\\n";
+			break;
+		case '\t':
+			s += "\\t";
+			break;
+		case '\\':
+			s += "\\\\";
+			break;
 		default:
 			if(b[i] < 0x20 || b[i] >= 0x7f) {
 				snprintf(buf, sizeof(buf), "\\x%02" PRIx8, b[i]);
@@ -88,8 +99,7 @@ public:
 
 	LossyChannel(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
 		: base(up, down)
-	{
-	}
+	{}
 
 	virtual ~LossyChannel() override is_default
 
@@ -117,7 +127,10 @@ public:
 	using base::encode;
 
 	// Bit error rate
-	double ber() const { return store.ber; }
+	double ber() const
+	{
+		return store.ber;
+	}
 
 	char lossyByte(char b)
 	{
@@ -137,7 +150,10 @@ public:
 		return b;
 	}
 
-	virtual size_t mtu() const override { return store.MTU.as<size_t>(); }
+	virtual size_t mtu() const override
+	{
+		return store.MTU.as<size_t>();
+	}
 };
 
 int main()
@@ -219,4 +235,3 @@ int main()
 
 	return 0;
 }
-

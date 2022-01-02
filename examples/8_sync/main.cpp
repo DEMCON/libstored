@@ -17,10 +17,10 @@
 #include "ExampleSync1.h"
 #include "ExampleSync2.h"
 
+#include "getopt_mini.h"
+#include <stdlib.h>
 #include <stored>
 #include <string.h>
-#include <stdlib.h>
-#include "getopt_mini.h"
 
 static stored::Synchronizer synchronizer;
 
@@ -84,7 +84,8 @@ int main(int argc, char** argv)
 			stored::SyncZmqLayer* z = new stored::SyncZmqLayer(nullptr, optarg, true);
 			connections.push_back(z);
 			if((errno = z->lastError())) {
-				printf("Cannot initialize ZMQ, got error %d; %s\n", errno, zmq_strerror(errno));
+				printf("Cannot initialize ZMQ, got error %d; %s\n", errno,
+				       zmq_strerror(errno));
 				ret = 1;
 				break;
 			}
@@ -105,7 +106,8 @@ int main(int argc, char** argv)
 			stored::SyncZmqLayer* z = new stored::SyncZmqLayer(nullptr, optarg, false);
 			connections.push_back(z);
 			if((errno = z->lastError())) {
-				printf("Cannot initialize ZMQ, got error %d; %s\n", errno, zmq_strerror(errno));
+				printf("Cannot initialize ZMQ, got error %d; %s\n", errno,
+				       zmq_strerror(errno));
 				ret = 1;
 				break;
 			}
@@ -124,7 +126,9 @@ int main(int argc, char** argv)
 			break;
 		}
 		default:
-			printf("Usage: %s [-v] [-i <name>] [-p <port>] [-d <endpoint>|-u <endpoint>]*\n", argv[0]);
+			printf("Usage: %s [-v] [-i <name>] [-p <port>] [-d <endpoint>|-u "
+			       "<endpoint>]*\n",
+			       argv[0]);
 			printf("where\n");
 			printf("  -d   Listen for incoming 0MQ endpoint for downstream sync.\n");
 			printf("  -i   Set debugger's identification name.\n");
@@ -138,7 +142,8 @@ int main(int argc, char** argv)
 
 	stored::DebugZmqLayer debugLayer(nullptr, debug_port);
 	if((errno = debugLayer.lastError())) {
-		printf("Cannot initialize ZMQ for debugging, got error %d; %s\n", errno, zmq_strerror(errno));
+		printf("Cannot initialize ZMQ for debugging, got error %d; %s\n", errno,
+		       zmq_strerror(errno));
 		ret = 1;
 	}
 	debugLayer.wrap(debugger);
@@ -146,7 +151,8 @@ int main(int argc, char** argv)
 	std::vector<zmq_pollitem_t> fds;
 	fds.reserve(connections.size() + 1 /* debugger */);
 
-	for(std::list<stored::SyncZmqLayer*>::iterator it = connections.begin(); it != connections.end(); ++it) {
+	for(std::list<stored::SyncZmqLayer*>::iterator it = connections.begin();
+	    it != connections.end(); ++it) {
 		zmq_pollitem_t fd = {};
 		fd.socket = (*it)->socket();
 		fd.events = ZMQ_POLLIN;
@@ -179,11 +185,13 @@ int main(int argc, char** argv)
 		// Look for connection that has activity.
 		size_t i = 0;
 		int res = 0;
-		for(std::list<stored::SyncZmqLayer*>::iterator it = connections.begin(); it != connections.end() && cnt; ++it, i++) {
+		for(std::list<stored::SyncZmqLayer*>::iterator it = connections.begin();
+		    it != connections.end() && cnt; ++it, i++) {
 			if(fds[i].revents & ZMQ_POLLIN) {
 				cnt--;
 				if((res = (*it)->recv())) {
-					printf("Sync socket recv error %d; %s\n", res, zmq_strerror(res));
+					printf("Sync socket recv error %d; %s\n", res,
+					       zmq_strerror(res));
 					goto done;
 				}
 			}
@@ -194,7 +202,8 @@ int main(int argc, char** argv)
 			if(fds[fds.size() - 1].revents & ZMQ_POLLIN) {
 				cnt--;
 				if((res = debugLayer.recv())) {
-					printf("Debugger socket recv error %d; %s\n", res, zmq_strerror(res));
+					printf("Debugger socket recv error %d; %s\n", res,
+					       zmq_strerror(res));
 					goto done;
 				}
 			}
@@ -204,13 +213,14 @@ int main(int argc, char** argv)
 	}
 
 done:
-	for(std::list<stored::SyncZmqLayer*>::iterator it = connections.begin(); it != connections.end(); ++it) {
+	for(std::list<stored::SyncZmqLayer*>::iterator it = connections.begin();
+	    it != connections.end(); ++it) {
 		synchronizer.disconnect(**it);
 		delete *it;
 	}
-	for(std::list<stored::ProtocolLayer*>::iterator it = otherLayers.begin(); it != otherLayers.end(); ++it)
+	for(std::list<stored::ProtocolLayer*>::iterator it = otherLayers.begin();
+	    it != otherLayers.end(); ++it)
 		delete *it;
 
 	return ret;
 }
-

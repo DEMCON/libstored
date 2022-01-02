@@ -19,17 +19,17 @@
  */
 
 #include <libstored/macros.h>
-#include <libstored/config.h>
 #include <libstored/allocator.h>
-#include <libstored/util.h>
-#include <libstored/debugger.h>
-#include <libstored/protocol.h>
-#include <libstored/zmq.h>
-#include <libstored/synchronizer.h>
-#include <libstored/poller.h>
-#include <libstored/compress.h>
-#include <libstored/fifo.h>
 #include <libstored/components.h>
+#include <libstored/compress.h>
+#include <libstored/config.h>
+#include <libstored/debugger.h>
+#include <libstored/fifo.h>
+#include <libstored/poller.h>
+#include <libstored/protocol.h>
+#include <libstored/synchronizer.h>
+#include <libstored/util.h>
 #include <libstored/version.h>
+#include <libstored/zmq.h>
 
 #endif // LIBSTORED_STORED_H

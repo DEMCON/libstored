@@ -28,7 +28,9 @@ namespace stored {
  * \brief Implementation for stored::list().
  * \private
  */
-static void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg, String::type& name)
+static void
+list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg,
+     String::type& name)
 {
 	if(unlikely(!buffer || !directory))
 		return;
@@ -46,7 +48,8 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
 			size_t len = !Type::isFixed(type) ? decodeInt<size_t>(p) : Type::size(type);
 			size_t offset = decodeInt<size_t>(p);
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast,performance-no-int-to-ptr)
-			char* b = Type::isFunction(type) ? reinterpret_cast<char*>(offset) : static_cast<char*>(buffer) + offset;
+			char* b = Type::isFunction(type) ? reinterpret_cast<char*>(offset)
+							 : static_cast<char*>(buffer) + offset;
 			f(container, name.c_str(), type, b, len, arg);
 			break;
 		} else if(*p <= 0x1f) {
@@ -88,15 +91,20 @@ static void list(void* container, void* buffer, uint8_t const* directory, ListCa
  * \param directory the binary directory, to be parsed
  * \param f the callback function
  * \param arg an arbitrary argument to be passed to \p f
- * \param prefix when not \c nullptr, a string that is prepended for the name that is supplied to \p f
+ * \param prefix when not \c nullptr, a string that is prepended for the name that is supplied to \p
+ * f
  *
  * This function is not reentrant. Do not call it recursively.
  */
-void list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg, char const* prefix)
+void list(
+	void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg,
+	char const* prefix)
 {
 	static String::type name;
 	if(Config::AvoidDynamicMemory)
-		name.reserve((prefix ? strlen(prefix) * 2U : 0U) + 128U); // Some arbitrary buffer, which should usually be sufficient.
+		name.reserve(
+			(prefix ? strlen(prefix) * 2U : 0U)
+			+ 128U); // Some arbitrary buffer, which should usually be sufficient.
 
 	if(prefix)
 		name = prefix;
@@ -104,5 +112,4 @@ void list(void* container, void* buffer, uint8_t const* directory, ListCallbackA
 	list(container, buffer, directory, f, arg, name);
 }
 
-} // namespace
-
+} // namespace stored

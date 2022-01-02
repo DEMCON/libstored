@@ -16,16 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <libstored/util.h>
 #include <libstored/poller.h>
+#include <libstored/util.h>
 #include <libstored/version.h>
 
 #include <cstring>
 
 #if STORED_cplusplus < 201103L
-#  include <inttypes.h>
+#	include <inttypes.h>
 #else
-#  include <cinttypes>
+#	include <cinttypes>
 #endif
 
 namespace stored {
@@ -51,7 +51,9 @@ size_t strncpy(char* __restrict__ dst, char const* __restrict__ src, size_t len)
 /*!
  * \brief Like \c ::strncmp(), but handles non zero-terminated strings.
  */
-int strncmp(char const* __restrict__ str1, size_t len1, char const* __restrict__ str2, size_t len2) noexcept
+int strncmp(
+	char const* __restrict__ str1, size_t len1, char const* __restrict__ str2,
+	size_t len2) noexcept
 {
 	stored_assert(str1);
 	stored_assert(str2);
@@ -145,11 +147,21 @@ String::type string_literal(void const* buffer, size_t len, char const* prefix)
 	char buf[16];
 	for(size_t i = 0; i < len; i++) {
 		switch(b[i]) {
-		case '\0': s += "\\0"; break;
-		case '\r': s += "\\r"; break;
-		case '\n': s += "\\n"; break;
-		case '\t': s += "\\t"; break;
-		case '\\': s += "\\\\"; break;
+		case '\0':
+			s += "\\0";
+			break;
+		case '\r':
+			s += "\\r";
+			break;
+		case '\n':
+			s += "\\n";
+			break;
+		case '\t':
+			s += "\\t";
+			break;
+		case '\\':
+			s += "\\\\";
+			break;
 		default:
 			if(b[i] < 0x20 || b[i] >= 0x7f) {
 				// Embedded systems may not have a fancy printf, so limit the
@@ -171,100 +183,98 @@ String::type string_literal(void const* buffer, size_t len, char const* prefix)
  */
 char const* banner() noexcept
 {
-	return
-		"libstored " STORED_VERSION
+	return "libstored " STORED_VERSION
 #if STORED_cplusplus < 201103L
-		" C++98"
+	       " C++98"
 #elif STORED_cplusplus == 201103L
-		" C++11"
+	       " C++11"
 #elif STORED_cplusplus == 201402L
-		" C++14"
+	       " C++14"
 #elif STORED_cplusplus == 201703L
-		" C++17"
+	       " C++17"
 #endif
 #ifdef STORED_COMPILER_CLANG
-		" clang"
+	       " clang"
 #endif
 #ifdef STORED_COMPILER_GCC
-		" gcc"
+	       " gcc"
 #endif
 #ifdef STORED_COMPILER_ARMCC
-		" armcc"
+	       " armcc"
 #endif
 #ifdef STORED_COMPILER_MSVC
-		" msvc"
+	       " msvc"
 #endif
 #ifdef STORED_OS_WINDOWS
-		" win"
+	       " win"
 #endif
 #ifdef STORED_OS_LINUX
-		" linux"
+	       " linux"
 #endif
 #ifdef STORED_OS_OSC
-		" osx"
+	       " osx"
 #endif
 #ifdef STORED_OS_BAREMETAL
-		" baremetal"
+	       " baremetal"
 #endif
 #ifdef STORED_OS_GENERIC
-		" generic"
+	       " generic"
 #endif
 #ifdef STORED_LITTLE_ENDIAN
-		" le"
+	       " le"
 #endif
 #ifdef STORED_BIG_ENDIAN
-		" be"
+	       " be"
 #endif
 #if defined(STORED_HAVE_VALGRIND) && !defined(NVALGRIND)
-		" valgrind"
+	       " valgrind"
 #endif
 #ifdef STORED_HAVE_ZTH
-		" zth"
+	       " zth"
 #endif
 #ifdef STORED_HAVE_ZMQ
-		" zmq"
+	       " zmq"
 #endif
 #ifdef STORED_POLL_ZTH_WFMO
-		" poll=zth-wfmo"
+	       " poll=zth-wfmo"
 #endif
 #ifdef STORED_POLL_WFMO
-		" poll=wfmo"
+	       " poll=wfmo"
 #endif
 #ifdef STORED_POLL_ZTH_ZMQ
-		" poll=zth-zmq"
+	       " poll=zth-zmq"
 #endif
 #ifdef STORED_POLL_ZMQ
-		" poll=zmq"
+	       " poll=zmq"
 #endif
 #ifdef STORED_POLL_ZTH_POLL
-		" poll=zth-poll"
+	       " poll=zth-poll"
 #endif
 #ifdef STORED_POLL_POLL
-		" poll=poll"
+	       " poll=poll"
 #endif
 #ifdef STORED_POLL_ZTH_LOOP
-		" poll=zth-loop"
+	       " poll=zth-loop"
 #endif
 #ifdef STORED_POLL_LOOP
-		" poll=loop"
+	       " poll=loop"
 #endif
 #ifdef STORED_DRAFT_API
-		" draft"
+	       " draft"
 #endif
 #ifdef STORED_ENABLE_ASAN
-		" asan"
+	       " asan"
 #endif
 #ifdef STORED_ENABLE_LSAN
-		" lsan"
+	       " lsan"
 #endif
 #ifdef STORED_ENABLE_UBSAN
-		" ubsan"
+	       " ubsan"
 #endif
 #ifdef _DEBUG
-		" debug"
+	       " debug"
 #endif
 		;
 }
 
-} // namespace
-
+} // namespace stored

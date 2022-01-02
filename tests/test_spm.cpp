@@ -55,8 +55,8 @@ TEST(ScrachPad, Alloc)
 template <size_t S>
 void spmInfo(stored::ScratchPad<S>& spm)
 {
-	printf("%p: buffer=%p size=%zu cap=%zu max=%zu chunks=%zu\n",
-		&spm, spm.template alloc<char>(0), spm.size(), spm.capacity(), spm.max(), spm.chunks());
+	printf("%p: buffer=%p size=%zu cap=%zu max=%zu chunks=%zu\n", &spm,
+	       spm.template alloc<char>(0), spm.size(), spm.capacity(), spm.max(), spm.chunks());
 }
 
 TEST(ScratchPad, Reset)
@@ -206,4 +206,3 @@ TEST(ScratchPad, Stress)
 }
 
 } // namespace
-

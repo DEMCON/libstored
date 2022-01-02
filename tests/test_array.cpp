@@ -50,4 +50,3 @@ TEST(Array, Dynamic)
 }
 
 } // namespace
-

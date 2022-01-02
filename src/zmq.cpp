@@ -16,25 +16,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <libstored/protocol.h>
 #include <libstored/poller.h>
+#include <libstored/protocol.h>
 
 #ifdef STORED_HAVE_ZMQ
-#  include <zmq.h>
+#	include <zmq.h>
 
-#  ifdef STORED_HAVE_ZTH
+#	ifdef STORED_HAVE_ZTH
 // Allow Zth to provide wrappers for blocking ZMQ calls.
-#    include <libzth/zmq.h>
-#  endif
+#		include <libzth/zmq.h>
+#	endif
 
-#  include <cerrno>
-#  include <cstdlib>
+#	include <cerrno>
+#	include <cstdlib>
 
-#  if STORED_cplusplus < 201103L
-#    include <inttypes.h>
-#  else
-#    include <cinttypes>
-#  endif
+#	if STORED_cplusplus < 201103L
+#		include <inttypes.h>
+#	else
+#		include <cinttypes>
+#	endif
 
 namespace stored {
 
@@ -107,11 +107,11 @@ ZmqLayer::fd_type ZmqLayer::fd() const
 	size_t size = sizeof(socket);
 
 	if(zmq_getsockopt(m_socket, ZMQ_FD, &socket, &size) == -1) {
-#ifdef STORED_OS_WINDOWS
+#	ifdef STORED_OS_WINDOWS
 		return INVALID_SOCKET; // NOLINT(hicpp-signed-bitwise)
-#else
+#	else
 		return -1;
-#endif
+#	endif
 	}
 
 	return socket;
@@ -150,7 +150,9 @@ int ZmqLayer::block(bool forReading, long timeout_us, bool UNUSED_PAR(suspend))
 				// Should not happen.
 				err = EINVAL;
 			break;
-		} else if((pres[0]->events & (Pollable::Events)(Pollable::PollErr | Pollable::PollHup)).any()) {
+		} else if((pres[0]->events
+			   & (Pollable::Events)(Pollable::PollErr | Pollable::PollHup))
+				  .any()) {
 			// Something is wrong with the socket.
 			err = EIO;
 			break;
@@ -291,7 +293,7 @@ void ZmqLayer::encode(void const* buffer, size_t len, bool last)
 		// Success.
 		setLastError(0);
 	} else if(setLastError(errno) != EAGAIN) { // NOLINT(bugprone-branch-clone)
-		// Some other error occurred.
+						   // Some other error occurred.
 	} else if(block(false)) {
 		// Socket is not writable, and blocking failed.
 	} else {
@@ -362,7 +364,8 @@ int DebugZmqLayer::recv(long timeout_us)
  *
  * \see #stored::Synchronizer
  */
-SyncZmqLayer::SyncZmqLayer(void* context, char const* endpoint, bool listen, ProtocolLayer* up, ProtocolLayer* down)
+SyncZmqLayer::SyncZmqLayer(
+	void* context, char const* endpoint, bool listen, ProtocolLayer* up, ProtocolLayer* down)
 	: base(context, ZMQ_PAIR, up, down)
 {
 	if(lastError())
@@ -378,7 +381,7 @@ SyncZmqLayer::SyncZmqLayer(void* context, char const* endpoint, bool listen, Pro
 		setLastError(errno);
 }
 
-} // namespace
-#else // !STORED_HAVE_ZMQ
+} // namespace stored
+#else  // !STORED_HAVE_ZMQ
 char dummy_char_to_make_zmq_cpp_non_empty = 0; // NOLINT
 #endif // STORED_HAVE_ZMQ

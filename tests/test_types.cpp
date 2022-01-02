@@ -22,12 +22,12 @@
 #include "gtest/gtest.h"
 
 #ifdef STORED_OS_WINDOWS
-#  include <malloc.h>
-#  ifndef alloca
-#    define alloca(s) _malloca(s)
-#  endif
+#	include <malloc.h>
+#	ifndef alloca
+#		define alloca(s) _malloca(s)
+#	endif
 #else
-#  include <alloca.h>
+#	include <alloca.h>
 #endif
 
 namespace {
@@ -125,7 +125,7 @@ TEST(Types, Bool)
 TEST(Types, Pointer)
 {
 	stored::TestStore store;
-#if (defined(__SIZEOF_POINTER__) && __SIZEOF_POINTER__ == 8) || defined(_WIN64)
+#if(defined(__SIZEOF_POINTER__) && __SIZEOF_POINTER__ == 8) || defined(_WIN64)
 	EXPECT_FALSE(store.default_ptr64.get());
 	void* p = reinterpret_cast<void*>((uintptr_t)0xcafebabel);
 	store.default_ptr64 = p;
@@ -197,4 +197,3 @@ TEST(Types, FreeVariable)
 }
 
 } // namespace
-

@@ -527,6 +527,7 @@ protected:
 	virtual int init(Pollable const& p, WfmoPollerItem& item) noexcept final;
 	virtual void deinit(Pollable const& p, WfmoPollerItem& item) noexcept final;
 	virtual int doPoll(int timeout_ms, PollItemList& items) noexcept final;
+
 private:
 	Vector<HANDLE>::type m_handles;
 	Vector<size_t>::type m_indexMap;

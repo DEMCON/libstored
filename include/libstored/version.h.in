@@ -20,31 +20,31 @@
 
 #include <libstored/util.h>
 
-#define STORED_VERSION_MAJOR	@LIBSTORED_VERSION_MAJOR@
-#define STORED_VERSION_MINOR	@LIBSTORED_VERSION_MINOR@
-#define STORED_VERSION_PATCH	@LIBSTORED_VERSION_PATCH@
-#define STORED_VERSION_SUFFIX	"@LIBSTORED_VERSION_SUFFIX@"
+// clang-format off
+#define STORED_VERSION_MAJOR  @LIBSTORED_VERSION_MAJOR@
+#define STORED_VERSION_MINOR  @LIBSTORED_VERSION_MINOR@
+#define STORED_VERSION_PATCH  @LIBSTORED_VERSION_PATCH@
+#define STORED_VERSION_SUFFIX "@LIBSTORED_VERSION_SUFFIX@"
 
-#define STORED_VERSION \
-	STORED_STRINGIFY(STORED_VERSION_MAJOR) "." \
-	STORED_STRINGIFY(STORED_VERSION_MINOR) "." \
-	STORED_STRINGIFY(STORED_VERSION_PATCH) \
-	STORED_VERSION_SUFFIX
+#define STORED_VERSION                             \
+	STORED_STRINGIFY(STORED_VERSION_MAJOR)     \
+	"." STORED_STRINGIFY(STORED_VERSION_MINOR) \
+	"." STORED_STRINGIFY(STORED_VERSION_PATCH) \
+	    STORED_VERSION_SUFFIX
 
-#define STORED_VERSION_NUM ( \
-	STORED_VERSION_MAJOR * 10000L + \
-	STORED_VERSION_MINOR *   100L + \
-	STORED_VERSION_PATCH)
+#define STORED_VERSION_NUM \
+	(STORED_VERSION_MAJOR * 10000L + STORED_VERSION_MINOR * 100L + STORED_VERSION_PATCH)
+// clang-format on
 
 #ifdef __cplusplus
 namespace stored {
-	/*!
-	 * \brief Returns the version of libstored.
-	 */
-	constexpr char const* version() noexcept
-	{
-		return STORED_VERSION;
-	}
+/*!
+ * \brief Returns the version of libstored.
+ */
+constexpr char const* version() noexcept
+{
+	return STORED_VERSION;
 }
+} // namespace stored
 #endif // __cplusplus
 #endif // LIBSTORED_VERSION_H

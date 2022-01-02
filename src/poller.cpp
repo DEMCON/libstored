@@ -483,11 +483,11 @@ int PollPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 //
 
 #if defined(STORED_COMPILER_MSVC)
-#if defined(_WIN64)
-#	pragma comment(linker, "/alternatename:poll_once=poll_once_weak")
-#else
-#	pragma comment(linker, "/alternatename:_poll_once=_poll_once_weak")
-#endif
+#	if defined(_WIN64)
+#		pragma comment(linker, "/alternatename:poll_once=poll_once_weak")
+#	else
+#		pragma comment(linker, "/alternatename:_poll_once=_poll_once_weak")
+#	endif
 extern "C" int poll_once_weak(TypedPollable const& p, Pollable::Events& revents) noexcept
 {
 	return poll_once_default(p, revents);

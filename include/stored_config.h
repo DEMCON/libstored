@@ -7,30 +7,29 @@
  */
 
 #ifndef LIBSTORED_CONFIG_H
-#  error Do not include this file directly, include <stored> instead.
+#	error Do not include this file directly, include <stored> instead.
 #endif
 
 #ifndef STORED_CONFIG_H
-#define STORED_CONFIG_H
+#	define STORED_CONFIG_H
 
-#ifdef __cplusplus
+#	ifdef __cplusplus
 namespace stored {
-	/*!
-	 * \brief Example of a configuration that override the stored::DefaultConfig.
-	 * \see stored_config.h
-	 */
-	struct Config : public DefaultConfig {
-		// Override defaults from DefaultConfig here for your local setup.
-		//static bool const HookSetOnChangeOnly = true;
+/*!
+ * \brief Example of a configuration that override the stored::DefaultConfig.
+ * \see stored_config.h
+ */
+struct Config : public DefaultConfig {
+	// Override defaults from DefaultConfig here for your local setup.
+	// static bool const HookSetOnChangeOnly = true;
 
-		//template <typename T>
-		//struct Allocator {
-		//	typedef MyAllocator<T> type;
-		//};
+	// template <typename T>
+	// struct Allocator {
+	//	typedef MyAllocator<T> type;
+	// };
 
-		// ...
-	};
-} // namespace
-#endif // __cplusplus
-#endif // STORED_CONFIG_H
-
+	// ...
+};
+} // namespace stored
+#	endif // __cplusplus
+#endif	       // STORED_CONFIG_H

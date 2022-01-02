@@ -21,7 +21,7 @@
 #include <cstring>
 
 #ifdef STORED_COMPILER_ARMCC
-#  pragma clang diagnostic ignored "-Wweak-vtables"
+#	pragma clang diagnostic ignored "-Wweak-vtables"
 #endif
 
 namespace stored {
@@ -62,8 +62,7 @@ Debugger::Debugger(char const* identification, char const* versions)
 	, m_traceStream()
 	, m_traceDecimate()
 	, m_traceCount()
-{
-}
+{}
 
 /*!
  * \brief Destructor.
@@ -112,7 +111,8 @@ notfound:
 	// a store.
 
 	size_t prefix_len = 1;
-	for(; prefix_len < len && name[prefix_len] && name[prefix_len] != '/'; prefix_len++);
+	for(; prefix_len < len && name[prefix_len] && name[prefix_len] != '/'; prefix_len++)
+		;
 	if(prefix_len == len)
 		goto notfound;
 
@@ -136,10 +136,12 @@ notfound:
 
 	StoreMap::const_iterator it = m_map.lower_bound(prefix);
 	if(it == m_map.end())
-		goto notfound; // NOLINT(bugprone-branch-clone)
+		goto notfound;			// NOLINT(bugprone-branch-clone)
 	else if(strcmp(prefix, it->first) == 0) // Rule 1.
-		goto gotit; // NOLINT(bugprone-branch-clone)
-	else if(::strncmp(prefix, it->first, prefix_len) == 0 && (++it == m_map.end() || ::strncmp(prefix, it->first, prefix_len) != 0)) { // Rule 2.
+		goto gotit;			// NOLINT(bugprone-branch-clone)
+	else if(::strncmp(prefix, it->first, prefix_len) == 0
+		&& (++it == m_map.end()
+		    || ::strncmp(prefix, it->first, prefix_len) != 0)) { // Rule 2.
 		--it;
 		goto gotit;
 	} else
@@ -429,11 +431,15 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 		len--;
 		// Find / that indicates the object.
 		// Always use last char, which may be an alias.
-		while(len > 1 && *p != '/') { p++; len--; }
+		while(len > 1 && *p != '/') {
+			p++;
+			len--;
+		}
 		if(len == 0)
 			goto error;
 
-		size_t valuelen = (size_t)(static_cast<char const*>(p) - static_cast<char const*>(value));
+		size_t valuelen =
+			(size_t)(static_cast<char const*>(p) - static_cast<char const*>(value));
 		DebugVariant variant = find(p, len);
 		if(!variant.valid())
 			goto error;
@@ -512,7 +518,8 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 			it->second = variant;
 		} else {
 			// Add new alias.
-			std::pair<AliasMap::iterator, bool> inserted = aliases().insert(std::make_pair(a, variant));
+			std::pair<AliasMap::iterator, bool> inserted =
+				aliases().insert(std::make_pair(a, variant));
 			if(!inserted.second)
 				// Already there. Replace it.
 				inserted.first->second = variant;
@@ -552,7 +559,8 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 			if(newlen > Config::DebuggerMacro)
 				goto error;
 
-			std::pair<MacroMap::iterator,bool> inserted = macros().insert(MacroMap::value_type(m, String::type()));
+			std::pair<MacroMap::iterator, bool> inserted =
+				macros().insert(MacroMap::value_type(m, String::type()));
 			inserted.first->second.append(p, len);
 			m_macroSize = newlen;
 		} else {
@@ -617,7 +625,8 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 		size_t buflen = 1;
 		p++;
 		len -= 2;
-		for(; len > 0 && *p != ' '; buflen++, p++, len--);
+		for(; len > 0 && *p != ' '; buflen++, p++, len--)
+			;
 
 		void const* buf = addrhex;
 		if(!decodeHex(Type::Pointer, buf, buflen))
@@ -635,7 +644,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 				goto error;
 
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-			datalen = (size_t)*reinterpret_cast<unsigned int const*>(buf);
+			datalen = (size_t) * reinterpret_cast<unsigned int const*>(buf);
 		}
 
 		if(datalen == 0)
@@ -676,7 +685,8 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 		size_t buflen = 1;
 		p++;
 		len -= 2;
-		for(; len > 0 && *p != ' '; buflen++, p++, len--);
+		for(; len > 0 && *p != ' '; buflen++, p++, len--)
+			;
 
 		void const* buf = addrhex;
 		if(!decodeHex(Type::Pointer, buf, buflen))
@@ -841,8 +851,7 @@ error:
 /*!
  * \brief Helper layer to merge responses for the macro response.
  */
-class FrameMerger : public ProtocolLayer
-{
+class FrameMerger : public ProtocolLayer {
 public:
 	typedef ProtocolLayer base;
 
@@ -917,10 +926,10 @@ static char encodeNibble(uint8_t n)
  * 0x34).  The endianness is determined by the type of the data.
  *
  * \param type the type of the data
- * \param data a pointer to the data to be encoded, where the pointer is overwritten by a #spm() allocated buffer with the result
- * \param len the length of \p data, which is overwritten with the length of the result
- * \param shortest if \c true, trim the 0 from the left, if the type allows that
- * \see #decodeHex()
+ * \param data a pointer to the data to be encoded, where the pointer is overwritten by a #spm()
+ * allocated buffer with the result \param len the length of \p data, which is overwritten with the
+ * length of the result \param shortest if \c true, trim the 0 from the left, if the type allows
+ * that \see #decodeHex()
  */
 void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortest)
 {
@@ -961,7 +970,8 @@ void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortes
 		len *= 2;
 
 		if(shortest && Type::isInt(type))
-			for(; len > 1 && hex[0] == '0'; len--, hex++);
+			for(; len > 1 && hex[0] == '0'; len--, hex++)
+				;
 	} else {
 		// just a byte sequence in hex
 		for(size_t i = 0; i < len; i++, src++) {
@@ -979,7 +989,8 @@ void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortes
 /*!
  * \brief Decode a nibble.
  * \param c the nibble to decode in ASCII hex
- * \param ok will be set to \c false when decoding failed. The value is untouched when decoding was successful.
+ * \param ok will be set to \c false when decoding failed. The value is untouched when decoding was
+ * successful.
  */
 static uint8_t decodeNibble(char c, bool& ok)
 {
@@ -1038,8 +1049,8 @@ bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len)
 
 		for(size_t i = 0; i + 1 < len; i += 2) {
 			bin[i / 2] = (uint8_t)(
-				(uint8_t)(decodeNibble(src[i], ok) << 4u) |
-				decodeNibble(src[i + 1], ok));
+				(uint8_t)(decodeNibble(src[i], ok) << 4u)
+				| decodeNibble(src[i + 1], ok));
 		}
 	}
 
@@ -1119,7 +1130,9 @@ size_t Debugger::stream(char s, char const* data, size_t len)
 	if(!str)
 		return 0;
 
-	len = std::min(len, std::max(str->buffer().capacity(), (size_t)Config::DebuggerStreamBuffer) - str->buffer().size());
+	len = std::min(
+		len, std::max(str->buffer().capacity(), (size_t)Config::DebuggerStreamBuffer)
+			     - str->buffer().size());
 
 	str->encode(data, len);
 
@@ -1157,7 +1170,8 @@ Stream<>* Debugger::stream(char s, bool alloc)
 		while(cleaned && m_streams.size() >= Config::DebuggerStreams) {
 			// Out of buffers. Check if we can recycle something.
 			cleaned = false;
-			for(StreamMap::iterator it2 = m_streams.begin(); it2 != m_streams.end(); ++it2)
+			for(StreamMap::iterator it2 = m_streams.begin(); it2 != m_streams.end();
+			    ++it2)
 				if(it2->second->empty()) {
 					// Got one.
 					if(!recycle) {
@@ -1175,8 +1189,9 @@ Stream<>* Debugger::stream(char s, bool alloc)
 
 		if(m_streams.size() < Config::DebuggerStreams) {
 			// Add a new stream.
-			return m_streams.insert(std::make_pair(s,
-				recycle ? recycle : new Stream<>())).first->second;
+			return m_streams
+				.insert(std::make_pair(s, recycle ? recycle : new Stream<>()))
+				.first->second;
 		} else {
 			// Out of buffers.
 			stored_assert(!recycle);
@@ -1211,9 +1226,9 @@ char const* Debugger::streams(void const*& buffer, size_t& len)
  * \brief Executes the trace macro and appends the output to the trace buffer.
  *
  * The application should always call this function as often as required for tracing.
- * For example, if 1 kHz tracing is to be supported, make sure to call this function at (about) 1 kHz.
- * Depending on the configuration, decimation is applied.
- * This call will execute the macro, when required, so the call is potentially expensive.
+ * For example, if 1 kHz tracing is to be supported, make sure to call this function at (about) 1
+ * kHz. Depending on the configuration, decimation is applied. This call will execute the macro,
+ * when required, so the call is potentially expensive.
  *
  * The output of the macro is either completely or not at all put in the stream buffer;
  * it is not truncated.
@@ -1260,5 +1275,4 @@ bool Debugger::tracing() const
 	return Config::DebuggerTrace && m_traceDecimate > 0;
 }
 
-} // namespace
-
+} // namespace stored

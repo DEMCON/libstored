@@ -46,15 +46,15 @@
  * an std::thread.
  */
 
-#include "ExampleConcurrencyMain.h"
 #include "ExampleConcurrencyControl.h"
+#include "ExampleConcurrencyMain.h"
 
-#include <stored>
-#include <thread>
+#include <cerrno>
 #include <chrono>
 #include <cstdio>
-#include <cerrno>
+#include <stored>
 #include <string>
+#include <thread>
 
 // Make the Control store synchronizable.
 class ControlStore : public STORE_SYNC_BASE_CLASS(ExampleConcurrencyControlBase, ControlStore) {
@@ -70,13 +70,14 @@ public:
 using FifoLoopback = stored::FifoLoopback<ControlStore::MaxMessageSize * 4>;
 
 // This is the 'interrupt handler'. In this example an std::thread.
-static void control(ControlStore& controlStore, stored::Synchronizer& synchronizer, FifoLoopback& loopback)
+static void
+control(ControlStore& controlStore, stored::Synchronizer& synchronizer, FifoLoopback& loopback)
 {
 	// Specify the handler to be called when a Synchronizer message that is
 	// pushed into the FifoLoopback does not fit anymore. In this case, we just
 	// yield and wait a while.  You may also decide to abort the application,
 	// if you determined that it should not happen in your case.
-	loopback.b2a().setOverflowHandler([&](){
+	loopback.b2a().setOverflowHandler([&]() {
 		while(loopback.b2a().full())
 			std::this_thread::yield();
 
@@ -145,7 +146,7 @@ int main(int argc, char** argv)
 	FifoLoopback loopback;
 
 	// In case the FIFO gets full, this thread just stalls...
-	loopback.a2b().setOverflowHandler([&](){
+	loopback.a2b().setOverflowHandler([&]() {
 		// ...but there should not be a deadlock.
 		assert(!loopback.a2b().full() || !loopback.b2a().full());
 
@@ -184,13 +185,16 @@ int main(int argc, char** argv)
 		try {
 			controlStore.setpoint = (uint32_t)std::stoul(argv[1], nullptr, 0);
 			demo = true;
-			printf("Enabled demo mode with setpoint = %u\n", (unsigned)controlStore.setpoint);
+			printf("Enabled demo mode with setpoint = %u\n",
+			       (unsigned)controlStore.setpoint);
 		} catch(...) {
 		}
 	}
 
 	// Ready to start the control thread.
-	std::thread controller(control, std::ref(controlStoreOther), std::ref(synchronizerOther), std::ref(loopback));
+	std::thread controller(
+		control, std::ref(controlStoreOther), std::ref(synchronizerOther),
+		std::ref(loopback));
 
 	// Main loop.
 	while(!demo || controlStore.run) {
@@ -223,4 +227,3 @@ int main(int argc, char** argv)
 	controller.join();
 	return 0;
 }
-

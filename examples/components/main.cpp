@@ -23,7 +23,8 @@
 #include <chrono>
 #include <iostream>
 
-class ExampleComponentsStore : public STORE_BASE_CLASS(ExampleComponentsBase, ExampleComponentsStore) {
+class ExampleComponentsStore
+	: public STORE_BASE_CLASS(ExampleComponentsBase, ExampleComponentsStore) {
 	STORE_CLASS_BODY(ExampleComponentsBase, ExampleComponentsStore)
 public:
 	ExampleComponentsStore() = default;
@@ -40,6 +41,7 @@ public:
 			value = m_frequency_Hz;
 		}
 	}
+
 private:
 	float m_frequency_Hz{5.0};
 };
@@ -64,9 +66,13 @@ static float fly(float power)
 	if(std::isnan(power))
 		power = 0;
 
-	float air_density = air_pressure * std::exp(-(G * height * air_molar_mass) / (temperature * 8.314462618f)) / (air_molar_mass * temperature);
+	float air_density =
+		air_pressure
+		* std::exp(-(G * height * air_molar_mass) / (temperature * 8.314462618f))
+		/ (air_molar_mass * temperature);
 
-	float lift = .5f * air_density * std::pow(power * store.helicopter__motor_constant, 2.0f) * store.helicopter__lift_coefficient;
+	float lift = .5f * air_density * std::pow(power * store.helicopter__motor_constant, 2.0f)
+		     * store.helicopter__lift_coefficient;
 	float drag = .5f * air_density * std::pow(speed, 2.0f) * store.helicopter__drag_coefficient;
 	float weight = store.helicopter__mass_kg * G;
 
@@ -91,23 +97,22 @@ static float fly(float power)
 	store.helicopter__speed_m__s = speed;
 	store.helicopter__height_m = height;
 
-	std::cout
-		<< "power throttle: " << power << "  "
-		<< "height: " << height << " m  "
-		<< "speed: " << speed << " m/s  "
-		<< "lift: " << lift << " N  "
-		<< "drag: " << drag << " N  "
-		<< "F: " << F << " N  "
-		<< "acc: " << accelleration << " m/s^2  "
-		<< "air density: " << air_density << " kg/m^3"
-		<< std::endl;
+	std::cout << "power throttle: " << power << "  "
+		  << "height: " << height << " m  "
+		  << "speed: " << speed << " m/s  "
+		  << "lift: " << lift << " N  "
+		  << "drag: " << drag << " N  "
+		  << "F: " << F << " N  "
+		  << "acc: " << accelleration << " m/s^2  "
+		  << "air density: " << air_density << " kg/m^3" << std::endl;
 	return height;
 }
 
 int main()
 {
 	std::cout << "Helicopter flight simulator" << std::endl << std::endl;
-	std::cout << "Try to fly this helicopter, using a poorly-tuned (PID) controller." << std::endl;
+	std::cout << "Try to fly this helicopter, using a poorly-tuned (PID) controller."
+		  << std::endl;
 	std::cout << "Connect via ZMQ and set /pid/setpoint to the desired height." << std::endl;
 	std::cout << "For example, set it to 1000, and see the heli take off." << std::endl;
 	std::cout << "Tune all parameters at will and see what happens." << std::endl << std::endl;
@@ -154,7 +159,8 @@ int main()
 		auto rem_us = rem.count();
 
 		if(rem_us <= 0) {
-			t += std::chrono::milliseconds((long long)(1.0e3f / store.pid__frequency_Hz()));
+			t += std::chrono::milliseconds(
+				(long long)(1.0e3f / store.pid__frequency_Hz()));
 			// This is where the magic takes place.
 			store.pid__y = fly(pid());
 			if(!pid.isHealthy())

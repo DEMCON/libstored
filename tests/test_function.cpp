@@ -24,7 +24,9 @@ namespace {
 class FunctionTestStore : public STORE_BASE_CLASS(TestStoreBase, FunctionTestStore) {
 	STORE_CLASS_BODY(TestStoreBase, FunctionTestStore)
 public:
-	FunctionTestStore() : m_f_read__write(4) {}
+	FunctionTestStore()
+		: m_f_read__write(4)
+	{}
 
 	void __f_read__write(bool set, double& value)
 	{
@@ -49,12 +51,36 @@ public:
 		return len;
 	}
 
-	void __array_f_int_0(bool set, int32_t& value) { if(!set) value = (int32_t)0; }
-	void __array_f_int_1(bool set, int32_t& value) { if(!set) value = (int32_t)0; }
-	void __array_f_int_2(bool set, int32_t& value) { if(!set) value = (int32_t)0; }
-	void __array_f_int_3(bool set, int32_t& value) { if(!set) value = (int32_t)0; }
-	size_t __array_f_blob_0(bool UNUSED_PAR(set), void* UNUSED_PAR(value), size_t UNUSED_PAR(len)) { return 0; }
-	size_t __array_f_blob_1(bool UNUSED_PAR(set), void* UNUSED_PAR(value), size_t UNUSED_PAR(len)) { return 0; }
+	void __array_f_int_0(bool set, int32_t& value)
+	{
+		if(!set)
+			value = (int32_t)0;
+	}
+	void __array_f_int_1(bool set, int32_t& value)
+	{
+		if(!set)
+			value = (int32_t)0;
+	}
+	void __array_f_int_2(bool set, int32_t& value)
+	{
+		if(!set)
+			value = (int32_t)0;
+	}
+	void __array_f_int_3(bool set, int32_t& value)
+	{
+		if(!set)
+			value = (int32_t)0;
+	}
+	size_t
+	__array_f_blob_0(bool UNUSED_PAR(set), void* UNUSED_PAR(value), size_t UNUSED_PAR(len))
+	{
+		return 0;
+	}
+	size_t
+	__array_f_blob_1(bool UNUSED_PAR(set), void* UNUSED_PAR(value), size_t UNUSED_PAR(len))
+	{
+		return 0;
+	}
 
 private:
 	double m_f_read__write;
@@ -100,4 +126,3 @@ TEST(Function, FreeFunction)
 }
 
 } // namespace
-
