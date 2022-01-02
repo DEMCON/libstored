@@ -366,7 +366,8 @@ private:
 	StoreJournal m_journal;
 };
 
-#	define STORE_SYNC_BASE_CLASS(Base, Impl) ::stored::Synchronizable<::stored::Base<Impl>>
+#	define STORE_SYNC_BASE_CLASS(Base, Impl) \
+		::stored::Synchronizable</**/ ::stored::Base<Impl> /**/>
 
 #	define STORE_SYNC_CLASS_BODY(Base, Impl)               \
 		STORED_CLASS_NOCOPY(Impl)                       \

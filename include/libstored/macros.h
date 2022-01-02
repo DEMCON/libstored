@@ -156,8 +156,9 @@ typedef SSIZE_T ssize_t;
 #		pragma warning(push)
 #		pragma warning(disable : 4668)
 #	endif
-#	include <windows.h>
 #	include <winsock2.h>
+// Include order is important.
+#	include <windows.h>
 #	ifdef STORED_COMPILER_MSVC
 #		pragma warning(pop)
 #	endif
