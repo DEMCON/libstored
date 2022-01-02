@@ -241,8 +241,13 @@ int WfmoPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 			continue;
 		}
 #	endif
-		m_handles.push_back(items[i].h);
-		m_indexMap.push_back(i);
+		try {
+			m_handles.push_back(items[i].h);
+			m_indexMap.push_back(i);
+		} catch(...) {
+			// Should not happen; already reserved memory above.
+			return EFAULT;
+		}
 	}
 
 #	ifdef STORED_HAVE_ZMQ
