@@ -212,8 +212,14 @@ int WfmoPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 	m_handles.clear();
 	m_indexMap.clear();
 
-	m_handles.reserve(items.size());
-	m_indexMap.reserve(items.size());
+	try {
+		m_handles.reserve(items.size());
+		m_indexMap.reserve(items.size());
+	} catch(std::bad_alloc const&) {
+		return ENOMEM;
+	} catch(...) {
+		return EFAULT;
+	}
 
 	Pollable::Events revents = 0;
 	bool gotSomething = false;
