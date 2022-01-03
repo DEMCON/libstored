@@ -1665,7 +1665,8 @@ int PolledFileLayer::block(
 				// Should not happen.
 				err = EINVAL;
 			break;
-		} else if((pres[0]->events & (Pollable::Events)(Poller::PollErr | Poller::PollHup))
+		} else if((pres[0]->events
+			   & (Pollable::Events)(Pollable::PollErr | Pollable::PollHup))
 				  .any()) {
 			// Something is wrong with the pipe/socket.
 			err = EIO;

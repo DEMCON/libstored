@@ -1,0 +1,119 @@
+# libstored, distributed debuggable data stores.
+# Copyright (C) 2020-2022  Jochem Rutgers
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+include(ExternalProject)
+include(CheckIncludeFileCXX)
+
+if(TARGET libzth)
+	# Target already exists.
+	set(Zth_FOUND 1)
+	message(STATUS "Skipped looking for Zth; target already exists")
+endif()
+
+find_package(Zth CONFIG)
+
+if(NOT Zth_FOUND AND Zth_FIND_REQUIRED)
+	message(STATUS "Cannot find installed Zth. Building from source.")
+
+	if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+		message(WARNING "Zth requires gcc, but you are using a different compiler. Cannot build from source.")
+	else()
+		set(Zth_FOUND 1)
+
+		set(libzth_flags
+			-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+			-DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+			-DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}
+			-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+			-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+			-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+			-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+			-DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
+			-DZTH_BUILD_EXAMPLES=OFF
+			-DZTH_TESTS=OFF
+			-DZTH_DOCUMENTATION=OFF
+			-DZTH_THREADS=ON
+		)
+
+		if(LIBSTORED_DIST_DIR AND EXISTS ${LIBSTORED_DIST_DIR}/include)
+			set(libzth_flags ${libzth_flags} -DZTH_PREPEND_INCLUDE_DIRECTORIES=${LIBSTORED_DIST_DIR}/include)
+		endif()
+
+		if(LIBSTORED_HAVE_LIBZMQ)
+			set(libzth_flags ${libzth_flags} -DZTH_HAVE_LIBZMQ=ON)
+		else()
+			set(libzth_flags ${libzth_flags} -DZTH_HAVE_LIBZMQ=OFF)
+		endif()
+
+		if(LIBSTORED_ENABLE_ASAN)
+			set(libzth_flags ${libzth_flags} -DZTH_ENABLE_ASAN=ON)
+		endif()
+		if(LIBSTORED_ENABLE_LSAN)
+			set(libzth_flags ${libzth_flags} -DZTH_ENABLE_LSAN=ON)
+		endif()
+		if(LIBSTORED_ENABLE_UBSAN)
+			set(libzth_flags ${libzth_flags} -DZTH_ENABLE_UBSAN=ON)
+		endif()
+
+		set(_libzth_loc ${CMAKE_INSTALL_PREFIX}/lib/libzth.a)
+
+		set(libzth_repo "https://github.com/jhrutgers/zth.git")
+		set(libzth_tag "v1.0.0")
+
+		ExternalProject_Add(
+			libzth-extern
+			GIT_REPOSITORY ${libzth_repo}
+			GIT_TAG ${libzth_tag}
+			CMAKE_ARGS ${libzth_flags}
+			INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+			BUILD_BYPRODUCTS ${_libzth_loc}
+			UPDATE_DISCONNECTED 1
+		)
+
+		file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/include)
+		file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/lib)
+		add_library(libzth STATIC IMPORTED GLOBAL)
+
+		if(_libzth_loc)
+			set_property(TARGET libzth PROPERTY IMPORTED_LOCATION ${_libzth_loc})
+		endif()
+
+		set_property(TARGET libzth PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_INSTALL_PREFIX}/include)
+		add_dependencies(libzth libzth-extern)
+
+		# It would be nicer to extract this information from the
+		# exported libzth.cmake file, but ExternalProject installs it
+		# during the build stage, while we need the information when
+		# configuring...
+		target_compile_options(libzth INTERFACE -DZTH_THREADS=1)
+		target_link_libraries(libzth INTERFACE pthread rt dl)
+		if(NOT APPLE)
+			CHECK_INCLUDE_FILE_CXX("libunwind.h" ZTH_HAVE_LIBUNWIND)
+			if(ZTH_HAVE_LIBUNWIND)
+				target_link_libraries(libzth INTERFACE unwind)
+			endif()
+		endif()
+
+		if(LIBSTORED_HAVE_LIBZMQ)
+			if(TARGET libzmq)
+				# Make sure ZeroMQ is built and installed, before configuring Zth.
+				# Otherwise, Zth may build it again.
+				add_dependencies(libzth-extern libzmq)
+			endif()
+			target_compile_definitions(libzth INTERFACE ZTH_HAVE_LIBZMQ)
+		endif()
+	endif()
+endif()

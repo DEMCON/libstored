@@ -64,3 +64,6 @@ if(LIBSTORED_HAVE_LIBZMQ)
 	add_subdirectory(zmqserver)
 endif()
 
+if(LIBSTORED_HAVE_ZTH)
+	add_subdirectory(fibered)
+endif()

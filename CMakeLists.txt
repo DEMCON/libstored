@@ -171,13 +171,19 @@ list(APPEND CMAKE_MODULE_PATH ${LIBSTORED_SOURCE_DIR}/cmake)
 option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
 
 if(LIBSTORED_HAVE_HEATSHRINK)
-	find_package(Heatshrink)
+	find_package(Heatshrink REQUIRED)
 endif()
 
 option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
 
 if(LIBSTORED_HAVE_LIBZMQ)
-	find_package(ZeroMQ)
+	find_package(ZeroMQ REQUIRED)
+endif()
+
+option(LIBSTORED_HAVE_ZTH "Use Zth" OFF)
+
+if(LIBSTORED_HAVE_ZTH)
+	find_package(Zth REQUIRED)
 endif()
 
 add_subdirectory(extern)

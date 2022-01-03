@@ -5,7 +5,7 @@ set_target_properties(concurrency
 		CXX_STANDARD_REQUIRED YES
 )
 
-libstored_generate(concurrency ExampleConcurrencyMain.st ExampleConcurrencyControl.st)
+libstored_generate(TARGET concurrency STORES ExampleConcurrencyMain.st ExampleConcurrencyControl.st)
 
 find_package(Threads)
 target_link_libraries(concurrency PUBLIC ${CMAKE_THREAD_LIBS_INIT})

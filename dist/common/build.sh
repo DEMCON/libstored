@@ -22,6 +22,7 @@ function show_help {
 	echo "  test  Enable building and running tests"
 	echo "  zmq   Enable ZeroMQ integration"
 	echo "  nozmq Disable ZeroMQ integration"
+	echo "  zth   Enable Zth integration"
 	exit 2
 }
 
@@ -79,6 +80,8 @@ while [[ ! -z ${1:-} ]]; do
 			cmake_opts="${cmake_opts} -DLIBSTORED_HAVE_LIBZMQ=ON";;
 		nozmq)
 			cmake_opts="${cmake_opts} -DLIBSTORED_HAVE_LIBZMQ=OFF";;
+		zth)
+			cmake_opts="${cmake_opts} -DLIBSTORED_HAVE_ZTH=ON";;
 		heatshrink)
 			cmake_opts="${cmake_opts} -DLIBSTORED_HAVE_HEATSHRINK=ON";;
 		noheatshrink)

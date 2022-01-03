@@ -31,6 +31,7 @@ option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" OFF)
 option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" OFF)
 option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
 option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
+option(LIBSTORED_HAVE_ZTH "Use Zth" OFF)
 option(LIBSTORED_CLANG_TIDY "Run clang-tidy" OFF)
 
 file(TO_CMAKE_PATH "{{libstored_dir|escapebs}}" libstored_dir)
