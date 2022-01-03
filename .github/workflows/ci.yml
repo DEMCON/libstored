@@ -110,6 +110,8 @@ jobs:
   build-all:
     needs: [build-ubuntu, build-ubuntu-prev, build-windows, build-mac, build-mingw]
     runs-on: ubuntu-latest
+    steps:
+      - name: done
 
   # If everything is OK, publish documentation
   documentation:
