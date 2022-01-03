@@ -1,6 +1,6 @@
 /*
  * libstored, distributed debuggable data stores.
- * Copyright (C) 2020-2021  Jochem Rutgers
+ * Copyright (C) 2020-2022  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.12
+import QtQuick
 
 Item {
     id: comp
@@ -25,6 +25,7 @@ Item {
     property var obj: null
     property string name: obj ? obj.name : ""
     property real pollInterval: 2
+    property bool autoReadOnInit: true
 
     onRefChanged: {
         if(typeof(ref) != "string") {
@@ -43,7 +44,7 @@ Item {
             if(!obj.polling) {
                 if(pollInterval > 0)
                     obj.poll(pollInterval)
-                else
+                else if(autoReadOnInit)
                     obj.asyncRead()
             } else if(pollInterval > 0 && obj.pollInterval > pollInterval) {
                 // Prefer the faster setting, if there are multiple.

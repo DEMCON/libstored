@@ -5,7 +5,7 @@
 
 #ifdef STORED_OS_POSIX
 // Just use glibc's one.
-#  include <unistd.h>
+#	include <unistd.h>
 #else // STORED_OS_POSIX
 
 extern int opterr;

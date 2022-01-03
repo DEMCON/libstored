@@ -1,6 +1,6 @@
 /*
  * libstored, distributed debuggable data stores.
- * Copyright (C) 2020-2021  Jochem Rutgers
+ * Copyright (C) 2020-2022  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -16,25 +16,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <libstored/poller.h>
 #include <libstored/protocol.h>
 #include <libstored/util.h>
-#include <libstored/poller.h>
 
 #ifdef STORED_OS_WINDOWS
-#  include <io.h>
-#  include <fcntl.h>
+#	include <fcntl.h>
+#	include <io.h>
 #elif !defined(STORED_OS_BAREMETAL)
-#  include <unistd.h>
-#  include <fcntl.h>
+#	include <fcntl.h>
+#	include <unistd.h>
 #endif
 
 #if defined(STORED_OS_POSIX)
-#  include <termios.h>
+#	include <termios.h>
 #endif
 
 #if defined(STORED_OS_WINDOWS)
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#  define write(fd, buffer, count) _write(fd, buffer, (unsigned int)(count))
+#	define write(fd, buffer, count) _write(fd, buffer, (unsigned int)(count))
 #endif
 
 #include <algorithm>
@@ -63,13 +63,14 @@ ProtocolLayer::~ProtocolLayer()
 
 
 
-
 //////////////////////////////
 // AsciiEscapeLayer
 //
 
 /*!
  * \copydoc stored::ProtocolLayer::ProtocolLayer()
+ * \param all when \c true, convert all control characters, instead of only those that conflict with
+ * other protocols
  */
 AsciiEscapeLayer::AsciiEscapeLayer(bool all, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
@@ -124,7 +125,7 @@ escape:
 
 char AsciiEscapeLayer::needEscape(char c) const
 {
-	if(!((uint8_t)c & (uint8_t)~(uint8_t)AsciiEscapeLayer::EscMask)) {
+	if(!((uint8_t)c & (uint8_t) ~(uint8_t)AsciiEscapeLayer::EscMask)) {
 		if(!m_all) {
 			// Only escape what conflicts with other protocols.
 			switch(c) {
@@ -163,7 +164,7 @@ void AsciiEscapeLayer::encode(void const* buffer, size_t len, bool last)
 			if(chunk < p + i)
 				base::encode(chunk, (size_t)(p + i - chunk), false);
 
-			uint8_t const esc[2] = { AsciiEscapeLayer::Esc, (uint8_t)escaped };
+			uint8_t const esc[2] = {AsciiEscapeLayer::Esc, (uint8_t)escaped};
 			base::encode(esc, sizeof(esc), last && i + 1 == len);
 			chunk = p + i + 1;
 		}
@@ -185,8 +186,6 @@ size_t AsciiEscapeLayer::mtu() const
 
 
 
-
-
 //////////////////////////////
 // TerminalLayer
 //
@@ -194,15 +193,15 @@ size_t AsciiEscapeLayer::mtu() const
 #if STORED_cplusplus < 201103L
 /*!
  * \copydoc stored::ProtocolLayer::ProtocolLayer(ProtocolLayer*,ProtocolLayer*)
- * \param nonDebugDecodeFd the file descriptor to write data to that are not part of debug messages during decode(). Set to -1 to drop this data.
+ * \param nonDebugDecodeFd the file descriptor to write data to that are not part of debug messages
+ *	during decode(). Set to -1 to drop this data.
  */
 TerminalLayer::TerminalLayer(NonDebugDecodeCallback* cb, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_nonDebugDecodeCallback(cb)
 	, m_decodeState(StateNormal)
 	, m_encodeState()
-{
-}
+{}
 #endif
 
 TerminalLayer::TerminalLayer(ProtocolLayer* up, ProtocolLayer* down)
@@ -212,8 +211,7 @@ TerminalLayer::TerminalLayer(ProtocolLayer* up, ProtocolLayer* down)
 #endif
 	, m_decodeState(StateNormal)
 	, m_encodeState()
-{
-}
+{}
 
 void TerminalLayer::reset()
 {
@@ -243,7 +241,9 @@ void TerminalLayer::decode(void* buffer, size_t len)
 		case StateNormalEsc:
 			if(likely(c == EscStart)) {
 				if(i - nonDebugOffset > 1u)
-					nonDebugDecode(static_cast<char*>(buffer) + nonDebugOffset, i - nonDebugOffset - 1); // Also skip the ESC
+					nonDebugDecode(
+						static_cast<char*>(buffer) + nonDebugOffset,
+						i - nonDebugOffset - 1); // Also skip the ESC
 				m_decodeState = StateDebug;
 				nonDebugOffset = len;
 			} else
@@ -341,9 +341,6 @@ size_t TerminalLayer::mtu() const
 
 
 
-
-
-
 //////////////////////////////
 // SegmentationLayer
 //
@@ -355,8 +352,7 @@ SegmentationLayer::SegmentationLayer(size_t mtu, ProtocolLayer* up, ProtocolLaye
 	: base(up, down)
 	, m_mtu(mtu)
 	, m_encoded()
-{
-}
+{}
 
 void SegmentationLayer::reset()
 {
@@ -485,7 +481,8 @@ ArqLayer::ArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* dow
  */
 ArqLayer::~ArqLayer()
 {
-	for(Deque<String::type*>::type::iterator it = m_encodeQueue.begin(); it != m_encodeQueue.end(); ++it)
+	for(Deque<String::type*>::type::iterator it = m_encodeQueue.begin();
+	    it != m_encodeQueue.end(); ++it)
 		cleanup(*it);
 	for(Deque<String::type*>::type::iterator it = m_spare.begin(); it != m_spare.end(); ++it)
 		cleanup(*it);
@@ -515,7 +512,8 @@ next:
 		return;
 
 	if(buffer_[0] & AckFlag) {
-		if(waitingForAck() && (buffer_[0] & SeqMask) == ((uint8_t)(*m_encodeQueue.front())[0] & SeqMask)) {
+		if(waitingForAck()
+		   && (buffer_[0] & SeqMask) == ((uint8_t)(*m_encodeQueue.front())[0] & SeqMask)) {
 			// They got our last transmission.
 			popEncodeQueue();
 			m_retransmits = 0;
@@ -782,7 +780,8 @@ String::type& ArqLayer::pushEncodeQueueRaw()
 	String::type* s = nullptr;
 
 	if(m_spare.empty()) {
-		s = new(allocate<String::type>()) String::type; // NOLINT(cppcoreguidelines-owning-memory)
+		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+		s = new(allocate<String::type>()) String::type;
 
 		m_encodeQueue.
 #if STORED_cplusplus >= 201103L
@@ -811,7 +810,8 @@ String::type& ArqLayer::pushEncodeQueueRaw()
  */
 void ArqLayer::shrink_to_fit()
 {
-	for(Deque<String::type*>::type::iterator it = m_encodeQueue.begin(); it != m_encodeQueue.end(); ++it)
+	for(Deque<String::type*>::type::iterator it = m_encodeQueue.begin();
+	    it != m_encodeQueue.end(); ++it)
 #if STORED_cplusplus >= 201103L
 		(*it)->shrink_to_fit();
 #else
@@ -845,8 +845,7 @@ DebugArqLayer::DebugArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, Protocol
 	, m_encodeSeqReset(true)
 	, m_maxEncodeBuffer(maxEncodeBuffer)
 	, m_encodeBufferSize()
-{
-}
+{}
 
 void DebugArqLayer::reset()
 {
@@ -885,7 +884,9 @@ void DebugArqLayer::decode(void* buffer, size_t len)
 
 	switch(m_decodeState) {
 	case DecodeStateDecoded:
-		stored_assert(m_encodeState == EncodeStateIdle || m_encodeState == EncodeStateUnbufferedIdle);
+		stored_assert(
+			m_encodeState == EncodeStateIdle
+			|| m_encodeState == EncodeStateUnbufferedIdle);
 
 		if(seq == m_decodeSeq) {
 			// This is the next command. The previous one was received, apparently.
@@ -902,18 +903,21 @@ void DebugArqLayer::decode(void* buffer, size_t len)
 			// This seems to be a retransmit of the current command.
 			switch(m_encodeState) {
 			case EncodeStateUnbufferedIdle:
-				// We must reexecute the command. Reset the sequence number, as the content may change.
+				// We must reexecute the command. Reset the sequence number, as the
+				// content may change.
 				setPurgeableResponse(false);
 				m_decodeSeq = m_decodeSeqStart;
 				m_decodeState = DecodeStateIdle;
 				m_encodeSeqReset = true;
 				break;
 			case EncodeStateIdle:
-				// Wait for full retransmit of the command, but do not actually decode.
+				// Wait for full retransmit of the command, but do not actually
+				// decode.
 				m_decodeState = DecodeStateRetransmit;
 				break;
 			default:
-				stored_assert(false); // NOLINT(hicpp-static-assert,misc-static-assert)
+				// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert)
+				stored_assert(false);
 			}
 		} // else: unexpected seq; ignore.
 		break;
@@ -924,7 +928,8 @@ void DebugArqLayer::decode(void* buffer, size_t len)
 	case DecodeStateRetransmit:
 		if(nextSeq(seq) == m_decodeSeq) {
 			// Got the last part of the command. Retransmit the response buffer.
-			for(Vector<String::type>::type::const_iterator it = m_encodeBuffer.begin(); it != m_encodeBuffer.end(); ++it)
+			for(Vector<String::type>::type::const_iterator it = m_encodeBuffer.begin();
+			    it != m_encodeBuffer.end(); ++it)
 				base::encode(it->data(), it->size(), true);
 			m_decodeState = DecodeStateDecoded;
 		}
@@ -953,13 +958,16 @@ void DebugArqLayer::encode(void const* buffer, size_t len, bool last)
 		// This seems to be the first part of the response.
 		// So, the request message must have been complete.
 		m_decodeState = DecodeStateDecoded;
-		stored_assert(m_encodeState == EncodeStateIdle || m_encodeState == EncodeStateUnbufferedIdle);
+		stored_assert(
+			m_encodeState == EncodeStateIdle
+			|| m_encodeState == EncodeStateUnbufferedIdle);
 	}
 
 	switch(m_encodeState) {
 	case EncodeStateIdle:
 	case EncodeStateEncoding:
-		if(unlikely(m_maxEncodeBuffer > 0 && m_encodeBufferSize + len > m_maxEncodeBuffer)) {
+		if(unlikely(
+			   m_maxEncodeBuffer > 0 && m_encodeBufferSize + len > m_maxEncodeBuffer)) {
 			// Overflow.
 			setPurgeableResponse();
 		}
@@ -1013,7 +1021,8 @@ void DebugArqLayer::encode(void const* buffer, size_t len, bool last)
 		m_encodeBuffer.back().append(static_cast<char const*>(buffer), len);
 
 		if(last) {
-			base::encode(m_encodeBuffer.back().data(), m_encodeBuffer.back().size(), true);
+			base::encode(
+				m_encodeBuffer.back().data(), m_encodeBuffer.back().size(), true);
 			m_encodeState = EncodeStateIdle;
 		}
 	}
@@ -1021,7 +1030,8 @@ void DebugArqLayer::encode(void const* buffer, size_t len, bool last)
 
 void DebugArqLayer::setPurgeableResponse(bool purgeable)
 {
-	bool wasPurgeable = m_encodeState == EncodeStateUnbufferedIdle || m_encodeState == EncodeStateUnbufferedEncoding;
+	bool wasPurgeable = m_encodeState == EncodeStateUnbufferedIdle
+			    || m_encodeState == EncodeStateUnbufferedEncoding;
 
 	if(wasPurgeable == purgeable)
 		return;
@@ -1035,7 +1045,8 @@ void DebugArqLayer::setPurgeableResponse(bool purgeable)
 			String::type const& s = m_encodeBuffer.back();
 			base::encode(s.data(), s.size(), false);
 			m_encodeState = EncodeStateUnbufferedEncoding;
-			break; }
+			break;
+		}
 		case EncodeStateIdle:
 			m_encodeState = EncodeStateUnbufferedIdle;
 			break;
@@ -1132,31 +1143,30 @@ size_t DebugArqLayer::encodeSeq(uint32_t seq, void* buffer)
 
 
 
-
-
 //////////////////////////////
 // Crc8Layer
 //
 
 // Generated by http://www.sunshine2k.de/coding/javascript/crc/crc_js.html
 static const uint8_t crc8_table[] = {
-	0x00, 0xA6, 0xEA, 0x4C, 0x72, 0xD4, 0x98, 0x3E, 0xE4, 0x42, 0x0E, 0xA8, 0x96, 0x30, 0x7C, 0xDA,
-	0x6E, 0xC8, 0x84, 0x22, 0x1C, 0xBA, 0xF6, 0x50, 0x8A, 0x2C, 0x60, 0xC6, 0xF8, 0x5E, 0x12, 0xB4,
-	0xDC, 0x7A, 0x36, 0x90, 0xAE, 0x08, 0x44, 0xE2, 0x38, 0x9E, 0xD2, 0x74, 0x4A, 0xEC, 0xA0, 0x06,
-	0xB2, 0x14, 0x58, 0xFE, 0xC0, 0x66, 0x2A, 0x8C, 0x56, 0xF0, 0xBC, 0x1A, 0x24, 0x82, 0xCE, 0x68,
-	0x1E, 0xB8, 0xF4, 0x52, 0x6C, 0xCA, 0x86, 0x20, 0xFA, 0x5C, 0x10, 0xB6, 0x88, 0x2E, 0x62, 0xC4,
-	0x70, 0xD6, 0x9A, 0x3C, 0x02, 0xA4, 0xE8, 0x4E, 0x94, 0x32, 0x7E, 0xD8, 0xE6, 0x40, 0x0C, 0xAA,
-	0xC2, 0x64, 0x28, 0x8E, 0xB0, 0x16, 0x5A, 0xFC, 0x26, 0x80, 0xCC, 0x6A, 0x54, 0xF2, 0xBE, 0x18,
-	0xAC, 0x0A, 0x46, 0xE0, 0xDE, 0x78, 0x34, 0x92, 0x48, 0xEE, 0xA2, 0x04, 0x3A, 0x9C, 0xD0, 0x76,
-	0x3C, 0x9A, 0xD6, 0x70, 0x4E, 0xE8, 0xA4, 0x02, 0xD8, 0x7E, 0x32, 0x94, 0xAA, 0x0C, 0x40, 0xE6,
-	0x52, 0xF4, 0xB8, 0x1E, 0x20, 0x86, 0xCA, 0x6C, 0xB6, 0x10, 0x5C, 0xFA, 0xC4, 0x62, 0x2E, 0x88,
-	0xE0, 0x46, 0x0A, 0xAC, 0x92, 0x34, 0x78, 0xDE, 0x04, 0xA2, 0xEE, 0x48, 0x76, 0xD0, 0x9C, 0x3A,
-	0x8E, 0x28, 0x64, 0xC2, 0xFC, 0x5A, 0x16, 0xB0, 0x6A, 0xCC, 0x80, 0x26, 0x18, 0xBE, 0xF2, 0x54,
-	0x22, 0x84, 0xC8, 0x6E, 0x50, 0xF6, 0xBA, 0x1C, 0xC6, 0x60, 0x2C, 0x8A, 0xB4, 0x12, 0x5E, 0xF8,
-	0x4C, 0xEA, 0xA6, 0x00, 0x3E, 0x98, 0xD4, 0x72, 0xA8, 0x0E, 0x42, 0xE4, 0xDA, 0x7C, 0x30, 0x96,
-	0xFE, 0x58, 0x14, 0xB2, 0x8C, 0x2A, 0x66, 0xC0, 0x1A, 0xBC, 0xF0, 0x56, 0x68, 0xCE, 0x82, 0x24,
-	0x90, 0x36, 0x7A, 0xDC, 0xE2, 0x44, 0x08, 0xAE, 0x74, 0xD2, 0x9E, 0x38, 0x06, 0xA0, 0xEC, 0x4A
-};
+	0x00, 0xA6, 0xEA, 0x4C, 0x72, 0xD4, 0x98, 0x3E, 0xE4, 0x42, 0x0E, 0xA8, 0x96, 0x30, 0x7C,
+	0xDA, 0x6E, 0xC8, 0x84, 0x22, 0x1C, 0xBA, 0xF6, 0x50, 0x8A, 0x2C, 0x60, 0xC6, 0xF8, 0x5E,
+	0x12, 0xB4, 0xDC, 0x7A, 0x36, 0x90, 0xAE, 0x08, 0x44, 0xE2, 0x38, 0x9E, 0xD2, 0x74, 0x4A,
+	0xEC, 0xA0, 0x06, 0xB2, 0x14, 0x58, 0xFE, 0xC0, 0x66, 0x2A, 0x8C, 0x56, 0xF0, 0xBC, 0x1A,
+	0x24, 0x82, 0xCE, 0x68, 0x1E, 0xB8, 0xF4, 0x52, 0x6C, 0xCA, 0x86, 0x20, 0xFA, 0x5C, 0x10,
+	0xB6, 0x88, 0x2E, 0x62, 0xC4, 0x70, 0xD6, 0x9A, 0x3C, 0x02, 0xA4, 0xE8, 0x4E, 0x94, 0x32,
+	0x7E, 0xD8, 0xE6, 0x40, 0x0C, 0xAA, 0xC2, 0x64, 0x28, 0x8E, 0xB0, 0x16, 0x5A, 0xFC, 0x26,
+	0x80, 0xCC, 0x6A, 0x54, 0xF2, 0xBE, 0x18, 0xAC, 0x0A, 0x46, 0xE0, 0xDE, 0x78, 0x34, 0x92,
+	0x48, 0xEE, 0xA2, 0x04, 0x3A, 0x9C, 0xD0, 0x76, 0x3C, 0x9A, 0xD6, 0x70, 0x4E, 0xE8, 0xA4,
+	0x02, 0xD8, 0x7E, 0x32, 0x94, 0xAA, 0x0C, 0x40, 0xE6, 0x52, 0xF4, 0xB8, 0x1E, 0x20, 0x86,
+	0xCA, 0x6C, 0xB6, 0x10, 0x5C, 0xFA, 0xC4, 0x62, 0x2E, 0x88, 0xE0, 0x46, 0x0A, 0xAC, 0x92,
+	0x34, 0x78, 0xDE, 0x04, 0xA2, 0xEE, 0x48, 0x76, 0xD0, 0x9C, 0x3A, 0x8E, 0x28, 0x64, 0xC2,
+	0xFC, 0x5A, 0x16, 0xB0, 0x6A, 0xCC, 0x80, 0x26, 0x18, 0xBE, 0xF2, 0x54, 0x22, 0x84, 0xC8,
+	0x6E, 0x50, 0xF6, 0xBA, 0x1C, 0xC6, 0x60, 0x2C, 0x8A, 0xB4, 0x12, 0x5E, 0xF8, 0x4C, 0xEA,
+	0xA6, 0x00, 0x3E, 0x98, 0xD4, 0x72, 0xA8, 0x0E, 0x42, 0xE4, 0xDA, 0x7C, 0x30, 0x96, 0xFE,
+	0x58, 0x14, 0xB2, 0x8C, 0x2A, 0x66, 0xC0, 0x1A, 0xBC, 0xF0, 0x56, 0x68, 0xCE, 0x82, 0x24,
+	0x90, 0x36, 0x7A, 0xDC, 0xE2, 0x44, 0x08, 0xAE, 0x74, 0xD2, 0x9E, 0x38, 0x06, 0xA0, 0xEC,
+	0x4A};
 
 /*!
  * \brief Ctor.
@@ -1164,8 +1174,7 @@ static const uint8_t crc8_table[] = {
 Crc8Layer::Crc8Layer(ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_crc(init)
-{
-}
+{}
 
 void Crc8Layer::reset()
 {
@@ -1222,30 +1231,36 @@ size_t Crc8Layer::mtu() const
 
 
 
-
-
 //////////////////////////////
 // Crc16Layer
 //
 
 // Generated by http://www.sunshine2k.de/coding/javascript/crc/crc_js.html
 static const uint16_t crc16_table[] = {
-	0x0000, 0xBAAD, 0xCFF7, 0x755A, 0x2543, 0x9FEE, 0xEAB4, 0x5019, 0x4A86, 0xF02B, 0x8571, 0x3FDC, 0x6FC5, 0xD568, 0xA032, 0x1A9F,
-	0x950C, 0x2FA1, 0x5AFB, 0xE056, 0xB04F, 0x0AE2, 0x7FB8, 0xC515, 0xDF8A, 0x6527, 0x107D, 0xAAD0, 0xFAC9, 0x4064, 0x353E, 0x8F93,
-	0x90B5, 0x2A18, 0x5F42, 0xE5EF, 0xB5F6, 0x0F5B, 0x7A01, 0xC0AC, 0xDA33, 0x609E, 0x15C4, 0xAF69, 0xFF70, 0x45DD, 0x3087, 0x8A2A,
-	0x05B9, 0xBF14, 0xCA4E, 0x70E3, 0x20FA, 0x9A57, 0xEF0D, 0x55A0, 0x4F3F, 0xF592, 0x80C8, 0x3A65, 0x6A7C, 0xD0D1, 0xA58B, 0x1F26,
-	0x9BC7, 0x216A, 0x5430, 0xEE9D, 0xBE84, 0x0429, 0x7173, 0xCBDE, 0xD141, 0x6BEC, 0x1EB6, 0xA41B, 0xF402, 0x4EAF, 0x3BF5, 0x8158,
-	0x0ECB, 0xB466, 0xC13C, 0x7B91, 0x2B88, 0x9125, 0xE47F, 0x5ED2, 0x444D, 0xFEE0, 0x8BBA, 0x3117, 0x610E, 0xDBA3, 0xAEF9, 0x1454,
-	0x0B72, 0xB1DF, 0xC485, 0x7E28, 0x2E31, 0x949C, 0xE1C6, 0x5B6B, 0x41F4, 0xFB59, 0x8E03, 0x34AE, 0x64B7, 0xDE1A, 0xAB40, 0x11ED,
-	0x9E7E, 0x24D3, 0x5189, 0xEB24, 0xBB3D, 0x0190, 0x74CA, 0xCE67, 0xD4F8, 0x6E55, 0x1B0F, 0xA1A2, 0xF1BB, 0x4B16, 0x3E4C, 0x84E1,
-	0x8D23, 0x378E, 0x42D4, 0xF879, 0xA860, 0x12CD, 0x6797, 0xDD3A, 0xC7A5, 0x7D08, 0x0852, 0xB2FF, 0xE2E6, 0x584B, 0x2D11, 0x97BC,
-	0x182F, 0xA282, 0xD7D8, 0x6D75, 0x3D6C, 0x87C1, 0xF29B, 0x4836, 0x52A9, 0xE804, 0x9D5E, 0x27F3, 0x77EA, 0xCD47, 0xB81D, 0x02B0,
-	0x1D96, 0xA73B, 0xD261, 0x68CC, 0x38D5, 0x8278, 0xF722, 0x4D8F, 0x5710, 0xEDBD, 0x98E7, 0x224A, 0x7253, 0xC8FE, 0xBDA4, 0x0709,
-	0x889A, 0x3237, 0x476D, 0xFDC0, 0xADD9, 0x1774, 0x622E, 0xD883, 0xC21C, 0x78B1, 0x0DEB, 0xB746, 0xE75F, 0x5DF2, 0x28A8, 0x9205,
-	0x16E4, 0xAC49, 0xD913, 0x63BE, 0x33A7, 0x890A, 0xFC50, 0x46FD, 0x5C62, 0xE6CF, 0x9395, 0x2938, 0x7921, 0xC38C, 0xB6D6, 0x0C7B,
-	0x83E8, 0x3945, 0x4C1F, 0xF6B2, 0xA6AB, 0x1C06, 0x695C, 0xD3F1, 0xC96E, 0x73C3, 0x0699, 0xBC34, 0xEC2D, 0x5680, 0x23DA, 0x9977,
-	0x8651, 0x3CFC, 0x49A6, 0xF30B, 0xA312, 0x19BF, 0x6CE5, 0xD648, 0xCCD7, 0x767A, 0x0320, 0xB98D, 0xE994, 0x5339, 0x2663, 0x9CCE,
-	0x135D, 0xA9F0, 0xDCAA, 0x6607, 0x361E, 0x8CB3, 0xF9E9, 0x4344, 0x59DB, 0xE376, 0x962C, 0x2C81, 0x7C98, 0xC635, 0xB36F, 0x09C2,
+	0x0000, 0xBAAD, 0xCFF7, 0x755A, 0x2543, 0x9FEE, 0xEAB4, 0x5019, 0x4A86, 0xF02B, 0x8571,
+	0x3FDC, 0x6FC5, 0xD568, 0xA032, 0x1A9F, 0x950C, 0x2FA1, 0x5AFB, 0xE056, 0xB04F, 0x0AE2,
+	0x7FB8, 0xC515, 0xDF8A, 0x6527, 0x107D, 0xAAD0, 0xFAC9, 0x4064, 0x353E, 0x8F93, 0x90B5,
+	0x2A18, 0x5F42, 0xE5EF, 0xB5F6, 0x0F5B, 0x7A01, 0xC0AC, 0xDA33, 0x609E, 0x15C4, 0xAF69,
+	0xFF70, 0x45DD, 0x3087, 0x8A2A, 0x05B9, 0xBF14, 0xCA4E, 0x70E3, 0x20FA, 0x9A57, 0xEF0D,
+	0x55A0, 0x4F3F, 0xF592, 0x80C8, 0x3A65, 0x6A7C, 0xD0D1, 0xA58B, 0x1F26, 0x9BC7, 0x216A,
+	0x5430, 0xEE9D, 0xBE84, 0x0429, 0x7173, 0xCBDE, 0xD141, 0x6BEC, 0x1EB6, 0xA41B, 0xF402,
+	0x4EAF, 0x3BF5, 0x8158, 0x0ECB, 0xB466, 0xC13C, 0x7B91, 0x2B88, 0x9125, 0xE47F, 0x5ED2,
+	0x444D, 0xFEE0, 0x8BBA, 0x3117, 0x610E, 0xDBA3, 0xAEF9, 0x1454, 0x0B72, 0xB1DF, 0xC485,
+	0x7E28, 0x2E31, 0x949C, 0xE1C6, 0x5B6B, 0x41F4, 0xFB59, 0x8E03, 0x34AE, 0x64B7, 0xDE1A,
+	0xAB40, 0x11ED, 0x9E7E, 0x24D3, 0x5189, 0xEB24, 0xBB3D, 0x0190, 0x74CA, 0xCE67, 0xD4F8,
+	0x6E55, 0x1B0F, 0xA1A2, 0xF1BB, 0x4B16, 0x3E4C, 0x84E1, 0x8D23, 0x378E, 0x42D4, 0xF879,
+	0xA860, 0x12CD, 0x6797, 0xDD3A, 0xC7A5, 0x7D08, 0x0852, 0xB2FF, 0xE2E6, 0x584B, 0x2D11,
+	0x97BC, 0x182F, 0xA282, 0xD7D8, 0x6D75, 0x3D6C, 0x87C1, 0xF29B, 0x4836, 0x52A9, 0xE804,
+	0x9D5E, 0x27F3, 0x77EA, 0xCD47, 0xB81D, 0x02B0, 0x1D96, 0xA73B, 0xD261, 0x68CC, 0x38D5,
+	0x8278, 0xF722, 0x4D8F, 0x5710, 0xEDBD, 0x98E7, 0x224A, 0x7253, 0xC8FE, 0xBDA4, 0x0709,
+	0x889A, 0x3237, 0x476D, 0xFDC0, 0xADD9, 0x1774, 0x622E, 0xD883, 0xC21C, 0x78B1, 0x0DEB,
+	0xB746, 0xE75F, 0x5DF2, 0x28A8, 0x9205, 0x16E4, 0xAC49, 0xD913, 0x63BE, 0x33A7, 0x890A,
+	0xFC50, 0x46FD, 0x5C62, 0xE6CF, 0x9395, 0x2938, 0x7921, 0xC38C, 0xB6D6, 0x0C7B, 0x83E8,
+	0x3945, 0x4C1F, 0xF6B2, 0xA6AB, 0x1C06, 0x695C, 0xD3F1, 0xC96E, 0x73C3, 0x0699, 0xBC34,
+	0xEC2D, 0x5680, 0x23DA, 0x9977, 0x8651, 0x3CFC, 0x49A6, 0xF30B, 0xA312, 0x19BF, 0x6CE5,
+	0xD648, 0xCCD7, 0x767A, 0x0320, 0xB98D, 0xE994, 0x5339, 0x2663, 0x9CCE, 0x135D, 0xA9F0,
+	0xDCAA, 0x6607, 0x361E, 0x8CB3, 0xF9E9, 0x4344, 0x59DB, 0xE376, 0x962C, 0x2C81, 0x7C98,
+	0xC635, 0xB36F, 0x09C2,
 };
 
 /*!
@@ -1254,8 +1269,7 @@ static const uint16_t crc16_table[] = {
 Crc16Layer::Crc16Layer(ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_crc(init)
-{
-}
+{}
 
 void Crc16Layer::reset()
 {
@@ -1289,7 +1303,7 @@ void Crc16Layer::encode(void const* buffer, size_t len, bool last)
 	base::encode(buffer, len, false);
 
 	if(last) {
-		uint8_t crc[2] = { (uint8_t)(m_crc >> 8u), (uint8_t)m_crc };
+		uint8_t crc[2] = {(uint8_t)(m_crc >> 8u), (uint8_t)m_crc};
 		base::encode(crc, sizeof(crc), true);
 		m_crc = init;
 	}
@@ -1390,8 +1404,7 @@ PrintLayer::PrintLayer(FILE* f, char const* name, ProtocolLayer* up, ProtocolLay
 	, m_f(f)
 	, m_name(name)
 	, m_enable(true)
-{
-}
+{}
 
 void PrintLayer::decode(void* buffer, size_t len)
 {
@@ -1481,8 +1494,9 @@ bool PrintLayer::enabled() const
 /*!
  * \brief Constructor.
  */
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 impl::Loopback1::Loopback1(ProtocolLayer& from, ProtocolLayer& to)
-	: m_to(to)
+	: m_to(&to)
 	, m_buffer()
 	, m_capacity()
 	, m_len()
@@ -1525,7 +1539,8 @@ void impl::Loopback1::reserve(size_t capacity)
 }
 
 /*!
- * \brief Collect partial data, and passes into the \c decode() of \c to when it has the full message.
+ * \brief Collect partial data, and passes into the \c decode() of \c to when it has the full
+ * message.
  */
 void impl::Loopback1::encode(void const* buffer, size_t len, bool last)
 {
@@ -1538,7 +1553,7 @@ void impl::Loopback1::encode(void const* buffer, size_t len, bool last)
 	}
 
 	if(last) {
-		m_to.decode(m_buffer, m_len);
+		m_to->decode(m_buffer, m_len);
 		m_len = 0;
 	}
 }
@@ -1549,8 +1564,7 @@ void impl::Loopback1::encode(void const* buffer, size_t len, bool last)
 Loopback::Loopback(ProtocolLayer& a, ProtocolLayer& b)
 	: m_a2b(a, b)
 	, m_b2a(b, a)
-{
-}
+{}
 
 /*!
  * \brief Reserve heap memory to assemble partial messages.
@@ -1562,7 +1576,6 @@ void Loopback::reserve(size_t capacity)
 	m_a2b.reserve(capacity);
 	m_b2a.reserve(capacity);
 }
-
 
 
 
@@ -1578,7 +1591,7 @@ PolledLayer::~PolledLayer()
 	// We would like to close(), but at this point, the subclass was
 	// already destructed. So, make sure to close the handles
 	// in your subclass dtor.
-	//close();
+	// close();
 
 	cleanup(m_poller);
 }
@@ -1591,7 +1604,7 @@ PolledLayer::~PolledLayer()
 Poller& PolledLayer::poller()
 {
 	if(!m_poller)
-		m_poller = new(allocate<Poller>()) Poller(); // NOLINT(cppcoreguidelines-owning-memory)
+		m_poller = new Poller(); // NOLINT(cppcoreguidelines-owning-memory)
 
 	return *m_poller;
 }
@@ -1615,23 +1628,25 @@ PolledFileLayer::~PolledFileLayer() is_default
  * \param fd the file descriptor to block on
  * \param forReading when \c true, it blocks till stored::Poller::PollIn, otherwise PollOut
  * \param timeout_us if zero, this function does not block. -1 blocks indefinitely.
- * \param suspend if \c true, do a suspend of the thread while blocking, otherwise allow fiber switching (when using Zth)
- * \return 0 on success, otherwise an \c errno
+ * \param suspend if \c true, do a suspend of the thread while blocking, otherwise allow fiber
+ * switching (when using Zth) \return 0 on success, otherwise an \c errno
  */
-int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, long timeout_us, bool suspend)
+int PolledFileLayer::block(
+	PolledFileLayer::fd_type fd, bool forReading, long timeout_us, bool UNUSED_PAR(suspend))
 {
 	setLastError(0);
 
 	Poller& poller = this->poller();
 
-	Poller::events_t events = forReading ? Poller::PollIn : Poller::PollOut;
+	Pollable::Events events = forReading ? Pollable::PollIn : Pollable::PollOut;
 
 	int err = 0;
 #ifdef STORED_OS_WINDOWS
-	int res = poller.addh(fd, nullptr, events);
+	PollableHandle pollbl(fd, events);
 #else
-	int res = poller.add(fd, nullptr, events);
+	PollableFd pollbl(fd, events);
 #endif
+	int res = poller.add(pollbl);
 
 	if(res) {
 		err = res;
@@ -1639,7 +1654,7 @@ int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, long ti
 	}
 
 	while(true) {
-		Poller::Result const& pres = poller.poll(timeout_us, suspend);
+		Poller::Result const& pres = poller.poll((int)(timeout_us / 1000L));
 
 		if(pres.empty()) {
 			if(timeout_us <= 0 && errno == EINTR)
@@ -1650,21 +1665,19 @@ int PolledFileLayer::block(PolledFileLayer::fd_type fd, bool forReading, long ti
 				// Should not happen.
 				err = EINVAL;
 			break;
-		} else if(((Poller::events_t)pres[0].events) & (Poller::events_t)(Poller::PollErr | Poller::PollHup)) {
+		} else if((pres[0]->events & (Pollable::Events)(Poller::PollErr | Poller::PollHup))
+				  .any()) {
 			// Something is wrong with the pipe/socket.
 			err = EIO;
 			break;
-		} else if(((Poller::events_t)pres[0].events) & events) {
+		} else if((pres[0]->events & events).any()) {
 			// Got it.
 			break;
 		}
 	}
 
-#ifdef STORED_OS_WINDOWS
-	res = poller.removeh(fd);
-#else
-	res = poller.remove(fd);
-#endif
+	res = poller.remove(pollbl);
+
 	if(res && !err)
 		err = res;
 
@@ -1696,7 +1709,6 @@ done:
  */
 PolledSocketLayer::~PolledSocketLayer() is_default
 #endif
-
 
 
 
@@ -1736,12 +1748,12 @@ FileLayer::FileLayer(int fd_r, int fd_w, ProtocolLayer* up, ProtocolLayer* down)
 	, m_fd_r(-1)
 	, m_fd_w(-1)
 {
-#  ifdef STORED_OS_POSIX
+#	ifdef STORED_OS_POSIX
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	fcntl(fd_r, F_SETFL, fcntl(fd_r, F_GETFL) | O_NONBLOCK);
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	fcntl(fd_w, F_SETFL, fcntl(fd_w, F_GETFL) | O_NONBLOCK);
-#  endif
+#	endif
 
 	init(fd_r, fd_w == -1 ? fd_r : fd_w);
 }
@@ -1770,11 +1782,11 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 		if((w = r = open(name_r, O_RDWR | O_APPEND | O_CREAT | O_NONBLOCK, 0666)) == -1)
 			goto error;
 
-	// NOLINTNEXTLINE(hicpp-signed-bitwise,bugprone-branch-clone)
+		// NOLINTNEXTLINE(hicpp-signed-bitwise,bugprone-branch-clone)
 	} else if((r = open(name_r, O_RDONLY | O_CREAT | O_NONBLOCK, 0666)) == -1) {
 		goto error;
 
-	// NOLINTNEXTLINE(hicpp-signed-bitwise)
+		// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	} else if((w = open(name_w, O_WRONLY | O_APPEND | O_CREAT | O_NONBLOCK, 0666)) == -1) {
 		goto error;
 	}
@@ -1881,9 +1893,9 @@ done:
 		switch(written) {
 		case -1:
 			switch(errno) {
-#if EAGAIN != EWOULDBLOCK
+#	if EAGAIN != EWOULDBLOCK
 			case EWOULDBLOCK:
-#endif
+#	endif
 			case EAGAIN: {
 				if(this->block(m_fd_w, false, -1, m_fd_w == STDOUT_FILENO))
 					return;
@@ -1954,9 +1966,9 @@ again:
 	if(cnt == -1) {
 		switch(errno) {
 		case EAGAIN:
-#if EAGAIN != EWOULDBLOCK
+#	if EAGAIN != EWOULDBLOCK
 		case EWOULDBLOCK:
-#endif
+#	endif
 			if(timeout_us == 0)
 				return setLastError(errno);
 
@@ -2041,18 +2053,19 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 		return;
 	}
 
-	bool isCOM_r =           ::strncmp(name_r, "\\\\.\\COM", 7) == 0;
+	bool isCOM_r = ::strncmp(name_r, "\\\\.\\COM", 7) == 0;
 	bool isCOM_w = name_w && ::strncmp(name_w, "\\\\.\\COM", 7) == 0;
 
 	if(!name_w || strcmp(name_r, name_w) == 0) {
 		HANDLE h = INVALID_HANDLE_VALUE; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
-		if(!isValidHandle((h = CreateFile(name_r,
-			GENERIC_READ | GENERIC_WRITE,					// NOLINT(hicpp-signed-bitwise)
-			FILE_SHARE_READ | FILE_SHARE_WRITE,				// NOLINT(hicpp-signed-bitwise)
-			NULL, (DWORD)(isCOM_r ? OPEN_EXISTING : OPEN_ALWAYS),
-			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,	// NOLINT(hicpp-signed-bitwise)
-			NULL))))
-		{
+		if(!isValidHandle(
+			   (h = CreateFile(
+				    name_r,
+				    GENERIC_READ | GENERIC_WRITE,	// NOLINT
+				    FILE_SHARE_READ | FILE_SHARE_WRITE, // NOLINT
+				    NULL, (DWORD)(isCOM_r ? OPEN_EXISTING : OPEN_ALWAYS),
+				    FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, // NOLINT
+				    NULL)))) {
 			setLastError(EINVAL);
 			return;
 		}
@@ -2060,25 +2073,25 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 		init(h, h);
 	} else {
 		HANDLE h_r = INVALID_HANDLE_VALUE; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
-		if(!isValidHandle((h_r = CreateFile(name_r,
-			GENERIC_READ,
-			FILE_SHARE_READ | FILE_SHARE_WRITE,				// NOLINT(hicpp-signed-bitwise)
-			NULL, (DWORD)(isCOM_r ? OPEN_EXISTING : OPEN_ALWAYS),
-			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,	// NOLINT(hicpp-signed-bitwise)
-			NULL))))
-		{
+		if(!isValidHandle(
+			   (h_r = CreateFile(
+				    name_r, GENERIC_READ,
+				    FILE_SHARE_READ | FILE_SHARE_WRITE, // NOLINT
+				    NULL, (DWORD)(isCOM_r ? OPEN_EXISTING : OPEN_ALWAYS),
+				    FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, // NOLINT
+				    NULL)))) {
 			setLastError(EINVAL);
 			return;
 		}
 
 		HANDLE h_w = INVALID_HANDLE_VALUE; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
-		if(!isValidHandle((h_w = CreateFile(name_w,
-			GENERIC_WRITE,
-			FILE_SHARE_READ | FILE_SHARE_WRITE,				// NOLINT(hicpp-signed-bitwise)
-			NULL, (DWORD)(isCOM_w ? OPEN_EXISTING : OPEN_ALWAYS),
-			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,	// NOLINT(hicpp-signed-bitwise)
-			NULL))))
-		{
+		if(!isValidHandle(
+			   (h_w = CreateFile(
+				    name_w, GENERIC_WRITE,
+				    FILE_SHARE_READ | FILE_SHARE_WRITE, // NOLINT
+				    NULL, (DWORD)(isCOM_w ? OPEN_EXISTING : OPEN_ALWAYS),
+				    FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, // NOLINT
+				    NULL)))) {
 			setLastError(EINVAL);
 			return;
 		}
@@ -2284,9 +2297,9 @@ wait_prev_write:
 			resetOverlappedWrite();
 			m_writeLen -= written;
 			if(block) {
-				if(WriteFile(fd_w(), &m_bufferWrite[offset],
-					(DWORD)m_writeLen, &written, &m_overlappedWrite))
-				{
+				if(WriteFile(
+					   fd_w(), &m_bufferWrite[offset], (DWORD)m_writeLen,
+					   &written, &m_overlappedWrite)) {
 					// Completed immediately.
 				} else {
 					switch(GetLastError()) {
@@ -2298,10 +2311,12 @@ wait_prev_write:
 					}
 				}
 			} else {
-				if(WriteFileEx(fd_w(), &m_bufferWrite[offset],
-					(DWORD)m_writeLen, &m_overlappedWrite,
-					// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
-					(LPOVERLAPPED_COMPLETION_ROUTINE)(void*)&writeCompletionRoutine))
+				if(WriteFileEx(
+					   fd_w(), &m_bufferWrite[offset], (DWORD)m_writeLen,
+					   &m_overlappedWrite,
+					   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+					   (LPOVERLAPPED_COMPLETION_ROUTINE)(
+						   void*)&writeCompletionRoutine))
 					return 0;
 				else
 					goto error;
@@ -2323,7 +2338,9 @@ error:
  * If the write was incomplete (which is unlikely, but not guaranteed),
  * it will issue a new overlapped write to continue with the rest of the write buffer.
  */
-void FileLayer::writeCompletionRoutine(DWORD dwErrorCode, DWORD UNUSED_PAR(dwNumberOfBytesTransfered), LPOVERLAPPED lpOverlapped)
+void FileLayer::writeCompletionRoutine(
+	// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+	DWORD dwErrorCode, DWORD UNUSED_PAR(dwNumberOfBytesTransfered), LPOVERLAPPED lpOverlapped)
 {
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 	FileLayer* that = *(FileLayer**)((uintptr_t)lpOverlapped + sizeof(*lpOverlapped));
@@ -2362,10 +2379,10 @@ done:
 	setLastError(0);
 	resetOverlappedWrite();
 	m_overlappedWrite.Offset = m_overlappedWrite.OffsetHigh = 0xffffffff;
-	if(WriteFileEx(fd_w(), &m_bufferWrite[0], (DWORD)len, &m_overlappedWrite,
-		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
-		(LPOVERLAPPED_COMPLETION_ROUTINE)(void*)&writeCompletionRoutine))
-	{
+	if(WriteFileEx(
+		   fd_w(), &m_bufferWrite[0], (DWORD)len, &m_overlappedWrite,
+		   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+		   (LPOVERLAPPED_COMPLETION_ROUTINE)(void*)&writeCompletionRoutine)) {
 		// Already finished.
 	} else {
 		switch(GetLastError()) {
@@ -2437,10 +2454,7 @@ again:
 	// Read everything there is to read.
 	// This should be finished quickly.
 	resetOverlappedRead();
-	if(ReadFile(m_fd_r, &m_bufferRead[0],
-		(DWORD)readable,
-		&bytesRead, &m_overlappedRead))
-	{
+	if(ReadFile(m_fd_r, &m_bufferRead[0], (DWORD)readable, &bytesRead, &m_overlappedRead)) {
 		// Finished immediately.
 		decode(&m_bufferRead[0], (size_t)bytesRead);
 		didDecode = true;
@@ -2495,7 +2509,8 @@ size_t FileLayer::available()
 			return 0;
 
 		if(readable == 0)
-			// There is nothing to read. Issue a read of 1 byte, which will overlap/block.
+			// There is nothing to read. Issue a read of 1 byte, which will
+			// overlap/block.
 			return 1;
 
 		return (size_t)readable;
@@ -2610,22 +2625,25 @@ void FileLayer::resetOverlappedWrite()
  *
  * The given name is prefixed with \c \\\\.\\pipe\\.
  */
-NamedPipeLayer::NamedPipeLayer(char const* name, DWORD openMode, ProtocolLayer* up, ProtocolLayer* down)
+NamedPipeLayer::NamedPipeLayer(
+	char const* name, DWORD openMode, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_state(StateInit)
 	, m_openMode(openMode)
 {
 	stored_assert(name);
-	stored_assert(openMode == PIPE_ACCESS_DUPLEX || openMode == PIPE_ACCESS_INBOUND || openMode == PIPE_ACCESS_OUTBOUND);
+	stored_assert(
+		openMode == PIPE_ACCESS_DUPLEX || openMode == PIPE_ACCESS_INBOUND
+		|| openMode == PIPE_ACCESS_OUTBOUND);
 
 	m_name = "\\\\.\\pipe\\";
 	m_name += name;
 
-	HANDLE h = CreateNamedPipe(m_name.c_str(),
-		openMode | FILE_FLAG_OVERLAPPED, // NOLINT(hicpp-signed-bitwise)
+	HANDLE h = CreateNamedPipe(
+		m_name.c_str(),
+		openMode | FILE_FLAG_OVERLAPPED,		 // NOLINT(hicpp-signed-bitwise)
 		PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT, // NOLINT(hicpp-signed-bitwise)
-		1, BufferSize, BufferSize,
-		0, NULL);
+		1, BufferSize, BufferSize, 0, NULL);
 
 	if(!isValidHandle(h)) {
 		close_();
@@ -2829,7 +2847,8 @@ bool NamedPipeLayer::isConnected() const
 // DoublePipeLayer
 //
 
-DoublePipeLayer::DoublePipeLayer(char const* name_r, char const* name_w, ProtocolLayer* up, ProtocolLayer* down)
+DoublePipeLayer::DoublePipeLayer(
+	char const* name_r, char const* name_w, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_r(name_r, PIPE_ACCESS_INBOUND, this, nullptr)
 	, m_w(name_w, PIPE_ACCESS_OUTBOUND)
@@ -2893,15 +2912,13 @@ void DoublePipeLayer::reset()
 
 
 
-
 //////////////////////////////
 // XsimLayer
 //
 
 XsimLayer::XsimLayer(char const* pipe_prefix, ProtocolLayer* up, ProtocolLayer* down)
-	: base(	(String::type(pipe_prefix) += "_from_xsim").c_str(),
-			(String::type(pipe_prefix) += "_to_xsim").c_str(),
-			up, down)
+	: base((String::type(pipe_prefix) += "_from_xsim").c_str(),
+	       (String::type(pipe_prefix) += "_to_xsim").c_str(), up, down)
 	, m_callback(*this)
 	, m_req((String::type(pipe_prefix) += "_req_xsim").c_str(), PIPE_ACCESS_INBOUND)
 	, m_inFlight()
@@ -3028,7 +3045,7 @@ StdioLayer::StdioLayer(ProtocolLayer* up, ProtocolLayer* down)
 
 	if(GetConsoleMode(m_fd_w, &mode)) {
 		// NOLINTNEXTLINE(hicpp-signed-bitwise)
-		SetConsoleMode(m_fd_w, mode | 4 /*ENABLE_VIRTUAL_TERMINAL_PROCESSING*/ );
+		SetConsoleMode(m_fd_w, mode | 4 /*ENABLE_VIRTUAL_TERMINAL_PROCESSING*/);
 	} else {
 		// stdout is probably redirected, in which case it is a named pipe.
 		m_pipe_w = true;
@@ -3061,7 +3078,9 @@ bool StdioLayer::isPipeOut() const
 	return m_pipe_w;
 }
 
-int StdioLayer::block(fd_type UNUSED_PAR(fd), bool UNUSED_PAR(forReading), long UNUSED_PAR(timeout_us), bool UNUSED_PAR(suspend))
+int StdioLayer::block(
+	fd_type UNUSED_PAR(fd), bool UNUSED_PAR(forReading), long UNUSED_PAR(timeout_us),
+	bool UNUSED_PAR(suspend))
 {
 	stored_assert(false);
 	return setLastError(EINVAL);
@@ -3110,7 +3129,7 @@ again:
 	if(isPipeIn()) {
 		if(!PeekNamedPipe(fd_r(), NULL, 0, NULL, &cnt, NULL))
 			goto error;
-	} else if(!GetNumberOfConsoleInputEvents(fd_r(), &cnt)){
+	} else if(!GetNumberOfConsoleInputEvents(fd_r(), &cnt)) {
 		goto error;
 	}
 
@@ -3181,23 +3200,25 @@ StdioLayer::StdioLayer(ProtocolLayer* up, ProtocolLayer* down)
 
 
 
-
 //////////////////////////////
 // SerialLayer
 //
 
 #ifdef STORED_OS_WINDOWS
-SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, bool xonxoff, ProtocolLayer* up, ProtocolLayer* down)
+SerialLayer::SerialLayer(
+	char const* name, unsigned long baud, bool rtscts, bool xonxoff, ProtocolLayer* up,
+	ProtocolLayer* down)
 	: base(up, down)
 {
 	HANDLE h = INVALID_HANDLE_VALUE; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
-	if(!isValidHandle((h = CreateFile(name,
-		GENERIC_READ | GENERIC_WRITE,					// NOLINT(hicpp-signed-bitwise)
-		FILE_SHARE_READ | FILE_SHARE_WRITE,				// NOLINT(hicpp-signed-bitwise)
-		NULL, OPEN_EXISTING,
-		FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,	// NOLINT(hicpp-signed-bitwise)
-		NULL))))
-	{
+	if(!isValidHandle(
+		   (h = CreateFile(
+			    name,
+			    GENERIC_READ | GENERIC_WRITE,	// NOLINT
+			    FILE_SHARE_READ | FILE_SHARE_WRITE, // NOLINT
+			    NULL, OPEN_EXISTING,
+			    FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, // NOLINT
+			    NULL)))) {
 		setLastError(EINVAL);
 		return;
 	}
@@ -3274,7 +3295,9 @@ int SerialLayer::resetAutoBaud()
 }
 
 #elif defined(STORED_OS_POSIX)
-SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, bool xonxoff, ProtocolLayer* up, ProtocolLayer* down)
+SerialLayer::SerialLayer(
+	char const* name, unsigned long baud, bool rtscts, bool xonxoff, ProtocolLayer* up,
+	ProtocolLayer* down)
 	: base(up, down)
 {
 	int fd = -1;
@@ -3296,30 +3319,31 @@ SerialLayer::SerialLayer(char const* name, unsigned long baud, bool rtscts, bool
 		return;
 	}
 
-	// NOLINTNEXTLINE(hicpp-signed-bitwise)
-	config.c_iflag &= (tcflag_t)~(BRKINT | ICRNL | INLCR | PARMRK | INPCK | ISTRIP | IXON | IXOFF);
+	config.c_iflag &=
+		// NOLINTNEXTLINE(hicpp-signed-bitwise)
+		(tcflag_t) ~(BRKINT | ICRNL | INLCR | PARMRK | INPCK | ISTRIP | IXON | IXOFF);
 	if(xonxoff) {
 		// NOLINTNEXTLINE(hicpp-signed-bitwise)
 		config.c_iflag |= (tcflag_t)(IXON | IXOFF);
 	}
 	config.c_oflag = 0;
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
-	config.c_lflag &= (tcflag_t)~(ECHO | ECHONL | ICANON | IEXTEN | ISIG);
+	config.c_lflag &= (tcflag_t) ~(ECHO | ECHONL | ICANON | IEXTEN | ISIG);
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
-	config.c_cflag &= (tcflag_t)~(CSIZE | PARENB | CSTOPB);
+	config.c_cflag &= (tcflag_t) ~(CSIZE | PARENB | CSTOPB);
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	config.c_cflag |= CS8;
 	if(rtscts) {
-#ifdef CNEW_RTSCTS
+#	ifdef CNEW_RTSCTS
 		config.c_cflag |= CNEW_RTSCTS;
-#elif defined(CRTSCTS)
+#	elif defined(CRTSCTS)
 		config.c_cflag |= CRTSCTS;
-#else
+#	else
 		setLastError(EINVAL);
 		return;
-#endif
+#	endif
 	}
-	config.c_cc[VMIN]  = 0;
+	config.c_cc[VMIN] = 0;
 	config.c_cc[VTIME] = 0;
 
 	if(cfsetispeed(&config, (speed_t)baud) < 0 || cfsetospeed(&config, (speed_t)baud) < 0) {
@@ -3356,5 +3380,4 @@ int SerialLayer::resetAutoBaud()
 }
 #endif // STORED_OS_POSIX
 
-} // namespace
-
+} // namespace stored

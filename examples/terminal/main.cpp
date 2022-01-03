@@ -13,7 +13,7 @@
 // stdout to a file, you will see these sequences.
 //
 // If you enable the following line, this example dumps the response to stderr too.
-#  define PRINT_TO_STDERR
+#	define PRINT_TO_STDERR
 #endif
 
 // If defined, do not print escaped messages to the console, but silently drop them.
@@ -66,17 +66,20 @@ int main()
 
 	printf("Terminal with out-of-band debug messages test\n\n");
 	printf("To inject a command, enter `ESC %c <your command> ESC %c`.\n",
-		stored::TerminalLayer::EscStart,
-		stored::TerminalLayer::EscEnd);
+	       stored::TerminalLayer::EscStart, stored::TerminalLayer::EscEnd);
 	printf("If pressing ESC does not work, try pressing Ctrl+[ instead.\n");
 	printf("All other input is considered part of the normal application stream,\n"
-		"which is case-inverted in this example.\n\n");
+	       "which is case-inverted in this example.\n\n");
 
 	setvbuf(stdin, NULL, _IONBF, 0);
 	setvbuf(stdout, NULL, _IONBF, 0);
 
 	stored::Poller poller;
-	poller.add(stdio, nullptr, stored::Poller::PollIn);
+	stored::PollableFileLayer pollable(stdio, stored::Pollable::PollIn);
+	if((errno = poller.add(pollable))) {
+		perror("Cannot add pollable");
+		return 1;
+	}
 
 	while(stdio.isOpen()) {
 		poller.poll();
@@ -85,4 +88,3 @@ int main()
 
 	return 0;
 }
-

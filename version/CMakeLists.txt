@@ -1,5 +1,5 @@
 # libstored, distributed debuggable data stores.
-# Copyright (C) 2020-2021  Jochem Rutgers
+# Copyright (C) 2020-2022  Jochem Rutgers
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -26,7 +26,7 @@ list(GET LIBSTORED_VERSION_LIST 2 LIBSTORED_VERSION_PATCH)
 
 if(	LIBSTORED_VERSION_MAJOR GREATER "99" OR
 	LIBSTORED_VERSION_MINOR GREATER "99" OR
-	LIBSTORED_VERSION_MPATCH GREATER "99")
+	LIBSTORED_VERSION_PATCH GREATER "99")
 	message(FATAL_ERROR "Please update version.h.in's STORED_VERSION_NUM")
 endif()
 

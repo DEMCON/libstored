@@ -2,7 +2,7 @@
 #define LIBSTORED_POLLER_H
 /*
  * libstored, distributed debuggable data stores.
- * Copyright (C) 2020-2021  Jochem Rutgers
+ * Copyright (C) 2020-2022  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -20,327 +20,1229 @@
 
 #ifdef __cplusplus
 
-#include <libstored/macros.h>
-#include <libstored/util.h>
-#include <libstored/zmq.h>
-#include <libstored/protocol.h>
+#	include <libstored/macros.h>
+#	include <libstored/allocator.h>
+#	include <libstored/config.h>
+#	include <libstored/protocol.h>
+#	include <libstored/util.h>
+#	include <libstored/version.h>
 
-#include <cstdarg>
-#include <vector>
-#include <deque>
+#	include <bitset>
+#	include <memory>
+#	include <stdexcept>
+#	include <typeinfo>
+#	include <vector>
 
-#ifdef STORED_HAVE_ZMQ
-#  include <zmq.h>
-#endif
+#	if STORED_cplusplus >= 201103L
+#		include <initializer_list>
+#		include <utility>
+#	endif
 
-#ifdef STORED_HAVE_ZTH
-#  include <zth>
-#endif
+#	ifdef STORED_OS_WINDOWS
+#		include <winsock2.h>
+#	endif
 
-#ifdef STORED_OS_WINDOWS
-#  include <winsock2.h>
-#endif
+#	ifdef STORED_OS_POSIX
+#		include <poll.h>
+#	endif
 
-#if !defined(STORED_POLL_ZTH_WFMO) && \
-    !defined(STORED_POLL_WFMO) && \
-    !defined(STORED_POLL_ZTH) && \
-    !defined(STORED_POLL_ZTH_LOOP) && \
-    !defined(STORED_POLL_ZMQ) && \
-    !defined(STORED_POLL_LOOP) && \
-    !defined(STORED_POLL_POLL)
+#	ifdef STORED_HAVE_ZTH
+#		include <zth>
+#		if ZTH_VERSION_NUM < 10000
+#			error Unsupport Zth version.
+#		endif
+#	endif
+
+#	if !defined(STORED_POLL_ZTH_WFMO) && !defined(STORED_POLL_WFMO)        \
+		&& !defined(STORED_POLL_ZTH_ZMQ) && !defined(STORED_POLL_ZMQ)   \
+		&& !defined(STORED_POLL_ZTH_POLL) && !defined(STORED_POLL_POLL) \
+		&& !defined(STORED_POLL_ZTH_LOOP) && !defined(STORED_POLL_LOOP)
 // Do auto-detect
 
-#  ifdef STORED_OS_WINDOWS
-#    ifdef STORED_HAVE_ZTH
-// We cannot use Zth's poll, as it does not support Windows very well.
-// But we have to use Zth's waiter and polling for events instead using WFMO.
-#      define STORED_POLL_ZTH_WFMO
-#    else
-// Use Windows's WaitForMultipleObjects.
-#      define STORED_POLL_WFMO
-#    endif
-#  else
-#    ifdef STORED_HAVE_ZTH
-#      ifdef ZTH_HAVE_POLLER
-// Use Zth's poll to do a fiber-aware poll.
-#        define STORED_POLL_ZTH
-#      else
-// There is no poller. Bare metal?
-#        define STORED_POLL_ZTH_LOOP
-#      endif
-#    elif defined(STORED_HAVE_ZMQ)
-// Use libzmq's poll, as it might handle poll on ZMQ sockets more efficiently.
-#      define STORED_POLL_ZMQ
-#    elif defined(STORED_OS_GENERIC) || defined(STORED_OS_BAREMETAL)
-// There is no poll() available.
-#      define STORED_POLL_LOOP
-#    else
-// Use use the OS's poll.
-#      define STORED_POLL_POLL
-#    endif
-#  endif
-#endif // auto-detect
+#		ifdef STORED_OS_WINDOWS
+#			ifdef STORED_HAVE_ZTH
+// Use WaitForMultipleObjects via the zth::Waiter.
+#				define STORED_POLL_ZTH_WFMO
+#			else
+// Use WaitForMultipleObjects.
+#				define STORED_POLL_WFMO
+#			endif
+#		elif defined(STORED_HAVE_ZMQ)
+#			ifdef STORED_HAVE_ZTH
+// Use zmq_poll() via zth::Waiter.
+#				define STORED_POLL_ZTH_ZMQ
+#			else
+// Use zmq_poll().
+#				define STORED_POLL_ZMQ
+#			endif
+#		elif defined(STORED_OS_POSIX)
+#			ifdef STORED_HAVE_ZTH
+// Use poll() via zth::Waiter.
+#				define STORED_POLL_ZTH_POLL
+#			else
+// Use poll().
+#				define STORED_POLL_POLL
+#			endif
+#		elif defined(STORED_HAVE_ZTH)
+// Use poll_once() via zth::Waiter.
+#			define STORED_POLL_ZTH_LOOP
+#		else
+// Use poll_once() in a loop.
+#			define STORED_POLL_LOOP
+#		endif
+#	endif // auto-detect
 
-#if defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH) || defined(STORED_POLL_ZMQ)
-#  include <poll.h>
-#endif
-#ifdef STORED_POLL_ZMQ
-#  include <zmq.h>
-#endif
+#	if defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH_POLL)
+#		include <poll.h>
+#	endif
+#	ifdef STORED_HAVE_ZMQ
+#		include <zmq.h>
+#	endif
+
+#	if !defined(STORED_HAVE_ZTH) && STORED_VERSION_NUM < 20000
+#		define STORED_POLL_OLD
+#	endif
 
 namespace stored {
 
+//////////////////////////////////////////////
+// Pollable
+//
+
+#	ifdef STORED_HAVE_ZTH
+
+// In case we have Zth, we will forward all poll requests to Zth instead.  So,
+// base our types on Zth's types.
+using zth::Pollable;
+
+#	else // !STORED_HAVE_ZTH
+
+// We don't have Zth, but we still want to have an equivalent interface. Define
+// it here.
+
+/*!
+ * \brief A pollable thing.
+ */
+struct Pollable {
 	/*!
-	 * \brief A generic way of \c poll() for any blockable resource.
-	 *
-	 * Depending on the platform, different poll strategies are automatically chosen:
-	 *
-	 * - STORED_POLL_WFMO (Windows without Zth): Block using \c WaitForMultipleObjectEx() in alertable state.
-	 * - STORED_POLL_ZTH_WFMO (Windows with Zth): Non-blocking call to \c WaitForMultipleObjectEx() by the zth::Waiter.
-	 * - STORED_POLL_ZTH (Non-Windows with Zth, without ZMQ): rely on zth::poll(), which uses the OS's \c %poll()
-	 * - STORED_POLL_ZTH_LOOP (Bare metal with Zth): call stored::poll_once() by zth::Waiter
-	 * - STORED_POLL_ZMQ (Non-Windows without Zth, with ZMQ): rely on \c zmq_poll()
-	 * - STORED_POLL_LOOP (Bare metal without Zth): busy-wait calling stored::poll_once()
-	 * - STORED_POLL_POLL (Non-Windows without Zth and ZMQ): rely on OS's %poll()
-	 *
-	 * Auto-detect is bypassed when one of the macros above is defined.
-	 *
-	 * To use the poller, basically do this:
-	 *
-	 * \code
-	 * Poller poller;
-	 *
-	 * // Pick some user_data you can recognize.
-	 * poller.add(fd1, &fd1, Poller::PollIn);
-	 * poller.add(fd2, &fd2, Poller::PollOut);
-	 *
-	 * while(true) {
-	 *     auto const& res = poller.poll();
-	 *
-	 *     for(auto it : res) {
-	 *         if(it->user_data == &fd1)
-	 *             read(fd1, ...);
-	 *         if(it->user_data == &fd2)
-	 *             write(fd2, ...)
-	 *     }
-	 * }
-	 * \endcode
+	 * \brief Flags to be used with #events and #revents.
 	 */
-	class Poller {
-		CLASS_NOCOPY(Poller)
-	public:
-		typedef unsigned short events_t;
-
-#ifdef STORED_POLL_ZMQ
-		static events_t const PollIn = (events_t)ZMQ_POLLIN;
-		static events_t const PollOut = (events_t)ZMQ_POLLOUT;
-		static events_t const PollErr = (events_t)ZMQ_POLLERR;
-		static events_t const PollHup = (events_t)POLLHUP;
-#elif defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH) || defined(STORED_POLL_ZTH_WFMO)
-		static events_t const PollIn = (events_t)POLLIN;
-		static events_t const PollOut = (events_t)POLLOUT;
-		static events_t const PollErr = (events_t)POLLERR;
-#  ifdef POLLHUP
-		static events_t const PollHup = (events_t)POLLHUP;
-#  endif
-#else
-		static events_t const PollIn = 1u;
-		static events_t const PollOut = 2u;
-		static events_t const PollErr = 4u;
-		static events_t const PollHup = 8u;
-#endif
-
-		class Event {
-		public:
-			enum Type {
-				TypeNone,
-				TypeFd,
-				TypePolledFileLayer,
-#ifdef STORED_OS_WINDOWS
-				TypeWinSock,
-				TypeHandle,
-#endif
-#ifdef STORED_HAVE_ZMQ
-				TypeZmqSock,
-				TypeZmq
-#endif
-			};
-
-			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-			Event()
-				: type(TypeNone)
-#ifndef STORED_POLL_ZMQ
-				, user_data(), events()
-#endif
-#ifdef STORED_OS_WINDOWS
-				, h()
-#endif
-			{}
-
-			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-			explicit Event(int /*Type*/ type_, ...)
-				: type((Type)type_)
-#ifndef STORED_POLL_ZMQ
-				, user_data(), events()
-#endif
-#ifdef STORED_OS_WINDOWS
-				, h()
-#endif
-			{
-				va_list args;
-				va_start(args, type_);
-
-				switch(type) {
-				case TypeFd: fd = va_arg(args, int); break;
-				case TypePolledFileLayer: polledFileLayer = va_arg(args, PolledFileLayer*); break;
-#ifdef STORED_OS_WINDOWS
-				case TypeWinSock: winsock = va_arg(args, SOCKET); break;
-				case TypeHandle: h = handle = va_arg(args, HANDLE); break;
-#endif
-#ifdef STORED_HAVE_ZMQ
-				case TypeZmqSock: zmqsock = va_arg(args, void*); break;
-				case TypeZmq: zmq = va_arg(args, ZmqLayer*); break;
-#endif
-				default:;
-				}
-
-				va_end(args);
-			}
-
-			Type type;
-			union {
-				int fd;
-				PolledFileLayer* polledFileLayer;
-#ifdef STORED_OS_WINDOWS
-				SOCKET winsock;
-				HANDLE handle;
-#endif
-#ifdef STORED_HAVE_ZMQ
-				void* zmqsock;
-				ZmqLayer* zmq;
-#endif
-			};
-#if !defined(STORED_POLL_ZMQ)
-			void* user_data;
-			events_t events;
-#endif
-
-#if defined(STORED_POLL_ZTH)
-			zth_pollfd_t* pollfd;
-#elif defined(STORED_POLL_POLL)
-			struct ::pollfd* pollfd;
-#elif defined(STORED_OS_WINDOWS)
-			HANDLE h;
-#endif
-
-			bool operator==(Event const& e) const
-			{
-				if(type != e.type)
-					return false;
-
-				switch(type) {
-				case TypeNone: return true;
-				case TypeFd: return fd == e.fd;
-				case TypePolledFileLayer: return polledFileLayer == e.polledFileLayer;
-#ifdef STORED_OS_WINDOWS
-				case TypeWinSock: return winsock == e.winsock;
-				case TypeHandle: return handle == e.handle;
-#endif
-#ifdef STORED_HAVE_ZMQ
-				case TypeZmqSock: return zmqsock == e.zmqsock;
-				case TypeZmq: return zmq == e.zmq;
-#endif
-				default:
-					return false;
-				}
-			}
-		};
-
-		Poller();
-		~Poller();
-
-#ifdef STORED_POLL_ZMQ
-		typedef std::vector<zmq_poller_event_t> Result;
-		Result const& poll(long timeout_us = -1, bool suspend = false);
-#else
-		typedef std::vector<Event> Result;
-		Result const& poll(long timeout_us = -1, bool suspend = false);
-#endif
-
-		int add(int fd, void* user_data, events_t events);
-		int modify(int fd, events_t events);
-		int remove(int fd);
-
-		int add(PolledFileLayer& layer, void* user_data, events_t events);
-		int modify(PolledFileLayer& layer, events_t events);
-		int remove(PolledFileLayer& layer);
-
-#if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
-		int add(SOCKET socket, void* user_data, events_t events);
-		int modify(SOCKET socket, events_t events);
-		int remove(SOCKET socket);
-
-		int addh(HANDLE handle, void* user_data, events_t events);
-		int modifyh(HANDLE handle, events_t events);
-		int removeh(HANDLE handle);
-#endif
-#if defined(STORED_HAVE_ZMQ) || defined(DOXYGEN)
-		int add(void* socket, void* user_data, events_t events);
-		int modify(void* socket, events_t events);
-		int remove(void* socket);
-
-		int add(ZmqLayer& layer, void* user_data, events_t events);
-		int modify(ZmqLayer& layer, events_t events);
-		int remove(ZmqLayer& layer);
-#endif
-	protected:
-		int add(Event const& e, void* user_data, events_t events);
-		int modify(Event const& e, events_t events);
-		int remove(Event const& e);
-#ifndef STORED_POLL_ZMQ
-		Event* find(Event const& e);
-#endif
-
-#if defined(STORED_POLL_LOOP) || defined(STORED_POLL_ZTH_LOOP)
-		bool poll_once();
-#endif
-#if defined(STORED_POLL_ZTH_LOOP)
-		bool zth_poll_once();
-	private:
-		zth::Timestamp m_timeout;
-#endif
-
-	private:
-#ifdef STORED_POLL_ZMQ
-		void* m_poller;
-		Result m_lastEvents;
-#else
-		std::deque<Event> m_events;
-		Result m_lastEvents;
-#endif
-#if defined(STORED_POLL_POLL) || defined(STORED_POLL_ZTH)
-		std::vector<pollfd> m_lastEventsFd;
-#endif
-#ifdef STORED_OS_WINDOWS
-		std::vector<HANDLE> m_lastEventsH;
-#endif
+	enum EventsFlags {
+		PollInIndex,
+		PollOutIndex,
+		PollErrIndex,
+		PollPriIndex,
+		PollHupIndex,
+		FlagCount,
 	};
 
-#if defined(STORED_POLL_LOOP) || defined(STORED_POLL_ZTH_LOOP) || defined(DOXYGEN)
+	/*! \brief Type of #events and #revents. */
+	typedef std::bitset<FlagCount> Events;
+
+#		if STORED_cplusplus >= 201103L
+	typedef unsigned long long Events_value;
+#		else
+	typedef unsigned long Events_value;
+#		endif
+	static Events_value const PollIn = 1UL << PollInIndex;
+	static Events_value const PollOut = 1UL << PollOutIndex;
+	static Events_value const PollErr = 1UL << PollErrIndex;
+	static Events_value const PollPri = 1UL << PollPriIndex;
+	static Events_value const PollHup = 1UL << PollHupIndex;
+
 	/*!
-	 * \brief Supply a custom \c poll() implementation.
+	 * \brief Ctor.
+	 */
+	explicit constexpr Pollable(Events const& e, void* user = nullptr) noexcept
+		: user_data(user)
+		, events(e)
+	{}
+
+	/*!
+	 * \brief User data.
 	 *
-	 * This function is used when there is no way to do the actual poll with
-	 * standard functions, like on bare metal. The user must supply this
-	 * function.
+	 * This can be changed, even after adding a Pollable to a Poller.
+	 */
+	void* user_data;
+
+	/*!
+	 * \brief Events to poll.
 	 *
-	 * \param e the event to poll
-	 * \param revents the events of the poll, which may be 0 if there were no events
+	 * Do not change these events after adding the Pollable to a Poller.
+	 *
+	 * Not every Poller may support all flags.
+	 */
+	Events events;
+
+	/*!
+	 * \brief Returned events by a poll.
+	 *
+	 * Do not set manually, let the Poller do that.
+	 */
+	Events revents;
+};
+#	endif // !STORED_HAVE_ZTH
+
+/*!
+ * \brief A Pollable with run-time type information.
+ *
+ * A subclass must use \c STORED_POLLABLE_TYPE(subclass_type) in its
+ * definition.
+ */
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
+class TypedPollable : public Pollable {
+	STORED_CLASS_NEW_DELETE(TypedPollable)
+public:
+	explicit constexpr TypedPollable(Events const& e, void* user = nullptr) noexcept
+		: Pollable(e, user)
+	{}
+
+	virtual ~TypedPollable() is_default
+
+#	ifdef __cpp_rtti
+	typedef std::type_info const& Type;
+	static Type staticType() noexcept
+	{
+		return typeid(Pollable);
+	}
+#	else  // __cpp_rtti
+	typedef void const* Type;
+	static Type staticType() noexcept
+	{
+		return nullptr;
+	}
+#	endif // !__cpp_rtti
+	virtual Type type() const noexcept = 0;
+};
+
+/*!
+ * \def STORED_POLLABLE_TYPE
+ * \brief Helper macro to generate the TypedPollable::staticType() and
+ *	TypedPollable::type() functions.
+ *
+ * The type functions will be final. So, the class cannot be subclassed any
+ * further with more specific (sub)types.
+ */
+#	ifdef __cpp_rtti
+#		define STORED_POLLABLE_TYPE(T)                                           \
+		public:                                                                   \
+			static ::stored::TypedPollable::Type staticType() noexcept        \
+			{                                                                 \
+				return typeid(T);                                         \
+			}                                                                 \
+			virtual ::stored::TypedPollable::Type type() const noexcept final \
+			{                                                                 \
+				return staticType();                                      \
+			}                                                                 \
+                                                                                          \
+		private:                                                                  \
+			STORED_CLASS_NEW_DELETE(T)
+#	else // !__cpp_rtti
+#		define STORED_POLLABLE_TYPE(T)                                        \
+			static ::zth::TypedPollable::Type staticType() noexcept        \
+			{                                                              \
+				static char const t = 0;                               \
+				return (::zth::Pollable::Type)&t;                      \
+			}                                                              \
+			virtual ::zth::TypedPollable::Type type() const noexcept final \
+			{                                                              \
+				return staticType();                                   \
+			}                                                              \
+                                                                                       \
+		private:                                                               \
+			STORED_CLASS_NEW_DELETE(T)
+#	endif // !__cpp_rtti
+
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
+class PollableCallbackBase : public TypedPollable {
+	STORED_POLLABLE_TYPE(PollableCallbackBase)
+protected:
+	explicit constexpr PollableCallbackBase(Events const& e, void* user = nullptr) noexcept
+		: TypedPollable(e, user)
+	{}
+
+	virtual ~PollableCallbackBase() override is_default;
+
+public:
+	virtual Events operator()() const noexcept = 0;
+};
+
+/*!
+ * \brief Use a callback function while polling.
+ *
+ * The function type \p F must be compatible with
+ * <tt>Pollable::Events& (Pollable const&)</tt>.
+ */
+template <typename F = Pollable::Events (*)(Pollable const&)>
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
+class PollableCallback final : public PollableCallbackBase {
+	STORED_CLASS_NEW_DELETE(PollableCallback)
+public:
+	typedef Events(f_type)(Pollable const&);
+
+	PollableCallback(F f_, Events const& e, void* user = nullptr)
+		: PollableCallbackBase(e, user)
+		, f(f_)
+	{}
+
+#	if STORED_cplusplus >= 201103L
+	template <typename F_>
+	PollableCallback(F_&& f_, Events const& e, void* user = nullptr)
+		: PollableCallbackBase{e, user}
+		, f{std::forward<F_>(f_)}
+	{}
+#	endif
+
+	virtual ~PollableCallback() override is_default
+
+	virtual Events operator()() const noexcept final
+	{
+		try {
+			return f(static_cast<Pollable const&>(*this));
+		} catch(...) {
+			return Pollable::PollErr;
+		}
+	}
+
+	F f;
+};
+
+inline PollableCallback<>
+pollable(PollableCallback<>::f_type f, Pollable::Events const& events, void* user = nullptr)
+{
+	return PollableCallback<>(f, events, user);
+}
+
+#	if STORED_cplusplus >= 201103L
+template <typename F>
+PollableCallback<typename std::decay<F>::type>
+pollable(F&& f, Pollable::Events const& events, void* user = nullptr)
+{
+	return PollableCallback<typename std::decay<F>::type>{std::forward<F>(f), events, user};
+}
+#	else
+template <typename F>
+PollableCallback<F> pollable(F const& f, Pollable::Events const& events, void* user)
+{
+	return PollableCallback<F>(f, events, user);
+}
+#	endif
+
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
+class PollableFd final : public TypedPollable {
+	STORED_POLLABLE_TYPE(PollableFd)
+public:
+	constexpr PollableFd(int f, Events const& e, void* user = nullptr) noexcept
+		: TypedPollable(e, user)
+		, fd(f)
+	{}
+
+	virtual ~PollableFd() override is_default
+
+	int fd;
+};
+
+inline PollableFd pollable(int fd, Pollable::Events const& events, void* user = nullptr)
+{
+	return PollableFd(fd, events, user);
+}
+
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
+class PollableFileLayer final : public TypedPollable {
+	STORED_POLLABLE_TYPE(PollableFileLayer)
+public:
+	constexpr PollableFileLayer(
+		PolledFileLayer& l, Events const& e, void* user = nullptr) noexcept
+		: TypedPollable(e, user)
+		, layer(&l)
+	{}
+
+	virtual ~PollableFileLayer() override is_default
+
+	PolledFileLayer* layer;
+};
+
+inline PollableFileLayer
+pollable(PolledFileLayer& l, Pollable::Events const& events, void* user = nullptr)
+{
+	return PollableFileLayer(l, events, user);
+}
+
+#	ifdef STORED_OS_WINDOWS
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
+class PollableSocket final : public TypedPollable {
+	STORED_POLLABLE_TYPE(PollableSocket)
+public:
+	constexpr PollableSocket(SOCKET s, Events const& e, void* user = nullptr) noexcept
+		: TypedPollable(e, user)
+		, socket(s)
+	{}
+
+	virtual ~PollableSocket() override is_default
+
+	SOCKET socket;
+};
+
+inline PollableSocket pollable(SOCKET s, Pollable::Events const& events, void* user = nullptr)
+{
+	return PollableSocket(s, events, user);
+}
+
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
+class PollableHandle final : public TypedPollable {
+	STORED_POLLABLE_TYPE(PollableHandle)
+public:
+	constexpr PollableHandle(HANDLE h, Events const& e, void* user = nullptr) noexcept
+		: TypedPollable(e, user)
+		, handle(h)
+	{}
+
+	virtual ~PollableHandle() override is_default
+
+	HANDLE handle;
+};
+
+#		if 0 // Ambiguous with pollable(ZeroMQ socket), as they are both void*.
+inline PollableHandle pollable(HANDLE h, Pollable::Events const& events, void* user = nullptr)
+{
+	return PollableHandle(h, events, user);
+}
+#		endif
+#	endif // STORED_OS_WINDOWS
+
+#	ifdef STORED_HAVE_ZMQ
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
+class PollableZmqSocket : public TypedPollable {
+	STORED_POLLABLE_TYPE(PollableZmqSocket)
+public:
+	constexpr PollableZmqSocket(void* s, Events const& e, void* user = nullptr) noexcept
+		: TypedPollable(e, user)
+		, socket(s)
+	{}
+
+	virtual ~PollableZmqSocket() override is_default
+
+	void* socket;
+};
+
+inline PollableZmqSocket pollable(void* s, Pollable::Events const& events, void* user = nullptr)
+{
+	return PollableZmqSocket(s, events, user);
+}
+
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
+class PollableZmqLayer : public TypedPollable {
+	STORED_POLLABLE_TYPE(PollableZmqLayer)
+public:
+	constexpr PollableZmqLayer(ZmqLayer& l, Events const& e, void* user = nullptr) noexcept
+		: TypedPollable(e, user)
+		, layer(&l)
+	{}
+
+	virtual ~PollableZmqLayer() override is_default
+
+	ZmqLayer* layer;
+};
+
+inline PollableZmqLayer pollable(ZmqLayer& l, Pollable::Events const& events, void* user = nullptr)
+{
+	return PollableZmqLayer(l, events, user);
+}
+#	endif // STORED_HAVE_ZMQ
+
+
+
+//////////////////////////////////////////////
+// Poller base classes
+//
+
+#	ifndef STORED_HAVE_ZTH
+/*!
+ * \brief Abstract base class of a poller.
+ */
+template <typename PollItem_>
+class PollerBase {
+	STORED_CLASS_NOCOPY(PollerBase)
+public:
+	typedef PollItem_ PollItem;
+	typedef typename Vector<PollItem>::type PollItemList;
+
+protected:
+	PollerBase() noexcept is_default
+	virtual ~PollerBase() is_default
+
+	virtual void event(Pollable::Events revents, size_t index) noexcept = 0;
+
+protected:
+	virtual int init(Pollable const& p, PollItem& item) noexcept = 0;
+	virtual void deinit(Pollable const& UNUSED_PAR(p), PollItem& UNUSED_PAR(item)) noexcept {}
+	virtual int doPoll(int timeout_ms, PollItemList& items) noexcept = 0;
+};
+#	endif // !STORED_HAVE_ZTH
+
+
+
+//////////////////////////////////////////////
+// Polling using WaitForMultipleObjects()
+//
+// Without Zth:			With Zth:
+//
+// stored::PollerBase		zth::PollerServer
+//	^				^
+//	|				|
+// stored::WfmoPoller		stored::WfmoPoller
+// = stored::PollerImpl		= stored::PollerServer
+//	^
+//	|
+// stored::Poller		zth::PollerClient
+//				= stored::Poller
+
+#	ifdef STORED_OS_WINDOWS
+struct WfmoPollerItem {
+	TypedPollable const* pollable;
+	HANDLE h;
+};
+#		ifdef STORED_HAVE_ZTH
+typedef zth::PollerServer<WfmoPollerItem> WfmoPollerBase;
+#		else
+typedef PollerBase<WfmoPollerItem> WfmoPollerBase;
+#		endif
+
+class WfmoPoller : public WfmoPollerBase {
+	STORED_CLASS_NOCOPY(WfmoPoller)
+	STORED_CLASS_NEW_DELETE(WfmoPoller)
+public:
+	virtual ~WfmoPoller() override is_default
+
+#		ifndef STORED_HAVE_ZTH
+protected:
+#		endif
+	WfmoPoller() is_default
+
+#		ifdef STORED_HAVE_ZTH
+private:
+#		else
+protected:
+#		endif
+	virtual int init(Pollable const& p, WfmoPollerItem& item) noexcept final;
+	virtual void deinit(Pollable const& p, WfmoPollerItem& item) noexcept final;
+	virtual int doPoll(int timeout_ms, PollItemList& items) noexcept final;
+
+private:
+	Vector<HANDLE>::type m_handles;
+	Vector<size_t>::type m_indexMap;
+};
+
+#		ifdef STORED_POLL_WFMO
+typedef WfmoPoller PollerImpl;
+#		elif defined(STORED_POLL_ZTH_WFMO)
+typedef WfmoPoller PollerServer;
+#		endif
+#	endif // STORED_OS_WINDOWS
+
+
+
+//////////////////////////////////////////////
+// Polling using zmq_poll()
+//
+// Without Zth:			With Zth:
+//
+// stored::PollerBase		zth::ZmqPoller
+//	^				^
+//	|				|
+// stored::ZmqPoller		stored::ZmqPoller
+// = stored::PollerImpl		= stored::PollerServer
+//	^
+//	|
+// stored::Poller		zth::PollerClient
+//				= stored::Poller
+
+#	ifdef STORED_HAVE_ZMQ
+#		ifdef STORED_HAVE_ZTH
+typedef zth::ZmqPoller ZmqPollerBase;
+#		else
+typedef PollerBase<zmq_pollitem_t> ZmqPollerBase;
+#		endif
+
+class ZmqPoller : public ZmqPollerBase {
+	STORED_CLASS_NOCOPY(ZmqPoller)
+	STORED_CLASS_NEW_DELETE(ZmqPoller)
+public:
+	virtual ~ZmqPoller() override is_default
+
+#		ifndef STORED_HAVE_ZTH
+protected:
+#		endif
+	ZmqPoller() is_default
+
+#		ifdef STORED_HAVE_ZTH
+private:
+#		else
+protected:
+#		endif
+	virtual int init(Pollable const& p, zmq_pollitem_t& item) noexcept final;
+
+#		ifndef STORED_POLL_ZTH_ZMQ
+	virtual int doPoll(int timeout_ms, PollItemList& items) noexcept final;
+#		endif
+};
+
+#		ifdef STORED_POLL_ZMQ
+typedef ZmqPoller PollerImpl;
+#		elif defined(STORED_POLL_ZTH_ZMQ)
+typedef ZmqPoller PollerServer;
+#		endif
+#	endif // STORED_HAVE_ZMQ
+
+
+
+//////////////////////////////////////////////
+// Polling using poll()
+//
+// Without Zth:			With Zth:
+//
+// stored::PollerBase		zth::PollPoller
+//	^				^
+//	|				|
+// stored::PollPoller		stored::PollPoller
+// = stored::PollerImpl		= stored::PollerServer
+//	^
+//	|
+// stored::Poller		zth::PollerClient
+//				= stored::Poller
+
+#	if defined(STORED_OS_POSIX)
+#		ifdef STORED_HAVE_ZTH
+typedef zth::PollPoller PollPollerBase;
+#		else
+typedef PollerBase<struct pollfd> PollPollerBase;
+#		endif
+
+class PollPoller : public PollPollerBase {
+	STORED_CLASS_NOCOPY(PollPoller)
+	STORED_CLASS_NEW_DELETE(PollPoller)
+public:
+	virtual ~PollPoller() override is_default
+
+#		ifndef STORED_HAVE_ZTH
+protected:
+#		endif
+	PollPoller() is_default
+
+#		ifdef STORED_HAVE_ZTH
+private:
+#		else
+protected:
+#		endif
+	virtual int init(Pollable const& p, struct pollfd& item) noexcept final;
+
+#		ifndef STORED_POLL_ZTH_POLL
+	virtual int doPoll(int timeout_ms, PollItemList& items) noexcept final;
+#		endif // !STORED_POLL_ZTH_POLL
+};
+
+#		ifdef STORED_POLL_POLL
+typedef PollPoller PollerImpl;
+#		elif defined(STORED_POLL_ZTH_POLL)
+typedef PollPoller PollerServer;
+#		endif
+#	endif // STORED_OS_POSIX
+
+
+
+//////////////////////////////////////////////
+// Polling using poll_once()
+//
+// Without Zth:			With Zth:
+//
+// stored::PollerBase		zth::PollerServer
+//	^				^
+//	|				|
+// stored::LoopPoller		stored::LoopPoller
+// = stored::PollerImpl		= stored::PollerServer
+//	^
+//	|
+// stored::Poller		zth::PollerClient
+//				= stored::Poller
+
+#	ifdef STORED_COMPILER_MSVC
+extern "C"
+#	endif
+	int
+	poll_once(TypedPollable const& p, Pollable::Events& revents) noexcept;
+
+int poll_once_default(TypedPollable const& p, Pollable::Events& revents) noexcept;
+
+#	ifdef STORED_HAVE_ZTH
+typedef zth::PollerServer<Pollable const*> LoopPollerBase;
+#	else
+typedef PollerBase<Pollable const*> LoopPollerBase;
+#	endif
+
+class LoopPoller : public LoopPollerBase {
+	STORED_CLASS_NOCOPY(LoopPoller)
+	STORED_CLASS_NEW_DELETE(LoopPoller)
+public:
+	virtual ~LoopPoller() override is_default
+
+#	ifndef STORED_HAVE_ZTH
+protected:
+#	endif
+	LoopPoller() is_default
+
+#	ifdef STORED_HAVE_ZTH
+private:
+#	else
+protected:
+#	endif
+	virtual int init(Pollable const& p, Pollable const*& item) noexcept final;
+	virtual int doPoll(int timeout_ms, PollItemList& items) noexcept final;
+};
+
+#	ifdef STORED_POLL_LOOP
+typedef LoopPoller PollerImpl;
+#	elif defined(STORED_POLL_ZTH_LOOP)
+typedef LoopPoller PollerServer;
+#	endif
+
+
+
+//////////////////////////////////////////////
+// Poller
+//
+// Without Zth:			With Zth:
+//
+// stored::PollerImpl		zth::PollerClient
+//	^			= stored::Poller
+//	|
+// stored::InheritablePoller
+//	^
+//	|
+// stored::Poller
+//
+// The interface of stored::Poller is equivalent to zth::PollerClient.  User
+// code can just use stored::Poller, regardless whether Zth is used.
+//
+// For this, stored::Poller (without Zth) must implement the interface based on
+// the minimal function provided by the PollerServer-like interface classes.
+//
+// To inherit a Poller, use InheritablePoller as base class. Poller itself does
+// not add any logic, and is final.
+//
+
+#	ifdef STORED_HAVE_ZTH
+typedef zth::PollerClient Poller;
+#	else // !STORED_HAVE_ZTH
+
+template <typename PollerImpl = PollerImpl>
+class InheritablePoller : public PollerImpl {
+	STORED_CLASS_NOCOPY(InheritablePoller)
+	STORED_CLASS_NEW_DELETE(InheritablePoller)
+protected:
+	using typename PollerImpl::PollItem;
+	using typename PollerImpl::PollItemList;
+
+#		ifdef STORED_POLL_OLD
+	struct OldResult {
+		Pollable::Events_value events;
+		Pollable::Events_value revents;
+		void* user_data;
+		Pollable* p;
+
+		Pollable* operator->() const
+		{
+			return p;
+		}
+
+		Pollable& operator*() const
+		{
+			return *p;
+		}
+	};
+
+	typedef typename Vector<OldResult>::type Result;
+#		else
+	typedef typename Vector<Pollable*>::type Result;
+#		endif
+
+	InheritablePoller() is_default
+
+	/*!
+	 * \brief Dtor.
+	 */
+	virtual ~InheritablePoller() override
+	{
+		stored_assert(empty());
+	}
+
+	void throwing(int res)
+	{
+		errno = res;
+
+#		ifdef __cpp_exceptions
+		switch(errno) {
+		case 0:
+			break;
+		case ENOMEM:
+			throw std::bad_alloc();
+		default:
+			throw std::runtime_error("");
+		}
+#		endif
+	}
+
+public:
+	/*!
+	 * \brief Add a pollable object.
+	 *
+	 * Once a pollable is added, do not modify its properties, except for
+	 * \c user_data.
+	 *
 	 * \return 0 on success, otherwise an errno
 	 */
-	int poll_once(Poller::Event const& e, Poller::events_t& revents);
-#endif
+	virtual int add(Pollable& p) noexcept
+	{
+		try {
+			reserve(1);
+		} catch(std::bad_alloc const&) {
+			return ENOMEM;
+		} catch(...) {
+			return EINVAL;
+		}
 
-} // namespace
+		PollItem item;
+		int res = this->init(p, item);
+		if(res)
+			return res;
+
+		try {
+#		if STORED_cplusplus >= 201103L
+			m_items.emplace_back(std::move(item));
+#		else
+			m_items.push_back(item);
+#		endif
+		} catch(...) {
+			this->deinit(p, item);
+			return EINVAL;
+		}
+
+		try {
+			m_pollables.push_back(&p);
+		} catch(...) {
+			this->deinit(p, m_items.back());
+			m_items.pop_back();
+			return EINVAL;
+		}
+
+		return 0;
+	}
+
+#		if STORED_cplusplus >= 201103L
+	int add(std::initializer_list<std::reference_wrapper<Pollable>> l) noexcept
+	{
+		try {
+			reserve(l.size());
+		} catch(std::bad_alloc const&) {
+			return ENOMEM;
+		} catch(...) {
+			return EINVAL;
+		}
+
+		int res = 0;
+		size_t count = 0;
+
+		for(auto const& p : l) {
+			if((res = add(p))) {
+				// Rollback.
+				for(auto const* it = l.begin(); it != l.end() && count > 0;
+				    ++it, count--)
+					remove(*it);
+				break;
+			}
+
+			// Success.
+			count++;
+		}
+
+		return res;
+	}
+#		endif
+
+	/*!
+	 * \brief Remove a pollable object.
+	 * \return 0 on success, otherwise an errno
+	 */
+	virtual int remove(Pollable& p) noexcept
+	{
+		for(size_t i = 0; i < m_pollables.size(); i++)
+			if(m_pollables[i] == &p) {
+				this->deinit(p, m_items[i]);
+#		if STORED_cplusplus >= 201103L
+				m_items[i] = std::move(m_items.back());
+#		else
+				m_items[i] = m_items.back();
+#		endif
+				m_items.pop_back();
+				m_pollables[i] = m_pollables.back();
+				m_pollables.pop_back();
+				return 0;
+			}
+
+		return ESRCH;
+	}
+
+	/*!
+	 * \brief Reserve memory to add more pollables.
+	 *
+	 * \exception std::bad_alloc when allocation fails
+	 */
+	virtual void reserve(size_t more)
+	{
+		size_t capacity = m_pollables.size() + more;
+		m_pollables.reserve(capacity);
+		m_items.reserve(capacity);
+		m_result.reserve(capacity);
+	}
+
+	/*!
+	 * \brief Checks if there is any pollable registered.
+	 */
+	bool empty() const noexcept
+	{
+		return m_pollables.empty();
+	}
+
+	virtual void clear() noexcept
+	{
+		for(size_t i = 0; i < m_items.size(); i++)
+			this->deinit(*m_pollables[i], m_items[i]);
+
+		m_pollables.clear();
+		m_items.clear();
+	}
+
+	virtual Result const& poll(int timeout_ms = -1) noexcept
+	{
+		stored_assert(m_pollables.size() == m_items.size());
+		m_result.clear();
+
+		if((errno = this->doPoll(timeout_ms, m_items)))
+			m_result.clear();
+
+		if(m_result.empty() && !errno)
+			errno = EAGAIN;
+
+		return m_result;
+	}
+
+protected:
+	virtual void event(Pollable::Events revents, size_t index) noexcept override
+	{
+		stored_assert(index < m_items.size());
+
+		Pollable* p = m_pollables[index];
+		p->revents = revents;
+
+		if(revents.none())
+			return;
+
+#		ifdef STORED_POLL_OLD
+		OldResult r = {p->events.to_ulong(), revents.to_ulong(), p->user_data, p};
+		m_result.push_back(r);
+#		else
+		m_result.push_back(p);
+#		endif
+	}
+
+private:
+	Vector<Pollable*>::type m_pollables;
+	PollItemList m_items;
+	Result m_result;
+};
+
+template <typename PollerImpl = PollerImpl>
+class CustomPoller final : public InheritablePoller<PollerImpl> {
+	STORED_CLASS_NOCOPY(CustomPoller)
+	STORED_CLASS_NEW_DELETE(CustomPoller)
+public:
+	CustomPoller() is_default
+
+	virtual ~CustomPoller() override
+	{
+		this->clear();
+	}
+
+#		if STORED_cplusplus >= 201103L
+	CustomPoller(std::initializer_list<std::reference_wrapper<Pollable>> l)
+	{
+		this->throwing(this->add(l));
+	}
+#		endif // C++11
+};
+
+class Poller final : public InheritablePoller<> {
+	STORED_CLASS_NOCOPY(Poller)
+	STORED_CLASS_NEW_DELETE(Poller)
+public:
+	typedef InheritablePoller<> base;
+
+	Poller() is_default
+
+	virtual ~Poller() final;
+
+#		if STORED_cplusplus >= 201103L
+	Poller(std::initializer_list<std::reference_wrapper<Pollable>> l)
+	{
+		throwing(add(l));
+	}
+#		endif // C++11
+
+#		ifdef STORED_POLL_OLD
+	// Provide the old Poller interface, for a while.
+public:
+	using base::add;
+	using base::poll;
+	using base::remove;
+	using base::Result;
+
+	typedef Pollable::Events_value events_t;
+	static Pollable::Events_value const PollIn = Pollable::PollIn;
+	static Pollable::Events_value const PollOut = Pollable::PollOut;
+	static Pollable::Events_value const PollErr = Pollable::PollErr;
+	static Pollable::Events_value const PollPri = Pollable::PollPri;
+	static Pollable::Events_value const PollHup = Pollable::PollHup;
+
+	STORED_DEPRECATED("Use the new Pollables instead")
+	Result const& poll(long timeout_us, bool UNUSED_PAR(suspend) = false)
+	{
+		return base::poll((int)(timeout_us / 1000L));
+	}
+
+	struct compare_fd {
+		bool operator()(PollableFd const& p, int fd) const
+		{
+			return p.fd == fd;
+		}
+	};
+
+	STORED_DEPRECATED("Use the new Pollables instead")
+	int add(int fd, void* user_data, events_t events)
+	{
+		return add<PollableFd>(fd, user_data, events);
+	}
+
+	int modify(int fd, events_t events)
+	{
+		return modify<PollableFd>(fd, events, compare_fd());
+	}
+
+	int remove(int fd)
+	{
+		return remove<PollableFd>(fd, compare_fd());
+	}
+
+	struct compare_FileLayer {
+		bool operator()(PollableFileLayer const& p, PolledFileLayer& l) const
+		{
+			return p.layer == &l;
+		}
+	};
+
+	STORED_DEPRECATED("Use the new Pollables instead")
+	int add(PolledFileLayer& layer, void* user_data, events_t events)
+	{
+		return add<PollableFileLayer, PolledFileLayer&>(layer, user_data, events);
+	}
+
+	int modify(PolledFileLayer& layer, events_t events)
+	{
+		return modify<PollableFileLayer, PolledFileLayer&>(
+			layer, events, compare_FileLayer());
+	}
+
+	int remove(PolledFileLayer& layer)
+	{
+		return remove<PollableFileLayer, PolledFileLayer&>(layer, compare_FileLayer());
+	}
+
+#			if defined(STORED_OS_WINDOWS)
+	struct compare_SOCKET {
+		bool operator()(PollableSocket const& p, SOCKET s) const
+		{
+			return p.socket == s;
+		}
+	};
+
+	STORED_DEPRECATED("Use the new Pollables instead")
+	int add(SOCKET socket, void* user_data, events_t events)
+	{
+		return add<PollableSocket>(socket, user_data, events);
+	}
+
+	int modify(SOCKET socket, events_t events)
+	{
+		return modify<PollableSocket>(socket, events, compare_SOCKET());
+	}
+
+	int remove(SOCKET socket)
+	{
+		return remove<PollableSocket>(socket, compare_SOCKET());
+	}
+
+	struct compare_HANDLE {
+		bool operator()(PollableHandle const& p, HANDLE handle) const
+		{
+			return p.handle == handle;
+		}
+	};
+
+	STORED_DEPRECATED("Use the new Pollables instead")
+	int addh(HANDLE handle, void* user_data, events_t events)
+	{
+		return add<PollableHandle>(handle, user_data, events);
+	}
+
+	int modifyh(HANDLE handle, events_t events)
+	{
+		return modify<PollableHandle>(handle, events, compare_HANDLE());
+	}
+
+	int removeh(HANDLE handle)
+	{
+		return remove<PollableHandle>(handle, compare_HANDLE());
+	}
+#			endif // STORED_OS_WINDOWS
+
+#			if defined(STORED_HAVE_ZMQ)
+	struct compare_socket {
+		bool operator()(PollableZmqSocket const& p, void* socket) const
+		{
+			return p.socket == &socket;
+		}
+	};
+
+	STORED_DEPRECATED("Use the new Pollables instead")
+	int add(void* socket, void* user_data, events_t events)
+	{
+		return add<PollableZmqSocket>(socket, user_data, events);
+	}
+
+	int modify(void* socket, events_t events)
+	{
+		return modify<PollableZmqSocket>(socket, events, compare_socket());
+	}
+
+	int remove(void* socket)
+	{
+		return remove<PollableZmqSocket>(socket, compare_socket());
+	}
+
+	struct compare_zmq {
+		bool operator()(PollableZmqLayer const& p, ZmqLayer& layer) const
+		{
+			return p.layer == &layer;
+		}
+	};
+
+	STORED_DEPRECATED("Use the new Pollables instead")
+	int add(ZmqLayer& layer, void* user_data, events_t events)
+	{
+		return add<PollableZmqLayer, ZmqLayer&>(layer, user_data, events);
+	}
+
+	int modify(ZmqLayer& layer, events_t events)
+	{
+		return modify<PollableZmqLayer, ZmqLayer&>(layer, events, compare_zmq());
+	}
+
+	int remove(ZmqLayer& layer)
+	{
+		return remove<PollableZmqLayer, ZmqLayer&>(layer, compare_zmq());
+	}
+#			endif // STORED_HAVE_ZMQ
+
+	virtual void clear() noexcept override
+	{
+		base::clear();
+
+		for(decltype(m_pollables.begin()) it = m_pollables.begin(); it != m_pollables.end();
+		    ++it)
+			delete *it; // NOLINT(cppcoreguidelines-owning-memory)
+
+		m_pollables.clear();
+	}
+
+private:
+	typedef Vector<TypedPollable*>::type Pollables;
+
+	template <typename T, typename A>
+	int add(A a, void* user_data, events_t events)
+	{
+		T* p = new T(a, events, user_data); // NOLINT(cppcoreguidelines-owning-memory)
+		int res = add(*p);
+
+		if(res)
+			delete p; // NOLINT(cppcoreguidelines-owning-memory)
+		else
+			m_pollables.push_back(p);
+
+		return res;
+	}
+
+	template <typename T, typename A, typename C>
+	int modify(A a, events_t events, C const& c)
+	{
+		Pollables::iterator it = find<T, A, C>(a, c);
+		if(it == m_pollables.end())
+			return ESRCH;
+
+		T* p = static_cast<T*>(*it);
+		stored_assert(p);
+		void* user_data = p->user_data;
+		remove(*p);
+		return add<T, A>(a, user_data, events);
+	}
+
+	template <typename T, typename A, typename C>
+	int remove(A a, C const& c)
+	{
+		Pollables::iterator it = find<T, A, C>(a, c);
+		if(it == m_pollables.end())
+			return ESRCH;
+
+		T* p = static_cast<T*>(*it);
+		stored_assert(p);
+
+		int res = remove(*p);
+		delete p; // NOLINT(cppcoreguidelines-owning-memory)
+
+		*it = m_pollables.back();
+		m_pollables.pop_back();
+
+		return res;
+	}
+
+	template <typename T, typename A, typename C>
+	Pollables::iterator find(A a, C const& cmp)
+	{
+		for(decltype(m_pollables.begin()) it = m_pollables.begin(); it != m_pollables.end();
+		    ++it)
+			if((*it)->type() == T::staticType()) {
+				T* p = static_cast<T*>(*it);
+				if(cmp(*p, a))
+					return it;
+			}
+
+		return m_pollables.end();
+	}
+
+private:
+	Pollables m_pollables;
+#		endif
+};
+#	endif // !STORED_HAVE_ZTH
+
+} // namespace stored
 #endif // __cplusplus
+
 #endif // LIBSTORED_POLLER_H

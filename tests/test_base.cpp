@@ -1,6 +1,6 @@
 /*
  * libstored, distributed debuggable data stores.
- * Copyright (C) 2020-2021  Jochem Rutgers
+ * Copyright (C) 2020-2022  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,4 +22,3 @@ std::function<void(std::type_info const&, void*, size_t, size_t)> TestAllocatorB
 std::function<void(std::type_info const&, void*, size_t, size_t)> TestAllocatorBase::deallocate_cb;
 TestAllocatorBase::Stats TestAllocatorBase::allocate_stats;
 TestAllocatorBase::Stats TestAllocatorBase::deallocate_stats;
-

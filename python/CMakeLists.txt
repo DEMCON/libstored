@@ -1,5 +1,5 @@
 # libstored, distributed debuggable data stores.
-# Copyright (C) 2020-2021  Jochem Rutgers
+# Copyright (C) 2020-2022  Jochem Rutgers
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -23,8 +23,7 @@ list(APPEND pylibstored_src
 	libstored/cli/__main__.py
 	libstored/gui/__init__.py
 	libstored/gui/__main__.py
-	libstored/gui/gui_client.qml
-	libstored/gui/twotone_bug_report_black_48dp.png
+	${CMAKE_CURRENT_SOURCE_DIR}/libstored/gui/gui_qrc.py
 	libstored/csv.py
 	libstored/protocol.py
 	libstored/serial2zmq.py
@@ -57,11 +56,12 @@ execute_process(
 )
 
 add_subdirectory(libstored/visu)
+add_subdirectory(libstored/gui)
 
 set(pylibstored_wheel_file "libstored-${pylibstored_version}-py3-none-any.whl" CACHE INTERNAL "")
 set(pylibstored_wheel "${CMAKE_CURRENT_BINARY_DIR}/dist/${pylibstored_wheel_file}" CACHE INTERNAL "")
 
-set(_wheel_deps ${pylistored_src})
+set(_wheel_deps ${pylibstored_src} gui-qrc)
 
 if(LIBSTORED_EXAMPLES)
 	set(_wheel_deps ${_wheel_deps} visu-example)

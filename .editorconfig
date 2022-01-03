@@ -29,3 +29,6 @@ indent_style = space
 indent_size = 3
 charset = utf-8-bom
 
+[*.cmd]
+end_of_line = crlf
+

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # libstored, distributed debuggable data stores.
-# Copyright (C) 2020-2021  Jochem Rutgers
+# Copyright (C) 2020-2022  Jochem Rutgers
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -22,9 +22,10 @@ import os
 import logging
 import importlib.util
 
-from PySide2.QtGui import QGuiApplication
-from PySide2.QtQml import QQmlApplicationEngine
-from PySide2.QtCore import Qt, QCoreApplication, qInstallMessageHandler, QtMsgType
+from PySide6.QtGui import QGuiApplication
+from PySide6.QtQml import QQmlApplicationEngine
+from PySide6.QtCore import Qt, QCoreApplication, qInstallMessageHandler, QtMsgType
+from PySide6.QtQuickControls2 import QQuickStyle
 
 from ..zmq_client import ZmqClient
 from ..zmq_server import ZmqServer
@@ -47,8 +48,6 @@ if __name__ == '__main__':
     logger = logging.getLogger('visu')
     qInstallMessageHandler(msgHandler)
 
-    QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     QCoreApplication.setApplicationName("Embedded Debugger visu")
 
     parser = argparse.ArgumentParser(description='ZMQ visu', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -71,6 +70,7 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.DEBUG)
 
     app = QGuiApplication(sys.argv)
+    QQuickStyle.setStyle("Basic")
 
     csv = args.csv
     if csv != None:
@@ -98,5 +98,5 @@ if __name__ == '__main__':
     if not engine.rootObjects():
         sys.exit(-1)
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 

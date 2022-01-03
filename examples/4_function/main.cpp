@@ -7,19 +7,21 @@
 
 #include "ExampleFunction.h"
 
-#include <ctime>
 #include <cstdio>
 #include <cstdlib>
+#include <ctime>
 
 #ifdef STORED_COMPILER_MSVC
-#  pragma warning(disable: 4996)
+#	pragma warning(disable : 4996)
 #endif
 
 // Create a subclass of stored::ExampleFunctionBase to define the side effects of the functions.
 class MyExample : public STORE_BASE_CLASS(ExampleFunctionBase, MyExample) {
 	STORE_CLASS_BODY(ExampleFunctionBase, MyExample)
 public:
-	MyExample() : m_echo() {}
+	MyExample()
+		: m_echo()
+	{}
 
 	// Override the default functions from base. Even though they are not
 	// virtual, these are called as expected.  To do this, you had to specify
@@ -32,7 +34,7 @@ public:
 		if(set)
 			return; // read-only
 
-		value = (uint64_t)time(NULL);
+		value = (uint64_t)time(nullptr);
 	}
 
 	void __rand(bool set, int32_t& value)
@@ -45,8 +47,15 @@ public:
 		}
 	}
 
-	void __echo_0(bool set, int32_t& value) { __echo(0, set, value); }
-	void __echo_1(bool set, int32_t& value) { __echo(1, set, value); }
+	void __echo_0(bool set, int32_t& value)
+	{
+		__echo(0, set, value);
+	}
+
+	void __echo_1(bool set, int32_t& value)
+	{
+		__echo(1, set, value);
+	}
 
 private:
 	void __echo(int i, bool set, int32_t& value)
@@ -69,8 +78,8 @@ int main()
 {
 	MyExample e;
 
-//	time_t now = (time_t)e.time_s.get();
-//	printf("time = %s\n", ctime(&now));
+	//	time_t now = (time_t)e.time_s.get();
+	//	printf("time = %s\n", ctime(&now));
 
 	srand(42);
 	printf("rand = %" PRId32 "\n", e.rand.get());
@@ -84,4 +93,3 @@ int main()
 
 	return 0;
 }
-

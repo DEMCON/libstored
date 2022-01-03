@@ -1,6 +1,6 @@
 /*
  * libstored, distributed debuggable data stores.
- * Copyright (C) 2020-2021  Jochem Rutgers
+ * Copyright (C) 2020-2022  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -36,7 +36,7 @@ TEST(Synchronizer, Endianness)
 	EXPECT_EQ(stored::swap_endian<uint16_t>(0x1234), 0x3412);
 	EXPECT_EQ(stored::swap_endian<uint32_t>(0x12345678), 0x78563412);
 
-	uint8_t b[] = {1,2,3};
+	uint8_t b[] = {1, 2, 3};
 	stored::swap_endian_<3>(b);
 	EXPECT_EQ(b[0], 3);
 	EXPECT_EQ(b[1], 2);
@@ -57,15 +57,16 @@ TEST(Synchronizer, Instantiate)
 }
 
 class TestJournal : public stored::StoreJournal {
-	CLASS_NOCOPY(TestJournal)
+	STORED_CLASS_NOCOPY(TestJournal)
 public:
 	template <typename... Arg>
 	TestJournal(Arg&&... arg)
 		: StoreJournal(std::forward<Arg>(arg)...)
-	{
-	}
+	{}
 
-	FRIEND_TEST(Synchronizer, ShortSeq);
+	FRIEND_TEST(
+		Synchronizer, // fmt
+		ShortSeq);
 };
 
 TEST(Synchronizer, ShortSeq)
@@ -104,8 +105,10 @@ TEST(Synchronizer, ShortSeq)
 	EXPECT_EQ(j.toLong(49), 0x10031);
 	EXPECT_EQ(j.toLong(1), 0x10001);
 
-	EXPECT_TRUE(j.hasChanged(1, j.seq() - TestJournal::ShortSeqWindow + TestJournal::SeqLowerMargin));
-	EXPECT_FALSE(j.hasChanged(1, j.seq() - TestJournal::ShortSeqWindow + TestJournal::SeqLowerMargin * 2u));
+	EXPECT_TRUE(j.hasChanged(
+		1, j.seq() - TestJournal::ShortSeqWindow + TestJournal::SeqLowerMargin));
+	EXPECT_FALSE(j.hasChanged(
+		1, j.seq() - TestJournal::ShortSeqWindow + TestJournal::SeqLowerMargin * 2u));
 }
 
 TEST(Synchronizer, Changes)
@@ -116,7 +119,7 @@ TEST(Synchronizer, Changes)
 	auto u8 = store.default_uint8.variable();
 
 	size_t c = 0;
-	store.journal().iterateChanged(0, [&](stored::StoreJournal::Key){ c++; });
+	store.journal().iterateChanged(0, [&](stored::StoreJournal::Key) { c++; });
 	EXPECT_EQ(c, 0);
 
 	stored::StoreJournal::Key key_u8 = (stored::StoreJournal::Key)u8.key();
@@ -126,7 +129,7 @@ TEST(Synchronizer, Changes)
 	EXPECT_TRUE(store.journal().hasChanged(key_u8, now));
 
 	c = 0;
-	store.journal().iterateChanged(0, [&](stored::StoreJournal::Key){ c++; });
+	store.journal().iterateChanged(0, [&](stored::StoreJournal::Key) { c++; });
 	EXPECT_EQ(c, 1);
 
 	now = store.journal().seq();
@@ -147,29 +150,29 @@ TEST(Synchronizer, Changes)
 	EXPECT_TRUE(store.journal().hasChanged(now));
 
 	c = 0;
-	store.journal().iterateChanged(0, [&](stored::StoreJournal::Key){ c++; });
+	store.journal().iterateChanged(0, [&](stored::StoreJournal::Key) { c++; });
 	EXPECT_EQ(c, 2);
 }
 
-#define EXPECT_SYNCED(store1, store2) \
-	do { \
-		auto _map1 = (store1).map(); \
-		auto _map2 = (store2).map(); \
-		for(auto& _o : _map1) \
+#define EXPECT_SYNCED(store1, store2)                                      \
+	do {                                                               \
+		auto _map1 = (store1).map();                               \
+		auto _map2 = (store2).map();                               \
+		for(auto& _o : _map1)                                      \
 			EXPECT_EQ(_o.second.get(), _map2[_o.first].get()); \
 	} while(0)
 
-#define EXPECT_NOT_SYNCED(store1, store2) \
-	do { \
-		auto _map1 = (store1).map(); \
-		auto _map2 = (store2).map(); \
-		bool _synced = true; \
-		for(auto& _o : _map1) \
+#define EXPECT_NOT_SYNCED(store1, store2)                              \
+	do {                                                           \
+		auto _map1 = (store1).map();                           \
+		auto _map2 = (store2).map();                           \
+		bool _synced = true;                                   \
+		for(auto& _o : _map1)                                  \
 			if(_o.second.get() != _map2[_o.first].get()) { \
-				_synced = false; \
-				break; \
-			} \
-		EXPECT_FALSE(_synced); \
+				_synced = false;                       \
+				break;                                 \
+			}                                              \
+		EXPECT_FALSE(_synced);                                 \
 	} while(0)
 
 TEST(Synchronizer, Sync2)
@@ -312,7 +315,8 @@ TEST(Synchronizer, Sync5)
 			int i = rand() % 5;
 			auto& l = list[i];
 
-			// Pick a random object from that store (but only one in five can be written by us).
+			// Pick a random object from that store (but only one in five can be written
+			// by us).
 			auto& o = l[((size_t)rand() % (l.size() / 5u)) * 5u + (size_t)i];
 
 			// Flip a bit of that object.
@@ -335,4 +339,3 @@ TEST(Synchronizer, Sync5)
 }
 
 } // namespace
-

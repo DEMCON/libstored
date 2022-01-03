@@ -195,7 +195,7 @@ static void ramp()
 
 static void control()
 {
-	using f_type = std::pair<void(*)(), stored::Variable<uint8_t, ExampleControlStore>>;
+	using f_type = std::pair<void (*)(), stored::Variable<uint8_t, ExampleControlStore>>;
 
 	static std::array<f_type, 6> fs = {
 		f_type{&pid, store.pid__evaluation_order},
@@ -206,8 +206,9 @@ static void control()
 		f_type{&ramp, store.ramp__evaluation_order},
 	};
 
-	std::stable_sort(fs.begin(), fs.end(),
-		[](f_type const& a, f_type const& b) { return a.second.get() < b.second.get(); });
+	std::stable_sort(fs.begin(), fs.end(), [](f_type const& a, f_type const& b) {
+		return a.second.get() < b.second.get();
+	});
 
 	for(auto const& f : fs)
 		f.first();
@@ -230,8 +231,9 @@ int main()
 	zmqLayer.wrap(debugger);
 
 	stored::Poller poller;
+	stored::PollableZmqLayer pollableZmq(zmqLayer, stored::Pollable::PollIn);
 
-	if((errno = poller.add(zmqLayer, nullptr, stored::Poller::PollIn))) {
+	if((errno = poller.add(pollableZmq))) {
 		printf("Cannot add to poller; %s (error %d)\n", zmq_strerror(errno), errno);
 		exit(1);
 	}
@@ -244,13 +246,14 @@ int main()
 		auto rem_us = rem.count();
 
 		if(rem_us <= 0) {
-			t += std::chrono::milliseconds((long long)(1.0e3f / store.frequency_Hz.get()));
+			t += std::chrono::milliseconds(
+				(long long)(1.0e3f / store.frequency_Hz.get()));
 			// This is where the magic takes place.
 			control();
 			continue;
 		}
 
-		if(poller.poll(std::max(0L, (long)rem_us)).empty()) {
+		if(poller.poll(std::max<int>(0, (int)(rem_us / 1000L))).empty()) {
 			switch(errno) {
 			case EINTR:
 			case EAGAIN:

@@ -15,9 +15,23 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 Added
 `````
 
-- Add support for ninja, and default to it in build scripts
+- Add support for ninja, and default to it in build scripts.
+- Migrate pylibstored from PySide2 to PySide6.
+- Using ``matplotlib`` for plotting signals by ``libstored.gui``.
+
+Changed
+```````
+
+- Restructured ``scripts`` directory into ``dist``.
+- Replace poller API.
+
+Removed
+```````
+
+- Ubuntu 18.04 support. PySide6 requires Ubuntu 20.04 or later.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.0.0...HEAD
+
 
 
 `1.0.0`_ - 2021-08-25

@@ -1,6 +1,4 @@
 @echo off
-set here=%~dp0
-pushd %here%\..
 
 net session > NUL 2> NUL
 if errorlevel 1 goto no_admin
@@ -28,9 +26,6 @@ set pkg=python3 tortoisegit git cmake ninja pkgconfiglite mingw doxygen.install 
 choco install -y --no-progress %pkg%
 if errorlevel 1 goto error
 
-choco upgrade -y --no-progress %pkg%
-if errorlevel 1 goto error
-
 where /q libcairo-2.dll > NUL 2> NUL
 if errorlevel 1 goto no_cairo
 goto have_cairo
@@ -46,17 +41,8 @@ call refreshenv
 python.exe -m ensurepip
 if errorlevel 1 goto error
 
-python.exe -m pip install --upgrade setuptools pip
-if errorlevel 1 goto error
-
-python.exe -m pip install --upgrade wheel
-if errorlevel 1 goto error
-
-python.exe -m pip install --upgrade -r scripts\requirements.txt
-if errorlevel 1 goto error
 
 :done
-popd
 exit /b 0
 
 :error
@@ -64,7 +50,5 @@ echo.
 echo Error occurred, stopping
 echo.
 :silent_error
-popd
 pause
 exit /b 1
-

@@ -4,17 +4,17 @@
  */
 
 #ifndef LIBSTORED_CONFIG_H
-#  error Do not include this file directly, include <stored> instead.
+#	error Do not include this file directly, include <stored> instead.
 #endif
 
 #ifndef STORED_CONFIG_H
-#define STORED_CONFIG_H
+#	define STORED_CONFIG_H
 
-#ifdef __cplusplus
-#include <cstdio>
-#include <cstdlib>
-#include <functional>
-#include <typeinfo>
+#	ifdef __cplusplus
+#		include <cstdio>
+#		include <cstdlib>
+#		include <functional>
+#		include <typeinfo>
 
 class TestAllocatorBase {
 public:
@@ -64,10 +64,12 @@ public:
 	TestAllocator() noexcept = default;
 
 	template <typename A>
-	TestAllocator(TestAllocator<A> const&) noexcept {}
+	TestAllocator(TestAllocator<A> const&) noexcept
+	{}
 
 	template <typename A>
-	TestAllocator(TestAllocator<A>&&) noexcept {}
+	TestAllocator(TestAllocator<A>&&) noexcept
+	{}
 
 	value_type* allocate(size_t n)
 	{
@@ -89,18 +91,23 @@ public:
 		free(p);
 	}
 
-	constexpr bool operator==(TestAllocator&) noexcept { return true; }
-	constexpr bool operator!=(TestAllocator&) noexcept { return false; }
+	constexpr bool operator==(TestAllocator&) noexcept
+	{
+		return true;
+	}
+	constexpr bool operator!=(TestAllocator&) noexcept
+	{
+		return false;
+	}
 };
 
 namespace stored {
-	struct Config : public DefaultConfig {
-
-		template <typename T>
-		struct Allocator {
-			typedef TestAllocator<T> type;
-		};
+struct Config : public DefaultConfig {
+	template <typename T>
+	struct Allocator {
+		typedef TestAllocator<T> type;
 	};
-} // namespace
-#endif // __cplusplus
-#endif // STORED_CONFIG_H
+};
+} // namespace stored
+#	endif // __cplusplus
+#endif	       // STORED_CONFIG_H

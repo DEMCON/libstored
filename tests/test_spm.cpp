@@ -1,6 +1,6 @@
 /*
  * libstored, distributed debuggable data stores.
- * Copyright (C) 2020-2021  Jochem Rutgers
+ * Copyright (C) 2020-2022  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -55,8 +55,8 @@ TEST(ScrachPad, Alloc)
 template <size_t S>
 void spmInfo(stored::ScratchPad<S>& spm)
 {
-	printf("%p: buffer=%p size=%zu cap=%zu max=%zu chunks=%zu\n",
-		&spm, spm.template alloc<char>(0), spm.size(), spm.capacity(), spm.max(), spm.chunks());
+	printf("%p: buffer=%p size=%zu cap=%zu max=%zu chunks=%zu\n", &spm,
+	       spm.template alloc<char>(0), spm.size(), spm.capacity(), spm.max(), spm.chunks());
 }
 
 TEST(ScratchPad, Reset)
@@ -195,7 +195,7 @@ TEST(ScratchPad, Stress)
 	for(int j = 0; j < 100; j++) {
 		spm.reset();
 		for(int i = 0; i < 1000; i++) {
-			auto c = spm.alloc<char>(rand() % 19, rand() % 31);
+			auto c = spm.alloc<char>((size_t)(rand() % 19), (size_t)(rand() % 31));
 			EXPECT_NE(c, nullptr);
 			if(rand() % 128 == 0)
 				spm.reset();
@@ -206,4 +206,3 @@ TEST(ScratchPad, Stress)
 }
 
 } // namespace
-

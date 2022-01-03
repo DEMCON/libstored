@@ -1,5 +1,5 @@
 # libstored, distributed debuggable data stores.
-# Copyright (C) 2020-2021  Jochem Rutgers
+# Copyright (C) 2020-2022  Jochem Rutgers
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -59,6 +59,7 @@ function(libstored_lib libprefix libpath)
 	endforeach()
 
 	target_include_directories(${libprefix}libstored PUBLIC
+		$<BUILD_INTERFACE:${LIBSTORED_PREPEND_INCLUDE_DIRECTORIES}>
 		$<BUILD_INTERFACE:${libstored_dir}/include>
 		$<BUILD_INTERFACE:${libpath}/include>
 		$<INSTALL_INTERFACE:include>
@@ -66,11 +67,12 @@ function(libstored_lib libprefix libpath)
 
 	string(REGEX REPLACE "^(.*)-$" "stored-\\1" libname ${libprefix})
 	set_target_properties(${libprefix}libstored PROPERTIES OUTPUT_NAME ${libname})
+	target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_NAME=${libname})
 
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		target_compile_definitions(${libprefix}libstored PUBLIC -D_DEBUG)
+		target_compile_definitions(${libprefix}libstored PUBLIC -D_DEBUG=1)
 	else()
-		target_compile_definitions(${libprefix}libstored PUBLIC -DNDEBUG)
+		target_compile_definitions(${libprefix}libstored PUBLIC -DNDEBUG=1)
 	endif()
 
 	if(MSVC)
@@ -78,24 +80,27 @@ function(libstored_lib libprefix libpath)
 	else()
 		target_compile_options(${libprefix}libstored PRIVATE -Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion -ffunction-sections -fdata-sections)
 	endif()
+	if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		target_compile_options(${libprefix}libstored PRIVATE -Wno-defaulted-function-deleted)
+	endif()
 
 	if(LIBSTORED_DRAFT_API)
-		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_DRAFT_API)
+		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_DRAFT_API=1)
 	endif()
 
 	CHECK_INCLUDE_FILE_CXX("valgrind/memcheck.h" LIBSTORED_HAVE_VALGRIND)
 	if(LIBSTORED_HAVE_VALGRIND)
-		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_HAVE_VALGRIND)
+		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_HAVE_VALGRIND=1)
 	endif()
 
 	if(TARGET libzth)
 		message(STATUS "Enable Zth integration for ${libprefix}libstored")
-		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_HAVE_ZTH)
+		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_HAVE_ZTH=1)
 		target_link_libraries(${libprefix}libstored PUBLIC libzth)
 	endif()
 
 	if(LIBSTORED_HAVE_LIBZMQ)
-		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_HAVE_ZMQ)
+		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_HAVE_ZMQ=1)
 		target_link_libraries(${libprefix}libstored PUBLIC libzmq)
 	endif()
 
@@ -104,93 +109,86 @@ function(libstored_lib libprefix libpath)
 	endif()
 
 	if(LIBSTORED_HAVE_HEATSHRINK)
-		target_compile_definitions(${libprefix}libstored PUBLIC STORED_HAVE_HEATSHRINK)
+		target_compile_definitions(${libprefix}libstored PUBLIC -DSTORED_HAVE_HEATSHRINK=1)
 		target_link_libraries(${libprefix}libstored PUBLIC heatshrink)
 	endif()
 
 	if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 		find_program(CLANG_TIDY_EXE NAMES "clang-tidy" DOC "Path to clang-tidy executable")
-		if(CLANG_TIDY_EXE AND (NOT CMAKE_CXX_STANDARD OR NOT CMAKE_CXX_STANDARD EQUAL 98))
-			# It seems that if clang is not installed, clang-tidy doesn't work properly.
-			find_program(CLANG_EXE NAMES "clang" DOC "Path to clang executable")
-			if(CLANG_EXE AND LIBSTORED_DEV)
-				option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ${LIBSTORED_DEV_OPTION})
-			else()
-				option(LIBSTORED_CLANG_TIDY "Run clang-tidy" OFF)
-			endif()
+		if(CLANG_TIDY_EXE AND LIBSTORED_CLANG_TIDY)
+			message(STATUS "Enabled clang-tidy for ${libprefix}libstored")
 
-			if(LIBSTORED_CLANG_TIDY)
-				message(STATUS "Enabled clang-tidy for ${libprefix}libstored")
+			string(CONCAT CLANG_TIDY_CHECKS "-checks="
+				"bugprone-*,"
+				"-bugprone-macro-parentheses,"
 
-				string(CONCAT CLANG_TIDY_CHECKS "-checks="
-					"bugprone-*,"
-					"clang-analyzer-*,"
-					"concurrency-*,"
+				"clang-analyzer-*,"
+				"concurrency-*,"
 
-					"cppcoreguidelines-*,"
-					"-cppcoreguidelines-avoid-c-arrays,"
-					"-cppcoreguidelines-avoid-goto,"
-					"-cppcoreguidelines-avoid-magic-numbers,"
-					"-cppcoreguidelines-explicit-virtual-functions,"
-					"-cppcoreguidelines-macro-usage,"
-					"-cppcoreguidelines-pro-bounds-array-to-pointer-decay,"
-					"-cppcoreguidelines-pro-bounds-pointer-arithmetic,"
-					"-cppcoreguidelines-pro-type-union-access,"
-					"-cppcoreguidelines-pro-type-vararg,"
+				"cppcoreguidelines-*,"
+				"-cppcoreguidelines-avoid-c-arrays,"
+				"-cppcoreguidelines-avoid-goto,"
+				"-cppcoreguidelines-avoid-magic-numbers,"
+				"-cppcoreguidelines-explicit-virtual-functions,"
+				"-cppcoreguidelines-macro-usage,"
+				"-cppcoreguidelines-pro-bounds-array-to-pointer-decay,"
+				"-cppcoreguidelines-pro-bounds-pointer-arithmetic,"
+				"-cppcoreguidelines-pro-type-union-access,"
+				"-cppcoreguidelines-pro-type-vararg,"
 
-					"hicpp-*,"
-					"-hicpp-avoid-c-arrays,"
-					"-hicpp-avoid-goto,"
-					"-hicpp-braces-around-statements,"
-					"-hicpp-member-init,"
-					"-hicpp-no-array-decay,"
-					"-hicpp-no-malloc,"
-					"-hicpp-uppercase-literal-suffix,"
-					"-hicpp-use-auto,"
-					"-hicpp-use-override,"
-					"-hicpp-vararg,"
+				"hicpp-*,"
+				"-hicpp-avoid-c-arrays,"
+				"-hicpp-avoid-goto,"
+				"-hicpp-braces-around-statements,"
+				"-hicpp-member-init,"
+				"-hicpp-no-array-decay,"
+				"-hicpp-no-malloc,"
+				"-hicpp-uppercase-literal-suffix,"
+				"-hicpp-use-auto,"
+				"-hicpp-use-override,"
+				"-hicpp-vararg,"
 
-					"misc-*,"
-					"-misc-no-recursion,"
-					"-misc-non-private-member-variables-in-classes,"
+				"misc-*,"
+				"-misc-no-recursion,"
+				"-misc-non-private-member-variables-in-classes,"
+				"-misc-macro-parentheses,"
 
-					"readability-*,"
-					"-readability-braces-around-statements,"
-					"-readability-convert-member-functions-to-static,"
-					"-readability-else-after-return,"
-					"-readability-function-cognitive-complexity,"
-					"-readability-implicit-bool-conversion,"
-					"-readability-magic-numbers,"
-					"-readability-make-member-function-const,"
-					"-readability-redundant-access-specifiers,"
-					"-readability-uppercase-literal-suffix,"
+				"readability-*,"
+				"-readability-braces-around-statements,"
+				"-readability-convert-member-functions-to-static,"
+				"-readability-else-after-return,"
+				"-readability-function-cognitive-complexity,"
+				"-readability-implicit-bool-conversion,"
+				"-readability-magic-numbers,"
+				"-readability-make-member-function-const,"
+				"-readability-redundant-access-specifiers,"
+				"-readability-uppercase-literal-suffix,"
 
-					"performance-*,"
-					"-performance-no-int-to-ptr," # Especially on WIN32 HANDLEs.
+				"performance-*,"
+				"-performance-no-int-to-ptr," # Especially on WIN32 HANDLEs.
 
-					"portability-*,"
-				)
-				set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
-					"--extra-arg=-I${libstored_dir}/include"
-					"--extra-arg=-I${CMAKE_BINARY_DIR}/include"
-					"--extra-arg=-I${libpath}/include"
-					"--header-filter=.*include/libstored.*"
-					"--warnings-as-errors=*"
-					"--extra-arg=-Wno-unknown-warning-option"
-				)
+				"portability-*,"
+			)
+			set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
+				"--extra-arg=-I${libstored_dir}/include"
+				"--extra-arg=-I${CMAKE_BINARY_DIR}/include"
+				"--extra-arg=-I${libpath}/include"
+				"--header-filter=.*include/libstored.*"
+				"--warnings-as-errors=*"
+				"--extra-arg=-Wno-unknown-warning-option"
+			)
 
-				set_target_properties(${libprefix}libstored
-					PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}" )
-			else()
-				set_target_properties(${libprefix}libstored
-					PROPERTIES CXX_CLANG_TIDY "")
-			endif()
+			set_target_properties(${libprefix}libstored
+				PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}" )
+		else()
+			set_target_properties(${libprefix}libstored
+				PROPERTIES CXX_CLANG_TIDY "")
 		endif()
 	endif()
 
 	if(LIBSTORED_ENABLE_ASAN)
 		target_compile_options(${libprefix}libstored PRIVATE -fsanitize=address -fno-omit-frame-pointer)
-		target_compile_definitions(${libprefix}libstored PRIVATE -DSTORED_ENABLE_ASAN)
+		target_compile_definitions(${libprefix}libstored PRIVATE -DSTORED_ENABLE_ASAN=1)
 		if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
 			target_link_options(${libprefix}libstored INTERFACE -fsanitize=address)
 		else()
@@ -200,7 +198,7 @@ function(libstored_lib libprefix libpath)
 
 	if(LIBSTORED_ENABLE_LSAN)
 		target_compile_options(${libprefix}libstored PRIVATE -fsanitize=leak -fno-omit-frame-pointer)
-		target_compile_definitions(${libprefix}libstored PRIVATE -DSTORED_ENABLE_LSAN)
+		target_compile_definitions(${libprefix}libstored PRIVATE -DSTORED_ENABLE_LSAN=1)
 		if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
 			target_link_options(${libprefix}libstored INTERFACE -fsanitize=leak)
 		else()
@@ -210,7 +208,7 @@ function(libstored_lib libprefix libpath)
 
 	if(LIBSTORED_ENABLE_UBSAN)
 		target_compile_options(${libprefix}libstored PRIVATE -fsanitize=undefined -fno-omit-frame-pointer)
-		target_compile_definitions(${libprefix}libstored PRIVATE -DSTORED_ENABLE_UBSAN)
+		target_compile_definitions(${libprefix}libstored PRIVATE -DSTORED_ENABLE_UBSAN=1)
 		if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
 			target_link_options(${libprefix}libstored INTERFACE -fsanitize=undefined)
 		else()
@@ -311,7 +309,7 @@ function(libstored_generate target) # add all other models as varargs
 		endif()
 	endif()
 
-	if(LIBSTORED_DOCUMENTATION)
+	if(LIBSTORED_DOCUMENTATION AND TARGET doc)
 		add_dependencies(doc ${target}-libstored-generate)
 	endif()
 

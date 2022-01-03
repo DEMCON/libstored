@@ -1,6 +1,6 @@
 /*
  * libstored, distributed debuggable data stores.
- * Copyright (C) 2020-2021  Jochem Rutgers
+ * Copyright (C) 2020-2022  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -16,12 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "TestStore.h"
+#define STORED_NO_DEPRECATED
+
 #include "libstored/poller.h"
+#include "TestStore.h"
 #include "gtest/gtest.h"
 
 #ifdef STORED_HAVE_ZMQ
-#  include <zmq.h>
+#	include <zmq.h>
 #endif
 
 namespace {
@@ -38,7 +40,7 @@ TEST(Poller, Win)
 	stored::Poller poller;
 
 	// Test HANDLE
-	poller.addh(e, (void*)1, stored::Poller::PollIn);
+	EXPECT_EQ(poller.addh(e, (void*)1, stored::Poller::PollIn), 0);
 
 	auto const* res = &poller.poll(0);
 	EXPECT_NE(errno, 0);
@@ -47,7 +49,6 @@ TEST(Poller, Win)
 	EXPECT_EQ(SetEvent(e), TRUE);
 	res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
-	EXPECT_EQ(res->at(0).handle, e);
 	EXPECT_EQ(res->at(0).user_data, (void*)1);
 
 	// Test fd (non-socket)
@@ -84,7 +85,7 @@ TEST(Poller, Zmq)
 	auto const* res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
 	EXPECT_EQ(res->at(0).user_data, (void*)2);
-	EXPECT_EQ(res->at(0).events, (stored::Poller::events_t)stored::Poller::PollOut);
+	EXPECT_EQ(res->at(0).revents, (stored::Poller::events_t)stored::Poller::PollOut);
 
 	zmq_send(req, "Hi", 2, 0);
 
@@ -106,4 +107,3 @@ TEST(Poller, Zmq)
 #endif // STORED_HAVE_ZMQ
 
 } // namespace
-

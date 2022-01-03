@@ -1,5 +1,5 @@
 # libstored, distributed debuggable data stores.
-# Copyright (C) 2020-2021  Jochem Rutgers
+# Copyright (C) 2020-2022  Jochem Rutgers
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -27,10 +27,11 @@ import heatshrink2
 import keyword
 import weakref
 import random
+import locale
 
-from PySide2.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, QLocale, \
+from PySide6.QtCore import QObject, Signal, Slot, Property, QTimer, Qt, QLocale, \
     QEvent, QCoreApplication, QStandardPaths, QSocketNotifier, QEventLoop, SIGNAL
-from PySide2.QtGui import QKeyEvent
+from PySide6.QtGui import QKeyEvent
 
 from .zmq_server import ZmqServer
 from .csv import CsvExport
@@ -486,6 +487,16 @@ class Object(QObject):
             ',' if p == ',' else '.')
         QCoreApplication.sendEvent(recv, ev)
 
+    def _interpret_int(self, value):
+        # Remove all group separators. They are irrelevant, but prevent
+        # parsing.
+        gs = self.locale.groupSeparator()
+        if gs != '':
+            value = value.replace(gs, '')
+
+        x = int(value, 0)
+        return x
+
     def _interpret_float(self, value):
         # Remove all group separators. They are irrelevant, but prevent
         # parsing when not at the right place.
@@ -501,14 +512,14 @@ class Object(QObject):
     def interpret(self, value):
         if isinstance(value,str):
             value = {
-                self.Int8: lambda x: int(x,0),
-                self.Uint8: lambda x: int(x,0),
-                self.Int16: lambda x: int(x,0),
-                self.Uint16: lambda x: int(x,0),
-                self.Int32: lambda x: int(x,0),
-                self.Uint32: lambda x: int(x,0),
-                self.Int64: lambda x: int(x,0),
-                self.Uint64: lambda x: int(x,0),
+                self.Int8: self._interpret_int,
+                self.Uint8: self._interpret_int,
+                self.Int16: self._interpret_int,
+                self.Uint16: self._interpret_int,
+                self.Int32: self._interpret_int,
+                self.Uint32: self._interpret_int,
+                self.Int64: self._interpret_int,
+                self.Uint64: self._interpret_int,
                 self.Float: self._interpret_float,
                 self.Double: self._interpret_float,
                 self.Pointer32: lambda x: int(x,0),
@@ -553,6 +564,12 @@ class Object(QObject):
 
     valueString = _Property(str, _valueString_get, _valueString_set, notify=valueStringChanged)
 
+    def _format_int(self, x):
+        # QLocale does not support ints larger than 32-bit, so fallback to
+        # python locale formatting.  It should be the same, though.
+        locale.setlocale(locale.LC_NUMERIC, '')
+        return f'{x:n}'
+
     def _format_get(self):
         return self._format
 
@@ -569,9 +586,11 @@ class Object(QObject):
         elif f == 'bytes':
             self._formatter = self._formatBytes
         elif self._type & ~self.FlagFunction == self.Float:
-            self._formatter = lambda x: self.locale.toString(x, 'g', prec=6)
+            self._formatter = lambda x: self.locale.toString(x, 'g', 6)
         elif self._type & ~self.FlagFunction == self.Double:
-            self._formatter = lambda x: self.locale.toString(x, 'g', prec=15)
+            self._formatter = lambda x: self.locale.toString(x, 'g', 15)
+        elif self._type & self.FlagInt:
+            self._formatter = self._format_int
         else:
             self._formatter = str
 

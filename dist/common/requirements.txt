@@ -1,13 +1,17 @@
+-r requirements-minimal.txt
+
+# Packages for (py)libstored
 setuptools >= 38.6.0
 wheel >= 0.31.0
-jinja2
-textx
 pyzmq
-pyside2
+PySide6
 pyserial
 natsort
 crcmod
 heatshrink2
+matplotlib>=3.5.0
+
+# Packages for documentation.
 Sphinx<4.1.0
 sphinx-rtd-theme
 sphinxcontrib-plantuml

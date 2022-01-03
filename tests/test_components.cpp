@@ -1,6 +1,6 @@
 /*
  * libstored, distributed debuggable data stores.
- * Copyright (C) 2020-2021  Jochem Rutgers
+ * Copyright (C) 2020-2022  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -70,7 +70,8 @@ TEST(Amplifier, Ambiguous)
 {
 	stored::TestStore store;
 	// Note that enable is not passed to objects(), so it is not used by amp.
-	constexpr auto amp_o = stored::Amplifier<stored::TestStore>::objects<'g','O'>("/ambiguous amp/");
+	constexpr auto amp_o =
+		stored::Amplifier<stored::TestStore>::objects<'g', 'O'>("/ambiguous amp/");
 	stored::Amplifier<stored::TestStore, amp_o.flags()> amp{amp_o, store};
 
 	EXPECT_FLOAT_EQ(amp(1.0f), -1.0f);
@@ -80,7 +81,8 @@ TEST(Amplifier, Ambiguous)
 TEST(Amplifier, Double)
 {
 	stored::TestStore store;
-	constexpr auto amp_o = stored::Amplifier<stored::TestStore, 0, double>::objects<'g'>("/double amp/");
+	constexpr auto amp_o =
+		stored::Amplifier<stored::TestStore, 0, double>::objects<'g'>("/double amp/");
 	stored::Amplifier<stored::TestStore, amp_o.flags(), double> amp{amp_o, store};
 
 	EXPECT_DOUBLE_EQ(amp(1.0), -3.0);
@@ -89,8 +91,9 @@ TEST(Amplifier, Double)
 TEST(Amplifier, Assign)
 {
 	stored::TestStore store;
-	constexpr auto amp1_o = stored::Amplifier<stored::TestStore>::objects<'g','O'>("/amp/");
-	constexpr auto amp2_o = stored::Amplifier<stored::TestStore>::objects<'g','O'>("/small amp/");
+	constexpr auto amp1_o = stored::Amplifier<stored::TestStore>::objects<'g', 'O'>("/amp/");
+	constexpr auto amp2_o =
+		stored::Amplifier<stored::TestStore>::objects<'g', 'O'>("/small amp/");
 	static_assert(amp1_o.flags() == amp2_o.flags(), "");
 
 	stored::Amplifier<stored::TestStore, amp1_o.flags()> amp;

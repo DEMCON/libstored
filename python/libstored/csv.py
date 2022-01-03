@@ -1,5 +1,5 @@
 # libstored, distributed debuggable data stores.
-# Copyright (C) 2020-2021  Jochem Rutgers
+# Copyright (C) 2020-2022  Jochem Rutgers
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -21,7 +21,7 @@ import queue
 import logging
 import os
 
-from PySide2.QtCore import QObject, Signal, Slot, Property
+from PySide6.QtCore import QObject, Signal, Slot, Property
 
 def generateFilename(filename=None, base=None, addTimestamp=False, ext='.csv', now=None):
     if filename is None and base is None:

@@ -1,5 +1,5 @@
 # libstored, distributed debuggable data stores.
-# Copyright (C) 2020-2021  Jochem Rutgers
+# Copyright (C) 2020-2022  Jochem Rutgers
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +16,8 @@
 
 cmake_minimum_required(VERSION 3.1)
 project(libstored)
+
+cmake_policy(VERSION 3.1)
 
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
@@ -34,7 +36,7 @@ if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-	set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/dist" CACHE PATH "Override default install path" FORCE)
+	set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/deploy" CACHE PATH "Override default install path" FORCE)
 endif()
 
 message(STATUS "Install prefix set to ${CMAKE_INSTALL_PREFIX}")
@@ -54,23 +56,14 @@ option(LIBSTORED_INSTALL_STORE_LIBS "Install generated static libstored librarie
 option(LIBSTORED_DEV "Enable by default development related build options" OFF)
 if(LIBSTORED_DEV)
 	set(LIBSTORED_DEV_OPTION ON)
+	set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE)
 else()
 	set(LIBSTORED_DEV_OPTION OFF)
 endif()
 
-# Should be defaulted to OFF some day.
-option(LIBSTORED_DRAFT_API "Enable draft API" ON)
-if(LIBSTORED_DRAFT_API)
-	message(STATUS "Enable libstored draft API")
-endif()
+option(LIBSTORED_PYLIBSTORED "Build python libstored package" ON)
 
-option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" OFF)
-option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" OFF)
-option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" OFF)
-
-add_subdirectory(version)
-
-if(WIN32)
+if(CMAKE_HOST_WIN32 OR NOT LIBSTORED_PYLIBSTORED)
 	# The documentation needs wavedrom (via sphinx), but sphinxcontrib-wavedrom
 	# needs cairo.  In turn, that package needs libcairo-2.dll (64-bit,
 	# matching python's word size), which cannot be installed automatically by
@@ -80,11 +73,86 @@ else()
 	option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" ON)
 endif()
 
-if(LIBSTORED_DOCUMENTATION)
+option(LIBSTORED_VENV "Create a python venv" ON)
+if(LIBSTORED_VENV)
+	message(STATUS "Checking venv...")
+	if(CMAKE_HOST_UNIX)
+		if(LIBSTORED_PYLIBSTORED OR LIBSTORED_DOCUMENTATION)
+			set(venv_check "check")
+		else()
+			set(venv_check "check-minimal")
+		endif()
+		# Force CC and CXX to default, in case we are cross-compiling
+		# and compiling wheels for the venv...
+		execute_process(
+			COMMAND ${CMAKE_COMMAND} -E env --unset=CC --unset=CXX ${PROJECT_SOURCE_DIR}/dist/common/venv.sh ${venv_check}
+			RESULT_VARIABLE ret)
+		list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_SOURCE_DIR}/dist/.venv/bin")
+	elseif(CMAKE_HOST_WIN32)
+		execute_process(
+			COMMAND ${CMAKE_COMMAND} -E env --unset=CC --unset=CXX ${PROJECT_SOURCE_DIR}/dist/win32/venv.cmd check
+			RESULT_VARIABLE ret)
+		list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_SOURCE_DIR}/dist/.venv/Scripts")
+	else()
+		message(FATAL_ERROR "Don't know how to create a venv.")
+	endif()
+	if(ret EQUAL "2")
+		message(FATAL_ERROR "Cannot create venv")
+	endif()
+endif()
+
+# Should be defaulted to OFF some day.
+option(LIBSTORED_DRAFT_API "Enable draft API" ON)
+if(LIBSTORED_DRAFT_API)
+	message(STATUS "Enable libstored draft API")
+endif()
+
+if(MINGW OR MSVC)
+	set(LIBSTORED_ENABLE_ASAN_DEFAULT NO)
+	set(LIBSTORED_ENABLE_LSAN_DEFAULT NO)
+	set(LIBSTORED_ENABLE_UBSAN_DEFAULT NO)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
+	set(LIBSTORED_ENABLE_ASAN_DEFAULT ${LIBSTORED_DEV_OPTION})
+	set(LIBSTORED_ENABLE_LSAN_DEFAULT NO)
+	set(LIBSTORED_ENABLE_UBSAN_DEFAULT ${LIBSTORED_DEV_OPTION})
+else()
+	set(LIBSTORED_ENABLE_ASAN_DEFAULT ${LIBSTORED_DEV_OPTION})
+	set(LIBSTORED_ENABLE_LSAN_DEFAULT ${LIBSTORED_DEV_OPTION})
+	set(LIBSTORED_ENABLE_UBSAN_DEFAULT ${LIBSTORED_DEV_OPTION})
+endif()
+
+option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" ${LIBSTORED_ENABLE_ASAN_DEFAULT})
+option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" ${LIBSTORED_ENABLE_LSAN_DEFAULT})
+option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" ${LIBSTORED_ENABLE_UBSAN_DEFAULT})
+
+set(LIBSTORED_CLANG_TIDY_DEFAULT OFF)
+
+if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
+	find_program(CLANG_TIDY_EXE NAMES "clang-tidy" DOC "Path to clang-tidy executable")
+	if(	# We must have clang-tidy.
+		CLANG_TIDY_EXE AND
+		# We must compile for C++11 or later...
+		(NOT CMAKE_CXX_STANDARD OR NOT CMAKE_CXX_STANDARD EQUAL 98) AND
+		# ...except when running in Windows, which only supports C++14 or later.
+		(NOT WIN32 OR NOT CMAKE_CXX_STANDARD EQUAL 11)
+	)
+		# It seems that if clang is not installed, clang-tidy doesn't work properly.
+		find_program(CLANG_EXE NAMES "clang" DOC "Path to clang executable")
+		if(CLANG_EXE AND LIBSTORED_DEV)
+			set(LIBSTORED_CLANG_TIDY_DEFAULT ${LIBSTORED_DEV_OPTION})
+		endif()
+	endif()
+endif()
+
+option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ${LIBSTORED_CLANG_TIDY_DEFAULT})
+
+add_subdirectory(version)
+
+if(LIBSTORED_DOCUMENTATION AND LIBSTORED_PYLIBSTORED)
 	add_subdirectory(sphinx)
 endif()
 
-if(WIN32)
+if(CMAKE_HOST_WIN32)
 	find_program(PYTHON_EXECUTABLE python)
 else()
 	find_program(PYTHON_EXECUTABLE python3)
@@ -142,8 +210,17 @@ if(LIBSTORED_EXAMPLES)
 	add_subdirectory(examples)
 endif()
 
-option(LIBSTORED_PIP_INSTALL_USER "Run pip install with --user flag when installing wheel files" ON)
-add_subdirectory(python)
+if(LIBSTORED_VENV)
+	set(LIBSTORED_PIP_INSTALL_USER_DEFAULT OFF)
+else()
+	set(LIBSTORED_PIP_INSTALL_USER_DEFAULT ON)
+endif()
+
+option(LIBSTORED_PIP_INSTALL_USER "Run pip install with --user flag when installing wheel files" ${LIBSTORED_PIP_INSTALL_USER_DEFAULT})
+
+if(LIBSTORED_PYLIBSTORED)
+	add_subdirectory(python)
+endif()
 
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0")
 	if(CMAKE_CROSSCOMPILING)
@@ -201,6 +278,7 @@ if(CPPCHECK_CMD)
 			--quiet
 			--suppressions-list=${CMAKE_CURRENT_SOURCE_DIR}/.cppcheck_suppr
 			--error-exitcode=1
+			-DCPPCHECK
 #			--xml
 			-I include
 			${CPPCHECK_EXAMPLES}
@@ -218,4 +296,8 @@ if(CPPCHECK_CMD)
 	if(LIBSTORED_CPPCHECK)
 		add_custom_target(libstored-cppcheck-all ALL DEPENDS libstored-cppcheck)
 	endif()
+endif()
+
+if(LIBSTORED_DIST_DIR)
+	add_subdirectory(${LIBSTORED_DIST_DIR})
 endif()

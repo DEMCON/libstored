@@ -1,5 +1,5 @@
 # libstored, distributed debuggable data stores.
-# Copyright (C) 2020-2021  Jochem Rutgers
+# Copyright (C) 2020-2022  Jochem Rutgers
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -17,6 +17,7 @@
 # The value will be appended to a STORED_POLL_ define.
 set(LIBSTORED_POLL "AUTO" CACHE STRING "Poll method")
 
+				option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ${LIBSTORED_DEV_OPTION})
 set(LIBSTORED_CLANG_TIDY "OFF")
 set(LIBSTORED_INSTALL_STORE_LIBS "OFF")
 set(LIBSTORED_DRAFT_API "ON")
@@ -39,6 +40,14 @@ else()
 		set(LIBSTORED_ENABLE_UBSAN ON)
 		add_compile_options(-fno-sanitize-recover=undefined)
 	endif()
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+	add_compile_options(-Wno-defaulted-function-deleted)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10)
+	add_compile_options(-Wno-array-bounds)
 endif()
 
 if(APPLE)
@@ -74,14 +83,14 @@ if(LIBSTORED_ENABLE_UBSAN AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	target_compile_options(teststore-libstored PUBLIC -fno-sanitize=vptr)
 endif()
 
-macro(libstored_add_test TESTNAME)
+function(libstored_add_test TESTNAME)
 	add_executable(${TESTNAME} ${ARGN} test_base.cpp)
 	target_include_directories(${TESTNAME} BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 	target_link_libraries(${TESTNAME} gtest gmock gtest_main teststore-libstored)
-	gtest_discover_tests(${TESTNAME} TEST_LIST tests)
-	set_tests_properties(${tests} PROPERTIES TIMEOUT 60)
 	set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
-endmacro()
+	gtest_add_tests(TARGET ${TESTNAME} TEST_LIST tests)
+	set_tests_properties(${tests} PROPERTIES TIMEOUT 60)
+endfunction()
 
 libstored_add_test(test_allocator test_allocator.cpp)
 libstored_add_test(test_types test_types.cpp)
@@ -95,6 +104,8 @@ libstored_add_test(test_debugger test_debugger.cpp)
 libstored_add_test(test_synchronizer test_synchronizer.cpp)
 libstored_add_test(test_fifo test_fifo.cpp)
 libstored_add_test(test_components test_components.cpp)
+libstored_add_test(test_weak test_weak.cpp)
+libstored_add_test(test_weak_override test_weak_override.cpp)
 if(WIN32)
 	libstored_add_test(test_poller test_poller_win.cpp)
 	if(LIBSTORED_HAVE_LIBZMQ)
@@ -177,7 +188,7 @@ else()
 	set(ENV_PATH_SEP ":")
 endif()
 
-if(LIBSTORED_HAVE_LIBZMQ AND LIBSTORED_EXAMPLES)
+if(LIBSTORED_HAVE_LIBZMQ AND LIBSTORED_EXAMPLES AND LIBSTORED_PYLIBSTORED)
 	add_test(
 		NAME ZmqClient
 		COMMAND ${CMAKE_COMMAND} -E env

@@ -2,7 +2,7 @@
 
 #ifdef STORED_COMPILER_MSVC
 
-#include <stddef.h>
+#	include <stddef.h>
 
 int opterr = 1;
 int optopt = 0;
@@ -32,7 +32,8 @@ int getopt(int argc, char* const* argv, char const* options)
 
 	// Check if option exists.
 	int i = 0;
-	for(; options[i] && options[i] != optopt; i++);
+	for(; options[i] && options[i] != optopt; i++)
+		;
 
 	if(!options[i])
 		// Unknown.

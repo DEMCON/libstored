@@ -1,6 +1,6 @@
 /*
  * libstored, distributed debuggable data stores.
- * Copyright (C) 2020-2021  Jochem Rutgers
+ * Copyright (C) 2020-2022  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -16,8 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import QtQuick.Controls 2.12
-import QtQuick 2.12
+import QtQuick.Controls
+import QtQuick
 
 Measurement {
     readOnly: false
@@ -61,7 +61,7 @@ Measurement {
     Keys.forwardTo: decimalPointConversion
     Item {
         id: decimalPointConversion
-        Keys.onPressed: {
+        Keys.onPressed: (event) => {
             if(obj !== null && event.key == Qt.Key_Period && (event.modifiers & Qt.KeypadModifier)) {
                 event.accepted = true
                 obj.injectDecimalPoint(parent)

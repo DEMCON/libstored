@@ -1,5 +1,5 @@
 # libstored, distributed debuggable data stores.
-# Copyright (C) 2020-2021  Jochem Rutgers
+# Copyright (C) 2020-2022  Jochem Rutgers
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -25,6 +25,16 @@ else()
 		endif()
 		set(LIBSTORED_ENABLE_UBSAN ON)
 	endif()
+endif()
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+	add_compile_options(-Wno-defaulted-function-deleted)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 11)
+	# gcc's updated -Warray-bounds seem to give a lot of bogus errors.
+	# In this case, assigning to uint64_t& value in __time_s() seems to trip it.
+	# Ignore this warning, for now.
+	add_compile_options(-Wno-array-bounds)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT APPLE)

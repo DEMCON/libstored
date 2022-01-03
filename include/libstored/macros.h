@@ -2,7 +2,7 @@
 #define LIBSTORED_MACROS_H
 /*
  * libstored, distributed debuggable data stores.
- * Copyright (C) 2020-2021  Jochem Rutgers
+ * Copyright (C) 2020-2022  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -24,18 +24,18 @@
 // Preamble
 
 #ifdef STORED_HAVE_ZTH
-#  include <libzth/macros.h>
+#	include <libzth/macros.h>
 #endif
 
 #ifdef _DEBUG
-#  undef NDEBUG
+#	undef NDEBUG
 #endif
 #if !defined(_DEBUG) && !defined(NDEBUG)
-#  define _DEBUG
+#	define _DEBUG
 #endif
 
 #ifdef __cplusplus
-#  define STORED_cplusplus __cplusplus
+#	define STORED_cplusplus __cplusplus
 #endif
 
 
@@ -45,75 +45,84 @@
 //
 
 #ifdef __GNUC__
-#  ifdef __ARMCC_VERSION
-#    define STORED_COMPILER_ARMCC
+#	ifdef __ARMCC_VERSION
+#		define STORED_COMPILER_ARMCC
 // This is ARMCC/Keil
-#    pragma clang diagnostic ignored "-Wold-style-cast"
-#    pragma clang diagnostic ignored "-Wused-but-marked-unused"
-#    pragma clang diagnostic ignored "-Wpadded"
-#    if STORED_cplusplus >= 201103L
-#      pragma clang diagnostic ignored "-Wc++98-compat"
-#    endif
-#  elif defined(__clang__)
-#    define STORED_COMPILER_CLANG
+#		pragma clang diagnostic ignored "-Wold-style-cast"
+#		pragma clang diagnostic ignored "-Wused-but-marked-unused"
+#		pragma clang diagnostic ignored "-Wpadded"
+#		if STORED_cplusplus >= 201103L
+#			pragma clang diagnostic ignored "-Wc++98-compat"
+#		endif
+#	elif defined(__clang__)
+#		define STORED_COMPILER_CLANG
 // This is clang, which looks a lot like gcc
-#    pragma clang diagnostic ignored "-Wunused-local-typedef"
-#  else
-#    define STORED_COMPILER_GCC
+#		pragma clang diagnostic ignored "-Wunused-local-typedef"
+#	else
+#		define STORED_COMPILER_GCC
 // This is gcc
-#    if defined(__MINGW32__) || defined(__MINGW64__)
-#      define STORED_COMPILER_MINGW
-#    endif
-#  endif
-#  ifdef __cplusplus
-#    if __cplusplus < 201103L && !defined(decltype)
-#      define decltype(x) __typeof__(x) // Well, not really true when references are involved...
-#    endif
-#  endif
-#  ifndef _GNU_SOURCE
-#    define _GNU_SOURCE
-#  endif
-#  ifndef GCC_VERSION
-#    define GCC_VERSION (__GNUC__ * 10000L + __GNUC_MINOR__ * 100L + __GNUC_PATCHLEVEL__)
-#  endif
-#  ifndef UNUSED_PAR
-#    if STORED_cplusplus >= 201703L
-#      define UNUSED_PAR(name)	name [[maybe_unused]]
-#    else
-#      define UNUSED_PAR(name)	name __attribute__((unused))
-#    endif
-#  endif
+#		if defined(__MINGW32__) || defined(__MINGW64__)
+#			define STORED_COMPILER_MINGW
+#		endif
+#	endif
+#	ifdef __cplusplus
+#		if __cplusplus < 201103L && !defined(decltype)
+#			define decltype(x) \
+				__typeof__(x) // Well, not really true when references are
+					      // involved...
+#		endif
+#	endif
+#	ifndef _GNU_SOURCE
+#		define _GNU_SOURCE
+#	endif
+#	ifndef GCC_VERSION
+#		define GCC_VERSION \
+			(__GNUC__ * 10000L + __GNUC_MINOR__ * 100L + __GNUC_PATCHLEVEL__)
+#	endif
+#	ifndef UNUSED_PAR
+#		if STORED_cplusplus >= 201703L
+#			define UNUSED_PAR(name) name [[maybe_unused]]
+#		else
+#			define UNUSED_PAR(name) name __attribute__((unused))
+#		endif
+#	endif
+#	define STORED_DEPRECATED(msg) __attribute__((deprecated(msg)))
 #elif defined(_MSC_VER)
-#  define STORED_COMPILER_MSVC
-// MSVC always defines __cplusplus as 199711L, even though it actually compiles a different language version.
-#  ifdef __cplusplus
-#    undef STORED_cplusplus
-#    define STORED_cplusplus _MSVC_LANG
-#  endif
-#  ifndef UNUSED_PAR
-#    if STORED_cplusplus >= 201703L
-#      define UNUSED_PAR(name)	name [[maybe_unused]]
-#    elif defined(__clang__)
+#	define STORED_COMPILER_MSVC
+// MSVC always defines __cplusplus as 199711L, even though it actually compiles a different language
+// version.
+#	ifdef __cplusplus
+#		undef STORED_cplusplus
+#		define STORED_cplusplus _MSVC_LANG
+#	endif
+#	ifndef UNUSED_PAR
+#		if STORED_cplusplus >= 201703L
+#			define UNUSED_PAR(name) name [[maybe_unused]]
+#		elif defined(__clang__)
 // That's odd. Probably clang-tidy.
-#      define UNUSED_PAR(name)	name /* NOLINT(clang-diagnostic-unused-parameter,misc-unused-parameters) */
-#    else
-#      define UNUSED_PAR(name)	name
-#   endif
-#  endif
-#  define NOMINMAX
-#  define _USE_MATH_DEFINES
-#  pragma warning(disable: 4061 4068 4100 4127 4200 4201 4296 4324 4355 4459 4514 4571 4625 4626 4706 4710 4711 4774 4789 4820 5026 5027 5039 5045)
-#  if _MSC_VER >= 1925
-#    pragma warning(disable: 5204)
-#  endif
-#  include <BaseTsd.h>
+#			define UNUSED_PAR(name)                                                         \
+				name /* NOLINT(clang-diagnostic-unused-parameter,misc-unused-parameters) \
+				      */
+#		else
+#			define UNUSED_PAR(name) name
+#		endif
+#	endif
+#	define NOMINMAX
+#	define _USE_MATH_DEFINES
+#	pragma warning( \
+		disable : 4061 4068 4100 4127 4200 4201 4296 4324 4355 4459 4514 4571 4625 4626 4706 4710 4711 4774 4789 4820 5026 5027 5039 5045)
+#	if _MSC_VER >= 1925
+#		pragma warning(disable : 5204)
+#	endif
+#	include <BaseTsd.h>
 typedef SSIZE_T ssize_t;
-#  define __attribute__(...)
-#  ifndef __restrict__
-#    define __restrict__ __restrict
-#  endif
+#	define __attribute__(...)
+#	ifndef __restrict__
+#		define __restrict__ __restrict
+#	endif
+#	define STORED_DEPRECATED(msg) __declspec(deprecated(msg))
 #else
-#  error Unsupported compiler.
+#	error Unsupported compiler.
 #endif
 
 
@@ -123,19 +132,13 @@ typedef SSIZE_T ssize_t;
 //
 
 #if defined(STORED_cplusplus) && STORED_cplusplus >= 201703L
-#  define STORED_FALLTHROUGH [[fallthrough]];
+#	define STORED_FALLTHROUGH [[fallthrough]];
 #elif defined(GCC_VERSION) && GCC_VERSION >= 70000L
-#  define STORED_FALLTHROUGH __attribute__ ((fallthrough));
+#	define STORED_FALLTHROUGH __attribute__((fallthrough));
 #else
-#  define STORED_FALLTHROUGH
+#	define STORED_FALLTHROUGH
 #endif
 
-#ifdef STORED_HAVE_ZMQ
-// For the poller.
-#  ifndef ZMQ_BUILD_DRAFT_API
-#    define ZMQ_BUILD_DRAFT_API
-#  endif
-#endif
 
 
 //////////////////////////////////////////////////
@@ -143,57 +146,58 @@ typedef SSIZE_T ssize_t;
 //
 
 #if defined(_WIN32) || defined(__CYGWIN__)
-#  define STORED_OS_WINDOWS 1
-#  define _WANT_IO_C99_FORMATS 1
-#  define __USE_MINGW_ANSI_STDIO 1
-#  if defined(UNICODE) || defined(_UNICODE)
-#    error Do not use UNICODE. Use ANSI with UTF-8 instead.
-#  endif
-#  ifdef STORED_COMPILER_MSVC
-#    pragma warning(push)
-#    pragma warning(disable: 4668)
-#  endif
-#  include <winsock2.h>
-#  include <windows.h>
-#  ifdef STORED_COMPILER_MSVC
-#    pragma warning(pop)
-#  endif
+#	define STORED_OS_WINDOWS      1
+#	define _WANT_IO_C99_FORMATS   1
+#	define __USE_MINGW_ANSI_STDIO 1
+#	if defined(UNICODE) || defined(_UNICODE)
+#		error Do not use UNICODE. Use ANSI with UTF-8 instead.
+#	endif
+#	ifdef STORED_COMPILER_MSVC
+#		pragma warning(push)
+#		pragma warning(disable : 4668)
+#	endif
+#	include <winsock2.h>
+// Include order is important.
+#	include <windows.h>
+#	ifdef STORED_COMPILER_MSVC
+#		pragma warning(pop)
+#	endif
 #elif defined(__linux__)
-#  define STORED_OS_LINUX 1
-#  define STORED_OS_POSIX 1
+#	define STORED_OS_LINUX 1
+#	define STORED_OS_POSIX 1
 #elif defined(STORED_COMPILER_ARMCC)
-#  define STORED_OS_BAREMETAL 1
+#	define STORED_OS_BAREMETAL 1
 #elif defined(__APPLE__)
-#  define STORED_OS_OSX 1
-#  define STORED_OS_POSIX 1
+#	define STORED_OS_OSX	1
+#	define STORED_OS_POSIX 1
 #else
-#  define STORED_OS_GENERIC 1
+#	define STORED_OS_GENERIC 1
 #endif
 
 #define __STDC_FORMAT_MACROS
 
 #if defined(__BYTE_ORDER__)
-#  if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-#    define STORED_LITTLE_ENDIAN
-#  else
-#    define STORED_BIG_ENDIAN
-#  endif
+#	if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#		define STORED_LITTLE_ENDIAN
+#	else
+#		define STORED_BIG_ENDIAN
+#	endif
 #elif defined(_M_IX86) || defined(_M_X64)
-#  define STORED_LITTLE_ENDIAN
+#	define STORED_LITTLE_ENDIAN
 #else
-#  error Unknown byte order
+#	error Unknown byte order
 #endif
 
 #if !defined(STORED_HAVE_VALGRIND) && defined(ZTH_HAVE_VALGRIND)
-#  define STORED_HAVE_VALGRIND
+#	define STORED_HAVE_VALGRIND 1
 #endif
 
 #ifdef CLANG_TIDY
-#  undef STORED_HAVE_VALGRIND
+#	undef STORED_HAVE_VALGRIND
 #endif
 
 #if defined(NDEBUG) && defined(STORED_HAVE_VALGRIND) && !defined(NVALGRIND)
-#  define NVALGRIND
+#	define NVALGRIND
 #endif
 
 
@@ -203,39 +207,70 @@ typedef SSIZE_T ssize_t;
 //
 
 #ifndef EXTERN_C
-#  ifdef __cplusplus
-#    define EXTERN_C extern "C"
-#  else
-#    define EXTERN_C
-#  endif
+#	ifdef __cplusplus
+#		define EXTERN_C extern "C"
+#	else
+#		define EXTERN_C
+#	endif
 #endif
 
-#if defined(STORED_cplusplus) && STORED_cplusplus < 201103L
-#  ifndef STORED_COMPILER_MSVC
-#    ifndef constexpr
-#      define constexpr
-#    endif
-#    ifndef override
-#      define override
-#    endif
-#    ifndef final
-#      define final
-#    endif
-#    ifndef nullptr
-#      define nullptr NULL
-#    endif
-#    ifndef noexcept
-#      define noexcept throw()
-#    endif
-#  endif
+#if defined(STORED_cplusplus)
+// All C++
+#	if !defined(__cpp_exceptions)
+#		define try if(true)
+#		define catch(...) if(false)
+#	endif
+
+#	if STORED_cplusplus < 201103L // < C++11
+#		ifndef STORED_COMPILER_MSVC
+#			ifndef constexpr
+#				define constexpr inline
+#			endif
+#			ifndef override
+#				define override
+#			endif
+#			ifndef final
+#				define final
+#			endif
+#			ifndef nullptr
+#				define nullptr NULL
+#			endif
+#			ifndef noexcept
+#				define noexcept throw()
+#			endif
+#		endif
+#		ifndef is_default
+#			define is_default \
+				{}
+#		endif
+#		ifndef constexpr14
+#			define constexpr14 inline
+#		endif
+#	else // C++11 or higher
+#		ifndef is_default
+#			define is_default = default;
+#		endif
+#		ifndef constexpr14
+#			if STORED_cplusplus >= 201402L
+#				define constexpr14 constexpr
+#			else
+#				define constexpr14 inline
+#			endif
+#		endif
+#	endif
 #endif
 
-#ifndef constexpr14
-#  if STORED_cplusplus >= 201402L
-#    define constexpr14 constexpr
-#  else
-#    define constexpr14 inline
-#  endif
+#if defined(STORED_cplusplus) && STORED_cplusplus >= 201402L
+#	undef STORED_DEPRECATED
+#	define STORED_DEPRECATED(msg) [[deprecated(msg)]]
+#endif
+#ifndef STORED_DEPRECATED
+#	define STORED_DEPRECATED(msg)
+#endif
+
+#ifdef STORED_NO_DEPRECATED
+#	undef STORED_DEPRECATED
+#	define STORED_DEPRECATED(msg)
 #endif
 
 #endif // LIBSTORED_MACROS_H

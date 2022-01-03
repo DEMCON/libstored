@@ -1,6 +1,6 @@
 /*
  * libstored, distributed debuggable data stores.
- * Copyright (C) 2020-2021  Jochem Rutgers
+ * Copyright (C) 2020-2022  Jochem Rutgers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -21,8 +21,8 @@
 
 #ifdef STORED_HAVE_HEATSHRINK
 extern "C" {
-#  include <heatshrink_encoder.h>
-#  include <heatshrink_decoder.h>
+#	include <heatshrink_decoder.h>
+#	include <heatshrink_encoder.h>
 }
 
 /*!
@@ -33,7 +33,7 @@ static heatshrink_encoder& encoder_(void* e)
 	stored_assert(e);
 	return *static_cast<heatshrink_encoder*>(e);
 }
-#define encoder() (encoder_(m_encoder)) // NOLINT(cppcoreguidelines-macro-usage)
+#	define encoder() (encoder_(m_encoder)) // NOLINT(cppcoreguidelines-macro-usage)
 
 /*!
  * \brief Helper to get a \c heatshrink_decoder reference from \c CompressLayer::m_decoder.
@@ -43,7 +43,7 @@ static heatshrink_decoder& decoder_(void* d)
 	stored_assert(d);
 	return *static_cast<heatshrink_decoder*>(d);
 }
-#define decoder() (decoder_(m_decoder)) // NOLINT(cppcoreguidelines-macro-usage)
+#	define decoder() (decoder_(m_decoder)) // NOLINT(cppcoreguidelines-macro-usage)
 
 namespace stored {
 
@@ -56,8 +56,7 @@ CompressLayer::CompressLayer(ProtocolLayer* up, ProtocolLayer* down)
 	, m_decoder()
 	, m_decodeBufferSize()
 	, m_state()
-{
-}
+{}
 
 /*!
  * \brief Dtor.
@@ -103,7 +102,7 @@ void CompressLayer::decode(void* buffer, size_t len)
 		decoderPoll();
 
 	base::decode(&m_decodeBuffer[0], m_decodeBufferSize);
-	m_state &= (uint8_t)~(uint8_t)FlagDecoding;
+	m_state &= (uint8_t) ~(uint8_t)FlagDecoding;
 }
 
 /*!
@@ -114,7 +113,9 @@ void CompressLayer::decoderPoll()
 	while(true) {
 		m_decodeBuffer.resize(m_decodeBufferSize + 128);
 		size_t output_size = 0;
-		HSD_poll_res res = heatshrink_decoder_poll(&decoder(), &m_decodeBuffer[m_decodeBufferSize], m_decodeBuffer.size() - m_decodeBufferSize, &output_size);
+		HSD_poll_res res = heatshrink_decoder_poll(
+			&decoder(), &m_decodeBuffer[m_decodeBufferSize],
+			m_decodeBuffer.size() - m_decodeBufferSize, &output_size);
 
 		m_decodeBufferSize += output_size;
 		stored_assert(m_decodeBufferSize <= m_decodeBuffer.size());
@@ -160,7 +161,7 @@ void CompressLayer::encode(void const* buffer, size_t len, bool last)
 			encoderPoll();
 		base::encode(nullptr, 0, true);
 		heatshrink_encoder_reset(&encoder());
-		m_state &= (uint8_t)~(uint8_t)FlagEncoding;
+		m_state &= (uint8_t) ~(uint8_t)FlagEncoding;
 	}
 }
 
@@ -173,7 +174,8 @@ void CompressLayer::encoderPoll()
 
 	while(true) {
 		size_t output_size = 0;
-		HSE_poll_res res = heatshrink_encoder_poll(&encoder(), out_buf, sizeof(out_buf), &output_size);
+		HSE_poll_res res =
+			heatshrink_encoder_poll(&encoder(), out_buf, sizeof(out_buf), &output_size);
 
 		if(output_size > 0)
 			base::encode(out_buf, output_size, false);
@@ -206,7 +208,7 @@ bool CompressLayer::idle() const
 	return m_state == 0;
 }
 
-} // namespace
-#else // !STORED_HAVE_HEATSHRINK
+} // namespace stored
+#else  // !STORED_HAVE_HEATSHRINK
 char dummy_char_to_make_compress_cpp_non_empty; // NOLINT
 #endif // STORED_HAVE_HEATSHRINK
