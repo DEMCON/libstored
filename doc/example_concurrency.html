@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>concurrency &mdash; libstored 1.0.1-rc documentation</title>
+  <title>concurrency &mdash; libstored 1.1.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.0.1.dev0
+                1.1.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -172,184 +172,189 @@ uint32 actual
 <span class="cm"> *</span>
 <span class="cm"> * For demo purposes, the interrupt handler is in this example implemented as</span>
 <span class="cm"> * an std::thread.</span>
-<span class="cm"> */</span>
+<span class="cm"> */</span><span class="w"></span>
 
-<span class="cp">#include</span> <span class="cpf">&quot;ExampleConcurrencyMain.h&quot;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;ExampleConcurrencyControl.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ExampleConcurrencyControl.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ExampleConcurrencyMain.h&quot;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;thread&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;chrono&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;cerrno&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cerrno&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;chrono&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span><span class="cp"></span>
 
 <span class="c1">// Make the Control store synchronizable.</span>
-<span class="k">class</span> <span class="nc">ControlStore</span> <span class="o">:</span> <span class="k">public</span> <span class="n">STORE_SYNC_BASE_CLASS</span><span class="p">(</span><span class="n">ExampleConcurrencyControlBase</span><span class="p">,</span> <span class="n">ControlStore</span><span class="p">)</span> <span class="p">{</span>
-	<span class="n">STORE_SYNC_CLASS_BODY</span><span class="p">(</span><span class="n">ExampleConcurrencyControlBase</span><span class="p">,</span> <span class="n">ControlStore</span><span class="p">)</span>
-<span class="k">public</span><span class="o">:</span>
-	<span class="n">ControlStore</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span><span class="p">;</span>
-<span class="p">};</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ControlStore</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">STORE_SYNC_BASE_CLASS</span><span class="p">(</span><span class="n">ExampleConcurrencyControlBase</span><span class="p">,</span><span class="w"> </span><span class="n">ControlStore</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">STORE_SYNC_CLASS_BODY</span><span class="p">(</span><span class="n">ExampleConcurrencyControlBase</span><span class="p">,</span><span class="w"> </span><span class="n">ControlStore</span><span class="p">)</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="n">ControlStore</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 
 <span class="c1">// Use a bounded memory for the FifoLoopback channels. This is set at four</span>
 <span class="c1">// times the maximum message a Synchronizer may send (which is usually only</span>
 <span class="c1">// during initial setup when the full buffer is transmitted). You have to think</span>
 <span class="c1">// about what is appropriate for your application.</span>
-<span class="k">using</span> <span class="n">FifoLoopback</span> <span class="o">=</span> <span class="n">stored</span><span class="o">::</span><span class="n">FifoLoopback</span><span class="o">&lt;</span><span class="n">ControlStore</span><span class="o">::</span><span class="n">MaxMessageSize</span> <span class="o">*</span> <span class="mi">4</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="n">FifoLoopback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">FifoLoopback</span><span class="o">&lt;</span><span class="n">ControlStore</span><span class="o">::</span><span class="n">MaxMessageSize</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="p">;</span><span class="w"></span>
 
 <span class="c1">// This is the &#39;interrupt handler&#39;. In this example an std::thread.</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">control</span><span class="p">(</span><span class="n">ControlStore</span><span class="o">&amp;</span> <span class="n">controlStore</span><span class="p">,</span> <span class="n">stored</span><span class="o">::</span><span class="n">Synchronizer</span><span class="o">&amp;</span> <span class="n">synchronizer</span><span class="p">,</span> <span class="n">FifoLoopback</span><span class="o">&amp;</span> <span class="n">loopback</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="c1">// Specify the handler to be called when a Synchronizer message that is</span>
-	<span class="c1">// pushed into the FifoLoopback does not fit anymore. In this case, we just</span>
-	<span class="c1">// yield and wait a while.  You may also decide to abort the application,</span>
-	<span class="c1">// if you determined that it should not happen in your case.</span>
-	<span class="n">loopback</span><span class="p">.</span><span class="n">b2a</span><span class="p">().</span><span class="n">setOverflowHandler</span><span class="p">([</span><span class="o">&amp;</span><span class="p">](){</span>
-		<span class="k">while</span><span class="p">(</span><span class="n">loopback</span><span class="p">.</span><span class="n">b2a</span><span class="p">().</span><span class="n">full</span><span class="p">())</span>
-			<span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">yield</span><span class="p">();</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"></span>
+<span class="nf">control</span><span class="p">(</span><span class="n">ControlStore</span><span class="o">&amp;</span><span class="w"> </span><span class="n">controlStore</span><span class="p">,</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Synchronizer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">synchronizer</span><span class="p">,</span><span class="w"> </span><span class="n">FifoLoopback</span><span class="o">&amp;</span><span class="w"> </span><span class="n">loopback</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="c1">// Specify the handler to be called when a Synchronizer message that is</span>
+<span class="w">	</span><span class="c1">// pushed into the FifoLoopback does not fit anymore. In this case, we just</span>
+<span class="w">	</span><span class="c1">// yield and wait a while.  You may also decide to abort the application,</span>
+<span class="w">	</span><span class="c1">// if you determined that it should not happen in your case.</span>
+<span class="w">	</span><span class="n">loopback</span><span class="p">.</span><span class="n">b2a</span><span class="p">().</span><span class="n">setOverflowHandler</span><span class="p">([</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">while</span><span class="p">(</span><span class="n">loopback</span><span class="p">.</span><span class="n">b2a</span><span class="p">().</span><span class="n">full</span><span class="p">())</span><span class="w"></span>
+<span class="w">			</span><span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">yield</span><span class="p">();</span><span class="w"></span>
 
-		<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
-	<span class="p">});</span>
+<span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">});</span><span class="w"></span>
 
-	<span class="k">while</span><span class="p">(</span><span class="n">controlStore</span><span class="p">.</span><span class="n">run</span><span class="p">)</span> <span class="p">{</span>
-		<span class="c1">// Sleep for a while (or wait for an &#39;interrupt&#39;).</span>
-		<span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">sleep_for</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">seconds</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+<span class="w">	</span><span class="k">while</span><span class="p">(</span><span class="n">controlStore</span><span class="p">.</span><span class="n">run</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="c1">// Sleep for a while (or wait for an &#39;interrupt&#39;).</span>
+<span class="w">		</span><span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">sleep_for</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">seconds</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span><span class="w"></span>
 
-		<span class="c1">// The Synchronizer may push at most one message back into the</span>
-		<span class="c1">// FifoLoopback channel when receiving one. Therefore, only try to</span>
-		<span class="c1">// decode a message when we know that it will not block.</span>
-		<span class="k">while</span><span class="p">(</span><span class="n">loopback</span><span class="p">.</span><span class="n">b2a</span><span class="p">().</span><span class="n">space</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">ControlStore</span><span class="o">::</span><span class="n">MaxMessageSize</span><span class="p">)</span>
-			<span class="k">if</span><span class="p">(</span><span class="n">loopback</span><span class="p">.</span><span class="n">a2b</span><span class="p">().</span><span class="n">recv</span><span class="p">())</span>
-				<span class="k">break</span><span class="p">;</span>
+<span class="w">		</span><span class="c1">// The Synchronizer may push at most one message back into the</span>
+<span class="w">		</span><span class="c1">// FifoLoopback channel when receiving one. Therefore, only try to</span>
+<span class="w">		</span><span class="c1">// decode a message when we know that it will not block.</span>
+<span class="w">		</span><span class="k">while</span><span class="p">(</span><span class="n">loopback</span><span class="p">.</span><span class="n">b2a</span><span class="p">().</span><span class="n">space</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">ControlStore</span><span class="o">::</span><span class="n">MaxMessageSize</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="k">if</span><span class="p">(</span><span class="n">loopback</span><span class="p">.</span><span class="n">a2b</span><span class="p">().</span><span class="n">recv</span><span class="p">())</span><span class="w"></span>
+<span class="w">				</span><span class="k">break</span><span class="p">;</span><span class="w"></span>
 
-		<span class="c1">// This &#39;control loop&#39; allows you to override the actual value.</span>
-		<span class="c1">// Otherwise, it steps towards the setpoint.</span>
-		<span class="k">if</span><span class="p">(</span><span class="n">controlStore</span><span class="p">.</span><span class="n">override_obj</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
-			<span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">controlStore</span><span class="p">.</span><span class="n">override_obj</span><span class="p">;</span>
-		<span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span> <span class="o">&lt;</span> <span class="n">controlStore</span><span class="p">.</span><span class="n">setpoint</span><span class="p">)</span>
-			<span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span> <span class="o">=</span> <span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-		<span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span> <span class="o">&gt;</span> <span class="n">controlStore</span><span class="p">.</span><span class="n">setpoint</span><span class="p">)</span>
-			<span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span> <span class="o">=</span> <span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+<span class="w">		</span><span class="c1">// This &#39;control loop&#39; allows you to override the actual value.</span>
+<span class="w">		</span><span class="c1">// Otherwise, it steps towards the setpoint.</span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">controlStore</span><span class="p">.</span><span class="n">override_obj</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">controlStore</span><span class="p">.</span><span class="n">override_obj</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="p">(</span><span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">controlStore</span><span class="p">.</span><span class="n">setpoint</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="p">(</span><span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">controlStore</span><span class="p">.</span><span class="n">setpoint</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
 
-		<span class="c1">// Only send updates when we know it will fit in the FifoLoopback.</span>
-		<span class="k">if</span><span class="p">(</span><span class="n">loopback</span><span class="p">.</span><span class="n">b2a</span><span class="p">().</span><span class="n">space</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">ControlStore</span><span class="o">::</span><span class="n">MaxMessageSize</span><span class="p">)</span>
-			<span class="n">synchronizer</span><span class="p">.</span><span class="n">process</span><span class="p">();</span>
-	<span class="p">}</span>
+<span class="w">		</span><span class="c1">// Only send updates when we know it will fit in the FifoLoopback.</span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">loopback</span><span class="p">.</span><span class="n">b2a</span><span class="p">().</span><span class="n">space</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">ControlStore</span><span class="o">::</span><span class="n">MaxMessageSize</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">synchronizer</span><span class="p">.</span><span class="n">process</span><span class="p">();</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="c1">// Send a bye message and terminate the connection.</span>
-	<span class="n">synchronizer</span><span class="p">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">loopback</span><span class="p">.</span><span class="n">b</span><span class="p">());</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="c1">// Send a bye message and terminate the connection.</span>
+<span class="w">	</span><span class="n">synchronizer</span><span class="p">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">loopback</span><span class="p">.</span><span class="n">b</span><span class="p">());</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="c1">// Before starting the control thread, initialize all components.  This</span>
-	<span class="c1">// will use the heap, but that is OK, as we are not in the &#39;interrupt</span>
-	<span class="c1">// handler&#39;.  After initialization, it is safe to use the store and</span>
-	<span class="c1">// Synchronizer instances.</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">ExampleConcurrencyMain</span> <span class="n">mainStore</span><span class="p">;</span>
-	<span class="n">ControlStore</span> <span class="n">controlStore</span><span class="p">;</span>
-	<span class="n">ControlStore</span> <span class="n">controlStoreOther</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="c1">// Before starting the control thread, initialize all components.  This</span>
+<span class="w">	</span><span class="c1">// will use the heap, but that is OK, as we are not in the &#39;interrupt</span>
+<span class="w">	</span><span class="c1">// handler&#39;.  After initialization, it is safe to use the store and</span>
+<span class="w">	</span><span class="c1">// Synchronizer instances.</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">ExampleConcurrencyMain</span><span class="w"> </span><span class="n">mainStore</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">ControlStore</span><span class="w"> </span><span class="n">controlStore</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">ControlStore</span><span class="w"> </span><span class="n">controlStoreOther</span><span class="p">;</span><span class="w"></span>
 
-	<span class="c1">// Create the debugger for both stores.</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span> <span class="n">debug</span><span class="p">(</span><span class="s">&quot;concurrency&quot;</span><span class="p">);</span>
-	<span class="n">debug</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">mainStore</span><span class="p">);</span>
-	<span class="n">debug</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">controlStore</span><span class="p">);</span>
+<span class="w">	</span><span class="c1">// Create the debugger for both stores.</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span><span class="w"> </span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;concurrency&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">debug</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">mainStore</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">debug</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">controlStore</span><span class="p">);</span><span class="w"></span>
 
 <span class="cp">#ifdef STORED_HAVE_ZMQ</span>
-	<span class="c1">// Create a ZeroMQ connection for the debugger.</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">DebugZmqLayer</span> <span class="n">zmq</span><span class="p">;</span>
-	<span class="n">zmq</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">debug</span><span class="p">);</span>
+<span class="w">	</span><span class="c1">// Create a ZeroMQ connection for the debugger.</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">DebugZmqLayer</span><span class="w"> </span><span class="n">zmq</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">zmq</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">debug</span><span class="p">);</span><span class="w"></span>
 <span class="cp">#endif</span>
 
-	<span class="c1">// This is the Synchronizer for this thread.</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">Synchronizer</span> <span class="n">synchronizer</span><span class="p">;</span>
-	<span class="n">synchronizer</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">controlStore</span><span class="p">);</span>
+<span class="w">	</span><span class="c1">// This is the Synchronizer for this thread.</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Synchronizer</span><span class="w"> </span><span class="n">synchronizer</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">synchronizer</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">controlStore</span><span class="p">);</span><span class="w"></span>
 
-	<span class="c1">// This is the Synchronizer for the other thread.</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">Synchronizer</span> <span class="n">synchronizerOther</span><span class="p">;</span>
-	<span class="n">synchronizerOther</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">controlStoreOther</span><span class="p">);</span>
+<span class="w">	</span><span class="c1">// This is the Synchronizer for the other thread.</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Synchronizer</span><span class="w"> </span><span class="n">synchronizerOther</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">synchronizerOther</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">controlStoreOther</span><span class="p">);</span><span class="w"></span>
 
-	<span class="c1">// The thread-safe message-passing channel between both Synchronizers.</span>
-	<span class="n">FifoLoopback</span> <span class="n">loopback</span><span class="p">;</span>
+<span class="w">	</span><span class="c1">// The thread-safe message-passing channel between both Synchronizers.</span>
+<span class="w">	</span><span class="n">FifoLoopback</span><span class="w"> </span><span class="n">loopback</span><span class="p">;</span><span class="w"></span>
 
-	<span class="c1">// In case the FIFO gets full, this thread just stalls...</span>
-	<span class="n">loopback</span><span class="p">.</span><span class="n">a2b</span><span class="p">().</span><span class="n">setOverflowHandler</span><span class="p">([</span><span class="o">&amp;</span><span class="p">](){</span>
-		<span class="c1">// ...but there should not be a deadlock.</span>
-		<span class="n">assert</span><span class="p">(</span><span class="o">!</span><span class="n">loopback</span><span class="p">.</span><span class="n">a2b</span><span class="p">().</span><span class="n">full</span><span class="p">()</span> <span class="o">||</span> <span class="o">!</span><span class="n">loopback</span><span class="p">.</span><span class="n">b2a</span><span class="p">().</span><span class="n">full</span><span class="p">());</span>
+<span class="w">	</span><span class="c1">// In case the FIFO gets full, this thread just stalls...</span>
+<span class="w">	</span><span class="n">loopback</span><span class="p">.</span><span class="n">a2b</span><span class="p">().</span><span class="n">setOverflowHandler</span><span class="p">([</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="c1">// ...but there should not be a deadlock.</span>
+<span class="w">		</span><span class="n">assert</span><span class="p">(</span><span class="o">!</span><span class="n">loopback</span><span class="p">.</span><span class="n">a2b</span><span class="p">().</span><span class="n">full</span><span class="p">()</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="n">loopback</span><span class="p">.</span><span class="n">b2a</span><span class="p">().</span><span class="n">full</span><span class="p">());</span><span class="w"></span>
 
-		<span class="k">while</span><span class="p">(</span><span class="n">loopback</span><span class="p">.</span><span class="n">a2b</span><span class="p">().</span><span class="n">full</span><span class="p">())</span>
-			<span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">yield</span><span class="p">();</span>
+<span class="w">		</span><span class="k">while</span><span class="p">(</span><span class="n">loopback</span><span class="p">.</span><span class="n">a2b</span><span class="p">().</span><span class="n">full</span><span class="p">())</span><span class="w"></span>
+<span class="w">			</span><span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">yield</span><span class="p">();</span><span class="w"></span>
 
-		<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
-	<span class="p">});</span>
+<span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">});</span><span class="w"></span>
 
-	<span class="c1">// Connect the loopback channel.</span>
-	<span class="n">synchronizer</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">loopback</span><span class="p">.</span><span class="n">a</span><span class="p">());</span>
-	<span class="n">synchronizerOther</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">loopback</span><span class="p">.</span><span class="n">b</span><span class="p">());</span>
-	<span class="c1">// Specify that the other thread will use the channel as the source of its</span>
-	<span class="c1">// store instance.</span>
-	<span class="n">synchronizerOther</span><span class="p">.</span><span class="n">syncFrom</span><span class="p">(</span><span class="n">controlStoreOther</span><span class="p">,</span> <span class="n">loopback</span><span class="p">.</span><span class="n">b</span><span class="p">());</span>
+<span class="w">	</span><span class="c1">// Connect the loopback channel.</span>
+<span class="w">	</span><span class="n">synchronizer</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">loopback</span><span class="p">.</span><span class="n">a</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="n">synchronizerOther</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">loopback</span><span class="p">.</span><span class="n">b</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="c1">// Specify that the other thread will use the channel as the source of its</span>
+<span class="w">	</span><span class="c1">// store instance.</span>
+<span class="w">	</span><span class="n">synchronizerOther</span><span class="p">.</span><span class="n">syncFrom</span><span class="p">(</span><span class="n">controlStoreOther</span><span class="p">,</span><span class="w"> </span><span class="n">loopback</span><span class="p">.</span><span class="n">b</span><span class="p">());</span><span class="w"></span>
 
-	<span class="c1">// We need a poller to check for ZeroMQ (debugger) messages.</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">Poller</span> <span class="n">poller</span><span class="p">;</span>
+<span class="w">	</span><span class="c1">// We need a poller to check for ZeroMQ (debugger) messages.</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Poller</span><span class="w"> </span><span class="n">poller</span><span class="p">;</span><span class="w"></span>
 <span class="cp">#ifdef STORED_HAVE_ZMQ</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">poller</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">zmq</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">,</span> <span class="n">stored</span><span class="o">::</span><span class="n">Poller</span><span class="o">::</span><span class="n">PollIn</span><span class="p">))</span> <span class="p">{</span>
-		<span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot register zmq to poller&quot;</span><span class="p">);</span>
-		<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">PollableZmqLayer</span><span class="w"> </span><span class="n">pollableZmq</span><span class="p">(</span><span class="n">zmq</span><span class="p">,</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Pollable</span><span class="o">::</span><span class="n">PollIn</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">((</span><span class="n">errno</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">poller</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">pollableZmq</span><span class="p">)))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot register zmq to poller&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 <span class="cp">#endif</span>
 
-	<span class="c1">// When actual value changes, it is printed to the console.</span>
-	<span class="k">auto</span> <span class="n">prevActual</span> <span class="o">=</span> <span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-	<span class="n">prevActual</span><span class="o">++</span><span class="p">;</span> <span class="c1">// Force to be different.</span>
+<span class="w">	</span><span class="c1">// When actual value changes, it is printed to the console.</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">prevActual</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"></span>
+<span class="w">	</span><span class="n">prevActual</span><span class="o">++</span><span class="p">;</span><span class="w"> </span><span class="c1">// Force to be different.</span>
 
-	<span class="c1">// For demo purposes, you can specify the setpoint as a command line</span>
-	<span class="c1">// argument.  If set, the application quits when the actual reaches the</span>
-	<span class="c1">// setpoint.</span>
-	<span class="kt">bool</span> <span class="n">demo</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">argc</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">try</span> <span class="p">{</span>
-			<span class="n">controlStore</span><span class="p">.</span><span class="n">setpoint</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">std</span><span class="o">::</span><span class="n">stoul</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="k">nullptr</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-			<span class="n">demo</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
-			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Enabled demo mode with setpoint = %u</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kt">unsigned</span><span class="p">)</span><span class="n">controlStore</span><span class="p">.</span><span class="n">setpoint</span><span class="p">);</span>
-		<span class="p">}</span> <span class="k">catch</span><span class="p">(...)</span> <span class="p">{</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="c1">// For demo purposes, you can specify the setpoint as a command line</span>
+<span class="w">	</span><span class="c1">// argument.  If set, the application quits when the actual reaches the</span>
+<span class="w">	</span><span class="c1">// setpoint.</span>
+<span class="w">	</span><span class="kt">bool</span><span class="w"> </span><span class="n">demo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">argc</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="n">controlStore</span><span class="p">.</span><span class="n">setpoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">std</span><span class="o">::</span><span class="n">stoul</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">			</span><span class="n">demo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Enabled demo mode with setpoint = %u</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">			       </span><span class="p">(</span><span class="kt">unsigned</span><span class="p">)</span><span class="n">controlStore</span><span class="p">.</span><span class="n">setpoint</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="p">(...)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="c1">// Ready to start the control thread.</span>
-	<span class="n">std</span><span class="o">::</span><span class="kr">thread</span> <span class="n">controller</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">ref</span><span class="p">(</span><span class="n">controlStoreOther</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">ref</span><span class="p">(</span><span class="n">synchronizerOther</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">ref</span><span class="p">(</span><span class="n">loopback</span><span class="p">));</span>
+<span class="w">	</span><span class="c1">// Ready to start the control thread.</span>
+<span class="w">	</span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">controller</span><span class="p">(</span><span class="w"></span>
+<span class="w">		</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">ref</span><span class="p">(</span><span class="n">controlStoreOther</span><span class="p">),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">ref</span><span class="p">(</span><span class="n">synchronizerOther</span><span class="p">),</span><span class="w"></span>
+<span class="w">		</span><span class="n">std</span><span class="o">::</span><span class="n">ref</span><span class="p">(</span><span class="n">loopback</span><span class="p">));</span><span class="w"></span>
 
-	<span class="c1">// Main loop.</span>
-	<span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="n">demo</span> <span class="o">||</span> <span class="n">controlStore</span><span class="p">.</span><span class="n">run</span><span class="p">)</span> <span class="p">{</span>
-		<span class="c1">// Check for ZeroMQ input.</span>
-		<span class="k">auto</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">res</span> <span class="o">=</span> <span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">(</span><span class="mi">100000L</span><span class="p">);</span>
-		<span class="k">if</span><span class="p">(</span><span class="n">res</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span> <span class="p">{</span>
-			<span class="k">if</span><span class="p">(</span><span class="n">errno</span> <span class="o">!=</span> <span class="n">EAGAIN</span><span class="p">)</span>
-				<span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot poll&quot;</span><span class="p">);</span>
-		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+<span class="w">	</span><span class="c1">// Main loop.</span>
+<span class="w">	</span><span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="n">demo</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">controlStore</span><span class="p">.</span><span class="n">run</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="c1">// Check for ZeroMQ input.</span>
+<span class="w">		</span><span class="k">auto</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">res</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="k">if</span><span class="p">(</span><span class="n">errno</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">EAGAIN</span><span class="p">)</span><span class="w"></span>
+<span class="w">				</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot poll&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="cp">#ifdef STORED_HAVE_ZMQ</span>
-			<span class="k">if</span><span class="p">(</span><span class="n">zmq</span><span class="p">.</span><span class="n">recv</span><span class="p">())</span>
-				<span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot recv&quot;</span><span class="p">);</span>
+<span class="w">			</span><span class="k">if</span><span class="p">(</span><span class="n">zmq</span><span class="p">.</span><span class="n">recv</span><span class="p">())</span><span class="w"></span>
+<span class="w">				</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot recv&quot;</span><span class="p">);</span><span class="w"></span>
 <span class="cp">#endif</span>
-		<span class="p">}</span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
 
-		<span class="c1">// Check for Synchronizer messages from the other thread.</span>
-		<span class="n">loopback</span><span class="p">.</span><span class="n">b2a</span><span class="p">().</span><span class="n">recvAll</span><span class="p">();</span>
+<span class="w">		</span><span class="c1">// Check for Synchronizer messages from the other thread.</span>
+<span class="w">		</span><span class="n">loopback</span><span class="p">.</span><span class="n">b2a</span><span class="p">().</span><span class="n">recvAll</span><span class="p">();</span><span class="w"></span>
 
-		<span class="k">if</span><span class="p">(</span><span class="n">prevActual</span> <span class="o">!=</span> <span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span><span class="p">)</span>
-			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;actual = %u</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kt">unsigned</span><span class="p">)(</span><span class="n">prevActual</span> <span class="o">=</span> <span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span><span class="p">));</span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">prevActual</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;actual = %u</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="p">)(</span><span class="n">prevActual</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">controlStore</span><span class="p">.</span><span class="n">actual</span><span class="p">));</span><span class="w"></span>
 
-		<span class="k">if</span><span class="p">(</span><span class="n">demo</span> <span class="o">&amp;&amp;</span> <span class="n">prevActual</span> <span class="o">==</span> <span class="n">controlStore</span><span class="p">.</span><span class="n">setpoint</span><span class="p">)</span>
-			<span class="c1">// Done, terminate.</span>
-			<span class="n">controlStore</span><span class="p">.</span><span class="n">run</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">demo</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">prevActual</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">controlStore</span><span class="p">.</span><span class="n">setpoint</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="c1">// Done, terminate.</span>
+<span class="w">			</span><span class="n">controlStore</span><span class="p">.</span><span class="n">run</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"></span>
 
-		<span class="c1">// Push updates in our Control store to the other thread.</span>
-		<span class="n">synchronizer</span><span class="p">.</span><span class="n">process</span><span class="p">();</span>
-	<span class="p">}</span>
+<span class="w">		</span><span class="c1">// Push updates in our Control store to the other thread.</span>
+<span class="w">		</span><span class="n">synchronizer</span><span class="p">.</span><span class="n">process</span><span class="p">();</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="n">controller</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
-	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="n">controller</span><span class="p">.</span><span class="n">join</span><span class="p">();</span><span class="w"></span>
+<span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -421,30 +426,30 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_52E">
-<span id="_CPPv3N6stored26ExampleConcurrencyMainBaseUt2_52E"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1ab35df3d33b89617d5a0b1e7ab225987c"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_52E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_51E">
+<span id="_CPPv3N6stored26ExampleConcurrencyMainBaseUt2_51E"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a0caccd6dd4c79e80567010c598dc4a5d"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_51E" title="Permalink to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5211ObjectCountE">
-<span id="_CPPv3N6stored26ExampleConcurrencyMainBaseUt2_5211ObjectCountE"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1ab35df3d33b89617d5a0b1e7ab225987cad8946d0cf6cef8afc523f619fea1e37f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5211ObjectCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5111ObjectCountE">
+<span id="_CPPv3N6stored26ExampleConcurrencyMainBaseUt2_5111ObjectCountE"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a0caccd6dd4c79e80567010c598dc4a5dad8946d0cf6cef8afc523f619fea1e37f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5111ObjectCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of objects in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5213VariableCountE">
-<span id="_CPPv3N6stored26ExampleConcurrencyMainBaseUt2_5213VariableCountE"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1ab35df3d33b89617d5a0b1e7ab225987ca97ee6d7413aa7eca83b19da369918909"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5213VariableCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5113VariableCountE">
+<span id="_CPPv3N6stored26ExampleConcurrencyMainBaseUt2_5113VariableCountE"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a0caccd6dd4c79e80567010c598dc4a5da97ee6d7413aa7eca83b19da369918909"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5113VariableCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of variables in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5213FunctionCountE">
-<span id="_CPPv3N6stored26ExampleConcurrencyMainBaseUt2_5213FunctionCountE"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1ab35df3d33b89617d5a0b1e7ab225987ca2b2b4cabd7c072d0a276bab7fd78edad"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5213FunctionCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5113FunctionCountE">
+<span id="_CPPv3N6stored26ExampleConcurrencyMainBaseUt2_5113FunctionCountE"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a0caccd6dd4c79e80567010c598dc4a5da2b2b4cabd7c072d0a276bab7fd78edad"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5113FunctionCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of functions in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5210BufferSizeE">
-<span id="_CPPv3N6stored26ExampleConcurrencyMainBaseUt2_5210BufferSizeE"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1ab35df3d33b89617d5a0b1e7ab225987ca253baa2ca4fafe9d6764ccaf2e983af2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5210BufferSizeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5110BufferSizeE">
+<span id="_CPPv3N6stored26ExampleConcurrencyMainBaseUt2_5110BufferSizeE"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a0caccd6dd4c79e80567010c598dc4a5da253baa2ca4fafe9d6764ccaf2e983af2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBaseUt2_5110BufferSizeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Buffer size. </p>
 </dd></dl>
 
@@ -482,18 +487,6 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBase26ExampleConcurrencyMainBaseERR26ExampleConcurrencyMainBase">
-<span id="_CPPv3N6stored26ExampleConcurrencyMainBase26ExampleConcurrencyMainBaseERR26ExampleConcurrencyMainBase"></span><span id="_CPPv2N6stored26ExampleConcurrencyMainBase26ExampleConcurrencyMainBaseERR26ExampleConcurrencyMainBase"></span><span id="stored::ExampleConcurrencyMainBase::ExampleConcurrencyMainBase__ExampleConcurrencyMainBaseRR"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a8aad00a0d700b36ea76f2976f7d7d18d"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleConcurrencyMainBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored26ExampleConcurrencyMainBase26ExampleConcurrencyMainBaseERR26ExampleConcurrencyMainBase" title="stored::ExampleConcurrencyMainBase::ExampleConcurrencyMainBase"><span class="n"><span class="pre">ExampleConcurrencyMainBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBase26ExampleConcurrencyMainBaseERR26ExampleConcurrencyMainBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBase26ExampleConcurrencyMainBaseERK26ExampleConcurrencyMainBase">
-<span id="_CPPv3N6stored26ExampleConcurrencyMainBase26ExampleConcurrencyMainBaseERK26ExampleConcurrencyMainBase"></span><span id="_CPPv2N6stored26ExampleConcurrencyMainBase26ExampleConcurrencyMainBaseERK26ExampleConcurrencyMainBase"></span><span id="stored::ExampleConcurrencyMainBase::ExampleConcurrencyMainBase__ExampleConcurrencyMainBaseCR"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a3862f25273001883d4b4fdce3de55536"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleConcurrencyMainBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored26ExampleConcurrencyMainBase26ExampleConcurrencyMainBaseERK26ExampleConcurrencyMainBase" title="stored::ExampleConcurrencyMainBase::ExampleConcurrencyMainBase"><span class="n"><span class="pre">ExampleConcurrencyMainBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBase26ExampleConcurrencyMainBaseERK26ExampleConcurrencyMainBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored26ExampleConcurrencyMainBase11bufferToKeyEPKv">
 <span id="_CPPv3NK6stored26ExampleConcurrencyMainBase11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored26ExampleConcurrencyMainBase11bufferToKeyEPKv"></span><span id="stored::ExampleConcurrencyMainBase::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a2d61cd2539ea43b4192a251adfd42a48"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored26ExampleConcurrencyMainBase3KeyE" title="stored::ExampleConcurrencyMainBase::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bufferToKey</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored26ExampleConcurrencyMainBase11bufferToKeyEPKv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Converts a variable’s buffer to a key. </p>
@@ -522,13 +515,13 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored26ExampleConcurrencyMainBase14implementationEv">
-<span id="_CPPv3NK6stored26ExampleConcurrencyMainBase14implementationEv"></span><span id="_CPPv2NK6stored26ExampleConcurrencyMainBase14implementationEv"></span><span id="stored::ExampleConcurrencyMainBase::implementationCCE"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a0b642c4bc1cb98318941ab0d7de5d6ab"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored26ExampleConcurrencyMainBase14ImplementationE" title="stored::ExampleConcurrencyMainBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored26ExampleConcurrencyMainBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored26ExampleConcurrencyMainBase14implementationEv"></span><span id="_CPPv2NK6stored26ExampleConcurrencyMainBase14implementationEv"></span><span id="stored::ExampleConcurrencyMainBase::implementationC"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a35d600169db028acb0a95b7b51ce91ab"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored26ExampleConcurrencyMainBase14ImplementationE" title="stored::ExampleConcurrencyMainBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored26ExampleConcurrencyMainBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBase14implementationEv">
-<span id="_CPPv3N6stored26ExampleConcurrencyMainBase14implementationEv"></span><span id="_CPPv2N6stored26ExampleConcurrencyMainBase14implementationEv"></span><span id="stored::ExampleConcurrencyMainBase::implementationCE"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1abdb7edecaf5f817cf14a74473db5e02f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored26ExampleConcurrencyMainBase14ImplementationE" title="stored::ExampleConcurrencyMainBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored26ExampleConcurrencyMainBase14implementationEv"></span><span id="_CPPv2N6stored26ExampleConcurrencyMainBase14implementationEv"></span><span id="stored::ExampleConcurrencyMainBase::implementation"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a2d5b7cfdda2165149f3d1ac572d1d3dc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored26ExampleConcurrencyMainBase14ImplementationE" title="stored::ExampleConcurrencyMainBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
@@ -570,20 +563,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored26ExampleConcurrencyMainBase4nameEv">
-<span id="_CPPv3NK6stored26ExampleConcurrencyMainBase4nameEv"></span><span id="_CPPv2NK6stored26ExampleConcurrencyMainBase4nameEv"></span><span id="stored::ExampleConcurrencyMainBase::nameCCE"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a3bd85bf132fe631bf3b0b8431362cf6a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored26ExampleConcurrencyMainBase4nameEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored26ExampleConcurrencyMainBase4nameEv"></span><span id="_CPPv2NK6stored26ExampleConcurrencyMainBase4nameEv"></span><span id="stored::ExampleConcurrencyMainBase::nameC"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a69973b38833c77b6d80b90251193d9d2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored26ExampleConcurrencyMainBase4nameEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBaseaSERR26ExampleConcurrencyMainBase">
-<span id="_CPPv3N6stored26ExampleConcurrencyMainBaseaSERR26ExampleConcurrencyMainBase"></span><span id="_CPPv2N6stored26ExampleConcurrencyMainBaseaSERR26ExampleConcurrencyMainBase"></span><span id="stored::ExampleConcurrencyMainBase::assign-operator__ExampleConcurrencyMainBaseRR"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a3da21024eef08d23673e0e0e73ecf940"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored26ExampleConcurrencyMainBaseE" title="stored::ExampleConcurrencyMainBase"><span class="n"><span class="pre">ExampleConcurrencyMainBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBaseaSERR26ExampleConcurrencyMainBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBaseaSERK26ExampleConcurrencyMainBase">
-<span id="_CPPv3N6stored26ExampleConcurrencyMainBaseaSERK26ExampleConcurrencyMainBase"></span><span id="_CPPv2N6stored26ExampleConcurrencyMainBaseaSERK26ExampleConcurrencyMainBase"></span><span id="stored::ExampleConcurrencyMainBase::assign-operator__ExampleConcurrencyMainBaseCR"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a5cc2e00cecdd3f89396d5dea465c0edd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored26ExampleConcurrencyMainBaseE" title="stored::ExampleConcurrencyMainBase"><span class="n"><span class="pre">ExampleConcurrencyMainBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBaseaSERK26ExampleConcurrencyMainBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -680,8 +661,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERR22ExampleConcurrencyMain">
-<span id="_CPPv3N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERR22ExampleConcurrencyMain"></span><span id="_CPPv2N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERR22ExampleConcurrencyMain"></span><span id="stored::ExampleConcurrencyMain::ExampleConcurrencyMain__ExampleConcurrencyMainRR"></span><span class="target" id="classstored_1_1_example_concurrency_main_1ae29fc057cb1f2de12ba26af3a3e46906"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERR22ExampleConcurrencyMain" title="stored::ExampleConcurrencyMain::ExampleConcurrencyMain"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERR22ExampleConcurrencyMain" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
+<span id="_CPPv3N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERR22ExampleConcurrencyMain"></span><span id="_CPPv2N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERR22ExampleConcurrencyMain"></span><span id="stored::ExampleConcurrencyMain::ExampleConcurrencyMain__ExampleConcurrencyMainRR"></span><span class="target" id="classstored_1_1_example_concurrency_main_1a9591066612b117e90997cc88ab08b79f"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERR22ExampleConcurrencyMain" title="stored::ExampleConcurrencyMain::ExampleConcurrencyMain"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERR22ExampleConcurrencyMain" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Default move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -692,7 +673,7 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored22ExampleConcurrencyMainaSERR22ExampleConcurrencyMain">
-<span id="_CPPv3N6stored22ExampleConcurrencyMainaSERR22ExampleConcurrencyMain"></span><span id="_CPPv2N6stored22ExampleConcurrencyMainaSERR22ExampleConcurrencyMain"></span><span id="stored::ExampleConcurrencyMain::assign-operator__ExampleConcurrencyMainRR"></span><span class="target" id="classstored_1_1_example_concurrency_main_1ab07e4e5e90b8483fd5ce8526ab040adb"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored22ExampleConcurrencyMainE" title="stored::ExampleConcurrencyMain"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored22ExampleConcurrencyMainaSERR22ExampleConcurrencyMain" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored22ExampleConcurrencyMainaSERR22ExampleConcurrencyMain"></span><span id="_CPPv2N6stored22ExampleConcurrencyMainaSERR22ExampleConcurrencyMain"></span><span id="stored::ExampleConcurrencyMain::assign-operator__ExampleConcurrencyMainRR"></span><span class="target" id="classstored_1_1_example_concurrency_main_1a5ea3d86bd76bc84120c0f9326403b112"></span><a class="reference internal" href="#_CPPv4N6stored22ExampleConcurrencyMainE" title="stored::ExampleConcurrencyMain"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored22ExampleConcurrencyMainE" title="stored::ExampleConcurrencyMain"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored22ExampleConcurrencyMainaSERR22ExampleConcurrencyMain" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 
@@ -787,30 +768,30 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_51E">
-<span id="_CPPv3N6stored29ExampleConcurrencyControlBaseUt2_51E"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a1de750018043df1de684b5ac68d2406c"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_51E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_50E">
+<span id="_CPPv3N6stored29ExampleConcurrencyControlBaseUt2_50E"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a8fdf27fc83b374e3b7d6f61b5d69edb8"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_50E" title="Permalink to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5111ObjectCountE">
-<span id="_CPPv3N6stored29ExampleConcurrencyControlBaseUt2_5111ObjectCountE"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a1de750018043df1de684b5ac68d2406cab00f705c2ddf8c654665eef6712dd448"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5111ObjectCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5011ObjectCountE">
+<span id="_CPPv3N6stored29ExampleConcurrencyControlBaseUt2_5011ObjectCountE"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a8fdf27fc83b374e3b7d6f61b5d69edb8ab00f705c2ddf8c654665eef6712dd448"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5011ObjectCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of objects in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5113VariableCountE">
-<span id="_CPPv3N6stored29ExampleConcurrencyControlBaseUt2_5113VariableCountE"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a1de750018043df1de684b5ac68d2406ca5ea705f845f7f78b2fe39f7da9685766"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5113VariableCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5013VariableCountE">
+<span id="_CPPv3N6stored29ExampleConcurrencyControlBaseUt2_5013VariableCountE"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a8fdf27fc83b374e3b7d6f61b5d69edb8a5ea705f845f7f78b2fe39f7da9685766"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5013VariableCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of variables in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5113FunctionCountE">
-<span id="_CPPv3N6stored29ExampleConcurrencyControlBaseUt2_5113FunctionCountE"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a1de750018043df1de684b5ac68d2406cafaf1fecc18ead80704dd0640c109712b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5113FunctionCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5013FunctionCountE">
+<span id="_CPPv3N6stored29ExampleConcurrencyControlBaseUt2_5013FunctionCountE"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a8fdf27fc83b374e3b7d6f61b5d69edb8afaf1fecc18ead80704dd0640c109712b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5013FunctionCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of functions in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5110BufferSizeE">
-<span id="_CPPv3N6stored29ExampleConcurrencyControlBaseUt2_5110BufferSizeE"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a1de750018043df1de684b5ac68d2406ca984993a3ef1c5d5374f189f287aec794"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5110BufferSizeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5010BufferSizeE">
+<span id="_CPPv3N6stored29ExampleConcurrencyControlBaseUt2_5010BufferSizeE"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a8fdf27fc83b374e3b7d6f61b5d69edb8a984993a3ef1c5d5374f189f287aec794"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBaseUt2_5010BufferSizeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Buffer size. </p>
 </dd></dl>
 
@@ -848,18 +829,6 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBase29ExampleConcurrencyControlBaseERR29ExampleConcurrencyControlBase">
-<span id="_CPPv3N6stored29ExampleConcurrencyControlBase29ExampleConcurrencyControlBaseERR29ExampleConcurrencyControlBase"></span><span id="_CPPv2N6stored29ExampleConcurrencyControlBase29ExampleConcurrencyControlBaseERR29ExampleConcurrencyControlBase"></span><span id="stored::ExampleConcurrencyControlBase::ExampleConcurrencyControlBase__ExampleConcurrencyControlBaseRR"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a24bd48ed0fd625f1415702fe450a365a"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleConcurrencyControlBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored29ExampleConcurrencyControlBase29ExampleConcurrencyControlBaseERR29ExampleConcurrencyControlBase" title="stored::ExampleConcurrencyControlBase::ExampleConcurrencyControlBase"><span class="n"><span class="pre">ExampleConcurrencyControlBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBase29ExampleConcurrencyControlBaseERR29ExampleConcurrencyControlBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBase29ExampleConcurrencyControlBaseERK29ExampleConcurrencyControlBase">
-<span id="_CPPv3N6stored29ExampleConcurrencyControlBase29ExampleConcurrencyControlBaseERK29ExampleConcurrencyControlBase"></span><span id="_CPPv2N6stored29ExampleConcurrencyControlBase29ExampleConcurrencyControlBaseERK29ExampleConcurrencyControlBase"></span><span id="stored::ExampleConcurrencyControlBase::ExampleConcurrencyControlBase__ExampleConcurrencyControlBaseCR"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1ad6cae4033632678477a1e3b4b8460900"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleConcurrencyControlBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored29ExampleConcurrencyControlBase29ExampleConcurrencyControlBaseERK29ExampleConcurrencyControlBase" title="stored::ExampleConcurrencyControlBase::ExampleConcurrencyControlBase"><span class="n"><span class="pre">ExampleConcurrencyControlBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBase29ExampleConcurrencyControlBaseERK29ExampleConcurrencyControlBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored29ExampleConcurrencyControlBase11bufferToKeyEPKv">
 <span id="_CPPv3NK6stored29ExampleConcurrencyControlBase11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored29ExampleConcurrencyControlBase11bufferToKeyEPKv"></span><span id="stored::ExampleConcurrencyControlBase::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a3a45267be1c1fb629428ae3ce1d4dcd9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored29ExampleConcurrencyControlBase3KeyE" title="stored::ExampleConcurrencyControlBase::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bufferToKey</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored29ExampleConcurrencyControlBase11bufferToKeyEPKv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Converts a variable’s buffer to a key. </p>
@@ -888,13 +857,13 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored29ExampleConcurrencyControlBase14implementationEv">
-<span id="_CPPv3NK6stored29ExampleConcurrencyControlBase14implementationEv"></span><span id="_CPPv2NK6stored29ExampleConcurrencyControlBase14implementationEv"></span><span id="stored::ExampleConcurrencyControlBase::implementationCCE"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a011e5a0b1295df71a69272d6de964122"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored29ExampleConcurrencyControlBase14ImplementationE" title="stored::ExampleConcurrencyControlBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored29ExampleConcurrencyControlBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored29ExampleConcurrencyControlBase14implementationEv"></span><span id="_CPPv2NK6stored29ExampleConcurrencyControlBase14implementationEv"></span><span id="stored::ExampleConcurrencyControlBase::implementationC"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a55cf61c1deea0036bc5d3de7aa675990"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored29ExampleConcurrencyControlBase14ImplementationE" title="stored::ExampleConcurrencyControlBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored29ExampleConcurrencyControlBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBase14implementationEv">
-<span id="_CPPv3N6stored29ExampleConcurrencyControlBase14implementationEv"></span><span id="_CPPv2N6stored29ExampleConcurrencyControlBase14implementationEv"></span><span id="stored::ExampleConcurrencyControlBase::implementationCE"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1ad5e0670338051c113424443bc0b443b1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored29ExampleConcurrencyControlBase14ImplementationE" title="stored::ExampleConcurrencyControlBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored29ExampleConcurrencyControlBase14implementationEv"></span><span id="_CPPv2N6stored29ExampleConcurrencyControlBase14implementationEv"></span><span id="stored::ExampleConcurrencyControlBase::implementation"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1abb261ebda1327dda9520200c458b6ac6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored29ExampleConcurrencyControlBase14ImplementationE" title="stored::ExampleConcurrencyControlBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
@@ -936,20 +905,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored29ExampleConcurrencyControlBase4nameEv">
-<span id="_CPPv3NK6stored29ExampleConcurrencyControlBase4nameEv"></span><span id="_CPPv2NK6stored29ExampleConcurrencyControlBase4nameEv"></span><span id="stored::ExampleConcurrencyControlBase::nameCCE"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a5d2505b57b857de0c8f854ea82fb3693"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored29ExampleConcurrencyControlBase4nameEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored29ExampleConcurrencyControlBase4nameEv"></span><span id="_CPPv2NK6stored29ExampleConcurrencyControlBase4nameEv"></span><span id="stored::ExampleConcurrencyControlBase::nameC"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a9e44ef7fa8f4f44019e0668bb22ebe00"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored29ExampleConcurrencyControlBase4nameEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBaseaSERR29ExampleConcurrencyControlBase">
-<span id="_CPPv3N6stored29ExampleConcurrencyControlBaseaSERR29ExampleConcurrencyControlBase"></span><span id="_CPPv2N6stored29ExampleConcurrencyControlBaseaSERR29ExampleConcurrencyControlBase"></span><span id="stored::ExampleConcurrencyControlBase::assign-operator__ExampleConcurrencyControlBaseRR"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a283269a1ba8452033402261f31b5188a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored29ExampleConcurrencyControlBaseE" title="stored::ExampleConcurrencyControlBase"><span class="n"><span class="pre">ExampleConcurrencyControlBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBaseaSERR29ExampleConcurrencyControlBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBaseaSERK29ExampleConcurrencyControlBase">
-<span id="_CPPv3N6stored29ExampleConcurrencyControlBaseaSERK29ExampleConcurrencyControlBase"></span><span id="_CPPv2N6stored29ExampleConcurrencyControlBaseaSERK29ExampleConcurrencyControlBase"></span><span id="stored::ExampleConcurrencyControlBase::assign-operator__ExampleConcurrencyControlBaseCR"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a7b32110d9a8041128229c3cf6af3d00f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored29ExampleConcurrencyControlBaseE" title="stored::ExampleConcurrencyControlBase"><span class="n"><span class="pre">ExampleConcurrencyControlBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBaseaSERK29ExampleConcurrencyControlBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1046,8 +1003,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERR25ExampleConcurrencyControl">
-<span id="_CPPv3N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERR25ExampleConcurrencyControl"></span><span id="_CPPv2N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERR25ExampleConcurrencyControl"></span><span id="stored::ExampleConcurrencyControl::ExampleConcurrencyControl__ExampleConcurrencyControlRR"></span><span class="target" id="classstored_1_1_example_concurrency_control_1a9e4e5211e7adf096b14debda509e2ad5"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERR25ExampleConcurrencyControl" title="stored::ExampleConcurrencyControl::ExampleConcurrencyControl"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERR25ExampleConcurrencyControl" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
+<span id="_CPPv3N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERR25ExampleConcurrencyControl"></span><span id="_CPPv2N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERR25ExampleConcurrencyControl"></span><span id="stored::ExampleConcurrencyControl::ExampleConcurrencyControl__ExampleConcurrencyControlRR"></span><span class="target" id="classstored_1_1_example_concurrency_control_1a92d184298382e0d0e2225d71a242fdf2"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERR25ExampleConcurrencyControl" title="stored::ExampleConcurrencyControl::ExampleConcurrencyControl"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERR25ExampleConcurrencyControl" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Default move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1058,7 +1015,7 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleConcurrencyControlaSERR25ExampleConcurrencyControl">
-<span id="_CPPv3N6stored25ExampleConcurrencyControlaSERR25ExampleConcurrencyControl"></span><span id="_CPPv2N6stored25ExampleConcurrencyControlaSERR25ExampleConcurrencyControl"></span><span id="stored::ExampleConcurrencyControl::assign-operator__ExampleConcurrencyControlRR"></span><span class="target" id="classstored_1_1_example_concurrency_control_1a274384333b0a926aa0f3024074825d0e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored25ExampleConcurrencyControlE" title="stored::ExampleConcurrencyControl"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleConcurrencyControlaSERR25ExampleConcurrencyControl" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored25ExampleConcurrencyControlaSERR25ExampleConcurrencyControl"></span><span id="_CPPv2N6stored25ExampleConcurrencyControlaSERR25ExampleConcurrencyControl"></span><span id="stored::ExampleConcurrencyControl::assign-operator__ExampleConcurrencyControlRR"></span><span class="target" id="classstored_1_1_example_concurrency_control_1a7d9b385fbd4b916838e55dcbcbea666d"></span><a class="reference internal" href="#_CPPv4N6stored25ExampleConcurrencyControlE" title="stored::ExampleConcurrencyControl"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored25ExampleConcurrencyControlE" title="stored::ExampleConcurrencyControl"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleConcurrencyControlaSERR25ExampleConcurrencyControl" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 

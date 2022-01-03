@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2_basic &mdash; libstored 1.0.1-rc documentation</title>
+  <title>2_basic &mdash; libstored 1.1.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.0.1.dev0
+                1.1.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -178,27 +178,27 @@ string:4[2] two strings
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
 <span class="cm"> * \file</span>
 <span class="cm"> * \brief Basic variable example.</span>
-<span class="cm"> */</span>
+<span class="cm"> */</span><span class="w"></span>
 
-<span class="cp">#include</span> <span class="cpf">&quot;ExampleBasic.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ExampleBasic.h&quot;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
-<span class="p">{</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">ExampleBasic</span> <span class="n">e</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">ExampleBasic</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w"></span>
 
-	<span class="c1">// Initialized value.</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;test42=%&quot;</span> <span class="n">PRId8</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">test42</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+<span class="w">	</span><span class="c1">// Initialized value.</span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;test42=%&quot;</span><span class="w"> </span><span class="n">PRId8</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">test42</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
 
-	<span class="c1">// The thing with the space around the =</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;_42_test42=%&quot;</span> <span class="n">PRId8</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">_42_test42</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+<span class="w">	</span><span class="c1">// The thing with the space around the =</span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;_42_test42=%&quot;</span><span class="w"> </span><span class="n">PRId8</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">_42_test42</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
 
-	<span class="c1">// The initialized array element.</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;three ints[1]=%&quot;</span> <span class="n">PRId16</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">three_ints_1</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+<span class="w">	</span><span class="c1">// The initialized array element.</span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;three ints[1]=%&quot;</span><span class="w"> </span><span class="n">PRId16</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">three_ints_1</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
 
-	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -417,30 +417,30 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleBasicBaseUt2_39E">
-<span id="_CPPv3N6stored16ExampleBasicBaseUt2_39E"></span><span class="target" id="classstored_1_1_example_basic_base_1a870bd509ae7c48c88e93bb38c1489ecf"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseUt2_39E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleBasicBaseUt2_38E">
+<span id="_CPPv3N6stored16ExampleBasicBaseUt2_38E"></span><span class="target" id="classstored_1_1_example_basic_base_1aca9a4c419b6973a09282d38781597e8d"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseUt2_38E" title="Permalink to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleBasicBaseUt2_3911ObjectCountE">
-<span id="_CPPv3N6stored16ExampleBasicBaseUt2_3911ObjectCountE"></span><span class="target" id="classstored_1_1_example_basic_base_1a870bd509ae7c48c88e93bb38c1489ecfa4e22a2b2a8de56993771d183f49c8912"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseUt2_3911ObjectCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleBasicBaseUt2_3811ObjectCountE">
+<span id="_CPPv3N6stored16ExampleBasicBaseUt2_3811ObjectCountE"></span><span class="target" id="classstored_1_1_example_basic_base_1aca9a4c419b6973a09282d38781597e8da4e22a2b2a8de56993771d183f49c8912"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseUt2_3811ObjectCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of objects in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleBasicBaseUt2_3913VariableCountE">
-<span id="_CPPv3N6stored16ExampleBasicBaseUt2_3913VariableCountE"></span><span class="target" id="classstored_1_1_example_basic_base_1a870bd509ae7c48c88e93bb38c1489ecfae001c655d56ee9d29d169fa05d19c6da"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseUt2_3913VariableCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleBasicBaseUt2_3813VariableCountE">
+<span id="_CPPv3N6stored16ExampleBasicBaseUt2_3813VariableCountE"></span><span class="target" id="classstored_1_1_example_basic_base_1aca9a4c419b6973a09282d38781597e8dae001c655d56ee9d29d169fa05d19c6da"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseUt2_3813VariableCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of variables in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleBasicBaseUt2_3913FunctionCountE">
-<span id="_CPPv3N6stored16ExampleBasicBaseUt2_3913FunctionCountE"></span><span class="target" id="classstored_1_1_example_basic_base_1a870bd509ae7c48c88e93bb38c1489ecfa56067008cb7a6845b075a32db30e743f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseUt2_3913FunctionCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleBasicBaseUt2_3813FunctionCountE">
+<span id="_CPPv3N6stored16ExampleBasicBaseUt2_3813FunctionCountE"></span><span class="target" id="classstored_1_1_example_basic_base_1aca9a4c419b6973a09282d38781597e8da56067008cb7a6845b075a32db30e743f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseUt2_3813FunctionCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of functions in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleBasicBaseUt2_3910BufferSizeE">
-<span id="_CPPv3N6stored16ExampleBasicBaseUt2_3910BufferSizeE"></span><span class="target" id="classstored_1_1_example_basic_base_1a870bd509ae7c48c88e93bb38c1489ecfa966156d6e00f36f303fb4a5cf5ede4f5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseUt2_3910BufferSizeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleBasicBaseUt2_3810BufferSizeE">
+<span id="_CPPv3N6stored16ExampleBasicBaseUt2_3810BufferSizeE"></span><span class="target" id="classstored_1_1_example_basic_base_1aca9a4c419b6973a09282d38781597e8da966156d6e00f36f303fb4a5cf5ede4f5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseUt2_3810BufferSizeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Buffer size. </p>
 </dd></dl>
 
@@ -478,18 +478,6 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleBasicBase16ExampleBasicBaseERR16ExampleBasicBase">
-<span id="_CPPv3N6stored16ExampleBasicBase16ExampleBasicBaseERR16ExampleBasicBase"></span><span id="_CPPv2N6stored16ExampleBasicBase16ExampleBasicBaseERR16ExampleBasicBase"></span><span id="stored::ExampleBasicBase::ExampleBasicBase__ExampleBasicBaseRR"></span><span class="target" id="classstored_1_1_example_basic_base_1a5f8a97097566f3d62f16d6852b68abd8"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleBasicBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase16ExampleBasicBaseERR16ExampleBasicBase" title="stored::ExampleBasicBase::ExampleBasicBase"><span class="n"><span class="pre">ExampleBasicBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBase16ExampleBasicBaseERR16ExampleBasicBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleBasicBase16ExampleBasicBaseERK16ExampleBasicBase">
-<span id="_CPPv3N6stored16ExampleBasicBase16ExampleBasicBaseERK16ExampleBasicBase"></span><span id="_CPPv2N6stored16ExampleBasicBase16ExampleBasicBaseERK16ExampleBasicBase"></span><span id="stored::ExampleBasicBase::ExampleBasicBase__ExampleBasicBaseCR"></span><span class="target" id="classstored_1_1_example_basic_base_1a0262449bde91199d4dac9ba2bb81cbc4"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleBasicBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase16ExampleBasicBaseERK16ExampleBasicBase" title="stored::ExampleBasicBase::ExampleBasicBase"><span class="n"><span class="pre">ExampleBasicBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBase16ExampleBasicBaseERK16ExampleBasicBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored16ExampleBasicBase11bufferToKeyEPKv">
 <span id="_CPPv3NK6stored16ExampleBasicBase11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored16ExampleBasicBase11bufferToKeyEPKv"></span><span id="stored::ExampleBasicBase::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_basic_base_1a2c04752218f85ca92696c97603743ff5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase3KeyE" title="stored::ExampleBasicBase::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bufferToKey</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16ExampleBasicBase11bufferToKeyEPKv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Converts a variable’s buffer to a key. </p>
@@ -524,13 +512,13 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored16ExampleBasicBase14implementationEv">
-<span id="_CPPv3NK6stored16ExampleBasicBase14implementationEv"></span><span id="_CPPv2NK6stored16ExampleBasicBase14implementationEv"></span><span id="stored::ExampleBasicBase::implementationCCE"></span><span class="target" id="classstored_1_1_example_basic_base_1a42fc062253db1707e88dda6861891001"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase14ImplementationE" title="stored::ExampleBasicBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16ExampleBasicBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored16ExampleBasicBase14implementationEv"></span><span id="_CPPv2NK6stored16ExampleBasicBase14implementationEv"></span><span id="stored::ExampleBasicBase::implementationC"></span><span class="target" id="classstored_1_1_example_basic_base_1ac4c14d2a27ab1b0167dbfb32cf7b9f29"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase14ImplementationE" title="stored::ExampleBasicBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16ExampleBasicBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleBasicBase14implementationEv">
-<span id="_CPPv3N6stored16ExampleBasicBase14implementationEv"></span><span id="_CPPv2N6stored16ExampleBasicBase14implementationEv"></span><span id="stored::ExampleBasicBase::implementationCE"></span><span class="target" id="classstored_1_1_example_basic_base_1a7e3a32390297b5549d6d12d62da5231f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase14ImplementationE" title="stored::ExampleBasicBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored16ExampleBasicBase14implementationEv"></span><span id="_CPPv2N6stored16ExampleBasicBase14implementationEv"></span><span id="stored::ExampleBasicBase::implementation"></span><span class="target" id="classstored_1_1_example_basic_base_1a5190adcd20054a639a6cf28bdbf57ccf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleBasicBase14ImplementationE" title="stored::ExampleBasicBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
@@ -572,20 +560,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored16ExampleBasicBase4nameEv">
-<span id="_CPPv3NK6stored16ExampleBasicBase4nameEv"></span><span id="_CPPv2NK6stored16ExampleBasicBase4nameEv"></span><span id="stored::ExampleBasicBase::nameCCE"></span><span class="target" id="classstored_1_1_example_basic_base_1a95fbe3ea9677ab77e90b888219df67ff"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16ExampleBasicBase4nameEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored16ExampleBasicBase4nameEv"></span><span id="_CPPv2NK6stored16ExampleBasicBase4nameEv"></span><span id="stored::ExampleBasicBase::nameC"></span><span class="target" id="classstored_1_1_example_basic_base_1a344e0644b2fb5cfa8e716ddb74253157"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16ExampleBasicBase4nameEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleBasicBaseaSERR16ExampleBasicBase">
-<span id="_CPPv3N6stored16ExampleBasicBaseaSERR16ExampleBasicBase"></span><span id="_CPPv2N6stored16ExampleBasicBaseaSERR16ExampleBasicBase"></span><span id="stored::ExampleBasicBase::assign-operator__ExampleBasicBaseRR"></span><span class="target" id="classstored_1_1_example_basic_base_1a9b098a3687f1100fc349a8c143592d32"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleBasicBaseE" title="stored::ExampleBasicBase"><span class="n"><span class="pre">ExampleBasicBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseaSERR16ExampleBasicBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleBasicBaseaSERK16ExampleBasicBase">
-<span id="_CPPv3N6stored16ExampleBasicBaseaSERK16ExampleBasicBase"></span><span id="_CPPv2N6stored16ExampleBasicBaseaSERK16ExampleBasicBase"></span><span id="stored::ExampleBasicBase::assign-operator__ExampleBasicBaseCR"></span><span class="target" id="classstored_1_1_example_basic_base_1a0ed300987214e097fa901194a3676471"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleBasicBaseE" title="stored::ExampleBasicBase"><span class="n"><span class="pre">ExampleBasicBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleBasicBaseaSERK16ExampleBasicBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -694,8 +670,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleBasic12ExampleBasicERR12ExampleBasic">
-<span id="_CPPv3N6stored12ExampleBasic12ExampleBasicERR12ExampleBasic"></span><span id="_CPPv2N6stored12ExampleBasic12ExampleBasicERR12ExampleBasic"></span><span id="stored::ExampleBasic::ExampleBasic__ExampleBasicRR"></span><span class="target" id="classstored_1_1_example_basic_1a0ed3ef11ff64b796ca3f0b50781b0147"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleBasic</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleBasic12ExampleBasicERR12ExampleBasic" title="stored::ExampleBasic::ExampleBasic"><span class="n"><span class="pre">ExampleBasic</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleBasic12ExampleBasicERR12ExampleBasic" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
+<span id="_CPPv3N6stored12ExampleBasic12ExampleBasicERR12ExampleBasic"></span><span id="_CPPv2N6stored12ExampleBasic12ExampleBasicERR12ExampleBasic"></span><span id="stored::ExampleBasic::ExampleBasic__ExampleBasicRR"></span><span class="target" id="classstored_1_1_example_basic_1a8a0ed240f6b4dbcf3e355d00fac5172c"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleBasic</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleBasic12ExampleBasicERR12ExampleBasic" title="stored::ExampleBasic::ExampleBasic"><span class="n"><span class="pre">ExampleBasic</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleBasic12ExampleBasicERR12ExampleBasic" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Default move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -706,7 +682,7 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleBasicaSERR12ExampleBasic">
-<span id="_CPPv3N6stored12ExampleBasicaSERR12ExampleBasic"></span><span id="_CPPv2N6stored12ExampleBasicaSERR12ExampleBasic"></span><span id="stored::ExampleBasic::assign-operator__ExampleBasicRR"></span><span class="target" id="classstored_1_1_example_basic_1a41c6cdb56157187afd7cb13d553a06e8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleBasicE" title="stored::ExampleBasic"><span class="n"><span class="pre">ExampleBasic</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleBasicaSERR12ExampleBasic" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored12ExampleBasicaSERR12ExampleBasic"></span><span id="_CPPv2N6stored12ExampleBasicaSERR12ExampleBasic"></span><span id="stored::ExampleBasic::assign-operator__ExampleBasicRR"></span><span class="target" id="classstored_1_1_example_basic_1af94937fe34558365e185527bd3824981"></span><a class="reference internal" href="#_CPPv4N6stored12ExampleBasicE" title="stored::ExampleBasic"><span class="n"><span class="pre">ExampleBasic</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleBasicE" title="stored::ExampleBasic"><span class="n"><span class="pre">ExampleBasic</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleBasicaSERR12ExampleBasic" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 

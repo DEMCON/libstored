@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>5_debug &mdash; libstored 1.0.1-rc documentation</title>
+  <title>5_debug &mdash; libstored 1.1.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.0.1.dev0
+                1.1.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -125,204 +125,204 @@
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
 <span class="cm"> * \file</span>
 <span class="cm"> * \brief Example with a debugger instance and two stores.</span>
-<span class="cm"> */</span>
+<span class="cm"> */</span><span class="w"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&quot;ExampleDebugSomeStore.h&quot;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;ExampleDebugAnotherStore.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ExampleDebugAnotherStore.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ExampleDebugSomeStore.h&quot;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
 
 <span class="cp">#ifdef STORED_COMPILER_MSVC</span>
-<span class="cp">#  define strdup(s) _strdup(s)</span>
+<span class="cp">#	define strdup(s) _strdup(s)</span>
 <span class="cp">#endif</span>
 
 <span class="c1">// A &#39;physical layer&#39; that sends the outgoing (encoded) data to print().</span>
-<span class="k">class</span> <span class="nc">PrintfPhysical</span> <span class="o">:</span> <span class="k">public</span> <span class="n">stored</span><span class="o">::</span><span class="n">ProtocolLayer</span> <span class="p">{</span>
-	<span class="n">CLASS_NOCOPY</span><span class="p">(</span><span class="n">PrintfPhysical</span><span class="p">)</span>
-<span class="k">public</span><span class="o">:</span>
-	<span class="k">typedef</span> <span class="n">stored</span><span class="o">::</span><span class="n">ProtocolLayer</span> <span class="n">base</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PrintfPhysical</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">ProtocolLayer</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">STORED_CLASS_NOCOPY</span><span class="p">(</span><span class="n">PrintfPhysical</span><span class="p">)</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="k">typedef</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">ProtocolLayer</span><span class="w"> </span><span class="n">base</span><span class="p">;</span><span class="w"></span>
 
-	<span class="k">explicit</span> <span class="nf">PrintfPhysical</span><span class="p">(</span><span class="n">ProtocolLayer</span><span class="o">&amp;</span> <span class="n">up</span><span class="p">)</span>
-		<span class="o">:</span> <span class="n">base</span><span class="p">(</span><span class="o">&amp;</span><span class="n">up</span><span class="p">)</span>
-		<span class="p">,</span> <span class="n">m_encoding</span><span class="p">()</span>
-		<span class="p">,</span> <span class="n">m_silenced</span><span class="p">()</span>
-	<span class="p">{</span>
-		<span class="n">up</span><span class="p">.</span><span class="n">setDown</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="k">explicit</span><span class="w"> </span><span class="n">PrintfPhysical</span><span class="p">(</span><span class="n">ProtocolLayer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">up</span><span class="p">)</span><span class="w"></span>
+<span class="w">		</span><span class="o">:</span><span class="w"> </span><span class="n">base</span><span class="p">(</span><span class="o">&amp;</span><span class="n">up</span><span class="p">)</span><span class="w"></span>
+<span class="w">		</span><span class="p">,</span><span class="w"> </span><span class="n">m_encoding</span><span class="p">()</span><span class="w"></span>
+<span class="w">		</span><span class="p">,</span><span class="w"> </span><span class="n">m_silenced</span><span class="p">()</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">up</span><span class="p">.</span><span class="n">setDown</span><span class="p">(</span><span class="k">this</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="nf">decode</span><span class="p">(</span><span class="kt">char</span> <span class="k">const</span><span class="o">*</span> <span class="n">frame</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="kt">char</span><span class="o">*</span> <span class="n">s</span> <span class="o">=</span> <span class="n">strdup</span><span class="p">(</span><span class="n">frame</span><span class="p">);</span>
-		<span class="k">if</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-			<span class="n">decode</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">s</span><span class="p">));</span>
-		<span class="n">free</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">decode</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">frame</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strdup</span><span class="p">(</span><span class="n">frame</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">decode</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">strlen</span><span class="p">(</span><span class="n">s</span><span class="p">));</span><span class="w"></span>
+<span class="w">		</span><span class="n">free</span><span class="p">(</span><span class="n">s</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="nf">decode</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">)</span> <span class="k">final</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">m_silenced</span><span class="p">)</span>
-			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;&gt;&gt;   %.*s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">len</span><span class="p">,</span> <span class="p">(</span><span class="kt">char</span> <span class="k">const</span><span class="o">*</span><span class="p">)</span><span class="n">buffer</span><span class="p">);</span>
-		<span class="n">base</span><span class="o">::</span><span class="n">decode</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">);</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">decode</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">)</span><span class="w"> </span><span class="k">final</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">m_silenced</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;&gt;&gt;   %.*s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="p">)</span><span class="n">buffer</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="n">base</span><span class="o">::</span><span class="n">decode</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="nf">encode</span><span class="p">(</span><span class="kt">void</span> <span class="k">const</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">last</span> <span class="o">=</span> <span class="nb">true</span><span class="p">)</span> <span class="k">final</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">m_encoding</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">m_silenced</span><span class="p">)</span>
-				<span class="n">printf</span><span class="p">(</span><span class="s">&quot;&lt;&lt;   &quot;</span><span class="p">);</span>
-			<span class="n">m_encoding</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
-		<span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">encode</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">last</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="k">final</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">m_encoding</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">m_silenced</span><span class="p">)</span><span class="w"></span>
+<span class="w">				</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;&lt;&lt;   &quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">			</span><span class="n">m_encoding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
 
-		<span class="k">if</span><span class="p">(</span><span class="n">len</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">m_silenced</span><span class="p">)</span>
-			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;%.*s&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">len</span><span class="p">,</span> <span class="p">(</span><span class="kt">char</span> <span class="k">const</span><span class="o">*</span><span class="p">)</span><span class="n">buffer</span><span class="p">);</span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">len</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">m_silenced</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%.*s&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="p">)</span><span class="n">buffer</span><span class="p">);</span><span class="w"></span>
 
-		<span class="k">if</span><span class="p">(</span><span class="n">last</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">m_silenced</span><span class="p">)</span>
-				<span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-			<span class="n">m_encoding</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">last</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">m_silenced</span><span class="p">)</span><span class="w"></span>
+<span class="w">				</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">			</span><span class="n">m_encoding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="nf">silence</span><span class="p">(</span><span class="kt">bool</span> <span class="n">silenced</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="n">m_silenced</span> <span class="o">=</span> <span class="n">silenced</span><span class="p">;</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">silence</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">silenced</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">m_silenced</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">silenced</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-<span class="k">private</span><span class="o">:</span>
-	<span class="kt">bool</span> <span class="n">m_encoding</span><span class="p">;</span>
-	<span class="kt">bool</span> <span class="n">m_silenced</span><span class="p">;</span>
-<span class="p">};</span>
+<span class="k">private</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="kt">bool</span><span class="w"> </span><span class="n">m_encoding</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="kt">bool</span><span class="w"> </span><span class="n">m_silenced</span><span class="p">;</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 
 <span class="c1">// Extend the capabilities with the &#39;z&#39; command.</span>
-<span class="k">class</span> <span class="nc">ExtendedDebugger</span> <span class="o">:</span> <span class="k">public</span> <span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span> <span class="p">{</span>
-	<span class="n">CLASS_NOCOPY</span><span class="p">(</span><span class="n">ExtendedDebugger</span><span class="p">)</span>
-<span class="k">public</span><span class="o">:</span>
-	<span class="k">typedef</span> <span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span> <span class="n">base</span><span class="p">;</span>
-	<span class="k">explicit</span> <span class="nf">ExtendedDebugger</span><span class="p">(</span><span class="kt">char</span> <span class="k">const</span><span class="o">*</span> <span class="n">identification</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">)</span>
-		<span class="o">:</span> <span class="n">base</span><span class="p">(</span><span class="n">identification</span><span class="p">)</span>
-	<span class="p">{}</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExtendedDebugger</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">STORED_CLASS_NOCOPY</span><span class="p">(</span><span class="n">ExtendedDebugger</span><span class="p">)</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="k">typedef</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span><span class="w"> </span><span class="n">base</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="k">explicit</span><span class="w"> </span><span class="n">ExtendedDebugger</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">identification</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">)</span><span class="w"></span>
+<span class="w">		</span><span class="o">:</span><span class="w"> </span><span class="n">base</span><span class="p">(</span><span class="n">identification</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{}</span><span class="w"></span>
 
-	<span class="k">virtual</span> <span class="o">~</span><span class="n">ExtendedDebugger</span><span class="p">()</span> <span class="k">noexcept</span> <span class="k">override</span> <span class="n">is_default</span><span class="p">;</span>
+<span class="w">	</span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">ExtendedDebugger</span><span class="p">()</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="n">is_default</span><span class="p">;</span><span class="w"></span>
 
-	<span class="k">virtual</span> <span class="kt">void</span> <span class="nf">capabilities</span><span class="p">(</span><span class="kt">char</span><span class="o">*&amp;</span> <span class="n">caps</span><span class="p">,</span> <span class="kt">size_t</span><span class="o">&amp;</span> <span class="n">len</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">reserve</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">override</span>
-	<span class="p">{</span>
-		<span class="c1">// Get the default capabilities.</span>
-		<span class="n">base</span><span class="o">::</span><span class="n">capabilities</span><span class="p">(</span><span class="n">caps</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">reserve</span> <span class="o">+</span> <span class="mi">1</span> <span class="cm">/* add room for our &#39;z&#39; cmd */</span><span class="p">);</span>
-		<span class="c1">// Add our &#39;z&#39; cmd.</span>
-		<span class="n">caps</span><span class="p">[</span><span class="n">len</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;z&#39;</span><span class="p">;</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">capabilities</span><span class="p">(</span><span class="kt">char</span><span class="o">*&amp;</span><span class="w"> </span><span class="n">caps</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">reserve</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="c1">// Get the default capabilities.</span>
+<span class="w">		</span><span class="n">base</span><span class="o">::</span><span class="n">capabilities</span><span class="p">(</span><span class="n">caps</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="n">reserve</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="cm">/* add room for our &#39;z&#39; cmd */</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="c1">// Add our &#39;z&#39; cmd.</span>
+<span class="w">		</span><span class="n">caps</span><span class="p">[</span><span class="n">len</span><span class="o">++</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;z&#39;</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="k">virtual</span> <span class="kt">void</span> <span class="nf">process</span><span class="p">(</span><span class="kt">void</span> <span class="k">const</span><span class="o">*</span> <span class="n">frame</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="n">ProtocolLayer</span><span class="o">&amp;</span> <span class="n">response</span><span class="p">)</span> <span class="k">override</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="n">unlikely</span><span class="p">(</span><span class="o">!</span><span class="n">frame</span> <span class="o">||</span> <span class="n">len</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span>
-			<span class="k">return</span><span class="p">;</span>
+<span class="w">	</span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">frame</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="n">ProtocolLayer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">response</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">unlikely</span><span class="p">(</span><span class="o">!</span><span class="n">frame</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">len</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"></span>
+<span class="w">			</span><span class="k">return</span><span class="p">;</span><span class="w"></span>
 
-		<span class="kt">char</span> <span class="k">const</span><span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">frame</span><span class="p">);</span>
+<span class="w">		</span><span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">frame</span><span class="p">);</span><span class="w"></span>
 
-		<span class="k">switch</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">{</span>
-		<span class="k">case</span> <span class="sc">&#39;z&#39;</span><span class="o">:</span>
-			<span class="c1">// That&#39;s our cmd. Let&#39;s respond with something useful...</span>
-			<span class="n">response</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&quot;Zzzz&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
-			<span class="k">break</span><span class="p">;</span>
-		<span class="k">default</span><span class="o">:</span>
-			<span class="c1">// Not for us, forward to our base.</span>
-			<span class="n">base</span><span class="o">::</span><span class="n">process</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">response</span><span class="p">);</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
-<span class="p">};</span>
+<span class="w">		</span><span class="k">switch</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">case</span><span class="w"> </span><span class="sc">&#39;z&#39;</span><span class="o">:</span><span class="w"></span>
+<span class="w">			</span><span class="c1">// That&#39;s our cmd. Let&#39;s respond with something useful...</span>
+<span class="w">			</span><span class="n">response</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&quot;Zzzz&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span><span class="w"></span>
+<span class="w">			</span><span class="k">break</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="k">default</span><span class="o">:</span><span class="w"></span>
+<span class="w">			</span><span class="c1">// Not for us, forward to our base.</span>
+<span class="w">			</span><span class="n">base</span><span class="o">::</span><span class="n">process</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="n">response</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
-<span class="p">{</span>
-	<span class="c1">// Create a few stores.</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">ExampleDebugSomeStore</span> <span class="n">someStore1</span><span class="p">;</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">ExampleDebugSomeStore</span> <span class="n">someStore2</span><span class="p">;</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">ExampleDebugAnotherStore</span> <span class="n">anotherStore</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="c1">// Create a few stores.</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">ExampleDebugSomeStore</span><span class="w"> </span><span class="n">someStore1</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">ExampleDebugSomeStore</span><span class="w"> </span><span class="n">someStore2</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">ExampleDebugAnotherStore</span><span class="w"> </span><span class="n">anotherStore</span><span class="p">;</span><span class="w"></span>
 
-	<span class="c1">// Register them to a debugger.</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span> <span class="n">debugger</span><span class="p">(</span><span class="s">&quot;5_debug&quot;</span><span class="p">);</span>
-	<span class="n">debugger</span><span class="p">.</span><span class="n">setVersions</span><span class="p">(</span><span class="s">&quot;123&quot;</span><span class="p">);</span>
-	<span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">someStore1</span><span class="p">,</span> <span class="s">&quot;/SomeStore&quot;</span><span class="p">);</span>
-	<span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">someStore2</span><span class="p">,</span> <span class="s">&quot;/OtherInstanceOfSomeStore&quot;</span><span class="p">);</span>
-	<span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">anotherStore</span><span class="p">);</span> <span class="c1">// Use default name.</span>
+<span class="w">	</span><span class="c1">// Register them to a debugger.</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span><span class="w"> </span><span class="n">debugger</span><span class="p">(</span><span class="s">&quot;5_debug&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">debugger</span><span class="p">.</span><span class="n">setVersions</span><span class="p">(</span><span class="s">&quot;123&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">someStore1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;/SomeStore&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">someStore2</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;/OtherInstanceOfSomeStore&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">anotherStore</span><span class="p">);</span><span class="w"> </span><span class="c1">// Use default name.</span>
 
-	<span class="c1">// Some accesses to the stores objects using the full prefix.</span>
-	<span class="kt">int32_t</span> <span class="n">i</span><span class="p">;</span>
-	<span class="c1">// The stored::DebugVariant is a bit more expensive than directly</span>
-	<span class="c1">// accessing the store&#39;s accessors, but allows a template-independant interface,</span>
-	<span class="c1">// as the debugger will operate only on such an interface.</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">DebugVariant</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">debugger</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;/SomeStore/i&quot;</span><span class="p">);</span>
-	<span class="n">i1</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">i</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">i</span><span class="p">));</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;/SomeStore/i = %&quot;</span> <span class="n">PRId32</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
-	<span class="n">i</span><span class="o">++</span><span class="p">;</span>
-	<span class="n">i1</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="o">&amp;</span><span class="n">i</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">i</span><span class="p">));</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;/SomeStore/i = %&quot;</span> <span class="n">PRId32</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">someStore1</span><span class="p">.</span><span class="n">i</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+<span class="w">	</span><span class="c1">// Some accesses to the stores objects using the full prefix.</span>
+<span class="w">	</span><span class="kt">int32_t</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="c1">// The stored::DebugVariant is a bit more expensive than directly</span>
+<span class="w">	</span><span class="c1">// accessing the store&#39;s accessors, but allows a template-independant interface,</span>
+<span class="w">	</span><span class="c1">// as the debugger will operate only on such an interface.</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">DebugVariant</span><span class="w"> </span><span class="n">i1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">debugger</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;/SomeStore/i&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">i1</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">i</span><span class="p">));</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;/SomeStore/i = %&quot;</span><span class="w"> </span><span class="n">PRId32</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">i</span><span class="o">++</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">i1</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="o">&amp;</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">i</span><span class="p">));</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;/SomeStore/i = %&quot;</span><span class="w"> </span><span class="n">PRId32</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">someStore1</span><span class="p">.</span><span class="n">i</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">DebugVariant</span> <span class="n">i2</span> <span class="o">=</span> <span class="n">debugger</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;/OtherInstanceOfSomeStore/i&quot;</span><span class="p">);</span>
-	<span class="n">i2</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">i</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">i</span><span class="p">));</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;/OtherInstanceOfSomeStore/i = %&quot;</span> <span class="n">PRId32</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">DebugVariant</span><span class="w"> </span><span class="n">i2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">debugger</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;/OtherInstanceOfSomeStore/i&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">i2</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">i</span><span class="p">));</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;/OtherInstanceOfSomeStore/i = %&quot;</span><span class="w"> </span><span class="n">PRId32</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">DebugVariant</span> <span class="n">j</span> <span class="o">=</span> <span class="n">debugger</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;/ExampleDebugAnotherStore/j&quot;</span><span class="p">);</span>
-	<span class="n">j</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">i</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">i</span><span class="p">));</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;/ExampleDebugAnotherStore/j = %&quot;</span> <span class="n">PRId32</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">DebugVariant</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">debugger</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;/ExampleDebugAnotherStore/j&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">j</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">i</span><span class="p">));</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;/ExampleDebugAnotherStore/j = %&quot;</span><span class="w"> </span><span class="n">PRId32</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span><span class="w"></span>
 
-	<span class="c1">// DebugVariants are small, copyable and assignable, so they can be used in</span>
-	<span class="c1">// std::map, for example.</span>
-	<span class="n">i2</span> <span class="o">=</span> <span class="n">i1</span><span class="p">;</span> <span class="c1">// let i2 point to /SomeStore/i</span>
-	<span class="n">i2</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">i</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">i</span><span class="p">));</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;i2 = %&quot;</span> <span class="n">PRId32</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+<span class="w">	</span><span class="c1">// DebugVariants are small, copyable and assignable, so they can be used in</span>
+<span class="w">	</span><span class="c1">// std::map, for example.</span>
+<span class="w">	</span><span class="n">i2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i1</span><span class="p">;</span><span class="w"> </span><span class="c1">// let i2 point to /SomeStore/i</span>
+<span class="w">	</span><span class="n">i2</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">i</span><span class="p">));</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;i2 = %&quot;</span><span class="w"> </span><span class="n">PRId32</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span><span class="w"></span>
 
-	<span class="c1">// Now process some Embedded Debugger messages</span>
-	<span class="n">PrintfPhysical</span> <span class="n">phy</span><span class="p">(</span><span class="n">debugger</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;?&quot;</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;i&quot;</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;r/ExampleDebugAnotherStore/j&quot;</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;wf00f/SomeStore/i&quot;</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;r/SomeStore/i&quot;</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;eHello World!!1&quot;</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;l&quot;</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;a0/SomeStore/i&quot;</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;r0&quot;</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;m* r0 e; r0 e; r/ExampleDebugAnotherStore/j&quot;</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;*&quot;</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;m*&quot;</span><span class="p">);</span>
+<span class="w">	</span><span class="c1">// Now process some Embedded Debugger messages</span>
+<span class="w">	</span><span class="n">PrintfPhysical</span><span class="w"> </span><span class="n">phy</span><span class="p">(</span><span class="n">debugger</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;?&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;i&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;r/ExampleDebugAnotherStore/j&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;wf00f/SomeStore/i&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;r/SomeStore/i&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;eHello World!!1&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;l&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;a0/SomeStore/i&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;r0&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;m* r0 e; r0 e; r/ExampleDebugAnotherStore/j&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;*&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;m*&quot;</span><span class="p">);</span><span class="w"></span>
 
-	<span class="c1">// Suppress output, such that the application always prints the same.</span>
-	<span class="c1">// This is handy for testing the behavior of the application by unit tests.</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">silence</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+<span class="w">	</span><span class="c1">// Suppress output, such that the application always prints the same.</span>
+<span class="w">	</span><span class="c1">// This is handy for testing the behavior of the application by unit tests.</span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">silence</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span><span class="w"></span>
 
-	<span class="kt">int</span> <span class="n">mem</span> <span class="o">=</span> <span class="mh">0xbeef</span><span class="p">;</span>
-	<span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="o">=</span> <span class="p">{};</span>
-	<span class="n">snprintf</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buffer</span><span class="p">),</span> <span class="s">&quot;R%&quot;</span> <span class="n">PRIxPTR</span> <span class="s">&quot; %zu&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="o">&amp;</span><span class="n">mem</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">mem</span><span class="p">));</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span>
+<span class="w">	</span><span class="kt">int</span><span class="w"> </span><span class="n">mem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0xbeef</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="kt">char</span><span class="w"> </span><span class="n">buffer</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span><span class="w"></span>
+<span class="w">	</span><span class="n">snprintf</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">buffer</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;R%&quot;</span><span class="w"> </span><span class="n">PRIxPTR</span><span class="w"> </span><span class="s">&quot; %zu&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="o">&amp;</span><span class="n">mem</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">mem</span><span class="p">));</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">snprintf</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buffer</span><span class="p">),</span> <span class="s">&quot;W%&quot;</span> <span class="n">PRIxPTR</span> <span class="s">&quot; cafe&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="o">&amp;</span><span class="n">mem</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span>
+<span class="w">	</span><span class="n">snprintf</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">buffer</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;W%&quot;</span><span class="w"> </span><span class="n">PRIxPTR</span><span class="w"> </span><span class="s">&quot; cafe&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="o">&amp;</span><span class="n">mem</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;mem = 0x%x</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">mem</span><span class="p">);</span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;mem = 0x%x</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">mem</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">phy</span><span class="p">.</span><span class="n">silence</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">silence</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;s&quot;</span><span class="p">);</span>
-	<span class="n">debugger</span><span class="p">.</span><span class="n">stream</span><span class="p">(</span><span class="sc">&#39;A&#39;</span><span class="p">,</span> <span class="s">&quot;Hello&quot;</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;s&quot;</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;sA&quot;</span><span class="p">);</span>
-	<span class="n">debugger</span><span class="p">.</span><span class="n">stream</span><span class="p">(</span><span class="sc">&#39;A&#39;</span><span class="p">,</span> <span class="s">&quot;stream!!1&quot;</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;sA&quot;</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;s&quot;</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;sA/&quot;</span><span class="p">);</span>
-	<span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;sB/&quot;</span><span class="p">);</span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;s&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">debugger</span><span class="p">.</span><span class="n">stream</span><span class="p">(</span><span class="sc">&#39;A&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Hello&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;s&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;sA&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">debugger</span><span class="p">.</span><span class="n">stream</span><span class="p">(</span><span class="sc">&#39;A&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;stream!!1&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;sA&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;s&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;sA/&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">phy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;sB/&quot;</span><span class="p">);</span><span class="w"></span>
 
 
-	<span class="c1">// Test our debugger with the z capability.</span>
-	<span class="n">ExtendedDebugger</span> <span class="n">extdebugger</span><span class="p">;</span>
-	<span class="n">PrintfPhysical</span> <span class="n">extphy</span><span class="p">(</span><span class="n">extdebugger</span><span class="p">);</span>
-	<span class="n">extphy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;?&quot;</span><span class="p">);</span>
-	<span class="n">extphy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;z&quot;</span><span class="p">);</span>
+<span class="w">	</span><span class="c1">// Test our debugger with the z capability.</span>
+<span class="w">	</span><span class="n">ExtendedDebugger</span><span class="w"> </span><span class="n">extdebugger</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">PrintfPhysical</span><span class="w"> </span><span class="n">extphy</span><span class="p">(</span><span class="n">extdebugger</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">extphy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;?&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">extphy</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;z&quot;</span><span class="p">);</span><span class="w"></span>
 
-	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -439,30 +439,30 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_43E">
-<span id="_CPPv3N6stored25ExampleDebugSomeStoreBaseUt2_43E"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1a353b38f3df78ca6b27bae16207f84e91"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_43E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_42E">
+<span id="_CPPv3N6stored25ExampleDebugSomeStoreBaseUt2_42E"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1a306e08285d98a472df40cbc3d04d8ce0"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_42E" title="Permalink to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4311ObjectCountE">
-<span id="_CPPv3N6stored25ExampleDebugSomeStoreBaseUt2_4311ObjectCountE"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1a353b38f3df78ca6b27bae16207f84e91af619e09edfdbc9ad867aafc1c71e351a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4311ObjectCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4211ObjectCountE">
+<span id="_CPPv3N6stored25ExampleDebugSomeStoreBaseUt2_4211ObjectCountE"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1a306e08285d98a472df40cbc3d04d8ce0af619e09edfdbc9ad867aafc1c71e351a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4211ObjectCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of objects in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4313VariableCountE">
-<span id="_CPPv3N6stored25ExampleDebugSomeStoreBaseUt2_4313VariableCountE"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1a353b38f3df78ca6b27bae16207f84e91a34731f45b9b9d688d9674d43f8579230"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4313VariableCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4213VariableCountE">
+<span id="_CPPv3N6stored25ExampleDebugSomeStoreBaseUt2_4213VariableCountE"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1a306e08285d98a472df40cbc3d04d8ce0a34731f45b9b9d688d9674d43f8579230"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4213VariableCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of variables in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4313FunctionCountE">
-<span id="_CPPv3N6stored25ExampleDebugSomeStoreBaseUt2_4313FunctionCountE"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1a353b38f3df78ca6b27bae16207f84e91a2befdb407f07a5c4a348c54ad38df124"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4313FunctionCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4213FunctionCountE">
+<span id="_CPPv3N6stored25ExampleDebugSomeStoreBaseUt2_4213FunctionCountE"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1a306e08285d98a472df40cbc3d04d8ce0a2befdb407f07a5c4a348c54ad38df124"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4213FunctionCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of functions in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4310BufferSizeE">
-<span id="_CPPv3N6stored25ExampleDebugSomeStoreBaseUt2_4310BufferSizeE"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1a353b38f3df78ca6b27bae16207f84e91aa54b90d2da65a87736b362a8666cd61c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4310BufferSizeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4210BufferSizeE">
+<span id="_CPPv3N6stored25ExampleDebugSomeStoreBaseUt2_4210BufferSizeE"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1a306e08285d98a472df40cbc3d04d8ce0aa54b90d2da65a87736b362a8666cd61c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBaseUt2_4210BufferSizeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Buffer size. </p>
 </dd></dl>
 
@@ -500,18 +500,6 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBase25ExampleDebugSomeStoreBaseERR25ExampleDebugSomeStoreBase">
-<span id="_CPPv3N6stored25ExampleDebugSomeStoreBase25ExampleDebugSomeStoreBaseERR25ExampleDebugSomeStoreBase"></span><span id="_CPPv2N6stored25ExampleDebugSomeStoreBase25ExampleDebugSomeStoreBaseERR25ExampleDebugSomeStoreBase"></span><span id="stored::ExampleDebugSomeStoreBase::ExampleDebugSomeStoreBase__ExampleDebugSomeStoreBaseRR"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1a49868de8db90b5a569138ffc6134e7f2"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleDebugSomeStoreBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase25ExampleDebugSomeStoreBaseERR25ExampleDebugSomeStoreBase" title="stored::ExampleDebugSomeStoreBase::ExampleDebugSomeStoreBase"><span class="n"><span class="pre">ExampleDebugSomeStoreBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase25ExampleDebugSomeStoreBaseERR25ExampleDebugSomeStoreBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBase25ExampleDebugSomeStoreBaseERK25ExampleDebugSomeStoreBase">
-<span id="_CPPv3N6stored25ExampleDebugSomeStoreBase25ExampleDebugSomeStoreBaseERK25ExampleDebugSomeStoreBase"></span><span id="_CPPv2N6stored25ExampleDebugSomeStoreBase25ExampleDebugSomeStoreBaseERK25ExampleDebugSomeStoreBase"></span><span id="stored::ExampleDebugSomeStoreBase::ExampleDebugSomeStoreBase__ExampleDebugSomeStoreBaseCR"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1aa0f2b9e6155229fb757115fd33a7cb2c"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleDebugSomeStoreBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase25ExampleDebugSomeStoreBaseERK25ExampleDebugSomeStoreBase" title="stored::ExampleDebugSomeStoreBase::ExampleDebugSomeStoreBase"><span class="n"><span class="pre">ExampleDebugSomeStoreBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase25ExampleDebugSomeStoreBaseERK25ExampleDebugSomeStoreBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored25ExampleDebugSomeStoreBase11bufferToKeyEPKv">
 <span id="_CPPv3NK6stored25ExampleDebugSomeStoreBase11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored25ExampleDebugSomeStoreBase11bufferToKeyEPKv"></span><span id="stored::ExampleDebugSomeStoreBase::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1af17d56331310e8d9b68b6a2143e117db"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase3KeyE" title="stored::ExampleDebugSomeStoreBase::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bufferToKey</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored25ExampleDebugSomeStoreBase11bufferToKeyEPKv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Converts a variable’s buffer to a key. </p>
@@ -540,13 +528,13 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored25ExampleDebugSomeStoreBase14implementationEv">
-<span id="_CPPv3NK6stored25ExampleDebugSomeStoreBase14implementationEv"></span><span id="_CPPv2NK6stored25ExampleDebugSomeStoreBase14implementationEv"></span><span id="stored::ExampleDebugSomeStoreBase::implementationCCE"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1a8389c5e3e18e30b1fc0cde53ac7d5cc7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase14ImplementationE" title="stored::ExampleDebugSomeStoreBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored25ExampleDebugSomeStoreBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored25ExampleDebugSomeStoreBase14implementationEv"></span><span id="_CPPv2NK6stored25ExampleDebugSomeStoreBase14implementationEv"></span><span id="stored::ExampleDebugSomeStoreBase::implementationC"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1a5c5e86d9ed2a0f94d15fbc8afd1de641"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase14ImplementationE" title="stored::ExampleDebugSomeStoreBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored25ExampleDebugSomeStoreBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBase14implementationEv">
-<span id="_CPPv3N6stored25ExampleDebugSomeStoreBase14implementationEv"></span><span id="_CPPv2N6stored25ExampleDebugSomeStoreBase14implementationEv"></span><span id="stored::ExampleDebugSomeStoreBase::implementationCE"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1a46bfc286b8aa6e53b1f62e9d5014e950"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase14ImplementationE" title="stored::ExampleDebugSomeStoreBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored25ExampleDebugSomeStoreBase14implementationEv"></span><span id="_CPPv2N6stored25ExampleDebugSomeStoreBase14implementationEv"></span><span id="stored::ExampleDebugSomeStoreBase::implementation"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1aa241f433eca6ceadb0635dfe2500d26f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase14ImplementationE" title="stored::ExampleDebugSomeStoreBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
@@ -588,20 +576,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored25ExampleDebugSomeStoreBase4nameEv">
-<span id="_CPPv3NK6stored25ExampleDebugSomeStoreBase4nameEv"></span><span id="_CPPv2NK6stored25ExampleDebugSomeStoreBase4nameEv"></span><span id="stored::ExampleDebugSomeStoreBase::nameCCE"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1adb1ea376c55e7cc3a9b39978ff7be7ba"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored25ExampleDebugSomeStoreBase4nameEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored25ExampleDebugSomeStoreBase4nameEv"></span><span id="_CPPv2NK6stored25ExampleDebugSomeStoreBase4nameEv"></span><span id="stored::ExampleDebugSomeStoreBase::nameC"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1a7466151ef7ddb105954c55388d2e7513"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored25ExampleDebugSomeStoreBase4nameEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBaseaSERR25ExampleDebugSomeStoreBase">
-<span id="_CPPv3N6stored25ExampleDebugSomeStoreBaseaSERR25ExampleDebugSomeStoreBase"></span><span id="_CPPv2N6stored25ExampleDebugSomeStoreBaseaSERR25ExampleDebugSomeStoreBase"></span><span id="stored::ExampleDebugSomeStoreBase::assign-operator__ExampleDebugSomeStoreBaseRR"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1ad6451e16de54a4e49eac9bf3b243e575"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored25ExampleDebugSomeStoreBaseE" title="stored::ExampleDebugSomeStoreBase"><span class="n"><span class="pre">ExampleDebugSomeStoreBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBaseaSERR25ExampleDebugSomeStoreBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBaseaSERK25ExampleDebugSomeStoreBase">
-<span id="_CPPv3N6stored25ExampleDebugSomeStoreBaseaSERK25ExampleDebugSomeStoreBase"></span><span id="_CPPv2N6stored25ExampleDebugSomeStoreBaseaSERK25ExampleDebugSomeStoreBase"></span><span id="stored::ExampleDebugSomeStoreBase::assign-operator__ExampleDebugSomeStoreBaseCR"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1aae7fa5943d608f814fa23514a9e28e6a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored25ExampleDebugSomeStoreBaseE" title="stored::ExampleDebugSomeStoreBase"><span class="n"><span class="pre">ExampleDebugSomeStoreBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBaseaSERK25ExampleDebugSomeStoreBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -698,8 +674,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERR21ExampleDebugSomeStore">
-<span id="_CPPv3N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERR21ExampleDebugSomeStore"></span><span id="_CPPv2N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERR21ExampleDebugSomeStore"></span><span id="stored::ExampleDebugSomeStore::ExampleDebugSomeStore__ExampleDebugSomeStoreRR"></span><span class="target" id="classstored_1_1_example_debug_some_store_1a86b6a1a19ae849a1cc29d8e9a28e6ead"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERR21ExampleDebugSomeStore" title="stored::ExampleDebugSomeStore::ExampleDebugSomeStore"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERR21ExampleDebugSomeStore" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
+<span id="_CPPv3N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERR21ExampleDebugSomeStore"></span><span id="_CPPv2N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERR21ExampleDebugSomeStore"></span><span id="stored::ExampleDebugSomeStore::ExampleDebugSomeStore__ExampleDebugSomeStoreRR"></span><span class="target" id="classstored_1_1_example_debug_some_store_1aa5415fadfa11e99bef35557364d271ae"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERR21ExampleDebugSomeStore" title="stored::ExampleDebugSomeStore::ExampleDebugSomeStore"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERR21ExampleDebugSomeStore" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Default move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -710,7 +686,7 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleDebugSomeStoreaSERR21ExampleDebugSomeStore">
-<span id="_CPPv3N6stored21ExampleDebugSomeStoreaSERR21ExampleDebugSomeStore"></span><span id="_CPPv2N6stored21ExampleDebugSomeStoreaSERR21ExampleDebugSomeStore"></span><span id="stored::ExampleDebugSomeStore::assign-operator__ExampleDebugSomeStoreRR"></span><span class="target" id="classstored_1_1_example_debug_some_store_1a0767b6afd0834bdfe2a420e71195a2f0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored21ExampleDebugSomeStoreE" title="stored::ExampleDebugSomeStore"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleDebugSomeStoreaSERR21ExampleDebugSomeStore" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored21ExampleDebugSomeStoreaSERR21ExampleDebugSomeStore"></span><span id="_CPPv2N6stored21ExampleDebugSomeStoreaSERR21ExampleDebugSomeStore"></span><span id="stored::ExampleDebugSomeStore::assign-operator__ExampleDebugSomeStoreRR"></span><span class="target" id="classstored_1_1_example_debug_some_store_1a5dcca6fe344195fc994d84c009306a7b"></span><a class="reference internal" href="#_CPPv4N6stored21ExampleDebugSomeStoreE" title="stored::ExampleDebugSomeStore"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored21ExampleDebugSomeStoreE" title="stored::ExampleDebugSomeStore"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleDebugSomeStoreaSERR21ExampleDebugSomeStore" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 
@@ -786,30 +762,30 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_42E">
-<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBaseUt2_42E"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1a9062906d5cc7151baa5e8cd833920391"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_42E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_41E">
+<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBaseUt2_41E"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1aa5e5e517ad843805d143fe0d9d42413e"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_41E" title="Permalink to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4211ObjectCountE">
-<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBaseUt2_4211ObjectCountE"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1a9062906d5cc7151baa5e8cd833920391a099b7260dcf6d87f6e79ba74f2ea9138"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4211ObjectCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4111ObjectCountE">
+<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBaseUt2_4111ObjectCountE"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1aa5e5e517ad843805d143fe0d9d42413ea099b7260dcf6d87f6e79ba74f2ea9138"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4111ObjectCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of objects in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4213VariableCountE">
-<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBaseUt2_4213VariableCountE"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1a9062906d5cc7151baa5e8cd833920391a9075cc802ad7e87aa7bbf99e868a7e5e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4213VariableCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4113VariableCountE">
+<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBaseUt2_4113VariableCountE"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1aa5e5e517ad843805d143fe0d9d42413ea9075cc802ad7e87aa7bbf99e868a7e5e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4113VariableCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of variables in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4213FunctionCountE">
-<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBaseUt2_4213FunctionCountE"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1a9062906d5cc7151baa5e8cd833920391acc0f3d50a951be93f8333def011fe0a7"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4213FunctionCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4113FunctionCountE">
+<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBaseUt2_4113FunctionCountE"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1aa5e5e517ad843805d143fe0d9d42413eacc0f3d50a951be93f8333def011fe0a7"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4113FunctionCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of functions in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4210BufferSizeE">
-<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBaseUt2_4210BufferSizeE"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1a9062906d5cc7151baa5e8cd833920391ad2829348f1c557bbdfa2e73a1e25b20b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4210BufferSizeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4110BufferSizeE">
+<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBaseUt2_4110BufferSizeE"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1aa5e5e517ad843805d143fe0d9d42413ead2829348f1c557bbdfa2e73a1e25b20b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBaseUt2_4110BufferSizeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Buffer size. </p>
 </dd></dl>
 
@@ -847,18 +823,6 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBase28ExampleDebugAnotherStoreBaseERR28ExampleDebugAnotherStoreBase">
-<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBase28ExampleDebugAnotherStoreBaseERR28ExampleDebugAnotherStoreBase"></span><span id="_CPPv2N6stored28ExampleDebugAnotherStoreBase28ExampleDebugAnotherStoreBaseERR28ExampleDebugAnotherStoreBase"></span><span id="stored::ExampleDebugAnotherStoreBase::ExampleDebugAnotherStoreBase__ExampleDebugAnotherStoreBaseRR"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1abcff1cc47ff7b2054abd30a4ab6c2928"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleDebugAnotherStoreBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase28ExampleDebugAnotherStoreBaseERR28ExampleDebugAnotherStoreBase" title="stored::ExampleDebugAnotherStoreBase::ExampleDebugAnotherStoreBase"><span class="n"><span class="pre">ExampleDebugAnotherStoreBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase28ExampleDebugAnotherStoreBaseERR28ExampleDebugAnotherStoreBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBase28ExampleDebugAnotherStoreBaseERK28ExampleDebugAnotherStoreBase">
-<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBase28ExampleDebugAnotherStoreBaseERK28ExampleDebugAnotherStoreBase"></span><span id="_CPPv2N6stored28ExampleDebugAnotherStoreBase28ExampleDebugAnotherStoreBaseERK28ExampleDebugAnotherStoreBase"></span><span id="stored::ExampleDebugAnotherStoreBase::ExampleDebugAnotherStoreBase__ExampleDebugAnotherStoreBaseCR"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1a9e2b93edbd4cfc0fef42791efb68360f"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleDebugAnotherStoreBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase28ExampleDebugAnotherStoreBaseERK28ExampleDebugAnotherStoreBase" title="stored::ExampleDebugAnotherStoreBase::ExampleDebugAnotherStoreBase"><span class="n"><span class="pre">ExampleDebugAnotherStoreBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase28ExampleDebugAnotherStoreBaseERK28ExampleDebugAnotherStoreBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored28ExampleDebugAnotherStoreBase11bufferToKeyEPKv">
 <span id="_CPPv3NK6stored28ExampleDebugAnotherStoreBase11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored28ExampleDebugAnotherStoreBase11bufferToKeyEPKv"></span><span id="stored::ExampleDebugAnotherStoreBase::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1aae786687f6710bbc909cc39b8733b6cc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase3KeyE" title="stored::ExampleDebugAnotherStoreBase::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bufferToKey</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored28ExampleDebugAnotherStoreBase11bufferToKeyEPKv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Converts a variable’s buffer to a key. </p>
@@ -887,13 +851,13 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored28ExampleDebugAnotherStoreBase14implementationEv">
-<span id="_CPPv3NK6stored28ExampleDebugAnotherStoreBase14implementationEv"></span><span id="_CPPv2NK6stored28ExampleDebugAnotherStoreBase14implementationEv"></span><span id="stored::ExampleDebugAnotherStoreBase::implementationCCE"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1a8dd2877da296e3fa51b299ca2ee67ed2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase14ImplementationE" title="stored::ExampleDebugAnotherStoreBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored28ExampleDebugAnotherStoreBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored28ExampleDebugAnotherStoreBase14implementationEv"></span><span id="_CPPv2NK6stored28ExampleDebugAnotherStoreBase14implementationEv"></span><span id="stored::ExampleDebugAnotherStoreBase::implementationC"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1afb86ffa031ace697df912007cd141f77"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase14ImplementationE" title="stored::ExampleDebugAnotherStoreBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored28ExampleDebugAnotherStoreBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBase14implementationEv">
-<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBase14implementationEv"></span><span id="_CPPv2N6stored28ExampleDebugAnotherStoreBase14implementationEv"></span><span id="stored::ExampleDebugAnotherStoreBase::implementationCE"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1a1e54ce5b4c1f8e6eb8415bfc21162b1b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase14ImplementationE" title="stored::ExampleDebugAnotherStoreBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBase14implementationEv"></span><span id="_CPPv2N6stored28ExampleDebugAnotherStoreBase14implementationEv"></span><span id="stored::ExampleDebugAnotherStoreBase::implementation"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1a1f90916196273a124e60a0304297a92c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase14ImplementationE" title="stored::ExampleDebugAnotherStoreBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
@@ -935,20 +899,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored28ExampleDebugAnotherStoreBase4nameEv">
-<span id="_CPPv3NK6stored28ExampleDebugAnotherStoreBase4nameEv"></span><span id="_CPPv2NK6stored28ExampleDebugAnotherStoreBase4nameEv"></span><span id="stored::ExampleDebugAnotherStoreBase::nameCCE"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1ab6c006e5ed5fa1565b756af58eb6b2d8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored28ExampleDebugAnotherStoreBase4nameEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored28ExampleDebugAnotherStoreBase4nameEv"></span><span id="_CPPv2NK6stored28ExampleDebugAnotherStoreBase4nameEv"></span><span id="stored::ExampleDebugAnotherStoreBase::nameC"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1a355db1a025361478bebb98887c97a3e0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored28ExampleDebugAnotherStoreBase4nameEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBaseaSERR28ExampleDebugAnotherStoreBase">
-<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBaseaSERR28ExampleDebugAnotherStoreBase"></span><span id="_CPPv2N6stored28ExampleDebugAnotherStoreBaseaSERR28ExampleDebugAnotherStoreBase"></span><span id="stored::ExampleDebugAnotherStoreBase::assign-operator__ExampleDebugAnotherStoreBaseRR"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1a2c0fa92d5c85389eb785b9d15e9ae2d0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBaseE" title="stored::ExampleDebugAnotherStoreBase"><span class="n"><span class="pre">ExampleDebugAnotherStoreBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBaseaSERR28ExampleDebugAnotherStoreBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBaseaSERK28ExampleDebugAnotherStoreBase">
-<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBaseaSERK28ExampleDebugAnotherStoreBase"></span><span id="_CPPv2N6stored28ExampleDebugAnotherStoreBaseaSERK28ExampleDebugAnotherStoreBase"></span><span id="stored::ExampleDebugAnotherStoreBase::assign-operator__ExampleDebugAnotherStoreBaseCR"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1a362e7b76c5504b070c627f6626f1a378"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBaseE" title="stored::ExampleDebugAnotherStoreBase"><span class="n"><span class="pre">ExampleDebugAnotherStoreBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBaseaSERK28ExampleDebugAnotherStoreBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1045,8 +997,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERR24ExampleDebugAnotherStore">
-<span id="_CPPv3N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERR24ExampleDebugAnotherStore"></span><span id="_CPPv2N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERR24ExampleDebugAnotherStore"></span><span id="stored::ExampleDebugAnotherStore::ExampleDebugAnotherStore__ExampleDebugAnotherStoreRR"></span><span class="target" id="classstored_1_1_example_debug_another_store_1aa69885d69429f2d23803e85d0ea385aa"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERR24ExampleDebugAnotherStore" title="stored::ExampleDebugAnotherStore::ExampleDebugAnotherStore"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERR24ExampleDebugAnotherStore" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
+<span id="_CPPv3N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERR24ExampleDebugAnotherStore"></span><span id="_CPPv2N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERR24ExampleDebugAnotherStore"></span><span id="stored::ExampleDebugAnotherStore::ExampleDebugAnotherStore__ExampleDebugAnotherStoreRR"></span><span class="target" id="classstored_1_1_example_debug_another_store_1a01bdf53575f63a3a8b978adedcb02299"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERR24ExampleDebugAnotherStore" title="stored::ExampleDebugAnotherStore::ExampleDebugAnotherStore"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERR24ExampleDebugAnotherStore" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Default move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1057,7 +1009,7 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored24ExampleDebugAnotherStoreaSERR24ExampleDebugAnotherStore">
-<span id="_CPPv3N6stored24ExampleDebugAnotherStoreaSERR24ExampleDebugAnotherStore"></span><span id="_CPPv2N6stored24ExampleDebugAnotherStoreaSERR24ExampleDebugAnotherStore"></span><span id="stored::ExampleDebugAnotherStore::assign-operator__ExampleDebugAnotherStoreRR"></span><span class="target" id="classstored_1_1_example_debug_another_store_1a91824d2952e9108ae8a6aa0ffbd62df9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored24ExampleDebugAnotherStoreE" title="stored::ExampleDebugAnotherStore"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored24ExampleDebugAnotherStoreaSERR24ExampleDebugAnotherStore" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored24ExampleDebugAnotherStoreaSERR24ExampleDebugAnotherStore"></span><span id="_CPPv2N6stored24ExampleDebugAnotherStoreaSERR24ExampleDebugAnotherStore"></span><span id="stored::ExampleDebugAnotherStore::assign-operator__ExampleDebugAnotherStoreRR"></span><span class="target" id="classstored_1_1_example_debug_another_store_1a68611133223276a598b9f359e18b7a15"></span><a class="reference internal" href="#_CPPv4N6stored24ExampleDebugAnotherStoreE" title="stored::ExampleDebugAnotherStore"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored24ExampleDebugAnotherStoreE" title="stored::ExampleDebugAnotherStore"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored24ExampleDebugAnotherStoreaSERR24ExampleDebugAnotherStore" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 

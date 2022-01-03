@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>control &mdash; libstored 1.0.1-rc documentation</title>
+  <title>control &mdash; libstored 1.1.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.0.1.dev0
+                1.1.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -245,257 +245,260 @@
 <span class="cm"> * - PID output via amplifier and lowpass filter to PID input</span>
 <span class="cm"> *</span>
 <span class="cm"> * C++14 is required for this example, as stored/components.h requires it.</span>
-<span class="cm"> */</span>
+<span class="cm"> */</span><span class="w"></span>
 
-<span class="cp">#include</span> <span class="cpf">&quot;ExampleControl.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ExampleControl.h&quot;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;chrono&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;utility&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;chrono&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;utility&gt;</span><span class="cp"></span>
 
-<span class="k">class</span> <span class="nc">ExampleControlStore</span> <span class="o">:</span> <span class="k">public</span> <span class="n">STORE_BASE_CLASS</span><span class="p">(</span><span class="n">ExampleControlBase</span><span class="p">,</span> <span class="n">ExampleControlStore</span><span class="p">)</span> <span class="p">{</span>
-	<span class="n">STORE_CLASS_BODY</span><span class="p">(</span><span class="n">ExampleControlBase</span><span class="p">,</span> <span class="n">ExampleControlStore</span><span class="p">)</span>
-<span class="k">public</span><span class="o">:</span>
-	<span class="n">ExampleControlStore</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExampleControlStore</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">STORE_BASE_CLASS</span><span class="p">(</span><span class="n">ExampleControlBase</span><span class="p">,</span><span class="w"> </span><span class="n">ExampleControlStore</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">STORE_CLASS_BODY</span><span class="p">(</span><span class="n">ExampleControlBase</span><span class="p">,</span><span class="w"> </span><span class="n">ExampleControlStore</span><span class="p">)</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="n">ExampleControlStore</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span><span class="w"></span>
 
-	<span class="c1">// You can change the control frequency dynamically.</span>
-	<span class="kt">void</span> <span class="nf">__frequency_Hz</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">float</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span> <span class="p">{</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="n">m_frequency_Hz</span><span class="p">;</span>
-		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-			<span class="n">m_frequency_Hz</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="mf">0.1f</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
-			<span class="n">pid__reset</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
-			<span class="n">lowpass__reset</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
-			<span class="n">ramp__reset</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="c1">// You can change the control frequency dynamically.</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="nf">__frequency_Hz</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_frequency_Hz</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="n">m_frequency_Hz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="mf">0.1f</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w"></span>
+<span class="w">			</span><span class="n">pid__reset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="n">lowpass__reset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="n">ramp__reset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="nf">__pid__frequency_Hz</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">float</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="n">frequency_Hz</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-		<span class="k">else</span>
-			<span class="n">frequency_Hz</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="nf">__pid__frequency_Hz</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frequency_Hz</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"></span>
+<span class="w">		</span><span class="k">else</span><span class="w"></span>
+<span class="w">			</span><span class="n">frequency_Hz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="nf">__sine__sample_frequency_Hz</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">float</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="n">frequency_Hz</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-		<span class="k">else</span>
-			<span class="n">frequency_Hz</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="nf">__sine__sample_frequency_Hz</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frequency_Hz</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"></span>
+<span class="w">		</span><span class="k">else</span><span class="w"></span>
+<span class="w">			</span><span class="n">frequency_Hz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="nf">__pulse__sample_frequency_Hz</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">float</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="n">frequency_Hz</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-		<span class="k">else</span>
-			<span class="n">frequency_Hz</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="nf">__pulse__sample_frequency_Hz</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frequency_Hz</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"></span>
+<span class="w">		</span><span class="k">else</span><span class="w"></span>
+<span class="w">			</span><span class="n">frequency_Hz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="nf">__lowpass__sample_frequency_Hz</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">float</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="n">frequency_Hz</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-		<span class="k">else</span>
-			<span class="n">frequency_Hz</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="nf">__lowpass__sample_frequency_Hz</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frequency_Hz</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"></span>
+<span class="w">		</span><span class="k">else</span><span class="w"></span>
+<span class="w">			</span><span class="n">frequency_Hz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="nf">__ramp__sample_frequency_Hz</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">float</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="n">frequency_Hz</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-		<span class="k">else</span>
-			<span class="n">frequency_Hz</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="nf">__ramp__sample_frequency_Hz</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frequency_Hz</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"></span>
+<span class="w">		</span><span class="k">else</span><span class="w"></span>
+<span class="w">			</span><span class="n">frequency_Hz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-<span class="k">private</span><span class="o">:</span>
-	<span class="kt">float</span> <span class="n">m_frequency_Hz</span><span class="p">{</span><span class="mf">10.0f</span><span class="p">};</span>
-<span class="p">};</span>
+<span class="k">private</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="kt">float</span><span class="w"> </span><span class="n">m_frequency_Hz</span><span class="p">{</span><span class="mf">10.0f</span><span class="p">};</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 
-<span class="k">static</span> <span class="n">ExampleControlStore</span> <span class="n">store</span><span class="p">;</span>
-<span class="k">using</span> <span class="n">value_type</span> <span class="o">=</span> <span class="k">decltype</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">declval</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="o">&gt;</span><span class="p">().</span><span class="n">interconnect__x_0</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+<span class="k">static</span><span class="w"> </span><span class="n">ExampleControlStore</span><span class="w"> </span><span class="n">store</span><span class="p">;</span><span class="w"></span>
+<span class="k">using</span><span class="w"> </span><span class="n">value_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">decltype</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">declval</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="o">&gt;</span><span class="p">().</span><span class="n">interconnect__x_0</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
 
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">pid</span><span class="p">()</span>
-<span class="p">{</span>
-	<span class="k">constexpr</span> <span class="k">auto</span> <span class="n">pid_o</span> <span class="o">=</span> <span class="n">stored</span><span class="o">::</span><span class="n">PID</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="o">&gt;::</span><span class="n">objects</span><span class="p">(</span><span class="s">&quot;/pid/&quot;</span><span class="p">);</span>
-	<span class="k">static</span> <span class="n">stored</span><span class="o">::</span><span class="n">PID</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="p">,</span> <span class="n">pid_o</span><span class="p">.</span><span class="n">flags</span><span class="p">()</span><span class="o">&gt;</span> <span class="n">pid_v</span><span class="p">{</span><span class="n">pid_o</span><span class="p">,</span> <span class="n">store</span><span class="p">};</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">pid</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="k">constexpr</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">pid_o</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">PID</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="o">&gt;::</span><span class="n">objects</span><span class="p">(</span><span class="s">&quot;/pid/&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="k">static</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">PID</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="p">,</span><span class="w"> </span><span class="n">pid_o</span><span class="p">.</span><span class="n">flags</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pid_v</span><span class="p">{</span><span class="n">pid_o</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">};</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">x_setpoint</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">pid__x_setpoint</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">x_setpoint</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span>
-		<span class="n">store</span><span class="p">.</span><span class="n">pid__setpoint</span> <span class="o">=</span> <span class="n">x_setpoint</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">x_setpoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">pid__x_setpoint</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">x_setpoint</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span><span class="w"></span>
+<span class="w">		</span><span class="n">store</span><span class="p">.</span><span class="n">pid__setpoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x_setpoint</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">x_y</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">pid__x_y</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">x_y</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span>
-		<span class="n">store</span><span class="p">.</span><span class="n">pid__y</span> <span class="o">=</span> <span class="n">x_y</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">x_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">pid__x_y</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">x_y</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span><span class="w"></span>
+<span class="w">		</span><span class="n">store</span><span class="p">.</span><span class="n">pid__y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x_y</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">u</span> <span class="o">=</span> <span class="n">pid_v</span><span class="p">();</span>
-	<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">pid_v</span><span class="p">.</span><span class="n">isHealthy</span><span class="p">())</span>
-		<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;/pid not healthy&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pid_v</span><span class="p">();</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">pid_v</span><span class="p">.</span><span class="n">isHealthy</span><span class="p">())</span><span class="w"></span>
+<span class="w">		</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;/pid not healthy&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">x_u</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">pid__x_u</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">x_u</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span>
-		<span class="n">x_u</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">u</span><span class="p">);</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">x_u</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">pid__x_u</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">x_u</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span><span class="w"></span>
+<span class="w">		</span><span class="n">x_u</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">u</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">amp</span><span class="p">()</span>
-<span class="p">{</span>
-	<span class="k">constexpr</span> <span class="k">auto</span> <span class="n">amp_o</span> <span class="o">=</span> <span class="n">stored</span><span class="o">::</span><span class="n">Amplifier</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="o">&gt;::</span><span class="n">objects</span><span class="p">(</span><span class="s">&quot;/amp/&quot;</span><span class="p">);</span>
-	<span class="k">static</span> <span class="n">stored</span><span class="o">::</span><span class="n">Amplifier</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="p">,</span> <span class="n">amp_o</span><span class="p">.</span><span class="n">flags</span><span class="p">()</span><span class="o">&gt;</span> <span class="n">amp_v</span><span class="p">{</span><span class="n">amp_o</span><span class="p">,</span> <span class="n">store</span><span class="p">};</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">amp</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="k">constexpr</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">amp_o</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Amplifier</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="o">&gt;::</span><span class="n">objects</span><span class="p">(</span><span class="s">&quot;/amp/&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="k">static</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Amplifier</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="p">,</span><span class="w"> </span><span class="n">amp_o</span><span class="p">.</span><span class="n">flags</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="n">amp_v</span><span class="p">{</span><span class="n">amp_o</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">};</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">x_input</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">amp__x_input</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">x_input</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span>
-		<span class="n">store</span><span class="p">.</span><span class="n">amp__input</span> <span class="o">=</span> <span class="n">x_input</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">x_input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">amp__x_input</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">x_input</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span><span class="w"></span>
+<span class="w">		</span><span class="n">store</span><span class="p">.</span><span class="n">amp__input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x_input</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">output</span> <span class="o">=</span> <span class="n">amp_v</span><span class="p">();</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">amp_v</span><span class="p">();</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">x_output</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">amp__x_output</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">x_output</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span>
-		<span class="n">x_output</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">output</span><span class="p">);</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">x_output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">amp__x_output</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">x_output</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span><span class="w"></span>
+<span class="w">		</span><span class="n">x_output</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">output</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">sine</span><span class="p">()</span>
-<span class="p">{</span>
-	<span class="k">constexpr</span> <span class="k">auto</span> <span class="n">sine_o</span> <span class="o">=</span> <span class="n">stored</span><span class="o">::</span><span class="n">Sine</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="o">&gt;::</span><span class="n">objects</span><span class="p">(</span><span class="s">&quot;/sine/&quot;</span><span class="p">);</span>
-	<span class="k">static</span> <span class="n">stored</span><span class="o">::</span><span class="n">Sine</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="p">,</span> <span class="n">sine_o</span><span class="p">.</span><span class="n">flags</span><span class="p">()</span><span class="o">&gt;</span> <span class="n">sine_v</span><span class="p">{</span><span class="n">sine_o</span><span class="p">,</span> <span class="n">store</span><span class="p">};</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">sine</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="k">constexpr</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">sine_o</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Sine</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="o">&gt;::</span><span class="n">objects</span><span class="p">(</span><span class="s">&quot;/sine/&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="k">static</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Sine</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="p">,</span><span class="w"> </span><span class="n">sine_o</span><span class="p">.</span><span class="n">flags</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sine_v</span><span class="p">{</span><span class="n">sine_o</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">};</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">y</span> <span class="o">=</span> <span class="n">sine_v</span><span class="p">();</span>
-	<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">sine_v</span><span class="p">.</span><span class="n">isHealthy</span><span class="p">())</span>
-		<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;/sine not healthy&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sine_v</span><span class="p">();</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">sine_v</span><span class="p">.</span><span class="n">isHealthy</span><span class="p">())</span><span class="w"></span>
+<span class="w">		</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;/sine not healthy&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">x_output</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">sine__x_output</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">x_output</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span>
-		<span class="n">x_output</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">y</span><span class="p">);</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">x_output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">sine__x_output</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">x_output</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span><span class="w"></span>
+<span class="w">		</span><span class="n">x_output</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">y</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">pulse</span><span class="p">()</span>
-<span class="p">{</span>
-	<span class="k">constexpr</span> <span class="k">auto</span> <span class="n">pulse_o</span> <span class="o">=</span> <span class="n">stored</span><span class="o">::</span><span class="n">PulseWave</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="o">&gt;::</span><span class="n">objects</span><span class="p">(</span><span class="s">&quot;/pulse/&quot;</span><span class="p">);</span>
-	<span class="k">static</span> <span class="n">stored</span><span class="o">::</span><span class="n">PulseWave</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="p">,</span> <span class="n">pulse_o</span><span class="p">.</span><span class="n">flags</span><span class="p">()</span><span class="o">&gt;</span> <span class="n">pulse_v</span><span class="p">{</span><span class="n">pulse_o</span><span class="p">,</span> <span class="n">store</span><span class="p">};</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">pulse</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="k">constexpr</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">pulse_o</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">PulseWave</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="o">&gt;::</span><span class="n">objects</span><span class="p">(</span><span class="s">&quot;/pulse/&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="k">static</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">PulseWave</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="p">,</span><span class="w"> </span><span class="n">pulse_o</span><span class="p">.</span><span class="n">flags</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pulse_v</span><span class="p">{</span><span class="n">pulse_o</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">};</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">x_duty_cycle</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">pulse__x_duty_cycle</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">x_duty_cycle</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span>
-		<span class="n">store</span><span class="p">.</span><span class="n">pulse__duty_cycle</span> <span class="o">=</span> <span class="n">x_duty_cycle</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">x_duty_cycle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">pulse__x_duty_cycle</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">x_duty_cycle</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span><span class="w"></span>
+<span class="w">		</span><span class="n">store</span><span class="p">.</span><span class="n">pulse__duty_cycle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x_duty_cycle</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">y</span> <span class="o">=</span> <span class="n">pulse_v</span><span class="p">();</span>
-	<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">pulse_v</span><span class="p">.</span><span class="n">isHealthy</span><span class="p">())</span>
-		<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;/pulse not healthy&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse_v</span><span class="p">();</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">pulse_v</span><span class="p">.</span><span class="n">isHealthy</span><span class="p">())</span><span class="w"></span>
+<span class="w">		</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;/pulse not healthy&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">x_output</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">pulse__x_output</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">x_output</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span>
-		<span class="n">x_output</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">y</span><span class="p">);</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">x_output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">pulse__x_output</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">x_output</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span><span class="w"></span>
+<span class="w">		</span><span class="n">x_output</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">y</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">lowpass</span><span class="p">()</span>
-<span class="p">{</span>
-	<span class="k">constexpr</span> <span class="k">auto</span> <span class="n">lowpass_o</span> <span class="o">=</span> <span class="n">stored</span><span class="o">::</span><span class="n">LowPass</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="o">&gt;::</span><span class="n">objects</span><span class="p">(</span><span class="s">&quot;/lowpass/&quot;</span><span class="p">);</span>
-	<span class="k">static</span> <span class="n">stored</span><span class="o">::</span><span class="n">LowPass</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="p">,</span> <span class="n">lowpass_o</span><span class="p">.</span><span class="n">flags</span><span class="p">()</span><span class="o">&gt;</span> <span class="n">lowpass_v</span><span class="p">{</span><span class="n">lowpass_o</span><span class="p">,</span> <span class="n">store</span><span class="p">};</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">lowpass</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="k">constexpr</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">lowpass_o</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">LowPass</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="o">&gt;::</span><span class="n">objects</span><span class="p">(</span><span class="s">&quot;/lowpass/&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="k">static</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">LowPass</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="p">,</span><span class="w"> </span><span class="n">lowpass_o</span><span class="p">.</span><span class="n">flags</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lowpass_v</span><span class="p">{</span><span class="n">lowpass_o</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">};</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">x_input</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">lowpass__x_input</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">x_input</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span>
-		<span class="n">store</span><span class="p">.</span><span class="n">lowpass__input</span> <span class="o">=</span> <span class="n">x_input</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">x_input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">lowpass__x_input</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">x_input</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span><span class="w"></span>
+<span class="w">		</span><span class="n">store</span><span class="p">.</span><span class="n">lowpass__input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x_input</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">output</span> <span class="o">=</span> <span class="n">lowpass_v</span><span class="p">();</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lowpass_v</span><span class="p">();</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">x_output</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">lowpass__x_output</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">x_output</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span>
-		<span class="n">x_output</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">output</span><span class="p">);</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">x_output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">lowpass__x_output</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">x_output</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span><span class="w"></span>
+<span class="w">		</span><span class="n">x_output</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">output</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">ramp</span><span class="p">()</span>
-<span class="p">{</span>
-	<span class="k">constexpr</span> <span class="k">auto</span> <span class="n">ramp_o</span> <span class="o">=</span> <span class="n">stored</span><span class="o">::</span><span class="n">Ramp</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="o">&gt;::</span><span class="n">objects</span><span class="p">(</span><span class="s">&quot;/ramp/&quot;</span><span class="p">);</span>
-	<span class="k">static</span> <span class="n">stored</span><span class="o">::</span><span class="n">Ramp</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="p">,</span> <span class="n">ramp_o</span><span class="p">.</span><span class="n">flags</span><span class="p">()</span><span class="o">&gt;</span> <span class="n">ramp_v</span><span class="p">{</span><span class="n">ramp_o</span><span class="p">,</span> <span class="n">store</span><span class="p">};</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ramp</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="k">constexpr</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">ramp_o</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Ramp</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="o">&gt;::</span><span class="n">objects</span><span class="p">(</span><span class="s">&quot;/ramp/&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="k">static</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Ramp</span><span class="o">&lt;</span><span class="n">ExampleControlStore</span><span class="p">,</span><span class="w"> </span><span class="n">ramp_o</span><span class="p">.</span><span class="n">flags</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ramp_v</span><span class="p">{</span><span class="n">ramp_o</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">};</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">x_input</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">ramp__x_input</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">x_input</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span>
-		<span class="n">store</span><span class="p">.</span><span class="n">ramp__input</span> <span class="o">=</span> <span class="n">x_input</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">x_input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">ramp__x_input</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">x_input</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span><span class="w"></span>
+<span class="w">		</span><span class="n">store</span><span class="p">.</span><span class="n">ramp__input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x_input</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">output</span> <span class="o">=</span> <span class="n">ramp_v</span><span class="p">();</span>
-	<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">ramp_v</span><span class="p">.</span><span class="n">isHealthy</span><span class="p">())</span>
-		<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;/ramp not healthy&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ramp_v</span><span class="p">();</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">ramp_v</span><span class="p">.</span><span class="n">isHealthy</span><span class="p">())</span><span class="w"></span>
+<span class="w">		</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;/ramp not healthy&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">x_output</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">ramp__x_output</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">x_output</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span>
-		<span class="n">x_output</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">output</span><span class="p">);</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">x_output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">interconnect__x_a</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="n">ramp__x_output</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">x_output</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span><span class="w"></span>
+<span class="w">		</span><span class="n">x_output</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">output</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">control</span><span class="p">()</span>
-<span class="p">{</span>
-	<span class="k">using</span> <span class="n">f_type</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="o">*</span><span class="p">)(),</span> <span class="n">stored</span><span class="o">::</span><span class="n">Variable</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="p">,</span> <span class="n">ExampleControlStore</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">control</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="k">using</span><span class="w"> </span><span class="n">f_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">)(),</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Variable</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="p">,</span><span class="w"> </span><span class="n">ExampleControlStore</span><span class="o">&gt;&gt;</span><span class="p">;</span><span class="w"></span>
 
-	<span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">f_type</span><span class="p">,</span> <span class="mi">6</span><span class="o">&gt;</span> <span class="n">fs</span> <span class="o">=</span> <span class="p">{</span>
-		<span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">pid</span><span class="p">,</span> <span class="n">store</span><span class="p">.</span><span class="n">pid__evaluation_order</span><span class="p">},</span>
-		<span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">,</span> <span class="n">store</span><span class="p">.</span><span class="n">amp__evaluation_order</span><span class="p">},</span>
-		<span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">sine</span><span class="p">,</span> <span class="n">store</span><span class="p">.</span><span class="n">sine__evaluation_order</span><span class="p">},</span>
-		<span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">pulse</span><span class="p">,</span> <span class="n">store</span><span class="p">.</span><span class="n">pulse__evaluation_order</span><span class="p">},</span>
-		<span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">lowpass</span><span class="p">,</span> <span class="n">store</span><span class="p">.</span><span class="n">lowpass__evaluation_order</span><span class="p">},</span>
-		<span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">ramp</span><span class="p">,</span> <span class="n">store</span><span class="p">.</span><span class="n">ramp__evaluation_order</span><span class="p">},</span>
-	<span class="p">};</span>
+<span class="w">	</span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">f_type</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">pid__evaluation_order</span><span class="p">},</span><span class="w"></span>
+<span class="w">		</span><span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">amp__evaluation_order</span><span class="p">},</span><span class="w"></span>
+<span class="w">		</span><span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">sine</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">sine__evaluation_order</span><span class="p">},</span><span class="w"></span>
+<span class="w">		</span><span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">pulse</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">pulse__evaluation_order</span><span class="p">},</span><span class="w"></span>
+<span class="w">		</span><span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">lowpass</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">lowpass__evaluation_order</span><span class="p">},</span><span class="w"></span>
+<span class="w">		</span><span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">ramp</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">ramp__evaluation_order</span><span class="p">},</span><span class="w"></span>
+<span class="w">	</span><span class="p">};</span><span class="w"></span>
 
-	<span class="n">std</span><span class="o">::</span><span class="n">stable_sort</span><span class="p">(</span><span class="n">fs</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">fs</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span>
-		<span class="p">[](</span><span class="n">f_type</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">a</span><span class="p">,</span> <span class="n">f_type</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">a</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">get</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">get</span><span class="p">();</span> <span class="p">});</span>
+<span class="w">	</span><span class="n">std</span><span class="o">::</span><span class="n">stable_sort</span><span class="p">(</span><span class="n">fs</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">fs</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="p">[](</span><span class="n">f_type</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">f_type</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">get</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"></span>
+<span class="w">	</span><span class="p">});</span><span class="w"></span>
 
-	<span class="k">for</span><span class="p">(</span><span class="k">auto</span> <span class="k">const</span><span class="o">&amp;</span> <span class="nl">f</span> <span class="p">:</span> <span class="n">fs</span><span class="p">)</span>
-		<span class="n">f</span><span class="p">.</span><span class="n">first</span><span class="p">();</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="k">for</span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="nl">f</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">fs</span><span class="p">)</span><span class="w"></span>
+<span class="w">		</span><span class="n">f</span><span class="p">.</span><span class="n">first</span><span class="p">();</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
-<span class="p">{</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Dynamically change the interconnections between the components</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;by modifying the /&lt;component&gt;/x &lt;variable&gt;.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Dynamically change the interconnections between the components</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;by modifying the /&lt;component&gt;/x &lt;variable&gt;.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
 
-	<span class="c1">// Construct the protocol stack.</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span> <span class="n">debugger</span><span class="p">{</span><span class="s">&quot;control&quot;</span><span class="p">};</span>
-	<span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store</span><span class="p">);</span>
+<span class="w">	</span><span class="c1">// Construct the protocol stack.</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span><span class="w"> </span><span class="n">debugger</span><span class="p">{</span><span class="s">&quot;control&quot;</span><span class="p">};</span><span class="w"></span>
+<span class="w">	</span><span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">DebugZmqLayer</span> <span class="n">zmqLayer</span><span class="p">;</span>
-	<span class="k">if</span><span class="p">((</span><span class="n">errno</span> <span class="o">=</span> <span class="n">zmqLayer</span><span class="p">.</span><span class="n">lastError</span><span class="p">()))</span> <span class="p">{</span>
-		<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Cannot initialize ZMQ layer; %s (error %d)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">zmq_strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">),</span> <span class="n">errno</span><span class="p">);</span>
-		<span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-	<span class="p">}</span>
-	<span class="n">zmqLayer</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">debugger</span><span class="p">);</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">DebugZmqLayer</span><span class="w"> </span><span class="n">zmqLayer</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">((</span><span class="n">errno</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zmqLayer</span><span class="p">.</span><span class="n">lastError</span><span class="p">()))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Cannot initialize ZMQ layer; %s (error %d)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">zmq_strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">),</span><span class="w"> </span><span class="n">errno</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
+<span class="w">	</span><span class="n">zmqLayer</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">debugger</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">Poller</span> <span class="n">poller</span><span class="p">;</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Poller</span><span class="w"> </span><span class="n">poller</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">PollableZmqLayer</span><span class="w"> </span><span class="n">pollableZmq</span><span class="p">(</span><span class="n">zmqLayer</span><span class="p">,</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Pollable</span><span class="o">::</span><span class="n">PollIn</span><span class="p">);</span><span class="w"></span>
 
-	<span class="k">if</span><span class="p">((</span><span class="n">errno</span> <span class="o">=</span> <span class="n">poller</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">zmqLayer</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">,</span> <span class="n">stored</span><span class="o">::</span><span class="n">Poller</span><span class="o">::</span><span class="n">PollIn</span><span class="p">)))</span> <span class="p">{</span>
-		<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Cannot add to poller; %s (error %d)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">zmq_strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">),</span> <span class="n">errno</span><span class="p">);</span>
-		<span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="k">if</span><span class="p">((</span><span class="n">errno</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">poller</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">pollableZmq</span><span class="p">)))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Cannot add to poller; %s (error %d)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">zmq_strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">),</span><span class="w"> </span><span class="n">errno</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="k">auto</span> <span class="n">t</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span><span class="w"></span>
 
-	<span class="k">while</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">auto</span> <span class="n">now</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
-		<span class="k">auto</span> <span class="n">rem</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">duration_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">microseconds</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">now</span><span class="p">);</span>
-		<span class="k">auto</span> <span class="n">rem_us</span> <span class="o">=</span> <span class="n">rem</span><span class="p">.</span><span class="n">count</span><span class="p">();</span>
+<span class="w">	</span><span class="k">while</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">auto</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span><span class="w"></span>
+<span class="w">		</span><span class="k">auto</span><span class="w"> </span><span class="n">rem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">duration_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">microseconds</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">now</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="k">auto</span><span class="w"> </span><span class="n">rem_us</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rem</span><span class="p">.</span><span class="n">count</span><span class="p">();</span><span class="w"></span>
 
-		<span class="k">if</span><span class="p">(</span><span class="n">rem_us</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-			<span class="n">t</span> <span class="o">+=</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">((</span><span class="kt">long</span> <span class="kt">long</span><span class="p">)(</span><span class="mf">1.0e3</span><span class="n">f</span> <span class="o">/</span> <span class="n">store</span><span class="p">.</span><span class="n">frequency_Hz</span><span class="p">.</span><span class="n">get</span><span class="p">()));</span>
-			<span class="c1">// This is where the magic takes place.</span>
-			<span class="n">control</span><span class="p">();</span>
-			<span class="k">continue</span><span class="p">;</span>
-		<span class="p">}</span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">rem_us</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="n">t</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">(</span><span class="w"></span>
+<span class="w">				</span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="kt">long</span><span class="p">)(</span><span class="mf">1.0e3f</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">frequency_Hz</span><span class="p">.</span><span class="n">get</span><span class="p">()));</span><span class="w"></span>
+<span class="w">			</span><span class="c1">// This is where the magic takes place.</span>
+<span class="w">			</span><span class="n">control</span><span class="p">();</span><span class="w"></span>
+<span class="w">			</span><span class="k">continue</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
 
-		<span class="k">if</span><span class="p">(</span><span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="mi">0L</span><span class="p">,</span> <span class="p">(</span><span class="kt">long</span><span class="p">)</span><span class="n">rem_us</span><span class="p">)).</span><span class="n">empty</span><span class="p">())</span> <span class="p">{</span>
-			<span class="k">switch</span><span class="p">(</span><span class="n">errno</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">case</span> <span class="nl">EINTR</span><span class="p">:</span>
-			<span class="k">case</span> <span class="nl">EAGAIN</span><span class="p">:</span>
-				<span class="k">break</span><span class="p">;</span>
-			<span class="k">default</span><span class="o">:</span>
-				<span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot poll&quot;</span><span class="p">);</span>
-				<span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-			<span class="p">}</span> <span class="c1">// else timeout</span>
-		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">((</span><span class="n">errno</span> <span class="o">=</span> <span class="n">zmqLayer</span><span class="p">.</span><span class="n">recv</span><span class="p">()))</span> <span class="p">{</span>
-			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Cannot recv; %s (error %d)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">zmq_strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">),</span> <span class="n">errno</span><span class="p">);</span>
-			<span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
-<span class="p">}</span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="n">rem_us</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1000L</span><span class="p">))).</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="k">switch</span><span class="p">(</span><span class="n">errno</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="k">case</span><span class="w"> </span><span class="nl">EINTR</span><span class="p">:</span><span class="w"></span>
+<span class="w">			</span><span class="k">case</span><span class="w"> </span><span class="nl">EAGAIN</span><span class="p">:</span><span class="w"></span>
+<span class="w">				</span><span class="k">break</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="k">default</span><span class="o">:</span><span class="w"></span>
+<span class="w">				</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot poll&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">				</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">			</span><span class="p">}</span><span class="w"> </span><span class="c1">// else timeout</span>
+<span class="w">		</span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="p">((</span><span class="n">errno</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zmqLayer</span><span class="p">.</span><span class="n">recv</span><span class="p">()))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Cannot recv; %s (error %d)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">zmq_strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">),</span><span class="w"> </span><span class="n">errno</span><span class="p">);</span><span class="w"></span>
+<span class="w">			</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -1054,30 +1057,30 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleControlBaseUt2_53E">
-<span id="_CPPv3N6stored18ExampleControlBaseUt2_53E"></span><span class="target" id="classstored_1_1_example_control_base_1ae06f6dc2ac3291faf7a17cdffb7a5113"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleControlBaseUt2_53E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleControlBaseUt2_52E">
+<span id="_CPPv3N6stored18ExampleControlBaseUt2_52E"></span><span class="target" id="classstored_1_1_example_control_base_1a195c9d943c1cfe0d8aac90beb5009e77"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleControlBaseUt2_52E" title="Permalink to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleControlBaseUt2_5311ObjectCountE">
-<span id="_CPPv3N6stored18ExampleControlBaseUt2_5311ObjectCountE"></span><span class="target" id="classstored_1_1_example_control_base_1ae06f6dc2ac3291faf7a17cdffb7a5113ade45568637468e2285d08096c7b746ac"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleControlBaseUt2_5311ObjectCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleControlBaseUt2_5211ObjectCountE">
+<span id="_CPPv3N6stored18ExampleControlBaseUt2_5211ObjectCountE"></span><span class="target" id="classstored_1_1_example_control_base_1a195c9d943c1cfe0d8aac90beb5009e77ade45568637468e2285d08096c7b746ac"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleControlBaseUt2_5211ObjectCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of objects in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleControlBaseUt2_5313VariableCountE">
-<span id="_CPPv3N6stored18ExampleControlBaseUt2_5313VariableCountE"></span><span class="target" id="classstored_1_1_example_control_base_1ae06f6dc2ac3291faf7a17cdffb7a5113a5497c8d34526b00ffc04f18f9fc2b238"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleControlBaseUt2_5313VariableCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleControlBaseUt2_5213VariableCountE">
+<span id="_CPPv3N6stored18ExampleControlBaseUt2_5213VariableCountE"></span><span class="target" id="classstored_1_1_example_control_base_1a195c9d943c1cfe0d8aac90beb5009e77a5497c8d34526b00ffc04f18f9fc2b238"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleControlBaseUt2_5213VariableCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of variables in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleControlBaseUt2_5313FunctionCountE">
-<span id="_CPPv3N6stored18ExampleControlBaseUt2_5313FunctionCountE"></span><span class="target" id="classstored_1_1_example_control_base_1ae06f6dc2ac3291faf7a17cdffb7a5113a889f0a81c88cec81fe6301e32a9b307a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleControlBaseUt2_5313FunctionCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleControlBaseUt2_5213FunctionCountE">
+<span id="_CPPv3N6stored18ExampleControlBaseUt2_5213FunctionCountE"></span><span class="target" id="classstored_1_1_example_control_base_1a195c9d943c1cfe0d8aac90beb5009e77a889f0a81c88cec81fe6301e32a9b307a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleControlBaseUt2_5213FunctionCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of functions in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleControlBaseUt2_5310BufferSizeE">
-<span id="_CPPv3N6stored18ExampleControlBaseUt2_5310BufferSizeE"></span><span class="target" id="classstored_1_1_example_control_base_1ae06f6dc2ac3291faf7a17cdffb7a5113abcf012d72912a030af2317c3c5ff207f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleControlBaseUt2_5310BufferSizeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleControlBaseUt2_5210BufferSizeE">
+<span id="_CPPv3N6stored18ExampleControlBaseUt2_5210BufferSizeE"></span><span class="target" id="classstored_1_1_example_control_base_1a195c9d943c1cfe0d8aac90beb5009e77abcf012d72912a030af2317c3c5ff207f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleControlBaseUt2_5210BufferSizeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Buffer size. </p>
 </dd></dl>
 
@@ -1114,18 +1117,6 @@ public:
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleControlBase18ExampleControlBaseERR18ExampleControlBase">
-<span id="_CPPv3N6stored18ExampleControlBase18ExampleControlBaseERR18ExampleControlBase"></span><span id="_CPPv2N6stored18ExampleControlBase18ExampleControlBaseERR18ExampleControlBase"></span><span id="stored::ExampleControlBase::ExampleControlBase__ExampleControlBaseRR"></span><span class="target" id="classstored_1_1_example_control_base_1a75962ac028c0b5f056af09dfe9e09c10"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleControlBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored18ExampleControlBase18ExampleControlBaseERR18ExampleControlBase" title="stored::ExampleControlBase::ExampleControlBase"><span class="n"><span class="pre">ExampleControlBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleControlBase18ExampleControlBaseERR18ExampleControlBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleControlBase18ExampleControlBaseERK18ExampleControlBase">
-<span id="_CPPv3N6stored18ExampleControlBase18ExampleControlBaseERK18ExampleControlBase"></span><span id="_CPPv2N6stored18ExampleControlBase18ExampleControlBaseERK18ExampleControlBase"></span><span id="stored::ExampleControlBase::ExampleControlBase__ExampleControlBaseCR"></span><span class="target" id="classstored_1_1_example_control_base_1aabe95f725e2e590a62c1ea03eb176cdf"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleControlBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored18ExampleControlBase18ExampleControlBaseERK18ExampleControlBase" title="stored::ExampleControlBase::ExampleControlBase"><span class="n"><span class="pre">ExampleControlBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleControlBase18ExampleControlBaseERK18ExampleControlBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleControlBase14__frequency_HzEbRf">
 <span id="_CPPv3N6stored18ExampleControlBase14__frequency_HzEbRf"></span><span id="_CPPv2N6stored18ExampleControlBase14__frequency_HzEbRf"></span><span id="stored::ExampleControlBase::__frequency_Hz__b.floatR"></span><span class="target" id="classstored_1_1_example_control_base_1a9afce4fd66a7d57779914ae110bd1e0b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__frequency_Hz</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">set</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored18ExampleControlBase14__frequency_HzEbRf" title="Permalink to this definition"></a><br /></dt>
@@ -1191,13 +1182,13 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored18ExampleControlBase14implementationEv">
-<span id="_CPPv3NK6stored18ExampleControlBase14implementationEv"></span><span id="_CPPv2NK6stored18ExampleControlBase14implementationEv"></span><span id="stored::ExampleControlBase::implementationCCE"></span><span class="target" id="classstored_1_1_example_control_base_1a16188bf3b3b9ca45c58684ab9082b875"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored18ExampleControlBase14ImplementationE" title="stored::ExampleControlBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored18ExampleControlBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored18ExampleControlBase14implementationEv"></span><span id="_CPPv2NK6stored18ExampleControlBase14implementationEv"></span><span id="stored::ExampleControlBase::implementationC"></span><span class="target" id="classstored_1_1_example_control_base_1a7f0671a34ee18572aa4308cf520a2faf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored18ExampleControlBase14ImplementationE" title="stored::ExampleControlBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored18ExampleControlBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleControlBase14implementationEv">
-<span id="_CPPv3N6stored18ExampleControlBase14implementationEv"></span><span id="_CPPv2N6stored18ExampleControlBase14implementationEv"></span><span id="stored::ExampleControlBase::implementationCE"></span><span class="target" id="classstored_1_1_example_control_base_1a125fbf0c2d7c83e36d593fae0075c7a9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored18ExampleControlBase14ImplementationE" title="stored::ExampleControlBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleControlBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored18ExampleControlBase14implementationEv"></span><span id="_CPPv2N6stored18ExampleControlBase14implementationEv"></span><span id="stored::ExampleControlBase::implementation"></span><span class="target" id="classstored_1_1_example_control_base_1a311f9d0aba6167c64a460b8b7433ecc7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored18ExampleControlBase14ImplementationE" title="stored::ExampleControlBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleControlBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
@@ -1245,20 +1236,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored18ExampleControlBase4nameEv">
-<span id="_CPPv3NK6stored18ExampleControlBase4nameEv"></span><span id="_CPPv2NK6stored18ExampleControlBase4nameEv"></span><span id="stored::ExampleControlBase::nameCCE"></span><span class="target" id="classstored_1_1_example_control_base_1a23afbf00578a13fb836d401831482315"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored18ExampleControlBase4nameEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored18ExampleControlBase4nameEv"></span><span id="_CPPv2NK6stored18ExampleControlBase4nameEv"></span><span id="stored::ExampleControlBase::nameC"></span><span class="target" id="classstored_1_1_example_control_base_1a52fdafe47d44f659b094eaeeaaf14b24"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored18ExampleControlBase4nameEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleControlBaseaSERR18ExampleControlBase">
-<span id="_CPPv3N6stored18ExampleControlBaseaSERR18ExampleControlBase"></span><span id="_CPPv2N6stored18ExampleControlBaseaSERR18ExampleControlBase"></span><span id="stored::ExampleControlBase::assign-operator__ExampleControlBaseRR"></span><span class="target" id="classstored_1_1_example_control_base_1a46be6db2d8712d51801909ff6b2a1b71"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored18ExampleControlBaseE" title="stored::ExampleControlBase"><span class="n"><span class="pre">ExampleControlBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleControlBaseaSERR18ExampleControlBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleControlBaseaSERK18ExampleControlBase">
-<span id="_CPPv3N6stored18ExampleControlBaseaSERK18ExampleControlBase"></span><span id="_CPPv2N6stored18ExampleControlBaseaSERK18ExampleControlBase"></span><span id="stored::ExampleControlBase::assign-operator__ExampleControlBaseCR"></span><span class="target" id="classstored_1_1_example_control_base_1ab6ca29a7b4aef5f0e9fb353f6700c88d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored18ExampleControlBaseE" title="stored::ExampleControlBase"><span class="n"><span class="pre">ExampleControlBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleControlBaseaSERK18ExampleControlBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1355,8 +1334,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14ExampleControl14ExampleControlERR14ExampleControl">
-<span id="_CPPv3N6stored14ExampleControl14ExampleControlERR14ExampleControl"></span><span id="_CPPv2N6stored14ExampleControl14ExampleControlERR14ExampleControl"></span><span id="stored::ExampleControl::ExampleControl__ExampleControlRR"></span><span class="target" id="classstored_1_1_example_control_1a31835de639dc79c3db1df50416553164"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleControl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14ExampleControl14ExampleControlERR14ExampleControl" title="stored::ExampleControl::ExampleControl"><span class="n"><span class="pre">ExampleControl</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored14ExampleControl14ExampleControlERR14ExampleControl" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
+<span id="_CPPv3N6stored14ExampleControl14ExampleControlERR14ExampleControl"></span><span id="_CPPv2N6stored14ExampleControl14ExampleControlERR14ExampleControl"></span><span id="stored::ExampleControl::ExampleControl__ExampleControlRR"></span><span class="target" id="classstored_1_1_example_control_1a389cc88348f47f6ce659e0953603cf4d"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleControl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14ExampleControl14ExampleControlERR14ExampleControl" title="stored::ExampleControl::ExampleControl"><span class="n"><span class="pre">ExampleControl</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored14ExampleControl14ExampleControlERR14ExampleControl" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Default move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1367,7 +1346,7 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14ExampleControlaSERR14ExampleControl">
-<span id="_CPPv3N6stored14ExampleControlaSERR14ExampleControl"></span><span id="_CPPv2N6stored14ExampleControlaSERR14ExampleControl"></span><span id="stored::ExampleControl::assign-operator__ExampleControlRR"></span><span class="target" id="classstored_1_1_example_control_1a471ec5b6423b17b91965ec35278cd5a8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14ExampleControlE" title="stored::ExampleControl"><span class="n"><span class="pre">ExampleControl</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored14ExampleControlaSERR14ExampleControl" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored14ExampleControlaSERR14ExampleControl"></span><span id="_CPPv2N6stored14ExampleControlaSERR14ExampleControl"></span><span id="stored::ExampleControl::assign-operator__ExampleControlRR"></span><span class="target" id="classstored_1_1_example_control_1a96859fb42851caa86e589841ce95ba50"></span><a class="reference internal" href="#_CPPv4N6stored14ExampleControlE" title="stored::ExampleControl"><span class="n"><span class="pre">ExampleControl</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14ExampleControlE" title="stored::ExampleControl"><span class="n"><span class="pre">ExampleControl</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored14ExampleControlaSERR14ExampleControl" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 

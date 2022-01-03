@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>7_protocol &mdash; libstored 1.0.1-rc documentation</title>
+  <title>7_protocol &mdash; libstored 1.1.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.0.1.dev0
+                1.1.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -123,146 +123,162 @@ uint32 injected errors
 <span class="cm"> * the MTU can also dynamically changed.</span>
 <span class="cm"> *</span>
 <span class="cm"> * Start this example using the \c stdio wrapper and connect the GUI to it.</span>
-<span class="cm"> */</span>
+<span class="cm"> */</span><span class="w"></span>
 
-<span class="cp">#include</span> <span class="cpf">&quot;ExampleProtocol.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ExampleProtocol.h&quot;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
 
 <span class="cp">#ifdef STORED_COMPILER_MSVC</span>
-<span class="cp">#  include &lt;io.h&gt;</span>
-<span class="cp">#  define read(fd, buffer, len) _read(fd, buffer, (unsigned int)(len))</span>
-<span class="cp">#  define STDERR_FILENO		_fileno(stderr)</span>
-<span class="cp">#  define STDOUT_FILENO		_fileno(stdout)</span>
-<span class="cp">#  define STDIN_FILENO		_fileno(stdin)</span>
+<span class="cp">#</span><span class="w">	</span><span class="cp">include</span><span class="w"> </span><span class="cpf">&lt;io.h&gt;</span><span class="cp"></span>
+<span class="cp">#	define read(fd, buffer, len) _read(fd, buffer, (unsigned int)(len))</span>
+<span class="cp">#	define STDERR_FILENO	_fileno(stderr)</span>
+<span class="cp">#	define STDOUT_FILENO	_fileno(stdout)</span>
+<span class="cp">#	define STDIN_FILENO	_fileno(stdin)</span>
 <span class="cp">#else</span>
-<span class="cp">#  include &lt;unistd.h&gt;</span>
+<span class="cp">#</span><span class="w">	</span><span class="cp">include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span><span class="cp"></span>
 <span class="cp">#endif</span>
 
 <span class="cp">#ifdef STORED_OS_WINDOWS</span>
-<span class="cp">#  include &lt;malloc.h&gt;</span>
-<span class="cp">#  ifndef alloca</span>
-<span class="cp">#    define alloca(x) _alloca(x)</span>
-<span class="cp">#  endif</span>
+<span class="cp">#</span><span class="w">	</span><span class="cp">include</span><span class="w"> </span><span class="cpf">&lt;malloc.h&gt;</span><span class="cp"></span>
+<span class="cp">#	ifndef alloca</span>
+<span class="cp">#		define alloca(x) _alloca(x)</span>
+<span class="cp">#	endif</span>
 <span class="cp">#else</span>
-<span class="cp">#  include &lt;alloca.h&gt;</span>
+<span class="cp">#</span><span class="w">	</span><span class="cp">include</span><span class="w"> </span><span class="cpf">&lt;alloca.h&gt;</span><span class="cp"></span>
 <span class="cp">#endif</span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;ctime&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;ctime&gt;</span><span class="cp"></span>
 
 <span class="cp">#if STORED_cplusplus &lt; 201103L</span>
-<span class="cp">#  include &lt;inttypes.h&gt;</span>
+<span class="cp">#</span><span class="w">	</span><span class="cp">include</span><span class="w"> </span><span class="cpf">&lt;inttypes.h&gt;</span><span class="cp"></span>
 <span class="cp">#else</span>
-<span class="cp">#  include &lt;cinttypes&gt;</span>
+<span class="cp">#</span><span class="w">	</span><span class="cp">include</span><span class="w"> </span><span class="cpf">&lt;cinttypes&gt;</span><span class="cp"></span>
 <span class="cp">#endif</span>
 
-<span class="k">static</span> <span class="n">stored</span><span class="o">::</span><span class="n">ExampleProtocol</span> <span class="n">store</span><span class="p">;</span>
+<span class="k">static</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">ExampleProtocol</span><span class="w"> </span><span class="n">store</span><span class="p">;</span><span class="w"></span>
 
 <span class="cm">/*!</span>
 <span class="cm"> * \brief Print a buffer, for demonstration purposes.</span>
-<span class="cm"> */</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">printBuffer</span><span class="p">(</span><span class="kt">void</span> <span class="k">const</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">char</span> <span class="k">const</span><span class="o">*</span> <span class="n">prefix</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">,</span> <span class="kt">FILE</span><span class="o">*</span> <span class="n">f</span> <span class="o">=</span> <span class="n">stdout</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">s</span><span class="p">;</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
-		<span class="n">s</span> <span class="o">+=</span> <span class="n">prefix</span><span class="p">;</span>
+<span class="cm"> */</span><span class="w"></span>
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"></span>
+<span class="nf">printBuffer</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">prefix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="kt">FILE</span><span class="o">*</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stdout</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">s</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span><span class="w"></span>
+<span class="w">		</span><span class="n">s</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">prefix</span><span class="p">;</span><span class="w"></span>
 
-	<span class="kt">uint8_t</span> <span class="k">const</span><span class="o">*</span> <span class="n">b</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint8_t</span> <span class="k">const</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span>
-	<span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
-	<span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">switch</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">{</span>
-		<span class="k">case</span> <span class="sc">&#39;\0&#39;</span><span class="o">:</span> <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\\</span><span class="s">0&quot;</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
-		<span class="k">case</span> <span class="sc">&#39;\r&#39;</span><span class="o">:</span> <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\\</span><span class="s">r&quot;</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
-		<span class="k">case</span> <span class="sc">&#39;\n&#39;</span><span class="o">:</span> <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\\</span><span class="s">n&quot;</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
-		<span class="k">case</span> <span class="sc">&#39;\t&#39;</span><span class="o">:</span> <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\\</span><span class="s">t&quot;</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
-		<span class="k">case</span> <span class="sc">&#39;\\&#39;</span><span class="o">:</span> <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\\\\</span><span class="s">&quot;</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
-		<span class="k">default</span><span class="o">:</span>
-			<span class="k">if</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mh">0x20</span> <span class="o">||</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mh">0x7f</span><span class="p">)</span> <span class="p">{</span>
-				<span class="n">snprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">),</span> <span class="s">&quot;</span><span class="se">\\</span><span class="s">x%02&quot;</span> <span class="n">PRIx8</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
-				<span class="n">s</span> <span class="o">+=</span> <span class="n">buf</span><span class="p">;</span>
-			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-				<span class="n">s</span> <span class="o">+=</span> <span class="p">(</span><span class="kt">char</span><span class="p">)</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-			<span class="p">}</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="kt">uint8_t</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="w"> </span><span class="k">const</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="kt">char</span><span class="w"> </span><span class="n">buf</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span><span class="w"></span>
+<span class="w">	</span><span class="k">for</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">len</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">switch</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">case</span><span class="w"> </span><span class="sc">&#39;\0&#39;</span><span class="o">:</span><span class="w"></span>
+<span class="w">			</span><span class="n">s</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\\</span><span class="s">0&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="k">break</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="k">case</span><span class="w"> </span><span class="sc">&#39;\r&#39;</span><span class="o">:</span><span class="w"></span>
+<span class="w">			</span><span class="n">s</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\\</span><span class="s">r&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="k">break</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="k">case</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="o">:</span><span class="w"></span>
+<span class="w">			</span><span class="n">s</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\\</span><span class="s">n&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="k">break</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="k">case</span><span class="w"> </span><span class="sc">&#39;\t&#39;</span><span class="o">:</span><span class="w"></span>
+<span class="w">			</span><span class="n">s</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\\</span><span class="s">t&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="k">break</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="k">case</span><span class="w"> </span><span class="sc">&#39;\\&#39;</span><span class="o">:</span><span class="w"></span>
+<span class="w">			</span><span class="n">s</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\\\\</span><span class="s">&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="k">break</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="k">default</span><span class="o">:</span><span class="w"></span>
+<span class="w">			</span><span class="k">if</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mh">0x20</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mh">0x7f</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">				</span><span class="n">snprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\\</span><span class="s">x%02&quot;</span><span class="w"> </span><span class="n">PRIx8</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span><span class="w"></span>
+<span class="w">				</span><span class="n">s</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">buf</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">				</span><span class="n">s</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="p">)</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w"></span>
+<span class="w">			</span><span class="p">}</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
-	<span class="n">fputs</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">f</span><span class="p">);</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="n">s</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">fputs</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span><span class="w"> </span><span class="n">f</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
 <span class="cm">/*!</span>
 <span class="cm"> * \brief Simulate a lossy channel.</span>
 <span class="cm"> *</span>
 <span class="cm"> * Depending on the bit error rate (ber) set in the store, bits are flipped.</span>
 <span class="cm"> * Moreover, it allows to set an MTU via the store.</span>
-<span class="cm"> */</span>
-<span class="k">class</span> <span class="nc">LossyChannel</span> <span class="o">:</span> <span class="k">public</span> <span class="n">stored</span><span class="o">::</span><span class="n">ProtocolLayer</span> <span class="p">{</span>
-	<span class="n">CLASS_NOCOPY</span><span class="p">(</span><span class="n">LossyChannel</span><span class="p">)</span>
-<span class="k">public</span><span class="o">:</span>
-	<span class="k">typedef</span> <span class="n">stored</span><span class="o">::</span><span class="n">ProtocolLayer</span> <span class="n">base</span><span class="p">;</span>
+<span class="cm"> */</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LossyChannel</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">ProtocolLayer</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">STORED_CLASS_NOCOPY</span><span class="p">(</span><span class="n">LossyChannel</span><span class="p">)</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="k">typedef</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">ProtocolLayer</span><span class="w"> </span><span class="n">base</span><span class="p">;</span><span class="w"></span>
 
-	<span class="n">LossyChannel</span><span class="p">(</span><span class="n">ProtocolLayer</span><span class="o">*</span> <span class="n">up</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">,</span> <span class="n">ProtocolLayer</span><span class="o">*</span> <span class="n">down</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">)</span>
-		<span class="o">:</span> <span class="n">base</span><span class="p">(</span><span class="n">up</span><span class="p">,</span> <span class="n">down</span><span class="p">)</span>
-	<span class="p">{</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="n">LossyChannel</span><span class="p">(</span><span class="n">ProtocolLayer</span><span class="o">*</span><span class="w"> </span><span class="n">up</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="n">ProtocolLayer</span><span class="o">*</span><span class="w"> </span><span class="n">down</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">)</span><span class="w"></span>
+<span class="w">		</span><span class="o">:</span><span class="w"> </span><span class="n">base</span><span class="p">(</span><span class="n">up</span><span class="p">,</span><span class="w"> </span><span class="n">down</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{}</span><span class="w"></span>
 
-	<span class="k">virtual</span> <span class="o">~</span><span class="n">LossyChannel</span><span class="p">()</span> <span class="k">override</span> <span class="n">is_default</span>
+<span class="w">	</span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">LossyChannel</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="n">is_default</span><span class="w"></span>
 
-	<span class="k">virtual</span> <span class="kt">void</span> <span class="n">decode</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">)</span> <span class="k">override</span>
-	<span class="p">{</span>
-		<span class="kt">char</span><span class="o">*</span> <span class="n">buffer_</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span>
-		<span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-			<span class="n">buffer_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">lossyByte</span><span class="p">(</span><span class="n">buffer_</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="w">	</span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">decode</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">buffer_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="k">for</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">len</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">buffer_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lossyByte</span><span class="p">(</span><span class="n">buffer_</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span><span class="w"></span>
 
-		<span class="n">printBuffer</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="s">&quot;&gt; &quot;</span><span class="p">);</span>
-		<span class="n">base</span><span class="o">::</span><span class="n">decode</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">);</span>
-	<span class="p">}</span>
+<span class="w">		</span><span class="n">printBuffer</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&gt; &quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="n">base</span><span class="o">::</span><span class="n">decode</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="k">virtual</span> <span class="kt">void</span> <span class="n">encode</span><span class="p">(</span><span class="kt">void</span> <span class="k">const</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">last</span> <span class="o">=</span> <span class="nb">true</span><span class="p">)</span> <span class="k">override</span>
-	<span class="p">{</span>
-		<span class="c1">// cppcheck-suppress allocaCalled</span>
-		<span class="kt">char</span><span class="o">*</span> <span class="n">buffer_</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">alloca</span><span class="p">(</span><span class="n">len</span><span class="p">);</span>
-		<span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-			<span class="n">buffer_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">lossyByte</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">buffer</span><span class="p">)[</span><span class="n">i</span><span class="p">]);</span>
+<span class="w">	</span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">encode</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">last</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="c1">// cppcheck-suppress allocaCalled</span>
+<span class="w">		</span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">buffer_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">alloca</span><span class="p">(</span><span class="n">len</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="k">for</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">len</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">buffer_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lossyByte</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">buffer</span><span class="p">)[</span><span class="n">i</span><span class="p">]);</span><span class="w"></span>
 
-		<span class="n">printBuffer</span><span class="p">(</span><span class="n">buffer_</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="s">&quot;&lt; &quot;</span><span class="p">);</span>
-		<span class="n">base</span><span class="o">::</span><span class="n">encode</span><span class="p">(</span><span class="n">buffer_</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">last</span><span class="p">);</span>
-	<span class="p">}</span>
+<span class="w">		</span><span class="n">printBuffer</span><span class="p">(</span><span class="n">buffer_</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&lt; &quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="n">base</span><span class="o">::</span><span class="n">encode</span><span class="p">(</span><span class="n">buffer_</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="n">last</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="k">using</span> <span class="n">base</span><span class="o">::</span><span class="n">encode</span><span class="p">;</span>
+<span class="w">	</span><span class="k">using</span><span class="w"> </span><span class="n">base</span><span class="o">::</span><span class="n">encode</span><span class="p">;</span><span class="w"></span>
 
-	<span class="c1">// Bit error rate</span>
-	<span class="kt">double</span> <span class="nf">ber</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">store</span><span class="p">.</span><span class="n">ber</span><span class="p">;</span> <span class="p">}</span>
+<span class="w">	</span><span class="c1">// Bit error rate</span>
+<span class="w">	</span><span class="kt">double</span><span class="w"> </span><span class="nf">ber</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">ber</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">char</span> <span class="nf">lossyByte</span><span class="p">(</span><span class="kt">char</span> <span class="n">b</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kt">double</span> <span class="n">p</span> <span class="o">=</span>
+<span class="w">	</span><span class="kt">char</span><span class="w"> </span><span class="nf">lossyByte</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">8</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="kt">double</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
 <span class="cp">#ifdef STORED_OS_WINDOWS</span>
-				<span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="o">::</span><span class="n">rand</span><span class="p">()</span> <span class="o">/</span> <span class="n">RAND_MAX</span><span class="p">;</span>
+<span class="w">				</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="o">::</span><span class="n">rand</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">RAND_MAX</span><span class="p">;</span><span class="w"></span>
 <span class="cp">#else</span>
-				<span class="n">drand48</span><span class="p">();</span>
+<span class="w">				</span><span class="n">drand48</span><span class="p">();</span><span class="w"></span>
 <span class="cp">#endif</span>
-			<span class="k">if</span><span class="p">(</span><span class="n">p</span> <span class="o">&lt;</span> <span class="n">ber</span><span class="p">())</span> <span class="p">{</span>
-				<span class="c1">// Inject an error.</span>
-				<span class="n">b</span> <span class="o">=</span> <span class="n">b</span> <span class="o">^</span> <span class="p">(</span><span class="kt">char</span><span class="p">)(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">rand</span><span class="p">()</span> <span class="o">%</span> <span class="mi">8</span><span class="p">));</span>
-				<span class="n">store</span><span class="p">.</span><span class="n">injected_errors</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">injected_errors</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-			<span class="p">}</span>
-		<span class="p">}</span>
-		<span class="k">return</span> <span class="n">b</span><span class="p">;</span>
-	<span class="p">}</span>
+<span class="w">			</span><span class="k">if</span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">ber</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">				</span><span class="c1">// Inject an error.</span>
+<span class="w">				</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">^</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="p">)(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">rand</span><span class="p">()</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">8</span><span class="p">));</span><span class="w"></span>
+<span class="w">				</span><span class="n">store</span><span class="p">.</span><span class="n">injected_errors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">injected_errors</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="p">}</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
+<span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="k">virtual</span> <span class="kt">size_t</span> <span class="nf">mtu</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span> <span class="p">{</span> <span class="k">return</span> <span class="n">store</span><span class="p">.</span><span class="n">MTU</span><span class="p">.</span><span class="n">as</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">();</span> <span class="p">}</span>
-<span class="p">};</span>
+<span class="w">	</span><span class="k">virtual</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">mtu</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">MTU</span><span class="p">.</span><span class="n">as</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
-<span class="p">{</span>
-	<span class="c1">// Demonstrate a full stack assuming a lossy channel.</span>
-	<span class="c1">// In this example, the lossy channel is simulated by LossyChannel,</span>
-	<span class="c1">// which just flips bits, depending on the set bit error rate (BER).</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="c1">// Demonstrate a full stack assuming a lossy channel.</span>
+<span class="w">	</span><span class="c1">// In this example, the lossy channel is simulated by LossyChannel,</span>
+<span class="w">	</span><span class="c1">// which just flips bits, depending on the set bit error rate (BER).</span>
 
-	<span class="cm">/*</span>
+<span class="w">	</span><span class="cm">/*</span>
 <span class="cm">	Consider the received string:</span>
 <span class="cm">		\x1b_@Y?Ez\x7fI\x1b\\</span>
 
@@ -279,58 +295,62 @@ uint32 injected errors
 <span class="cm">	To test, run in a shell:</span>
 <span class="cm">	  echo -e -n &#39;\x1b_\xc0X\xe4\x1c\x1b\\\x1b_@Y?Ez\x7fI\x1b\\&#39; | 7_protocol</span>
 
-<span class="cm">	*/</span>
+<span class="cm">	*/</span><span class="w"></span>
 
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Demo of a lossy channel.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Run this example using libstored.wrapper.stdio with the flag</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;  -S segment,arq,crc16,ascii,term</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Demo of a lossy channel.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Run this example using libstored.wrapper.stdio with the flag</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;  -S segment,arq,crc16,ascii,term</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span> <span class="n">debugger</span><span class="p">(</span><span class="s">&quot;7_protocol&quot;</span><span class="p">);</span>
-	<span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store</span><span class="p">);</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span><span class="w"> </span><span class="n">debugger</span><span class="p">(</span><span class="s">&quot;7_protocol&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">SegmentationLayer</span> <span class="n">segmentation</span><span class="p">;</span>
-	<span class="n">segmentation</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">debugger</span><span class="p">);</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">SegmentationLayer</span><span class="w"> </span><span class="n">segmentation</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">segmentation</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">debugger</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">DebugArqLayer</span> <span class="n">arq</span><span class="p">;</span>
-	<span class="n">arq</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">segmentation</span><span class="p">);</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">DebugArqLayer</span><span class="w"> </span><span class="n">arq</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">arq</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">segmentation</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">Crc16Layer</span> <span class="n">crc</span><span class="p">;</span>
-	<span class="n">crc</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">arq</span><span class="p">);</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Crc16Layer</span><span class="w"> </span><span class="n">crc</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">crc</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">arq</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">AsciiEscapeLayer</span> <span class="n">escape</span><span class="p">;</span>
-	<span class="n">escape</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">crc</span><span class="p">);</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">AsciiEscapeLayer</span><span class="w"> </span><span class="n">escape</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">escape</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">crc</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">TerminalLayer</span> <span class="n">terminal</span><span class="p">;</span>
-	<span class="n">terminal</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">escape</span><span class="p">);</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">TerminalLayer</span><span class="w"> </span><span class="n">terminal</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">terminal</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">escape</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">BufferLayer</span> <span class="n">buffer</span><span class="p">;</span>
-	<span class="n">buffer</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">terminal</span><span class="p">);</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">BufferLayer</span><span class="w"> </span><span class="n">buffer</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">buffer</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">terminal</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">LossyChannel</span> <span class="n">lossy</span><span class="p">;</span>
-	<span class="n">lossy</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span>
+<span class="w">	</span><span class="n">LossyChannel</span><span class="w"> </span><span class="n">lossy</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">lossy</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">StdioLayer</span> <span class="n">stdio</span><span class="p">;</span>
-	<span class="n">stdio</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">lossy</span><span class="p">);</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">StdioLayer</span><span class="w"> </span><span class="n">stdio</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">stdio</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">lossy</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">setvbuf</span><span class="p">(</span><span class="n">stdin</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">_IONBF</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-	<span class="n">setvbuf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">_IONBF</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="w">	</span><span class="n">setvbuf</span><span class="p">(</span><span class="n">stdin</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">_IONBF</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">setvbuf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">_IONBF</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
 
 <span class="cp">#ifdef STORED_OS_WINDOWS</span>
-	<span class="n">srand</span><span class="p">((</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">)</span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">));</span>
+<span class="w">	</span><span class="n">srand</span><span class="p">((</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">));</span><span class="w"></span>
 <span class="cp">#else</span>
-	<span class="n">srand48</span><span class="p">((</span><span class="kt">long</span><span class="p">)</span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">));</span>
+<span class="w">	</span><span class="n">srand48</span><span class="p">((</span><span class="kt">long</span><span class="p">)</span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">));</span><span class="w"></span>
 <span class="cp">#endif</span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">Poller</span> <span class="n">poller</span><span class="p">;</span>
-	<span class="n">poller</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">stdio</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">,</span> <span class="n">stored</span><span class="o">::</span><span class="n">Poller</span><span class="o">::</span><span class="n">PollIn</span><span class="p">);</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Poller</span><span class="w"> </span><span class="n">poller</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">PollableFileLayer</span><span class="w"> </span><span class="n">pollable</span><span class="p">(</span><span class="n">stdio</span><span class="p">,</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Pollable</span><span class="o">::</span><span class="n">PollIn</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">((</span><span class="n">errno</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">poller</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">pollable</span><span class="p">)))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot add pollable&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="k">while</span><span class="p">(</span><span class="n">stdio</span><span class="p">.</span><span class="n">isOpen</span><span class="p">())</span> <span class="p">{</span>
-		<span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">();</span>
-		<span class="n">stdio</span><span class="p">.</span><span class="n">recv</span><span class="p">();</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="k">while</span><span class="p">(</span><span class="n">stdio</span><span class="p">.</span><span class="n">isOpen</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">();</span><span class="w"></span>
+<span class="w">		</span><span class="n">stdio</span><span class="p">.</span><span class="n">recv</span><span class="p">();</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -415,30 +435,30 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleProtocolBaseUt2_45E">
-<span id="_CPPv3N6stored19ExampleProtocolBaseUt2_45E"></span><span class="target" id="classstored_1_1_example_protocol_base_1a9d2f06659e1e02686a38731f3eab4ab1"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseUt2_45E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleProtocolBaseUt2_44E">
+<span id="_CPPv3N6stored19ExampleProtocolBaseUt2_44E"></span><span class="target" id="classstored_1_1_example_protocol_base_1af4cfac052340ded6b423e6f140c9c39a"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseUt2_44E" title="Permalink to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleProtocolBaseUt2_4511ObjectCountE">
-<span id="_CPPv3N6stored19ExampleProtocolBaseUt2_4511ObjectCountE"></span><span class="target" id="classstored_1_1_example_protocol_base_1a9d2f06659e1e02686a38731f3eab4ab1a4f36f37a8865b91ca86ae378cd226063"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseUt2_4511ObjectCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleProtocolBaseUt2_4411ObjectCountE">
+<span id="_CPPv3N6stored19ExampleProtocolBaseUt2_4411ObjectCountE"></span><span class="target" id="classstored_1_1_example_protocol_base_1af4cfac052340ded6b423e6f140c9c39aa4f36f37a8865b91ca86ae378cd226063"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseUt2_4411ObjectCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of objects in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleProtocolBaseUt2_4513VariableCountE">
-<span id="_CPPv3N6stored19ExampleProtocolBaseUt2_4513VariableCountE"></span><span class="target" id="classstored_1_1_example_protocol_base_1a9d2f06659e1e02686a38731f3eab4ab1a381cdf9686df65eadb1222658e8e4ce9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseUt2_4513VariableCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleProtocolBaseUt2_4413VariableCountE">
+<span id="_CPPv3N6stored19ExampleProtocolBaseUt2_4413VariableCountE"></span><span class="target" id="classstored_1_1_example_protocol_base_1af4cfac052340ded6b423e6f140c9c39aa381cdf9686df65eadb1222658e8e4ce9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseUt2_4413VariableCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of variables in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleProtocolBaseUt2_4513FunctionCountE">
-<span id="_CPPv3N6stored19ExampleProtocolBaseUt2_4513FunctionCountE"></span><span class="target" id="classstored_1_1_example_protocol_base_1a9d2f06659e1e02686a38731f3eab4ab1acdbf2b0f9080b3c312cf039504fe9887"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseUt2_4513FunctionCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleProtocolBaseUt2_4413FunctionCountE">
+<span id="_CPPv3N6stored19ExampleProtocolBaseUt2_4413FunctionCountE"></span><span class="target" id="classstored_1_1_example_protocol_base_1af4cfac052340ded6b423e6f140c9c39aacdbf2b0f9080b3c312cf039504fe9887"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseUt2_4413FunctionCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of functions in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleProtocolBaseUt2_4510BufferSizeE">
-<span id="_CPPv3N6stored19ExampleProtocolBaseUt2_4510BufferSizeE"></span><span class="target" id="classstored_1_1_example_protocol_base_1a9d2f06659e1e02686a38731f3eab4ab1a3419082fbece3bdc31928b542edda32d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseUt2_4510BufferSizeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleProtocolBaseUt2_4410BufferSizeE">
+<span id="_CPPv3N6stored19ExampleProtocolBaseUt2_4410BufferSizeE"></span><span class="target" id="classstored_1_1_example_protocol_base_1af4cfac052340ded6b423e6f140c9c39aa3419082fbece3bdc31928b542edda32d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseUt2_4410BufferSizeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Buffer size. </p>
 </dd></dl>
 
@@ -476,18 +496,6 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleProtocolBase19ExampleProtocolBaseERR19ExampleProtocolBase">
-<span id="_CPPv3N6stored19ExampleProtocolBase19ExampleProtocolBaseERR19ExampleProtocolBase"></span><span id="_CPPv2N6stored19ExampleProtocolBase19ExampleProtocolBaseERR19ExampleProtocolBase"></span><span id="stored::ExampleProtocolBase::ExampleProtocolBase__ExampleProtocolBaseRR"></span><span class="target" id="classstored_1_1_example_protocol_base_1a4027d46c1d58b63603c7f0588395a78e"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleProtocolBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored19ExampleProtocolBase19ExampleProtocolBaseERR19ExampleProtocolBase" title="stored::ExampleProtocolBase::ExampleProtocolBase"><span class="n"><span class="pre">ExampleProtocolBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBase19ExampleProtocolBaseERR19ExampleProtocolBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleProtocolBase19ExampleProtocolBaseERK19ExampleProtocolBase">
-<span id="_CPPv3N6stored19ExampleProtocolBase19ExampleProtocolBaseERK19ExampleProtocolBase"></span><span id="_CPPv2N6stored19ExampleProtocolBase19ExampleProtocolBaseERK19ExampleProtocolBase"></span><span id="stored::ExampleProtocolBase::ExampleProtocolBase__ExampleProtocolBaseCR"></span><span class="target" id="classstored_1_1_example_protocol_base_1afa91d5735658c4bfb42e67f34d653da9"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleProtocolBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored19ExampleProtocolBase19ExampleProtocolBaseERK19ExampleProtocolBase" title="stored::ExampleProtocolBase::ExampleProtocolBase"><span class="n"><span class="pre">ExampleProtocolBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBase19ExampleProtocolBaseERK19ExampleProtocolBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored19ExampleProtocolBase11bufferToKeyEPKv">
 <span id="_CPPv3NK6stored19ExampleProtocolBase11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored19ExampleProtocolBase11bufferToKeyEPKv"></span><span id="stored::ExampleProtocolBase::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_protocol_base_1acb1a33d98726df7625ac3350dd6ee2d8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored19ExampleProtocolBase3KeyE" title="stored::ExampleProtocolBase::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bufferToKey</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored19ExampleProtocolBase11bufferToKeyEPKv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Converts a variable’s buffer to a key. </p>
@@ -516,13 +524,13 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored19ExampleProtocolBase14implementationEv">
-<span id="_CPPv3NK6stored19ExampleProtocolBase14implementationEv"></span><span id="_CPPv2NK6stored19ExampleProtocolBase14implementationEv"></span><span id="stored::ExampleProtocolBase::implementationCCE"></span><span class="target" id="classstored_1_1_example_protocol_base_1a17a093669884dddbb65c3d59dc964221"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored19ExampleProtocolBase14ImplementationE" title="stored::ExampleProtocolBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored19ExampleProtocolBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored19ExampleProtocolBase14implementationEv"></span><span id="_CPPv2NK6stored19ExampleProtocolBase14implementationEv"></span><span id="stored::ExampleProtocolBase::implementationC"></span><span class="target" id="classstored_1_1_example_protocol_base_1af8cb54ccfcec01cdeaeb2d1ef3d4dfcc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored19ExampleProtocolBase14ImplementationE" title="stored::ExampleProtocolBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored19ExampleProtocolBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleProtocolBase14implementationEv">
-<span id="_CPPv3N6stored19ExampleProtocolBase14implementationEv"></span><span id="_CPPv2N6stored19ExampleProtocolBase14implementationEv"></span><span id="stored::ExampleProtocolBase::implementationCE"></span><span class="target" id="classstored_1_1_example_protocol_base_1ae913959b06f6faf1cb8af53966d6103c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored19ExampleProtocolBase14ImplementationE" title="stored::ExampleProtocolBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored19ExampleProtocolBase14implementationEv"></span><span id="_CPPv2N6stored19ExampleProtocolBase14implementationEv"></span><span id="stored::ExampleProtocolBase::implementation"></span><span class="target" id="classstored_1_1_example_protocol_base_1a8a549b1ba8208f22e70fb5f1f30f667e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored19ExampleProtocolBase14ImplementationE" title="stored::ExampleProtocolBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
@@ -564,20 +572,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored19ExampleProtocolBase4nameEv">
-<span id="_CPPv3NK6stored19ExampleProtocolBase4nameEv"></span><span id="_CPPv2NK6stored19ExampleProtocolBase4nameEv"></span><span id="stored::ExampleProtocolBase::nameCCE"></span><span class="target" id="classstored_1_1_example_protocol_base_1a5db215ead3774cb78ed4f485a098852b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored19ExampleProtocolBase4nameEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored19ExampleProtocolBase4nameEv"></span><span id="_CPPv2NK6stored19ExampleProtocolBase4nameEv"></span><span id="stored::ExampleProtocolBase::nameC"></span><span class="target" id="classstored_1_1_example_protocol_base_1a87191f3d936d9a8f64b52e5ff1394b4b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored19ExampleProtocolBase4nameEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleProtocolBaseaSERR19ExampleProtocolBase">
-<span id="_CPPv3N6stored19ExampleProtocolBaseaSERR19ExampleProtocolBase"></span><span id="_CPPv2N6stored19ExampleProtocolBaseaSERR19ExampleProtocolBase"></span><span id="stored::ExampleProtocolBase::assign-operator__ExampleProtocolBaseRR"></span><span class="target" id="classstored_1_1_example_protocol_base_1a3ffb5f39bcf671d97e3076a79c7b0a67"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleProtocolBaseE" title="stored::ExampleProtocolBase"><span class="n"><span class="pre">ExampleProtocolBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseaSERR19ExampleProtocolBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleProtocolBaseaSERK19ExampleProtocolBase">
-<span id="_CPPv3N6stored19ExampleProtocolBaseaSERK19ExampleProtocolBase"></span><span id="_CPPv2N6stored19ExampleProtocolBaseaSERK19ExampleProtocolBase"></span><span id="stored::ExampleProtocolBase::assign-operator__ExampleProtocolBaseCR"></span><span class="target" id="classstored_1_1_example_protocol_base_1a83445f821ace3d23937a30be6d1b8f1c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleProtocolBaseE" title="stored::ExampleProtocolBase"><span class="n"><span class="pre">ExampleProtocolBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseaSERK19ExampleProtocolBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -674,8 +670,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored15ExampleProtocol15ExampleProtocolERR15ExampleProtocol">
-<span id="_CPPv3N6stored15ExampleProtocol15ExampleProtocolERR15ExampleProtocol"></span><span id="_CPPv2N6stored15ExampleProtocol15ExampleProtocolERR15ExampleProtocol"></span><span id="stored::ExampleProtocol::ExampleProtocol__ExampleProtocolRR"></span><span class="target" id="classstored_1_1_example_protocol_1aaeafcf12001439e2499a59d597ca9659"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleProtocol</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleProtocol15ExampleProtocolERR15ExampleProtocol" title="stored::ExampleProtocol::ExampleProtocol"><span class="n"><span class="pre">ExampleProtocol</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored15ExampleProtocol15ExampleProtocolERR15ExampleProtocol" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
+<span id="_CPPv3N6stored15ExampleProtocol15ExampleProtocolERR15ExampleProtocol"></span><span id="_CPPv2N6stored15ExampleProtocol15ExampleProtocolERR15ExampleProtocol"></span><span id="stored::ExampleProtocol::ExampleProtocol__ExampleProtocolRR"></span><span class="target" id="classstored_1_1_example_protocol_1ac177d7f5c1bd40c05cfa549e79d8f370"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleProtocol</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleProtocol15ExampleProtocolERR15ExampleProtocol" title="stored::ExampleProtocol::ExampleProtocol"><span class="n"><span class="pre">ExampleProtocol</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored15ExampleProtocol15ExampleProtocolERR15ExampleProtocol" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Default move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -686,7 +682,7 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored15ExampleProtocolaSERR15ExampleProtocol">
-<span id="_CPPv3N6stored15ExampleProtocolaSERR15ExampleProtocol"></span><span id="_CPPv2N6stored15ExampleProtocolaSERR15ExampleProtocol"></span><span id="stored::ExampleProtocol::assign-operator__ExampleProtocolRR"></span><span class="target" id="classstored_1_1_example_protocol_1a0393de6ab8f06a0541bea4a5c02a2bc7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleProtocolE" title="stored::ExampleProtocol"><span class="n"><span class="pre">ExampleProtocol</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored15ExampleProtocolaSERR15ExampleProtocol" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored15ExampleProtocolaSERR15ExampleProtocol"></span><span id="_CPPv2N6stored15ExampleProtocolaSERR15ExampleProtocol"></span><span id="stored::ExampleProtocol::assign-operator__ExampleProtocolRR"></span><span class="target" id="classstored_1_1_example_protocol_1ac11ee476b47eb783eb0f41223ed431d5"></span><a class="reference internal" href="#_CPPv4N6stored15ExampleProtocolE" title="stored::ExampleProtocol"><span class="n"><span class="pre">ExampleProtocol</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleProtocolE" title="stored::ExampleProtocol"><span class="n"><span class="pre">ExampleProtocol</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored15ExampleProtocolaSERR15ExampleProtocol" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4_function &mdash; libstored 1.0.1-rc documentation</title>
+  <title>4_function &mdash; libstored 1.1.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.0.1.dev0
+                1.1.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -123,89 +123,98 @@
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
 <span class="cm"> * \file</span>
 <span class="cm"> * \brief Example to show how functions work.</span>
-<span class="cm"> */</span>
+<span class="cm"> */</span><span class="w"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&quot;ExampleFunction.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ExampleFunction.h&quot;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;ctime&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;cstdlib&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdlib&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;ctime&gt;</span><span class="cp"></span>
 
 <span class="cp">#ifdef STORED_COMPILER_MSVC</span>
-<span class="cp">#  pragma warning(disable: 4996)</span>
+<span class="cp">#	pragma warning(disable : 4996)</span>
 <span class="cp">#endif</span>
 
 <span class="c1">// Create a subclass of stored::ExampleFunctionBase to define the side effects of the functions.</span>
-<span class="k">class</span> <span class="nc">MyExample</span> <span class="o">:</span> <span class="k">public</span> <span class="n">STORE_BASE_CLASS</span><span class="p">(</span><span class="n">ExampleFunctionBase</span><span class="p">,</span> <span class="n">MyExample</span><span class="p">)</span> <span class="p">{</span>
-	<span class="n">STORE_CLASS_BODY</span><span class="p">(</span><span class="n">ExampleFunctionBase</span><span class="p">,</span> <span class="n">MyExample</span><span class="p">)</span>
-<span class="k">public</span><span class="o">:</span>
-	<span class="n">MyExample</span><span class="p">()</span> <span class="o">:</span> <span class="n">m_echo</span><span class="p">()</span> <span class="p">{}</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyExample</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">STORE_BASE_CLASS</span><span class="p">(</span><span class="n">ExampleFunctionBase</span><span class="p">,</span><span class="w"> </span><span class="n">MyExample</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">STORE_CLASS_BODY</span><span class="p">(</span><span class="n">ExampleFunctionBase</span><span class="p">,</span><span class="w"> </span><span class="n">MyExample</span><span class="p">)</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="n">MyExample</span><span class="p">()</span><span class="w"></span>
+<span class="w">		</span><span class="o">:</span><span class="w"> </span><span class="n">m_echo</span><span class="p">()</span><span class="w"></span>
+<span class="w">	</span><span class="p">{}</span><span class="w"></span>
 
-	<span class="c1">// Override the default functions from base. Even though they are not</span>
-	<span class="c1">// virtual, these are called as expected.  To do this, you had to specify</span>
-	<span class="c1">// the class as the template parameter of ExampleFunctionBase :)</span>
+<span class="w">	</span><span class="c1">// Override the default functions from base. Even though they are not</span>
+<span class="w">	</span><span class="c1">// virtual, these are called as expected.  To do this, you had to specify</span>
+<span class="w">	</span><span class="c1">// the class as the template parameter of ExampleFunctionBase :)</span>
 
-	<span class="c1">// The function gets the parameter set, which indicates if the value is</span>
-	<span class="c1">// written (true) or should be returned (false).</span>
-	<span class="kt">void</span> <span class="n">__time_s</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint64_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="n">set</span><span class="p">)</span>
-			<span class="k">return</span><span class="p">;</span> <span class="c1">// read-only</span>
+<span class="w">	</span><span class="c1">// The function gets the parameter set, which indicates if the value is</span>
+<span class="w">	</span><span class="c1">// written (true) or should be returned (false).</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__time_s</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">set</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="k">return</span><span class="p">;</span><span class="w"> </span><span class="c1">// read-only</span>
 
-		<span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
-	<span class="p">}</span>
+<span class="w">		</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">time</span><span class="p">(</span><span class="k">nullptr</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="n">__rand</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">int32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kt">int32_t</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">48271</span><span class="p">;</span>
-			<span class="kt">int32_t</span> <span class="n">m</span> <span class="o">=</span> <span class="mi">2147483647</span><span class="p">;</span>
-			<span class="k">static</span> <span class="kt">int32_t</span> <span class="n">seed</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="n">seed</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">seed</span><span class="p">)</span> <span class="o">%</span> <span class="n">m</span><span class="p">;</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__rand</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">int32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="kt">int32_t</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">48271</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="kt">int32_t</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2147483647</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="k">static</span><span class="w"> </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">seed</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">m</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="n">__echo_0</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">int32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span> <span class="n">__echo</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">set</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span> <span class="p">}</span>
-	<span class="kt">void</span> <span class="n">__echo_1</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">int32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span> <span class="n">__echo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">set</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span> <span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__echo_0</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">int32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">__echo</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-<span class="k">private</span><span class="o">:</span>
-	<span class="kt">void</span> <span class="n">__echo</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">int32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="n">assert</span><span class="p">(</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="kt">size_t</span><span class="p">)</span><span class="n">i</span> <span class="o">&lt;</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">m_echo</span><span class="p">)</span> <span class="o">/</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">m_echo</span><span class="p">[</span><span class="mi">0</span><span class="p">]));</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__echo_1</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">int32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">__echo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-		<span class="k">if</span><span class="p">(</span><span class="n">set</span><span class="p">)</span>
-			<span class="n">m_echo</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
-		<span class="k">else</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="n">m_echo</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="k">private</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__echo</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">int32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">assert</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="p">)</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">m_echo</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">m_echo</span><span class="p">[</span><span class="mi">0</span><span class="p">]));</span><span class="w"></span>
 
-		<span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s echo[%d] = %&quot;</span> <span class="n">PRId32</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">set</span> <span class="o">?</span> <span class="s">&quot;set&quot;</span> <span class="o">:</span> <span class="s">&quot;get&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
-	<span class="p">}</span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">set</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">m_echo</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="k">else</span><span class="w"></span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_echo</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w"></span>
 
-<span class="k">private</span><span class="o">:</span>
-	<span class="kt">int32_t</span> <span class="n">m_echo</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
-<span class="p">};</span>
+<span class="w">		</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s echo[%d] = %&quot;</span><span class="w"> </span><span class="n">PRId32</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">&quot;set&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;get&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
-<span class="p">{</span>
-	<span class="n">MyExample</span> <span class="n">e</span><span class="p">;</span>
+<span class="k">private</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="kt">int32_t</span><span class="w"> </span><span class="n">m_echo</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 
-<span class="c1">//	time_t now = (time_t)e.time_s.get();</span>
-<span class="c1">//	printf(&quot;time = %s\n&quot;, ctime(&amp;now));</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">MyExample</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w"></span>
 
-	<span class="n">srand</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;rand = %&quot;</span> <span class="n">PRId32</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">rand</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;rand = %&quot;</span> <span class="n">PRId32</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">rand</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;rand = %&quot;</span> <span class="n">PRId32</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">rand</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+<span class="w">	</span><span class="c1">//	time_t now = (time_t)e.time_s.get();</span>
+<span class="w">	</span><span class="c1">//	printf(&quot;time = %s\n&quot;, ctime(&amp;now));</span>
 
-	<span class="n">e</span><span class="p">.</span><span class="n">echo_0</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
-	<span class="n">e</span><span class="p">.</span><span class="n">echo_1</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="mi">11</span><span class="p">);</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;echo[0] returned %&quot;</span> <span class="n">PRId32</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">echo_0</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;echo[1] returned %&quot;</span> <span class="n">PRId32</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;/echo[1]&quot;</span><span class="p">).</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">().</span><span class="n">get</span><span class="p">());</span>
+<span class="w">	</span><span class="n">srand</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;rand = %&quot;</span><span class="w"> </span><span class="n">PRId32</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">rand</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;rand = %&quot;</span><span class="w"> </span><span class="n">PRId32</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">rand</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;rand = %&quot;</span><span class="w"> </span><span class="n">PRId32</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">rand</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
 
-	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="n">e</span><span class="p">.</span><span class="n">echo_0</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">e</span><span class="p">.</span><span class="n">echo_1</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="mi">11</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;echo[0] returned %&quot;</span><span class="w"> </span><span class="n">PRId32</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">echo_0</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;echo[1] returned %&quot;</span><span class="w"> </span><span class="n">PRId32</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;/echo[1]&quot;</span><span class="p">).</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">().</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+
+<span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -298,30 +307,30 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleFunctionBaseUt2_41E">
-<span id="_CPPv3N6stored19ExampleFunctionBaseUt2_41E"></span><span class="target" id="classstored_1_1_example_function_base_1ae22bf4e25a8f43cb0bed610698b0720a"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBaseUt2_41E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleFunctionBaseUt2_40E">
+<span id="_CPPv3N6stored19ExampleFunctionBaseUt2_40E"></span><span class="target" id="classstored_1_1_example_function_base_1a415ac645d72ea13cca7f6f9a4ad8e3d7"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBaseUt2_40E" title="Permalink to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleFunctionBaseUt2_4111ObjectCountE">
-<span id="_CPPv3N6stored19ExampleFunctionBaseUt2_4111ObjectCountE"></span><span class="target" id="classstored_1_1_example_function_base_1ae22bf4e25a8f43cb0bed610698b0720aafcef1ef2e56834d37674fc090da2acaf"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBaseUt2_4111ObjectCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleFunctionBaseUt2_4011ObjectCountE">
+<span id="_CPPv3N6stored19ExampleFunctionBaseUt2_4011ObjectCountE"></span><span class="target" id="classstored_1_1_example_function_base_1a415ac645d72ea13cca7f6f9a4ad8e3d7afcef1ef2e56834d37674fc090da2acaf"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBaseUt2_4011ObjectCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of objects in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleFunctionBaseUt2_4113VariableCountE">
-<span id="_CPPv3N6stored19ExampleFunctionBaseUt2_4113VariableCountE"></span><span class="target" id="classstored_1_1_example_function_base_1ae22bf4e25a8f43cb0bed610698b0720aa575a3e640c0cc08ad23d6c89ec78da14"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBaseUt2_4113VariableCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleFunctionBaseUt2_4013VariableCountE">
+<span id="_CPPv3N6stored19ExampleFunctionBaseUt2_4013VariableCountE"></span><span class="target" id="classstored_1_1_example_function_base_1a415ac645d72ea13cca7f6f9a4ad8e3d7a575a3e640c0cc08ad23d6c89ec78da14"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBaseUt2_4013VariableCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of variables in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleFunctionBaseUt2_4113FunctionCountE">
-<span id="_CPPv3N6stored19ExampleFunctionBaseUt2_4113FunctionCountE"></span><span class="target" id="classstored_1_1_example_function_base_1ae22bf4e25a8f43cb0bed610698b0720aa8779a00596b7461db132768f3309f9b6"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBaseUt2_4113FunctionCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleFunctionBaseUt2_4013FunctionCountE">
+<span id="_CPPv3N6stored19ExampleFunctionBaseUt2_4013FunctionCountE"></span><span class="target" id="classstored_1_1_example_function_base_1a415ac645d72ea13cca7f6f9a4ad8e3d7a8779a00596b7461db132768f3309f9b6"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBaseUt2_4013FunctionCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of functions in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleFunctionBaseUt2_4110BufferSizeE">
-<span id="_CPPv3N6stored19ExampleFunctionBaseUt2_4110BufferSizeE"></span><span class="target" id="classstored_1_1_example_function_base_1ae22bf4e25a8f43cb0bed610698b0720aa7783a8e34584e62b153a83e9038fb682"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBaseUt2_4110BufferSizeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleFunctionBaseUt2_4010BufferSizeE">
+<span id="_CPPv3N6stored19ExampleFunctionBaseUt2_4010BufferSizeE"></span><span class="target" id="classstored_1_1_example_function_base_1a415ac645d72ea13cca7f6f9a4ad8e3d7a7783a8e34584e62b153a83e9038fb682"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBaseUt2_4010BufferSizeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Buffer size. </p>
 </dd></dl>
 
@@ -358,18 +367,6 @@ public:
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleFunctionBase19ExampleFunctionBaseERR19ExampleFunctionBase">
-<span id="_CPPv3N6stored19ExampleFunctionBase19ExampleFunctionBaseERR19ExampleFunctionBase"></span><span id="_CPPv2N6stored19ExampleFunctionBase19ExampleFunctionBaseERR19ExampleFunctionBase"></span><span id="stored::ExampleFunctionBase::ExampleFunctionBase__ExampleFunctionBaseRR"></span><span class="target" id="classstored_1_1_example_function_base_1aca33b87133c81234beb00cf13493f405"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFunctionBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored19ExampleFunctionBase19ExampleFunctionBaseERR19ExampleFunctionBase" title="stored::ExampleFunctionBase::ExampleFunctionBase"><span class="n"><span class="pre">ExampleFunctionBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBase19ExampleFunctionBaseERR19ExampleFunctionBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleFunctionBase19ExampleFunctionBaseERK19ExampleFunctionBase">
-<span id="_CPPv3N6stored19ExampleFunctionBase19ExampleFunctionBaseERK19ExampleFunctionBase"></span><span id="_CPPv2N6stored19ExampleFunctionBase19ExampleFunctionBaseERK19ExampleFunctionBase"></span><span id="stored::ExampleFunctionBase::ExampleFunctionBase__ExampleFunctionBaseCR"></span><span class="target" id="classstored_1_1_example_function_base_1a1bb8be691a77951a0a95007a4c8effe0"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFunctionBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored19ExampleFunctionBase19ExampleFunctionBaseERK19ExampleFunctionBase" title="stored::ExampleFunctionBase::ExampleFunctionBase"><span class="n"><span class="pre">ExampleFunctionBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBase19ExampleFunctionBaseERK19ExampleFunctionBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleFunctionBase8__echo_0EbR7int32_t">
 <span id="_CPPv3N6stored19ExampleFunctionBase8__echo_0EbR7int32_t"></span><span id="_CPPv2N6stored19ExampleFunctionBase8__echo_0EbR7int32_t"></span><span id="stored::ExampleFunctionBase::__echo_0__b.int32_tR"></span><span class="target" id="classstored_1_1_example_function_base_1a9ec235b9545cae4a43122b3b3c84db83"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__echo_0</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">set</span></span>, <span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBase8__echo_0EbR7int32_t" title="Permalink to this definition"></a><br /></dt>
@@ -429,13 +426,13 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored19ExampleFunctionBase14implementationEv">
-<span id="_CPPv3NK6stored19ExampleFunctionBase14implementationEv"></span><span id="_CPPv2NK6stored19ExampleFunctionBase14implementationEv"></span><span id="stored::ExampleFunctionBase::implementationCCE"></span><span class="target" id="classstored_1_1_example_function_base_1a46b40e56cf63b1adfdd11e8eb32f0d86"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored19ExampleFunctionBase14ImplementationE" title="stored::ExampleFunctionBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored19ExampleFunctionBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored19ExampleFunctionBase14implementationEv"></span><span id="_CPPv2NK6stored19ExampleFunctionBase14implementationEv"></span><span id="stored::ExampleFunctionBase::implementationC"></span><span class="target" id="classstored_1_1_example_function_base_1ac781602f8140971ebc3d846333607c26"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored19ExampleFunctionBase14ImplementationE" title="stored::ExampleFunctionBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored19ExampleFunctionBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleFunctionBase14implementationEv">
-<span id="_CPPv3N6stored19ExampleFunctionBase14implementationEv"></span><span id="_CPPv2N6stored19ExampleFunctionBase14implementationEv"></span><span id="stored::ExampleFunctionBase::implementationCE"></span><span class="target" id="classstored_1_1_example_function_base_1aac897b80cdc6f5390faf39dc3c567cab"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored19ExampleFunctionBase14ImplementationE" title="stored::ExampleFunctionBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored19ExampleFunctionBase14implementationEv"></span><span id="_CPPv2N6stored19ExampleFunctionBase14implementationEv"></span><span id="stored::ExampleFunctionBase::implementation"></span><span class="target" id="classstored_1_1_example_function_base_1a459f66cc051a2b83366a776c97313d6f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored19ExampleFunctionBase14ImplementationE" title="stored::ExampleFunctionBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
@@ -477,20 +474,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored19ExampleFunctionBase4nameEv">
-<span id="_CPPv3NK6stored19ExampleFunctionBase4nameEv"></span><span id="_CPPv2NK6stored19ExampleFunctionBase4nameEv"></span><span id="stored::ExampleFunctionBase::nameCCE"></span><span class="target" id="classstored_1_1_example_function_base_1a8d137b16b5d63ba3a62531199282e821"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored19ExampleFunctionBase4nameEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored19ExampleFunctionBase4nameEv"></span><span id="_CPPv2NK6stored19ExampleFunctionBase4nameEv"></span><span id="stored::ExampleFunctionBase::nameC"></span><span class="target" id="classstored_1_1_example_function_base_1a3b52469b91c9b7d4908b29950436d959"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored19ExampleFunctionBase4nameEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleFunctionBaseaSERR19ExampleFunctionBase">
-<span id="_CPPv3N6stored19ExampleFunctionBaseaSERR19ExampleFunctionBase"></span><span id="_CPPv2N6stored19ExampleFunctionBaseaSERR19ExampleFunctionBase"></span><span id="stored::ExampleFunctionBase::assign-operator__ExampleFunctionBaseRR"></span><span class="target" id="classstored_1_1_example_function_base_1af904a798354c43f5eeb2e647a11bfd1d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleFunctionBaseE" title="stored::ExampleFunctionBase"><span class="n"><span class="pre">ExampleFunctionBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBaseaSERR19ExampleFunctionBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleFunctionBaseaSERK19ExampleFunctionBase">
-<span id="_CPPv3N6stored19ExampleFunctionBaseaSERK19ExampleFunctionBase"></span><span id="_CPPv2N6stored19ExampleFunctionBaseaSERK19ExampleFunctionBase"></span><span id="stored::ExampleFunctionBase::assign-operator__ExampleFunctionBaseCR"></span><span class="target" id="classstored_1_1_example_function_base_1a44474c2bb48bf72654ea59c600ad3e8e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleFunctionBaseE" title="stored::ExampleFunctionBase"><span class="n"><span class="pre">ExampleFunctionBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleFunctionBaseaSERK19ExampleFunctionBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -587,8 +572,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored15ExampleFunction15ExampleFunctionERR15ExampleFunction">
-<span id="_CPPv3N6stored15ExampleFunction15ExampleFunctionERR15ExampleFunction"></span><span id="_CPPv2N6stored15ExampleFunction15ExampleFunctionERR15ExampleFunction"></span><span id="stored::ExampleFunction::ExampleFunction__ExampleFunctionRR"></span><span class="target" id="classstored_1_1_example_function_1ad642ac73e20788f6917d8db531690afc"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFunction</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleFunction15ExampleFunctionERR15ExampleFunction" title="stored::ExampleFunction::ExampleFunction"><span class="n"><span class="pre">ExampleFunction</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored15ExampleFunction15ExampleFunctionERR15ExampleFunction" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
+<span id="_CPPv3N6stored15ExampleFunction15ExampleFunctionERR15ExampleFunction"></span><span id="_CPPv2N6stored15ExampleFunction15ExampleFunctionERR15ExampleFunction"></span><span id="stored::ExampleFunction::ExampleFunction__ExampleFunctionRR"></span><span class="target" id="classstored_1_1_example_function_1acf3e497b4238c5b29bc6a1822ae23435"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFunction</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleFunction15ExampleFunctionERR15ExampleFunction" title="stored::ExampleFunction::ExampleFunction"><span class="n"><span class="pre">ExampleFunction</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored15ExampleFunction15ExampleFunctionERR15ExampleFunction" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Default move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -599,7 +584,7 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored15ExampleFunctionaSERR15ExampleFunction">
-<span id="_CPPv3N6stored15ExampleFunctionaSERR15ExampleFunction"></span><span id="_CPPv2N6stored15ExampleFunctionaSERR15ExampleFunction"></span><span id="stored::ExampleFunction::assign-operator__ExampleFunctionRR"></span><span class="target" id="classstored_1_1_example_function_1a5b5b185a0f67a83f6c701c99a530f373"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleFunctionE" title="stored::ExampleFunction"><span class="n"><span class="pre">ExampleFunction</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored15ExampleFunctionaSERR15ExampleFunction" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored15ExampleFunctionaSERR15ExampleFunction"></span><span id="_CPPv2N6stored15ExampleFunctionaSERR15ExampleFunction"></span><span id="stored::ExampleFunction::assign-operator__ExampleFunctionRR"></span><span class="target" id="classstored_1_1_example_function_1aeecfb005b414c58a236ebf67571f8f25"></span><a class="reference internal" href="#_CPPv4N6stored15ExampleFunctionE" title="stored::ExampleFunction"><span class="n"><span class="pre">ExampleFunction</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleFunctionE" title="stored::ExampleFunction"><span class="n"><span class="pre">ExampleFunction</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored15ExampleFunctionaSERR15ExampleFunction" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 

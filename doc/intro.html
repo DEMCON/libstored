@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>libstored &mdash; libstored 1.0.1-rc documentation</title>
+  <title>libstored &mdash; libstored 1.1.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.0.1.dev0
+                1.1.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -195,7 +195,7 @@ See also the <a class="reference external" href="https://demcon.github.io/libsto
 <h2>libstored - Store by description<a class="headerlink" href="#libstored-store-by-description" title="Permalink to this headline"></a></h2>
 <p>The store is described in a simple grammar.  See the <a class="reference external" href="https://github.com/DEMCON/libstored/tree/master/examples">examples</a> directory for
 more explanation. This is just an impression of the syntax:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Comment
+<div class="highlight-raw notranslate"><div class="highlight"><pre><span></span>// Comment
 // Grammar: type:size[array]=initializer long name with any character
 
 uint32 some int
@@ -210,13 +210,13 @@ int8=42 another int, which is initialized
 </pre></div>
 </div>
 <p>The generated store (C++ class) has variables that can be accessed like this:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mystore.some_int = 10;
-int i = mystore.another_int_which_is_initialized;
-mystore.time_s.get();
-mystore.scope__b = false;
-mystore.scope__numbers_0.set(0.1);
-mystore.scope__numbers_1.set(1.1);
-mystore.scope__s.set(&quot;hello&quot;);
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mystore</span><span class="p">.</span><span class="n">some_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mystore</span><span class="p">.</span><span class="n">another_int_which_is_initialized</span><span class="p">;</span><span class="w"></span>
+<span class="n">mystore</span><span class="p">.</span><span class="n">time_s</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"></span>
+<span class="n">mystore</span><span class="p">.</span><span class="n">scope__b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"></span>
+<span class="n">mystore</span><span class="p">.</span><span class="n">scope__numbers_0</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="mf">0.1</span><span class="p">);</span><span class="w"></span>
+<span class="n">mystore</span><span class="p">.</span><span class="n">scope__numbers_1</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="mf">1.1</span><span class="p">);</span><span class="w"></span>
+<span class="n">mystore</span><span class="p">.</span><span class="n">scope__s</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <p>The store has a few other interesting properties:</p>
@@ -321,7 +321,7 @@ Debugger instance. The connect to this C++ bridge.</p>
 the example below by running python from the <code class="docutils literal notranslate"><span class="pre">python</span></code> directory, but you can
 also install the <code class="docutils literal notranslate"><span class="pre">libstored</span></code> package on your system. To do this, execute the
 <code class="docutils literal notranslate"><span class="pre">pylibstored-install</span></code> cmake target, such as:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd build
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> build
 ninja pylibstored-install
 </pre></div>
 </div>
@@ -330,7 +330,7 @@ ninja pylibstored-install
 <p>To get a grasp how debugging feels like, try the following.</p>
 <ul class="simple">
 <li><p>Build the examples, as discussed above.</p></li>
-<li><p>If you use Windows, execute <code class="docutils literal notranslate"><span class="pre">scripts/env.cmd</span></code> to set your environment
+<li><p>If you use Windows, execute <code class="docutils literal notranslate"><span class="pre">dist/win32/env.cmd</span></code> to set your environment
 properly.  In the instructions below, use <code class="docutils literal notranslate"><span class="pre">python</span></code> instead of <code class="docutils literal notranslate"><span class="pre">python3</span></code>.</p></li>
 <li><p>Run your favorite <code class="docutils literal notranslate"><span class="pre">lognplot</span></code> instance, e.g., by running <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">lognplot</span></code>.</p></li>
 <li><p>Run <code class="docutils literal notranslate"><span class="pre">examples/zmqserver/zmqserver</span></code>. This starts an application with a store
@@ -479,24 +479,24 @@ from the application.</p>
 </section>
 <section id="how-to-build">
 <h2>How to build<a class="headerlink" href="#how-to-build" title="Permalink to this headline"></a></h2>
-<p>Run <code class="docutils literal notranslate"><span class="pre">scripts/bootstrap</span></code> (as Administrator under Windows) once to install all
-build dependencies.  Then run <code class="docutils literal notranslate"><span class="pre">scripts/build</span></code> to build the project. This does
-effectively:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mkdir build
-cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=dist
+<p>Run <code class="docutils literal notranslate"><span class="pre">dist/&lt;platform&gt;/bootstrap</span></code> (as Administrator under Windows) once to
+install all build dependencies.  Then run <code class="docutils literal notranslate"><span class="pre">dist/&lt;platform&gt;/build</span></code> to build
+the project. This does effectively:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir build
+<span class="nb">cd</span> build
+cmake ../../.. -DCMAKE_INSTALL_PREFIX<span class="o">=</span>dist
 cmake --build .
 cmake --build . --target install
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">scripts/build</span></code> takes an optional argument, which allows you to specify the
-<code class="docutils literal notranslate"><span class="pre">CMAKE_BUILD_TYPE</span></code>.  If not specified, Debug is assumed.</p>
+<p><code class="docutils literal notranslate"><span class="pre">dist/&lt;platform&gt;/build</span></code> takes an optional argument, which allows you to
+specify the <code class="docutils literal notranslate"><span class="pre">CMAKE_BUILD_TYPE</span></code>.  If not specified, Debug is assumed.</p>
 <p>By default, all examples are built.  For example, notice that sources are
 generated under <code class="docutils literal notranslate"><span class="pre">examples/1_hello</span></code>, while the example itself is built in the
 <code class="docutils literal notranslate"><span class="pre">build</span></code> directory. The documentation can be viewed at
 <code class="docutils literal notranslate"><span class="pre">sphinx/html/index.html</span></code>.</p>
 <p>To run all tests, use one of:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cmake --build . --target test
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake --build . --target <span class="nb">test</span>
 cmake --build . --target RUN_TESTS
 </pre></div>
 </div>
@@ -504,30 +504,41 @@ cmake --build . --target RUN_TESTS
 <h3>How to integrate in your build<a class="headerlink" href="#how-to-integrate-in-your-build" title="Permalink to this headline"></a></h3>
 <p>Building libstored on itself is not too interesting, it is about how it can
 generate stuff for you.  This is how to integrate it in your project:</p>
-<ul>
+<ul class="simple">
 <li><p>Add libstored to your source repository, for example as a submodule.</p></li>
-<li><p>Run <code class="docutils literal notranslate"><span class="pre">scripts/bootstrap</span></code> in the libstored directory once to install all
-dependencies.</p></li>
-<li><p>Include libstored to your cmake project. For example:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>set(LIBSTORED_EXAMPLES OFF CACHE BOOL &quot;Disable libstored examples&quot; FORCE)
-set(LIBSTORED_TESTS OFF CACHE BOOL &quot;Disable libstored tests&quot; FORCE)
-set(LIBSTORED_DOCUMENTATION OFF CACHE BOOL &quot;Disable libstored documentation&quot; FORCE)
-add_subdirectory(libstored)
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">dist/&lt;platform&gt;/bootstrap</span></code> in the libstored directory once to install
+all dependencies.</p></li>
+<li><p>Include libstored to your cmake project. For example:</p></li>
+</ul>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">LIBSTORED_EXAMPLES</span><span class="w"> </span><span class="s">OFF</span><span class="w"> </span><span class="s">CACHE</span><span class="w"> </span><span class="s">BOOL</span><span class="w"> </span><span class="s2">&quot;Disable libstored examples&quot;</span><span class="w"> </span><span class="s">FORCE</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">LIBSTORED_TESTS</span><span class="w"> </span><span class="s">OFF</span><span class="w"> </span><span class="s">CACHE</span><span class="w"> </span><span class="s">BOOL</span><span class="w"> </span><span class="s2">&quot;Disable libstored tests&quot;</span><span class="w"> </span><span class="s">FORCE</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">LIBSTORED_DOCUMENTATION</span><span class="w"> </span><span class="s">OFF</span><span class="w"> </span><span class="s">CACHE</span><span class="w"> </span><span class="s">BOOL</span><span class="w"> </span><span class="s2">&quot;Disable libstored documentation&quot;</span><span class="w"> </span><span class="s">FORCE</span><span class="p">)</span>
+<span class="nb">add_subdirectory</span><span class="p">(</span><span class="s">libstored</span><span class="p">)</span>
 </pre></div>
 </div>
-</li>
-<li><p>Optional: install <code class="docutils literal notranslate"><span class="pre">scripts/st.vim</span></code> in <code class="docutils literal notranslate"><span class="pre">$HOME/.vim/syntax</span></code> to have proper
-syntax highlighting in vim.</p></li>
+<ul class="simple">
+<li><p>Optional: install <code class="docutils literal notranslate"><span class="pre">dist/common/st.vim</span></code> in <code class="docutils literal notranslate"><span class="pre">$HOME/.vim/syntax</span></code> to have
+proper syntax highlighting in vim.</p></li>
 <li><p>Add some store definition file to your project, let’s say <code class="docutils literal notranslate"><span class="pre">MyStore.st</span></code>.
 Assume you have a target <code class="docutils literal notranslate"><span class="pre">app</span></code> (which can be any type of cmake target), which
 is going to use <code class="docutils literal notranslate"><span class="pre">MyStore.st</span></code>, generate all required files. This will generate
 the sources in the <code class="docutils literal notranslate"><span class="pre">libstored</span></code> subdirectory of the current source directory,
-a library named <code class="docutils literal notranslate"><span class="pre">app-libstored</span></code>, and set all the dependencies right:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>add_executable(app main.cpp)
-libstored_generate(app MyStore.st)
+a library named <code class="docutils literal notranslate"><span class="pre">app-libstored</span></code>, and set all the dependencies right:</p></li>
+</ul>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">add_executable</span><span class="p">(</span><span class="s">app</span><span class="w"> </span><span class="s">main.cpp</span><span class="p">)</span>
+<span class="nb">libstored_generate</span><span class="p">(</span><span class="s">app</span><span class="w"> </span><span class="s">MyStore.st</span><span class="p">)</span>
 </pre></div>
 </div>
-</li>
+<ul class="simple">
+<li><p>To override the default configuration, provide a <code class="docutils literal notranslate"><span class="pre">stored_config.h</span></code> file.
+Add this to the build by either setting <code class="docutils literal notranslate"><span class="pre">LIBSTORED_PREPEND_INCLUDE_DIRECTORIES</span></code>
+to a space-separated list with application-specific include directories,
+containing the header file, or by setting the include directory using:</p></li>
+</ul>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">target_include_directories</span><span class="p">(</span><span class="s">app-libstored</span><span class="w"> </span><span class="s">BEFORE</span><span class="w"> </span><span class="s">PUBLIC</span><span class="w"> </span><span class="s">path/to/my/include</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
 <li><p>Now, build your <code class="docutils literal notranslate"><span class="pre">app</span></code>. The generated libstored library is automatically
 built.</p></li>
 <li><p>If you want to use the VHDL store in your Vivado project, create a project

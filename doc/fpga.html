@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VHDL &mdash; libstored 1.0.1-rc documentation</title>
+  <title>VHDL &mdash; libstored 1.1.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.0.1.dev0
+                1.1.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -118,51 +118,51 @@ protocol stack.</p></li>
 <span class="sig-name descname"><span class="pre">Store_hdl</span></span></dt>
 <dd><p>The generated stores have the following entity definition (for the
 ExampleFpga store in this case):</p>
-<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">ExampleFpga_hdl</span> <span class="k">is</span>
-   <span class="k">generic</span> <span class="p">(</span>
-      <span class="n">SYSTEM_CLK_FREQ</span> <span class="o">:</span> <span class="kt">integer</span> <span class="o">:=</span> <span class="mi">100</span><span class="n">e6</span><span class="p">;</span>
-      <span class="n">SYNC_OUT_INTERVAL_s</span> <span class="o">:</span> <span class="n">real</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">1</span><span class="p">;</span>
-      <span class="n">ID</span> <span class="o">:</span> <span class="kt">natural</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span>
-      <span class="n">AXI_SLAVE</span> <span class="o">:</span> <span class="kt">boolean</span> <span class="o">:=</span> <span class="n">true</span><span class="p">;</span>
-      <span class="n">BUFFER_AFTER_N_VARS</span> <span class="o">:</span> <span class="kt">positive</span> <span class="o">:=</span> <span class="mi">4</span><span class="p">;</span>
-      <span class="n">VAR_ACCESS</span> <span class="o">:</span> <span class="n">ExampleFpga_pkg</span><span class="p">.</span><span class="n">var_access_t</span> <span class="o">:=</span> <span class="n">ExampleFpga_pkg</span><span class="p">.</span><span class="n">VAR_ACCESS_RW</span><span class="p">;</span>
-      <span class="n">SIMULATION</span> <span class="o">:</span> <span class="kt">boolean</span> <span class="o">:=</span> <span class="n">false</span>
-   <span class="p">);</span>
-   <span class="k">port</span> <span class="p">(</span>
-      <span class="n">clk</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">rstn</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">var_out</span> <span class="o">:</span> <span class="k">out</span> <span class="n">ExampleFpga_pkg</span><span class="p">.</span><span class="n">var_out_t</span><span class="p">;</span>
-      <span class="n">var_in</span> <span class="o">:</span> <span class="k">in</span> <span class="n">ExampleFpga_pkg</span><span class="p">.</span><span class="n">var_in_t</span> <span class="o">:=</span> <span class="n">ExampleFpga_pkg</span><span class="p">.</span><span class="n">var_in_default</span><span class="p">;</span>
-      <span class="n">sync_in</span> <span class="o">:</span> <span class="k">in</span> <span class="n">msg_t</span> <span class="o">:=</span> <span class="n">msg_term</span><span class="p">;</span>
-      <span class="n">sync_out</span> <span class="o">:</span> <span class="k">out</span> <span class="n">msg_t</span><span class="p">;</span>
-      <span class="n">sync_id</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">unsigned</span><span class="p">(</span><span class="mi">15</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
-      <span class="n">sync_chained_id</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">unsigned</span><span class="p">(</span><span class="mi">15</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">)</span> <span class="o">:=</span> <span class="p">(</span><span class="k">others</span> <span class="o">=&gt;</span> <span class="sc">&#39;0&#39;</span><span class="p">);</span>
-      <span class="n">sync_chained_in</span> <span class="o">:</span> <span class="k">in</span> <span class="n">msg_t</span> <span class="o">:=</span> <span class="n">msg_term</span><span class="p">;</span>
-      <span class="n">sync_chained_out</span> <span class="o">:</span> <span class="k">out</span> <span class="n">msg_t</span><span class="p">;</span>
-      <span class="n">sync_out_trigger</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span> <span class="o">:=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
-      <span class="n">sync_out_hold</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span> <span class="o">:=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
-      <span class="n">sync_out_irq</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">sync_out_have_changes</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">sync_connected</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">sync_in_busy</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">s_axi_araddr</span>  <span class="o">:</span> <span class="k">in</span>  <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">31</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">)</span> <span class="o">:=</span> <span class="p">(</span><span class="k">others</span> <span class="o">=&gt;</span> <span class="sc">&#39;-&#39;</span><span class="p">);</span>
-      <span class="n">s_axi_arready</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">s_axi_arvalid</span> <span class="o">:</span> <span class="k">in</span>  <span class="kt">std_logic</span> <span class="o">:=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
-      <span class="n">s_axi_awaddr</span>  <span class="o">:</span> <span class="k">in</span>  <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">31</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">)</span> <span class="o">:=</span> <span class="p">(</span><span class="k">others</span> <span class="o">=&gt;</span> <span class="sc">&#39;-&#39;</span><span class="p">);</span>
-      <span class="n">s_axi_awready</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">s_axi_awvalid</span> <span class="o">:</span> <span class="k">in</span>  <span class="kt">std_logic</span> <span class="o">:=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
-      <span class="n">s_axi_bready</span>  <span class="o">:</span> <span class="k">in</span>  <span class="kt">std_logic</span> <span class="o">:=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
-      <span class="n">s_axi_bresp</span>   <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">1</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
-      <span class="n">s_axi_bvalid</span>  <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">s_axi_rdata</span>   <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">31</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
-      <span class="n">s_axi_rready</span>  <span class="o">:</span> <span class="k">in</span>  <span class="kt">std_logic</span> <span class="o">:=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
-      <span class="n">s_axi_rresp</span>   <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">1</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
-      <span class="n">s_axi_rvalid</span>  <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">s_axi_wdata</span>   <span class="o">:</span> <span class="k">in</span>  <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">31</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">)</span> <span class="o">:=</span> <span class="p">(</span><span class="k">others</span> <span class="o">=&gt;</span> <span class="sc">&#39;-&#39;</span><span class="p">);</span>
-      <span class="n">s_axi_wready</span>  <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">s_axi_wvalid</span>  <span class="o">:</span> <span class="k">in</span>  <span class="kt">std_logic</span> <span class="o">:=</span> <span class="sc">&#39;0&#39;</span>
-   <span class="p">);</span>
-<span class="k">end</span> <span class="nc">ExampleFpga_hdl</span><span class="p">;</span>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span><span class="w"> </span><span class="nc">ExampleFpga_hdl</span><span class="w"> </span><span class="k">is</span><span class="w"></span>
+<span class="w">   </span><span class="k">generic</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">SYSTEM_CLK_FREQ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">integer</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">100</span><span class="n">e6</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">SYNC_OUT_INTERVAL_s</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">real</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">ID</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">natural</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">AXI_SLAVE</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">true</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">BUFFER_AFTER_N_VARS</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">positive</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">VAR_ACCESS</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ExampleFpga_pkg</span><span class="p">.</span><span class="n">var_access_t</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ExampleFpga_pkg</span><span class="p">.</span><span class="n">VAR_ACCESS_RW</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">SIMULATION</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">false</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="k">port</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">clk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">rstn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">var_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">ExampleFpga_pkg</span><span class="p">.</span><span class="n">var_out_t</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">var_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">ExampleFpga_pkg</span><span class="p">.</span><span class="n">var_in_t</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ExampleFpga_pkg</span><span class="p">.</span><span class="n">var_in_default</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">sync_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">msg_t</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">msg_term</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">sync_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">sync_id</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">unsigned</span><span class="p">(</span><span class="mi">15</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">sync_chained_id</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">unsigned</span><span class="p">(</span><span class="mi">15</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">(</span><span class="k">others</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">sync_chained_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">msg_t</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">msg_term</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">sync_chained_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">sync_out_trigger</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">sync_out_hold</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">sync_out_irq</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">sync_out_have_changes</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">sync_connected</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">sync_in_busy</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">s_axi_araddr</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">31</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">(</span><span class="k">others</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="sc">&#39;-&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">s_axi_arready</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">s_axi_arvalid</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">s_axi_awaddr</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">31</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">(</span><span class="k">others</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="sc">&#39;-&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">s_axi_awready</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">s_axi_awvalid</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">s_axi_bready</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">s_axi_bresp</span><span class="w">   </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">s_axi_bvalid</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">s_axi_rdata</span><span class="w">   </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">31</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">s_axi_rready</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">s_axi_rresp</span><span class="w">   </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">s_axi_rvalid</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">s_axi_wdata</span><span class="w">   </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">31</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">(</span><span class="k">others</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="sc">&#39;-&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">s_axi_wready</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">s_axi_wvalid</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w">  </span><span class="kt">std_logic</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="nc">ExampleFpga_hdl</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <dl>
@@ -183,14 +183,14 @@ combinatorial path length.</p>
 read-write, is the most generic, but has the highest resource usage.</p>
 <p>To override only a few access settings, assign a function to <code class="docutils literal notranslate"><span class="pre">VAR_ACCESS</span></code>,
 with an implementation like this:</p>
-<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">var_access</span> <span class="k">return</span> <span class="n">ExampleFpga_pkg</span><span class="p">.</span><span class="n">var_access_t</span> <span class="k">is</span>
-   <span class="k">variable</span> <span class="n">v</span> <span class="o">:</span> <span class="n">ExampleFpga_pkg</span><span class="p">.</span><span class="n">var_access_t</span><span class="p">;</span>
-<span class="k">begin</span>
-   <span class="n">v</span> <span class="o">:=</span> <span class="n">ExampleFpga_pkg</span><span class="p">.</span><span class="n">VAR_ACCESS_RW</span><span class="p">;</span>
-   <span class="n">v</span><span class="p">.</span><span class="err">\</span><span class="n">t_clk</span><span class="err">\</span> <span class="o">:=</span> <span class="n">ACCESS_WO</span><span class="p">;</span>
-   <span class="n">v</span><span class="p">.</span><span class="err">\</span><span class="n">default_register_write_count</span><span class="err">\</span> <span class="o">:=</span> <span class="n">ACCESS_WO</span><span class="p">;</span>
-   <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
-<span class="k">end</span> <span class="k">function</span><span class="p">;</span>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">function</span><span class="w"> </span><span class="n">var_access</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ExampleFpga_pkg</span><span class="p">.</span><span class="n">var_access_t</span><span class="w"> </span><span class="k">is</span><span class="w"></span>
+<span class="w">   </span><span class="k">variable</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ExampleFpga_pkg</span><span class="p">.</span><span class="n">var_access_t</span><span class="p">;</span><span class="w"></span>
+<span class="k">begin</span><span class="w"></span>
+<span class="w">   </span><span class="n">v</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ExampleFpga_pkg</span><span class="p">.</span><span class="n">VAR_ACCESS_RW</span><span class="p">;</span><span class="w"></span>
+<span class="w">   </span><span class="n">v</span><span class="p">.</span><span class="err">\</span><span class="n">t_clk</span><span class="err">\</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ACCESS_WO</span><span class="p">;</span><span class="w"></span>
+<span class="w">   </span><span class="n">v</span><span class="p">.</span><span class="err">\</span><span class="n">default_register_write_count</span><span class="err">\</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ACCESS_WO</span><span class="p">;</span><span class="w"></span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">v</span><span class="p">;</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="k">function</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <p>See also <a class="reference internal" href="#var-access-t"><span class="std std-ref">var_access_t</span></a>.</p>
@@ -265,20 +265,20 @@ The fields in the record are generated based on the names in the store.
 Check the generated package file to see how these names are translated.
 The record for a store with only one <code class="docutils literal notranslate"><span class="pre">uint32</span></code> variable could look like
 this:</p>
-<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">subtype</span> <span class="err">\</span><span class="n">some_variable__type</span><span class="err">\</span> <span class="k">is</span> <span class="kt">unsigned</span><span class="p">(</span><span class="mi">31</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">subtype</span><span class="w"> </span><span class="err">\</span><span class="n">some_variable__type</span><span class="err">\</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="kt">unsigned</span><span class="p">(</span><span class="mi">31</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
 
-<span class="k">type</span> <span class="err">\</span><span class="n">blob__out_t</span><span class="err">\</span> <span class="k">is</span> <span class="k">record</span>
-   <span class="n">value</span> <span class="o">:</span> <span class="err">\</span><span class="n">some_variable__type</span><span class="err">\</span><span class="p">;</span>
-   <span class="n">updated</span> <span class="o">:</span> <span class="kt">std_logic</span><span class="p">;</span>
-<span class="k">end</span> <span class="k">record</span><span class="p">;</span>
+<span class="k">type</span><span class="w"> </span><span class="err">\</span><span class="n">blob__out_t</span><span class="err">\</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">record</span><span class="w"></span>
+<span class="w">   </span><span class="n">value</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="err">\</span><span class="n">some_variable__type</span><span class="err">\</span><span class="p">;</span><span class="w"></span>
+<span class="w">   </span><span class="n">updated</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="k">record</span><span class="p">;</span><span class="w"></span>
 
-<span class="k">type</span> <span class="n">var_out_t</span> <span class="k">is</span> <span class="k">record</span>
-   <span class="err">\</span><span class="n">some_variable</span><span class="err">\</span> <span class="o">:</span> <span class="err">\</span><span class="n">some_variable__out_t</span><span class="err">\</span><span class="p">;</span>
-<span class="k">end</span> <span class="k">record</span><span class="p">;</span>
+<span class="k">type</span><span class="w"> </span><span class="n">var_out_t</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">record</span><span class="w"></span>
+<span class="w">   </span><span class="err">\</span><span class="n">some_variable</span><span class="err">\</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="err">\</span><span class="n">some_variable__out_t</span><span class="err">\</span><span class="p">;</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="k">record</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <p>The output timing is exemplified below.</p>
-<img alt="../_images/wavedrom-d6a68cdf-cef1-4678-9627-af010fa1f605.svg" src="../_images/wavedrom-d6a68cdf-cef1-4678-9627-af010fa1f605.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
+<img alt="../_images/wavedrom-b40ac1dc-51c2-433c-b8a6-fd0e7d305474.svg" src="../_images/wavedrom-b40ac1dc-51c2-433c-b8a6-fd0e7d305474.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
 When the value is written, via <code class="docutils literal notranslate"><span class="pre">var_in</span></code>, the AXI interface, or via the
 Synchronizer, <code class="docutils literal notranslate"><span class="pre">value</span></code> is updated and <code class="docutils literal notranslate"><span class="pre">updated</span></code> is flagged for one
 clock cycle.  The flag is set at every write, not only when the data
@@ -301,20 +301,20 @@ time, the priority is in the same order. So, writes via <code class="docutils li
 override other writes at the same time.</p>
 <p>The record for a store with only one <code class="docutils literal notranslate"><span class="pre">uint32</span></code> variable could look like
 this:</p>
-<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">subtype</span> <span class="err">\</span><span class="n">some_variable__type</span><span class="err">\</span> <span class="k">is</span> <span class="kt">unsigned</span><span class="p">(</span><span class="mi">31</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">subtype</span><span class="w"> </span><span class="err">\</span><span class="n">some_variable__type</span><span class="err">\</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="kt">unsigned</span><span class="p">(</span><span class="mi">31</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
 
-<span class="k">type</span> <span class="err">\</span><span class="n">some_variable__in_t</span><span class="err">\</span> <span class="k">is</span> <span class="k">record</span>
-   <span class="n">value</span> <span class="o">:</span> <span class="err">\</span><span class="n">some_variable__type</span><span class="err">\</span><span class="p">;</span>
-   <span class="n">we</span> <span class="o">:</span> <span class="kt">std_logic</span><span class="p">;</span>
-<span class="k">end</span> <span class="k">record</span><span class="p">;</span>
+<span class="k">type</span><span class="w"> </span><span class="err">\</span><span class="n">some_variable__in_t</span><span class="err">\</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">record</span><span class="w"></span>
+<span class="w">   </span><span class="n">value</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="err">\</span><span class="n">some_variable__type</span><span class="err">\</span><span class="p">;</span><span class="w"></span>
+<span class="w">   </span><span class="n">we</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="k">record</span><span class="p">;</span><span class="w"></span>
 
-<span class="k">type</span> <span class="n">var_in_t</span> <span class="k">is</span> <span class="k">record</span>
-   <span class="err">\</span><span class="n">some_variable</span><span class="err">\</span> <span class="o">:</span> <span class="err">\</span><span class="n">some_variable__in_t</span><span class="err">\</span><span class="p">;</span>
-<span class="k">end</span> <span class="k">record</span><span class="p">;</span>
+<span class="k">type</span><span class="w"> </span><span class="n">var_in_t</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">record</span><span class="w"></span>
+<span class="w">   </span><span class="err">\</span><span class="n">some_variable</span><span class="err">\</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="err">\</span><span class="n">some_variable__in_t</span><span class="err">\</span><span class="p">;</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="k">record</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <p>When <code class="docutils literal notranslate"><span class="pre">we</span></code> is high, the <code class="docutils literal notranslate"><span class="pre">value</span></code> is written to the store.</p>
-<img alt="../_images/wavedrom-2e6c19da-85ea-4e5f-b165-933c0a22317c.svg" src="../_images/wavedrom-2e6c19da-85ea-4e5f-b165-933c0a22317c.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
+<img alt="../_images/wavedrom-061f9c32-6e35-4121-b27e-7c65530917d9.svg" src="../_images/wavedrom-061f9c32-6e35-4121-b27e-7c65530917d9.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
 the case that a microcontroller and the FPGA synchronize a store.  If a
 variable should be read-only for the microcontroller, <code class="docutils literal notranslate"><span class="pre">we</span></code> can be tied
 high by the FPGA, such that the FPGA updates the variable constantly.  In
@@ -327,9 +327,9 @@ to 2, 3, and 4 in consecutive cycles.</p>
 <dl id="var-access-t">
 <dt>type var_access_t</dt><dd><p>This record contains all variables, with its access specifier.
 For example:</p>
-<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">type</span> <span class="n">var_access_t</span> <span class="k">is</span> <span class="k">record</span>
-   <span class="err">\</span><span class="n">some_variable</span><span class="err">\</span><span class="o">:</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">access_t</span><span class="p">;</span>
-<span class="k">end</span> <span class="k">record</span><span class="p">;</span>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">type</span><span class="w"> </span><span class="n">var_access_t</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">record</span><span class="w"></span>
+<span class="w">   </span><span class="err">\</span><span class="n">some_variable</span><span class="err">\</span><span class="o">:</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">access_t</span><span class="p">;</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="k">record</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <p>See also :ref:<code class="docutils literal notranslate"><span class="pre">access_t</span> <span class="pre">&lt;access_t&gt;</span></code>.</p>
@@ -358,7 +358,7 @@ is ignored (there is no backpressure in place).</p>
 <span class="sig-name descname"><span class="pre">libstored_pkg</span></span></dt>
 <dd><dl id="access-t">
 <dt>type access_t</dt><dd><p>This specifies the access type of a variable:</p>
-<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">type</span> <span class="n">access_t</span> <span class="k">is</span> <span class="p">(</span><span class="n">ACCESS_RW</span><span class="p">,</span> <span class="n">ACCESS_RO</span><span class="p">,</span> <span class="n">ACCESS_WO</span><span class="p">,</span> <span class="n">ACCESS_NA</span><span class="p">);</span>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">type</span><span class="w"> </span><span class="n">access_t</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="p">(</span><span class="n">ACCESS_RW</span><span class="p">,</span><span class="w"> </span><span class="n">ACCESS_RO</span><span class="p">,</span><span class="w"> </span><span class="n">ACCESS_WO</span><span class="p">,</span><span class="w"> </span><span class="n">ACCESS_NA</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="simple">
@@ -377,12 +377,12 @@ ignored.</p>
 </dl>
 </dd>
 <dt>type msg_t</dt><dd><p>This record holds all signals relevant to passing messages between protocol layers.</p>
-<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">type</span> <span class="n">msg_t</span> <span class="k">is</span> <span class="k">record</span>
-   <span class="n">data</span> <span class="o">:</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">7</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
-   <span class="n">last</span> <span class="o">:</span> <span class="kt">std_logic</span><span class="p">;</span>
-   <span class="n">valid</span> <span class="o">:</span> <span class="kt">std_logic</span><span class="p">;</span>
-   <span class="n">accept</span> <span class="o">:</span> <span class="kt">std_logic</span><span class="p">;</span>
-<span class="k">end</span> <span class="k">record</span><span class="p">;</span>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">type</span><span class="w"> </span><span class="n">msg_t</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">record</span><span class="w"></span>
+<span class="w">   </span><span class="n">data</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">7</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="n">last</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">   </span><span class="n">valid</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">   </span><span class="n">accept</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="k">record</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 </dd>
@@ -400,20 +400,20 @@ All layers have a similar interface:</p>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">Generic</span> <span class="pre">layer</span></span></dt>
-<dd><div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">SomeLayer</span> <span class="k">is</span>
-   <span class="k">port</span> <span class="p">(</span>
-      <span class="n">clk</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">rstn</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+<dd><div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span><span class="w"> </span><span class="nc">SomeLayer</span><span class="w"> </span><span class="k">is</span><span class="w"></span>
+<span class="w">   </span><span class="k">port</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">clk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">rstn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">encode_in</span> <span class="o">:</span> <span class="k">in</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
-      <span class="n">encode_out</span> <span class="o">:</span> <span class="k">out</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
+<span class="w">      </span><span class="n">encode_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">encode_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">decode_in</span> <span class="o">:</span> <span class="k">in</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
-      <span class="n">decode_out</span> <span class="o">:</span> <span class="k">out</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
+<span class="w">      </span><span class="n">decode_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">decode_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">idle</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span>
-   <span class="p">);</span>
-<span class="k">end</span> <span class="nc">SomeLayer</span><span class="p">;</span>
+<span class="w">      </span><span class="n">idle</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="nc">SomeLayer</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="simple">
@@ -432,7 +432,7 @@ layer in the stack.</p>
 </dd>
 </dl>
 <p>Passing messages follows this scheme, which is resembles the AXI4-Stream Protocol:</p>
-<img alt="../_images/wavedrom-5b372ff7-0d39-487c-b863-118aad36dfe3.svg" src="../_images/wavedrom-5b372ff7-0d39-487c-b863-118aad36dfe3.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
+<img alt="../_images/wavedrom-db51fd22-bcc1-4ac0-9eb3-cd26a73319a4.svg" src="../_images/wavedrom-db51fd22-bcc1-4ac0-9eb3-cd26a73319a4.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
 clock edge.  In the example above, this happens at edge 2, 3, 6, 9, and 10.
 There is no order or dependency in <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code>; both can be
 high while other is not, indicating ‘there is data’, or ‘the data can be
@@ -455,25 +455,25 @@ integration, <code class="docutils literal notranslate"><span class="pre">accept
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">AsciiEscapeLayer</span></span></dt>
 <dd><p>VHDL counterpart of <a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored16AsciiEscapeLayerE" title="stored::AsciiEscapeLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::AsciiEscapeLayer</span></code></a>.</p>
-<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">AsciiEscapeLayer</span> <span class="k">is</span>
-   <span class="k">generic</span> <span class="p">(</span>
-      <span class="n">ESCAPE_ALL</span> <span class="o">:</span> <span class="kt">boolean</span> <span class="o">:=</span> <span class="n">false</span><span class="p">;</span>
-      <span class="n">ENCODE_OUT_FIFO_DEPTH</span> <span class="o">:</span> <span class="kt">natural</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span>
-      <span class="n">DECODE_OUT_FIFO_DEPTH</span> <span class="o">:</span> <span class="kt">natural</span> <span class="o">:=</span> <span class="mi">0</span>
-   <span class="p">);</span>
-   <span class="k">port</span> <span class="p">(</span>
-      <span class="n">clk</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">rstn</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span><span class="w"> </span><span class="nc">AsciiEscapeLayer</span><span class="w"> </span><span class="k">is</span><span class="w"></span>
+<span class="w">   </span><span class="k">generic</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">ESCAPE_ALL</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">false</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">ENCODE_OUT_FIFO_DEPTH</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">natural</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">DECODE_OUT_FIFO_DEPTH</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">natural</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="k">port</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">clk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">rstn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">encode_in</span> <span class="o">:</span> <span class="k">in</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
-      <span class="n">encode_out</span> <span class="o">:</span> <span class="k">out</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
+<span class="w">      </span><span class="n">encode_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">encode_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">decode_in</span> <span class="o">:</span> <span class="k">in</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
-      <span class="n">decode_out</span> <span class="o">:</span> <span class="k">out</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
+<span class="w">      </span><span class="n">decode_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">decode_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">idle</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span>
-   <span class="p">);</span>
-<span class="k">end</span> <span class="nc">AsciiEscapeLayer</span><span class="p">;</span>
+<span class="w">      </span><span class="n">idle</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="nc">AsciiEscapeLayer</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="simple">
@@ -496,24 +496,24 @@ Set to 0 to allow pass-through.</p>
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">BufferLayer</span></span></dt>
 <dd><p>Buffer messages in a FIFO.</p>
-<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">BufferLayer</span> <span class="k">is</span>
-   <span class="k">generic</span> <span class="p">(</span>
-      <span class="n">ENCODE_DEPTH</span> <span class="o">:</span> <span class="kt">natural</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span>
-      <span class="n">DECODE_DEPTH</span> <span class="o">:</span> <span class="kt">natural</span> <span class="o">:=</span> <span class="mi">1</span>
-   <span class="p">);</span>
-   <span class="k">port</span> <span class="p">(</span>
-      <span class="n">clk</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">rstn</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span><span class="w"> </span><span class="nc">BufferLayer</span><span class="w"> </span><span class="k">is</span><span class="w"></span>
+<span class="w">   </span><span class="k">generic</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">ENCODE_DEPTH</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">natural</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">DECODE_DEPTH</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">natural</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="k">port</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">clk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">rstn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">encode_in</span> <span class="o">:</span> <span class="k">in</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span> <span class="o">:=</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_term</span><span class="p">;</span>
-      <span class="n">encode_out</span> <span class="o">:</span> <span class="k">out</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
+<span class="w">      </span><span class="n">encode_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_term</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">encode_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">decode_in</span> <span class="o">:</span> <span class="k">in</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span> <span class="o">:=</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_term</span><span class="p">;</span>
-      <span class="n">decode_out</span> <span class="o">:</span> <span class="k">out</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
+<span class="w">      </span><span class="n">decode_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_term</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">decode_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">idle</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span>
-   <span class="p">);</span>
-<span class="k">end</span> <span class="nc">BufferLayer</span><span class="p">;</span>
+<span class="w">      </span><span class="n">idle</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="nc">BufferLayer</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="simple">
@@ -531,29 +531,29 @@ Set to 0 to allow pass-through.</p>
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">TerminalLayer</span></span></dt>
 <dd><p>VHDL counterpart of <a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13TerminalLayerE" title="stored::TerminalLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::TerminalLayer</span></code></a>.</p>
-<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">TerminalLayer</span> <span class="k">is</span>
-   <span class="k">generic</span> <span class="p">(</span>
-      <span class="n">ENCODE_OUT_FIFO_DEPTH</span> <span class="o">:</span> <span class="kt">natural</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span>
-      <span class="n">DECODE_IN_FIFO_DEPTH</span> <span class="o">:</span> <span class="kt">natural</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span>
-      <span class="n">DECODE_OUT_FIFO_DEPTH</span> <span class="o">:</span> <span class="kt">natural</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span>
-      <span class="n">TERMINAL_OUT_FIFO_DEPTH</span> <span class="o">:</span> <span class="kt">natural</span> <span class="o">:=</span> <span class="mi">1</span>
-   <span class="p">);</span>
-   <span class="k">port</span> <span class="p">(</span>
-      <span class="n">clk</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">rstn</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span><span class="w"> </span><span class="nc">TerminalLayer</span><span class="w"> </span><span class="k">is</span><span class="w"></span>
+<span class="w">   </span><span class="k">generic</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">ENCODE_OUT_FIFO_DEPTH</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">natural</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">DECODE_IN_FIFO_DEPTH</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">natural</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">DECODE_OUT_FIFO_DEPTH</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">natural</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">TERMINAL_OUT_FIFO_DEPTH</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">natural</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="k">port</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">clk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">rstn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">encode_in</span> <span class="o">:</span> <span class="k">in</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
-      <span class="n">encode_out</span> <span class="o">:</span> <span class="k">out</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
+<span class="w">      </span><span class="n">encode_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">encode_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">decode_in</span> <span class="o">:</span> <span class="k">in</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
-      <span class="n">decode_out</span> <span class="o">:</span> <span class="k">out</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
+<span class="w">      </span><span class="n">decode_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">decode_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">terminal_in</span> <span class="o">:</span> <span class="k">in</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span> <span class="o">:=</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_term</span><span class="p">;</span>
-      <span class="n">terminal_out</span> <span class="o">:</span> <span class="k">out</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
+<span class="w">      </span><span class="n">terminal_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_term</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">terminal_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">idle</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span>
-   <span class="p">);</span>
-<span class="k">end</span> <span class="nc">TerminalLayer</span><span class="p">;</span>
+<span class="w">      </span><span class="n">idle</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="nc">TerminalLayer</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="simple">
@@ -579,27 +579,27 @@ Set to 0 to allow pass-through.</p>
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">UARTLayer</span></span></dt>
 <dd><p>UART end of the protocol stack, with optional RTS/CTS hardware flow control.</p>
-<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">UARTLayer</span> <span class="k">is</span>
-   <span class="k">generic</span> <span class="p">(</span>
-      <span class="n">SYSTEM_CLK_FREQ</span> <span class="o">:</span> <span class="kt">integer</span> <span class="o">:=</span> <span class="mi">100</span><span class="n">e6</span><span class="p">;</span>
-      <span class="n">BAUD</span> <span class="o">:</span> <span class="kt">integer</span> <span class="o">:=</span> <span class="mi">115200</span><span class="p">;</span>
-      <span class="n">DECODE_OUT_FIFO_DEPTH</span> <span class="o">:</span> <span class="kt">natural</span> <span class="o">:=</span> <span class="mi">0</span>
-   <span class="p">);</span>
-   <span class="k">port</span> <span class="p">(</span>
-      <span class="n">clk</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">rstn</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span><span class="w"> </span><span class="nc">UARTLayer</span><span class="w"> </span><span class="k">is</span><span class="w"></span>
+<span class="w">   </span><span class="k">generic</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">SYSTEM_CLK_FREQ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">integer</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">100</span><span class="n">e6</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">BAUD</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">integer</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">115200</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">DECODE_OUT_FIFO_DEPTH</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">natural</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="k">port</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">clk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">rstn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">encode_in</span> <span class="o">:</span> <span class="k">in</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
-      <span class="n">decode_out</span> <span class="o">:</span> <span class="k">out</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
+<span class="w">      </span><span class="n">encode_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">decode_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">rx</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">tx</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">cts</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span> <span class="o">:=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
-      <span class="n">rts</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
+<span class="w">      </span><span class="n">rx</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">tx</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">cts</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">rts</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">idle</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span>
-   <span class="p">);</span>
-<span class="k">end</span> <span class="nc">UARTLayer</span><span class="p">;</span>
+<span class="w">      </span><span class="n">idle</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="nc">UARTLayer</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="simple">
@@ -620,23 +620,23 @@ Set to 0 to allow pass-through.</p>
 <span class="sig-name descname"><span class="pre">FileLayer</span></span></dt>
 <dd><p>File backend of the protocol stack.
 Only available for simulation.</p>
-<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">FileLayer</span> <span class="k">is</span>
-   <span class="k">generic</span> <span class="p">(</span>
-      <span class="n">SLEEP_s</span> <span class="o">:</span> <span class="n">real</span> <span class="o">:=</span> <span class="mi">100</span><span class="p">.</span><span class="mi">0</span><span class="n">e</span><span class="o">-</span><span class="mi">6</span><span class="p">;</span>
-      <span class="n">FILENAME_IN</span> <span class="o">:</span> <span class="kt">string</span> <span class="o">:=</span> <span class="s">&quot;stack_in.txt&quot;</span><span class="p">;</span>
-      <span class="n">FILENAME_OUT</span> <span class="o">:</span> <span class="kt">string</span> <span class="o">:=</span> <span class="s">&quot;stack_out.txt&quot;</span><span class="p">;</span>
-      <span class="n">VERBOSE</span> <span class="o">:</span> <span class="kt">boolean</span> <span class="o">:=</span> <span class="n">false</span>
-   <span class="p">);</span>
-   <span class="k">port</span> <span class="p">(</span>
-      <span class="n">clk</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">rstn</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span><span class="w"> </span><span class="nc">FileLayer</span><span class="w"> </span><span class="k">is</span><span class="w"></span>
+<span class="w">   </span><span class="k">generic</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">SLEEP_s</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">real</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">100</span><span class="p">.</span><span class="mi">0</span><span class="n">e</span><span class="o">-</span><span class="mi">6</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">FILENAME_IN</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s">&quot;stack_in.txt&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">FILENAME_OUT</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s">&quot;stack_out.txt&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">VERBOSE</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">false</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="k">port</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">clk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">rstn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">encode_in</span> <span class="o">:</span> <span class="k">in</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
-      <span class="n">decode_out</span> <span class="o">:</span> <span class="k">out</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
+<span class="w">      </span><span class="n">encode_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">decode_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">idle</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span>
-   <span class="p">);</span>
-<span class="k">end</span> <span class="nc">FileLayer</span><span class="p">;</span>
+<span class="w">      </span><span class="n">idle</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="nc">FileLayer</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="simple">
@@ -661,24 +661,24 @@ Some throttling can be implemented this way.</p>
 <span class="sig-name descname"><span class="pre">TeeLayer</span></span></dt>
 <dd><p>Write all encoded and/or decoded data to a file, like the UNIX tool <code class="docutils literal notranslate"><span class="pre">tee</span></code>.
 Only available for simulation.</p>
-<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">TeeLayer</span> <span class="k">is</span>
-   <span class="k">generic</span> <span class="p">(</span>
-      <span class="n">FILENAME_ENCODE</span> <span class="o">:</span> <span class="kt">string</span> <span class="o">:=</span> <span class="s">&quot;&quot;</span><span class="p">;</span>
-      <span class="n">FILENAME_DECODE</span> <span class="o">:</span> <span class="kt">string</span> <span class="o">:=</span> <span class="s">&quot;&quot;</span>
-   <span class="p">);</span>
-   <span class="k">port</span> <span class="p">(</span>
-      <span class="n">clk</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">rstn</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span><span class="w"> </span><span class="nc">TeeLayer</span><span class="w"> </span><span class="k">is</span><span class="w"></span>
+<span class="w">   </span><span class="k">generic</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">FILENAME_ENCODE</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">FILENAME_DECODE</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="k">port</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">clk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">rstn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">encode_in</span> <span class="o">:</span> <span class="k">in</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
-      <span class="n">encode_out</span> <span class="o">:</span> <span class="k">out</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
+<span class="w">      </span><span class="n">encode_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">encode_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">decode_in</span> <span class="o">:</span> <span class="k">in</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
-      <span class="n">decode_out</span> <span class="o">:</span> <span class="k">out</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
+<span class="w">      </span><span class="n">decode_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">decode_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">idle</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span>
-   <span class="p">);</span>
-<span class="k">end</span> <span class="nc">TeeLayer</span><span class="p">;</span>
+<span class="w">      </span><span class="n">idle</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="nc">TeeLayer</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="simple">
@@ -699,21 +699,21 @@ Only used when not empty.</p>
 <span class="sig-name descname"><span class="pre">XsimLayer</span></span></dt>
 <dd><p>VHDL counterpart of <a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored9XsimLayerE" title="stored::XsimLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::XsimLayer</span></code></a>.
 Only available in simulation.</p>
-<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">XsimLayer</span> <span class="k">is</span>
-   <span class="k">generic</span> <span class="p">(</span>
-      <span class="n">PIPE_PREFIX</span> <span class="o">:</span> <span class="kt">string</span><span class="p">;</span>
-      <span class="n">VERBOSE</span> <span class="o">:</span> <span class="kt">boolean</span> <span class="o">:=</span> <span class="n">false</span>
-   <span class="p">);</span>
-   <span class="k">port</span> <span class="p">(</span>
-      <span class="n">clk</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">rstn</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span><span class="w"> </span><span class="nc">XsimLayer</span><span class="w"> </span><span class="k">is</span><span class="w"></span>
+<span class="w">   </span><span class="k">generic</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">PIPE_PREFIX</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">VERBOSE</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">false</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="k">port</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">clk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">rstn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">encode_in</span> <span class="o">:</span> <span class="k">in</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
-      <span class="n">decode_out</span> <span class="o">:</span> <span class="k">out</span> <span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span>
+<span class="w">      </span><span class="n">encode_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">decode_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">libstored_pkg</span><span class="p">.</span><span class="n">msg_t</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">idle</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span>
-   <span class="p">);</span>
-<span class="k">end</span> <span class="nc">XsimLayer</span><span class="p">;</span>
+<span class="w">      </span><span class="n">idle</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="nc">XsimLayer</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="simple">
@@ -734,31 +734,31 @@ Only available in simulation.</p>
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">libstored_droptail</span></span></dt>
 <dd><p>Drop the tail with a fixed length from a message.</p>
-<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">libstored_droptail</span> <span class="k">is</span>
-   <span class="k">generic</span> <span class="p">(</span>
-      <span class="n">FIFO_DEPTH</span> <span class="o">:</span> <span class="kt">natural</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span>
-      <span class="n">TAIL_LENGTH</span> <span class="o">:</span> <span class="kt">positive</span> <span class="o">:=</span> <span class="mi">1</span>
-   <span class="p">);</span>
-   <span class="k">port</span> <span class="p">(</span>
-      <span class="n">clk</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">rstn</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span><span class="w"> </span><span class="nc">libstored_droptail</span><span class="w"> </span><span class="k">is</span><span class="w"></span>
+<span class="w">   </span><span class="k">generic</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">FIFO_DEPTH</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">natural</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">TAIL_LENGTH</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">positive</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="k">port</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">clk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">rstn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">data_in</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">7</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
-      <span class="n">valid_in</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">last_in</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">accept_in</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">drop</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span> <span class="o">:=</span> <span class="sc">&#39;1&#39;</span><span class="p">;</span>
+<span class="w">      </span><span class="n">data_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">7</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">valid_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">last_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">accept_in</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">drop</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">data_out</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">7</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
-      <span class="n">valid_out</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">last_out</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">accept_out</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span>
-   <span class="p">);</span>
-<span class="k">end</span> <span class="nc">libstored_droptail</span><span class="p">;</span>
+<span class="w">      </span><span class="n">data_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">7</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">valid_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">last_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">accept_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="nc">libstored_droptail</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Example that drops a tail of length 1:</p>
-<img alt="../_images/wavedrom-fd09fc12-7118-4b59-850a-348c5ff8ce29.svg" src="../_images/wavedrom-fd09fc12-7118-4b59-850a-348c5ff8ce29.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
+<img alt="../_images/wavedrom-518bacf3-dbd5-40df-84cf-4430c5a74b71.svg" src="../_images/wavedrom-518bacf3-dbd5-40df-84cf-4430c5a74b71.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
 unspecified.</p>
 <dl class="simple">
 <dt>FIFO_DEPTH<span class="classifier">natural := 0</span></dt><dd><p>Minimum FIFO depth. Set to 0 to allow pass-through.</p>
@@ -780,23 +780,23 @@ So, <code class="docutils literal notranslate"><span class="pre">last_out</span>
 <span class="sig-name descname"><span class="pre">libstored_stream_buffer</span></span></dt>
 <dd><p>Break long combinatorial path by inserting flipflops.
 This is effectively a FIFO of size 1.</p>
-<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">libstored_stream_buffer</span> <span class="k">is</span>
-   <span class="k">generic</span> <span class="p">(</span>
-      <span class="n">WIDTH</span> <span class="o">:</span> <span class="kt">positive</span>
-   <span class="p">);</span>
-   <span class="k">port</span> <span class="p">(</span>
-      <span class="n">clk</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">rstn</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span><span class="w"> </span><span class="nc">libstored_stream_buffer</span><span class="w"> </span><span class="k">is</span><span class="w"></span>
+<span class="w">   </span><span class="k">generic</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">WIDTH</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">positive</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="k">port</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">clk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">rstn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">i</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="n">WIDTH</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
-      <span class="n">i_valid</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">i_accept</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
+<span class="w">      </span><span class="n">i</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic_vector</span><span class="p">(</span><span class="n">WIDTH</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">i_valid</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">i_accept</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">o</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="n">WIDTH</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
-      <span class="n">o_valid</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">o_accept</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span>
-   <span class="p">);</span>
-<span class="k">end</span> <span class="nc">libstored_stream_buffer</span><span class="p">;</span>
+<span class="w">      </span><span class="n">o</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic_vector</span><span class="p">(</span><span class="n">WIDTH</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">o_valid</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">o_accept</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="nc">libstored_stream_buffer</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 </dd></dl>
@@ -808,40 +808,40 @@ This is effectively a FIFO of size 1.</p>
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">libstored_fifo</span></span></dt>
 <dd><p>FIFO with optional conditional push, and lookahead before actual pop.</p>
-<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span> <span class="nc">libstored_fifo</span> <span class="k">is</span>
-   <span class="k">generic</span> <span class="p">(</span>
-      <span class="n">WIDTH</span> <span class="o">:</span> <span class="kt">positive</span><span class="p">;</span>
-      <span class="n">DEPTH</span> <span class="o">:</span> <span class="kt">natural</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span>
-      <span class="n">ALMOST_FULL_REMAINING</span> <span class="o">:</span> <span class="kt">natural</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span>
-      <span class="n">ALMOST_EMPTY_REMAINING</span> <span class="o">:</span> <span class="kt">natural</span> <span class="o">:=</span> <span class="mi">0</span>
-   <span class="p">);</span>
-   <span class="k">port</span> <span class="p">(</span>
-      <span class="n">clk</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">rstn</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+<div class="highlight-vhdl notranslate"><div class="highlight"><pre><span></span><span class="k">entity</span><span class="w"> </span><span class="nc">libstored_fifo</span><span class="w"> </span><span class="k">is</span><span class="w"></span>
+<span class="w">   </span><span class="k">generic</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">WIDTH</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">positive</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">DEPTH</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">natural</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">ALMOST_FULL_REMAINING</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">natural</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">ALMOST_EMPTY_REMAINING</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">natural</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="k">port</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">clk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">rstn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">i</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="n">WIDTH</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
-      <span class="n">i_valid</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">i_accept</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">i_commit</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span> <span class="o">:=</span> <span class="sc">&#39;1&#39;</span><span class="p">;</span>
-      <span class="n">i_rollback</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span> <span class="o">:=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
+<span class="w">      </span><span class="n">i</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic_vector</span><span class="p">(</span><span class="n">WIDTH</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">i_valid</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">i_accept</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">i_commit</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">i_rollback</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">o</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="n">WIDTH</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
-      <span class="n">o_valid</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">o_accept</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">o_commit</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span> <span class="o">:=</span> <span class="sc">&#39;1&#39;</span><span class="p">;</span>
-      <span class="n">o_rollback</span> <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span> <span class="o">:=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
+<span class="w">      </span><span class="n">o</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic_vector</span><span class="p">(</span><span class="n">WIDTH</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">downto</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">o_valid</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">o_accept</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">o_commit</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">o_rollback</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span><span class="w"></span>
 
-      <span class="n">full</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">empty</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">almost_full</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
-      <span class="n">almost_empty</span> <span class="o">:</span> <span class="k">out</span> <span class="kt">std_logic</span>
-   <span class="p">);</span>
-<span class="k">end</span> <span class="nc">libstored_fifo</span><span class="p">;</span>
+<span class="w">      </span><span class="n">full</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">empty</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">almost_full</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">almost_empty</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">std_logic</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="nc">libstored_fifo</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Example to drop and commit pushed data:</p>
-<img alt="../_images/wavedrom-1f4ba92d-fcfa-4ea0-b16f-9bee5a157abb.svg" src="../_images/wavedrom-1f4ba92d-fcfa-4ea0-b16f-9bee5a157abb.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
-<img alt="../_images/wavedrom-73bf02d7-a987-49de-98c5-2c2a74b2c1be.svg" src="../_images/wavedrom-73bf02d7-a987-49de-98c5-2c2a74b2c1be.svg" /><dl class="simple">
+<img alt="../_images/wavedrom-e7ef9f59-0577-46c4-ba3a-a5a022416b35.svg" src="../_images/wavedrom-e7ef9f59-0577-46c4-ba3a-a5a022416b35.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
+<img alt="../_images/wavedrom-6195de39-2aab-4a11-afa5-43d8b2e0fc7f.svg" src="../_images/wavedrom-6195de39-2aab-4a11-afa5-43d8b2e0fc7f.svg" /><dl class="simple">
 <dt>WIDTH<span class="classifier">positive</span></dt><dd><p>Data width.</p>
 </dd>
 <dt>DEPTH<span class="classifier">natural := 1</span></dt><dd><p>Minimum FIFO depth.</p>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Synchronizer &mdash; libstored 1.0.1-rc documentation</title>
+  <title>Synchronizer &mdash; libstored 1.1.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.0.1.dev0
+                1.1.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -238,24 +238,24 @@ versions are defined for symmetry.</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12StoreJournalUt2_29E">
-<span id="_CPPv3N6stored12StoreJournalUt2_29E"></span><span class="target" id="classstored_1_1_store_journal_1a778370c95309beca16ed29b1cace89ec"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored12StoreJournalUt2_29E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored12StoreJournalUt2_28E">
+<span id="_CPPv3N6stored12StoreJournalUt2_28E"></span><span class="target" id="classstored_1_1_store_journal_1ac7b54d6f56e901a83f6407b098e7fecf"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored12StoreJournalUt2_28E" title="Permalink to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12StoreJournalUt2_2914ShortSeqWindowE">
-<span id="_CPPv3N6stored12StoreJournalUt2_2914ShortSeqWindowE"></span><span class="target" id="classstored_1_1_store_journal_1a778370c95309beca16ed29b1cace89ecae1c5149eba2a5b6a26723d279d3d6df1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ShortSeqWindow</span></span></span><a class="headerlink" href="#_CPPv4N6stored12StoreJournalUt2_2914ShortSeqWindowE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored12StoreJournalUt2_2814ShortSeqWindowE">
+<span id="_CPPv3N6stored12StoreJournalUt2_2814ShortSeqWindowE"></span><span class="target" id="classstored_1_1_store_journal_1ac7b54d6f56e901a83f6407b098e7fecfae1c5149eba2a5b6a26723d279d3d6df1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ShortSeqWindow</span></span></span><a class="headerlink" href="#_CPPv4N6stored12StoreJournalUt2_2814ShortSeqWindowE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Maximum offset of <a class="reference internal" href="#classstored_1_1_store_journal_1adc2ea8f4e6cd15876d0eaaff5617c99a"><span class="std std-ref">seq()</span></a> that is a valid short seq. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12StoreJournalUt2_2914SeqLowerMarginE">
-<span id="_CPPv3N6stored12StoreJournalUt2_2914SeqLowerMarginE"></span><span class="target" id="classstored_1_1_store_journal_1a778370c95309beca16ed29b1cace89ecae53560694a25751a905ed7bdcbc06398"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SeqLowerMargin</span></span></span><a class="headerlink" href="#_CPPv4N6stored12StoreJournalUt2_2914SeqLowerMarginE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored12StoreJournalUt2_2814SeqLowerMarginE">
+<span id="_CPPv3N6stored12StoreJournalUt2_2814SeqLowerMarginE"></span><span class="target" id="classstored_1_1_store_journal_1ac7b54d6f56e901a83f6407b098e7fecfae53560694a25751a905ed7bdcbc06398"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SeqLowerMargin</span></span></span><a class="headerlink" href="#_CPPv4N6stored12StoreJournalUt2_2814SeqLowerMarginE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Oldest margin where the short seq of changes should be moved. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12StoreJournalUt2_2917SeqCleanThresholdE">
-<span id="_CPPv3N6stored12StoreJournalUt2_2917SeqCleanThresholdE"></span><span class="target" id="classstored_1_1_store_journal_1a778370c95309beca16ed29b1cace89eca03e52a7ab713953f3cb06c01c482d83a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SeqCleanThreshold</span></span></span><a class="headerlink" href="#_CPPv4N6stored12StoreJournalUt2_2917SeqCleanThresholdE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored12StoreJournalUt2_2817SeqCleanThresholdE">
+<span id="_CPPv3N6stored12StoreJournalUt2_2817SeqCleanThresholdE"></span><span class="target" id="classstored_1_1_store_journal_1ac7b54d6f56e901a83f6407b098e7fecfa03e52a7ab713953f3cb06c01c482d83a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SeqCleanThreshold</span></span></span><a class="headerlink" href="#_CPPv4N6stored12StoreJournalUt2_2817SeqCleanThresholdE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Threshold for <a class="reference internal" href="#classstored_1_1_store_journal_1a5a54164f5c9b8c9003fe0da3526638c3"><span class="std std-ref">clean()</span></a>. </p>
 </dd></dl>
 
@@ -313,18 +313,6 @@ versions are defined for symmetry.</p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12StoreJournal12StoreJournalERR12StoreJournal">
-<span id="_CPPv3N6stored12StoreJournal12StoreJournalERR12StoreJournal"></span><span id="_CPPv2N6stored12StoreJournal12StoreJournalERR12StoreJournal"></span><span id="stored::StoreJournal::StoreJournal__StoreJournalRR"></span><span class="target" id="classstored_1_1_store_journal_1ad97dbb84b832a35e00ee5f0fe55188d8"></span><span class="sig-name descname"><span class="n"><span class="pre">StoreJournal</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal12StoreJournalERR12StoreJournal" title="stored::StoreJournal::StoreJournal"><span class="n"><span class="pre">StoreJournal</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12StoreJournal12StoreJournalERR12StoreJournal" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12StoreJournal12StoreJournalERK12StoreJournal">
-<span id="_CPPv3N6stored12StoreJournal12StoreJournalERK12StoreJournal"></span><span id="_CPPv2N6stored12StoreJournal12StoreJournalERK12StoreJournal"></span><span id="stored::StoreJournal::StoreJournal__StoreJournalCR"></span><span class="target" id="classstored_1_1_store_journal_1a5381ec198ccadeab9ff28073b5b50089"></span><span class="sig-name descname"><span class="n"><span class="pre">StoreJournal</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournal12StoreJournalERK12StoreJournal" title="stored::StoreJournal::StoreJournal"><span class="n"><span class="pre">StoreJournal</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12StoreJournal12StoreJournalERK12StoreJournal" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12StoreJournalD0Ev">
 <span id="_CPPv3N6stored12StoreJournalD0Ev"></span><span id="_CPPv2N6stored12StoreJournalD0Ev"></span><span id="stored::StoreJournal::~StoreJournal"></span><span class="target" id="classstored_1_1_store_journal_1a5321ccaa7777ffce67362e0697e8f526"></span><span class="sig-name descname"><span class="n"><span class="pre">~StoreJournal</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored12StoreJournalD0Ev" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -356,7 +344,7 @@ versions are defined for symmetry.</p>
 <dd><p>Remove all elements from the administration older than the given threshold. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>oldest</strong> – seq of oldest element to remain. If 0, use older than <a class="reference internal" href="#classstored_1_1_store_journal_1a778370c95309beca16ed29b1cace89eca03e52a7ab713953f3cb06c01c482d83a"><span class="std std-ref">SeqCleanThreshold</span></a> before <a class="reference internal" href="#classstored_1_1_store_journal_1adc2ea8f4e6cd15876d0eaaff5617c99a"><span class="std std-ref">seq()</span></a>. </p>
+<dd class="field-odd"><p><strong>oldest</strong> – seq of oldest element to remain. If 0, use older than <a class="reference internal" href="#classstored_1_1_store_journal_1ac7b54d6f56e901a83f6407b098e7fecfa03e52a7ab713953f3cb06c01c482d83a"><span class="std std-ref">SeqCleanThreshold</span></a> before <a class="reference internal" href="#classstored_1_1_store_journal_1adc2ea8f4e6cd15876d0eaaff5617c99a"><span class="std std-ref">seq()</span></a>. </p>
 </dd>
 </dl>
 </dd></dl>
@@ -447,18 +435,6 @@ versions are defined for symmetry.</p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12StoreJournalaSERR12StoreJournal">
-<span id="_CPPv3N6stored12StoreJournalaSERR12StoreJournal"></span><span id="_CPPv2N6stored12StoreJournalaSERR12StoreJournal"></span><span id="stored::StoreJournal::assign-operator__StoreJournalRR"></span><span class="target" id="classstored_1_1_store_journal_1a48e699a4b32d44dc9f0ad7f14f2ebcb8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal"><span class="n"><span class="pre">StoreJournal</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12StoreJournalaSERR12StoreJournal" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12StoreJournalaSERK12StoreJournal">
-<span id="_CPPv3N6stored12StoreJournalaSERK12StoreJournal"></span><span id="_CPPv2N6stored12StoreJournalaSERK12StoreJournal"></span><span id="stored::StoreJournal::assign-operator__StoreJournalCR"></span><span class="target" id="classstored_1_1_store_journal_1a454a9014abdd862bf5ed01dc495b407c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal"><span class="n"><span class="pre">StoreJournal</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12StoreJournalaSERK12StoreJournal" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12StoreJournal11reserveHeapE6size_t">
 <span id="_CPPv3N6stored12StoreJournal11reserveHeapE6size_t"></span><span id="_CPPv2N6stored12StoreJournal11reserveHeapE6size_t"></span><span id="stored::StoreJournal::reserveHeap__s"></span><span class="target" id="classstored_1_1_store_journal_1a70c13cd96c475c2bacf91075a36a454a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reserveHeap</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">storeVariableCount</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12StoreJournal11reserveHeapE6size_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Pre-allocate memory for the given number of variables. </p>
@@ -540,18 +516,6 @@ versions are defined for symmetry.</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14SyncConnection14SyncConnectionERR14SyncConnection">
-<span id="_CPPv3N6stored14SyncConnection14SyncConnectionERR14SyncConnection"></span><span id="_CPPv2N6stored14SyncConnection14SyncConnectionERR14SyncConnection"></span><span id="stored::SyncConnection::SyncConnection__SyncConnectionRR"></span><span class="target" id="classstored_1_1_sync_connection_1a38740a1d2f047d214cd180c3ab8295c8"></span><span class="sig-name descname"><span class="n"><span class="pre">SyncConnection</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14SyncConnection14SyncConnectionERR14SyncConnection" title="stored::SyncConnection::SyncConnection"><span class="n"><span class="pre">SyncConnection</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored14SyncConnection14SyncConnectionERR14SyncConnection" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14SyncConnection14SyncConnectionERK14SyncConnection">
-<span id="_CPPv3N6stored14SyncConnection14SyncConnectionERK14SyncConnection"></span><span id="_CPPv2N6stored14SyncConnection14SyncConnectionERK14SyncConnection"></span><span id="stored::SyncConnection::SyncConnection__SyncConnectionCR"></span><span class="target" id="classstored_1_1_sync_connection_1a534cb3db69bfa2d73a12197c29c8e792"></span><span class="sig-name descname"><span class="n"><span class="pre">SyncConnection</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14SyncConnection14SyncConnectionERK14SyncConnection" title="stored::SyncConnection::SyncConnection"><span class="n"><span class="pre">SyncConnection</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored14SyncConnection14SyncConnectionERK14SyncConnection" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14SyncConnection14SyncConnectionER12SynchronizerR13ProtocolLayer">
 <span id="_CPPv3N6stored14SyncConnection14SyncConnectionER12SynchronizerR13ProtocolLayer"></span><span id="_CPPv2N6stored14SyncConnection14SyncConnectionER12SynchronizerR13ProtocolLayer"></span><span id="stored::SyncConnection::SyncConnection__SynchronizerR.ProtocolLayerR"></span><span class="target" id="classstored_1_1_sync_connection_1a24570b59f12295974ddbb6b305af34ca"></span><span class="sig-name descname"><span class="n"><span class="pre">SyncConnection</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12SynchronizerE" title="stored::Synchronizer"><span class="n"><span class="pre">Synchronizer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">synchronizer</span></span>, <a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">connection</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14SyncConnection14SyncConnectionER12SynchronizerR13ProtocolLayer" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Ctor. </p>
@@ -588,18 +552,6 @@ versions are defined for symmetry.</p>
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored14SyncConnection15isSynchronizingER12StoreJournal">
 <span id="_CPPv3NK6stored14SyncConnection15isSynchronizingER12StoreJournal"></span><span id="_CPPv2NK6stored14SyncConnection15isSynchronizingER12StoreJournal"></span><span id="stored::SyncConnection::isSynchronizing__StoreJournalRC"></span><span class="target" id="classstored_1_1_sync_connection_1a50170418af57d1349684a1e84ec6f037"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isSynchronizing</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal"><span class="n"><span class="pre">StoreJournal</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">store</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6stored14SyncConnection15isSynchronizingER12StoreJournal" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns if the given store is synchronized over this connection. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14SyncConnectionaSERR14SyncConnection">
-<span id="_CPPv3N6stored14SyncConnectionaSERR14SyncConnection"></span><span id="_CPPv2N6stored14SyncConnectionaSERR14SyncConnection"></span><span id="stored::SyncConnection::assign-operator__SyncConnectionRR"></span><span class="target" id="classstored_1_1_sync_connection_1ae8604fa9fb8fd03f70c2e798de86560b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14SyncConnectionE" title="stored::SyncConnection"><span class="n"><span class="pre">SyncConnection</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored14SyncConnectionaSERR14SyncConnection" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14SyncConnectionaSERK14SyncConnection">
-<span id="_CPPv3N6stored14SyncConnectionaSERK14SyncConnection"></span><span id="_CPPv2N6stored14SyncConnectionaSERK14SyncConnection"></span><span id="stored::SyncConnection::assign-operator__SyncConnectionCR"></span><span class="target" id="classstored_1_1_sync_connection_1a6639455b75a42a36ed66aafca1056677"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14SyncConnectionE" title="stored::SyncConnection"><span class="n"><span class="pre">SyncConnection</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored14SyncConnectionaSERK14SyncConnection" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -660,9 +612,9 @@ versions are defined for symmetry.</p>
 <span id="_CPPv3I0EN6stored14SynchronizableE"></span><span id="_CPPv2I0EN6stored14SynchronizableE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Base</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_synchronizable"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Synchronizable</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable::Base"><span class="n"><span class="pre">Base</span></span></a><a class="headerlink" href="#_CPPv4I0EN6stored14SynchronizableE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>An extension of a store to be used by the <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a>. </p>
 <p>Assume you have <code class="docutils literal notranslate"><span class="pre">MyStoreBase</span></code> (which takes a template parameter <code class="docutils literal notranslate"><span class="pre">Implementation</span></code>), and the actual store implementation <code class="docutils literal notranslate"><span class="pre">ActualStore</span></code>. If it does not have to be synchronizable, you would inherit <code class="docutils literal notranslate"><span class="pre">ActualStore</span></code> from <code class="docutils literal notranslate"><span class="pre">MyStoreBase&lt;ActualStore&gt;</span></code>.</p>
-<p>If it should be synchronizable, use <a class="reference internal" href="#classstored_1_1_synchronizable_1a3bc1ad747d4e160895d47012482f007c"><span class="std std-ref">Synchronizable</span></a> like this:</p>
+<p>If it should be synchronizable, use <a class="reference internal" href="#classstored_1_1_synchronizable_1a83faa28fa20314195ebf74d740bf5524"><span class="std std-ref">Synchronizable</span></a> like this:</p>
 <p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ActualStore : public stored::Synchronizable&lt;stored::MyStoreBase&lt;ActualStore&gt; &gt; {
-    CLASS_NOCOPY(ActualStore)
+    STORED_CLASS_NOCOPY(ActualStore)
 public:
     typedef stored::Synchronizable&lt;stored::MyStoreBase&lt;ActualStore&gt; &gt; base;
     using typename base::Implementation;
@@ -686,12 +638,12 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14SynchronizableUt2_30E">
-<span id="_CPPv3N6stored14SynchronizableUt2_30E"></span><span class="target" id="classstored_1_1_synchronizable_1aff79c8a2121376323315ea67b9d17f42"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored14SynchronizableUt2_30E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored14SynchronizableUt2_29E">
+<span id="_CPPv3N6stored14SynchronizableUt2_29E"></span><span class="target" id="classstored_1_1_synchronizable_1a579c2d63411be8a61ef3d935a4f8ac88"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored14SynchronizableUt2_29E" title="Permalink to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14SynchronizableUt2_3014MaxMessageSizeE">
-<span id="_CPPv3N6stored14SynchronizableUt2_3014MaxMessageSizeE"></span><span class="target" id="classstored_1_1_synchronizable_1aff79c8a2121376323315ea67b9d17f42a99303b78e58017c2aa962fb625dc0459"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MaxMessageSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored14SynchronizableUt2_3014MaxMessageSizeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored14SynchronizableUt2_2914MaxMessageSizeE">
+<span id="_CPPv3N6stored14SynchronizableUt2_2914MaxMessageSizeE"></span><span class="target" id="classstored_1_1_synchronizable_1a579c2d63411be8a61ef3d935a4f8ac88a99303b78e58017c2aa962fb625dc0459"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MaxMessageSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored14SynchronizableUt2_2914MaxMessageSizeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Maximum size of any <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a> message for this store. </p>
 </dd></dl>
 
@@ -721,18 +673,6 @@ public:
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14Synchronizable14SynchronizableERR14SynchronizableI4BaseE">
-<span id="_CPPv3N6stored14Synchronizable14SynchronizableERR14SynchronizableI4BaseE"></span><span id="_CPPv2N6stored14Synchronizable14SynchronizableERR14SynchronizableI4BaseE"></span><span id="stored::Synchronizable::Synchronizable__Synchronizable:Base:RR"></span><span class="target" id="classstored_1_1_synchronizable_1a0e77cc5c63bb3d99c78ddceebc1d0d20"></span><span class="sig-name descname"><span class="n"><span class="pre">Synchronizable</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14Synchronizable14SynchronizableERR14SynchronizableI4BaseE" title="stored::Synchronizable::Synchronizable"><span class="n"><span class="pre">Synchronizable</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable::Base"><span class="n"><span class="pre">Base</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored14Synchronizable14SynchronizableERR14SynchronizableI4BaseE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14Synchronizable14SynchronizableERK14SynchronizableI4BaseE">
-<span id="_CPPv3N6stored14Synchronizable14SynchronizableERK14SynchronizableI4BaseE"></span><span id="_CPPv2N6stored14Synchronizable14SynchronizableERK14SynchronizableI4BaseE"></span><span id="stored::Synchronizable::Synchronizable__Synchronizable:Base:CR"></span><span class="target" id="classstored_1_1_synchronizable_1a3bc1ad747d4e160895d47012482f007c"></span><span class="sig-name descname"><span class="n"><span class="pre">Synchronizable</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14Synchronizable14SynchronizableERK14SynchronizableI4BaseE" title="stored::Synchronizable::Synchronizable"><span class="n"><span class="pre">Synchronizable</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable::Base"><span class="n"><span class="pre">Base</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored14Synchronizable14SynchronizableERK14SynchronizableI4BaseE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14SynchronizableD0Ev">
 <span id="_CPPv3N6stored14SynchronizableD0Ev"></span><span id="_CPPv2N6stored14SynchronizableD0Ev"></span><span id="stored::Synchronizable::~Synchronizable"></span><span class="target" id="classstored_1_1_synchronizable_1a3d99a8a965a505af0ae3f861de18dde3"></span><span class="sig-name descname"><span class="n"><span class="pre">~Synchronizable</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored14SynchronizableD0Ev" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -758,18 +698,6 @@ public:
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14SynchronizableaSERR14SynchronizableI4BaseE">
-<span id="_CPPv3N6stored14SynchronizableaSERR14SynchronizableI4BaseE"></span><span id="_CPPv2N6stored14SynchronizableaSERR14SynchronizableI4BaseE"></span><span id="stored::Synchronizable::assign-operator__Synchronizable:Base:RR"></span><span class="target" id="classstored_1_1_synchronizable_1aee974db694832c9766912fb6d9412bd1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable"><span class="n"><span class="pre">Synchronizable</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable::Base"><span class="n"><span class="pre">Base</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored14SynchronizableaSERR14SynchronizableI4BaseE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14SynchronizableaSERK14SynchronizableI4BaseE">
-<span id="_CPPv3N6stored14SynchronizableaSERK14SynchronizableI4BaseE"></span><span id="_CPPv2N6stored14SynchronizableaSERK14SynchronizableI4BaseE"></span><span id="stored::Synchronizable::assign-operator__Synchronizable:Base:CR"></span><span class="target" id="classstored_1_1_synchronizable_1abeb440bc64f8144e8c9c8114c7743c0e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable"><span class="n"><span class="pre">Synchronizable</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable::Base"><span class="n"><span class="pre">Base</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored14SynchronizableaSERK14SynchronizableI4BaseE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14Synchronizable11reserveHeapEv">
 <span id="_CPPv3N6stored14Synchronizable11reserveHeapEv"></span><span id="_CPPv2N6stored14Synchronizable11reserveHeapEv"></span><span id="stored::Synchronizable::reserveHeap"></span><span class="target" id="classstored_1_1_synchronizable_1aa285cbea0809844a480f8b659614ba24"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reserveHeap</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14Synchronizable11reserveHeapEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Reserve worst-case heap usage. </p>
@@ -793,18 +721,6 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12Synchronizer12SynchronizerEv">
 <span id="_CPPv3N6stored12Synchronizer12SynchronizerEv"></span><span id="_CPPv2N6stored12Synchronizer12SynchronizerEv"></span><span id="stored::Synchronizer::Synchronizer"></span><span class="target" id="classstored_1_1_synchronizer_1ab661ecdbb09af58a1d2f3c91543d7cd7"></span><span class="sig-name descname"><span class="n"><span class="pre">Synchronizer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored12Synchronizer12SynchronizerEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Ctor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12Synchronizer12SynchronizerERR12Synchronizer">
-<span id="_CPPv3N6stored12Synchronizer12SynchronizerERR12Synchronizer"></span><span id="_CPPv2N6stored12Synchronizer12SynchronizerERR12Synchronizer"></span><span id="stored::Synchronizer::Synchronizer__SynchronizerRR"></span><span class="target" id="classstored_1_1_synchronizer_1a0b2b93c6263d2a0d4061f84855521966"></span><span class="sig-name descname"><span class="n"><span class="pre">Synchronizer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12Synchronizer12SynchronizerERR12Synchronizer" title="stored::Synchronizer::Synchronizer"><span class="n"><span class="pre">Synchronizer</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12Synchronizer12SynchronizerERR12Synchronizer" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12Synchronizer12SynchronizerERK12Synchronizer">
-<span id="_CPPv3N6stored12Synchronizer12SynchronizerERK12Synchronizer"></span><span id="_CPPv2N6stored12Synchronizer12SynchronizerERK12Synchronizer"></span><span id="stored::Synchronizer::Synchronizer__SynchronizerCR"></span><span class="target" id="classstored_1_1_synchronizer_1a127093e038524246f5ad6c642798c223"></span><span class="sig-name descname"><span class="n"><span class="pre">Synchronizer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12Synchronizer12SynchronizerERK12Synchronizer" title="stored::Synchronizer::Synchronizer"><span class="n"><span class="pre">Synchronizer</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12Synchronizer12SynchronizerERK12Synchronizer" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -846,18 +762,6 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored12Synchronizer3mapEvR14SynchronizableI5StoreE">
 <span id="_CPPv3I0EN6stored12Synchronizer3mapER14SynchronizableI5StoreE"></span><span id="_CPPv2I0EN6stored12Synchronizer3mapER14SynchronizableI5StoreE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Store</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_synchronizer_1a141a57011f946f70f4b4e04d4a22001c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">map</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable"><span class="n"><span class="pre">Synchronizable</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored12Synchronizer3mapEvR14SynchronizableI5StoreE" title="stored::Synchronizer::map::Store"><span class="n"><span class="pre">Store</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">store</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored12Synchronizer3mapEvR14SynchronizableI5StoreE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Register a store in this <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12SynchronizeraSERR12Synchronizer">
-<span id="_CPPv3N6stored12SynchronizeraSERR12Synchronizer"></span><span id="_CPPv2N6stored12SynchronizeraSERR12Synchronizer"></span><span id="stored::Synchronizer::assign-operator__SynchronizerRR"></span><span class="target" id="classstored_1_1_synchronizer_1a79c6cd962526431640297ff1817c5489"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12SynchronizerE" title="stored::Synchronizer"><span class="n"><span class="pre">Synchronizer</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12SynchronizeraSERR12Synchronizer" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12SynchronizeraSERK12Synchronizer">
-<span id="_CPPv3N6stored12SynchronizeraSERK12Synchronizer"></span><span id="_CPPv2N6stored12SynchronizeraSERK12Synchronizer"></span><span id="stored::Synchronizer::assign-operator__SynchronizerCR"></span><span class="target" id="classstored_1_1_synchronizer_1acc2811e9d12a27654cedbc47c79f6f35"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12SynchronizerE" title="stored::Synchronizer"><span class="n"><span class="pre">Synchronizer</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12SynchronizeraSERK12Synchronizer" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">

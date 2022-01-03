@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>zmqserver &mdash; libstored 1.0.1-rc documentation</title>
+  <title>zmqserver &mdash; libstored 1.1.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -29,7 +29,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.0.1.dev0
+                1.1.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -140,138 +140,148 @@ string:15 a string
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
 <span class="cm"> * \file</span>
 <span class="cm"> * \brief A stored::ZmqServer interface for a lot of different types of objects.</span>
-<span class="cm"> */</span>
+<span class="cm"> */</span><span class="w"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;ZmqServerStore.h&quot;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;cmath&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;time.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ZmqServerStore.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cmath&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;time.h&gt;</span><span class="cp"></span>
 
 <span class="cp">#if STORED_cplusplus &gt;= 201103L</span>
-<span class="cp">#  include &lt;chrono&gt;</span>
+<span class="cp">#</span><span class="w">	</span><span class="cp">include</span><span class="w"> </span><span class="cpf">&lt;chrono&gt;</span><span class="cp"></span>
 <span class="cp">#endif</span>
 
-<span class="k">class</span> <span class="nc">ZmqServerStore</span> <span class="o">:</span> <span class="k">public</span> <span class="n">STORE_BASE_CLASS</span><span class="p">(</span><span class="n">ZmqServerStoreBase</span><span class="p">,</span> <span class="n">ZmqServerStore</span><span class="p">)</span> <span class="p">{</span>
-	<span class="n">STORE_CLASS_BODY</span><span class="p">(</span><span class="n">ZmqServerStoreBase</span><span class="p">,</span> <span class="n">ZmqServerStore</span><span class="p">)</span>
-<span class="k">public</span><span class="o">:</span>
-	<span class="n">ZmqServerStore</span><span class="p">()</span> <span class="o">:</span> <span class="n">m_messages</span><span class="p">(),</span> <span class="n">m_writes</span><span class="p">()</span> <span class="p">{}</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ZmqServerStore</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">STORE_BASE_CLASS</span><span class="p">(</span><span class="n">ZmqServerStoreBase</span><span class="p">,</span><span class="w"> </span><span class="n">ZmqServerStore</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">STORE_CLASS_BODY</span><span class="p">(</span><span class="n">ZmqServerStoreBase</span><span class="p">,</span><span class="w"> </span><span class="n">ZmqServerStore</span><span class="p">)</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="n">ZmqServerStore</span><span class="p">()</span><span class="w"></span>
+<span class="w">		</span><span class="o">:</span><span class="w"> </span><span class="n">m_messages</span><span class="p">()</span><span class="w"></span>
+<span class="w">		</span><span class="p">,</span><span class="w"> </span><span class="n">m_writes</span><span class="p">()</span><span class="w"></span>
+<span class="w">	</span><span class="p">{}</span><span class="w"></span>
 
-<span class="k">protected</span><span class="o">:</span>
-	<span class="kt">void</span> <span class="n">__compute__an_int8_an_int16</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">int32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="n">an_int8</span><span class="p">.</span><span class="n">get</span><span class="p">()</span> <span class="o">+</span> <span class="n">an_int16</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-	<span class="p">}</span>
+<span class="k">protected</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__compute__an_int8_an_int16</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">int32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">an_int8</span><span class="p">.</span><span class="n">get</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">an_int16</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="n">__compute__circle_area_r__a_double</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">double</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="n">M_PI</span> <span class="o">*</span> <span class="n">a_double</span><span class="p">.</span><span class="n">get</span><span class="p">()</span> <span class="o">*</span> <span class="n">a_double</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__compute__circle_area_r__a_double</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">M_PI</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">a_double</span><span class="p">.</span><span class="n">get</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">a_double</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="n">__compute__length_of__a_string</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">strlen</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">a_string</span><span class="p">.</span><span class="n">buffer</span><span class="p">()));</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__compute__length_of__a_string</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">strlen</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">a_string</span><span class="p">.</span><span class="n">buffer</span><span class="p">()));</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__stats__ZMQ_messages</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_messages</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="k">else</span><span class="w"></span>
+<span class="w">			</span><span class="n">m_messages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="n">__stats__ZMQ_messages</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="n">m_messages</span><span class="p">;</span>
-		<span class="k">else</span>
-			<span class="n">m_messages</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__stats__object_writes</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_writes</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="n">__stats__object_writes</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="n">m_writes</span><span class="p">;</span>
-	<span class="p">}</span>
-
-	<span class="kt">void</span> <span class="n">__rand</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">double</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span> <span class="p">{</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__rand</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="cp">#ifdef STORED_OS_WINDOWS</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="o">::</span><span class="n">rand</span><span class="p">()</span> <span class="o">/</span> <span class="n">RAND_MAX</span><span class="p">;</span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="o">::</span><span class="n">rand</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">RAND_MAX</span><span class="p">;</span><span class="w"></span>
 <span class="cp">#else</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="n">drand48</span><span class="p">();</span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">drand48</span><span class="p">();</span><span class="w"></span>
 <span class="cp">#endif</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="n">__t_us</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">uint64_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span> <span class="p">{</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__t_us</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="cp">#if __cplusplus &gt;= 201103L</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)(</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">duration_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">microseconds</span><span class="o">&gt;</span><span class="p">(</span>
-				<span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">().</span><span class="n">time_since_epoch</span><span class="p">()).</span><span class="n">count</span><span class="p">());</span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint64_t</span><span class="p">)(</span><span class="w"></span>
+<span class="w">				</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">duration_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">microseconds</span><span class="o">&gt;</span><span class="p">(</span><span class="w"></span>
+<span class="w">					</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">().</span><span class="n">time_since_epoch</span><span class="p">())</span><span class="w"></span>
+<span class="w">					</span><span class="p">.</span><span class="n">count</span><span class="p">());</span><span class="w"></span>
 <span class="cp">#else</span>
-			<span class="c1">// There is no portable implementation here...</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000000ULL</span><span class="p">;</span>
+<span class="w">			</span><span class="c1">// There is no portable implementation here...</span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1000000ULL</span><span class="p">;</span><span class="w"></span>
 <span class="cp">#endif</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="n">__hookSet</span><span class="p">(</span><span class="n">stored</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">type</span> <span class="n">UNUSED_PAR</span><span class="p">(</span><span class="n">type</span><span class="p">),</span> <span class="kt">void</span><span class="o">*</span> <span class="n">UNUSED_PAR</span><span class="p">(</span><span class="n">buffer</span><span class="p">),</span> <span class="kt">size_t</span> <span class="n">UNUSED_PAR</span><span class="p">(</span><span class="n">len</span><span class="p">))</span> <span class="p">{</span> <span class="n">m_writes</span><span class="o">++</span><span class="p">;</span> <span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__hookSet</span><span class="p">(</span><span class="w"></span>
+<span class="w">		</span><span class="n">stored</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">type</span><span class="w"> </span><span class="n">UNUSED_PAR</span><span class="p">(</span><span class="n">type</span><span class="p">),</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">UNUSED_PAR</span><span class="p">(</span><span class="n">buffer</span><span class="p">),</span><span class="w"></span>
+<span class="w">		</span><span class="kt">size_t</span><span class="w"> </span><span class="n">UNUSED_PAR</span><span class="p">(</span><span class="n">len</span><span class="p">))</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">m_writes</span><span class="o">++</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-<span class="k">public</span><span class="o">:</span>
-	<span class="kt">void</span> <span class="n">incMessages</span><span class="p">()</span>
-	<span class="p">{</span>
-		<span class="n">m_messages</span><span class="o">++</span><span class="p">;</span>
-	<span class="p">}</span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">incMessages</span><span class="p">()</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">m_messages</span><span class="o">++</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-<span class="k">private</span><span class="o">:</span>
-	<span class="kt">uint32_t</span> <span class="n">m_messages</span><span class="p">;</span>
-	<span class="kt">uint32_t</span> <span class="n">m_writes</span><span class="p">;</span>
-<span class="p">};</span>
+<span class="k">private</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">m_messages</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">m_writes</span><span class="p">;</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
-<span class="p">{</span>
-	<span class="n">ZmqServerStore</span> <span class="n">store</span><span class="p">;</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span> <span class="n">debugger</span><span class="p">(</span><span class="s">&quot;zmqserver&quot;</span><span class="p">);</span>
-	<span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">ZmqServerStore</span><span class="w"> </span><span class="n">store</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span><span class="w"> </span><span class="n">debugger</span><span class="p">(</span><span class="s">&quot;zmqserver&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">DebugZmqLayer</span> <span class="n">zmqLayer</span><span class="p">;</span>
-	<span class="n">zmqLayer</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">debugger</span><span class="p">);</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">DebugZmqLayer</span><span class="w"> </span><span class="n">zmqLayer</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">zmqLayer</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">debugger</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Connect via ZMQ to debug this application.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Connect via ZMQ to debug this application.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">Poller</span> <span class="n">poller</span><span class="p">;</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Poller</span><span class="w"> </span><span class="n">poller</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">PollableZmqLayer</span><span class="w"> </span><span class="n">pollableZmq</span><span class="p">(</span><span class="n">zmqLayer</span><span class="p">,</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Pollable</span><span class="o">::</span><span class="n">PollIn</span><span class="p">);</span><span class="w"></span>
 
-	<span class="k">if</span><span class="p">((</span><span class="n">errno</span> <span class="o">=</span> <span class="n">poller</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">zmqLayer</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">,</span> <span class="n">stored</span><span class="o">::</span><span class="n">Poller</span><span class="o">::</span><span class="n">PollIn</span><span class="p">)))</span> <span class="p">{</span>
-		<span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot add to poller&quot;</span><span class="p">);</span>
-		<span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="k">if</span><span class="p">((</span><span class="n">errno</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">poller</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">pollableZmq</span><span class="p">)))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot add to poller&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">time_t</span> <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+<span class="w">	</span><span class="kt">time_t</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span><span class="w"></span>
 
-	<span class="k">while</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">(</span><span class="mi">100000</span><span class="p">).</span><span class="n">empty</span><span class="p">())</span> <span class="p">{</span> <span class="c1">// 100 ms</span>
-			<span class="k">switch</span><span class="p">(</span><span class="n">errno</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">case</span> <span class="nl">EINTR</span><span class="p">:</span>
-			<span class="k">case</span> <span class="nl">EAGAIN</span><span class="p">:</span>
-				<span class="k">break</span><span class="p">;</span>
-			<span class="k">default</span><span class="o">:</span>
-				<span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot poll&quot;</span><span class="p">);</span>
-				<span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-			<span class="p">}</span> <span class="c1">// else timeout</span>
-		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">((</span><span class="n">errno</span> <span class="o">=</span> <span class="n">zmqLayer</span><span class="p">.</span><span class="n">recv</span><span class="p">()))</span> <span class="p">{</span>
-			<span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot recv&quot;</span><span class="p">);</span>
-			<span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-			<span class="n">store</span><span class="p">.</span><span class="n">incMessages</span><span class="p">();</span>
-		<span class="p">}</span>
+<span class="w">	</span><span class="k">while</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">(</span><span class="mi">100</span><span class="p">).</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// 100 ms</span>
+<span class="w">			</span><span class="k">switch</span><span class="p">(</span><span class="n">errno</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="k">case</span><span class="w"> </span><span class="nl">EINTR</span><span class="p">:</span><span class="w"></span>
+<span class="w">			</span><span class="k">case</span><span class="w"> </span><span class="nl">EAGAIN</span><span class="p">:</span><span class="w"></span>
+<span class="w">				</span><span class="k">break</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="k">default</span><span class="o">:</span><span class="w"></span>
+<span class="w">				</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot poll&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">				</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">			</span><span class="p">}</span><span class="w"> </span><span class="c1">// else timeout</span>
+<span class="w">		</span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="p">((</span><span class="n">errno</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zmqLayer</span><span class="p">.</span><span class="n">recv</span><span class="p">()))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot recv&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">			</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="n">store</span><span class="p">.</span><span class="n">incMessages</span><span class="p">();</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
 
-		<span class="c1">// As an example, call debugger.trace() roughly once per second.</span>
-		<span class="kt">time_t</span> <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
-		<span class="k">if</span><span class="p">(</span><span class="n">t</span> <span class="o">!=</span> <span class="n">now</span><span class="p">)</span> <span class="p">{</span>
-			<span class="n">t</span> <span class="o">=</span> <span class="n">now</span><span class="p">;</span>
-			<span class="n">debugger</span><span class="p">.</span><span class="n">trace</span><span class="p">();</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
-<span class="p">}</span>
+<span class="w">		</span><span class="c1">// As an example, call debugger.trace() roughly once per second.</span>
+<span class="w">		</span><span class="kt">time_t</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">t</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">now</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="n">debugger</span><span class="p">.</span><span class="n">trace</span><span class="p">();</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -462,30 +472,30 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_55E">
-<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_55E"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a737bf2d9e288a89c9b7ebf5ba5ff6a12"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_55E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_54E">
+<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_54E"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a7ffe278b0215b1f13fa98579c2b08484"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_54E" title="Permalink to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_5511ObjectCountE">
-<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_5511ObjectCountE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a737bf2d9e288a89c9b7ebf5ba5ff6a12ab49110696541bcf3f1adfc1b7835390e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_5511ObjectCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_5411ObjectCountE">
+<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_5411ObjectCountE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a7ffe278b0215b1f13fa98579c2b08484ab49110696541bcf3f1adfc1b7835390e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_5411ObjectCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of objects in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_5513VariableCountE">
-<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_5513VariableCountE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a737bf2d9e288a89c9b7ebf5ba5ff6a12a32d81b9c8efef34f9e05b257ea273661"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_5513VariableCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_5413VariableCountE">
+<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_5413VariableCountE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a7ffe278b0215b1f13fa98579c2b08484a32d81b9c8efef34f9e05b257ea273661"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_5413VariableCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of variables in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_5513FunctionCountE">
-<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_5513FunctionCountE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a737bf2d9e288a89c9b7ebf5ba5ff6a12a5d97eec6df2600f53f4eefffa0ec92dc"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_5513FunctionCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_5413FunctionCountE">
+<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_5413FunctionCountE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a7ffe278b0215b1f13fa98579c2b08484a5d97eec6df2600f53f4eefffa0ec92dc"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_5413FunctionCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of functions in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_5510BufferSizeE">
-<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_5510BufferSizeE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a737bf2d9e288a89c9b7ebf5ba5ff6a12a293d1203a1fbc9ff54f9f2e82bdfd875"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_5510BufferSizeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_5410BufferSizeE">
+<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_5410BufferSizeE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a7ffe278b0215b1f13fa98579c2b08484a293d1203a1fbc9ff54f9f2e82bdfd875"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_5410BufferSizeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Buffer size. </p>
 </dd></dl>
 
@@ -522,18 +532,6 @@ public:
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERR18ZmqServerStoreBase">
-<span id="_CPPv3N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERR18ZmqServerStoreBase"></span><span id="_CPPv2N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERR18ZmqServerStoreBase"></span><span id="stored::ZmqServerStoreBase::ZmqServerStoreBase__ZmqServerStoreBaseRR"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1ab8b6432a6756e7c55afb93cc8764bdcd"></span><span class="sig-name descname"><span class="n"><span class="pre">ZmqServerStoreBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERR18ZmqServerStoreBase" title="stored::ZmqServerStoreBase::ZmqServerStoreBase"><span class="n"><span class="pre">ZmqServerStoreBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERR18ZmqServerStoreBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERK18ZmqServerStoreBase">
-<span id="_CPPv3N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERK18ZmqServerStoreBase"></span><span id="_CPPv2N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERK18ZmqServerStoreBase"></span><span id="stored::ZmqServerStoreBase::ZmqServerStoreBase__ZmqServerStoreBaseCR"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1ab5c032e1dd883c8208af41238d0db1b6"></span><span class="sig-name descname"><span class="n"><span class="pre">ZmqServerStoreBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERK18ZmqServerStoreBase" title="stored::ZmqServerStoreBase::ZmqServerStoreBase"><span class="n"><span class="pre">ZmqServerStoreBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBase18ZmqServerStoreBaseERK18ZmqServerStoreBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBase27__compute__an_int8_an_int16EbR7int32_t">
 <span id="_CPPv3N6stored18ZmqServerStoreBase27__compute__an_int8_an_int16EbR7int32_t"></span><span id="_CPPv2N6stored18ZmqServerStoreBase27__compute__an_int8_an_int16EbR7int32_t"></span><span id="stored::ZmqServerStoreBase::__compute__an_int8_an_int16__b.int32_tR"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a422ed1eeef553823bf77a9bfdc46f46e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__compute__an_int8_an_int16</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">set</span></span>, <span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBase27__compute__an_int8_an_int16EbR7int32_t" title="Permalink to this definition"></a><br /></dt>
@@ -605,13 +603,13 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored18ZmqServerStoreBase14implementationEv">
-<span id="_CPPv3NK6stored18ZmqServerStoreBase14implementationEv"></span><span id="_CPPv2NK6stored18ZmqServerStoreBase14implementationEv"></span><span id="stored::ZmqServerStoreBase::implementationCCE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a40a522d6b76d7f68546ac39f03c25f0a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored18ZmqServerStoreBase14ImplementationE" title="stored::ZmqServerStoreBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored18ZmqServerStoreBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored18ZmqServerStoreBase14implementationEv"></span><span id="_CPPv2NK6stored18ZmqServerStoreBase14implementationEv"></span><span id="stored::ZmqServerStoreBase::implementationC"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1ab2de2d534e33628efdd421a001244917"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored18ZmqServerStoreBase14ImplementationE" title="stored::ZmqServerStoreBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored18ZmqServerStoreBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBase14implementationEv">
-<span id="_CPPv3N6stored18ZmqServerStoreBase14implementationEv"></span><span id="_CPPv2N6stored18ZmqServerStoreBase14implementationEv"></span><span id="stored::ZmqServerStoreBase::implementationCE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1aff34e937f91b490cdba58ea192a469d6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored18ZmqServerStoreBase14ImplementationE" title="stored::ZmqServerStoreBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored18ZmqServerStoreBase14implementationEv"></span><span id="_CPPv2N6stored18ZmqServerStoreBase14implementationEv"></span><span id="stored::ZmqServerStoreBase::implementation"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a31ce2bdeef9d20d2e9710fb22bbbe652"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored18ZmqServerStoreBase14ImplementationE" title="stored::ZmqServerStoreBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
@@ -653,20 +651,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored18ZmqServerStoreBase4nameEv">
-<span id="_CPPv3NK6stored18ZmqServerStoreBase4nameEv"></span><span id="_CPPv2NK6stored18ZmqServerStoreBase4nameEv"></span><span id="stored::ZmqServerStoreBase::nameCCE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a859362913279b68bfbe2c01bb866ac50"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored18ZmqServerStoreBase4nameEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored18ZmqServerStoreBase4nameEv"></span><span id="_CPPv2NK6stored18ZmqServerStoreBase4nameEv"></span><span id="stored::ZmqServerStoreBase::nameC"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a3af7fad2666b3213e53693f809e3c9e0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored18ZmqServerStoreBase4nameEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseaSERR18ZmqServerStoreBase">
-<span id="_CPPv3N6stored18ZmqServerStoreBaseaSERR18ZmqServerStoreBase"></span><span id="_CPPv2N6stored18ZmqServerStoreBaseaSERR18ZmqServerStoreBase"></span><span id="stored::ZmqServerStoreBase::assign-operator__ZmqServerStoreBaseRR"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a89f46c1df13abeb6e32854830600bb15"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored18ZmqServerStoreBaseE" title="stored::ZmqServerStoreBase"><span class="n"><span class="pre">ZmqServerStoreBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseaSERR18ZmqServerStoreBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseaSERK18ZmqServerStoreBase">
-<span id="_CPPv3N6stored18ZmqServerStoreBaseaSERK18ZmqServerStoreBase"></span><span id="_CPPv2N6stored18ZmqServerStoreBaseaSERK18ZmqServerStoreBase"></span><span id="stored::ZmqServerStoreBase::assign-operator__ZmqServerStoreBaseCR"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a0be5ab02a7036529bfcb9b907af2085f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored18ZmqServerStoreBaseE" title="stored::ZmqServerStoreBase"><span class="n"><span class="pre">ZmqServerStoreBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseaSERK18ZmqServerStoreBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -763,8 +749,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14ZmqServerStore14ZmqServerStoreERR14ZmqServerStore">
-<span id="_CPPv3N6stored14ZmqServerStore14ZmqServerStoreERR14ZmqServerStore"></span><span id="_CPPv2N6stored14ZmqServerStore14ZmqServerStoreERR14ZmqServerStore"></span><span id="stored::ZmqServerStore::ZmqServerStore__ZmqServerStoreRR"></span><span class="target" id="classstored_1_1_zmq_server_store_1a63c0fd7693483050d46e7b451b6128e7"></span><span class="sig-name descname"><span class="n"><span class="pre">ZmqServerStore</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14ZmqServerStore14ZmqServerStoreERR14ZmqServerStore" title="stored::ZmqServerStore::ZmqServerStore"><span class="n"><span class="pre">ZmqServerStore</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored14ZmqServerStore14ZmqServerStoreERR14ZmqServerStore" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
+<span id="_CPPv3N6stored14ZmqServerStore14ZmqServerStoreERR14ZmqServerStore"></span><span id="_CPPv2N6stored14ZmqServerStore14ZmqServerStoreERR14ZmqServerStore"></span><span id="stored::ZmqServerStore::ZmqServerStore__ZmqServerStoreRR"></span><span class="target" id="classstored_1_1_zmq_server_store_1ac0c97415c5d41bf9a908ebd0772ace72"></span><span class="sig-name descname"><span class="n"><span class="pre">ZmqServerStore</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14ZmqServerStore14ZmqServerStoreERR14ZmqServerStore" title="stored::ZmqServerStore::ZmqServerStore"><span class="n"><span class="pre">ZmqServerStore</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored14ZmqServerStore14ZmqServerStoreERR14ZmqServerStore" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Default move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -775,7 +761,7 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14ZmqServerStoreaSERR14ZmqServerStore">
-<span id="_CPPv3N6stored14ZmqServerStoreaSERR14ZmqServerStore"></span><span id="_CPPv2N6stored14ZmqServerStoreaSERR14ZmqServerStore"></span><span id="stored::ZmqServerStore::assign-operator__ZmqServerStoreRR"></span><span class="target" id="classstored_1_1_zmq_server_store_1a38a5734941138e77c4c0ab2564be0c0f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14ZmqServerStoreE" title="stored::ZmqServerStore"><span class="n"><span class="pre">ZmqServerStore</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored14ZmqServerStoreaSERR14ZmqServerStore" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored14ZmqServerStoreaSERR14ZmqServerStore"></span><span id="_CPPv2N6stored14ZmqServerStoreaSERR14ZmqServerStore"></span><span id="stored::ZmqServerStore::assign-operator__ZmqServerStoreRR"></span><span class="target" id="classstored_1_1_zmq_server_store_1a884f0f38a22e31c1645ef4f11ae18ad9"></span><a class="reference internal" href="#_CPPv4N6stored14ZmqServerStoreE" title="stored::ZmqServerStore"><span class="n"><span class="pre">ZmqServerStore</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14ZmqServerStoreE" title="stored::ZmqServerStore"><span class="n"><span class="pre">ZmqServerStore</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored14ZmqServerStoreaSERR14ZmqServerStore" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 

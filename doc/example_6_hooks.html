@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>6_hooks &mdash; libstored 1.0.1-rc documentation</title>
+  <title>6_hooks &mdash; libstored 1.1.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.0.1.dev0
+                1.1.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -145,68 +145,72 @@ int32=3 variable 2
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
 <span class="cm"> * \file</span>
 <span class="cm"> * \brief Example to show the get/set synchronization hooks.</span>
-<span class="cm"> */</span>
+<span class="cm"> */</span><span class="w"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&quot;ExampleHooks.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ExampleHooks.h&quot;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
 
-<span class="k">class</span> <span class="nc">SyncedExampleHooks</span> <span class="o">:</span> <span class="k">public</span> <span class="n">STORE_BASE_CLASS</span><span class="p">(</span><span class="n">ExampleHooksBase</span><span class="p">,</span> <span class="n">SyncedExampleHooks</span><span class="p">)</span> <span class="p">{</span>
-	<span class="n">STORE_CLASS_BODY</span><span class="p">(</span><span class="n">ExampleHooksBase</span><span class="p">,</span> <span class="n">SyncedExampleHooks</span><span class="p">)</span>
-<span class="k">public</span><span class="o">:</span>
-	<span class="n">SyncedExampleHooks</span><span class="p">()</span> <span class="p">{}</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SyncedExampleHooks</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">STORE_BASE_CLASS</span><span class="p">(</span><span class="n">ExampleHooksBase</span><span class="p">,</span><span class="w"> </span><span class="n">SyncedExampleHooks</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">STORE_CLASS_BODY</span><span class="p">(</span><span class="n">ExampleHooksBase</span><span class="p">,</span><span class="w"> </span><span class="n">SyncedExampleHooks</span><span class="p">)</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="n">SyncedExampleHooks</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="n">__some_function</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">int32_t</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span> <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span> <span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__some_function</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">int32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">set</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="n">__hookEntryX</span><span class="p">(</span><span class="n">stored</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">type</span> <span class="n">type</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">)</span> <span class="k">noexcept</span>
-	<span class="p">{</span>
-		<span class="n">printf</span><span class="p">(</span><span class="s">&quot;entry_x(%u, %p, %zu) key=%&quot;</span> <span class="n">PRIxPTR</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-			<span class="p">(</span><span class="kt">unsigned</span><span class="p">)</span><span class="n">type</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">bufferToKey</span><span class="p">(</span><span class="n">buffer</span><span class="p">));</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__hookEntryX</span><span class="p">(</span><span class="n">stored</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">type</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;entry_x(%u, %p, %zu) key=%&quot;</span><span class="w"> </span><span class="n">PRIxPTR</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="p">)</span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"></span>
+<span class="w">		       </span><span class="n">bufferToKey</span><span class="p">(</span><span class="n">buffer</span><span class="p">));</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="n">__hookExitX</span><span class="p">(</span><span class="n">stored</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">type</span> <span class="n">type</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">changed</span><span class="p">)</span> <span class="k">noexcept</span>
-	<span class="p">{</span>
-		<span class="n">printf</span><span class="p">(</span><span class="s">&quot;exit_x(%u, %p, %zu, %schanged) key=%&quot;</span> <span class="n">PRIxPTR</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-			<span class="p">(</span><span class="kt">unsigned</span><span class="p">)</span><span class="n">type</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">changed</span> <span class="o">?</span> <span class="s">&quot;&quot;</span> <span class="o">:</span> <span class="s">&quot;un&quot;</span><span class="p">,</span> <span class="n">bufferToKey</span><span class="p">(</span><span class="n">buffer</span><span class="p">));</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__hookExitX</span><span class="p">(</span><span class="n">stored</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">type</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">changed</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;exit_x(%u, %p, %zu, %schanged) key=%&quot;</span><span class="w"> </span><span class="n">PRIxPTR</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="p">)</span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"></span>
+<span class="w">		       </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="n">changed</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;un&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bufferToKey</span><span class="p">(</span><span class="n">buffer</span><span class="p">));</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="n">__hookEntryRO</span><span class="p">(</span><span class="n">stored</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">type</span> <span class="n">type</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">)</span> <span class="k">noexcept</span>
-	<span class="p">{</span>
-		<span class="n">printf</span><span class="p">(</span><span class="s">&quot;entry_ro(%u, %p, %zu) key=%&quot;</span> <span class="n">PRIxPTR</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-			<span class="p">(</span><span class="kt">unsigned</span><span class="p">)</span><span class="n">type</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">bufferToKey</span><span class="p">(</span><span class="n">buffer</span><span class="p">));</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__hookEntryRO</span><span class="p">(</span><span class="n">stored</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">type</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;entry_ro(%u, %p, %zu) key=%&quot;</span><span class="w"> </span><span class="n">PRIxPTR</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="p">)</span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"></span>
+<span class="w">		       </span><span class="n">bufferToKey</span><span class="p">(</span><span class="n">buffer</span><span class="p">));</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="kt">void</span> <span class="n">__hookExitRO</span><span class="p">(</span><span class="n">stored</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">type</span> <span class="n">type</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">)</span> <span class="k">noexcept</span>
-	<span class="p">{</span>
-		<span class="n">printf</span><span class="p">(</span><span class="s">&quot;exit_ro(%u, %p, %zu) key=%&quot;</span> <span class="n">PRIxPTR</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-			<span class="p">(</span><span class="kt">unsigned</span><span class="p">)</span><span class="n">type</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">bufferToKey</span><span class="p">(</span><span class="n">buffer</span><span class="p">));</span>
-	<span class="p">}</span>
-<span class="p">};</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__hookExitRO</span><span class="p">(</span><span class="n">stored</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">type</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;exit_ro(%u, %p, %zu) key=%&quot;</span><span class="w"> </span><span class="n">PRIxPTR</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="p">)</span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"></span>
+<span class="w">		       </span><span class="n">bufferToKey</span><span class="p">(</span><span class="n">buffer</span><span class="p">));</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
-<span class="p">{</span>
-	<span class="n">SyncedExampleHooks</span> <span class="n">store</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">SyncedExampleHooks</span><span class="w"> </span><span class="n">store</span><span class="p">;</span><span class="w"></span>
 
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Function access (no hooks)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-	<span class="n">store</span><span class="p">.</span><span class="n">some_function</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-	<span class="n">store</span><span class="p">.</span><span class="n">some_function</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Function access (no hooks)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">store</span><span class="p">.</span><span class="n">some_function</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"></span>
+<span class="w">	</span><span class="n">store</span><span class="p">.</span><span class="n">some_function</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Read-only access to typed object</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-	<span class="n">store</span><span class="p">.</span><span class="n">variable_1</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Read-only access to typed object</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">store</span><span class="p">.</span><span class="n">variable_1</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"></span>
 
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Read-only access to variant object</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-	<span class="kt">int32_t</span> <span class="n">v</span><span class="p">;</span>
-	<span class="n">store</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;/variable 2&quot;</span><span class="p">).</span><span class="n">get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">v</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">v</span><span class="p">));</span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Read-only access to variant object</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="kt">int32_t</span><span class="w"> </span><span class="n">v</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">store</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;/variable 2&quot;</span><span class="p">).</span><span class="n">get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">v</span><span class="p">));</span><span class="w"></span>
 
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Exclusive access to typed object</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-	<span class="n">store</span><span class="p">.</span><span class="n">variable_1</span> <span class="o">=</span> <span class="mi">11</span><span class="p">;</span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Exclusive access to typed object</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">store</span><span class="p">.</span><span class="n">variable_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">11</span><span class="p">;</span><span class="w"></span>
 
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Exclusive access to variant object</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-	<span class="n">v</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
-	<span class="n">store</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;/variable 2&quot;</span><span class="p">).</span><span class="n">set</span><span class="p">(</span><span class="o">&amp;</span><span class="n">v</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">v</span><span class="p">));</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Exclusive access to variant object</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">store</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;/variable 2&quot;</span><span class="p">).</span><span class="n">set</span><span class="p">(</span><span class="o">&amp;</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">v</span><span class="p">));</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -279,30 +283,30 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleHooksBaseUt2_44E">
-<span id="_CPPv3N6stored16ExampleHooksBaseUt2_44E"></span><span class="target" id="classstored_1_1_example_hooks_base_1a10bf0e19acd2bf939447215c92337e43"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBaseUt2_44E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleHooksBaseUt2_43E">
+<span id="_CPPv3N6stored16ExampleHooksBaseUt2_43E"></span><span class="target" id="classstored_1_1_example_hooks_base_1a46b752bde970798d3c948a1dcafdb9bf"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBaseUt2_43E" title="Permalink to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleHooksBaseUt2_4411ObjectCountE">
-<span id="_CPPv3N6stored16ExampleHooksBaseUt2_4411ObjectCountE"></span><span class="target" id="classstored_1_1_example_hooks_base_1a10bf0e19acd2bf939447215c92337e43a95837794db2eaf2d3a80daf43c4df351"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBaseUt2_4411ObjectCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleHooksBaseUt2_4311ObjectCountE">
+<span id="_CPPv3N6stored16ExampleHooksBaseUt2_4311ObjectCountE"></span><span class="target" id="classstored_1_1_example_hooks_base_1a46b752bde970798d3c948a1dcafdb9bfa95837794db2eaf2d3a80daf43c4df351"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBaseUt2_4311ObjectCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of objects in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleHooksBaseUt2_4413VariableCountE">
-<span id="_CPPv3N6stored16ExampleHooksBaseUt2_4413VariableCountE"></span><span class="target" id="classstored_1_1_example_hooks_base_1a10bf0e19acd2bf939447215c92337e43a5beb9e3ccc66302e3d4a1e4084724f30"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBaseUt2_4413VariableCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleHooksBaseUt2_4313VariableCountE">
+<span id="_CPPv3N6stored16ExampleHooksBaseUt2_4313VariableCountE"></span><span class="target" id="classstored_1_1_example_hooks_base_1a46b752bde970798d3c948a1dcafdb9bfa5beb9e3ccc66302e3d4a1e4084724f30"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBaseUt2_4313VariableCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of variables in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleHooksBaseUt2_4413FunctionCountE">
-<span id="_CPPv3N6stored16ExampleHooksBaseUt2_4413FunctionCountE"></span><span class="target" id="classstored_1_1_example_hooks_base_1a10bf0e19acd2bf939447215c92337e43aea9fcfa0f6f9881928f21257511a68c8"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBaseUt2_4413FunctionCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleHooksBaseUt2_4313FunctionCountE">
+<span id="_CPPv3N6stored16ExampleHooksBaseUt2_4313FunctionCountE"></span><span class="target" id="classstored_1_1_example_hooks_base_1a46b752bde970798d3c948a1dcafdb9bfaea9fcfa0f6f9881928f21257511a68c8"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBaseUt2_4313FunctionCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of functions in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleHooksBaseUt2_4410BufferSizeE">
-<span id="_CPPv3N6stored16ExampleHooksBaseUt2_4410BufferSizeE"></span><span class="target" id="classstored_1_1_example_hooks_base_1a10bf0e19acd2bf939447215c92337e43adf4dc680e2672620c2c50f45950ee88d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBaseUt2_4410BufferSizeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleHooksBaseUt2_4310BufferSizeE">
+<span id="_CPPv3N6stored16ExampleHooksBaseUt2_4310BufferSizeE"></span><span class="target" id="classstored_1_1_example_hooks_base_1a46b752bde970798d3c948a1dcafdb9bfadf4dc680e2672620c2c50f45950ee88d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBaseUt2_4310BufferSizeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Buffer size. </p>
 </dd></dl>
 
@@ -340,18 +344,6 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleHooksBase16ExampleHooksBaseERR16ExampleHooksBase">
-<span id="_CPPv3N6stored16ExampleHooksBase16ExampleHooksBaseERR16ExampleHooksBase"></span><span id="_CPPv2N6stored16ExampleHooksBase16ExampleHooksBaseERR16ExampleHooksBase"></span><span id="stored::ExampleHooksBase::ExampleHooksBase__ExampleHooksBaseRR"></span><span class="target" id="classstored_1_1_example_hooks_base_1a403765bb2cf3c63a50959ffe4d3fb61d"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleHooksBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16ExampleHooksBase16ExampleHooksBaseERR16ExampleHooksBase" title="stored::ExampleHooksBase::ExampleHooksBase"><span class="n"><span class="pre">ExampleHooksBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBase16ExampleHooksBaseERR16ExampleHooksBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleHooksBase16ExampleHooksBaseERK16ExampleHooksBase">
-<span id="_CPPv3N6stored16ExampleHooksBase16ExampleHooksBaseERK16ExampleHooksBase"></span><span id="_CPPv2N6stored16ExampleHooksBase16ExampleHooksBaseERK16ExampleHooksBase"></span><span id="stored::ExampleHooksBase::ExampleHooksBase__ExampleHooksBaseCR"></span><span class="target" id="classstored_1_1_example_hooks_base_1a50acbe9a370da949f9a595807b5ba53e"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleHooksBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16ExampleHooksBase16ExampleHooksBaseERK16ExampleHooksBase" title="stored::ExampleHooksBase::ExampleHooksBase"><span class="n"><span class="pre">ExampleHooksBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBase16ExampleHooksBaseERK16ExampleHooksBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleHooksBase15__some_functionEbR7int32_t">
 <span id="_CPPv3N6stored16ExampleHooksBase15__some_functionEbR7int32_t"></span><span id="_CPPv2N6stored16ExampleHooksBase15__some_functionEbR7int32_t"></span><span id="stored::ExampleHooksBase::__some_function__b.int32_tR"></span><span class="target" id="classstored_1_1_example_hooks_base_1ae56d1ad56efe6cbb85687172da9e5efd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__some_function</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">set</span></span>, <span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBase15__some_functionEbR7int32_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Callback for some function. </p>
@@ -386,13 +378,13 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored16ExampleHooksBase14implementationEv">
-<span id="_CPPv3NK6stored16ExampleHooksBase14implementationEv"></span><span id="_CPPv2NK6stored16ExampleHooksBase14implementationEv"></span><span id="stored::ExampleHooksBase::implementationCCE"></span><span class="target" id="classstored_1_1_example_hooks_base_1a17b6b99af87e582a657269f85cd0891a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleHooksBase14ImplementationE" title="stored::ExampleHooksBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16ExampleHooksBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored16ExampleHooksBase14implementationEv"></span><span id="_CPPv2NK6stored16ExampleHooksBase14implementationEv"></span><span id="stored::ExampleHooksBase::implementationC"></span><span class="target" id="classstored_1_1_example_hooks_base_1ac3fe986b0f72e906d830c7a4c248f993"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleHooksBase14ImplementationE" title="stored::ExampleHooksBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16ExampleHooksBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleHooksBase14implementationEv">
-<span id="_CPPv3N6stored16ExampleHooksBase14implementationEv"></span><span id="_CPPv2N6stored16ExampleHooksBase14implementationEv"></span><span id="stored::ExampleHooksBase::implementationCE"></span><span class="target" id="classstored_1_1_example_hooks_base_1ae0419185d2d89b60188c94d398b40407"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleHooksBase14ImplementationE" title="stored::ExampleHooksBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored16ExampleHooksBase14implementationEv"></span><span id="_CPPv2N6stored16ExampleHooksBase14implementationEv"></span><span id="stored::ExampleHooksBase::implementation"></span><span class="target" id="classstored_1_1_example_hooks_base_1a8e46b52837e956ce0853a3ed2473bdfd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleHooksBase14ImplementationE" title="stored::ExampleHooksBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
@@ -434,20 +426,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored16ExampleHooksBase4nameEv">
-<span id="_CPPv3NK6stored16ExampleHooksBase4nameEv"></span><span id="_CPPv2NK6stored16ExampleHooksBase4nameEv"></span><span id="stored::ExampleHooksBase::nameCCE"></span><span class="target" id="classstored_1_1_example_hooks_base_1a18d345647f3bd9a7420cabc6cd74fb0d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16ExampleHooksBase4nameEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored16ExampleHooksBase4nameEv"></span><span id="_CPPv2NK6stored16ExampleHooksBase4nameEv"></span><span id="stored::ExampleHooksBase::nameC"></span><span class="target" id="classstored_1_1_example_hooks_base_1a2113fa71459fb9e386a35c6a37412be3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16ExampleHooksBase4nameEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleHooksBaseaSERR16ExampleHooksBase">
-<span id="_CPPv3N6stored16ExampleHooksBaseaSERR16ExampleHooksBase"></span><span id="_CPPv2N6stored16ExampleHooksBaseaSERR16ExampleHooksBase"></span><span id="stored::ExampleHooksBase::assign-operator__ExampleHooksBaseRR"></span><span class="target" id="classstored_1_1_example_hooks_base_1a931624de6ad7a03d4e4cb65f3653830f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleHooksBaseE" title="stored::ExampleHooksBase"><span class="n"><span class="pre">ExampleHooksBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBaseaSERR16ExampleHooksBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleHooksBaseaSERK16ExampleHooksBase">
-<span id="_CPPv3N6stored16ExampleHooksBaseaSERK16ExampleHooksBase"></span><span id="_CPPv2N6stored16ExampleHooksBaseaSERK16ExampleHooksBase"></span><span id="stored::ExampleHooksBase::assign-operator__ExampleHooksBaseCR"></span><span class="target" id="classstored_1_1_example_hooks_base_1afecac75d17539bcfe6fee6a66f64bc2c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleHooksBaseE" title="stored::ExampleHooksBase"><span class="n"><span class="pre">ExampleHooksBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleHooksBaseaSERK16ExampleHooksBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -544,8 +524,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleHooks12ExampleHooksERR12ExampleHooks">
-<span id="_CPPv3N6stored12ExampleHooks12ExampleHooksERR12ExampleHooks"></span><span id="_CPPv2N6stored12ExampleHooks12ExampleHooksERR12ExampleHooks"></span><span id="stored::ExampleHooks::ExampleHooks__ExampleHooksRR"></span><span class="target" id="classstored_1_1_example_hooks_1a7bf96feb71aeee25773c8464bc75cd09"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleHooks</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleHooks12ExampleHooksERR12ExampleHooks" title="stored::ExampleHooks::ExampleHooks"><span class="n"><span class="pre">ExampleHooks</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleHooks12ExampleHooksERR12ExampleHooks" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
+<span id="_CPPv3N6stored12ExampleHooks12ExampleHooksERR12ExampleHooks"></span><span id="_CPPv2N6stored12ExampleHooks12ExampleHooksERR12ExampleHooks"></span><span id="stored::ExampleHooks::ExampleHooks__ExampleHooksRR"></span><span class="target" id="classstored_1_1_example_hooks_1add395b0406a048c39dd1ec83d5af3f22"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleHooks</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleHooks12ExampleHooksERR12ExampleHooks" title="stored::ExampleHooks::ExampleHooks"><span class="n"><span class="pre">ExampleHooks</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleHooks12ExampleHooksERR12ExampleHooks" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Default move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -556,7 +536,7 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleHooksaSERR12ExampleHooks">
-<span id="_CPPv3N6stored12ExampleHooksaSERR12ExampleHooks"></span><span id="_CPPv2N6stored12ExampleHooksaSERR12ExampleHooks"></span><span id="stored::ExampleHooks::assign-operator__ExampleHooksRR"></span><span class="target" id="classstored_1_1_example_hooks_1acd40fc009cceafc2729d4a55b4e38af7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleHooksE" title="stored::ExampleHooks"><span class="n"><span class="pre">ExampleHooks</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleHooksaSERR12ExampleHooks" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored12ExampleHooksaSERR12ExampleHooks"></span><span id="_CPPv2N6stored12ExampleHooksaSERR12ExampleHooks"></span><span id="stored::ExampleHooks::assign-operator__ExampleHooksRR"></span><span class="target" id="classstored_1_1_example_hooks_1a4a08e822c38fe2586dafd48b86d835a3"></span><a class="reference internal" href="#_CPPv4N6stored12ExampleHooksE" title="stored::ExampleHooks"><span class="n"><span class="pre">ExampleHooks</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleHooksE" title="stored::ExampleHooks"><span class="n"><span class="pre">ExampleHooks</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleHooksaSERR12ExampleHooks" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 

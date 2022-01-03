@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>terminal &mdash; libstored 1.0.1-rc documentation</title>
+  <title>terminal &mdash; libstored 1.1.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.0.1.dev0
+                1.1.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -117,11 +117,11 @@ int32 oh gosh
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
 <span class="cm"> * \file</span>
 <span class="cm"> * \brief A stdin/stdout terminal application to test hand-injected Embedded Debugger messages.</span>
-<span class="cm"> */</span>
+<span class="cm"> */</span><span class="w"></span>
 
-<span class="cp">#include</span> <span class="cpf">&quot;ExampleTerminal.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ExampleTerminal.h&quot;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
 
 <span class="cp">#ifndef STORED_OS_WINDOWS</span>
 <span class="c1">// The default implementation emits the response to stdout, with APC / ST</span>
@@ -129,78 +129,81 @@ int32 oh gosh
 <span class="c1">// stdout to a file, you will see these sequences.</span>
 <span class="c1">//</span>
 <span class="c1">// If you enable the following line, this example dumps the response to stderr too.</span>
-<span class="cp">#  define PRINT_TO_STDERR</span>
+<span class="cp">#	define PRINT_TO_STDERR</span>
 <span class="cp">#endif</span>
 
 <span class="c1">// If defined, do not print escaped messages to the console, but silently drop them.</span>
 <span class="c1">//#define SUPPRESS_ESCAPE</span>
 
-<span class="k">class</span> <span class="nc">CaseInverter</span> <span class="o">:</span> <span class="k">public</span> <span class="n">stored</span><span class="o">::</span><span class="n">TerminalLayer</span> <span class="p">{</span>
-<span class="k">public</span><span class="o">:</span>
-	<span class="k">typedef</span> <span class="n">stored</span><span class="o">::</span><span class="n">TerminalLayer</span> <span class="n">base</span><span class="p">;</span>
-	<span class="n">CaseInverter</span><span class="p">()</span> <span class="n">is_default</span>
-	<span class="k">virtual</span> <span class="o">~</span><span class="n">CaseInverter</span><span class="p">()</span> <span class="k">override</span> <span class="n">is_default</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CaseInverter</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">TerminalLayer</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="k">typedef</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">TerminalLayer</span><span class="w"> </span><span class="n">base</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">CaseInverter</span><span class="p">()</span><span class="w"> </span><span class="n">is_default</span><span class="w"></span>
+<span class="w">	</span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">CaseInverter</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="n">is_default</span><span class="w"></span>
 
-<span class="k">protected</span><span class="o">:</span>
-	<span class="kt">void</span> <span class="n">nonDebugDecode</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">)</span> <span class="k">final</span>
-	<span class="p">{</span>
-		<span class="k">for</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">buffer</span><span class="p">;</span> <span class="n">len</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="n">len</span><span class="o">--</span><span class="p">,</span> <span class="n">p</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
-			<span class="k">if</span><span class="p">(</span><span class="n">c</span> <span class="o">&gt;=</span> <span class="sc">&#39;a&#39;</span> <span class="o">&amp;&amp;</span> <span class="n">c</span> <span class="o">&lt;=</span> <span class="sc">&#39;z&#39;</span><span class="p">)</span>
-				<span class="n">putchar</span><span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="sc">&#39;a&#39;</span> <span class="o">+</span> <span class="sc">&#39;A&#39;</span><span class="p">);</span>
-			<span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">c</span> <span class="o">&gt;=</span> <span class="sc">&#39;A&#39;</span> <span class="o">&amp;&amp;</span> <span class="n">c</span> <span class="o">&lt;=</span> <span class="sc">&#39;Z&#39;</span><span class="p">)</span>
-				<span class="n">putchar</span><span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="sc">&#39;A&#39;</span> <span class="o">+</span> <span class="sc">&#39;a&#39;</span><span class="p">);</span>
-			<span class="k">else</span>
-				<span class="nf">putchar</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
+<span class="k">protected</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">nonDebugDecode</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">)</span><span class="w"> </span><span class="k">final</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">for</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">buffer</span><span class="p">;</span><span class="w"> </span><span class="n">len</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">len</span><span class="o">--</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="k">if</span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;z&#39;</span><span class="p">)</span><span class="w"></span>
+<span class="w">				</span><span class="n">putchar</span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="sc">&#39;A&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">			</span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="sc">&#39;A&#39;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;Z&#39;</span><span class="p">)</span><span class="w"></span>
+<span class="w">				</span><span class="n">putchar</span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="sc">&#39;A&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">			</span><span class="k">else</span><span class="w"></span>
+<span class="w">				</span><span class="n">putchar</span><span class="p">(</span><span class="n">c</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
 <span class="cp">#ifdef PRINT_TO_STDERR</span>
-	<span class="kt">void</span> <span class="n">encode</span><span class="p">(</span><span class="kt">void</span> <span class="k">const</span><span class="o">*</span> <span class="n">buffer</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">last</span><span class="p">)</span> <span class="k">final</span>
-	<span class="p">{</span>
-		<span class="n">base</span><span class="o">::</span><span class="n">encode</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">last</span><span class="p">);</span>
-		<span class="n">fwrite</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">stderr</span><span class="p">);</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">encode</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">last</span><span class="p">)</span><span class="w"> </span><span class="k">final</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">base</span><span class="o">::</span><span class="n">encode</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="n">last</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="n">fwrite</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">stderr</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 <span class="cp">#endif</span>
-<span class="p">};</span>
+<span class="p">};</span><span class="w"></span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
-<span class="p">{</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">ExampleTerminal</span> <span class="n">store</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">ExampleTerminal</span><span class="w"> </span><span class="n">store</span><span class="p">;</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span> <span class="n">debugger</span><span class="p">;</span>
-	<span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store</span><span class="p">);</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span><span class="w"> </span><span class="n">debugger</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">AsciiEscapeLayer</span> <span class="n">escape</span><span class="p">;</span>
-	<span class="n">escape</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">debugger</span><span class="p">);</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">AsciiEscapeLayer</span><span class="w"> </span><span class="n">escape</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">escape</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">debugger</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">CaseInverter</span> <span class="n">ci</span><span class="p">;</span>
-	<span class="n">ci</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">escape</span><span class="p">);</span>
+<span class="w">	</span><span class="n">CaseInverter</span><span class="w"> </span><span class="n">ci</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">ci</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">escape</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">StdioLayer</span> <span class="n">stdio</span><span class="p">;</span>
-	<span class="n">stdio</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">ci</span><span class="p">);</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">StdioLayer</span><span class="w"> </span><span class="n">stdio</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">stdio</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">ci</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Terminal with out-of-band debug messages test</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">);</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;To inject a command, enter `ESC %c &lt;your command&gt; ESC %c`.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-		<span class="n">stored</span><span class="o">::</span><span class="n">TerminalLayer</span><span class="o">::</span><span class="n">EscStart</span><span class="p">,</span>
-		<span class="n">stored</span><span class="o">::</span><span class="n">TerminalLayer</span><span class="o">::</span><span class="n">EscEnd</span><span class="p">);</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;If pressing ESC does not work, try pressing Ctrl+[ instead.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;All other input is considered part of the normal application stream,</span><span class="se">\n</span><span class="s">&quot;</span>
-		<span class="s">&quot;which is case-inverted in this example.</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Terminal with out-of-band debug messages test</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;To inject a command, enter `ESC %c &lt;your command&gt; ESC %c`.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">	       </span><span class="n">stored</span><span class="o">::</span><span class="n">TerminalLayer</span><span class="o">::</span><span class="n">EscStart</span><span class="p">,</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">TerminalLayer</span><span class="o">::</span><span class="n">EscEnd</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;If pressing ESC does not work, try pressing Ctrl+[ instead.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;All other input is considered part of the normal application stream,</span><span class="se">\n</span><span class="s">&quot;</span><span class="w"></span>
+<span class="w">	       </span><span class="s">&quot;which is case-inverted in this example.</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">setvbuf</span><span class="p">(</span><span class="n">stdin</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">_IONBF</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-	<span class="n">setvbuf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">_IONBF</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="w">	</span><span class="n">setvbuf</span><span class="p">(</span><span class="n">stdin</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">_IONBF</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="n">setvbuf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">_IONBF</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">Poller</span> <span class="n">poller</span><span class="p">;</span>
-	<span class="n">poller</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">stdio</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">,</span> <span class="n">stored</span><span class="o">::</span><span class="n">Poller</span><span class="o">::</span><span class="n">PollIn</span><span class="p">);</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Poller</span><span class="w"> </span><span class="n">poller</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">PollableFileLayer</span><span class="w"> </span><span class="n">pollable</span><span class="p">(</span><span class="n">stdio</span><span class="p">,</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Pollable</span><span class="o">::</span><span class="n">PollIn</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">((</span><span class="n">errno</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">poller</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">pollable</span><span class="p">)))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot add pollable&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="k">while</span><span class="p">(</span><span class="n">stdio</span><span class="p">.</span><span class="n">isOpen</span><span class="p">())</span> <span class="p">{</span>
-		<span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">();</span>
-		<span class="n">stdio</span><span class="p">.</span><span class="n">recv</span><span class="p">();</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="k">while</span><span class="p">(</span><span class="n">stdio</span><span class="p">.</span><span class="n">isOpen</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">();</span><span class="w"></span>
+<span class="w">		</span><span class="n">stdio</span><span class="p">.</span><span class="n">recv</span><span class="p">();</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -273,30 +276,30 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_54E">
-<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_54E"></span><span class="target" id="classstored_1_1_example_terminal_base_1aa098cac6a9c5671b42199447455e8c9d"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_54E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_53E">
+<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_53E"></span><span class="target" id="classstored_1_1_example_terminal_base_1a8f6a5eb412ab4ece96bcc65641b68f7a"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_53E" title="Permalink to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_5411ObjectCountE">
-<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_5411ObjectCountE"></span><span class="target" id="classstored_1_1_example_terminal_base_1aa098cac6a9c5671b42199447455e8c9da83a159bb19340eb0eb1dd3c2fe31581b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_5411ObjectCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_5311ObjectCountE">
+<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_5311ObjectCountE"></span><span class="target" id="classstored_1_1_example_terminal_base_1a8f6a5eb412ab4ece96bcc65641b68f7aa83a159bb19340eb0eb1dd3c2fe31581b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_5311ObjectCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of objects in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_5413VariableCountE">
-<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_5413VariableCountE"></span><span class="target" id="classstored_1_1_example_terminal_base_1aa098cac6a9c5671b42199447455e8c9daf4f7e9ae4a24de02d53c248c236177a2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_5413VariableCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_5313VariableCountE">
+<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_5313VariableCountE"></span><span class="target" id="classstored_1_1_example_terminal_base_1a8f6a5eb412ab4ece96bcc65641b68f7aaf4f7e9ae4a24de02d53c248c236177a2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_5313VariableCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of variables in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_5413FunctionCountE">
-<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_5413FunctionCountE"></span><span class="target" id="classstored_1_1_example_terminal_base_1aa098cac6a9c5671b42199447455e8c9da50e8f2f260e387ca51dbdeba4732bddb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_5413FunctionCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_5313FunctionCountE">
+<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_5313FunctionCountE"></span><span class="target" id="classstored_1_1_example_terminal_base_1a8f6a5eb412ab4ece96bcc65641b68f7aa50e8f2f260e387ca51dbdeba4732bddb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_5313FunctionCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of functions in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_5410BufferSizeE">
-<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_5410BufferSizeE"></span><span class="target" id="classstored_1_1_example_terminal_base_1aa098cac6a9c5671b42199447455e8c9da386f0ae12df9785872e3811af5c6dab2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_5410BufferSizeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_5310BufferSizeE">
+<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_5310BufferSizeE"></span><span class="target" id="classstored_1_1_example_terminal_base_1a8f6a5eb412ab4ece96bcc65641b68f7aa386f0ae12df9785872e3811af5c6dab2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_5310BufferSizeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Buffer size. </p>
 </dd></dl>
 
@@ -334,18 +337,6 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBase19ExampleTerminalBaseERR19ExampleTerminalBase">
-<span id="_CPPv3N6stored19ExampleTerminalBase19ExampleTerminalBaseERR19ExampleTerminalBase"></span><span id="_CPPv2N6stored19ExampleTerminalBase19ExampleTerminalBaseERR19ExampleTerminalBase"></span><span id="stored::ExampleTerminalBase::ExampleTerminalBase__ExampleTerminalBaseRR"></span><span class="target" id="classstored_1_1_example_terminal_base_1adb1ae380d7f703dc27ad9ed904d697a1"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleTerminalBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored19ExampleTerminalBase19ExampleTerminalBaseERR19ExampleTerminalBase" title="stored::ExampleTerminalBase::ExampleTerminalBase"><span class="n"><span class="pre">ExampleTerminalBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBase19ExampleTerminalBaseERR19ExampleTerminalBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBase19ExampleTerminalBaseERK19ExampleTerminalBase">
-<span id="_CPPv3N6stored19ExampleTerminalBase19ExampleTerminalBaseERK19ExampleTerminalBase"></span><span id="_CPPv2N6stored19ExampleTerminalBase19ExampleTerminalBaseERK19ExampleTerminalBase"></span><span id="stored::ExampleTerminalBase::ExampleTerminalBase__ExampleTerminalBaseCR"></span><span class="target" id="classstored_1_1_example_terminal_base_1a0d9c91ec4b8d18344ce709d75ccd4f67"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleTerminalBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored19ExampleTerminalBase19ExampleTerminalBaseERK19ExampleTerminalBase" title="stored::ExampleTerminalBase::ExampleTerminalBase"><span class="n"><span class="pre">ExampleTerminalBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBase19ExampleTerminalBaseERK19ExampleTerminalBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored19ExampleTerminalBase11bufferToKeyEPKv">
 <span id="_CPPv3NK6stored19ExampleTerminalBase11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored19ExampleTerminalBase11bufferToKeyEPKv"></span><span id="stored::ExampleTerminalBase::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_terminal_base_1a0f2fac440989384ab04848163f6f2093"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored19ExampleTerminalBase3KeyE" title="stored::ExampleTerminalBase::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bufferToKey</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored19ExampleTerminalBase11bufferToKeyEPKv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Converts a variable’s buffer to a key. </p>
@@ -374,13 +365,13 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored19ExampleTerminalBase14implementationEv">
-<span id="_CPPv3NK6stored19ExampleTerminalBase14implementationEv"></span><span id="_CPPv2NK6stored19ExampleTerminalBase14implementationEv"></span><span id="stored::ExampleTerminalBase::implementationCCE"></span><span class="target" id="classstored_1_1_example_terminal_base_1a70ed48754fd29d2d0c567f6e04e5da82"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored19ExampleTerminalBase14ImplementationE" title="stored::ExampleTerminalBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored19ExampleTerminalBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored19ExampleTerminalBase14implementationEv"></span><span id="_CPPv2NK6stored19ExampleTerminalBase14implementationEv"></span><span id="stored::ExampleTerminalBase::implementationC"></span><span class="target" id="classstored_1_1_example_terminal_base_1a9a37038fee853889e3fff6a50800b76f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored19ExampleTerminalBase14ImplementationE" title="stored::ExampleTerminalBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored19ExampleTerminalBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBase14implementationEv">
-<span id="_CPPv3N6stored19ExampleTerminalBase14implementationEv"></span><span id="_CPPv2N6stored19ExampleTerminalBase14implementationEv"></span><span id="stored::ExampleTerminalBase::implementationCE"></span><span class="target" id="classstored_1_1_example_terminal_base_1a0b5e32901c9090f926f573f0855f6996"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored19ExampleTerminalBase14ImplementationE" title="stored::ExampleTerminalBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored19ExampleTerminalBase14implementationEv"></span><span id="_CPPv2N6stored19ExampleTerminalBase14implementationEv"></span><span id="stored::ExampleTerminalBase::implementation"></span><span class="target" id="classstored_1_1_example_terminal_base_1aa321af2b46637bb43468112b5261d212"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored19ExampleTerminalBase14ImplementationE" title="stored::ExampleTerminalBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
@@ -422,20 +413,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored19ExampleTerminalBase4nameEv">
-<span id="_CPPv3NK6stored19ExampleTerminalBase4nameEv"></span><span id="_CPPv2NK6stored19ExampleTerminalBase4nameEv"></span><span id="stored::ExampleTerminalBase::nameCCE"></span><span class="target" id="classstored_1_1_example_terminal_base_1a8f7c61e7c8c42eeece5cadd361663d38"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored19ExampleTerminalBase4nameEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored19ExampleTerminalBase4nameEv"></span><span id="_CPPv2NK6stored19ExampleTerminalBase4nameEv"></span><span id="stored::ExampleTerminalBase::nameC"></span><span class="target" id="classstored_1_1_example_terminal_base_1ac61d08d0c9e345274b9aff269442d4f4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored19ExampleTerminalBase4nameEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseaSERR19ExampleTerminalBase">
-<span id="_CPPv3N6stored19ExampleTerminalBaseaSERR19ExampleTerminalBase"></span><span id="_CPPv2N6stored19ExampleTerminalBaseaSERR19ExampleTerminalBase"></span><span id="stored::ExampleTerminalBase::assign-operator__ExampleTerminalBaseRR"></span><span class="target" id="classstored_1_1_example_terminal_base_1a68810b7c0247343607051fa6715d78d9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleTerminalBaseE" title="stored::ExampleTerminalBase"><span class="n"><span class="pre">ExampleTerminalBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseaSERR19ExampleTerminalBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseaSERK19ExampleTerminalBase">
-<span id="_CPPv3N6stored19ExampleTerminalBaseaSERK19ExampleTerminalBase"></span><span id="_CPPv2N6stored19ExampleTerminalBaseaSERK19ExampleTerminalBase"></span><span id="stored::ExampleTerminalBase::assign-operator__ExampleTerminalBaseCR"></span><span class="target" id="classstored_1_1_example_terminal_base_1ad8bfbc667e18142f2c0d6775ec3ee12c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored19ExampleTerminalBaseE" title="stored::ExampleTerminalBase"><span class="n"><span class="pre">ExampleTerminalBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseaSERK19ExampleTerminalBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -532,8 +511,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored15ExampleTerminal15ExampleTerminalERR15ExampleTerminal">
-<span id="_CPPv3N6stored15ExampleTerminal15ExampleTerminalERR15ExampleTerminal"></span><span id="_CPPv2N6stored15ExampleTerminal15ExampleTerminalERR15ExampleTerminal"></span><span id="stored::ExampleTerminal::ExampleTerminal__ExampleTerminalRR"></span><span class="target" id="classstored_1_1_example_terminal_1a6815ef118c1bea86537c88ab599a7b33"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleTerminal</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleTerminal15ExampleTerminalERR15ExampleTerminal" title="stored::ExampleTerminal::ExampleTerminal"><span class="n"><span class="pre">ExampleTerminal</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored15ExampleTerminal15ExampleTerminalERR15ExampleTerminal" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
+<span id="_CPPv3N6stored15ExampleTerminal15ExampleTerminalERR15ExampleTerminal"></span><span id="_CPPv2N6stored15ExampleTerminal15ExampleTerminalERR15ExampleTerminal"></span><span id="stored::ExampleTerminal::ExampleTerminal__ExampleTerminalRR"></span><span class="target" id="classstored_1_1_example_terminal_1a3840f9c71d1715068bb09e18a2589ba2"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleTerminal</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleTerminal15ExampleTerminalERR15ExampleTerminal" title="stored::ExampleTerminal::ExampleTerminal"><span class="n"><span class="pre">ExampleTerminal</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored15ExampleTerminal15ExampleTerminalERR15ExampleTerminal" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Default move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -544,7 +523,7 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored15ExampleTerminalaSERR15ExampleTerminal">
-<span id="_CPPv3N6stored15ExampleTerminalaSERR15ExampleTerminal"></span><span id="_CPPv2N6stored15ExampleTerminalaSERR15ExampleTerminal"></span><span id="stored::ExampleTerminal::assign-operator__ExampleTerminalRR"></span><span class="target" id="classstored_1_1_example_terminal_1a9bc72fc371c93882df31cc29a09d146d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleTerminalE" title="stored::ExampleTerminal"><span class="n"><span class="pre">ExampleTerminal</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored15ExampleTerminalaSERR15ExampleTerminal" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored15ExampleTerminalaSERR15ExampleTerminal"></span><span id="_CPPv2N6stored15ExampleTerminalaSERR15ExampleTerminal"></span><span id="stored::ExampleTerminal::assign-operator__ExampleTerminalRR"></span><span class="target" id="classstored_1_1_example_terminal_1afaaa39532d818daf44282f972449cf0b"></span><a class="reference internal" href="#_CPPv4N6stored15ExampleTerminalE" title="stored::ExampleTerminal"><span class="n"><span class="pre">ExampleTerminal</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15ExampleTerminalE" title="stored::ExampleTerminal"><span class="n"><span class="pre">ExampleTerminal</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored15ExampleTerminalaSERR15ExampleTerminal" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 

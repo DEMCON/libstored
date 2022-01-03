@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>components &mdash; libstored 1.0.1-rc documentation</title>
+  <title>components &mdash; libstored 1.1.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.0.1.dev0
+                1.1.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -176,168 +176,175 @@
 <span class="cm"> * C++14 for this.</span>
 <span class="cm"> *</span>
 <span class="cm"> * And don&#39;t crash the helicopter...</span>
-<span class="cm"> */</span>
+<span class="cm"> */</span><span class="w"></span>
 
-<span class="cp">#include</span> <span class="cpf">&quot;ExampleComponents.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ExampleComponents.h&quot;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stored&gt;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;chrono&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;chrono&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
 
-<span class="k">class</span> <span class="nc">ExampleComponentsStore</span> <span class="o">:</span> <span class="k">public</span> <span class="n">STORE_BASE_CLASS</span><span class="p">(</span><span class="n">ExampleComponentsBase</span><span class="p">,</span> <span class="n">ExampleComponentsStore</span><span class="p">)</span> <span class="p">{</span>
-	<span class="n">STORE_CLASS_BODY</span><span class="p">(</span><span class="n">ExampleComponentsBase</span><span class="p">,</span> <span class="n">ExampleComponentsStore</span><span class="p">)</span>
-<span class="k">public</span><span class="o">:</span>
-	<span class="n">ExampleComponentsStore</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExampleComponentsStore</span><span class="w"></span>
+<span class="w">	</span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">STORE_BASE_CLASS</span><span class="p">(</span><span class="n">ExampleComponentsBase</span><span class="p">,</span><span class="w"> </span><span class="n">ExampleComponentsStore</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">STORE_CLASS_BODY</span><span class="p">(</span><span class="n">ExampleComponentsBase</span><span class="p">,</span><span class="w"> </span><span class="n">ExampleComponentsStore</span><span class="p">)</span><span class="w"></span>
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="n">ExampleComponentsStore</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span><span class="w"></span>
 
-	<span class="c1">// You can change the control frequency dynamically.</span>
-	<span class="kt">void</span> <span class="nf">__pid__frequency_Hz</span><span class="p">(</span><span class="kt">bool</span> <span class="n">set</span><span class="p">,</span> <span class="kt">float</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="n">set</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">if</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">isnan</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">||</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mf">0.1f</span><span class="p">)</span>
-				<span class="n">value</span> <span class="o">=</span> <span class="mf">0.1f</span><span class="p">;</span>
+<span class="w">	</span><span class="c1">// You can change the control frequency dynamically.</span>
+<span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="nf">__pid__frequency_Hz</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">set</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="k">if</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">isnan</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">0.1f</span><span class="p">)</span><span class="w"></span>
+<span class="w">				</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.1f</span><span class="p">;</span><span class="w"></span>
 
-			<span class="n">m_frequency_Hz</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
-		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-			<span class="n">value</span> <span class="o">=</span> <span class="n">m_frequency_Hz</span><span class="p">;</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
-<span class="k">private</span><span class="o">:</span>
-	<span class="kt">float</span> <span class="n">m_frequency_Hz</span><span class="p">{</span><span class="mf">5.0</span><span class="p">};</span>
-<span class="p">};</span>
+<span class="w">			</span><span class="n">m_frequency_Hz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_frequency_Hz</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-<span class="k">static</span> <span class="n">ExampleComponentsStore</span> <span class="n">store</span><span class="p">;</span>
+<span class="k">private</span><span class="o">:</span><span class="w"></span>
+<span class="w">	</span><span class="kt">float</span><span class="w"> </span><span class="n">m_frequency_Hz</span><span class="p">{</span><span class="mf">5.0</span><span class="p">};</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 
-<span class="k">static</span> <span class="kt">float</span> <span class="nf">fly</span><span class="p">(</span><span class="kt">float</span> <span class="n">power</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="c1">// Greatly simplified model of a helicopter. The power lets the blades</span>
-	<span class="c1">// spin. If you have enough lift, you can take off.</span>
+<span class="k">static</span><span class="w"> </span><span class="n">ExampleComponentsStore</span><span class="w"> </span><span class="n">store</span><span class="p">;</span><span class="w"></span>
 
-	<span class="kt">float</span> <span class="n">dt</span> <span class="o">=</span> <span class="mf">1.0f</span> <span class="o">/</span> <span class="n">store</span><span class="p">.</span><span class="n">pid__frequency_Hz</span><span class="p">();</span>
-	<span class="kt">float</span> <span class="n">G</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">environment__G_m__s_2</span><span class="p">;</span>
-	<span class="kt">float</span> <span class="n">air_pressure</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">environment__surface_air_pressure_Pa</span><span class="p">;</span>
-	<span class="kt">float</span> <span class="n">air_molar_mass</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">environment__air_molar_mass_kg__mol</span><span class="p">;</span>
-	<span class="kt">float</span> <span class="n">temperature</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">environment__temperature_K</span><span class="p">;</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="nf">fly</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">power</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="c1">// Greatly simplified model of a helicopter. The power lets the blades</span>
+<span class="w">	</span><span class="c1">// spin. If you have enough lift, you can take off.</span>
 
-	<span class="kt">float</span> <span class="n">height</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">helicopter__height_m</span><span class="p">;</span>
-	<span class="kt">float</span> <span class="n">speed</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">helicopter__speed_m__s</span><span class="p">;</span>
+<span class="w">	</span><span class="kt">float</span><span class="w"> </span><span class="n">dt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0f</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">pid__frequency_Hz</span><span class="p">();</span><span class="w"></span>
+<span class="w">	</span><span class="kt">float</span><span class="w"> </span><span class="n">G</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">environment__G_m__s_2</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="kt">float</span><span class="w"> </span><span class="n">air_pressure</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">environment__surface_air_pressure_Pa</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="kt">float</span><span class="w"> </span><span class="n">air_molar_mass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">environment__air_molar_mass_kg__mol</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="kt">float</span><span class="w"> </span><span class="n">temperature</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">environment__temperature_K</span><span class="p">;</span><span class="w"></span>
 
-	<span class="n">power</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="mf">0.f</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="mf">1.f</span><span class="p">,</span> <span class="n">power</span><span class="p">));</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">isnan</span><span class="p">(</span><span class="n">power</span><span class="p">))</span>
-		<span class="n">power</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="w">	</span><span class="kt">float</span><span class="w"> </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">helicopter__height_m</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="kt">float</span><span class="w"> </span><span class="n">speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">helicopter__speed_m__s</span><span class="p">;</span><span class="w"></span>
 
-	<span class="kt">float</span> <span class="n">air_density</span> <span class="o">=</span> <span class="n">air_pressure</span> <span class="o">*</span> <span class="n">std</span><span class="o">::</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">G</span> <span class="o">*</span> <span class="n">height</span> <span class="o">*</span> <span class="n">air_molar_mass</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">temperature</span> <span class="o">*</span> <span class="mf">8.314462618f</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">air_molar_mass</span> <span class="o">*</span> <span class="n">temperature</span><span class="p">);</span>
+<span class="w">	</span><span class="n">power</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="mf">1.f</span><span class="p">,</span><span class="w"> </span><span class="n">power</span><span class="p">));</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">isnan</span><span class="p">(</span><span class="n">power</span><span class="p">))</span><span class="w"></span>
+<span class="w">		</span><span class="n">power</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
 
-	<span class="kt">float</span> <span class="n">lift</span> <span class="o">=</span> <span class="mf">.5f</span> <span class="o">*</span> <span class="n">air_density</span> <span class="o">*</span> <span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">power</span> <span class="o">*</span> <span class="n">store</span><span class="p">.</span><span class="n">helicopter__motor_constant</span><span class="p">,</span> <span class="mf">2.0f</span><span class="p">)</span> <span class="o">*</span> <span class="n">store</span><span class="p">.</span><span class="n">helicopter__lift_coefficient</span><span class="p">;</span>
-	<span class="kt">float</span> <span class="n">drag</span> <span class="o">=</span> <span class="mf">.5f</span> <span class="o">*</span> <span class="n">air_density</span> <span class="o">*</span> <span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span> <span class="mf">2.0f</span><span class="p">)</span> <span class="o">*</span> <span class="n">store</span><span class="p">.</span><span class="n">helicopter__drag_coefficient</span><span class="p">;</span>
-	<span class="kt">float</span> <span class="n">weight</span> <span class="o">=</span> <span class="n">store</span><span class="p">.</span><span class="n">helicopter__mass_kg</span> <span class="o">*</span> <span class="n">G</span><span class="p">;</span>
+<span class="w">	</span><span class="kt">float</span><span class="w"> </span><span class="n">air_density</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">		</span><span class="n">air_pressure</span><span class="w"></span>
+<span class="w">		</span><span class="o">*</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">G</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">height</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">air_molar_mass</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">temperature</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">8.314462618f</span><span class="p">))</span><span class="w"></span>
+<span class="w">		</span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">air_molar_mass</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">temperature</span><span class="p">);</span><span class="w"></span>
 
-	<span class="kt">float</span> <span class="n">F</span> <span class="o">=</span> <span class="n">lift</span> <span class="o">-</span> <span class="n">weight</span><span class="p">;</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">speed</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-		<span class="n">F</span> <span class="o">-=</span> <span class="n">drag</span><span class="p">;</span>
-	<span class="k">else</span>
-		<span class="n">F</span> <span class="o">+=</span> <span class="n">drag</span><span class="p">;</span>
+<span class="w">	</span><span class="kt">float</span><span class="w"> </span><span class="n">lift</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">.5f</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">air_density</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">power</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">helicopter__motor_constant</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0f</span><span class="p">)</span><span class="w"></span>
+<span class="w">		     </span><span class="o">*</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">helicopter__lift_coefficient</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="kt">float</span><span class="w"> </span><span class="n">drag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">.5f</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">air_density</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pow</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0f</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">helicopter__drag_coefficient</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="kt">float</span><span class="w"> </span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">helicopter__mass_kg</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">G</span><span class="p">;</span><span class="w"></span>
 
-	<span class="kt">float</span> <span class="n">accelleration</span> <span class="o">=</span> <span class="n">F</span> <span class="o">/</span> <span class="n">store</span><span class="p">.</span><span class="n">helicopter__mass_kg</span><span class="p">;</span>
+<span class="w">	</span><span class="kt">float</span><span class="w"> </span><span class="n">F</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lift</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">weight</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">speed</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"></span>
+<span class="w">		</span><span class="n">F</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">drag</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="k">else</span><span class="w"></span>
+<span class="w">		</span><span class="n">F</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">drag</span><span class="p">;</span><span class="w"></span>
 
-	<span class="n">speed</span> <span class="o">+=</span> <span class="n">accelleration</span> <span class="o">*</span> <span class="n">dt</span><span class="p">;</span>
-	<span class="n">height</span> <span class="o">+=</span> <span class="n">speed</span> <span class="o">*</span> <span class="n">dt</span><span class="p">;</span>
+<span class="w">	</span><span class="kt">float</span><span class="w"> </span><span class="n">accelleration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">F</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">helicopter__mass_kg</span><span class="p">;</span><span class="w"></span>
 
-	<span class="k">if</span><span class="p">(</span><span class="n">height</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="n">speed</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-			<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; ... Crash ... &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-		<span class="n">height</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-		<span class="n">speed</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="n">speed</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">accelleration</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dt</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">height</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">speed</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dt</span><span class="p">;</span><span class="w"></span>
 
-	<span class="n">store</span><span class="p">.</span><span class="n">helicopter__speed_m__s</span> <span class="o">=</span> <span class="n">speed</span><span class="p">;</span>
-	<span class="n">store</span><span class="p">.</span><span class="n">helicopter__height_m</span> <span class="o">=</span> <span class="n">height</span><span class="p">;</span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">height</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">speed</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"></span>
+<span class="w">			</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; ... Crash ... &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="n">speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="n">std</span><span class="o">::</span><span class="n">cout</span>
-		<span class="o">&lt;&lt;</span> <span class="s">&quot;power throttle: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">power</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;  &quot;</span>
-		<span class="o">&lt;&lt;</span> <span class="s">&quot;height: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">height</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; m  &quot;</span>
-		<span class="o">&lt;&lt;</span> <span class="s">&quot;speed: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">speed</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; m/s  &quot;</span>
-		<span class="o">&lt;&lt;</span> <span class="s">&quot;lift: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">lift</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; N  &quot;</span>
-		<span class="o">&lt;&lt;</span> <span class="s">&quot;drag: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">drag</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; N  &quot;</span>
-		<span class="o">&lt;&lt;</span> <span class="s">&quot;F: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">F</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; N  &quot;</span>
-		<span class="o">&lt;&lt;</span> <span class="s">&quot;acc: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">accelleration</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; m/s^2  &quot;</span>
-		<span class="o">&lt;&lt;</span> <span class="s">&quot;air density: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">air_density</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; kg/m^3&quot;</span>
-		<span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-	<span class="k">return</span> <span class="n">height</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="n">store</span><span class="p">.</span><span class="n">helicopter__speed_m__s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">speed</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">store</span><span class="p">.</span><span class="n">helicopter__height_m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">height</span><span class="p">;</span><span class="w"></span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
-<span class="p">{</span>
-	<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Helicopter flight simulator&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-	<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Try to fly this helicopter, using a poorly-tuned (PID) controller.&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-	<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Connect via ZMQ and set /pid/setpoint to the desired height.&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-	<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;For example, set it to 1000, and see the heli take off.&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-	<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Tune all parameters at will and see what happens.&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">	</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;power throttle: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">power</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  &quot;</span><span class="w"></span>
+<span class="w">		  </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;height: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">height</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; m  &quot;</span><span class="w"></span>
+<span class="w">		  </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;speed: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">speed</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; m/s  &quot;</span><span class="w"></span>
+<span class="w">		  </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;lift: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">lift</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; N  &quot;</span><span class="w"></span>
+<span class="w">		  </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;drag: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">drag</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; N  &quot;</span><span class="w"></span>
+<span class="w">		  </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;F: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">F</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; N  &quot;</span><span class="w"></span>
+<span class="w">		  </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;acc: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">accelleration</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; m/s^2  &quot;</span><span class="w"></span>
+<span class="w">		  </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;air density: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">air_density</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; kg/m^3&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="n">height</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-	<span class="c1">// This is the PID controller.</span>
-	<span class="c1">// This line finds all variables within the /pid/ scope, that are to be</span>
-	<span class="c1">// used by the PID instance. All lookup is done at compile-time. pid_o</span>
-	<span class="c1">// holds a set of flags that can be used to leave out unused (optional)</span>
-	<span class="c1">// parameters.</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Helicopter flight simulator&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Try to fly this helicopter, using a poorly-tuned (PID) controller.&quot;</span><span class="w"></span>
+<span class="w">		  </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Connect via ZMQ and set /pid/setpoint to the desired height.&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;For example, set it to 1000, and see the heli take off.&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Tune all parameters at will and see what happens.&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
 
-	<span class="k">constexpr</span> <span class="k">auto</span> <span class="n">pid_o</span> <span class="o">=</span> <span class="n">stored</span><span class="o">::</span><span class="n">PID</span><span class="o">&lt;</span><span class="n">ExampleComponentsStore</span><span class="o">&gt;::</span><span class="n">objects</span><span class="p">(</span><span class="s">&quot;/pid/&quot;</span><span class="p">);</span>
-	<span class="c1">// Now, instantiate the PID, tailored to the variables in your store.  The</span>
-	<span class="c1">// pid_o is also passed to the constructor to prove the addresses of the</span>
-	<span class="c1">// variables in the store, as found by (constexpr) find() in the store&#39;s</span>
-	<span class="c1">// directory.</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">PID</span><span class="o">&lt;</span><span class="n">ExampleComponentsStore</span><span class="p">,</span> <span class="n">pid_o</span><span class="p">.</span><span class="n">flags</span><span class="p">()</span><span class="o">&gt;</span> <span class="n">pid</span><span class="p">{</span><span class="n">pid_o</span><span class="p">,</span> <span class="n">store</span><span class="p">};</span>
+<span class="w">	</span><span class="c1">// This is the PID controller.</span>
+<span class="w">	</span><span class="c1">// This line finds all variables within the /pid/ scope, that are to be</span>
+<span class="w">	</span><span class="c1">// used by the PID instance. All lookup is done at compile-time. pid_o</span>
+<span class="w">	</span><span class="c1">// holds a set of flags that can be used to leave out unused (optional)</span>
+<span class="w">	</span><span class="c1">// parameters.</span>
 
-	<span class="c1">// Construct the protocol stack.</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span> <span class="n">debugger</span><span class="p">{</span><span class="s">&quot;components&quot;</span><span class="p">};</span>
-	<span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store</span><span class="p">);</span>
+<span class="w">	</span><span class="k">constexpr</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">pid_o</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">PID</span><span class="o">&lt;</span><span class="n">ExampleComponentsStore</span><span class="o">&gt;::</span><span class="n">objects</span><span class="p">(</span><span class="s">&quot;/pid/&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="c1">// Now, instantiate the PID, tailored to the variables in your store.  The</span>
+<span class="w">	</span><span class="c1">// pid_o is also passed to the constructor to prove the addresses of the</span>
+<span class="w">	</span><span class="c1">// variables in the store, as found by (constexpr) find() in the store&#39;s</span>
+<span class="w">	</span><span class="c1">// directory.</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">PID</span><span class="o">&lt;</span><span class="n">ExampleComponentsStore</span><span class="p">,</span><span class="w"> </span><span class="n">pid_o</span><span class="p">.</span><span class="n">flags</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pid</span><span class="p">{</span><span class="n">pid_o</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">};</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">DebugZmqLayer</span> <span class="n">zmqLayer</span><span class="p">;</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">zmqLayer</span><span class="p">.</span><span class="n">lastError</span><span class="p">())</span> <span class="p">{</span>
-		<span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot initialize ZMQ layer&quot;</span><span class="p">);</span>
-		<span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-	<span class="p">}</span>
-	<span class="n">zmqLayer</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">debugger</span><span class="p">);</span>
+<span class="w">	</span><span class="c1">// Construct the protocol stack.</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Debugger</span><span class="w"> </span><span class="n">debugger</span><span class="p">{</span><span class="s">&quot;components&quot;</span><span class="p">};</span><span class="w"></span>
+<span class="w">	</span><span class="n">debugger</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">store</span><span class="p">);</span><span class="w"></span>
 
-	<span class="n">stored</span><span class="o">::</span><span class="n">Poller</span> <span class="n">poller</span><span class="p">;</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">DebugZmqLayer</span><span class="w"> </span><span class="n">zmqLayer</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">zmqLayer</span><span class="p">.</span><span class="n">lastError</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot initialize ZMQ layer&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
+<span class="w">	</span><span class="n">zmqLayer</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">debugger</span><span class="p">);</span><span class="w"></span>
 
-	<span class="k">if</span><span class="p">((</span><span class="n">errno</span> <span class="o">=</span> <span class="n">poller</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">zmqLayer</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">,</span> <span class="n">stored</span><span class="o">::</span><span class="n">Poller</span><span class="o">::</span><span class="n">PollIn</span><span class="p">)))</span> <span class="p">{</span>
-		<span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot add to poller&quot;</span><span class="p">);</span>
-		<span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-	<span class="p">}</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Poller</span><span class="w"> </span><span class="n">poller</span><span class="p">;</span><span class="w"></span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">PollableZmqLayer</span><span class="w"> </span><span class="n">pollableZmq</span><span class="p">(</span><span class="n">zmqLayer</span><span class="p">,</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Pollable</span><span class="o">::</span><span class="n">PollIn</span><span class="p">);</span><span class="w"></span>
 
-	<span class="c1">// Determine polling/control interval.</span>
-	<span class="k">auto</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">((</span><span class="kt">long</span> <span class="kt">long</span><span class="p">)(</span><span class="mf">1.0e3</span><span class="n">f</span> <span class="o">/</span> <span class="n">store</span><span class="p">.</span><span class="n">pid__frequency_Hz</span><span class="p">()));</span>
-	<span class="k">auto</span> <span class="n">t</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">dt</span><span class="p">;</span>
+<span class="w">	</span><span class="k">if</span><span class="p">((</span><span class="n">errno</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">poller</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">pollableZmq</span><span class="p">)))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot add to poller&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
 
-	<span class="k">while</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">auto</span> <span class="n">now</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
-		<span class="k">auto</span> <span class="n">rem</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">duration_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">microseconds</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">now</span><span class="p">);</span>
-		<span class="k">auto</span> <span class="n">rem_us</span> <span class="o">=</span> <span class="n">rem</span><span class="p">.</span><span class="n">count</span><span class="p">();</span>
+<span class="w">	</span><span class="c1">// Determine polling/control interval.</span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">dt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">((</span><span class="kt">long</span><span class="w"> </span><span class="kt">long</span><span class="p">)(</span><span class="mf">1.0e3f</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">pid__frequency_Hz</span><span class="p">()));</span><span class="w"></span>
+<span class="w">	</span><span class="k">auto</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dt</span><span class="p">;</span><span class="w"></span>
 
-		<span class="k">if</span><span class="p">(</span><span class="n">rem_us</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-			<span class="n">t</span> <span class="o">+=</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">((</span><span class="kt">long</span> <span class="kt">long</span><span class="p">)(</span><span class="mf">1.0e3</span><span class="n">f</span> <span class="o">/</span> <span class="n">store</span><span class="p">.</span><span class="n">pid__frequency_Hz</span><span class="p">()));</span>
-			<span class="c1">// This is where the magic takes place.</span>
-			<span class="n">store</span><span class="p">.</span><span class="n">pid__y</span> <span class="o">=</span> <span class="n">fly</span><span class="p">(</span><span class="n">pid</span><span class="p">());</span>
-			<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">pid</span><span class="p">.</span><span class="n">isHealthy</span><span class="p">())</span>
-				<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Warning: numerically unstable&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-			<span class="k">continue</span><span class="p">;</span>
-		<span class="p">}</span>
+<span class="w">	</span><span class="k">while</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">		</span><span class="k">auto</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span><span class="w"></span>
+<span class="w">		</span><span class="k">auto</span><span class="w"> </span><span class="n">rem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">duration_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">microseconds</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">now</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="k">auto</span><span class="w"> </span><span class="n">rem_us</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rem</span><span class="p">.</span><span class="n">count</span><span class="p">();</span><span class="w"></span>
 
-		<span class="k">if</span><span class="p">(</span><span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">((</span><span class="kt">long</span><span class="p">)</span><span class="n">rem_us</span><span class="p">).</span><span class="n">empty</span><span class="p">())</span> <span class="p">{</span>
-			<span class="k">switch</span><span class="p">(</span><span class="n">errno</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">case</span> <span class="nl">EINTR</span><span class="p">:</span>
-			<span class="k">case</span> <span class="nl">EAGAIN</span><span class="p">:</span>
-				<span class="k">break</span><span class="p">;</span>
-			<span class="k">default</span><span class="o">:</span>
-				<span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot poll&quot;</span><span class="p">);</span>
-				<span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-			<span class="p">}</span> <span class="c1">// else timeout</span>
-		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">((</span><span class="n">errno</span> <span class="o">=</span> <span class="n">zmqLayer</span><span class="p">.</span><span class="n">recv</span><span class="p">()))</span> <span class="p">{</span>
-			<span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot recv&quot;</span><span class="p">);</span>
-			<span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
-<span class="p">}</span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">rem_us</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="n">t</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">(</span><span class="w"></span>
+<span class="w">				</span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="kt">long</span><span class="p">)(</span><span class="mf">1.0e3f</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">pid__frequency_Hz</span><span class="p">()));</span><span class="w"></span>
+<span class="w">			</span><span class="c1">// This is where the magic takes place.</span>
+<span class="w">			</span><span class="n">store</span><span class="p">.</span><span class="n">pid__y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fly</span><span class="p">(</span><span class="n">pid</span><span class="p">());</span><span class="w"></span>
+<span class="w">			</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">pid</span><span class="p">.</span><span class="n">isHealthy</span><span class="p">())</span><span class="w"></span>
+<span class="w">				</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Warning: numerically unstable&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="k">continue</span><span class="p">;</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
+
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">((</span><span class="kt">int</span><span class="p">)(</span><span class="n">rem_us</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1000L</span><span class="p">)).</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="k">switch</span><span class="p">(</span><span class="n">errno</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="k">case</span><span class="w"> </span><span class="nl">EINTR</span><span class="p">:</span><span class="w"></span>
+<span class="w">			</span><span class="k">case</span><span class="w"> </span><span class="nl">EAGAIN</span><span class="p">:</span><span class="w"></span>
+<span class="w">				</span><span class="k">break</span><span class="p">;</span><span class="w"></span>
+<span class="w">			</span><span class="k">default</span><span class="o">:</span><span class="w"></span>
+<span class="w">				</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot poll&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">				</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">			</span><span class="p">}</span><span class="w"> </span><span class="c1">// else timeout</span>
+<span class="w">		</span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="p">((</span><span class="n">errno</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zmqLayer</span><span class="p">.</span><span class="n">recv</span><span class="p">()))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">			</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot recv&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">			</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">		</span><span class="p">}</span><span class="w"></span>
+<span class="w">	</span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -554,30 +561,30 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleComponentsBaseUt2_50E">
-<span id="_CPPv3N6stored21ExampleComponentsBaseUt2_50E"></span><span class="target" id="classstored_1_1_example_components_base_1aa6743f4c1c7696e6c9de09b44870d400"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleComponentsBaseUt2_50E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleComponentsBaseUt2_49E">
+<span id="_CPPv3N6stored21ExampleComponentsBaseUt2_49E"></span><span class="target" id="classstored_1_1_example_components_base_1aed7f69207d6a412eef4046dca110a608"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleComponentsBaseUt2_49E" title="Permalink to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleComponentsBaseUt2_5011ObjectCountE">
-<span id="_CPPv3N6stored21ExampleComponentsBaseUt2_5011ObjectCountE"></span><span class="target" id="classstored_1_1_example_components_base_1aa6743f4c1c7696e6c9de09b44870d400adf166fe41680fd0fefe3de290ec56b00"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleComponentsBaseUt2_5011ObjectCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleComponentsBaseUt2_4911ObjectCountE">
+<span id="_CPPv3N6stored21ExampleComponentsBaseUt2_4911ObjectCountE"></span><span class="target" id="classstored_1_1_example_components_base_1aed7f69207d6a412eef4046dca110a608adf166fe41680fd0fefe3de290ec56b00"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleComponentsBaseUt2_4911ObjectCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of objects in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleComponentsBaseUt2_5013VariableCountE">
-<span id="_CPPv3N6stored21ExampleComponentsBaseUt2_5013VariableCountE"></span><span class="target" id="classstored_1_1_example_components_base_1aa6743f4c1c7696e6c9de09b44870d400a5a7f3fcfe45dacc7097bd9d4f2ff3876"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleComponentsBaseUt2_5013VariableCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleComponentsBaseUt2_4913VariableCountE">
+<span id="_CPPv3N6stored21ExampleComponentsBaseUt2_4913VariableCountE"></span><span class="target" id="classstored_1_1_example_components_base_1aed7f69207d6a412eef4046dca110a608a5a7f3fcfe45dacc7097bd9d4f2ff3876"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleComponentsBaseUt2_4913VariableCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of variables in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleComponentsBaseUt2_5013FunctionCountE">
-<span id="_CPPv3N6stored21ExampleComponentsBaseUt2_5013FunctionCountE"></span><span class="target" id="classstored_1_1_example_components_base_1aa6743f4c1c7696e6c9de09b44870d400a0715a13e23b4be5ce6dc02907d528296"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleComponentsBaseUt2_5013FunctionCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleComponentsBaseUt2_4913FunctionCountE">
+<span id="_CPPv3N6stored21ExampleComponentsBaseUt2_4913FunctionCountE"></span><span class="target" id="classstored_1_1_example_components_base_1aed7f69207d6a412eef4046dca110a608a0715a13e23b4be5ce6dc02907d528296"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleComponentsBaseUt2_4913FunctionCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of functions in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleComponentsBaseUt2_5010BufferSizeE">
-<span id="_CPPv3N6stored21ExampleComponentsBaseUt2_5010BufferSizeE"></span><span class="target" id="classstored_1_1_example_components_base_1aa6743f4c1c7696e6c9de09b44870d400a9502ba846d62082c4ea3e922f2cce665"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleComponentsBaseUt2_5010BufferSizeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleComponentsBaseUt2_4910BufferSizeE">
+<span id="_CPPv3N6stored21ExampleComponentsBaseUt2_4910BufferSizeE"></span><span class="target" id="classstored_1_1_example_components_base_1aed7f69207d6a412eef4046dca110a608a9502ba846d62082c4ea3e922f2cce665"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleComponentsBaseUt2_4910BufferSizeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Buffer size. </p>
 </dd></dl>
 
@@ -615,18 +622,6 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleComponentsBase21ExampleComponentsBaseERR21ExampleComponentsBase">
-<span id="_CPPv3N6stored21ExampleComponentsBase21ExampleComponentsBaseERR21ExampleComponentsBase"></span><span id="_CPPv2N6stored21ExampleComponentsBase21ExampleComponentsBaseERR21ExampleComponentsBase"></span><span id="stored::ExampleComponentsBase::ExampleComponentsBase__ExampleComponentsBaseRR"></span><span class="target" id="classstored_1_1_example_components_base_1a0028e8876750ba82a0c36f35b85aaa78"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleComponentsBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored21ExampleComponentsBase21ExampleComponentsBaseERR21ExampleComponentsBase" title="stored::ExampleComponentsBase::ExampleComponentsBase"><span class="n"><span class="pre">ExampleComponentsBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleComponentsBase21ExampleComponentsBaseERR21ExampleComponentsBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleComponentsBase21ExampleComponentsBaseERK21ExampleComponentsBase">
-<span id="_CPPv3N6stored21ExampleComponentsBase21ExampleComponentsBaseERK21ExampleComponentsBase"></span><span id="_CPPv2N6stored21ExampleComponentsBase21ExampleComponentsBaseERK21ExampleComponentsBase"></span><span id="stored::ExampleComponentsBase::ExampleComponentsBase__ExampleComponentsBaseCR"></span><span class="target" id="classstored_1_1_example_components_base_1a174e7ac338200ebaa65294edad3e3fe6"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleComponentsBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored21ExampleComponentsBase21ExampleComponentsBaseERK21ExampleComponentsBase" title="stored::ExampleComponentsBase::ExampleComponentsBase"><span class="n"><span class="pre">ExampleComponentsBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleComponentsBase21ExampleComponentsBaseERK21ExampleComponentsBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleComponentsBase19__pid__frequency_HzEbRf">
 <span id="_CPPv3N6stored21ExampleComponentsBase19__pid__frequency_HzEbRf"></span><span id="_CPPv2N6stored21ExampleComponentsBase19__pid__frequency_HzEbRf"></span><span id="stored::ExampleComponentsBase::__pid__frequency_Hz__b.floatR"></span><span class="target" id="classstored_1_1_example_components_base_1ad52ff292f64ee1e70364f97958458615"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__pid__frequency_Hz</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">set</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored21ExampleComponentsBase19__pid__frequency_HzEbRf" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Callback for pid/frequency (Hz) </p>
@@ -661,13 +656,13 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored21ExampleComponentsBase14implementationEv">
-<span id="_CPPv3NK6stored21ExampleComponentsBase14implementationEv"></span><span id="_CPPv2NK6stored21ExampleComponentsBase14implementationEv"></span><span id="stored::ExampleComponentsBase::implementationCCE"></span><span class="target" id="classstored_1_1_example_components_base_1ab28071f26590ada23a4c2ad00c1ade72"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored21ExampleComponentsBase14ImplementationE" title="stored::ExampleComponentsBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored21ExampleComponentsBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored21ExampleComponentsBase14implementationEv"></span><span id="_CPPv2NK6stored21ExampleComponentsBase14implementationEv"></span><span id="stored::ExampleComponentsBase::implementationC"></span><span class="target" id="classstored_1_1_example_components_base_1a138612d768a6d386249613f7bbcacff8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored21ExampleComponentsBase14ImplementationE" title="stored::ExampleComponentsBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored21ExampleComponentsBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleComponentsBase14implementationEv">
-<span id="_CPPv3N6stored21ExampleComponentsBase14implementationEv"></span><span id="_CPPv2N6stored21ExampleComponentsBase14implementationEv"></span><span id="stored::ExampleComponentsBase::implementationCE"></span><span class="target" id="classstored_1_1_example_components_base_1a64dabfd53f19a71bdf82c1baab20ee38"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored21ExampleComponentsBase14ImplementationE" title="stored::ExampleComponentsBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleComponentsBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored21ExampleComponentsBase14implementationEv"></span><span id="_CPPv2N6stored21ExampleComponentsBase14implementationEv"></span><span id="stored::ExampleComponentsBase::implementation"></span><span class="target" id="classstored_1_1_example_components_base_1a23a38da240354db3e5c614bab5832372"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored21ExampleComponentsBase14ImplementationE" title="stored::ExampleComponentsBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleComponentsBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
@@ -709,20 +704,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored21ExampleComponentsBase4nameEv">
-<span id="_CPPv3NK6stored21ExampleComponentsBase4nameEv"></span><span id="_CPPv2NK6stored21ExampleComponentsBase4nameEv"></span><span id="stored::ExampleComponentsBase::nameCCE"></span><span class="target" id="classstored_1_1_example_components_base_1a56ec01867646fe3e36a6ac0cb0044f96"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored21ExampleComponentsBase4nameEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored21ExampleComponentsBase4nameEv"></span><span id="_CPPv2NK6stored21ExampleComponentsBase4nameEv"></span><span id="stored::ExampleComponentsBase::nameC"></span><span class="target" id="classstored_1_1_example_components_base_1a1c8ba285952c5de51f0ebc34cc65140d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored21ExampleComponentsBase4nameEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleComponentsBaseaSERR21ExampleComponentsBase">
-<span id="_CPPv3N6stored21ExampleComponentsBaseaSERR21ExampleComponentsBase"></span><span id="_CPPv2N6stored21ExampleComponentsBaseaSERR21ExampleComponentsBase"></span><span id="stored::ExampleComponentsBase::assign-operator__ExampleComponentsBaseRR"></span><span class="target" id="classstored_1_1_example_components_base_1a661530ad6820fc6af515695380d8e77f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored21ExampleComponentsBaseE" title="stored::ExampleComponentsBase"><span class="n"><span class="pre">ExampleComponentsBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleComponentsBaseaSERR21ExampleComponentsBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleComponentsBaseaSERK21ExampleComponentsBase">
-<span id="_CPPv3N6stored21ExampleComponentsBaseaSERK21ExampleComponentsBase"></span><span id="_CPPv2N6stored21ExampleComponentsBaseaSERK21ExampleComponentsBase"></span><span id="stored::ExampleComponentsBase::assign-operator__ExampleComponentsBaseCR"></span><span class="target" id="classstored_1_1_example_components_base_1a2e413ce74b90903ec300554098840897"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored21ExampleComponentsBaseE" title="stored::ExampleComponentsBase"><span class="n"><span class="pre">ExampleComponentsBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleComponentsBaseaSERK21ExampleComponentsBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -819,8 +802,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored17ExampleComponents17ExampleComponentsERR17ExampleComponents">
-<span id="_CPPv3N6stored17ExampleComponents17ExampleComponentsERR17ExampleComponents"></span><span id="_CPPv2N6stored17ExampleComponents17ExampleComponentsERR17ExampleComponents"></span><span id="stored::ExampleComponents::ExampleComponents__ExampleComponentsRR"></span><span class="target" id="classstored_1_1_example_components_1af1170bd021c09a97597805147da1738c"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleComponents</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored17ExampleComponents17ExampleComponentsERR17ExampleComponents" title="stored::ExampleComponents::ExampleComponents"><span class="n"><span class="pre">ExampleComponents</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored17ExampleComponents17ExampleComponentsERR17ExampleComponents" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
+<span id="_CPPv3N6stored17ExampleComponents17ExampleComponentsERR17ExampleComponents"></span><span id="_CPPv2N6stored17ExampleComponents17ExampleComponentsERR17ExampleComponents"></span><span id="stored::ExampleComponents::ExampleComponents__ExampleComponentsRR"></span><span class="target" id="classstored_1_1_example_components_1a03b11b7ef83b371ec86eb09e4b40ab53"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleComponents</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored17ExampleComponents17ExampleComponentsERR17ExampleComponents" title="stored::ExampleComponents::ExampleComponents"><span class="n"><span class="pre">ExampleComponents</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored17ExampleComponents17ExampleComponentsERR17ExampleComponents" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Default move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -831,7 +814,7 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored17ExampleComponentsaSERR17ExampleComponents">
-<span id="_CPPv3N6stored17ExampleComponentsaSERR17ExampleComponents"></span><span id="_CPPv2N6stored17ExampleComponentsaSERR17ExampleComponents"></span><span id="stored::ExampleComponents::assign-operator__ExampleComponentsRR"></span><span class="target" id="classstored_1_1_example_components_1a1bc19a59b3cea79a47e1e789eaec8d9e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored17ExampleComponentsE" title="stored::ExampleComponents"><span class="n"><span class="pre">ExampleComponents</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored17ExampleComponentsaSERR17ExampleComponents" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored17ExampleComponentsaSERR17ExampleComponents"></span><span id="_CPPv2N6stored17ExampleComponentsaSERR17ExampleComponents"></span><span id="stored::ExampleComponents::assign-operator__ExampleComponentsRR"></span><span class="target" id="classstored_1_1_example_components_1a83ee70e13d8a9dd2acf17abfa7bbaae1"></span><a class="reference internal" href="#_CPPv4N6stored17ExampleComponentsE" title="stored::ExampleComponents"><span class="n"><span class="pre">ExampleComponents</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored17ExampleComponentsE" title="stored::ExampleComponents"><span class="n"><span class="pre">ExampleComponents</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored17ExampleComponentsaSERR17ExampleComponents" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 

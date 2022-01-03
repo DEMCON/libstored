@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3_scope &mdash; libstored 1.0.1-rc documentation</title>
+  <title>3_scope &mdash; libstored 1.1.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.0.1.dev0
+                1.1.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -141,23 +141,24 @@ double=9.81 gravitational constant (m/s^2)
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
 <span class="cm"> * \file</span>
 <span class="cm"> * \brief Example to show scoping in the store&#39;s objects.</span>
-<span class="cm"> */</span>
+<span class="cm"> */</span><span class="w"></span>
 
-<span class="cp">#include</span> <span class="cpf">&quot;ExampleScope.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ExampleScope.h&quot;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdio&gt;</span><span class="cp"></span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
-<span class="p">{</span>
-	<span class="n">stored</span><span class="o">::</span><span class="n">ExampleScope</span> <span class="n">e</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">ExampleScope</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w"></span>
 
-	<span class="c1">// Notice how the scope separator gets replaced by two underscores.</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;/scope/an int by API: %&quot;</span> <span class="n">PRId8</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">scope__an_int</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;/scope/an int by find(): %&quot;</span> <span class="n">PRId8</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;/scope/an int&quot;</span><span class="p">).</span><span class="n">variable</span><span class="o">&lt;</span><span class="kt">int8_t</span><span class="o">&gt;</span><span class="p">().</span><span class="n">get</span><span class="p">());</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;G = %g</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">gravitational_constant_m__s_2</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+<span class="w">	</span><span class="c1">// Notice how the scope separator gets replaced by two underscores.</span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;/scope/an int by API: %&quot;</span><span class="w"> </span><span class="n">PRId8</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">scope__an_int</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;/scope/an int by find(): %&quot;</span><span class="w"> </span><span class="n">PRId8</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">	       </span><span class="n">e</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;/scope/an int&quot;</span><span class="p">).</span><span class="n">variable</span><span class="o">&lt;</span><span class="kt">int8_t</span><span class="o">&gt;</span><span class="p">().</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;G = %g</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">gravitational_constant_m__s_2</span><span class="p">.</span><span class="n">get</span><span class="p">());</span><span class="w"></span>
 
-	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -268,30 +269,30 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBaseUt2_40E">
-<span id="_CPPv3N6stored16ExampleScopeBaseUt2_40E"></span><span class="target" id="classstored_1_1_example_scope_base_1a2f61403a05ce5efd7cd209ab55c8055f"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBaseUt2_40E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBaseUt2_39E">
+<span id="_CPPv3N6stored16ExampleScopeBaseUt2_39E"></span><span class="target" id="classstored_1_1_example_scope_base_1ad23ee645f4a07a4054ce76b3e952d929"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBaseUt2_39E" title="Permalink to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBaseUt2_4011ObjectCountE">
-<span id="_CPPv3N6stored16ExampleScopeBaseUt2_4011ObjectCountE"></span><span class="target" id="classstored_1_1_example_scope_base_1a2f61403a05ce5efd7cd209ab55c8055fa562a01d736691105601ca8717d2cf40d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBaseUt2_4011ObjectCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBaseUt2_3911ObjectCountE">
+<span id="_CPPv3N6stored16ExampleScopeBaseUt2_3911ObjectCountE"></span><span class="target" id="classstored_1_1_example_scope_base_1ad23ee645f4a07a4054ce76b3e952d929a562a01d736691105601ca8717d2cf40d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBaseUt2_3911ObjectCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of objects in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBaseUt2_4013VariableCountE">
-<span id="_CPPv3N6stored16ExampleScopeBaseUt2_4013VariableCountE"></span><span class="target" id="classstored_1_1_example_scope_base_1a2f61403a05ce5efd7cd209ab55c8055fa96230b3cd9eb5f4875ee4d9311ec450c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBaseUt2_4013VariableCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBaseUt2_3913VariableCountE">
+<span id="_CPPv3N6stored16ExampleScopeBaseUt2_3913VariableCountE"></span><span class="target" id="classstored_1_1_example_scope_base_1ad23ee645f4a07a4054ce76b3e952d929a96230b3cd9eb5f4875ee4d9311ec450c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBaseUt2_3913VariableCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of variables in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBaseUt2_4013FunctionCountE">
-<span id="_CPPv3N6stored16ExampleScopeBaseUt2_4013FunctionCountE"></span><span class="target" id="classstored_1_1_example_scope_base_1a2f61403a05ce5efd7cd209ab55c8055fa92c918bbf2de3d7d9976fe110595033b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBaseUt2_4013FunctionCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBaseUt2_3913FunctionCountE">
+<span id="_CPPv3N6stored16ExampleScopeBaseUt2_3913FunctionCountE"></span><span class="target" id="classstored_1_1_example_scope_base_1ad23ee645f4a07a4054ce76b3e952d929a92c918bbf2de3d7d9976fe110595033b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBaseUt2_3913FunctionCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of functions in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBaseUt2_4010BufferSizeE">
-<span id="_CPPv3N6stored16ExampleScopeBaseUt2_4010BufferSizeE"></span><span class="target" id="classstored_1_1_example_scope_base_1a2f61403a05ce5efd7cd209ab55c8055fa3413902f1cfd8332d34e2f9fdbb8c55d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBaseUt2_4010BufferSizeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBaseUt2_3910BufferSizeE">
+<span id="_CPPv3N6stored16ExampleScopeBaseUt2_3910BufferSizeE"></span><span class="target" id="classstored_1_1_example_scope_base_1ad23ee645f4a07a4054ce76b3e952d929a3413902f1cfd8332d34e2f9fdbb8c55d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBaseUt2_3910BufferSizeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Buffer size. </p>
 </dd></dl>
 
@@ -329,18 +330,6 @@ public:
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBase16ExampleScopeBaseERR16ExampleScopeBase">
-<span id="_CPPv3N6stored16ExampleScopeBase16ExampleScopeBaseERR16ExampleScopeBase"></span><span id="_CPPv2N6stored16ExampleScopeBase16ExampleScopeBaseERR16ExampleScopeBase"></span><span id="stored::ExampleScopeBase::ExampleScopeBase__ExampleScopeBaseRR"></span><span class="target" id="classstored_1_1_example_scope_base_1a0f1d97d26a0cc6f91488a6bbe83f0617"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleScopeBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16ExampleScopeBase16ExampleScopeBaseERR16ExampleScopeBase" title="stored::ExampleScopeBase::ExampleScopeBase"><span class="n"><span class="pre">ExampleScopeBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBase16ExampleScopeBaseERR16ExampleScopeBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBase16ExampleScopeBaseERK16ExampleScopeBase">
-<span id="_CPPv3N6stored16ExampleScopeBase16ExampleScopeBaseERK16ExampleScopeBase"></span><span id="_CPPv2N6stored16ExampleScopeBase16ExampleScopeBaseERK16ExampleScopeBase"></span><span id="stored::ExampleScopeBase::ExampleScopeBase__ExampleScopeBaseCR"></span><span class="target" id="classstored_1_1_example_scope_base_1ac165899ac280b17fdb4eceaa12ed5d92"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleScopeBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16ExampleScopeBase16ExampleScopeBaseERK16ExampleScopeBase" title="stored::ExampleScopeBase::ExampleScopeBase"><span class="n"><span class="pre">ExampleScopeBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBase16ExampleScopeBaseERK16ExampleScopeBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored16ExampleScopeBase11bufferToKeyEPKv">
 <span id="_CPPv3NK6stored16ExampleScopeBase11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored16ExampleScopeBase11bufferToKeyEPKv"></span><span id="stored::ExampleScopeBase::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_scope_base_1abe52f53007665414e68ac63e0b1a7c89"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleScopeBase3KeyE" title="stored::ExampleScopeBase::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bufferToKey</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16ExampleScopeBase11bufferToKeyEPKv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Converts a variable’s buffer to a key. </p>
@@ -369,13 +358,13 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored16ExampleScopeBase14implementationEv">
-<span id="_CPPv3NK6stored16ExampleScopeBase14implementationEv"></span><span id="_CPPv2NK6stored16ExampleScopeBase14implementationEv"></span><span id="stored::ExampleScopeBase::implementationCCE"></span><span class="target" id="classstored_1_1_example_scope_base_1a86c93e2ad927e1f9452239676772997e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleScopeBase14ImplementationE" title="stored::ExampleScopeBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16ExampleScopeBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored16ExampleScopeBase14implementationEv"></span><span id="_CPPv2NK6stored16ExampleScopeBase14implementationEv"></span><span id="stored::ExampleScopeBase::implementationC"></span><span class="target" id="classstored_1_1_example_scope_base_1ad8bf175e127db12754d6ceb09c50de5f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleScopeBase14ImplementationE" title="stored::ExampleScopeBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16ExampleScopeBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBase14implementationEv">
-<span id="_CPPv3N6stored16ExampleScopeBase14implementationEv"></span><span id="_CPPv2N6stored16ExampleScopeBase14implementationEv"></span><span id="stored::ExampleScopeBase::implementationCE"></span><span class="target" id="classstored_1_1_example_scope_base_1af3954ad174dba27d6d00fe136f433d3a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleScopeBase14ImplementationE" title="stored::ExampleScopeBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored16ExampleScopeBase14implementationEv"></span><span id="_CPPv2N6stored16ExampleScopeBase14implementationEv"></span><span id="stored::ExampleScopeBase::implementation"></span><span class="target" id="classstored_1_1_example_scope_base_1ae03d1258c2d488e978f29d464f9410a0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleScopeBase14ImplementationE" title="stored::ExampleScopeBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the reference to the implementation. </p>
 </dd></dl>
 
@@ -417,20 +406,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored16ExampleScopeBase4nameEv">
-<span id="_CPPv3NK6stored16ExampleScopeBase4nameEv"></span><span id="_CPPv2NK6stored16ExampleScopeBase4nameEv"></span><span id="stored::ExampleScopeBase::nameCCE"></span><span class="target" id="classstored_1_1_example_scope_base_1ab3b7ce9ce161475a369c49dbdcd8ef67"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16ExampleScopeBase4nameEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3NK6stored16ExampleScopeBase4nameEv"></span><span id="_CPPv2NK6stored16ExampleScopeBase4nameEv"></span><span id="stored::ExampleScopeBase::nameC"></span><span class="target" id="classstored_1_1_example_scope_base_1af5827dcccb8a80031935bb8f70b31e37"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16ExampleScopeBase4nameEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBaseaSERR16ExampleScopeBase">
-<span id="_CPPv3N6stored16ExampleScopeBaseaSERR16ExampleScopeBase"></span><span id="_CPPv2N6stored16ExampleScopeBaseaSERR16ExampleScopeBase"></span><span id="stored::ExampleScopeBase::assign-operator__ExampleScopeBaseRR"></span><span class="target" id="classstored_1_1_example_scope_base_1adf558d30a97328c0ab79398da71b7df6"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleScopeBaseE" title="stored::ExampleScopeBase"><span class="n"><span class="pre">ExampleScopeBase</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBaseaSERR16ExampleScopeBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBaseaSERK16ExampleScopeBase">
-<span id="_CPPv3N6stored16ExampleScopeBaseaSERK16ExampleScopeBase"></span><span id="_CPPv2N6stored16ExampleScopeBaseaSERK16ExampleScopeBase"></span><span id="stored::ExampleScopeBase::assign-operator__ExampleScopeBaseCR"></span><span class="target" id="classstored_1_1_example_scope_base_1afb5dbb234f4c3a9747dc260a68a0f5fc"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleScopeBaseE" title="stored::ExampleScopeBase"><span class="n"><span class="pre">ExampleScopeBase</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBaseaSERK16ExampleScopeBase" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -533,8 +510,8 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleScope12ExampleScopeERR12ExampleScope">
-<span id="_CPPv3N6stored12ExampleScope12ExampleScopeERR12ExampleScope"></span><span id="_CPPv2N6stored12ExampleScope12ExampleScopeERR12ExampleScope"></span><span id="stored::ExampleScope::ExampleScope__ExampleScopeRR"></span><span class="target" id="classstored_1_1_example_scope_1ab2b17ab65c23c62665820ae0f2a06590"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleScope</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleScope12ExampleScopeERR12ExampleScope" title="stored::ExampleScope::ExampleScope"><span class="n"><span class="pre">ExampleScope</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleScope12ExampleScopeERR12ExampleScope" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move constructor. </p>
+<span id="_CPPv3N6stored12ExampleScope12ExampleScopeERR12ExampleScope"></span><span id="_CPPv2N6stored12ExampleScope12ExampleScopeERR12ExampleScope"></span><span id="stored::ExampleScope::ExampleScope__ExampleScopeRR"></span><span class="target" id="classstored_1_1_example_scope_1a35c2c3d3915761076c50d6eb380fd5cc"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleScope</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleScope12ExampleScopeERR12ExampleScope" title="stored::ExampleScope::ExampleScope"><span class="n"><span class="pre">ExampleScope</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleScope12ExampleScopeERR12ExampleScope" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Default move constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -545,7 +522,7 @@ public:
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleScopeaSERR12ExampleScope">
-<span id="_CPPv3N6stored12ExampleScopeaSERR12ExampleScope"></span><span id="_CPPv2N6stored12ExampleScopeaSERR12ExampleScope"></span><span id="stored::ExampleScope::assign-operator__ExampleScopeRR"></span><span class="target" id="classstored_1_1_example_scope_1aa3f258143ef262aa3d791315cb6cb80c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleScopeE" title="stored::ExampleScope"><span class="n"><span class="pre">ExampleScope</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleScopeaSERR12ExampleScope" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored12ExampleScopeaSERR12ExampleScope"></span><span id="_CPPv2N6stored12ExampleScopeaSERR12ExampleScope"></span><span id="stored::ExampleScope::assign-operator__ExampleScopeRR"></span><span class="target" id="classstored_1_1_example_scope_1af6a8c957408c0fcf40b1af72ddc0984d"></span><a class="reference internal" href="#_CPPv4N6stored12ExampleScopeE" title="stored::ExampleScope"><span class="n"><span class="pre">ExampleScope</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleScopeE" title="stored::ExampleScope"><span class="n"><span class="pre">ExampleScope</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleScopeaSERR12ExampleScope" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Deleted move assignment operator. </p>
 </dd></dl>
 
