@@ -781,8 +781,7 @@ String::type& ArqLayer::pushEncodeQueueRaw()
 
 	if(m_spare.empty()) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-		s = new(allocate<String::type>())
-			String::type;
+		s = new(allocate<String::type>()) String::type;
 
 		m_encodeQueue.
 #if STORED_cplusplus >= 201103L
@@ -2062,12 +2061,10 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 		if(!isValidHandle(
 			   (h = CreateFile(
 				    name_r,
-				    GENERIC_READ | GENERIC_WRITE, // NOLINT(hicpp-signed-bitwise)
-				    FILE_SHARE_READ
-					    | FILE_SHARE_WRITE, // NOLINT(hicpp-signed-bitwise)
+				    GENERIC_READ | GENERIC_WRITE,	// NOLINT
+				    FILE_SHARE_READ | FILE_SHARE_WRITE, // NOLINT
 				    NULL, (DWORD)(isCOM_r ? OPEN_EXISTING : OPEN_ALWAYS),
-				    FILE_ATTRIBUTE_NORMAL
-					    | FILE_FLAG_OVERLAPPED, // NOLINT(hicpp-signed-bitwise)
+				    FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, // NOLINT
 				    NULL)))) {
 			setLastError(EINVAL);
 			return;
@@ -2079,11 +2076,9 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 		if(!isValidHandle(
 			   (h_r = CreateFile(
 				    name_r, GENERIC_READ,
-				    FILE_SHARE_READ
-					    | FILE_SHARE_WRITE, // NOLINT(hicpp-signed-bitwise)
+				    FILE_SHARE_READ | FILE_SHARE_WRITE, // NOLINT
 				    NULL, (DWORD)(isCOM_r ? OPEN_EXISTING : OPEN_ALWAYS),
-				    FILE_ATTRIBUTE_NORMAL
-					    | FILE_FLAG_OVERLAPPED, // NOLINT(hicpp-signed-bitwise)
+				    FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, // NOLINT
 				    NULL)))) {
 			setLastError(EINVAL);
 			return;
@@ -2345,8 +2340,8 @@ error:
  * If the write was incomplete (which is unlikely, but not guaranteed),
  * it will issue a new overlapped write to continue with the rest of the write buffer.
  */
-// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 void FileLayer::writeCompletionRoutine(
+	// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 	DWORD dwErrorCode, DWORD UNUSED_PAR(dwNumberOfBytesTransfered), LPOVERLAPPED lpOverlapped)
 {
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
@@ -3221,11 +3216,10 @@ SerialLayer::SerialLayer(
 	if(!isValidHandle(
 		   (h = CreateFile(
 			    name,
-			    GENERIC_READ | GENERIC_WRITE,	// NOLINT(hicpp-signed-bitwise)
-			    FILE_SHARE_READ | FILE_SHARE_WRITE, // NOLINT(hicpp-signed-bitwise)
+			    GENERIC_READ | GENERIC_WRITE,	// NOLINT
+			    FILE_SHARE_READ | FILE_SHARE_WRITE, // NOLINT
 			    NULL, OPEN_EXISTING,
-			    FILE_ATTRIBUTE_NORMAL
-				    | FILE_FLAG_OVERLAPPED, // NOLINT(hicpp-signed-bitwise)
+			    FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, // NOLINT
 			    NULL)))) {
 		setLastError(EINVAL);
 		return;

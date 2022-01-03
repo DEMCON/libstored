@@ -17,10 +17,11 @@
 #include "ExampleSync1.h"
 #include "ExampleSync2.h"
 
-#include "getopt_mini.h"
 #include <stdlib.h>
 #include <stored>
 #include <string.h>
+
+#include "getopt_mini.h"
 
 static stored::Synchronizer synchronizer;
 
