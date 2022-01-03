@@ -2088,11 +2088,9 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 		if(!isValidHandle(
 			   (h_w = CreateFile(
 				    name_w, GENERIC_WRITE,
-				    FILE_SHARE_READ
-					    | FILE_SHARE_WRITE, // NOLINT(hicpp-signed-bitwise)
+				    FILE_SHARE_READ | FILE_SHARE_WRITE, // NOLINT
 				    NULL, (DWORD)(isCOM_w ? OPEN_EXISTING : OPEN_ALWAYS),
-				    FILE_ATTRIBUTE_NORMAL
-					    | FILE_FLAG_OVERLAPPED, // NOLINT(hicpp-signed-bitwise)
+				    FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, // NOLINT
 				    NULL)))) {
 			setLastError(EINVAL);
 			return;
