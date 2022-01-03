@@ -112,6 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: done
+        run: echo 'Completed all build jobs.'
 
   # If everything is OK, publish documentation
   documentation:
