@@ -131,6 +131,7 @@ StatementMacros:
   - Q_UNUSED
   - QT_REQUIRE_VERSION
   - is_default
+  - zth_fiber
 TabWidth:        8
 UseCRLF:         false
 UseTab:          Always

@@ -36,5 +36,7 @@ config Debug nodev noheatshrink test
 config Release noheatshrink test
 config Debug nodev noexamples test
 config Release nodev noexamples test
+config Debug nodev san zth test
+config Release nodev zth test
 
 popd > /dev/null

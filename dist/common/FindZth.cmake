@@ -21,9 +21,9 @@ if(TARGET libzth)
 	# Target already exists.
 	set(Zth_FOUND 1)
 	message(STATUS "Skipped looking for Zth; target already exists")
+else()
+	find_package(Zth CONFIG)
 endif()
-
-find_package(Zth CONFIG)
 
 if(NOT Zth_FOUND AND Zth_FIND_REQUIRED)
 	message(STATUS "Cannot find installed Zth. Building from source.")
