@@ -18,10 +18,10 @@ jobs:
         cxx: [C++03, C++11, C++14, C++17]
         zmq: [zmq, nozmq]
         include:
-          gcc: 10
-          cxx: C++17
-          zmq: zmq
-          zth: zth
+          - gcc: 10
+            cxx: C++17
+            zmq: zmq
+            zth: zth
     runs-on: ubuntu-latest
     env:
       CC: gcc-${{matrix.gcc}}
