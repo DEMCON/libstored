@@ -289,7 +289,7 @@ int ZmqLayer::recv(long timeout_us)
 void ZmqLayer::encode(void const* buffer, size_t len, bool last)
 {
 	// First try, assume we are writable.
-	// NOLINTNEXTLINE(hicpp-signed-bitwise)
+	// NOLINTNEXTLINE(hicpp-signed-bitwise,cppcoreguidelines-pro-type-cstyle-cast)
 	if(likely(zmq_send(m_socket, (void*)buffer, len, ZMQ_DONTWAIT | (last ? 0 : ZMQ_SNDMORE))
 		  != -1)) {
 		// Success.
@@ -301,6 +301,7 @@ void ZmqLayer::encode(void const* buffer, size_t len, bool last)
 	} else {
 		// Socket should be writable now. This is a blocking call,
 		// but it should not block anymore.
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 		if(zmq_send(m_socket, (void*)buffer, len, last ? 0 : ZMQ_SNDMORE) != -1)
 			// Some error.
 			setLastError(errno);
