@@ -12,7 +12,7 @@ heatshrink2
 matplotlib>=3.5.0
 
 # Packages for documentation.
-Sphinx<4.1.0
+Sphinx
 sphinx-rtd-theme
 sphinxcontrib-plantuml
 breathe
