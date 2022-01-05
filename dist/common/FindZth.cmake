@@ -99,7 +99,10 @@ if(NOT Zth_FOUND AND Zth_FIND_REQUIRED)
 		# during the build stage, while we need the information when
 		# configuring...
 		target_compile_options(libzth INTERFACE -DZTH_THREADS=1)
-		target_link_libraries(libzth INTERFACE pthread rt dl)
+		target_link_libraries(libzth INTERFACE pthread)
+		if(UNIX)
+			target_link_libraries(libzth INTERFACE rt dl)
+		endif()
 		if(NOT APPLE)
 			CHECK_INCLUDE_FILE_CXX("libunwind.h" ZTH_HAVE_LIBUNWIND)
 			if(ZTH_HAVE_LIBUNWIND)
