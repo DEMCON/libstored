@@ -156,6 +156,12 @@ typedef SSIZE_T ssize_t;
 #		pragma warning(push)
 #		pragma warning(disable : 4668)
 #	endif
+#	ifndef WINVER
+#		define WINVER 0x0501
+#	endif
+#	ifndef _WIN32_WINNT
+#		define _WIN32_WINNT WINVER
+#	endif
 #	include <winsock2.h>
 // Include order is important.
 #	include <windows.h>
