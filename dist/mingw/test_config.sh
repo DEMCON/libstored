@@ -24,5 +24,6 @@ config Debug dev
 config Debug nodev
 config Release nodev nozmq
 config Release
+config Release nodev zth
 
 popd > /dev/null

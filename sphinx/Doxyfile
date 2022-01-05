@@ -2063,6 +2063,7 @@ PREDEFINED             = DOXYGEN \
 			 STORED_HAVE_ZMQ \
 			 STORED_HAVE_HEATSHRINK \
 			 STORED_DRAFT_API \
+			 zth_fiber= \
 
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this

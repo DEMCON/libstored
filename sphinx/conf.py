@@ -50,7 +50,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'libstored'
-copyright = '2020-2021, Jochem Rutgers'
+copyright = '2020-2022, Jochem Rutgers'
 author = 'Jochem Rutgers'
 
 # The version info for the project you're documenting, acts as replacement for
