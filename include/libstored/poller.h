@@ -48,7 +48,7 @@
 
 #	ifdef STORED_HAVE_ZTH
 #		include <zth>
-#		if ZTH_VERSION_NUM < 10000
+#		if ZTH_VERSION_MAJOR < 1
 #			error Unsupport Zth version.
 #		endif
 #	endif
