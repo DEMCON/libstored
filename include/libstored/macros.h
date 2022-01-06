@@ -162,7 +162,7 @@ typedef SSIZE_T ssize_t;
 #		define _WIN32_WINNT WINVER
 #	endif
 #	ifdef STORED_COMPILER_MSVC
-#		pragma warning(disable : 5031)
+#		pragma warning(disable : 5031 5032)
 #		pragma warning(push)
 #		pragma warning(disable : 4668)
 #	endif
@@ -171,7 +171,7 @@ typedef SSIZE_T ssize_t;
 #	include <windows.h>
 #	ifdef STORED_COMPILER_MSVC
 #		pragma warning(pop)
-#		pragma warning(default : 5031)
+#		pragma warning(default : 5031 5032)
 #	endif
 #elif defined(__linux__)
 #	define STORED_OS_LINUX 1
