@@ -99,7 +99,7 @@
 #		include <zmq.h>
 #	endif
 
-#	if !defined(STORED_HAVE_ZTH) && STORED_VERSION_NUM < 20000
+#	if !defined(STORED_HAVE_ZTH) && STORED_VERSION_NUM < 20000 && !defined(DOXYGEN)
 #		define STORED_POLL_OLD
 #	endif
 
@@ -278,7 +278,11 @@ template <typename F = Pollable::Events (*)(Pollable const&)>
 class PollableCallback final : public PollableCallbackBase {
 	STORED_CLASS_NEW_DELETE(PollableCallback)
 public:
+#	if STORED_cplusplus >= 201103L
+	using f_type = Events(Pollable const&);
+#	else
 	typedef Events(f_type)(Pollable const&);
+#	endif
 
 	PollableCallback(F f_, Events const& e, void* user = nullptr)
 		: PollableCallbackBase(e, user)
@@ -328,6 +332,11 @@ PollableCallback<F> pollable(F const& f, Pollable::Events const& events, void* u
 }
 #	endif
 
+/*!
+ * \brief Poll a file descriptor.
+ *
+ * Do not use in Windows, as its file descriptors are not pollable.
+ */
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class PollableFd final : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableFd)
@@ -347,6 +356,9 @@ inline PollableFd pollable(int fd, Pollable::Events const& events, void* user = 
 	return PollableFd(fd, events, user);
 }
 
+/*!
+ * \brief Poll a #stored::PolledFileLayer.
+ */
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class PollableFileLayer final : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableFileLayer)
@@ -368,7 +380,10 @@ pollable(PolledFileLayer& l, Pollable::Events const& events, void* user = nullpt
 	return PollableFileLayer(l, events, user);
 }
 
-#	ifdef STORED_OS_WINDOWS
+#	if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
+/*!
+ * \brief Poll a Windows SOCKET.
+ */
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class PollableSocket final : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableSocket)
@@ -388,6 +403,11 @@ inline PollableSocket pollable(SOCKET s, Pollable::Events const& events, void* u
 	return PollableSocket(s, events, user);
 }
 
+/*!
+ * \brief Poll a Windows HANDLE.
+ *
+ * Not all types of HANDLES are supported. Refer to \c WaitForSingleObject().
+ */
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class PollableHandle final : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableHandle)
@@ -411,6 +431,9 @@ inline PollableHandle pollable(HANDLE h, Pollable::Events const& events, void* u
 #	endif // STORED_OS_WINDOWS
 
 #	ifdef STORED_HAVE_ZMQ
+/*!
+ * \brief Poll a ZeroMQ socket.
+ */
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class PollableZmqSocket : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableZmqSocket)
@@ -430,6 +453,9 @@ inline PollableZmqSocket pollable(void* s, Pollable::Events const& events, void*
 	return PollableZmqSocket(s, events, user);
 }
 
+/*!
+ * \brief Poll a #stored::ZmqLayer.
+ */
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class PollableZmqLayer : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableZmqLayer)
@@ -761,6 +787,7 @@ protected:
 	using typename PollerImpl::PollItem;
 	using typename PollerImpl::PollItemList;
 
+public:
 #		ifdef STORED_POLL_OLD
 	struct OldResult {
 		Pollable::Events_value events;
@@ -784,6 +811,7 @@ protected:
 	typedef typename Vector<Pollable*>::type Result;
 #		endif
 
+protected:
 	InheritablePoller() is_default
 
 	/*!
