@@ -235,41 +235,31 @@ Debugger instance. The connect to this C++ bridge.
 Example
 ```````
 
-The host tools to debug your application are written in python, as the
-``libstored`` package, and are located the ``python`` directory. You can run
-the example below by running python from the ``python`` directory, but you can
-also install the ``libstored`` package on your system. To do this, execute the
-``pylibstored-install`` cmake target, such as:
-
-.. code:: bash
-
-   cd build
-   ninja pylibstored-install
-
-This builds a wheel from the ``python`` directory and installs it locally using
-``pip``.  Now you can just fire up python and do ``import libstored``.
+The host tools to debug your application are written in Python, based on
+PySide6. The ``libstored`` wheel file from the ``python`` directory is by
+default installed in the venv, located in ``dist/.venv``.
 
 To get a grasp how debugging feels like, try the following.
 
-- Build the examples, as discussed above.
-- If you use Windows, execute ``dist/win32/env.cmd`` to set your environment
-  properly.  In the instructions below, use ``python`` instead of ``python3``.
-- Run your favorite ``lognplot`` instance, e.g., by running ``python3 -m lognplot``.
-- Run ``examples/zmqserver/zmqserver``. This starts an application with a store
-  with all kinds of object types, and provides a ZeroMQ server interface for
-  debugging.
-- Run ``python3 -m libstored.gui -l`` within the ``python`` directory. This GUI
-  connects to both the ``zmqserver`` application via ZeroMQ, and to the
-  ``lognplot`` instance.
-- The GUI window will pop up and show the objects of the ``zmqserver`` example.
-  If polling is enabled of one of the objects, the values are forwarded to
-  ``lognplot``.
+1. Build the examples, as discussed above.
+2. If you use Windows, execute ``dist\win32\env.cmd`` to set your environment
+   properly.  In the instructions below, use ``python`` instead of ``python3``.
+3. Run ``examples/zmqserver/zmqserver``. This starts an application with a
+   store with all kinds of object, and provides a ZeroMQ server interface for
+   debugging.
+4. Activate the Python venv by running ``dist\.venv\Scripts\activate.bat`` on
+   Windows, or ``source dist/.venv/bin/activate`` on Linux or macOS.
+5. Run ``python3 -m libstored.gui``. This GUI connects to the ``zmqserver``
+   application via ZeroMQ.
+6. The GUI window will pop up and shows the objects of the ``zmqserver``
+   example.  To add a signal to the plot, first enable the polling checkbox,
+   and then enable the plot checkbox.
 
 The structure of this setup is::
 
-   +---------------+        +----------+
-   | libstored.gui | -----> | lognplot |
-   +---------------+        +----------+
+   +---------------+        +------------+
+   | libstored.gui | -----> | matplotlib |
+   +---------------+        +------------+
          |
          | ZeroMQ REQ/REP channel
          |
@@ -280,18 +270,18 @@ The structure of this setup is::
 .. image:: examples/zmqserver/zmqserver_screenshot.png
    :alt: zmqserver debugging screenshot
 
-The Embedded Debugger client connects via ZeroMQ.
-If you application does not have it, you must implement is somehow.
-The ``examples/terminal/terminal`` application could be debugged as follows:
+The Embedded Debugger client connects via ZeroMQ.  If your application does not
+have it, you must implement it somehow.  The ``examples/terminal/terminal``
+application could be debugged as follows:
 
-- Run ``python3 -m libstored.wrapper.stdio
-  ../build/examples/terminal/terminal`` from the ``python`` directory.  This
-  starts the ``terminal`` example, and extracts escaped debugger frames from
-  ``stdout``, which are forwarded to a ZeroMQ interface.
-- Connect a client, such as ``python3 -m libstored.gui``.  Instead of using
-  ``lognplot``, the GUI can also write all auto-refreshed data to a CSV file
-  when the ``-f log.csv`` is passed on the command line. Then, Kst_ can be used
-  for live viewing the file.
+1. Run ``python3 -m libstored.wrapper.stdio build/deploy/bin/terminal`` from
+   the activated venv (see above).  This starts the ``terminal`` example, and
+   extracts escaped debugger frames from ``stdout``, which are forwarded to a
+   ZeroMQ interface.
+2. Connect a client, such as ``python3 -m libstored.gui``.  Instead of using
+   ``matplotlib``, the GUI can also write all auto-refreshed data to a CSV file
+   when the ``-f log.csv`` is passed on the command line. Then, Kst_ can be
+   used for live viewing the file.
 
 The structure of this setup is::
 
@@ -418,7 +408,7 @@ the project. This does effectively:
 
    mkdir build
    cd build
-   cmake ../../.. -DCMAKE_INSTALL_PREFIX=dist
+   cmake ../../.. -DCMAKE_INSTALL_PREFIX=deploy
    cmake --build .
    cmake --build . --target install
 
@@ -444,53 +434,73 @@ How to integrate in your build
 Building libstored on itself is not too interesting, it is about how it can
 generate stuff for you.  This is how to integrate it in your project:
 
-- Add libstored to your source repository, for example as a submodule.
-- Run ``dist/<platform>/bootstrap`` in the libstored directory once to install
-  all dependencies.
-- Include libstored to your cmake project. For example:
+1. Add libstored to your source repository, for example as a submodule.
+2. Run ``dist/<platform>/bootstrap`` in the libstored directory once to install
+   all dependencies.
+3. Include libstored in your cmake project. For example:
 
-.. code:: cmake
+   .. code:: cmake
 
       set(LIBSTORED_EXAMPLES OFF CACHE BOOL "Disable libstored examples" FORCE)
       set(LIBSTORED_TESTS OFF CACHE BOOL "Disable libstored tests" FORCE)
       set(LIBSTORED_DOCUMENTATION OFF CACHE BOOL "Disable libstored documentation" FORCE)
       add_subdirectory(libstored)
 
-- Optional: install ``dist/common/st.vim`` in ``$HOME/.vim/syntax`` to have
-  proper syntax highlighting in vim.
-- Add some store definition file to your project, let's say ``MyStore.st``.
-  Assume you have a target ``app`` (which can be any type of cmake target), which
-  is going to use ``MyStore.st``, generate all required files. This will generate
-  the sources in the ``libstored`` subdirectory of the current source directory,
-  a library named ``app-libstored``, and set all the dependencies right:
+   ZeroMQ support is by default enabled, when the target platform supports it.
+   To disable it, add the following line before ``add_subdirector()`` above:
 
-.. code:: cmake
+   .. code:: cmake
+
+      set(LIBSTORED_HAVE_LIBZMQ OFF CACHE BOOL "Disable ZeroMQ" FORCE)
+
+   Zth_ support is by default disabled. When enabled, it will build Zth from
+   source when not found on your system. Using gcc is required for Zth. To
+   enable it, add:
+
+   .. code:: cmake
+
+      set(LIBSTORED_HAVE_ZTH ON CACHE BOOL "Enable Zth" FORCE)
+
+4. Optional: install ``dist/common/st.vim`` in ``$HOME/.vim/syntax`` to have
+   proper syntax highlighting in vim.
+5. Add some store definition file to your project, let's say ``MyStore.st``.
+   Assume you have a target ``app`` (which can be any type of cmake target),
+   which is going to use ``MyStore.st``, generate all required files. This will
+   generate the sources in the ``libstored`` subdirectory of the current source
+   directory, a library named ``app-libstored``, and set all the dependencies
+   right:
+
+   .. code:: cmake
 
       add_executable(app main.cpp)
-      libstored_generate(app MyStore.st)
+      libstored_generate(TARGET app STORES MyStore.st)
 
-- To override the default configuration, provide a ``stored_config.h`` file.
-  Add this to the build by either setting ``LIBSTORED_PREPEND_INCLUDE_DIRECTORIES``
-  to a space-separated list with application-specific include directories,
-  containing the header file, or by setting the include directory using:
+6. To override the default configuration, provide a ``stored_config.h`` file.
+   Add this to the build by either setting
+   ``LIBSTORED_PREPEND_INCLUDE_DIRECTORIES`` to a space-separated list with
+   application-specific include directories, containing the header file, or by
+   setting the include directory using:
 
-.. code:: cmake
+   .. code:: cmake
 
       target_include_directories(app-libstored BEFORE PUBLIC path/to/my/include)
 
-- Now, build your ``app``. The generated libstored library is automatically
-  built.
-- If you want to use the VHDL store in your Vivado project, create a project
-  for your FPGA, and source the generated file ``rtl/vivado.tcl``. This will add
-  all relevant files to your project. Afterwards, just save the project as
-  usually; the ``rtl/vivado.tcl`` file is not needed anymore.
-- If you ran the ``install`` target, a
-  ``share/cmake/libstored/libstored.cmake`` file is generated.  If you include
-  this file in another cmake project, you import all generated libraries as
-  static libraries. See the ``examples/installed`` example how to do this.
+7. Now, build your ``app``. The generated libstored library is automatically
+   built.
+8. If you want to use the VHDL store in your Vivado project, create a project
+   for your FPGA, and source the generated file ``rtl/vivado.tcl``. This will
+   add all relevant files to your project. Afterwards, just save the project as
+   usually; the ``rtl/vivado.tcl`` file is not needed anymore.
+9. If you ran the ``install`` target, a
+   ``share/cmake/libstored/libstored.cmake`` file is generated.  If you
+   include this file in another cmake project, you import all generated
+   libraries as static libraries. See the ``examples/installed`` example how
+   to do this.
 
 Check out the examples of libstored, which are all independent applications
 with their own generated store.
+
+.. _Zth: https://github.com/jhrutgers/zth
 
 
 License
