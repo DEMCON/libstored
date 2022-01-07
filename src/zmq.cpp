@@ -74,8 +74,9 @@ ZmqLayer::~ZmqLayer()
 
 	zmq_close(m_socket);
 
-	if(m_contextCleanup)
+	if(m_contextCleanup) {
 		zmq_ctx_term(context());
+	}
 }
 
 /*!
@@ -288,8 +289,9 @@ int ZmqLayer::recv(long timeout_us)
 void ZmqLayer::encode(void const* buffer, size_t len, bool last)
 {
 	// First try, assume we are writable.
-	// NOLINTNEXTLINE(hicpp-signed-bitwise)
-	if(likely(zmq_send(m_socket, buffer, len, ZMQ_DONTWAIT | (last ? 0 : ZMQ_SNDMORE)) != -1)) {
+	// NOLINTNEXTLINE(hicpp-signed-bitwise,cppcoreguidelines-pro-type-cstyle-cast)
+	if(likely(zmq_send(m_socket, (void*)buffer, len, ZMQ_DONTWAIT | (last ? 0 : ZMQ_SNDMORE))
+		  != -1)) {
 		// Success.
 		setLastError(0);
 	} else if(setLastError(errno) != EAGAIN) { // NOLINT(bugprone-branch-clone)
@@ -299,7 +301,8 @@ void ZmqLayer::encode(void const* buffer, size_t len, bool last)
 	} else {
 		// Socket should be writable now. This is a blocking call,
 		// but it should not block anymore.
-		if(zmq_send(m_socket, buffer, len, last ? 0 : ZMQ_SNDMORE) != -1)
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+		if(zmq_send(m_socket, (void*)buffer, len, last ? 0 : ZMQ_SNDMORE) != -1)
 			// Some error.
 			setLastError(errno);
 		else

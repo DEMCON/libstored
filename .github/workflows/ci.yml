@@ -17,6 +17,11 @@ jobs:
         gcc: [9, 10]
         cxx: [C++03, C++11, C++14, C++17]
         zmq: [zmq, nozmq]
+        include:
+          - gcc: 10
+            cxx: C++17
+            zmq: zmq
+            zth: zth
     runs-on: ubuntu-latest
     env:
       CC: gcc-${{matrix.gcc}}
@@ -29,11 +34,11 @@ jobs:
           dist/ubuntu/bootstrap.sh
           sudo apt install clang-tidy clang libegl1
       - name: build Debug
-        run: dist/ubuntu/build.sh Debug dev ${{matrix.cxx}} ${{matrix.zmq}} test
+        run: dist/ubuntu/build.sh Debug dev ${{matrix.cxx}} ${{matrix.zmq}} ${{matrix.zth}} test
       - name: build Release
         run: |
           rm -rf dist/ubuntu/build
-          dist/ubuntu/build.sh Release ${{matrix.cxx}} ${{matrix.zmq}} test
+          dist/ubuntu/build.sh Release ${{matrix.cxx}} ${{matrix.zmq}} ${{matrix.zth}} test
 
   build-ubuntu-prev:
     runs-on: ubuntu-18.04
@@ -64,17 +69,22 @@ jobs:
             cxx: C++03
           - compiler: msvc
             cxx: C++11
+        include:
+          - compiler: gcc
+            cxx: C++17
+            zmq: zmq
+            zth: zth
     steps:
       - name: checkout
         uses: actions/checkout@v2
       - name: bootstrap
         run: dist\win32\bootstrap.cmd
       - name: build Debug
-        run: dist\win32\build.cmd Debug dev ${{matrix.compiler}} ${{matrix.cxx}} ${{matrix.zmq}} test
+        run: dist\win32\build.cmd Debug dev ${{matrix.compiler}} ${{matrix.cxx}} ${{matrix.zmq}} ${{matrix.zth}} test
       - name: build Release
         run: |
           Remove-Item -path dist\win32\build -recurse -force
-          dist\win32\build.cmd Release ${{matrix.compiler}} ${{matrix.cxx}} ${{matrix.zmq}} test
+          dist\win32\build.cmd Release ${{matrix.compiler}} ${{matrix.cxx}} ${{matrix.zmq}} ${{matrix.zth}} test
 
   build-mac:
     runs-on: macos-latest
@@ -106,6 +116,14 @@ jobs:
           rm -rf dist/mingw/build
           dist/mingw/build.sh Release
 
+  # Dummy job that depends on all other build-* jobs.
+  build-all:
+    needs: [build-ubuntu, build-ubuntu-prev, build-windows, build-mac, build-mingw]
+    runs-on: ubuntu-latest
+    steps:
+      - name: done
+        run: echo 'Completed all build jobs.'
+
   # If everything is OK, publish documentation
   documentation:
     if: github.ref == 'refs/heads/master'
@@ -119,7 +137,7 @@ jobs:
           dist/ubuntu/bootstrap.sh
           sudo apt install libegl1
       - name: build
-        run: dist/ubuntu/build.sh -DLIBSTORED_DOCUMENTATION=ON -DLIBSTORED_PYLIBSTORED=ON
+        run: dist/ubuntu/build.sh -DLIBSTORED_DOCUMENTATION=ON -DLIBSTORED_PYLIBSTORED=ON -DLIBSTORED_HAVE_ZTH=ON
       - name: deploy
         uses: peaceiris/actions-gh-pages@v3
         with:

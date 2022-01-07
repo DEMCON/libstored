@@ -125,6 +125,24 @@ option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" ${LIBSTORED_ENABLE_A
 option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" ${LIBSTORED_ENABLE_LSAN_DEFAULT})
 option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" ${LIBSTORED_ENABLE_UBSAN_DEFAULT})
 
+option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
+
+if(LIBSTORED_HAVE_HEATSHRINK)
+	find_package(Heatshrink REQUIRED)
+endif()
+
+option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
+
+if(LIBSTORED_HAVE_LIBZMQ)
+	find_package(ZeroMQ REQUIRED)
+endif()
+
+option(LIBSTORED_HAVE_ZTH "Use Zth" OFF)
+
+if(LIBSTORED_HAVE_ZTH)
+	find_package(Zth REQUIRED)
+endif()
+
 set(LIBSTORED_CLANG_TIDY_DEFAULT OFF)
 
 if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
@@ -134,7 +152,9 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 		# We must compile for C++11 or later...
 		(NOT CMAKE_CXX_STANDARD OR NOT CMAKE_CXX_STANDARD EQUAL 98) AND
 		# ...except when running in Windows, which only supports C++14 or later.
-		(NOT WIN32 OR NOT CMAKE_CXX_STANDARD EQUAL 11)
+		(NOT WIN32 OR NOT CMAKE_CXX_STANDARD EQUAL 11) AND
+		# ...or Zth is used, which is not compatible with the MSVC headers, which are used by clang-tidy.
+		(NOT WIN32 OR NOT LIBSTORED_HAVE_ZTH)
 	)
 		# It seems that if clang is not installed, clang-tidy doesn't work properly.
 		find_program(CLANG_EXE NAMES "clang" DOC "Path to clang executable")
@@ -167,18 +187,6 @@ endif()
 
 set(LIBSTORED_SOURCE_DIR ${PROJECT_SOURCE_DIR} CACHE STRING "Path to the libstored sources" FORCE)
 list(APPEND CMAKE_MODULE_PATH ${LIBSTORED_SOURCE_DIR}/cmake)
-
-option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
-
-if(LIBSTORED_HAVE_HEATSHRINK)
-	find_package(Heatshrink)
-endif()
-
-option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
-
-if(LIBSTORED_HAVE_LIBZMQ)
-	find_package(ZeroMQ)
-endif()
 
 add_subdirectory(extern)
 

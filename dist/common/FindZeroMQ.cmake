@@ -46,11 +46,20 @@ if(NOT TARGET libzmq AND NOT CMAKE_CROSSCOMPILING)
 endif()
 
 if(NOT TARGET libzmq)
+	# Try previously built and installed
+	unset(ZeroMQ_FOUND CACHE)
+	find_package(ZeroMQ CONFIG)
+	if(ZeroMQ_FOUND)
+		message(STATUS "Found ZeroMQ using cmake")
+	endif()
+endif()
+
+if(NOT TARGET libzmq)
 	# Build from source
 	message(STATUS "Building ZeroMQ from source")
 	set(ZeroMQ_FOUND 1)
 
-	set(libzmq_flags -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPES=Release
+	set(libzmq_flags -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
 		-DCMAKE_GENERATOR=${CMAKE_GENERATOR}
 		-DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}
 		-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
@@ -77,8 +86,13 @@ if(NOT TARGET libzmq)
 				set(MSVC_TOOLSET "")
 			endif()
 			set(dllname "${MSVC_TOOLSET}-mt")
-			set(_libzmq_loc ${CMAKE_INSTALL_PREFIX}/bin/libzmq${dllname}-4_3_1.dll)
-			set(_libzmq_implib ${CMAKE_INSTALL_PREFIX}/lib/libzmq${dllname}-4_3_1.lib)
+
+			if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+				set(dllname "${dllname}-gd")
+			endif()
+
+			set(_libzmq_loc ${CMAKE_INSTALL_PREFIX}/bin/libzmq${dllname}-4_3_4.dll)
+			set(_libzmq_implib ${CMAKE_INSTALL_PREFIX}/lib/libzmq${dllname}-4_3_4.lib)
 		else()
 			set(_libzmq_loc ${CMAKE_INSTALL_PREFIX}/bin/libzmq.dll)
 			set(_libzmq_implib ${CMAKE_INSTALL_PREFIX}/lib/libzmq.dll.a)
@@ -90,7 +104,7 @@ if(NOT TARGET libzmq)
 	endif()
 
 	set(libzmq_repo "https://github.com/zeromq/libzmq.git")
-	set(libzmq_tag "v4.3.1")
+	set(libzmq_tag "v4.3.4")
 
 	if(MSVC)
 		ExternalProject_Add(
@@ -102,7 +116,7 @@ if(NOT TARGET libzmq)
 			BUILD_BYPRODUCTS ${_libzmq_loc} ${_libzmq_implib}
 			UPDATE_DISCONNECTED 1
 			BUILD_COMMAND ""
-			INSTALL_COMMAND "${CMAKE_COMMAND}" --build . --target install --config Release
+			INSTALL_COMMAND "${CMAKE_COMMAND}" --build . --target install --config ${CMAKE_BUILD_TYPE}
 		)
 	else()
 		ExternalProject_Add(
@@ -128,7 +142,12 @@ if(NOT TARGET libzmq)
 		set_property(TARGET libzmq PROPERTY IMPORTED_IMPLIB ${_libzmq_implib})
 	endif()
 
+	if(WIN32)
+		target_link_libraries(libzmq INTERFACE ws2_32 rpcrt4 iphlpapi)
+	else()
+		target_link_libraries(libzmq INTERFACE pthread rt)
+	endif()
+
 	set_property(TARGET libzmq PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_INSTALL_PREFIX}/include)
 	add_dependencies(libzmq libzmq-extern)
 endif()
-

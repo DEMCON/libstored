@@ -71,7 +71,7 @@ FetchContent_MakeAvailable(googletest)
 include(GoogleTest)
 
 add_custom_target(teststore)
-libstored_generate(teststore TestStore.st)
+libstored_generate(TARGET teststore STORES TestStore.st)
 target_compile_definitions(teststore-libstored PUBLIC STORED_POLL_${LIBSTORED_POLL})
 target_include_directories(teststore-libstored BEFORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
@@ -156,6 +156,9 @@ if(LIBSTORED_EXAMPLES)
 	libstored_example_test(6_hooks)
 	if(TARGET concurrency)
 		libstored_example_test(concurrency 3)
+	endif()
+	if(TARGET fibered)
+		libstored_example_test(fibered)
 	endif()
 endif()
 

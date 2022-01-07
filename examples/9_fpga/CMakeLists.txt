@@ -1,6 +1,6 @@
 if(LIBSTORED_HAVE_LIBZMQ)
 	add_executable(9_fpga main.cpp)
-	libstored_generate(9_fpga ExampleFpga.st ExampleFpga2.st)
+	libstored_generate(TARGET 9_fpga STORES ExampleFpga.st ExampleFpga2.st)
 	install(TARGETS 9_fpga RUNTIME DESTINATION bin OPTIONAL)
 
 	# Not tested with unix pipes.

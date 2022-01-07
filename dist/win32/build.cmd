@@ -108,6 +108,10 @@ if %1 == nozmq (
 	set cmake_opts=%cmake_opts% -DLIBSTORED_HAVE_LIBZMQ=OFF
 	goto next_param
 )
+if %1 == zth (
+	set cmake_opts=%cmake_opts% -DLIBSTORED_HAVE_ZTH=ON
+	goto next_param
+)
 if %1 == -- (
 	shift
 	goto do_build
@@ -176,6 +180,7 @@ echo   dev   Enable development-related options
 echo   test  Enable building and running tests
 echo   zmq   Enable ZeroMQ integration
 echo   nozmq Disable ZeroMQ integration
+echo   zth   Enable Zth integration
 popd
 exit /b 2
 goto silent_error

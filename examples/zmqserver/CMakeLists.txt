@@ -1,5 +1,5 @@
 add_executable(zmqserver main.cpp)
-libstored_generate(zmqserver ZmqServerStore.st)
+libstored_generate(TARGET zmqserver STORES ZmqServerStore.st)
 install(TARGETS zmqserver RUNTIME DESTINATION bin)
 
 if(WIN32)

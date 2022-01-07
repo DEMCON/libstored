@@ -44,6 +44,10 @@ call :config Release test gcc C++98
 if errorlevel 1 goto silent_error
 call :config Release test gcc C++11
 if errorlevel 1 goto silent_error
+call :config Debug nodev zth gcc test
+if errorlevel 1 goto silent_error
+call :config Release nodev zth gcc test
+if errorlevel 1 goto silent_error
 
 :done
 exit /b 0

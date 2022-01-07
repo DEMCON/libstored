@@ -14,8 +14,7 @@ What is it?
 ```````````````
 A generator for a C++ class (store) with your application's variables, and a
 tool set to synchronize updates between processes (including FPGA), and debug
-it remotely.  See also the
-presentation_.
+it remotely.  See also the presentation_.
 
 When do I need it?
 ``````````````````
@@ -97,7 +96,7 @@ libstored - Store by description
 The store is described in a simple grammar.  See the examples_ directory for
 more explanation. This is just an impression of the syntax:
 
-.. code:: raw
+.. code::
 
    // Comment
    // Grammar: type:size[array]=initializer long name with any character

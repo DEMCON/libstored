@@ -34,6 +34,8 @@ if which g++-11 > /dev/null; then
 	config Debug dev test CXX=g++-11 CC=gcc-11
 	config Debug nodev test CXX=g++-11 CC=gcc-11
 	config Release test CXX=g++-11 CC=gcc-11
+	config Debug nodev zth test CXX=g++-11 CC=gcc-11
+	config Release zth test CXX=g++-11 CC=gcc-11
 fi
 
 popd > /dev/null

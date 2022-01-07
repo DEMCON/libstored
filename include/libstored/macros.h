@@ -111,6 +111,9 @@
 #	define _USE_MATH_DEFINES
 #	pragma warning( \
 		disable : 4061 4068 4100 4127 4200 4201 4296 4324 4355 4459 4514 4571 4625 4626 4706 4710 4711 4774 4789 4820 5026 5027 5039 5045)
+#	if _MSC_VER >= 1915
+#		pragma warning(disable : 5105)
+#	endif
 #	if _MSC_VER >= 1925
 #		pragma warning(disable : 5204)
 #	endif
@@ -152,7 +155,14 @@ typedef SSIZE_T ssize_t;
 #	if defined(UNICODE) || defined(_UNICODE)
 #		error Do not use UNICODE. Use ANSI with UTF-8 instead.
 #	endif
+#	ifndef WINVER
+#		define WINVER 0x0501
+#	endif
+#	ifndef _WIN32_WINNT
+#		define _WIN32_WINNT WINVER
+#	endif
 #	ifdef STORED_COMPILER_MSVC
+#		pragma warning(disable : 5031 5032)
 #		pragma warning(push)
 #		pragma warning(disable : 4668)
 #	endif
@@ -161,6 +171,7 @@ typedef SSIZE_T ssize_t;
 #	include <windows.h>
 #	ifdef STORED_COMPILER_MSVC
 #		pragma warning(pop)
+#		pragma warning(default : 5031 5032)
 #	endif
 #elif defined(__linux__)
 #	define STORED_OS_LINUX 1

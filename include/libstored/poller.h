@@ -48,7 +48,7 @@
 
 #	ifdef STORED_HAVE_ZTH
 #		include <zth>
-#		if ZTH_VERSION_NUM < 10000
+#		if ZTH_VERSION_MAJOR < 1
 #			error Unsupport Zth version.
 #		endif
 #	endif
@@ -601,7 +601,7 @@ typedef ZmqPoller PollerServer;
 //
 // Without Zth:			With Zth:
 //
-// stored::PollerBase		zth::PollPoller
+// stored::PollerBase		zth::PollPoller or zth::PollerServer
 //	^				^
 //	|				|
 // stored::PollPoller		stored::PollPoller
@@ -613,7 +613,13 @@ typedef ZmqPoller PollerServer;
 
 #	if defined(STORED_OS_POSIX)
 #		ifdef STORED_HAVE_ZTH
+#			ifdef ZTH_HAVE_LIBZMQ
+// With ZMQ, zth::PollPoller is not defined, as ZMQ is always used for polling.
+// So, use the generic PollerServer instead.
+typedef zth::PollerServer<struct pollfd> PollPollerBase;
+#			else
 typedef zth::PollPoller PollPollerBase;
+#			endif
 #		else
 typedef PollerBase<struct pollfd> PollPollerBase;
 #		endif
@@ -731,7 +737,20 @@ typedef LoopPoller PollerServer;
 //
 
 #	ifdef STORED_HAVE_ZTH
-typedef zth::PollerClient Poller;
+class Poller : public zth::PollerClient {
+	STORED_CLASS_NOCOPY(Poller)
+	STORED_CLASS_NEW_DELETE(Poller)
+public:
+	Poller() is_default
+	virtual ~Poller() override is_default
+
+#		if __cplusplus >= 201103L
+	// cppcheck-suppress noExplicitConstructor
+	Poller(std::initializer_list<std::reference_wrapper<Pollable>> l)
+		: zth::PollerClient(l)
+	{}
+#		endif
+};
 #	else // !STORED_HAVE_ZTH
 
 template <typename PollerImpl = PollerImpl>

@@ -24,6 +24,9 @@ Changed
 
 - Restructured ``scripts`` directory into ``dist``.
 - Replace poller API.
+- ``libstored_lib`` and ``libstored_generate`` now take keyword-based
+  parameters, but old (positional) interface is still supported.
+- Improved Zth integration for fiber-aware polling.
 
 Removed
 ```````
