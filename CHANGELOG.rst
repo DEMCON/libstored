@@ -9,31 +9,42 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 .. _Semantic Versioning: https://semver.org/spec/v2.0.0.html
 
 
+
 `Unreleased`_
 -------------
+
+...
+
+.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.1.0...HEAD
+
+
+
+`1.1.0`_ - 2022-01-07
+---------------------
 
 Added
 `````
 
 - Add support for ninja, and default to it in build scripts.
-- Migrate pylibstored from PySide2 to PySide6.
-- Using ``matplotlib`` for plotting signals by ``libstored.gui``.
+- Use ``matplotlib`` for plotting signals by ``libstored.gui``.
 
 Changed
 ```````
 
-- Restructured ``scripts`` directory into ``dist``.
+- Migrate pylibstored from PySide2 to PySide6.
+- Restructure ``scripts`` directory into ``dist``.
 - Replace poller API.
 - ``libstored_lib`` and ``libstored_generate`` now take keyword-based
   parameters, but old (positional) interface is still supported.
-- Improved Zth integration for fiber-aware polling.
+- Improve Zth_ integration for fiber-aware polling.
 
 Removed
 ```````
 
-- Ubuntu 18.04 support. PySide6 requires Ubuntu 20.04 or later.
+- Drop Ubuntu 18.04 support. PySide6 requires Ubuntu 20.04 or later.
 
-.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.0.0...HEAD
+.. _1.1.0: https://github.com/DEMCON/libstored/releases/tag/v1.1.0
+.. _Zth: https://github.com/jhrutgers/zth
 
 
 
@@ -56,4 +67,3 @@ Added
 - Some documentation
 
 .. _1.0.0: https://github.com/DEMCON/libstored/releases/tag/v1.0.0
-
