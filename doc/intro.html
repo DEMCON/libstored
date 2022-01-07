@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>libstored &mdash; libstored 1.1.0-alpha documentation</title>
+  <title>libstored &mdash; libstored 1.1.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.1.0.dev0
+                1.1.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -315,37 +315,29 @@ C++ that has the same store, a Synchronizer connected to the FPGA, and a
 Debugger instance. The connect to this C++ bridge.</p>
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h3>
-<p>The host tools to debug your application are written in python, as the
-<code class="docutils literal notranslate"><span class="pre">libstored</span></code> package, and are located the <code class="docutils literal notranslate"><span class="pre">python</span></code> directory. You can run
-the example below by running python from the <code class="docutils literal notranslate"><span class="pre">python</span></code> directory, but you can
-also install the <code class="docutils literal notranslate"><span class="pre">libstored</span></code> package on your system. To do this, execute the
-<code class="docutils literal notranslate"><span class="pre">pylibstored-install</span></code> cmake target, such as:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> build
-ninja pylibstored-install
-</pre></div>
-</div>
-<p>This builds a wheel from the <code class="docutils literal notranslate"><span class="pre">python</span></code> directory and installs it locally using
-<code class="docutils literal notranslate"><span class="pre">pip</span></code>.  Now you can just fire up python and do <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">libstored</span></code>.</p>
+<p>The host tools to debug your application are written in Python, based on
+PySide6. The <code class="docutils literal notranslate"><span class="pre">libstored</span></code> wheel file from the <code class="docutils literal notranslate"><span class="pre">python</span></code> directory is by
+default installed in the venv, located in <code class="docutils literal notranslate"><span class="pre">dist/.venv</span></code>.</p>
 <p>To get a grasp how debugging feels like, try the following.</p>
-<ul class="simple">
+<ol class="arabic simple">
 <li><p>Build the examples, as discussed above.</p></li>
-<li><p>If you use Windows, execute <code class="docutils literal notranslate"><span class="pre">dist/win32/env.cmd</span></code> to set your environment
+<li><p>If you use Windows, execute <code class="docutils literal notranslate"><span class="pre">dist\win32\env.cmd</span></code> to set your environment
 properly.  In the instructions below, use <code class="docutils literal notranslate"><span class="pre">python</span></code> instead of <code class="docutils literal notranslate"><span class="pre">python3</span></code>.</p></li>
-<li><p>Run your favorite <code class="docutils literal notranslate"><span class="pre">lognplot</span></code> instance, e.g., by running <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">lognplot</span></code>.</p></li>
-<li><p>Run <code class="docutils literal notranslate"><span class="pre">examples/zmqserver/zmqserver</span></code>. This starts an application with a store
-with all kinds of object types, and provides a ZeroMQ server interface for
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">examples/zmqserver/zmqserver</span></code>. This starts an application with a
+store with all kinds of object, and provides a ZeroMQ server interface for
 debugging.</p></li>
-<li><p>Run <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">libstored.gui</span> <span class="pre">-l</span></code> within the <code class="docutils literal notranslate"><span class="pre">python</span></code> directory. This GUI
-connects to both the <code class="docutils literal notranslate"><span class="pre">zmqserver</span></code> application via ZeroMQ, and to the
-<code class="docutils literal notranslate"><span class="pre">lognplot</span></code> instance.</p></li>
-<li><p>The GUI window will pop up and show the objects of the <code class="docutils literal notranslate"><span class="pre">zmqserver</span></code> example.
-If polling is enabled of one of the objects, the values are forwarded to
-<code class="docutils literal notranslate"><span class="pre">lognplot</span></code>.</p></li>
-</ul>
+<li><p>Activate the Python venv by running <code class="docutils literal notranslate"><span class="pre">dist\.venv\Scripts\activate.bat</span></code> on
+Windows, or <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">dist/.venv/bin/activate</span></code> on Linux or macOS.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">libstored.gui</span></code>. This GUI connects to the <code class="docutils literal notranslate"><span class="pre">zmqserver</span></code>
+application via ZeroMQ.</p></li>
+<li><p>The GUI window will pop up and shows the objects of the <code class="docutils literal notranslate"><span class="pre">zmqserver</span></code>
+example.  To add a signal to the plot, first enable the polling checkbox,
+and then enable the plot checkbox.</p></li>
+</ol>
 <p>The structure of this setup is:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>+---------------+        +----------+
-| libstored.gui | -----&gt; | lognplot |
-+---------------+        +----------+
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>+---------------+        +------------+
+| libstored.gui | -----&gt; | matplotlib |
++---------------+        +------------+
       |
       | ZeroMQ REQ/REP channel
       |
@@ -355,19 +347,19 @@ If polling is enabled of one of the objects, the values are forwarded to
 </pre></div>
 </div>
 <img alt="zmqserver debugging screenshot" src="../_images/zmqserver_screenshot1.png" />
-<p>The Embedded Debugger client connects via ZeroMQ.
-If you application does not have it, you must implement is somehow.
-The <code class="docutils literal notranslate"><span class="pre">examples/terminal/terminal</span></code> application could be debugged as follows:</p>
-<ul class="simple">
-<li><p>Run <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">libstored.wrapper.stdio</span>
-<span class="pre">../build/examples/terminal/terminal</span></code> from the <code class="docutils literal notranslate"><span class="pre">python</span></code> directory.  This
-starts the <code class="docutils literal notranslate"><span class="pre">terminal</span></code> example, and extracts escaped debugger frames from
-<code class="docutils literal notranslate"><span class="pre">stdout</span></code>, which are forwarded to a ZeroMQ interface.</p></li>
+<p>The Embedded Debugger client connects via ZeroMQ.  If your application does not
+have it, you must implement it somehow.  The <code class="docutils literal notranslate"><span class="pre">examples/terminal/terminal</span></code>
+application could be debugged as follows:</p>
+<ol class="arabic simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">libstored.wrapper.stdio</span> <span class="pre">build/deploy/bin/terminal</span></code> from
+the activated venv (see above).  This starts the <code class="docutils literal notranslate"><span class="pre">terminal</span></code> example, and
+extracts escaped debugger frames from <code class="docutils literal notranslate"><span class="pre">stdout</span></code>, which are forwarded to a
+ZeroMQ interface.</p></li>
 <li><p>Connect a client, such as <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">libstored.gui</span></code>.  Instead of using
-<code class="docutils literal notranslate"><span class="pre">lognplot</span></code>, the GUI can also write all auto-refreshed data to a CSV file
-when the <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">log.csv</span></code> is passed on the command line. Then, <a class="reference external" href="https://kst-plot.kde.org/">Kst</a> can be used
-for live viewing the file.</p></li>
-</ul>
+<code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>, the GUI can also write all auto-refreshed data to a CSV file
+when the <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">log.csv</span></code> is passed on the command line. Then, <a class="reference external" href="https://kst-plot.kde.org/">Kst</a> can be
+used for live viewing the file.</p></li>
+</ol>
 <p>The structure of this setup is:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>+---------------+        +---------+           +-----+
 | libstored.gui | -----&gt; | log.csv | --------&gt; | Kst |
@@ -483,7 +475,7 @@ install all build dependencies.  Then run <code class="docutils literal notransl
 the project. This does effectively:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir build
 <span class="nb">cd</span> build
-cmake ../../.. -DCMAKE_INSTALL_PREFIX<span class="o">=</span>dist
+cmake ../../.. -DCMAKE_INSTALL_PREFIX<span class="o">=</span>deploy
 cmake --build .
 cmake --build . --target install
 </pre></div>
@@ -503,52 +495,63 @@ cmake --build . --target RUN_TESTS
 <h3>How to integrate in your build<a class="headerlink" href="#how-to-integrate-in-your-build" title="Permalink to this headline"></a></h3>
 <p>Building libstored on itself is not too interesting, it is about how it can
 generate stuff for you.  This is how to integrate it in your project:</p>
-<ul class="simple">
+<ol class="arabic">
 <li><p>Add libstored to your source repository, for example as a submodule.</p></li>
 <li><p>Run <code class="docutils literal notranslate"><span class="pre">dist/&lt;platform&gt;/bootstrap</span></code> in the libstored directory once to install
 all dependencies.</p></li>
-<li><p>Include libstored to your cmake project. For example:</p></li>
-</ul>
+<li><p>Include libstored in your cmake project. For example:</p>
 <div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">LIBSTORED_EXAMPLES</span><span class="w"> </span><span class="s">OFF</span><span class="w"> </span><span class="s">CACHE</span><span class="w"> </span><span class="s">BOOL</span><span class="w"> </span><span class="s2">&quot;Disable libstored examples&quot;</span><span class="w"> </span><span class="s">FORCE</span><span class="p">)</span>
 <span class="nb">set</span><span class="p">(</span><span class="s">LIBSTORED_TESTS</span><span class="w"> </span><span class="s">OFF</span><span class="w"> </span><span class="s">CACHE</span><span class="w"> </span><span class="s">BOOL</span><span class="w"> </span><span class="s2">&quot;Disable libstored tests&quot;</span><span class="w"> </span><span class="s">FORCE</span><span class="p">)</span>
 <span class="nb">set</span><span class="p">(</span><span class="s">LIBSTORED_DOCUMENTATION</span><span class="w"> </span><span class="s">OFF</span><span class="w"> </span><span class="s">CACHE</span><span class="w"> </span><span class="s">BOOL</span><span class="w"> </span><span class="s2">&quot;Disable libstored documentation&quot;</span><span class="w"> </span><span class="s">FORCE</span><span class="p">)</span>
 <span class="nb">add_subdirectory</span><span class="p">(</span><span class="s">libstored</span><span class="p">)</span>
 </pre></div>
 </div>
-<ul class="simple">
+<p>ZeroMQ support is by default enabled, when the target platform supports it.
+To disable it, add the following line before <code class="docutils literal notranslate"><span class="pre">add_subdirector()</span></code> above:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">LIBSTORED_HAVE_LIBZMQ</span><span class="w"> </span><span class="s">OFF</span><span class="w"> </span><span class="s">CACHE</span><span class="w"> </span><span class="s">BOOL</span><span class="w"> </span><span class="s2">&quot;Disable ZeroMQ&quot;</span><span class="w"> </span><span class="s">FORCE</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://github.com/jhrutgers/zth">Zth</a> support is by default disabled. When enabled, it will build Zth from
+source when not found on your system. Using gcc is required for Zth. To
+enable it, add:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">LIBSTORED_HAVE_ZTH</span><span class="w"> </span><span class="s">ON</span><span class="w"> </span><span class="s">CACHE</span><span class="w"> </span><span class="s">BOOL</span><span class="w"> </span><span class="s2">&quot;Enable Zth&quot;</span><span class="w"> </span><span class="s">FORCE</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
 <li><p>Optional: install <code class="docutils literal notranslate"><span class="pre">dist/common/st.vim</span></code> in <code class="docutils literal notranslate"><span class="pre">$HOME/.vim/syntax</span></code> to have
 proper syntax highlighting in vim.</p></li>
 <li><p>Add some store definition file to your project, let’s say <code class="docutils literal notranslate"><span class="pre">MyStore.st</span></code>.
-Assume you have a target <code class="docutils literal notranslate"><span class="pre">app</span></code> (which can be any type of cmake target), which
-is going to use <code class="docutils literal notranslate"><span class="pre">MyStore.st</span></code>, generate all required files. This will generate
-the sources in the <code class="docutils literal notranslate"><span class="pre">libstored</span></code> subdirectory of the current source directory,
-a library named <code class="docutils literal notranslate"><span class="pre">app-libstored</span></code>, and set all the dependencies right:</p></li>
-</ul>
+Assume you have a target <code class="docutils literal notranslate"><span class="pre">app</span></code> (which can be any type of cmake target),
+which is going to use <code class="docutils literal notranslate"><span class="pre">MyStore.st</span></code>, generate all required files. This will
+generate the sources in the <code class="docutils literal notranslate"><span class="pre">libstored</span></code> subdirectory of the current source
+directory, a library named <code class="docutils literal notranslate"><span class="pre">app-libstored</span></code>, and set all the dependencies
+right:</p>
 <div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">add_executable</span><span class="p">(</span><span class="s">app</span><span class="w"> </span><span class="s">main.cpp</span><span class="p">)</span>
-<span class="nb">libstored_generate</span><span class="p">(</span><span class="s">app</span><span class="w"> </span><span class="s">MyStore.st</span><span class="p">)</span>
+<span class="nb">libstored_generate</span><span class="p">(</span><span class="s">TARGET</span><span class="w"> </span><span class="s">app</span><span class="w"> </span><span class="s">STORES</span><span class="w"> </span><span class="s">MyStore.st</span><span class="p">)</span>
 </pre></div>
 </div>
-<ul class="simple">
+</li>
 <li><p>To override the default configuration, provide a <code class="docutils literal notranslate"><span class="pre">stored_config.h</span></code> file.
-Add this to the build by either setting <code class="docutils literal notranslate"><span class="pre">LIBSTORED_PREPEND_INCLUDE_DIRECTORIES</span></code>
-to a space-separated list with application-specific include directories,
-containing the header file, or by setting the include directory using:</p></li>
-</ul>
+Add this to the build by either setting
+<code class="docutils literal notranslate"><span class="pre">LIBSTORED_PREPEND_INCLUDE_DIRECTORIES</span></code> to a space-separated list with
+application-specific include directories, containing the header file, or by
+setting the include directory using:</p>
 <div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">target_include_directories</span><span class="p">(</span><span class="s">app-libstored</span><span class="w"> </span><span class="s">BEFORE</span><span class="w"> </span><span class="s">PUBLIC</span><span class="w"> </span><span class="s">path/to/my/include</span><span class="p">)</span>
 </pre></div>
 </div>
-<ul class="simple">
+</li>
 <li><p>Now, build your <code class="docutils literal notranslate"><span class="pre">app</span></code>. The generated libstored library is automatically
 built.</p></li>
 <li><p>If you want to use the VHDL store in your Vivado project, create a project
-for your FPGA, and source the generated file <code class="docutils literal notranslate"><span class="pre">rtl/vivado.tcl</span></code>. This will add
-all relevant files to your project. Afterwards, just save the project as
+for your FPGA, and source the generated file <code class="docutils literal notranslate"><span class="pre">rtl/vivado.tcl</span></code>. This will
+add all relevant files to your project. Afterwards, just save the project as
 usually; the <code class="docutils literal notranslate"><span class="pre">rtl/vivado.tcl</span></code> file is not needed anymore.</p></li>
 <li><p>If you ran the <code class="docutils literal notranslate"><span class="pre">install</span></code> target, a
-<code class="docutils literal notranslate"><span class="pre">share/cmake/libstored/libstored.cmake</span></code> file is generated.  If you include
-this file in another cmake project, you import all generated libraries as
-static libraries. See the <code class="docutils literal notranslate"><span class="pre">examples/installed</span></code> example how to do this.</p></li>
-</ul>
+<code class="docutils literal notranslate"><span class="pre">share/cmake/libstored/libstored.cmake</span></code> file is generated.  If you
+include this file in another cmake project, you import all generated
+libraries as static libraries. See the <code class="docutils literal notranslate"><span class="pre">examples/installed</span></code> example how
+to do this.</p></li>
+</ol>
 <p>Check out the examples of libstored, which are all independent applications
 with their own generated store.</p>
 </section>

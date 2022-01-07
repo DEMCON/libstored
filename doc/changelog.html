@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CHANGELOG &mdash; libstored 1.1.0-alpha documentation</title>
+  <title>CHANGELOG &mdash; libstored 1.1.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.1.0.dev0
+                1.1.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -44,14 +44,15 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">CHANGELOG</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#unreleased">Unreleased</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#unreleased">Unreleased</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">1.1.0 - 2022-01-07</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#added">Added</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#changed">Changed</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#removed">Removed</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id2">1.0.0 - 2021-08-25</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id3">Added</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">1.0.0 - 2021-08-25</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Added</a></li>
 </ul>
 </li>
 </ul>
@@ -93,37 +94,41 @@
 <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a class="reference external" href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>, and this project adheres to <a class="reference external" href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <section id="unreleased">
-<h2><a class="reference external" href="https://github.com/DEMCON/libstored/compare/v1.0.0...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Permalink to this headline"></a></h2>
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/compare/v1.1.0...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Permalink to this headline"></a></h2>
+<p>…</p>
+</section>
+<section id="id2">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.1.0">1.1.0</a> - 2022-01-07<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h2>
 <section id="added">
 <h3>Added<a class="headerlink" href="#added" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Add support for ninja, and default to it in build scripts.</p></li>
-<li><p>Migrate pylibstored from PySide2 to PySide6.</p></li>
-<li><p>Using <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> for plotting signals by <code class="docutils literal notranslate"><span class="pre">libstored.gui</span></code>.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> for plotting signals by <code class="docutils literal notranslate"><span class="pre">libstored.gui</span></code>.</p></li>
 </ul>
 </section>
 <section id="changed">
 <h3>Changed<a class="headerlink" href="#changed" title="Permalink to this headline"></a></h3>
 <ul class="simple">
-<li><p>Restructured <code class="docutils literal notranslate"><span class="pre">scripts</span></code> directory into <code class="docutils literal notranslate"><span class="pre">dist</span></code>.</p></li>
+<li><p>Migrate pylibstored from PySide2 to PySide6.</p></li>
+<li><p>Restructure <code class="docutils literal notranslate"><span class="pre">scripts</span></code> directory into <code class="docutils literal notranslate"><span class="pre">dist</span></code>.</p></li>
 <li><p>Replace poller API.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">libstored_lib</span></code> and <code class="docutils literal notranslate"><span class="pre">libstored_generate</span></code> now take keyword-based
 parameters, but old (positional) interface is still supported.</p></li>
-<li><p>Improved Zth integration for fiber-aware polling.</p></li>
+<li><p>Improve <a class="reference external" href="https://github.com/jhrutgers/zth">Zth</a> integration for fiber-aware polling.</p></li>
 </ul>
 </section>
 <section id="removed">
 <h3>Removed<a class="headerlink" href="#removed" title="Permalink to this headline"></a></h3>
 <ul class="simple">
-<li><p>Ubuntu 18.04 support. PySide6 requires Ubuntu 20.04 or later.</p></li>
+<li><p>Drop Ubuntu 18.04 support. PySide6 requires Ubuntu 20.04 or later.</p></li>
 </ul>
 </section>
 </section>
-<section id="id2">
-<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.0.0">1.0.0</a> - 2021-08-25<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h2>
+<section id="id4">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.0.0">1.0.0</a> - 2021-08-25<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h2>
 <p>Initial version.</p>
-<section id="id3">
-<h3>Added<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
+<section id="id5">
+<h3>Added<a class="headerlink" href="#id5" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Store generator for C++ and VHDL</p></li>
 <li><p>C++ library to access the store in your application</p></li>

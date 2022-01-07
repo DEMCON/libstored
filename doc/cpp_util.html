@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Utilities &mdash; libstored 1.1.0-alpha documentation</title>
+  <title>Utilities &mdash; libstored 1.1.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.1.0.dev0
+                1.1.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -51,10 +51,25 @@
 <li class="toctree-l2"><a class="reference internal" href="cpp_components.html">Components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html">Debugger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_directory.html">Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_poller.html">Poller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html">Protocol</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_synchronizer.html">Synchronizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_types.html">Types</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Utilities</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#likely">likely</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#saturated-cast">saturated_cast</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-assert">stored_assert</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-banner">stored::banner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-fifo">stored::Fifo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-memcmp-swap">stored::memcmp_swap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-messagefifo">stored::MessageFifo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-scratchpad">stored::Scratchpad</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-string-literal">stored::string_literal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-strncmp">stored::strncmp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-strncpy">stored::strncpy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-swap-endian">stored::swap_endian</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="fpga.html">VHDL</a></li>
@@ -90,6 +105,328 @@
   <section id="utilities">
 <h1>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline"></a></h1>
 <p>Misc helper functionality.</p>
+<section id="likely">
+<h2>likely<a class="headerlink" href="#likely" title="Permalink to this headline"></a></h2>
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.likely">
+<span class="target" id="util_8h_1aa0672ea7123854cc5f51902a06c473fb"></span><span class="sig-name descname"><span class="n"><span class="pre">likely</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">expr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.likely" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Marks the given expression to likely be evaluated to true. </p>
+<p>This may help compiler optimization. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the evaluated <code class="docutils literal notranslate"><span class="pre">expr</span></code> </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.unlikely">
+<span class="target" id="util_8h_1ad8700448546b3b5111404cc021061fd5"></span><span class="sig-name descname"><span class="n"><span class="pre">unlikely</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">expr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.unlikely" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Marks the given expression to likely be evaluated to true. </p>
+<p>This may help compiler optimization. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the evaluated <code class="docutils literal notranslate"><span class="pre">expr</span></code> </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="saturated-cast">
+<h2>saturated_cast<a class="headerlink" href="#saturated-cast" title="Permalink to this headline"></a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00E14saturated_cast1R1T">
+<span id="_CPPv3I00E14saturated_cast1T"></span><span id="_CPPv2I00E14saturated_cast1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">R</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="util_8h_1a6369ba91d4e58a60d331fd5143569fdd"></span><a class="reference internal" href="#_CPPv4I00E14saturated_cast1R1T" title="saturated_cast::R"><span class="n"><span class="pre">R</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">saturated_cast</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00E14saturated_cast1R1T" title="saturated_cast::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I00E14saturated_cast1R1T" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Converts a number type to another one, with proper rounding and saturation. </p>
+</dd></dl>
+
+</section>
+<section id="stored-assert">
+<h2>stored_assert<a class="headerlink" href="#stored-assert" title="Permalink to this headline"></a></h2>
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.stored_assert">
+<span class="target" id="util_8h_1ab750e51b876450a0a4ad419588a82a4d"></span><span class="sig-name descname"><span class="n"><span class="pre">stored_assert</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">expr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.stored_assert" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Like <code class="docutils literal notranslate"><span class="pre">assert()</span></code>, but only emits code when <a class="reference internal" href="cpp_config.html#structstored_1_1_default_config_1ae1cc7031c09a02bbdfb5e4a1e723fc4f"><span class="std std-ref">stored::Config::EnableAssert</span></a>. </p>
+</dd></dl>
+
+</section>
+<section id="stored-banner">
+<h2>stored::banner<a class="headerlink" href="#stored-banner" title="Permalink to this headline"></a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored6bannerEv">
+<span id="_CPPv3N6stored6bannerEv"></span><span id="_CPPv2N6stored6bannerEv"></span><span id="stored::banner"></span><span class="target" id="namespacestored_1acf12bb4cfb2f1048006afb47e7f1d546"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">banner</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored6bannerEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Return a single-line string that contains relevant configuration information of libstored. </p>
+</dd></dl>
+
+</section>
+<section id="stored-fifo">
+<h2>stored::Fifo<a class="headerlink" href="#stored-fifo" title="Permalink to this headline"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0_6size_t_bEN6stored4FifoE">
+<span id="_CPPv3I0_6size_t_bEN6stored4FifoE"></span><span id="_CPPv2I0_6size_t_bEN6stored4FifoE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Capacity</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ThreadSafe</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I0_6size_t_bEN6stored4FifoE" title="stored::Fifo::Capacity"><span class="n"><span class="pre">Capacity</span></span></a><span class="w"> </span><span class="o"><span class="pre">&gt;</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_fifo"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Fifo</span></span></span><a class="headerlink" href="#_CPPv4I0_6size_t_bEN6stored4FifoE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>FIFO that is optionally bounded in size and optionally thread-safe. </p>
+<p>This is a single-producer single-consumer FIFO.</p>
+<p>If bounded (<code class="docutils literal notranslate"><span class="pre">Capacity</span></code> is non-zero), it implements a circular buffer and does not do dynamic memory allocation during operation. Then, it is thread-safe and async-signal safe. Therefore, it can be used to communicate between threads, but also by an interrupt handler.</p>
+<p>If unbounded, it cannot be thread-safe. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo8iteratorE">
+<span id="_CPPv3N6stored4Fifo8iteratorE"></span><span id="_CPPv2N6stored4Fifo8iteratorE"></span><span id="stored::Fifo::iterator"></span><span class="target" id="classstored_1_1_fifo_1a5e6eae98c770643a8a9aab85df9e74d0"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">PopIterator</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_t_bEN6stored4FifoE" title="stored::Fifo"><span class="n"><span class="pre">Fifo</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">iterator</span></span></span><a class="headerlink" href="#_CPPv4N6stored4Fifo8iteratorE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo7pointerE">
+<span id="_CPPv3N6stored4Fifo7pointerE"></span><span id="_CPPv2N6stored4Fifo7pointerE"></span><span id="stored::Fifo::pointer"></span><span class="target" id="classstored_1_1_fifo_1a9a83ec9a9ee4815f98ef482431275c26"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">Buffer_type</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pointer</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pointer</span></span></span><a class="headerlink" href="#_CPPv4N6stored4Fifo7pointerE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo4typeE">
+<span id="_CPPv3N6stored4Fifo4typeE"></span><span id="_CPPv2N6stored4Fifo4typeE"></span><span id="stored::Fifo::type"></span><span class="target" id="classstored_1_1_fifo_1a1a5b93728cdc425dd781b595d0cc7aca"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t_bEN6stored4FifoE" title="stored::Fifo::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><a class="headerlink" href="#_CPPv4N6stored4Fifo4typeE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored4Fifo9availableEv">
+<span id="_CPPv3NK6stored4Fifo9availableEv"></span><span id="_CPPv2NK6stored4Fifo9availableEv"></span><span id="stored::Fifo::availableC"></span><span class="target" id="classstored_1_1_fifo_1a5fb49fb1771eabf3b03f69a155689981"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">available</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored4Fifo9availableEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo5beginEv">
+<span id="_CPPv3N6stored4Fifo5beginEv"></span><span id="_CPPv2N6stored4Fifo5beginEv"></span><span id="stored::Fifo::beginCE"></span><span class="target" id="classstored_1_1_fifo_1a16c2b6a942dd01f708adcb11ff7fa205"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored4Fifo8iteratorE" title="stored::Fifo::iterator"><span class="n"><span class="pre">iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored4Fifo5beginEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored4Fifo7boundedEv">
+<span id="_CPPv3NK6stored4Fifo7boundedEv"></span><span id="_CPPv2NK6stored4Fifo7boundedEv"></span><span id="stored::Fifo::boundedCCE"></span><span class="target" id="classstored_1_1_fifo_1afb859e7401936d924a29410fc2f1defe"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bounded</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored4Fifo7boundedEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored4Fifo8capacityEv">
+<span id="_CPPv3NK6stored4Fifo8capacityEv"></span><span id="_CPPv2NK6stored4Fifo8capacityEv"></span><span id="stored::Fifo::capacityCCE"></span><span class="target" id="classstored_1_1_fifo_1ad5e649e29774ab6348de99044561edcf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">capacity</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored4Fifo8capacityEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo5clearEv">
+<span id="_CPPv3N6stored4Fifo5clearEv"></span><span id="_CPPv2N6stored4Fifo5clearEv"></span><span id="stored::Fifo::clear"></span><span class="target" id="classstored_1_1_fifo_1a9c4f515af6a54fc363e6a74ecf0cecd0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">clear</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored4Fifo5clearEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN6stored4Fifo12emplace_backEvDpRR3Arg">
+<span id="_CPPv3IDpEN6stored4Fifo12emplace_backEDpRR3Arg"></span><span id="_CPPv2IDpEN6stored4Fifo12emplace_backEDpRR3Arg"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Arg</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_fifo_1accb3b6d71a6fa92bbf57a54f6037554d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emplace_back</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN6stored4Fifo12emplace_backEvDpRR3Arg" title="stored::Fifo::emplace_back::Arg"><span class="n"><span class="pre">Arg</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">arg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN6stored4Fifo12emplace_backEvDpRR3Arg" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored4Fifo5emptyEv">
+<span id="_CPPv3NK6stored4Fifo5emptyEv"></span><span id="_CPPv2NK6stored4Fifo5emptyEv"></span><span id="stored::Fifo::emptyC"></span><span class="target" id="classstored_1_1_fifo_1adab2fc335e0b1da06e4d3cc4aae0701a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">empty</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored4Fifo5emptyEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo3endEv">
+<span id="_CPPv3N6stored4Fifo3endEv"></span><span id="_CPPv2N6stored4Fifo3endEv"></span><span id="stored::Fifo::endCE"></span><span class="target" id="classstored_1_1_fifo_1a5df79fdd49245358a694c53aa027a7ef"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored4Fifo8iteratorE" title="stored::Fifo::iterator"><span class="n"><span class="pre">iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored4Fifo3endEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored4Fifo5frontEv">
+<span id="_CPPv3NK6stored4Fifo5frontEv"></span><span id="_CPPv2NK6stored4Fifo5frontEv"></span><span id="stored::Fifo::frontC"></span><span class="target" id="classstored_1_1_fifo_1ae741ec18170b4ef92aac4cb3c1a0df21"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored4Fifo4typeE" title="stored::Fifo::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">front</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored4Fifo5frontEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo5frontEv">
+<span id="_CPPv3N6stored4Fifo5frontEv"></span><span id="_CPPv2N6stored4Fifo5frontEv"></span><span id="stored::Fifo::front"></span><span class="target" id="classstored_1_1_fifo_1af8132ed8113cc23b433c6e7707ba33ce"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored4Fifo4typeE" title="stored::Fifo::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">front</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored4Fifo5frontEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored4Fifo4fullEv">
+<span id="_CPPv3NK6stored4Fifo4fullEv"></span><span id="_CPPv2NK6stored4Fifo4fullEv"></span><span id="stored::Fifo::fullC"></span><span class="target" id="classstored_1_1_fifo_1abd0bc0a976f827cb9cc504248110cdb2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">full</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored4Fifo4fullEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo9pop_frontEv">
+<span id="_CPPv3N6stored4Fifo9pop_frontEv"></span><span id="_CPPv2N6stored4Fifo9pop_frontEv"></span><span id="stored::Fifo::pop_front"></span><span class="target" id="classstored_1_1_fifo_1ae10a230138dcbc438e2e56c1fb97b8ee"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pop_front</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored4Fifo9pop_frontEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6stored4Fifo9push_backEv2It2It">
+<span id="_CPPv3I0EN6stored4Fifo9push_backE2It2It"></span><span id="_CPPv2I0EN6stored4Fifo9push_backE2It2It"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">It</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_fifo_1a0f02fa85d5bbfe2d2be6f16787f81339"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored4Fifo9push_backEv2It2It" title="stored::Fifo::push_back::It"><span class="n"><span class="pre">It</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">start</span></span>, <a class="reference internal" href="#_CPPv4I0EN6stored4Fifo9push_backEv2It2It" title="stored::Fifo::push_back::It"><span class="n"><span class="pre">It</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">end</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored4Fifo9push_backEv2It2It" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo9push_backENSt16initializer_listI4typeEE">
+<span id="_CPPv3N6stored4Fifo9push_backENSt16initializer_listI4typeEE"></span><span id="_CPPv2N6stored4Fifo9push_backENSt16initializer_listI4typeEE"></span><span id="stored::Fifo::push_back__std::initializer_list:type:"></span><span class="target" id="classstored_1_1_fifo_1a9617f2064d84c2bb1bdb00a1edfce2ee"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored4Fifo4typeE" title="stored::Fifo::type"><span class="n"><span class="pre">type</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">init</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored4Fifo9push_backENSt16initializer_listI4typeEE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo9push_backERK1T">
+<span id="_CPPv3N6stored4Fifo9push_backERK1T"></span><span id="_CPPv2N6stored4Fifo9push_backERK1T"></span><span id="stored::Fifo::push_back__TCR"></span><span class="target" id="classstored_1_1_fifo_1ad6f5e7f64c8042533e64298b1ed720e5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0_6size_t_bEN6stored4FifoE" title="stored::Fifo::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored4Fifo9push_backERK1T" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored4Fifo4sizeEv">
+<span id="_CPPv3NK6stored4Fifo4sizeEv"></span><span id="_CPPv2NK6stored4Fifo4sizeEv"></span><span id="stored::Fifo::sizeCCE"></span><span class="target" id="classstored_1_1_fifo_1a58315d71ba07109715f681d7170c5413"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored4Fifo4sizeEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored4Fifo5spaceEv">
+<span id="_CPPv3NK6stored4Fifo5spaceEv"></span><span id="_CPPv2NK6stored4Fifo5spaceEv"></span><span id="stored::Fifo::spaceC"></span><span class="target" id="classstored_1_1_fifo_1ae5724686f5288356b7d32b0a844a8f95"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">space</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored4Fifo5spaceEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+<section id="stored-memcmp-swap">
+<h2>stored::memcmp_swap<a class="headerlink" href="#stored-memcmp-swap" title="Permalink to this headline"></a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11memcmp_swapEPKvPKv6size_t">
+<span id="_CPPv3N6stored11memcmp_swapEPKvPKv6size_t"></span><span id="_CPPv2N6stored11memcmp_swapEPKvPKv6size_t"></span><span id="stored::memcmp_swap__voidCP.voidCP.s"></span><span class="target" id="namespacestored_1a1377147e65de490e1c6eb7469365d7b2"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">memcmp_swap</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">b</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored11memcmp_swapEPKvPKv6size_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>memcmp() with endianness swapping. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11memcpy_swapEPvPKv6size_t">
+<span id="_CPPv3N6stored11memcpy_swapEPvPKv6size_t"></span><span id="_CPPv2N6stored11memcpy_swapEPvPKv6size_t"></span><span id="stored::memcpy_swap__voidP.voidCP.s"></span><span class="target" id="namespacestored_1a05668bc679cf647fc500a516921deb16"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">memcpy_swap</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dst</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">src</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored11memcpy_swapEPvPKv6size_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">memcpy()</span></code> with endianness swapping. </p>
+</dd></dl>
+
+</section>
+<section id="stored-messagefifo">
+<h2>stored::MessageFifo<a class="headerlink" href="#stored-messagefifo" title="Permalink to this headline"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I_6size_t_6size_t_bEN6stored11MessageFifoE">
+<span id="_CPPv3I_6size_t_6size_t_bEN6stored11MessageFifoE"></span><span id="_CPPv2I_6size_t_6size_t_bEN6stored11MessageFifoE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Capacity</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Messages</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">defaultMessages</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I_6size_t_6size_t_bEN6stored11MessageFifoE" title="stored::MessageFifo::Capacity"><span class="n"><span class="pre">Capacity</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ThreadSafe</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I_6size_t_6size_t_bEN6stored11MessageFifoE" title="stored::MessageFifo::Capacity"><span class="n"><span class="pre">Capacity</span></span></a><span class="w"> </span><span class="o"><span class="pre">&gt;</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_message_fifo"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">MessageFifo</span></span></span><a class="headerlink" href="#_CPPv4I_6size_t_6size_t_bEN6stored11MessageFifoE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>FIFO for arbitrary-length messages. </p>
+<p>This is a single-producer single-consumer FIFO.</p>
+<p>The FIFO can be unbounded (<code class="docutils literal notranslate"><span class="pre">Capacity</span></code> is zero), which allows queuing any number and length of messages. However, it cannot be thread-safe in that case.</p>
+<p>If the FIFO is bounded (<code class="docutils literal notranslate"><span class="pre">Capacity</span></code> is set to the total buffer size for all queued messages), it can queue any number of messages (but limited by <code class="docutils literal notranslate"><span class="pre">Messages</span></code>) of any size (up to <code class="docutils literal notranslate"><span class="pre">Capacity</span></code>). Messages of different length can be used. It does not use dynamic memory allocation. It can be configured to be thread-safe, which is also async-signal safe. Therefore, it can be used to pass messages between threads, but also from/to an interrupt handler. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo10const_typeE">
+<span id="_CPPv3N6stored11MessageFifo10const_typeE"></span><span id="_CPPv2N6stored11MessageFifo10const_typeE"></span><span id="stored::MessageFifo::const_type"></span><span class="target" id="classstored_1_1_message_fifo_1ad0bd5d662020a504f38a55a63c190b8e"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">MessageView</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_type</span></span></span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo10const_typeE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo8iteratorE">
+<span id="_CPPv3N6stored11MessageFifo8iteratorE"></span><span id="_CPPv2N6stored11MessageFifo8iteratorE"></span><span id="stored::MessageFifo::iterator"></span><span class="target" id="classstored_1_1_message_fifo_1a5f8a4504e566f561baed8c6756ee881d"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">PopIterator</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_6size_t_6size_t_bEN6stored11MessageFifoE" title="stored::MessageFifo"><span class="n"><span class="pre">MessageFifo</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">iterator</span></span></span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo8iteratorE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo4typeE">
+<span id="_CPPv3N6stored11MessageFifo4typeE"></span><span id="_CPPv2N6stored11MessageFifo4typeE"></span><span id="stored::MessageFifo::type"></span><span class="target" id="classstored_1_1_message_fifo_1a204a703e45101da750e22549ba63bc87"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">Message</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo4typeE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo11append_backEPKc6size_t">
+<span id="_CPPv3N6stored11MessageFifo11append_backEPKc6size_t"></span><span id="_CPPv2N6stored11MessageFifo11append_backEPKc6size_t"></span><span id="stored::MessageFifo::append_back__cCP.s"></span><span class="target" id="classstored_1_1_message_fifo_1a06b784a9b6ca3855e7c6dcb35b6aaa20"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">append_back</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">message</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">length</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo11append_backEPKc6size_t" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo11append_backERK10const_type">
+<span id="_CPPv3N6stored11MessageFifo11append_backERK10const_type"></span><span id="_CPPv2N6stored11MessageFifo11append_backERK10const_type"></span><span id="stored::MessageFifo::append_back__const_typeCR"></span><span class="target" id="classstored_1_1_message_fifo_1aeb37100aa91160a9c91f7b471338f614"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">append_back</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored11MessageFifo10const_typeE" title="stored::MessageFifo::const_type"><span class="n"><span class="pre">const_type</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">message</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo11append_backERK10const_type" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored11MessageFifo9availableEv">
+<span id="_CPPv3NK6stored11MessageFifo9availableEv"></span><span id="_CPPv2NK6stored11MessageFifo9availableEv"></span><span id="stored::MessageFifo::availableC"></span><span class="target" id="classstored_1_1_message_fifo_1a33cc921a857cd503bb4b2c6d8fa1dcc2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">available</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored11MessageFifo9availableEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo5beginEv">
+<span id="_CPPv3N6stored11MessageFifo5beginEv"></span><span id="_CPPv2N6stored11MessageFifo5beginEv"></span><span id="stored::MessageFifo::beginCE"></span><span class="target" id="classstored_1_1_message_fifo_1acaf281dff5fdf35efa84e69caa1d648d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored11MessageFifo8iteratorE" title="stored::MessageFifo::iterator"><span class="n"><span class="pre">iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo5beginEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored11MessageFifo7boundedEv">
+<span id="_CPPv3NK6stored11MessageFifo7boundedEv"></span><span id="_CPPv2NK6stored11MessageFifo7boundedEv"></span><span id="stored::MessageFifo::boundedCCE"></span><span class="target" id="classstored_1_1_message_fifo_1ac360e91da1e481fdd553ffb1ad02bea8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bounded</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored11MessageFifo7boundedEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo5clearEv">
+<span id="_CPPv3N6stored11MessageFifo5clearEv"></span><span id="_CPPv2N6stored11MessageFifo5clearEv"></span><span id="stored::MessageFifo::clear"></span><span class="target" id="classstored_1_1_message_fifo_1afb7a92d982d56394c80d34ed0435a3c2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">clear</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo5clearEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored11MessageFifo5emptyEv">
+<span id="_CPPv3NK6stored11MessageFifo5emptyEv"></span><span id="_CPPv2NK6stored11MessageFifo5emptyEv"></span><span id="stored::MessageFifo::emptyC"></span><span class="target" id="classstored_1_1_message_fifo_1ab7933f23593466a57a5669dafe9ca53b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">empty</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored11MessageFifo5emptyEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo3endEv">
+<span id="_CPPv3N6stored11MessageFifo3endEv"></span><span id="_CPPv2N6stored11MessageFifo3endEv"></span><span id="stored::MessageFifo::endCE"></span><span class="target" id="classstored_1_1_message_fifo_1a38a2eaf21df03fbad341e5701cfe34a9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored11MessageFifo8iteratorE" title="stored::MessageFifo::iterator"><span class="n"><span class="pre">iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo3endEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored11MessageFifo5frontEv">
+<span id="_CPPv3NK6stored11MessageFifo5frontEv"></span><span id="_CPPv2NK6stored11MessageFifo5frontEv"></span><span id="stored::MessageFifo::frontC"></span><span class="target" id="classstored_1_1_message_fifo_1a8536dc6d782560f5fcf8b32c9c36e092"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored11MessageFifo10const_typeE" title="stored::MessageFifo::const_type"><span class="n"><span class="pre">const_type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">front</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored11MessageFifo5frontEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo5frontEv">
+<span id="_CPPv3N6stored11MessageFifo5frontEv"></span><span id="_CPPv2N6stored11MessageFifo5frontEv"></span><span id="stored::MessageFifo::front"></span><span class="target" id="classstored_1_1_message_fifo_1ade342ce4d943c28778618c274d8a9e14"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored11MessageFifo4typeE" title="stored::MessageFifo::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">front</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo5frontEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored11MessageFifo4fullEv">
+<span id="_CPPv3NK6stored11MessageFifo4fullEv"></span><span id="_CPPv2NK6stored11MessageFifo4fullEv"></span><span id="stored::MessageFifo::fullC"></span><span class="target" id="classstored_1_1_message_fifo_1af9de6acd09f2a438269404d9dd4c55f2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">full</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored11MessageFifo4fullEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo8pop_backEv">
+<span id="_CPPv3N6stored11MessageFifo8pop_backEv"></span><span id="_CPPv2N6stored11MessageFifo8pop_backEv"></span><span id="stored::MessageFifo::pop_back"></span><span class="target" id="classstored_1_1_message_fifo_1affa6bae35e2d872c0df3ed377461b634"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pop_back</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo8pop_backEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo9pop_frontEv">
+<span id="_CPPv3N6stored11MessageFifo9pop_frontEv"></span><span id="_CPPv2N6stored11MessageFifo9pop_frontEv"></span><span id="stored::MessageFifo::pop_front"></span><span class="target" id="classstored_1_1_message_fifo_1ae9ccd30eb148041127fbd7c3bd7385c8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pop_front</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo9pop_frontEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo9push_backEv">
+<span id="_CPPv3N6stored11MessageFifo9push_backEv"></span><span id="_CPPv2N6stored11MessageFifo9push_backEv"></span><span id="stored::MessageFifo::push_back"></span><span class="target" id="classstored_1_1_message_fifo_1a583022e6fd462237f3973b9cb765cf7f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo9push_backEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo9push_backEPKc6size_t">
+<span id="_CPPv3N6stored11MessageFifo9push_backEPKc6size_t"></span><span id="_CPPv2N6stored11MessageFifo9push_backEPKc6size_t"></span><span id="stored::MessageFifo::push_back__cCP.s"></span><span class="target" id="classstored_1_1_message_fifo_1aa2d017d496889f11a8823cf87ac09066"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">message</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">length</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo9push_backEPKc6size_t" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo9push_backERK10const_type">
+<span id="_CPPv3N6stored11MessageFifo9push_backERK10const_type"></span><span id="_CPPv2N6stored11MessageFifo9push_backERK10const_type"></span><span id="stored::MessageFifo::push_back__const_typeCR"></span><span class="target" id="classstored_1_1_message_fifo_1a374352b2b9777faf330c87cd2443775e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored11MessageFifo10const_typeE" title="stored::MessageFifo::const_type"><span class="n"><span class="pre">const_type</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">message</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo9push_backERK10const_type" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6stored11MessageFifo9push_backE6size_t2It2It">
+<span id="_CPPv3I0EN6stored11MessageFifo9push_backE2It2It"></span><span id="_CPPv2I0EN6stored11MessageFifo9push_backE2It2It"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">It</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_message_fifo_1aae6a82b061c86e27254117c59dc129a0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored11MessageFifo9push_backE6size_t2It2It" title="stored::MessageFifo::push_back::It"><span class="n"><span class="pre">It</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">start</span></span>, <a class="reference internal" href="#_CPPv4I0EN6stored11MessageFifo9push_backE6size_t2It2It" title="stored::MessageFifo::push_back::It"><span class="n"><span class="pre">It</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">end</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored11MessageFifo9push_backE6size_t2It2It" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo9push_backENSt16initializer_listI10const_typeEE">
+<span id="_CPPv3N6stored11MessageFifo9push_backENSt16initializer_listI10const_typeEE"></span><span id="_CPPv2N6stored11MessageFifo9push_backENSt16initializer_listI10const_typeEE"></span><span id="stored::MessageFifo::push_back__std::initializer_list:const_type:"></span><span class="target" id="classstored_1_1_message_fifo_1a0b128fbecf2a489665db3e4939c34272"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored11MessageFifo10const_typeE" title="stored::MessageFifo::const_type"><span class="n"><span class="pre">const_type</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">init</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo9push_backENSt16initializer_listI10const_typeEE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored11MessageFifo4sizeEv">
+<span id="_CPPv3NK6stored11MessageFifo4sizeEv"></span><span id="_CPPv2NK6stored11MessageFifo4sizeEv"></span><span id="stored::MessageFifo::sizeCCE"></span><span class="target" id="classstored_1_1_message_fifo_1a9c266ee22231263f14b0c1ecdc88c4d6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored11MessageFifo4sizeEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored11MessageFifo5spaceEv">
+<span id="_CPPv3NK6stored11MessageFifo5spaceEv"></span><span id="_CPPv2NK6stored11MessageFifo5spaceEv"></span><span id="stored::MessageFifo::spaceC"></span><span class="target" id="classstored_1_1_message_fifo_1a4c81ba0f60507ebb2d61cb4945cf7ae4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">space</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored11MessageFifo5spaceEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+<section id="stored-scratchpad">
+<h2>stored::Scratchpad<a class="headerlink" href="#stored-scratchpad" title="Permalink to this headline"></a></h2>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4I_6size_tEN6stored10ScratchPadE">
 <span id="_CPPv3I_6size_tEN6stored10ScratchPadE"></span><span id="_CPPv2I_6size_tEN6stored10ScratchPadE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MaxSize</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0xffff</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_scratch_pad"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ScratchPad</span></span></span><a class="headerlink" href="#_CPPv4I_6size_tEN6stored10ScratchPadE" title="Permalink to this definition"></a><br /></dt>
@@ -308,305 +645,9 @@
 
 </dd></dl>
 
-<dl class="cpp class">
-<dt class="sig sig-object cpp" id="_CPPv4I0_6size_t_bEN6stored4FifoE">
-<span id="_CPPv3I0_6size_t_bEN6stored4FifoE"></span><span id="_CPPv2I0_6size_t_bEN6stored4FifoE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Capacity</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ThreadSafe</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I0_6size_t_bEN6stored4FifoE" title="stored::Fifo::Capacity"><span class="n"><span class="pre">Capacity</span></span></a><span class="w"> </span><span class="o"><span class="pre">&gt;</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_fifo"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Fifo</span></span></span><a class="headerlink" href="#_CPPv4I0_6size_t_bEN6stored4FifoE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>FIFO that is optionally bounded in size and optionally thread-safe. </p>
-<p>This is a single-producer single-consumer FIFO.</p>
-<p>If bounded (<code class="docutils literal notranslate"><span class="pre">Capacity</span></code> is non-zero), it implements a circular buffer and does not do dynamic memory allocation during operation. Then, it is thread-safe and async-signal safe. Therefore, it can be used to communicate between threads, but also by an interrupt handler.</p>
-<p>If unbounded, it cannot be thread-safe. </p>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo8iteratorE">
-<span id="_CPPv3N6stored4Fifo8iteratorE"></span><span id="_CPPv2N6stored4Fifo8iteratorE"></span><span id="stored::Fifo::iterator"></span><span class="target" id="classstored_1_1_fifo_1a5e6eae98c770643a8a9aab85df9e74d0"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">PopIterator</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_t_bEN6stored4FifoE" title="stored::Fifo"><span class="n"><span class="pre">Fifo</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">iterator</span></span></span><a class="headerlink" href="#_CPPv4N6stored4Fifo8iteratorE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo7pointerE">
-<span id="_CPPv3N6stored4Fifo7pointerE"></span><span id="_CPPv2N6stored4Fifo7pointerE"></span><span id="stored::Fifo::pointer"></span><span class="target" id="classstored_1_1_fifo_1a9a83ec9a9ee4815f98ef482431275c26"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">Buffer_type</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pointer</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pointer</span></span></span><a class="headerlink" href="#_CPPv4N6stored4Fifo7pointerE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo4typeE">
-<span id="_CPPv3N6stored4Fifo4typeE"></span><span id="_CPPv2N6stored4Fifo4typeE"></span><span id="stored::Fifo::type"></span><span class="target" id="classstored_1_1_fifo_1a1a5b93728cdc425dd781b595d0cc7aca"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_t_bEN6stored4FifoE" title="stored::Fifo::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><a class="headerlink" href="#_CPPv4N6stored4Fifo4typeE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored4Fifo9availableEv">
-<span id="_CPPv3NK6stored4Fifo9availableEv"></span><span id="_CPPv2NK6stored4Fifo9availableEv"></span><span id="stored::Fifo::availableC"></span><span class="target" id="classstored_1_1_fifo_1a5fb49fb1771eabf3b03f69a155689981"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">available</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored4Fifo9availableEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo5beginEv">
-<span id="_CPPv3N6stored4Fifo5beginEv"></span><span id="_CPPv2N6stored4Fifo5beginEv"></span><span id="stored::Fifo::beginCE"></span><span class="target" id="classstored_1_1_fifo_1a16c2b6a942dd01f708adcb11ff7fa205"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored4Fifo8iteratorE" title="stored::Fifo::iterator"><span class="n"><span class="pre">iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored4Fifo5beginEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored4Fifo7boundedEv">
-<span id="_CPPv3NK6stored4Fifo7boundedEv"></span><span id="_CPPv2NK6stored4Fifo7boundedEv"></span><span id="stored::Fifo::boundedCCE"></span><span class="target" id="classstored_1_1_fifo_1afb859e7401936d924a29410fc2f1defe"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bounded</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored4Fifo7boundedEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored4Fifo8capacityEv">
-<span id="_CPPv3NK6stored4Fifo8capacityEv"></span><span id="_CPPv2NK6stored4Fifo8capacityEv"></span><span id="stored::Fifo::capacityCCE"></span><span class="target" id="classstored_1_1_fifo_1ad5e649e29774ab6348de99044561edcf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">capacity</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored4Fifo8capacityEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo5clearEv">
-<span id="_CPPv3N6stored4Fifo5clearEv"></span><span id="_CPPv2N6stored4Fifo5clearEv"></span><span id="stored::Fifo::clear"></span><span class="target" id="classstored_1_1_fifo_1a9c4f515af6a54fc363e6a74ecf0cecd0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">clear</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored4Fifo5clearEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4IDpEN6stored4Fifo12emplace_backEvDpRR3Arg">
-<span id="_CPPv3IDpEN6stored4Fifo12emplace_backEDpRR3Arg"></span><span id="_CPPv2IDpEN6stored4Fifo12emplace_backEDpRR3Arg"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Arg</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_fifo_1accb3b6d71a6fa92bbf57a54f6037554d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emplace_back</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN6stored4Fifo12emplace_backEvDpRR3Arg" title="stored::Fifo::emplace_back::Arg"><span class="n"><span class="pre">Arg</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">arg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN6stored4Fifo12emplace_backEvDpRR3Arg" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored4Fifo5emptyEv">
-<span id="_CPPv3NK6stored4Fifo5emptyEv"></span><span id="_CPPv2NK6stored4Fifo5emptyEv"></span><span id="stored::Fifo::emptyC"></span><span class="target" id="classstored_1_1_fifo_1adab2fc335e0b1da06e4d3cc4aae0701a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">empty</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored4Fifo5emptyEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo3endEv">
-<span id="_CPPv3N6stored4Fifo3endEv"></span><span id="_CPPv2N6stored4Fifo3endEv"></span><span id="stored::Fifo::endCE"></span><span class="target" id="classstored_1_1_fifo_1a5df79fdd49245358a694c53aa027a7ef"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored4Fifo8iteratorE" title="stored::Fifo::iterator"><span class="n"><span class="pre">iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored4Fifo3endEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored4Fifo5frontEv">
-<span id="_CPPv3NK6stored4Fifo5frontEv"></span><span id="_CPPv2NK6stored4Fifo5frontEv"></span><span id="stored::Fifo::frontC"></span><span class="target" id="classstored_1_1_fifo_1ae741ec18170b4ef92aac4cb3c1a0df21"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored4Fifo4typeE" title="stored::Fifo::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">front</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored4Fifo5frontEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo5frontEv">
-<span id="_CPPv3N6stored4Fifo5frontEv"></span><span id="_CPPv2N6stored4Fifo5frontEv"></span><span id="stored::Fifo::front"></span><span class="target" id="classstored_1_1_fifo_1af8132ed8113cc23b433c6e7707ba33ce"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored4Fifo4typeE" title="stored::Fifo::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">front</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored4Fifo5frontEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored4Fifo4fullEv">
-<span id="_CPPv3NK6stored4Fifo4fullEv"></span><span id="_CPPv2NK6stored4Fifo4fullEv"></span><span id="stored::Fifo::fullC"></span><span class="target" id="classstored_1_1_fifo_1abd0bc0a976f827cb9cc504248110cdb2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">full</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored4Fifo4fullEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo9pop_frontEv">
-<span id="_CPPv3N6stored4Fifo9pop_frontEv"></span><span id="_CPPv2N6stored4Fifo9pop_frontEv"></span><span id="stored::Fifo::pop_front"></span><span class="target" id="classstored_1_1_fifo_1ae10a230138dcbc438e2e56c1fb97b8ee"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pop_front</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored4Fifo9pop_frontEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN6stored4Fifo9push_backEv2It2It">
-<span id="_CPPv3I0EN6stored4Fifo9push_backE2It2It"></span><span id="_CPPv2I0EN6stored4Fifo9push_backE2It2It"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">It</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_fifo_1a0f02fa85d5bbfe2d2be6f16787f81339"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored4Fifo9push_backEv2It2It" title="stored::Fifo::push_back::It"><span class="n"><span class="pre">It</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">start</span></span>, <a class="reference internal" href="#_CPPv4I0EN6stored4Fifo9push_backEv2It2It" title="stored::Fifo::push_back::It"><span class="n"><span class="pre">It</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">end</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored4Fifo9push_backEv2It2It" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo9push_backENSt16initializer_listI4typeEE">
-<span id="_CPPv3N6stored4Fifo9push_backENSt16initializer_listI4typeEE"></span><span id="_CPPv2N6stored4Fifo9push_backENSt16initializer_listI4typeEE"></span><span id="stored::Fifo::push_back__std::initializer_list:type:"></span><span class="target" id="classstored_1_1_fifo_1a9617f2064d84c2bb1bdb00a1edfce2ee"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored4Fifo4typeE" title="stored::Fifo::type"><span class="n"><span class="pre">type</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">init</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored4Fifo9push_backENSt16initializer_listI4typeEE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored4Fifo9push_backERK1T">
-<span id="_CPPv3N6stored4Fifo9push_backERK1T"></span><span id="_CPPv2N6stored4Fifo9push_backERK1T"></span><span id="stored::Fifo::push_back__TCR"></span><span class="target" id="classstored_1_1_fifo_1ad6f5e7f64c8042533e64298b1ed720e5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0_6size_t_bEN6stored4FifoE" title="stored::Fifo::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored4Fifo9push_backERK1T" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored4Fifo4sizeEv">
-<span id="_CPPv3NK6stored4Fifo4sizeEv"></span><span id="_CPPv2NK6stored4Fifo4sizeEv"></span><span id="stored::Fifo::sizeCCE"></span><span class="target" id="classstored_1_1_fifo_1a58315d71ba07109715f681d7170c5413"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored4Fifo4sizeEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored4Fifo5spaceEv">
-<span id="_CPPv3NK6stored4Fifo5spaceEv"></span><span id="_CPPv2NK6stored4Fifo5spaceEv"></span><span id="stored::Fifo::spaceC"></span><span class="target" id="classstored_1_1_fifo_1ae5724686f5288356b7d32b0a844a8f95"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">space</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored4Fifo5spaceEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-</dd></dl>
-
-<dl class="cpp class">
-<dt class="sig sig-object cpp" id="_CPPv4I_6size_t_6size_t_bEN6stored11MessageFifoE">
-<span id="_CPPv3I_6size_t_6size_t_bEN6stored11MessageFifoE"></span><span id="_CPPv2I_6size_t_6size_t_bEN6stored11MessageFifoE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Capacity</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Messages</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">defaultMessages</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I_6size_t_6size_t_bEN6stored11MessageFifoE" title="stored::MessageFifo::Capacity"><span class="n"><span class="pre">Capacity</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ThreadSafe</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I_6size_t_6size_t_bEN6stored11MessageFifoE" title="stored::MessageFifo::Capacity"><span class="n"><span class="pre">Capacity</span></span></a><span class="w"> </span><span class="o"><span class="pre">&gt;</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_message_fifo"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">MessageFifo</span></span></span><a class="headerlink" href="#_CPPv4I_6size_t_6size_t_bEN6stored11MessageFifoE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>FIFO for arbitrary-length messages. </p>
-<p>This is a single-producer single-consumer FIFO.</p>
-<p>The FIFO can be unbounded (<code class="docutils literal notranslate"><span class="pre">Capacity</span></code> is zero), which allows queuing any number and length of messages. However, it cannot be thread-safe in that case.</p>
-<p>If the FIFO is bounded (<code class="docutils literal notranslate"><span class="pre">Capacity</span></code> is set to the total buffer size for all queued messages), it can queue any number of messages (but limited by <code class="docutils literal notranslate"><span class="pre">Messages</span></code>) of any size (up to <code class="docutils literal notranslate"><span class="pre">Capacity</span></code>). Messages of different length can be used. It does not use dynamic memory allocation. It can be configured to be thread-safe, which is also async-signal safe. Therefore, it can be used to pass messages between threads, but also from/to an interrupt handler. </p>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo10const_typeE">
-<span id="_CPPv3N6stored11MessageFifo10const_typeE"></span><span id="_CPPv2N6stored11MessageFifo10const_typeE"></span><span id="stored::MessageFifo::const_type"></span><span class="target" id="classstored_1_1_message_fifo_1ad0bd5d662020a504f38a55a63c190b8e"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">MessageView</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_type</span></span></span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo10const_typeE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo8iteratorE">
-<span id="_CPPv3N6stored11MessageFifo8iteratorE"></span><span id="_CPPv2N6stored11MessageFifo8iteratorE"></span><span id="stored::MessageFifo::iterator"></span><span class="target" id="classstored_1_1_message_fifo_1a5f8a4504e566f561baed8c6756ee881d"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">PopIterator</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_6size_t_6size_t_bEN6stored11MessageFifoE" title="stored::MessageFifo"><span class="n"><span class="pre">MessageFifo</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">iterator</span></span></span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo8iteratorE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo4typeE">
-<span id="_CPPv3N6stored11MessageFifo4typeE"></span><span id="_CPPv2N6stored11MessageFifo4typeE"></span><span id="stored::MessageFifo::type"></span><span class="target" id="classstored_1_1_message_fifo_1a204a703e45101da750e22549ba63bc87"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">Message</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo4typeE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo11append_backEPKc6size_t">
-<span id="_CPPv3N6stored11MessageFifo11append_backEPKc6size_t"></span><span id="_CPPv2N6stored11MessageFifo11append_backEPKc6size_t"></span><span id="stored::MessageFifo::append_back__cCP.s"></span><span class="target" id="classstored_1_1_message_fifo_1a06b784a9b6ca3855e7c6dcb35b6aaa20"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">append_back</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">message</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">length</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo11append_backEPKc6size_t" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo11append_backERK10const_type">
-<span id="_CPPv3N6stored11MessageFifo11append_backERK10const_type"></span><span id="_CPPv2N6stored11MessageFifo11append_backERK10const_type"></span><span id="stored::MessageFifo::append_back__const_typeCR"></span><span class="target" id="classstored_1_1_message_fifo_1aeb37100aa91160a9c91f7b471338f614"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">append_back</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored11MessageFifo10const_typeE" title="stored::MessageFifo::const_type"><span class="n"><span class="pre">const_type</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">message</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo11append_backERK10const_type" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored11MessageFifo9availableEv">
-<span id="_CPPv3NK6stored11MessageFifo9availableEv"></span><span id="_CPPv2NK6stored11MessageFifo9availableEv"></span><span id="stored::MessageFifo::availableC"></span><span class="target" id="classstored_1_1_message_fifo_1a33cc921a857cd503bb4b2c6d8fa1dcc2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">available</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored11MessageFifo9availableEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo5beginEv">
-<span id="_CPPv3N6stored11MessageFifo5beginEv"></span><span id="_CPPv2N6stored11MessageFifo5beginEv"></span><span id="stored::MessageFifo::beginCE"></span><span class="target" id="classstored_1_1_message_fifo_1acaf281dff5fdf35efa84e69caa1d648d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored11MessageFifo8iteratorE" title="stored::MessageFifo::iterator"><span class="n"><span class="pre">iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo5beginEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored11MessageFifo7boundedEv">
-<span id="_CPPv3NK6stored11MessageFifo7boundedEv"></span><span id="_CPPv2NK6stored11MessageFifo7boundedEv"></span><span id="stored::MessageFifo::boundedCCE"></span><span class="target" id="classstored_1_1_message_fifo_1ac360e91da1e481fdd553ffb1ad02bea8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bounded</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored11MessageFifo7boundedEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo5clearEv">
-<span id="_CPPv3N6stored11MessageFifo5clearEv"></span><span id="_CPPv2N6stored11MessageFifo5clearEv"></span><span id="stored::MessageFifo::clear"></span><span class="target" id="classstored_1_1_message_fifo_1afb7a92d982d56394c80d34ed0435a3c2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">clear</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo5clearEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored11MessageFifo5emptyEv">
-<span id="_CPPv3NK6stored11MessageFifo5emptyEv"></span><span id="_CPPv2NK6stored11MessageFifo5emptyEv"></span><span id="stored::MessageFifo::emptyC"></span><span class="target" id="classstored_1_1_message_fifo_1ab7933f23593466a57a5669dafe9ca53b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">empty</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored11MessageFifo5emptyEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo3endEv">
-<span id="_CPPv3N6stored11MessageFifo3endEv"></span><span id="_CPPv2N6stored11MessageFifo3endEv"></span><span id="stored::MessageFifo::endCE"></span><span class="target" id="classstored_1_1_message_fifo_1a38a2eaf21df03fbad341e5701cfe34a9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored11MessageFifo8iteratorE" title="stored::MessageFifo::iterator"><span class="n"><span class="pre">iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo3endEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored11MessageFifo5frontEv">
-<span id="_CPPv3NK6stored11MessageFifo5frontEv"></span><span id="_CPPv2NK6stored11MessageFifo5frontEv"></span><span id="stored::MessageFifo::frontC"></span><span class="target" id="classstored_1_1_message_fifo_1a8536dc6d782560f5fcf8b32c9c36e092"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored11MessageFifo10const_typeE" title="stored::MessageFifo::const_type"><span class="n"><span class="pre">const_type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">front</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored11MessageFifo5frontEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo5frontEv">
-<span id="_CPPv3N6stored11MessageFifo5frontEv"></span><span id="_CPPv2N6stored11MessageFifo5frontEv"></span><span id="stored::MessageFifo::front"></span><span class="target" id="classstored_1_1_message_fifo_1ade342ce4d943c28778618c274d8a9e14"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored11MessageFifo4typeE" title="stored::MessageFifo::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">front</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo5frontEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored11MessageFifo4fullEv">
-<span id="_CPPv3NK6stored11MessageFifo4fullEv"></span><span id="_CPPv2NK6stored11MessageFifo4fullEv"></span><span id="stored::MessageFifo::fullC"></span><span class="target" id="classstored_1_1_message_fifo_1af9de6acd09f2a438269404d9dd4c55f2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">full</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored11MessageFifo4fullEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo8pop_backEv">
-<span id="_CPPv3N6stored11MessageFifo8pop_backEv"></span><span id="_CPPv2N6stored11MessageFifo8pop_backEv"></span><span id="stored::MessageFifo::pop_back"></span><span class="target" id="classstored_1_1_message_fifo_1affa6bae35e2d872c0df3ed377461b634"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pop_back</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo8pop_backEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo9pop_frontEv">
-<span id="_CPPv3N6stored11MessageFifo9pop_frontEv"></span><span id="_CPPv2N6stored11MessageFifo9pop_frontEv"></span><span id="stored::MessageFifo::pop_front"></span><span class="target" id="classstored_1_1_message_fifo_1ae9ccd30eb148041127fbd7c3bd7385c8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pop_front</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo9pop_frontEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo9push_backEv">
-<span id="_CPPv3N6stored11MessageFifo9push_backEv"></span><span id="_CPPv2N6stored11MessageFifo9push_backEv"></span><span id="stored::MessageFifo::push_back"></span><span class="target" id="classstored_1_1_message_fifo_1a583022e6fd462237f3973b9cb765cf7f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo9push_backEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo9push_backEPKc6size_t">
-<span id="_CPPv3N6stored11MessageFifo9push_backEPKc6size_t"></span><span id="_CPPv2N6stored11MessageFifo9push_backEPKc6size_t"></span><span id="stored::MessageFifo::push_back__cCP.s"></span><span class="target" id="classstored_1_1_message_fifo_1aa2d017d496889f11a8823cf87ac09066"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">message</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">length</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo9push_backEPKc6size_t" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo9push_backERK10const_type">
-<span id="_CPPv3N6stored11MessageFifo9push_backERK10const_type"></span><span id="_CPPv2N6stored11MessageFifo9push_backERK10const_type"></span><span id="stored::MessageFifo::push_back__const_typeCR"></span><span class="target" id="classstored_1_1_message_fifo_1a374352b2b9777faf330c87cd2443775e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored11MessageFifo10const_typeE" title="stored::MessageFifo::const_type"><span class="n"><span class="pre">const_type</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">message</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo9push_backERK10const_type" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN6stored11MessageFifo9push_backE6size_t2It2It">
-<span id="_CPPv3I0EN6stored11MessageFifo9push_backE2It2It"></span><span id="_CPPv2I0EN6stored11MessageFifo9push_backE2It2It"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">It</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_message_fifo_1aae6a82b061c86e27254117c59dc129a0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored11MessageFifo9push_backE6size_t2It2It" title="stored::MessageFifo::push_back::It"><span class="n"><span class="pre">It</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">start</span></span>, <a class="reference internal" href="#_CPPv4I0EN6stored11MessageFifo9push_backE6size_t2It2It" title="stored::MessageFifo::push_back::It"><span class="n"><span class="pre">It</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">end</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored11MessageFifo9push_backE6size_t2It2It" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11MessageFifo9push_backENSt16initializer_listI10const_typeEE">
-<span id="_CPPv3N6stored11MessageFifo9push_backENSt16initializer_listI10const_typeEE"></span><span id="_CPPv2N6stored11MessageFifo9push_backENSt16initializer_listI10const_typeEE"></span><span id="stored::MessageFifo::push_back__std::initializer_list:const_type:"></span><span class="target" id="classstored_1_1_message_fifo_1a0b128fbecf2a489665db3e4939c34272"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored11MessageFifo10const_typeE" title="stored::MessageFifo::const_type"><span class="n"><span class="pre">const_type</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">init</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11MessageFifo9push_backENSt16initializer_listI10const_typeEE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored11MessageFifo4sizeEv">
-<span id="_CPPv3NK6stored11MessageFifo4sizeEv"></span><span id="_CPPv2NK6stored11MessageFifo4sizeEv"></span><span id="stored::MessageFifo::sizeCCE"></span><span class="target" id="classstored_1_1_message_fifo_1a9c266ee22231263f14b0c1ecdc88c4d6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored11MessageFifo4sizeEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored11MessageFifo5spaceEv">
-<span id="_CPPv3NK6stored11MessageFifo5spaceEv"></span><span id="_CPPv2NK6stored11MessageFifo5spaceEv"></span><span id="stored::MessageFifo::spaceC"></span><span class="target" id="classstored_1_1_message_fifo_1a4c81ba0f60507ebb2d61cb4945cf7ae4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">space</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored11MessageFifo5spaceEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.likely">
-<span class="target" id="util_8h_1aa0672ea7123854cc5f51902a06c473fb"></span><span class="sig-name descname"><span class="n"><span class="pre">likely</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">expr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.likely" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Marks the given expression to likely be evaluated to true. </p>
-<p>This may help compiler optimization. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the evaluated <code class="docutils literal notranslate"><span class="pre">expr</span></code> </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.unlikely">
-<span class="target" id="util_8h_1ad8700448546b3b5111404cc021061fd5"></span><span class="sig-name descname"><span class="n"><span class="pre">unlikely</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">expr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.unlikely" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Marks the given expression to likely be evaluated to true. </p>
-<p>This may help compiler optimization. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the evaluated <code class="docutils literal notranslate"><span class="pre">expr</span></code> </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.stored_assert">
-<span class="target" id="util_8h_1ab750e51b876450a0a4ad419588a82a4d"></span><span class="sig-name descname"><span class="n"><span class="pre">stored_assert</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">expr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.stored_assert" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Like <code class="docutils literal notranslate"><span class="pre">assert()</span></code>, but only emits code when <a class="reference internal" href="cpp_config.html#structstored_1_1_default_config_1ae1cc7031c09a02bbdfb5e4a1e723fc4f"><span class="std std-ref">stored::Config::EnableAssert</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6bannerEv">
-<span id="_CPPv3N6stored6bannerEv"></span><span id="_CPPv2N6stored6bannerEv"></span><span id="stored::banner"></span><span class="target" id="namespacestored_1acf12bb4cfb2f1048006afb47e7f1d546"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">banner</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored6bannerEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Return a single-line string that contains relevant configuration information of libstored. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11memcmp_swapEPKvPKv6size_t">
-<span id="_CPPv3N6stored11memcmp_swapEPKvPKv6size_t"></span><span id="_CPPv2N6stored11memcmp_swapEPKvPKv6size_t"></span><span id="stored::memcmp_swap__voidCP.voidCP.s"></span><span class="target" id="namespacestored_1a1377147e65de490e1c6eb7469365d7b2"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">memcmp_swap</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">b</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored11memcmp_swapEPKvPKv6size_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p>memcmp() with endianness swapping. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11memcpy_swapEPvPKv6size_t">
-<span id="_CPPv3N6stored11memcpy_swapEPvPKv6size_t"></span><span id="_CPPv2N6stored11memcpy_swapEPvPKv6size_t"></span><span id="stored::memcpy_swap__voidP.voidCP.s"></span><span class="target" id="namespacestored_1a05668bc679cf647fc500a516921deb16"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">memcpy_swap</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dst</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">src</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored11memcpy_swapEPvPKv6size_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p><code class="docutils literal notranslate"><span class="pre">memcpy()</span></code> with endianness swapping. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I00E14saturated_cast1R1T">
-<span id="_CPPv3I00E14saturated_cast1T"></span><span id="_CPPv2I00E14saturated_cast1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">R</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="util_8h_1a6369ba91d4e58a60d331fd5143569fdd"></span><a class="reference internal" href="#_CPPv4I00E14saturated_cast1R1T" title="saturated_cast::R"><span class="n"><span class="pre">R</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">saturated_cast</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00E14saturated_cast1R1T" title="saturated_cast::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I00E14saturated_cast1R1T" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Converts a number type to another one, with proper rounding and saturation. </p>
-</dd></dl>
-
+</section>
+<section id="stored-string-literal">
+<h2>stored::string_literal<a class="headerlink" href="#stored-string-literal" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14string_literalEPKv6size_tPKc">
 <span id="_CPPv3N6stored14string_literalEPKv6size_tPKc"></span><span id="_CPPv2N6stored14string_literalEPKv6size_tPKc"></span><span id="stored::string_literal__voidCP.s.cCP"></span><span class="target" id="namespacestored_1ab0e085ca2b629a2e8735fcdffd4bf618"></span><span class="n"><span class="pre">String</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">string_literal</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefix</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14string_literalEPKv6size_tPKc" title="Permalink to this definition"></a><br /></dt>
@@ -614,18 +655,27 @@
 <p>This comes in handy for verbose output of binary data, like protocol messages. </p>
 </dd></dl>
 
+</section>
+<section id="stored-strncmp">
+<h2>stored::strncmp<a class="headerlink" href="#stored-strncmp" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored7strncmpEPKc6size_tPKc6size_t">
 <span id="_CPPv3N6stored7strncmpEPKc6size_tPKc6size_t"></span><span id="_CPPv2N6stored7strncmpEPKc6size_tPKc6size_t"></span><span id="stored::strncmp__cCP.s.cCP.s"></span><span class="target" id="namespacestored_1a3578ecbcbb2c7cb431c34a640ee15904"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">strncmp</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">str1</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len1</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">str2</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len2</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored7strncmpEPKc6size_tPKc6size_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Like <code class="docutils literal notranslate"><a class="reference internal" href="#namespacestored_1a3578ecbcbb2c7cb431c34a640ee15904"><span class="std std-ref"><span class="pre">strncmp()</span></span></a></code>, but handles non zero-terminated strings. </p>
 </dd></dl>
 
+</section>
+<section id="stored-strncpy">
+<h2>stored::strncpy<a class="headerlink" href="#stored-strncpy" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored7strncpyEPcPKc6size_t">
 <span id="_CPPv3N6stored7strncpyEPcPKc6size_t"></span><span id="_CPPv2N6stored7strncpyEPcPKc6size_t"></span><span id="stored::strncpy__cP.cCP.s"></span><span class="target" id="namespacestored_1ae9a96ebe6be5c8f895234ffc423f860d"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">strncpy</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dst</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">src</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored7strncpyEPcPKc6size_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Like <code class="docutils literal notranslate"><a class="reference internal" href="#namespacestored_1ae9a96ebe6be5c8f895234ffc423f860d"><span class="std std-ref"><span class="pre">strncpy()</span></span></a></code>, but without padding and returning the length of the string. </p>
 </dd></dl>
 
+</section>
+<section id="stored-swap-endian">
+<h2>stored::swap_endian<a class="headerlink" href="#stored-swap-endian" title="Permalink to this headline"></a></h2>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored11swap_endianE1T1T">
 <span id="_CPPv3I0EN6stored11swap_endianE1T"></span><span id="_CPPv2I0EN6stored11swap_endianE1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacestored_1a0fee2d186b6abafc8ea81c22de2f1d30"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored11swap_endianE1T1T" title="stored::swap_endian::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">swap_endian</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored11swap_endianE1T1T" title="stored::swap_endian::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored11swap_endianE1T1T" title="Permalink to this definition"></a><br /></dt>
@@ -638,6 +688,7 @@
 <dd><p>Swap endianness of the given buffer. </p>
 </dd></dl>
 
+</section>
 </section>
 
 

@@ -118,7 +118,6 @@ The inheritance of the layers is shown below.
    ZmqLayer <|-- SyncZmqLayer
 
    class Loopback
-   class Poller
    FifoLoopback --> FifoLoopback1
 
 
@@ -196,11 +195,6 @@ stored::NamedPipeLayer
 ----------------------
 
 .. doxygenclass:: stored::NamedPipeLayer
-
-stored::Poller
---------------
-
-.. doxygenclass:: stored::Poller
 
 stored::PrintLayer
 ------------------

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Protocol &mdash; libstored 1.1.0-alpha documentation</title>
+  <title>Protocol &mdash; libstored 1.1.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Synchronizer" href="cpp_synchronizer.html" />
-    <link rel="prev" title="Directory" href="cpp_directory.html" /> 
+    <link rel="prev" title="Poller" href="cpp_poller.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.1.0.dev0
+                1.1.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -51,6 +51,7 @@
 <li class="toctree-l2"><a class="reference internal" href="cpp_components.html">Components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html">Debugger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_directory.html">Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_poller.html">Poller</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Protocol</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#stored-asciiescapelayer">stored::AsciiEscapeLayer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#stored-bufferlayer">stored::BufferLayer</a></li>
@@ -67,7 +68,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#stored-idlechecklayer">stored::IdleCheckLayer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#stored-loopback">stored::Loopback</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#stored-namedpipelayer">stored::NamedPipeLayer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#stored-poller">stored::Poller</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#stored-printlayer">stored::PrintLayer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#stored-segmentationlayer">stored::SegmentationLayer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#stored-seriallayer">stored::SerialLayer</a></li>
@@ -181,7 +181,7 @@ towards the hardware, and <a class="reference internal" href="#_CPPv4N6stored13P
 messages from the hardware up.</p>
 <p>The inheritance of the layers is shown below.</p>
 <p class="plantuml">
-<img src="../_images/plantuml-99b640032bc6c2161560aa3aa45b635a2cf5fe39.svg" alt="abstract ProtocolLayer
+<img src="../_images/plantuml-cc5f41b117e66f843321b6dffed0779cdff41b54.svg" alt="abstract ProtocolLayer
 ProtocolLayer &lt;|-- AsciiEscapeLayer
 ProtocolLayer &lt;|-- TerminalLayer
 AsciiEscapeLayer -[hidden]--&gt; TerminalLayer
@@ -229,7 +229,6 @@ ZmqLayer &lt;|-- DebugZmqLayer
 ZmqLayer &lt;|-- SyncZmqLayer
 
 class Loopback
-class Poller
 FifoLoopback --&gt; FifoLoopback1"/></p>
 <section id="stored-asciiescapelayer">
 <h2>stored::AsciiEscapeLayer<a class="headerlink" href="#stored-asciiescapelayer" title="Permalink to this headline"></a></h2>
@@ -1138,8 +1137,8 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dt class="sig sig-object cpp" id="_CPPv4N6stored9FileLayerE">
 <span id="_CPPv3N6stored9FileLayerE"></span><span id="_CPPv2N6stored9FileLayerE"></span><span id="stored::FileLayer"></span><span class="target" id="classstored_1_1_file_layer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">FileLayer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6stored15PolledFileLayerE" title="stored::PolledFileLayer"><span class="n"><span class="pre">PolledFileLayer</span></span></a><a class="headerlink" href="#_CPPv4N6stored9FileLayerE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>A layer that reads from and writes to file descriptors. </p>
-<p>For POSIX, this applies to everything that is a file descriptor. <code class="docutils literal notranslate"><span class="pre">read()</span></code> and <code class="docutils literal notranslate"><span class="pre">write()</span></code> is done non-blocking, by using a <a class="reference internal" href="#classstored_1_1_poller"><span class="std std-ref">stored::Poller</span></a>.</p>
-<p>For Windows, this can only be used for files. See <a class="reference internal" href="#classstored_1_1_named_pipe_layer"><span class="std std-ref">stored::NamedPipeLayer</span></a>. All files reads and writes use overlapped IO, in combination with a <a class="reference internal" href="#classstored_1_1_poller"><span class="std std-ref">stored::Poller</span></a>. The file handle must be opened that way. The implementation always has an overlapped read pending, and checks the corresponding event for completion. Every <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_protocol_layer_1a357b029311be09df61e019682a848ab5"><span class="std std-ref"><span class="pre">decode()</span></span></a></code> triggers an overlapped write. It uses a completion routine, so the thread must be put in an alertable state once in a while (which the <a class="reference internal" href="#classstored_1_1_poller"><span class="std std-ref">stored::Poller</span></a> does when blocking). </p>
+<p>For POSIX, this applies to everything that is a file descriptor. <code class="docutils literal notranslate"><span class="pre">read()</span></code> and <code class="docutils literal notranslate"><span class="pre">write()</span></code> is done non-blocking, by using a <a class="reference internal" href="cpp_poller.html#classstored_1_1_poller"><span class="std std-ref">stored::Poller</span></a>.</p>
+<p>For Windows, this can only be used for files. See <a class="reference internal" href="#classstored_1_1_named_pipe_layer"><span class="std std-ref">stored::NamedPipeLayer</span></a>. All files reads and writes use overlapped IO, in combination with a <a class="reference internal" href="cpp_poller.html#classstored_1_1_poller"><span class="std std-ref">stored::Poller</span></a>. The file handle must be opened that way. The implementation always has an overlapped read pending, and checks the corresponding event for completion. Every <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_protocol_layer_1a357b029311be09df61e019682a848ab5"><span class="std std-ref"><span class="pre">decode()</span></span></a></code> triggers an overlapped write. It uses a completion routine, so the thread must be put in an alertable state once in a while (which the <a class="reference internal" href="cpp_poller.html#classstored_1_1_poller"><span class="std std-ref">stored::Poller</span></a> does when blocking). </p>
 <p>Subclassed by <a class="reference internal" href="#classstored_1_1_named_pipe_layer"><span class="std std-ref">stored::NamedPipeLayer</span></a>, <a class="reference internal" href="#classstored_1_1_serial_layer"><span class="std std-ref">stored::SerialLayer</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -1198,7 +1197,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored9FileLayer2fdEv">
 <span id="_CPPv3NK6stored9FileLayer2fdEv"></span><span id="_CPPv2NK6stored9FileLayer2fdEv"></span><span id="stored::FileLayer::fdC"></span><span class="target" id="classstored_1_1_file_layer_1a58badaa958c01f0f22eaf298788148e8"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">fd_type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fd</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6stored9FileLayer2fdEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Returns the file descriptor to be used by a <a class="reference internal" href="#classstored_1_1_poller"><span class="std std-ref">stored::Poller</span></a> in order to call <a class="reference internal" href="#classstored_1_1_file_layer_1a1383d4291a2835c5015bdc2dd4dd53c7"><span class="std std-ref">recv()</span></a>. </p>
+<dd><p>Returns the file descriptor to be used by a <a class="reference internal" href="cpp_poller.html#classstored_1_1_poller"><span class="std std-ref">stored::Poller</span></a> in order to call <a class="reference internal" href="#classstored_1_1_file_layer_1a1383d4291a2835c5015bdc2dd4dd53c7"><span class="std std-ref">recv()</span></a>. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1414,233 +1413,6 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 </dd></dl>
 
 </div>
-</dd></dl>
-
-</section>
-<section id="stored-poller">
-<h2>stored::Poller<a class="headerlink" href="#stored-poller" title="Permalink to this headline"></a></h2>
-<dl class="cpp class">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6PollerE">
-<span id="_CPPv3N6stored6PollerE"></span><span id="_CPPv2N6stored6PollerE"></span><span id="stored::Poller"></span><span class="target" id="classstored_1_1_poller"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Poller</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">InheritablePoller</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored6PollerE" title="Permalink to this definition"></a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller4baseE">
-<span id="_CPPv3N6stored6Poller4baseE"></span><span id="_CPPv2N6stored6Poller4baseE"></span><span id="stored::Poller::base"></span><span class="target" id="classstored_1_1_poller_1a4cc633cfae619a5a074d4b6cb54501e8"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">InheritablePoller</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base</span></span></span><a class="headerlink" href="#_CPPv4N6stored6Poller4baseE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller8events_tE">
-<span id="_CPPv3N6stored6Poller8events_tE"></span><span id="_CPPv2N6stored6Poller8events_tE"></span><span id="stored::Poller::events_t"></span><span class="target" id="classstored_1_1_poller_1a9c0fa4447c3a1483fad52c82d31ee9bc"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">Pollable</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Events_value</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">events_t</span></span></span><a class="headerlink" href="#_CPPv4N6stored6Poller8events_tE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller6ResultE">
-<span id="_CPPv3N6stored6Poller6ResultE"></span><span id="_CPPv2N6stored6Poller6ResultE"></span><span id="stored::Poller::Result"></span><span class="target" id="classstored_1_1_poller_1a59ef418e16f2ccee2d6b3c64a7899c5d"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">Vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">OldResult</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Result</span></span></span><a class="headerlink" href="#_CPPv4N6stored6Poller6ResultE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller6PollerEv">
-<span id="_CPPv3N6stored6Poller6PollerEv"></span><span id="_CPPv2N6stored6Poller6PollerEv"></span><span id="stored::Poller::Poller"></span><span class="target" id="classstored_1_1_poller_1a48aab15a566f1d8f560a7d0772118420"></span><span class="sig-name descname"><span class="n"><span class="pre">Poller</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored6Poller6PollerEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller6PollerENSt16initializer_listINSt17reference_wrapperI8PollableEEEE">
-<span id="_CPPv3N6stored6Poller6PollerENSt16initializer_listINSt17reference_wrapperI8PollableEEEE"></span><span id="_CPPv2N6stored6Poller6PollerENSt16initializer_listINSt17reference_wrapperI8PollableEEEE"></span><span id="stored::Poller::Poller__std::initializer_list:std::reference_wrapper:Pollable::"></span><span class="target" id="classstored_1_1_poller_1a81cf48cd41117fbf4898ea37d564e1d5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Poller</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">reference_wrapper</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Pollable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">l</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored6Poller6PollerENSt16initializer_listINSt17reference_wrapperI8PollableEEEE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6PollerD0Ev">
-<span id="_CPPv3N6stored6PollerD0Ev"></span><span id="_CPPv2N6stored6PollerD0Ev"></span><span id="stored::Poller::~Poller"></span><span class="target" id="classstored_1_1_poller_1a64ef6d4ceafffe744724216a15940c1d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Poller</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">final</span></span><a class="headerlink" href="#_CPPv4N6stored6PollerD0Ev" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller3addEiPv8events_t">
-<span id="_CPPv3N6stored6Poller3addEiPv8events_t"></span><span id="_CPPv2N6stored6Poller3addEiPv8events_t"></span><span id="stored::Poller::add__i.voidP.events_t"></span><span class="target" id="classstored_1_1_poller_1a7fe572aa2ac38892434063776cf3b09d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fd</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">user_data</span></span>, <a class="reference internal" href="#_CPPv4N6stored6Poller8events_tE" title="stored::Poller::events_t"><span class="n"><span class="pre">events_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">events</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored6Poller3addEiPv8events_t" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller3addER8Pollable">
-<span id="_CPPv3N6stored6Poller3addER8Pollable"></span><span id="_CPPv2N6stored6Poller3addER8Pollable"></span><span id="stored::Poller::add__PollableR"></span><span class="target" id="classstored_1_1_poller_1a5afdeff1fb600f18465fbbcf00bd912d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Pollable</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored6Poller3addER8Pollable" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Add a pollable object. </p>
-<p>Once a pollable is added, do not modify its properties, except for <code class="docutils literal notranslate"><span class="pre">user_data</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>0 on success, otherwise an errno </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller3addER15PolledFileLayerPv8events_t">
-<span id="_CPPv3N6stored6Poller3addER15PolledFileLayerPv8events_t"></span><span id="_CPPv2N6stored6Poller3addER15PolledFileLayerPv8events_t"></span><span id="stored::Poller::add__PolledFileLayerR.voidP.events_t"></span><span class="target" id="classstored_1_1_poller_1a98c1997f19753487ed2828b6a6b07ca6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15PolledFileLayerE" title="stored::PolledFileLayer"><span class="n"><span class="pre">PolledFileLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">layer</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">user_data</span></span>, <a class="reference internal" href="#_CPPv4N6stored6Poller8events_tE" title="stored::Poller::events_t"><span class="n"><span class="pre">events_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">events</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored6Poller3addER15PolledFileLayerPv8events_t" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller3addENSt16initializer_listINSt17reference_wrapperI8PollableEEEE">
-<span id="_CPPv3N6stored6Poller3addENSt16initializer_listINSt17reference_wrapperI8PollableEEEE"></span><span id="_CPPv2N6stored6Poller3addENSt16initializer_listINSt17reference_wrapperI8PollableEEEE"></span><span id="stored::Poller::add__std::initializer_list:std::reference_wrapper:Pollable::"></span><span class="target" id="classstored_1_1_poller_1a853e0ec3c3717de1459f92468db99d64"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">reference_wrapper</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Pollable</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">l</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored6Poller3addENSt16initializer_listINSt17reference_wrapperI8PollableEEEE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller3addEPvPv8events_t">
-<span id="_CPPv3N6stored6Poller3addEPvPv8events_t"></span><span id="_CPPv2N6stored6Poller3addEPvPv8events_t"></span><span id="stored::Poller::add__voidP.voidP.events_t"></span><span class="target" id="classstored_1_1_poller_1ac86ec9af74ea099ab3590dd48d1bb387"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">socket</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">user_data</span></span>, <a class="reference internal" href="#_CPPv4N6stored6Poller8events_tE" title="stored::Poller::events_t"><span class="n"><span class="pre">events_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">events</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored6Poller3addEPvPv8events_t" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller3addER8ZmqLayerPv8events_t">
-<span id="_CPPv3N6stored6Poller3addER8ZmqLayerPv8events_t"></span><span id="_CPPv2N6stored6Poller3addER8ZmqLayerPv8events_t"></span><span id="stored::Poller::add__ZmqLayerR.voidP.events_t"></span><span class="target" id="classstored_1_1_poller_1a110069a8bcb78944764f245a7618a1d2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ZmqLayer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">layer</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">user_data</span></span>, <a class="reference internal" href="#_CPPv4N6stored6Poller8events_tE" title="stored::Poller::events_t"><span class="n"><span class="pre">events_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">events</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored6Poller3addER8ZmqLayerPv8events_t" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller5clearEv">
-<span id="_CPPv3N6stored6Poller5clearEv"></span><span id="_CPPv2N6stored6Poller5clearEv"></span><span id="stored::Poller::clear"></span><span class="target" id="classstored_1_1_poller_1a83794a4838f26030163d333d61d830e8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">clear</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored6Poller5clearEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller6modifyEi8events_t">
-<span id="_CPPv3N6stored6Poller6modifyEi8events_t"></span><span id="_CPPv2N6stored6Poller6modifyEi8events_t"></span><span id="stored::Poller::modify__i.events_t"></span><span class="target" id="classstored_1_1_poller_1ac2dbb801ea779dfd0381be27f1114c79"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">modify</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fd</span></span>, <a class="reference internal" href="#_CPPv4N6stored6Poller8events_tE" title="stored::Poller::events_t"><span class="n"><span class="pre">events_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">events</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored6Poller6modifyEi8events_t" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller6modifyER15PolledFileLayer8events_t">
-<span id="_CPPv3N6stored6Poller6modifyER15PolledFileLayer8events_t"></span><span id="_CPPv2N6stored6Poller6modifyER15PolledFileLayer8events_t"></span><span id="stored::Poller::modify__PolledFileLayerR.events_t"></span><span class="target" id="classstored_1_1_poller_1a06e1a638133d1b4aa9008e6ee413c55b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">modify</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15PolledFileLayerE" title="stored::PolledFileLayer"><span class="n"><span class="pre">PolledFileLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">layer</span></span>, <a class="reference internal" href="#_CPPv4N6stored6Poller8events_tE" title="stored::Poller::events_t"><span class="n"><span class="pre">events_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">events</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored6Poller6modifyER15PolledFileLayer8events_t" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller6modifyEPv8events_t">
-<span id="_CPPv3N6stored6Poller6modifyEPv8events_t"></span><span id="_CPPv2N6stored6Poller6modifyEPv8events_t"></span><span id="stored::Poller::modify__voidP.events_t"></span><span class="target" id="classstored_1_1_poller_1a5f981d5d1353378d149964b2bec7ade3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">modify</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">socket</span></span>, <a class="reference internal" href="#_CPPv4N6stored6Poller8events_tE" title="stored::Poller::events_t"><span class="n"><span class="pre">events_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">events</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored6Poller6modifyEPv8events_t" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller6modifyER8ZmqLayer8events_t">
-<span id="_CPPv3N6stored6Poller6modifyER8ZmqLayer8events_t"></span><span id="_CPPv2N6stored6Poller6modifyER8ZmqLayer8events_t"></span><span id="stored::Poller::modify__ZmqLayerR.events_t"></span><span class="target" id="classstored_1_1_poller_1ae5fcd2292e6b2de3b4117f4a25374618"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">modify</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ZmqLayer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">layer</span></span>, <a class="reference internal" href="#_CPPv4N6stored6Poller8events_tE" title="stored::Poller::events_t"><span class="n"><span class="pre">events_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">events</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored6Poller6modifyER8ZmqLayer8events_t" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller4pollEi">
-<span id="_CPPv3N6stored6Poller4pollEi"></span><span id="_CPPv2N6stored6Poller4pollEi"></span><span id="stored::Poller::poll__i"></span><span class="target" id="classstored_1_1_poller_1a1584e3b9738c13936a331296b61bf79a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored6Poller6ResultE" title="stored::Poller::Result"><span class="n"><span class="pre">Result</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">poll</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">timeout_ms</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">1</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored6Poller4pollEi" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller4pollElb">
-<span id="_CPPv3N6stored6Poller4pollElb"></span><span id="_CPPv2N6stored6Poller4pollElb"></span><span id="stored::Poller::poll__l.b"></span><span class="target" id="classstored_1_1_poller_1a5604e903911719a9a89b4b6c5e4cc1a0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored6Poller6ResultE" title="stored::Poller::Result"><span class="n"><span class="pre">Result</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">poll</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">timeout_us</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">suspend</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored6Poller4pollElb" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller6removeEi">
-<span id="_CPPv3N6stored6Poller6removeEi"></span><span id="_CPPv2N6stored6Poller6removeEi"></span><span id="stored::Poller::remove__i"></span><span class="target" id="classstored_1_1_poller_1a04390a8167a3ede3ea54b7d0879bdd1d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">remove</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored6Poller6removeEi" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller6removeER8Pollable">
-<span id="_CPPv3N6stored6Poller6removeER8Pollable"></span><span id="_CPPv2N6stored6Poller6removeER8Pollable"></span><span id="stored::Poller::remove__PollableR"></span><span class="target" id="classstored_1_1_poller_1ac9510c8cdf0679b035dda9abc82fba60"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">remove</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Pollable</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored6Poller6removeER8Pollable" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Remove a pollable object. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>0 on success, otherwise an errno </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller6removeER15PolledFileLayer">
-<span id="_CPPv3N6stored6Poller6removeER15PolledFileLayer"></span><span id="_CPPv2N6stored6Poller6removeER15PolledFileLayer"></span><span id="stored::Poller::remove__PolledFileLayerR"></span><span class="target" id="classstored_1_1_poller_1adf6f59370191fa9f63235d358833fc63"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">remove</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored15PolledFileLayerE" title="stored::PolledFileLayer"><span class="n"><span class="pre">PolledFileLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">layer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored6Poller6removeER15PolledFileLayer" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller6removeEPv">
-<span id="_CPPv3N6stored6Poller6removeEPv"></span><span id="_CPPv2N6stored6Poller6removeEPv"></span><span id="stored::Poller::remove__voidP"></span><span class="target" id="classstored_1_1_poller_1aee283fdb826dab35c740ba5d4c1ab92c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">remove</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">socket</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored6Poller6removeEPv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller6removeER8ZmqLayer">
-<span id="_CPPv3N6stored6Poller6removeER8ZmqLayer"></span><span id="_CPPv2N6stored6Poller6removeER8ZmqLayer"></span><span id="stored::Poller::remove__ZmqLayerR"></span><span class="target" id="classstored_1_1_poller_1a91ee4d3e30e4cbf482d6eae40d85299b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">remove</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ZmqLayer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">layer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored6Poller6removeER8ZmqLayer" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller7PollErrE">
-<span id="_CPPv3N6stored6Poller7PollErrE"></span><span id="_CPPv2N6stored6Poller7PollErrE"></span><span id="stored::Poller::PollErr__Pollable::Events_valueC"></span><span class="target" id="classstored_1_1_poller_1aa194a491cb44b368acf68f48a848fc7e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Pollable</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Events_value</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PollErr</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">Pollable</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">PollErr</span></span><a class="headerlink" href="#_CPPv4N6stored6Poller7PollErrE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller7PollHupE">
-<span id="_CPPv3N6stored6Poller7PollHupE"></span><span id="_CPPv2N6stored6Poller7PollHupE"></span><span id="stored::Poller::PollHup__Pollable::Events_valueC"></span><span class="target" id="classstored_1_1_poller_1adfc797d86f97fabc07c31a1f62b5213a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Pollable</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Events_value</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PollHup</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">Pollable</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">PollHup</span></span><a class="headerlink" href="#_CPPv4N6stored6Poller7PollHupE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller6PollInE">
-<span id="_CPPv3N6stored6Poller6PollInE"></span><span id="_CPPv2N6stored6Poller6PollInE"></span><span id="stored::Poller::PollIn__Pollable::Events_valueC"></span><span class="target" id="classstored_1_1_poller_1af5b46063a3c3af8fb42f83a8068eb00e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Pollable</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Events_value</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PollIn</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">Pollable</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">PollIn</span></span><a class="headerlink" href="#_CPPv4N6stored6Poller6PollInE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller7PollOutE">
-<span id="_CPPv3N6stored6Poller7PollOutE"></span><span id="_CPPv2N6stored6Poller7PollOutE"></span><span id="stored::Poller::PollOut__Pollable::Events_valueC"></span><span class="target" id="classstored_1_1_poller_1a2c09d5d61b8de58ecf1a8c287af3ac47"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Pollable</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Events_value</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PollOut</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">Pollable</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">PollOut</span></span><a class="headerlink" href="#_CPPv4N6stored6Poller7PollOutE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller7PollPriE">
-<span id="_CPPv3N6stored6Poller7PollPriE"></span><span id="_CPPv2N6stored6Poller7PollPriE"></span><span id="stored::Poller::PollPri__Pollable::Events_valueC"></span><span class="target" id="classstored_1_1_poller_1a287631cac0beaf52e01587ac71e96478"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Pollable</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Events_value</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PollPri</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">Pollable</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">PollPri</span></span><a class="headerlink" href="#_CPPv4N6stored6Poller7PollPriE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller10compare_fdE">
-<span id="_CPPv3N6stored6Poller10compare_fdE"></span><span id="_CPPv2N6stored6Poller10compare_fdE"></span><span id="stored::Poller::compare_fd"></span><span class="target" id="structstored_1_1_poller_1_1compare__fd"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compare_fd</span></span></span><a class="headerlink" href="#_CPPv4N6stored6Poller10compare_fdE" title="Permalink to this definition"></a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored6Poller10compare_fdclERK10PollableFdi">
-<span id="_CPPv3NK6stored6Poller10compare_fdclERK10PollableFdi"></span><span id="_CPPv2NK6stored6Poller10compare_fdclERK10PollableFdi"></span><span id="stored::Poller::compare_fd::call-operator__PollableFdCR.iC"></span><span class="target" id="structstored_1_1_poller_1_1compare__fd_1af7ef7f5319d4d40ff67384b9e204abcf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">PollableFd</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">p</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fd</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6stored6Poller10compare_fdclERK10PollableFdi" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-</dd></dl>
-
-<dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller17compare_FileLayerE">
-<span id="_CPPv3N6stored6Poller17compare_FileLayerE"></span><span id="_CPPv2N6stored6Poller17compare_FileLayerE"></span><span id="stored::Poller::compare_FileLayer"></span><span class="target" id="structstored_1_1_poller_1_1compare___file_layer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compare_FileLayer</span></span></span><a class="headerlink" href="#_CPPv4N6stored6Poller17compare_FileLayerE" title="Permalink to this definition"></a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored6Poller17compare_FileLayerclERK17PollableFileLayerR15PolledFileLayer">
-<span id="_CPPv3NK6stored6Poller17compare_FileLayerclERK17PollableFileLayerR15PolledFileLayer"></span><span id="_CPPv2NK6stored6Poller17compare_FileLayerclERK17PollableFileLayerR15PolledFileLayer"></span><span id="stored::Poller::compare_FileLayer::call-operator__PollableFileLayerCR.PolledFileLayerRC"></span><span class="target" id="structstored_1_1_poller_1_1compare___file_layer_1ab62612f87f3d384e6493461a56e5a882"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">PollableFileLayer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">p</span></span>, <a class="reference internal" href="#_CPPv4N6stored15PolledFileLayerE" title="stored::PolledFileLayer"><span class="n"><span class="pre">PolledFileLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">l</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6stored6Poller17compare_FileLayerclERK17PollableFileLayerR15PolledFileLayer" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-</dd></dl>
-
-<dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller14compare_socketE">
-<span id="_CPPv3N6stored6Poller14compare_socketE"></span><span id="_CPPv2N6stored6Poller14compare_socketE"></span><span id="stored::Poller::compare_socket"></span><span class="target" id="structstored_1_1_poller_1_1compare__socket"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compare_socket</span></span></span><a class="headerlink" href="#_CPPv4N6stored6Poller14compare_socketE" title="Permalink to this definition"></a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored6Poller14compare_socketclERK17PollableZmqSocketPv">
-<span id="_CPPv3NK6stored6Poller14compare_socketclERK17PollableZmqSocketPv"></span><span id="_CPPv2NK6stored6Poller14compare_socketclERK17PollableZmqSocketPv"></span><span id="stored::Poller::compare_socket::call-operator__PollableZmqSocketCR.voidPC"></span><span class="target" id="structstored_1_1_poller_1_1compare__socket_1a74cd7de0105dc2dfd8c65aecc9bbeeda"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">PollableZmqSocket</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">p</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">socket</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6stored6Poller14compare_socketclERK17PollableZmqSocketPv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-</dd></dl>
-
-<dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored6Poller11compare_zmqE">
-<span id="_CPPv3N6stored6Poller11compare_zmqE"></span><span id="_CPPv2N6stored6Poller11compare_zmqE"></span><span id="stored::Poller::compare_zmq"></span><span class="target" id="structstored_1_1_poller_1_1compare__zmq"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compare_zmq</span></span></span><a class="headerlink" href="#_CPPv4N6stored6Poller11compare_zmqE" title="Permalink to this definition"></a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored6Poller11compare_zmqclERK16PollableZmqLayerR8ZmqLayer">
-<span id="_CPPv3NK6stored6Poller11compare_zmqclERK16PollableZmqLayerR8ZmqLayer"></span><span id="_CPPv2NK6stored6Poller11compare_zmqclERK16PollableZmqLayerR8ZmqLayer"></span><span id="stored::Poller::compare_zmq::call-operator__PollableZmqLayerCR.ZmqLayerRC"></span><span class="target" id="structstored_1_1_poller_1_1compare__zmq_1acd1f46d3e651980b47e863d344910dcb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">PollableZmqLayer</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">p</span></span>, <span class="n"><span class="pre">ZmqLayer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">layer</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6stored6Poller11compare_zmqclERK16PollableZmqLayerR8ZmqLayer" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-</dd></dl>
-
 </dd></dl>
 
 </section>
@@ -2641,7 +2413,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="cpp_directory.html" class="btn btn-neutral float-left" title="Directory" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cpp_poller.html" class="btn btn-neutral float-left" title="Poller" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="cpp_synchronizer.html" class="btn btn-neutral float-right" title="Synchronizer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

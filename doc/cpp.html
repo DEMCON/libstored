@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>C++ &mdash; libstored 1.1.0-alpha documentation</title>
+  <title>C++ &mdash; libstored 1.1.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.1.0.dev0
+                1.1.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -51,6 +51,7 @@
 <li class="toctree-l2"><a class="reference internal" href="cpp_components.html">Components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html">Debugger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_directory.html">Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_poller.html">Poller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html">Protocol</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_synchronizer.html">Synchronizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_types.html">Types</a></li>
@@ -139,6 +140,22 @@ your application.</p>
 <li class="toctree-l2"><a class="reference internal" href="cpp_directory.html#stored-list">stored::list()</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_poller.html">Poller</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cpp_poller.html#pollables">Pollables</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollable">stored::Pollable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollablecallback">stored::PollableCallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollablefd">stored::PollableFd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollablefilelayer">stored::PollableFileLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollablehandle">stored::PollableHandle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollablesocket">stored::PollableSocket</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollablezmqlayer">stored::PollableZmqLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollablezmqsocket">stored::PollableZmqSocket</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_poller.html#stored-inheritablepoller">stored::InheritablePoller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_poller.html#stored-poller">stored::Poller</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="cpp_protocol.html">Protocol</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-asciiescapelayer">stored::AsciiEscapeLayer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-bufferlayer">stored::BufferLayer</a></li>
@@ -155,7 +172,6 @@ your application.</p>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-idlechecklayer">stored::IdleCheckLayer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-loopback">stored::Loopback</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-namedpipelayer">stored::NamedPipeLayer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-poller">stored::Poller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-printlayer">stored::PrintLayer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-segmentationlayer">stored::SegmentationLayer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-seriallayer">stored::SerialLayer</a></li>
@@ -198,7 +214,21 @@ your application.</p>
 <li class="toctree-l2"><a class="reference internal" href="cpp_types.html#stored-variant-void">stored::Variant&lt;void&gt;</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="cpp_util.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_util.html">Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#likely">likely</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#saturated-cast">saturated_cast</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-assert">stored_assert</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-banner">stored::banner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-fifo">stored::Fifo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-memcmp-swap">stored::memcmp_swap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-messagefifo">stored::MessageFifo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-scratchpad">stored::Scratchpad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-string-literal">stored::string_literal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-strncmp">stored::strncmp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-strncpy">stored::strncpy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-swap-endian">stored::swap_endian</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
