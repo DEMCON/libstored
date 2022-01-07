@@ -40,7 +40,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Content</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Content</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">CHANGELOG</a><ul>
@@ -107,6 +107,9 @@
 <ul class="simple">
 <li><p>Restructured <code class="docutils literal notranslate"><span class="pre">scripts</span></code> directory into <code class="docutils literal notranslate"><span class="pre">dist</span></code>.</p></li>
 <li><p>Replace poller API.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">libstored_lib</span></code> and <code class="docutils literal notranslate"><span class="pre">libstored_generate</span></code> now take keyword-based
+parameters, but old (positional) interface is still supported.</p></li>
+<li><p>Improved Zth integration for fiber-aware polling.</p></li>
 </ul>
 </section>
 <section id="removed">
@@ -147,7 +150,7 @@ application</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2021, Jochem Rutgers.</p>
+    <p>&#169; Copyright 2020-2022, Jochem Rutgers.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -40,7 +40,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Content</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Content</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">libstored</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#tl-dr">TL;DR</a><ul>
@@ -109,8 +109,7 @@
 <h3>What is it?<a class="headerlink" href="#what-is-it" title="Permalink to this headline"></a></h3>
 <p>A generator for a C++ class (store) with your application’s variables, and a
 tool set to synchronize updates between processes (including FPGA), and debug
-it remotely.  See also the
-<a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">presentation</a>.</p>
+it remotely.  See also the <a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">presentation</a>.</p>
 </section>
 <section id="when-do-i-need-it">
 <h3>When do I need it?<a class="headerlink" href="#when-do-i-need-it" title="Permalink to this headline"></a></h3>
@@ -195,7 +194,7 @@ See also the <a class="reference external" href="https://demcon.github.io/libsto
 <h2>libstored - Store by description<a class="headerlink" href="#libstored-store-by-description" title="Permalink to this headline"></a></h2>
 <p>The store is described in a simple grammar.  See the <a class="reference external" href="https://github.com/DEMCON/libstored/tree/master/examples">examples</a> directory for
 more explanation. This is just an impression of the syntax:</p>
-<div class="highlight-raw notranslate"><div class="highlight"><pre><span></span>// Comment
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Comment
 // Grammar: type:size[array]=initializer long name with any character
 
 uint32 some int
@@ -581,7 +580,7 @@ along with this program.  If not, see <a class="reference external" href="https:
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2021, Jochem Rutgers.</p>
+    <p>&#169; Copyright 2020-2022, Jochem Rutgers.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -40,7 +40,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Content</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Content</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">CHANGELOG</a></li>
@@ -278,7 +278,7 @@ this:</p>
 </pre></div>
 </div>
 <p>The output timing is exemplified below.</p>
-<img alt="../_images/wavedrom-b40ac1dc-51c2-433c-b8a6-fd0e7d305474.svg" src="../_images/wavedrom-b40ac1dc-51c2-433c-b8a6-fd0e7d305474.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
+<img alt="../_images/wavedrom-9da698d1-655c-44dd-9d26-2bff8335aece.svg" src="../_images/wavedrom-9da698d1-655c-44dd-9d26-2bff8335aece.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
 When the value is written, via <code class="docutils literal notranslate"><span class="pre">var_in</span></code>, the AXI interface, or via the
 Synchronizer, <code class="docutils literal notranslate"><span class="pre">value</span></code> is updated and <code class="docutils literal notranslate"><span class="pre">updated</span></code> is flagged for one
 clock cycle.  The flag is set at every write, not only when the data
@@ -314,7 +314,7 @@ this:</p>
 </pre></div>
 </div>
 <p>When <code class="docutils literal notranslate"><span class="pre">we</span></code> is high, the <code class="docutils literal notranslate"><span class="pre">value</span></code> is written to the store.</p>
-<img alt="../_images/wavedrom-061f9c32-6e35-4121-b27e-7c65530917d9.svg" src="../_images/wavedrom-061f9c32-6e35-4121-b27e-7c65530917d9.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
+<img alt="../_images/wavedrom-b0627927-ef77-4935-8b22-e840529f1c64.svg" src="../_images/wavedrom-b0627927-ef77-4935-8b22-e840529f1c64.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
 the case that a microcontroller and the FPGA synchronize a store.  If a
 variable should be read-only for the microcontroller, <code class="docutils literal notranslate"><span class="pre">we</span></code> can be tied
 high by the FPGA, such that the FPGA updates the variable constantly.  In
@@ -432,7 +432,7 @@ layer in the stack.</p>
 </dd>
 </dl>
 <p>Passing messages follows this scheme, which is resembles the AXI4-Stream Protocol:</p>
-<img alt="../_images/wavedrom-db51fd22-bcc1-4ac0-9eb3-cd26a73319a4.svg" src="../_images/wavedrom-db51fd22-bcc1-4ac0-9eb3-cd26a73319a4.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
+<img alt="../_images/wavedrom-7dc5ba6e-cf8f-44ff-9d0c-9bcf55eb0067.svg" src="../_images/wavedrom-7dc5ba6e-cf8f-44ff-9d0c-9bcf55eb0067.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
 clock edge.  In the example above, this happens at edge 2, 3, 6, 9, and 10.
 There is no order or dependency in <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code>; both can be
 high while other is not, indicating ‘there is data’, or ‘the data can be
@@ -758,7 +758,7 @@ Only available in simulation.</p>
 </pre></div>
 </div>
 <p>Example that drops a tail of length 1:</p>
-<img alt="../_images/wavedrom-518bacf3-dbd5-40df-84cf-4430c5a74b71.svg" src="../_images/wavedrom-518bacf3-dbd5-40df-84cf-4430c5a74b71.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
+<img alt="../_images/wavedrom-91fc36b3-ac2e-4d7e-b21e-5d392036e81c.svg" src="../_images/wavedrom-91fc36b3-ac2e-4d7e-b21e-5d392036e81c.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
 unspecified.</p>
 <dl class="simple">
 <dt>FIFO_DEPTH<span class="classifier">natural := 0</span></dt><dd><p>Minimum FIFO depth. Set to 0 to allow pass-through.</p>
@@ -840,8 +840,8 @@ This is effectively a FIFO of size 1.</p>
 </pre></div>
 </div>
 <p>Example to drop and commit pushed data:</p>
-<img alt="../_images/wavedrom-e7ef9f59-0577-46c4-ba3a-a5a022416b35.svg" src="../_images/wavedrom-e7ef9f59-0577-46c4-ba3a-a5a022416b35.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
-<img alt="../_images/wavedrom-6195de39-2aab-4a11-afa5-43d8b2e0fc7f.svg" src="../_images/wavedrom-6195de39-2aab-4a11-afa5-43d8b2e0fc7f.svg" /><dl class="simple">
+<img alt="../_images/wavedrom-d0629822-4cd4-4d88-861c-8f91789e9e8d.svg" src="../_images/wavedrom-d0629822-4cd4-4d88-861c-8f91789e9e8d.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
+<img alt="../_images/wavedrom-619a4ae4-95f0-4b63-b00f-35689ca623fe.svg" src="../_images/wavedrom-619a4ae4-95f0-4b63-b00f-35689ca623fe.svg" /><dl class="simple">
 <dt>WIDTH<span class="classifier">positive</span></dt><dd><p>Data width.</p>
 </dd>
 <dt>DEPTH<span class="classifier">natural := 1</span></dt><dd><p>Minimum FIFO depth.</p>
@@ -883,7 +883,7 @@ again.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2021, Jochem Rutgers.</p>
+    <p>&#169; Copyright 2020-2022, Jochem Rutgers.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

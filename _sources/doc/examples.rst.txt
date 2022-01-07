@@ -14,6 +14,7 @@
    example_components
    example_concurrency
    example_control
+   example_fibered
    example_terminal
    example_zmqserver
 
