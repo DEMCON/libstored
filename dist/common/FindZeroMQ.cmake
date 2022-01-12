@@ -54,7 +54,7 @@ if(NOT TARGET libzmq)
 	endif()
 endif()
 
-if(NOT TARGET libzmq)
+if(NOT TARGET libzmq AND ZeroMQ_FIND_REQUIRED)
 	# Build from source
 	message(STATUS "Building ZeroMQ from source")
 	set(ZeroMQ_FOUND 1)

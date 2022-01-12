@@ -16,6 +16,8 @@
 
 include(CheckIncludeFileCXX)
 include(CMakeParseArguments)
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
 get_filename_component(libstored_dir_ "${CMAKE_CURRENT_LIST_DIR}" DIRECTORY)
 set(libstored_dir "${libstored_dir_}" CACHE INTERNAL "")
@@ -79,7 +81,7 @@ function(libstored_lib libprefix libpath)
 			${LIBSTORED_LIB_DESTINATION}/src/${m}.cpp)
 
 		set_property(TARGET ${LIBSTORED_LIB_TARGET} APPEND PROPERTY PUBLIC_HEADER ${LIBSTORED_LIB_DESTINATION}/include/${m}.h)
-		install(DIRECTORY ${LIBSTORED_LIB_DESTINATION}/doc/ DESTINATION share/libstored)
+		install(DIRECTORY ${LIBSTORED_LIB_DESTINATION}/doc/ DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored)
 	endforeach()
 
 	target_include_directories(${LIBSTORED_LIB_TARGET} PUBLIC
@@ -241,10 +243,12 @@ function(libstored_lib libprefix libpath)
 	endif()
 
 	if(LIBSTORED_INSTALL_STORE_LIBS)
-		install(TARGETS ${LIBSTORED_LIB_TARGET} EXPORT libstored
-			ARCHIVE DESTINATION lib
-			PUBLIC_HEADER DESTINATION include
+		install(TARGETS ${LIBSTORED_LIB_TARGET} EXPORT ${LIBSTORED_LIB_TARGET}Store
+			ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+			PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 		)
+
+		install(EXPORT ${LIBSTORED_LIB_TARGET}Store DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake)
 	endif()
 endfunction()
 
@@ -370,8 +374,24 @@ function(libstored_generate target) # add all other models as varargs
 	libstored_copy_dlls(${LIBSTORED_GENERATE_TARGET})
 endfunction()
 
-configure_file(${libstored_dir}/cmake/libstored.cmake.in ${CMAKE_BINARY_DIR}/libstored.cmake)
-install(DIRECTORY ${libstored_dir}/include/ DESTINATION include FILES_MATCHING PATTERN "*.h")
-install(FILES ${libstored_dir}/include/stored DESTINATION include)
-install(EXPORT libstored DESTINATION share/libstored/cmake)
-install(FILES ${CMAKE_BINARY_DIR}/libstored.cmake DESTINATION share/cmake/libstored)
+install(DIRECTORY ${libstored_dir}/include/libstored/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libstored FILES_MATCHING PATTERN "*.h")
+install(FILES ${libstored_dir}/include/stored ${libstored_dir}/include/stored.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+set(LIBSTORED_CONFIG_FILE ${libstored_dir}/include/stored_config.h)
+foreach(d IN LISTS LIBSTORED_PREPEND_INCLUDE_DIRECTORIES)
+	if(EXISTS ${d}/stored_config.h)
+		set(LIBSTORED_CONFIG_FILE ${d}/stored_config.h)
+		break()
+	endif()
+endforeach()
+install(FILES ${LIBSTORED_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(EXPORT libstored DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake)
+
+configure_package_config_file(
+	"${libstored_dir}/cmake/LibstoredStoresConfig.cmake.in"
+	"${PROJECT_BINARY_DIR}/LibstoredStoresConfig.cmake"
+	INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/LibstoredStores
+)
+
+install(FILES ${PROJECT_BINARY_DIR}/LibstoredStoresConfig.cmake DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/LibstoredStores)
