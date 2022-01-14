@@ -192,6 +192,28 @@ add_subdirectory(extern)
 
 include(libstored)
 
+install(DIRECTORY ${LIBSTORED_SOURCE_DIR}/include/libstored/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libstored FILES_MATCHING PATTERN "*.h")
+install(FILES ${LIBSTORED_SOURCE_DIR}/include/stored ${LIBSTORED_SOURCE_DIR}/include/stored.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+set(LIBSTORED_CONFIG_FILE ${LIBSTORED_SOURCE_DIR}/include/stored_config.h)
+foreach(d IN LISTS LIBSTORED_PREPEND_INCLUDE_DIRECTORIES)
+	if(EXISTS ${d}/stored_config.h)
+		set(LIBSTORED_CONFIG_FILE ${d}/stored_config.h)
+		break()
+	endif()
+endforeach()
+install(FILES ${LIBSTORED_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(EXPORT libstored DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake)
+
+configure_package_config_file(
+	"${LIBSTORED_SOURCE_DIR}/cmake/LibstoredStoresConfig.cmake.in"
+	"${PROJECT_BINARY_DIR}/LibstoredStoresConfig.cmake"
+	INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/LibstoredStores
+)
+
+install(FILES ${PROJECT_BINARY_DIR}/LibstoredStoresConfig.cmake DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/LibstoredStores)
+
 if(DEFINED ENV{XILINX_VIVADO})
 	find_program(VIVADO_CMD NAMES vivado PATHS "$ENV{XILINX_VIVADO}/bin")
 endif()

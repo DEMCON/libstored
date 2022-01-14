@@ -19,10 +19,8 @@
 -#}
 
 cmake_minimum_required(VERSION 3.1)
-project({{libprefix}}-libstored)
+project({{libprefix}}libstored)
 cmake_policy(VERSION 3.1)
-
-include(CheckIncludeFileCXX)
 
 option(LIBSTORED_INSTALL_STORE_LIBS "Install generated static libstored libraries" ON)
 option(LIBSTORED_DRAFT_API "Enable draft API" OFF)
@@ -33,8 +31,11 @@ option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
 option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
 option(LIBSTORED_HAVE_ZTH "Use Zth" OFF)
 option(LIBSTORED_CLANG_TIDY "Run clang-tidy" OFF)
+option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" OFF)
 
-file(TO_CMAKE_PATH "{{libstored_dir|escapebs}}" libstored_dir)
-list(APPEND CMAKE_MODULE_PATH ${libstored_dir}/cmake)
+set(PYTHON_EXECUTABLE "{{python_executable|escapebs}}")
+
+file(TO_CMAKE_PATH "{{libstored_dir|escapebs}}" LIBSTORED_SOURCE_DIR)
+list(APPEND CMAKE_MODULE_PATH ${LIBSTORED_SOURCE_DIR}/cmake)
 include(libstored)
 libstored_lib({{libprefix}} ${CMAKE_CURRENT_SOURCE_DIR}{% for m in models %} {{m}}{% endfor %})

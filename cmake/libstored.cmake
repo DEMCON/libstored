@@ -19,8 +19,18 @@ include(CMakeParseArguments)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-get_filename_component(libstored_dir_ "${CMAKE_CURRENT_LIST_DIR}" DIRECTORY)
-set(libstored_dir "${libstored_dir_}" CACHE INTERNAL "")
+if(NOT LIBSTORED_SOURCE_DIR)
+	get_filename_component(LIBSTORED_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}" DIRECTORY)
+	set(LIBSTORED_SOURCE_DIR "${LIBSTORED_SOURCE_DIR}" CACHE INTERNAL "")
+endif()
+
+if(NOT PYTHON_EXECUTABLE)
+	if(CMAKE_HOST_WIN32)
+		find_program(PYTHON_EXECUTABLE python REQUIRED)
+	else()
+		find_program(PYTHON_EXECUTABLE python3 REQUIRED)
+	endif()
+endif()
 
 # Create the libstored library based on the generated files.
 # Old interface: libstored_lib(libprefix libpath store1 store2 ...)
@@ -48,31 +58,31 @@ function(libstored_lib libprefix libpath)
 	endif()
 
 	add_library(${LIBSTORED_LIB_TARGET} STATIC
-		${libstored_dir}/include/stored
-		${libstored_dir}/include/stored.h
-		${libstored_dir}/include/stored_config.h
-		${libstored_dir}/include/libstored/allocator.h
-		${libstored_dir}/include/libstored/compress.h
-		${libstored_dir}/include/libstored/config.h
-		${libstored_dir}/include/libstored/components.h
-		${libstored_dir}/include/libstored/debugger.h
-		${libstored_dir}/include/libstored/directory.h
-		${libstored_dir}/include/libstored/macros.h
-		${libstored_dir}/include/libstored/poller.h
-		${libstored_dir}/include/libstored/spm.h
-		${libstored_dir}/include/libstored/synchronizer.h
-		${libstored_dir}/include/libstored/types.h
-		${libstored_dir}/include/libstored/util.h
-		${libstored_dir}/include/libstored/version.h
-		${libstored_dir}/include/libstored/zmq.h
-		${libstored_dir}/src/compress.cpp
-		${libstored_dir}/src/directory.cpp
-		${libstored_dir}/src/debugger.cpp
-		${libstored_dir}/src/poller.cpp
-		${libstored_dir}/src/protocol.cpp
-		${libstored_dir}/src/synchronizer.cpp
-		${libstored_dir}/src/util.cpp
-		${libstored_dir}/src/zmq.cpp
+		${LIBSTORED_SOURCE_DIR}/include/stored
+		${LIBSTORED_SOURCE_DIR}/include/stored.h
+		${LIBSTORED_SOURCE_DIR}/include/stored_config.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/allocator.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/compress.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/config.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/components.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/debugger.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/directory.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/macros.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/poller.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/spm.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/synchronizer.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/types.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/util.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/version.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/zmq.h
+		${LIBSTORED_SOURCE_DIR}/src/compress.cpp
+		${LIBSTORED_SOURCE_DIR}/src/directory.cpp
+		${LIBSTORED_SOURCE_DIR}/src/debugger.cpp
+		${LIBSTORED_SOURCE_DIR}/src/poller.cpp
+		${LIBSTORED_SOURCE_DIR}/src/protocol.cpp
+		${LIBSTORED_SOURCE_DIR}/src/synchronizer.cpp
+		${LIBSTORED_SOURCE_DIR}/src/util.cpp
+		${LIBSTORED_SOURCE_DIR}/src/zmq.cpp
 	)
 
 	foreach(m IN ITEMS ${LIBSTORED_LIB_STORES})
@@ -86,14 +96,14 @@ function(libstored_lib libprefix libpath)
 
 	target_include_directories(${LIBSTORED_LIB_TARGET} PUBLIC
 		$<BUILD_INTERFACE:${LIBSTORED_PREPEND_INCLUDE_DIRECTORIES}>
-		$<BUILD_INTERFACE:${libstored_dir}/include>
+		$<BUILD_INTERFACE:${LIBSTORED_SOURCE_DIR}/include>
 		$<BUILD_INTERFACE:${LIBSTORED_LIB_DESTINATION}/include>
 		$<INSTALL_INTERFACE:include>
 	)
 
 	string(REGEX REPLACE "^(.*)-libstored$" "stored-\\1" libname ${LIBSTORED_LIB_TARGET})
 	set_target_properties(${LIBSTORED_LIB_TARGET} PROPERTIES OUTPUT_NAME ${libname})
-	target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_NAME=${libname})
+	target_compile_definitions(${LIBSTORED_LIB_TARGET} PRIVATE -DSTORED_NAME=${libname})
 
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -D_DEBUG=1)
@@ -196,7 +206,7 @@ function(libstored_lib libprefix libpath)
 				"portability-*,"
 			)
 			set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
-				"--extra-arg=-I${libstored_dir}/include"
+				"--extra-arg=-I${LIBSTORED_SOURCE_DIR}/include"
 				"--extra-arg=-I${CMAKE_BINARY_DIR}/include"
 				"--extra-arg=-I${LIBSTORED_LIB_DESTINATION}/include"
 				"--header-filter=.*include/libstored.*"
@@ -373,25 +383,3 @@ function(libstored_generate target) # add all other models as varargs
 
 	libstored_copy_dlls(${LIBSTORED_GENERATE_TARGET})
 endfunction()
-
-install(DIRECTORY ${libstored_dir}/include/libstored/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libstored FILES_MATCHING PATTERN "*.h")
-install(FILES ${libstored_dir}/include/stored ${libstored_dir}/include/stored.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-set(LIBSTORED_CONFIG_FILE ${libstored_dir}/include/stored_config.h)
-foreach(d IN LISTS LIBSTORED_PREPEND_INCLUDE_DIRECTORIES)
-	if(EXISTS ${d}/stored_config.h)
-		set(LIBSTORED_CONFIG_FILE ${d}/stored_config.h)
-		break()
-	endif()
-endforeach()
-install(FILES ${LIBSTORED_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-install(EXPORT libstored DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake)
-
-configure_package_config_file(
-	"${libstored_dir}/cmake/LibstoredStoresConfig.cmake.in"
-	"${PROJECT_BINARY_DIR}/LibstoredStoresConfig.cmake"
-	INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/LibstoredStores
-)
-
-install(FILES ${PROJECT_BINARY_DIR}/LibstoredStoresConfig.cmake DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/LibstoredStores)
