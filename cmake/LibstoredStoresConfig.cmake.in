@@ -2,9 +2,9 @@
 
 if(NOT TARGET libzmq)
 	if(WIN32)
-		include(${CMAKE_CURRENT_LIST_DIR}/../../CMake/ZeroMQTargets.cmake OPTIONAL RESULT_VARIABLE _zmq)
+		include(${CMAKE_CURRENT_LIST_DIR}/../../../CMake/ZeroMQTargets.cmake OPTIONAL RESULT_VARIABLE _zmq)
 	else()
-		include(${CMAKE_CURRENT_LIST_DIR}/../ZeroMQ/ZeroMQTargets.cmake OPTIONAL RESULT_VARIABLE _zmq)
+		include(${CMAKE_CURRENT_LIST_DIR}/../../ZeroMQ/ZeroMQTargets.cmake OPTIONAL RESULT_VARIABLE _zmq)
 	endif()
 
 	if(_zmq STREQUAL "NOTFOUND" AND NOT CMAKE_CROSSCOMPILING)
