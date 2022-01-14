@@ -72,6 +72,17 @@ if(NOT TARGET libzmq AND ZeroMQ_FIND_REQUIRED)
 		set(libzmq_flags ${libzmq_flags} -DZMQ_CV_IMPL=win32api)
 	endif()
 
+	if(CMAKE_CROSSCOMPILING)
+		# It seems that in case of crosscompiling, the host headers are
+		# found anyway. Force using builtins instead.
+		if(NOT WITH_LIBBSD)
+			set(libzmq_flags ${libzmq_flags} -DWITH_LIBBSD=OFF)
+		endif()
+		if(NOT WITH_LIBSODIUM)
+			set(libzmq_flags ${libzmq_flags} -DWITH_LIBSODIUM=OFF)
+		endif()
+	endif()
+
 	set(libzmq_flags ${libzmq_flags} -DBUILD_TESTS=OFF -DBUILD_STATIC=OFF)
 
 	if(LIBSTORED_ENABLE_ASAN)
