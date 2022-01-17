@@ -1,3 +1,4 @@
+// clang-format off
 {#
 vim:filetype=cpp
 
@@ -25,32 +26,32 @@ vim:filetype=cpp
 
 #ifdef __cplusplus
 
-#include <libstored/macros.h>
-#include <libstored/util.h>
-#include <libstored/types.h>
-#include <libstored/directory.h>
+#	include <libstored/macros.h>
+#	include <libstored/directory.h>
+#	include <libstored/types.h>
+#	include <libstored/util.h>
 
-#include <map>
+#	include <map>
 
-#if STORED_cplusplus >= 201103L
-#  include <type_traits>
-#endif
+#	if STORED_cplusplus >= 201103L
+#		include <type_traits>
+#	endif
 
 namespace stored {
 
 	/*!
 	 * \brief Data storage of {{store.name}}Base.
 	 */
-#ifdef STORED_COMPILER_MSVC
+#	ifdef STORED_COMPILER_MSVC
 	__declspec(align(8))
-#endif
+#	endif
 	struct {{store.name}}Data {
 		{{store.name}}Data() noexcept;
 
 		/*! \brief Data buffer for all variables. */
 		char buffer[{{store.buffer.size}}];
 
-#if STORED_cplusplus >= 201402L
+#	if STORED_cplusplus >= 201402L
 private:
 		static constexpr14 uint8_t directory[{{store.directory.data|len}}] = {
 			{{store.directory.data|carray|tab_indent(3)}}
@@ -64,21 +65,22 @@ public:
 		{
 			return (uint8_t const*)directory;
 		}
-#else
+#	else // < C++14
 		static uint8_t const* shortDirectory() noexcept;
-#endif
+#	endif // < C++14
 
 		static uint8_t const* longDirectory() noexcept;
 	}
-#ifndef STORED_COMPILER_MSVC
+#	ifndef STORED_COMPILER_MSVC
 	__attribute__((aligned(sizeof(double))))
-#endif
+#	endif
 	;
 
 	/*!
 	 * \brief Helper to call store functions given the id.
 	 *
-	 * Used by stored::impl::StoreFunction to bypass run-time overhead of calling the Store's \c callback().
+	 * Used by stored::impl::StoreFunction to bypass run-time overhead of
+	 * calling the Store's \c callback().
 	 */
 	template <typename Implementation, unsigned int F>
 	struct {{store.name}}FunctionMap {};
@@ -106,21 +108,21 @@ public:
 	 * Objects do not have memory themselves, they point to the buffer.
 	 * Therefore, a union is used to map all objects over each other.
 	 * Moreover, the objects now about this union, so they can recover the
-	 * pointer to the store by looking at their \c this pointer.  It is kind of
-	 * tricky, but by using this base class, we can assert on all memory
-	 * alignment assumptions.
+	 * pointer to the store by looking at their \c this pointer.  It is
+	 * kind of tricky, but by using this base class, we can assert on all
+	 * memory alignment assumptions.
 	 */
 	template <typename Base_, typename Implementation_>
 	class {{store.name}}Objects {
 	protected:
 		{{store.name}}Objects() noexcept {
-			// Empty objects still take one byte.
-			// This check ensures that all objects in the union below
-			// have the same address as this.
+			// Empty objects still take one byte.  This check
+			// ensures that all objects in the union below have the
+			// same address as this.
 			static_assert(sizeof(*this) == 1, "");
-#if STORED_cplusplus >= 201103L
+#	if STORED_cplusplus >= 201103L
 			static_assert(std::is_standard_layout<{{store.name}}Objects>::value, "");
-#endif
+#	endif
 		}
 
 	public:
@@ -128,11 +130,12 @@ public:
 		typedef Implementation_ Implementation;
 
 		// Type-specific object accessors.
-#ifndef DOXYGEN
-		// Doxygen gets confused about this union. And it does not matter for the
-		// user to know that it is a union anyway. So hide it from the docs.
+#	ifndef DOXYGEN
+		// Doxygen gets confused about this union. And it does not
+		// matter for the user to know that it is a union anyway. So
+		// hide it from the docs.
 		union {
-#endif
+#	endif
 {% for o in store.objects %}
 {%   if o is blob %}
 {%     if o is variable %}
@@ -152,25 +155,27 @@ public:
 {%     endif %}
 {%   endif %}
 {% endfor %}
-#ifndef DOXYGEN
+#	ifndef DOXYGEN
 		};
-#endif
+#	endif
 	};
 
 	/*!
-	 * \brief Base class with default interface of all {{store.name}} implementations.
+	 * \brief Base class with default interface of all {{store.name}}
+	 *	implementations.
 	 *
-	 * Although there are no virtual functions in the base class, subclasses
-	 * can override them.  The (lowest) subclass must pass the \p
-	 * Implementation_ template paramater to its base, such that all calls from
-	 * the base class can be directed to the proper overridden implementation.
+	 * Although there are no virtual functions in the base class,
+	 * subclasses can override them.  The (lowest) subclass must pass the
+	 * \p Implementation_ template paramater to its base, such that all
+	 * calls from the base class can be directed to the proper overridden
+	 * implementation.
 	 *
-	 * The base class cannot be instantiated. If a default implementation is
-	 * required, which does not have side effects to functions, instantiate
-	 * #stored::{{store.name}}.  This class contains all data of all variables,
-	 * so it can be large.  So, be aware when instantiating it on the stack.
-	 * Heap is fine. Static allocations is fine too, as the constructor and
-	 * destructor are trivial.
+	 * The base class cannot be instantiated. If a default implementation
+	 * is required, which does not have side effects to functions,
+	 * instantiate #stored::{{store.name}}.  This class contains all data
+	 * of all variables, so it can be large.  So, be aware when
+	 * instantiating it on the stack.  Heap is fine. Static allocations is
+	 * fine too, as the constructor and destructor are trivial.
 	 *
 	 * To inherit the base class, you can use the following template:
 	 *
@@ -188,7 +193,8 @@ public:
 	 * \see #stored::{{store.name}}Data
 	 */
 	template <typename Implementation_>
-	class {{store.name}}Base : public {{store.name}}Objects<{{store.name}}Base<Implementation_> , Implementation_> {
+	class {{store.name}}Base
+		: public {{store.name}}Objects<{{store.name}}Base<Implementation_>, Implementation_> {
 		STORED_CLASS_NOCOPY({{store.name}}Base)
 	protected:
 		/*! \brief Default constructor. */
@@ -198,10 +204,23 @@ public:
 		typedef {{store.name}}Objects<{{store.name}}Base, Implementation_> Objects;
 		/*! \brief Type of the actual implementation, which is the (lowest) subclass. */
 		typedef Implementation_ Implementation;
-		/*! \brief Returns the name of store, which can be used as prefix for #stored::Debugger. */
-		char const* name() const noexcept { return "/{{store.name}}"; }
-		/*! \brief Returns a unique hash of the store. */
-		static constexpr char const* hash() noexcept { return "{{store.hash}}"; }
+
+		/*!
+		 * \brief Returns the name of store, which can be used as
+		 *	prefix for #stored::Debugger.
+		 */
+		char const* name() const noexcept
+		{
+			return "/{{store.name}}";
+		}
+
+		/*!
+		 * \brief Returns a unique hash of the store.
+		 */
+		static constexpr char const* hash() noexcept
+		{
+			return "{{store.hash}}";
+		}
 
 		enum {
 			/*! \brief Number of objects in the store. */
@@ -214,22 +233,51 @@ public:
 			BufferSize = {{store.buffer.size}},
 		};
 
-		/*! \brief Returns the reference to the implementation.*/
-		Implementation const& implementation() const noexcept { return *static_cast<Implementation const*>(this); }
+		/*!
+		 * \brief Returns the reference to the implementation.
+		 */
+		Implementation const& implementation() const noexcept
+		{
+			return *static_cast<Implementation const*>(this);
+		}
+
 		/*! \copydoc stored::{{store.name}}Base::implementation() const */
-		Implementation& implementation() noexcept { return *static_cast<Implementation*>(this); }
+		Implementation& implementation() noexcept
+		{
+			return *static_cast<Implementation*>(this);
+		}
 
 	protected:
 		/*! \brief The type of the data structure. */
 		typedef {{store.name}}Data Data;
-		/*! \brief Returns the container for all the store's data. */
-		Data const& data() const noexcept { return m_data; }
+
+		/*!
+		 * \brief Returns the container for all the store's data.
+		 */
+		Data const& data() const noexcept
+		{
+			return m_data;
+		}
+
 		/*! \copydoc stored::{{store.name}}Base::data() const */
-		Data& data() noexcept { return m_data; }
-		/*! \brief Returns the buffer with all variable data. */
-		char const* buffer() const noexcept { return data().buffer; }
+		Data& data() noexcept
+		{
+			return m_data;
+		}
+
+		/*!
+		 * \brief Returns the buffer with all variable data.
+		 */
+		char const* buffer() const noexcept
+		{
+			return data().buffer;
+		}
+
 		/*! \copydoc stored::{{store.name}}Base::buffer() const */
-		char* buffer() noexcept { return data().buffer; }
+		char* buffer() noexcept
+		{
+			return data().buffer;
+		}
 
 		friend class stored::Variant<void>;
 
@@ -254,17 +302,21 @@ public:
 		{
 			stored_assert(offset + sizeof(T) <= sizeof(m_data.buffer));
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-			return Variable<T,Implementation>(implementation(), *reinterpret_cast<T*>(&buffer()[offset]));
+			return Variable<T,Implementation>(
+				implementation(), *reinterpret_cast<T*>(&buffer()[offset]));
 		}
 
-		template <typename Store_, typename Implementation__, typename T_, size_t offset_, size_t size_>
+		template <
+			typename Store_, typename Implementation__, typename T_,
+			size_t offset_, size_t size_>
 		friend class impl::StoreVariable;
 
 		/*!
-		 * \brief Returns a typed Function object, given the function identifier.
+		 * \brief Returns a typed Function object, given the function
+		 *	identifier.
 		 *
-		 * This only works for fixed-length types.
-		 * For other types, use #_variantf(Type::type, unsigned int, size_t).
+		 * This only works for fixed-length types.  For other types,
+		 * use #_variantf(Type::type, unsigned int, size_t).
 		 */
 		template <typename T>
 		Function<T,Implementation> _function(unsigned int f) noexcept
@@ -288,7 +340,9 @@ public:
 			return Variant<Implementation>(implementation(), type, &buffer()[offset], len);
 		}
 
-		template <typename Store, typename Implementation, Type::type type_, size_t offset, size_t size_>
+		template <
+			typename Store, typename Implementation, Type::type type_,
+			size_t offset, size_t size_>
 		friend class impl::StoreVariantV;
 
 		/*!
@@ -300,7 +354,9 @@ public:
 			return Variant<Implementation>(implementation(), type, f, len);
 		}
 
-		template <typename Store, typename Implementation, Type::type type_, unsigned int F, size_t size_>
+		template <
+			typename Store, typename Implementation, Type::type type_,
+			unsigned int F, size_t size_>
 		friend class impl::StoreVariantF;
 
 		// Variable/Function/Variant must be able to call callback() and the hooks.
@@ -314,11 +370,12 @@ public:
 		/*!
 		 * \brief Function callback resolver.
 		 *
-		 * This is the callback for a Function and a Variant, which converts a
-		 * call to the function identifier to an actual function call within
-		 * the Implementation.
+		 * This is the callback for a Function and a Variant, which
+		 * converts a call to the function identifier to an actual
+		 * function call within the Implementation.
 		 */
-		size_t callback(bool UNUSED_PAR(set), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len), unsigned int UNUSED_PAR(f))
+		size_t callback(bool UNUSED_PAR(set), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len),
+			unsigned int UNUSED_PAR(f))
 		{
 {% if store.objects|hasfunction %}
 			switch(f) {
@@ -326,11 +383,13 @@ public:
 {%     if o is function %}
 			case {{o.f}}: // {{o}}
 {%       if o is blob %}
-				return implementation().__{{o.cname}}(set, static_cast<{{o|ctype}}*>(buffer), len);
+				return implementation().__{{o.cname}}(set,
+					static_cast<{{o|ctype}}*>(buffer), len);
 {%       else %}
 				stored_assert(len == sizeof({{o|ctype}}));
 				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-				implementation().__{{o.cname}}(set, *reinterpret_cast<{{o|ctype}}*>(buffer));
+				implementation().__{{o.cname}}(set,
+					*reinterpret_cast<{{o|ctype}}*>(buffer));
 				return sizeof({{o|ctype}});
 {%       endif %}
 {%     endif %}
@@ -351,10 +410,17 @@ public:
 {%     if o is function %}
 {%       if o is blob %}
 		/*! \brief Callback for {{o}} */
-		size_t __{{o.cname}}(bool UNUSED_PAR(set), {{o|ctype}}* UNUSED_PAR(value), size_t UNUSED_PAR(len)) { return 0; }
+		size_t __{{o.cname}}(bool UNUSED_PAR(set), {{o|ctype}}* UNUSED_PAR(value),
+			size_t UNUSED_PAR(len))
+		{
+			return 0;
+		}
 {%       else %}
 		/*! \brief Callback for {{o}} */
-		void __{{o.cname}}(bool set, {{o|ctype}}& value) { if(!set) value = ({{o|ctype}})0; }
+		void __{{o.cname}}(bool set, {{o|ctype}}& value)
+		{
+			if(!set) value = ({{o|ctype}})0;
+		}
 {%       endif %}
 {%     endif %}
 {%   endfor %}
@@ -370,91 +436,115 @@ public:
 		/*!
 		 * \brief Converts a variable's buffer to a key.
 		 *
-		 * A key is unique for all variables of the same store, but identical
-		 * for the same variables across different instances of the same store
-		 * class. Therefore, the key can be used to synchronize between
-		 * instances of the same store.  A key does not contain meta data, such
-		 * as type or length. It is up to the synchronization library to make
-		 * sure that these properties are handled well.
+		 * A key is unique for all variables of the same store, but
+		 * identical for the same variables across different instances
+		 * of the same store class. Therefore, the key can be used to
+		 * synchronize between instances of the same store.  A key does
+		 * not contain meta data, such as type or length. It is up to
+		 * the synchronization library to make sure that these
+		 * properties are handled well.
 		 *
 		 * For synchronization, when #hookEntryX() or #hookEntryRO() is
-		 * invoked, one can compute the key of the object that is accessed. The
-		 * key can be used, for example, in a key-to-Variant map. When data
-		 * arrives from another party, the key can be used to find the proper
-		 * Variant in the map.
+		 * invoked, one can compute the key of the object that is
+		 * accessed. The key can be used, for example, in a
+		 * key-to-Variant map. When data arrives from another party,
+		 * the key can be used to find the proper Variant in the map.
 		 *
-		 * This way, data exchange is type-safe, as the Variant can check if
-		 * the data format matches the expected type. However, one cannot
-		 * process data if the key is not set yet in the map.
+		 * This way, data exchange is type-safe, as the Variant can
+		 * check if the data format matches the expected type. However,
+		 * one cannot process data if the key is not set yet in the
+		 * map.
 		 */
 		Key bufferToKey(void const* buffer) const noexcept
 		{
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 			// cppcheck-suppress assertWithSideEffect
-			stored_assert((uintptr_t)buffer >= (uintptr_t)this->buffer() && (uintptr_t)buffer < (uintptr_t)this->buffer() + sizeof(m_data.buffer));
+			stored_assert((uintptr_t)buffer >= (uintptr_t)this->buffer()
+				&& (uintptr_t)buffer < (uintptr_t)this->buffer() + sizeof(m_data.buffer));
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 			return (uintptr_t)buffer - (uintptr_t)this->buffer();
 		}
 
 	protected:
 		/*!
-		 * \brief Hook when exclusive access to a given variable is to be acquired.
-		 * \details Must be followed by #hookExitX().
+		 * \brief Hook when exclusive access to a given variable is to
+		 *	be acquired.
+		 *
+		 * Must be followed by #hookExitX().
 		 */
 		void hookEntryX(Type::type type, void* buffer, size_t len) noexcept
 		{
-			// This function is called by Variants, and alike, but the implementation
-			// has to friend all of them if it overrides this function.
-			// To ease integration give a default implementation that forwards the hook.
-			implementation().__hookEntryX(type, buffer, len); }
+			// This function is called by Variants, and alike, but
+			// the implementation has to friend all of them if it
+			// overrides this function.  To ease integration give a
+			// default implementation that forwards the hook.
+			implementation().__hookEntryX(type, buffer, len);
+		}
 
 		/*!
-		 * \brief Hook when exclusive access to a given variable is released.
-		 * \details Must be preceded by #hookEntryX().
+		 * \brief Hook when exclusive access to a given variable is
+		 *	released.
+		 *
+		 * Must be preceded by #hookEntryX().
 		 */
 		void hookExitX(Type::type type, void* buffer, size_t len, bool changed) noexcept
 		{
-			implementation().__hookExitX(type, buffer, len, changed); }
+			implementation().__hookExitX(type, buffer, len, changed);
+		}
 
 		/*!
-		 * \brief Hook when read-only access to a given variable is to be acquired.
-		 * \details Must be followed by #hookExitRO().
+		 * \brief Hook when read-only access to a given variable is to
+		 *	be acquired.
+		 *
+		 * Must be followed by #hookExitRO().
 		 */
 		void hookEntryRO(Type::type type, void* buffer, size_t len) noexcept
 		{
-			implementation().__hookEntryRO(type, buffer, len); }
+			implementation().__hookEntryRO(type, buffer, len);
+		}
 
 		/*!
-		 * \brief Hook when read-only access to a given variable is released.
-		 * \details Must be preceded by #hookEntryRO().
+		 * \brief Hook when read-only access to a given variable is
+		 *	released.
+		 *
+		 * Must be preceded by #hookEntryRO().
 		 */
 		void hookExitRO(Type::type type, void* buffer, size_t len) noexcept
 		{
-			implementation().__hookExitRO(type, buffer, len); }
+			implementation().__hookExitRO(type, buffer, len);
+		}
 
 		/*!
 		 * \copydoc hookEntryX()
 		 * \details Default implementation does nothing. Override in subclass.
 		 */
-		void __hookEntryX(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) noexcept {}
+		void __hookEntryX(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer),
+			size_t UNUSED_PAR(len)) noexcept
+		{}
 
 		/*!
 		 * \copydoc hookExitX()
 		 * \details Default implementation does nothing. Override in subclass.
 		 */
-		void __hookExitX(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len), bool UNUSED_PAR(changed)) noexcept {}
+		void __hookExitX(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer),
+			size_t UNUSED_PAR(len), bool UNUSED_PAR(changed)) noexcept
+		{}
 
 		/*!
 		 * \copydoc hookEntryRO()
 		 * \details Default implementation does nothing. Override in subclass.
 		 */
-		void __hookEntryRO(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) noexcept {}
+		void __hookEntryRO(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer),
+			size_t UNUSED_PAR(len)) noexcept
+		{}
 
 		/*!
 		 * \copydoc hookExitRO()
 		 * \details Default implementation does nothing. Override in subclass.
 		 */
-		void __hookExitRO(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) noexcept {}
+		void __hookExitRO(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer),
+			size_t UNUSED_PAR(len)) noexcept
+		{}
 
 	public:
 {% for a in store.arrays %}
@@ -471,17 +561,25 @@ public:
 		/*!
 		 * \copydoc stored::{{store.name}}Data::shortDirectory()
 		 */
-		uint8_t const* shortDirectory() const noexcept { return {{store.name}}Data::shortDirectory(); }
+		uint8_t const* shortDirectory() const noexcept
+		{
+			return {{store.name}}Data::shortDirectory();
+		}
+
 		/*!
 		 * \copydoc stored::{{store.name}}Data::longDirectory()
 		 */
-		uint8_t const* longDirectory() const noexcept { return {{store.name}}Data::longDirectory(); }
+		uint8_t const* longDirectory() const noexcept
+		{
+			return {{store.name}}Data::longDirectory();
+		}
 
 		/*!
 		 * \brief Finds an object with the given name.
 		 * \return the object, or an invalid #stored::Variant if not found.
 		 */
-		Variant<Implementation> find(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept
+		Variant<Implementation> find(char const* name,
+			size_t len = std::numeric_limits<size_t>::max()) noexcept
 		{
 			return stored::find(implementation(), shortDirectory(), name, len);
 		}
@@ -489,14 +587,17 @@ public:
 		/*!
 		 * \brief Finds a variable with the given name.
 		 *
-		 * The variable, when it exists, must have the given (fixed) type.  It
-		 * is returned as a free variable; it is not bound yet to a specific
-		 * store instance. This function is constexpr for C++14.
+		 * The variable, when it exists, must have the given (fixed)
+		 * type.  It is returned as a free variable; it is not bound
+		 * yet to a specific store instance. This function is constexpr
+		 * for C++14.
 		 */
 		template <typename T>
-		static constexpr14 FreeVariable<T,Implementation> freeVariable(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept
+		static constexpr14 FreeVariable<T,Implementation> freeVariable(char const* name,
+			size_t len = std::numeric_limits<size_t>::max()) noexcept
 		{
-			return stored::impl::find({{store.name}}Data::shortDirectory(), name, len).template variable<T,Implementation>();
+			return stored::impl::find({{store.name}}Data::shortDirectory(), name, len)
+				.template variable<T,Implementation>();
 		}
 
 		/*!
@@ -505,7 +606,8 @@ public:
 		 * The variable, when it exists, must have the given (fixed) type.
 		 */
 		template <typename T>
-		Variable<T,Implementation> variable(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept
+		Variable<T,Implementation> variable(char const* name,
+			size_t len = std::numeric_limits<size_t>::max()) noexcept
 		{
 			return freeVariable(name, len).apply(*this);
 		}
@@ -518,9 +620,11 @@ public:
 		 * store instance. This function is constexpr for C++14.
 		 */
 		template <typename T>
-		static constexpr14 FreeFunction<T,Implementation> freeFunction(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept
+		static constexpr14 FreeFunction<T,Implementation>
+		freeFunction(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept
 		{
-			return stored::impl::find({{store.name}}Data::shortDirectory(), name, len).template function<T,Implementation>();
+			return stored::impl::find({{store.name}}Data::shortDirectory(), name, len)
+				.template function<T,Implementation>();
 		}
 
 		/*!
@@ -529,7 +633,8 @@ public:
 		 * The function, when it exists, must have the given (fixed) type.
 		 */
 		template <typename T>
-		Function<T,Implementation> function(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept
+		Function<T,Implementation>
+		function(char const* name, size_t len = std::numeric_limits<size_t>::max()) noexcept
 		{
 			return freeFunction(name, len).apply(*this);
 		}
@@ -544,14 +649,18 @@ public:
 			stored::list(&implementation(), buffer(), longDirectory(), f, arg, prefix);
 		}
 
-#if STORED_cplusplus >= 201103L
+#	if STORED_cplusplus >= 201103L
 		/*!
 		 * \brief Calls a callback for every object in the #longDirectory().
 		 * \see stored::list()
 		 */
 		template <typename F>
-		void list(F&& f) noexcept { stored::list<Implementation,F>(&implementation(), buffer(), longDirectory(), std::forward<F>(f)); }
-#endif
+		void list(F&& f) noexcept
+		{
+			stored::list<Implementation,F>(&implementation(), buffer(), longDirectory(),
+				std::forward<F>(f));
+		}
+#	endif
 
 		/*! \brief Map as generated by #map(). */
 		typedef typename Map<String::type, Variant<Implementation> >::type ObjectMap;
@@ -572,14 +681,15 @@ public:
 		/*!
 		 * \brief Callback for #map().
 		 */
-		static void mapCallback(void* container, char const* name, Type::type type, void* buffer, size_t len, void* arg)
+		static void mapCallback(void* container, char const* name, Type::type type, void* buffer,
+			size_t len, void* arg)
 		{
 			ObjectMap& m = *static_cast<ObjectMap*>(arg);
 			Implementation& impl = *static_cast<Implementation*>(container);
 			m[name] =
-				Type::isFunction(type) ?
-				Variant<Implementation>(impl, type, (unsigned int)(uintptr_t)buffer, len) :
-				Variant<Implementation>(impl, type, buffer, len);
+				Type::isFunction(type)
+				? Variant<Implementation>(impl, type, (unsigned int)(uintptr_t)buffer, len)
+				: Variant<Implementation>(impl, type, buffer, len);
 		}
 	};
 
@@ -593,7 +703,7 @@ public:
 		{{store.name}}() is_default
 	};
 
-} // namespace
+} // namespace stored
 #endif // __cplusplus
 #endif // LIBSTORED_STORE_H_{{store.name}}
-
+// clang-format on
