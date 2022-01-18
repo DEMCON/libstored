@@ -125,6 +125,9 @@ option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" ${LIBSTORED_ENABLE_A
 option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" ${LIBSTORED_ENABLE_LSAN_DEFAULT})
 option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" ${LIBSTORED_ENABLE_UBSAN_DEFAULT})
 
+# find_package(Heatshrink) may do install(...EXPORT libstored).
+set(LIBSTORED_DO_INSTALL_LIBSTORED OFF)
+
 option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
 
 if(LIBSTORED_HAVE_HEATSHRINK)
@@ -204,7 +207,9 @@ foreach(d IN LISTS LIBSTORED_PREPEND_INCLUDE_DIRECTORIES)
 endforeach()
 install(FILES ${LIBSTORED_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-install(EXPORT libstored DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake)
+if(LIBSTORED_DO_INSTALL_LIBSTORED)
+	install(EXPORT libstored DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake)
+endif()
 
 configure_package_config_file(
 	"${LIBSTORED_SOURCE_DIR}/cmake/LibstoredStoresConfig.cmake.in"
