@@ -629,6 +629,87 @@ int strncmp(
 	size_t len2 = std::numeric_limits<size_t>::max()) noexcept;
 
 char const* banner() noexcept;
+
+template <typename T>
+struct identity {
+	typedef T self;
+};
+
+/*!
+ * \brief Type constructor for (wrapped) store base class types.
+ *
+ * When deriving from the base store class, instantiate your class as follows:
+ *
+ * \code
+ * class MyStore : public typename stored::store<MyStore, stored::MyStoreBase>::type {
+ *	STORED_STORE(MyStore, stored::MyStoreBase)
+ * public:
+ *	...
+ * };
+ * \endcode
+ *
+ * When wrappers are used, inject them in the sequence of inheritance:
+ *
+ * \code
+ * class MyStore : public stored::store_t<MyStore, stored::Synchronizable, stored::MyStoreBase> {
+ *	STORED_STORE(MyStore, stored::Synchronizable, stored::MyStoreBase)
+ * public:
+ *	...
+ * };
+ * \endcode
+ *
+ * Note the usage of \c stored::stored_t, which is equivalent to \c
+ * stored::store, but only available for C++11 and later.
+ */
+template <
+	typename Impl,
+	// ad infinitum
+	template <typename> typename Wrapper3, template <typename> typename Wrapper2 = identity,
+	template <typename> typename Wrapper1 = identity,
+	template <typename> typename Wrapper0 = identity,
+	template <typename> typename Base = identity>
+struct store {
+	typedef typename Wrapper3<typename Wrapper2<typename Wrapper1<
+		typename Wrapper0<typename Base<Impl>::self>::self>::self>::self>::self type;
+};
+
+// Make sure to match the number of template arguments of stored::store.
+#	define STORE_BASE_CLASS_1(x)	   x
+#	define STORE_BASE_CLASS_2(x, ...) STORE_BASE_CLASS_1(__VA_ARGS__)
+#	define STORE_BASE_CLASS_3(x, ...) STORE_BASE_CLASS_2(__VA_ARGS__)
+#	define STORE_BASE_CLASS_4(x, ...) STORE_BASE_CLASS_3(__VA_ARGS__)
+#	define STORE_BASE_CLASS_5(x, ...) STORE_BASE_CLASS_4(__VA_ARGS__)
+
+#	define STORED_GET_MACRO_ARGN(_0, _1, _2, _3, _4, _5, m, ...) m
+
+#	define STORE_CLASS_BASE(Impl, ...)                                             \
+		STORED_GET_MACRO_ARGN(                                                  \
+			0, Impl, ##__VA_ARGS__, STORE_BASE_CLASS_5, STORE_BASE_CLASS_4, \
+			STORE_BASE_CLASS_3, STORE_BASE_CLASS_2, STORE_BASE_CLASS_1)     \
+		(Impl, ##__VA_ARGS__)<Impl>
+
+#	define STORE_CLASS_(Impl, ...)              \
+		STORED_CLASS_NOCOPY(Impl)            \
+		STORED_CLASS_NEW_DELETE(Impl)        \
+	public:                                      \
+		typedef Impl self;                   \
+		typedef __VA_ARGS__ base;            \
+		using typename base::root;           \
+		using typename base::Implementation; \
+                                                     \
+	private:
+
+#	define STORE_CLASS(Impl, ...)                                                  \
+		STORE_CLASS_(Impl, typename ::stored::store<Impl, ##__VA_ARGS__>::type) \
+		friend class STORE_CLASS_BASE(Impl, ##__VA_ARGS__);
+
+#	define STORE_WRAPPER_CLASS(Impl, Base) STORE_CLASS_(Impl, Base)
+
+#	if STORED_cplusplus >= 201103L
+template <typename Impl, template <typename> typename... Base>
+using store_t = typename store<Impl, Base...>::type;
+#	endif
+
 } // namespace stored
 
 #	include <libstored/allocator.h>
@@ -682,16 +763,11 @@ Sub down_cast(Base& p) noexcept
 	return static_cast<Sub>(p);
 }
 
-#	define STORE_BASE_CLASS(Base, Impl) ::stored::Base<Impl>
+/*! \deprecated Use \c stored::store instead. */
+#	define STORE_BASE_CLASS(Base, Impl) ::stored::Base</**/ Impl /**/>
 
-#	define STORE_CLASS_BODY(Base, Impl)               \
-		STORED_CLASS_NOCOPY(Impl)                  \
-	public:                                            \
-		typedef STORE_BASE_CLASS(Base, Impl) base; \
-		using typename base::Implementation;       \
-		friend class ::stored::Base<Impl>;         \
-                                                           \
-	private:
+/*! \deprecated Use \c STORE_CLASS instead. */
+#	define STORE_CLASS_BODY(Base, Impl) STORE_CLASS(Impl, ::stored::Base)
 
 #endif // __cplusplus
 #endif // LIBSTORED_UTIL_H

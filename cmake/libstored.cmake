@@ -34,11 +34,11 @@ endif()
 
 # Create the libstored library based on the generated files.
 # Old interface: libstored_lib(libprefix libpath store1 store2 ...)
-# New interface: libstored_lib(TARGET lib DESTINATION libpath STORES store1 store1 ... [ZTH] [ZMQ|NO_ZMQ])
+# New interface: libstored_lib(TARGET lib DESTINATION libpath STORES store1 store1 ... [ZTH] [ZMQ|NO_ZMQ] [QT])
 function(libstored_lib libprefix libpath)
 	if("${libprefix}" STREQUAL "TARGET")
 		cmake_parse_arguments(LIBSTORED_LIB
-			"ZTH;ZMQ;NO_ZMQ"
+			"ZTH;ZMQ;NO_ZMQ;QT"
 			"TARGET;DESTINATION"
 			"STORES"
 			${ARGV}
@@ -138,6 +138,20 @@ function(libstored_lib libprefix libpath)
 	if(LIBSTORED_HAVE_LIBZMQ AND LIBSTORED_LIB_ZMQ)
 		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_ZMQ=1)
 		target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC libzmq)
+	endif()
+
+	if(LIBSTORED_HAVE_QT AND LIBSTORED_LIB_QT)
+		if(TARGET Qt5::Core)
+			message(STATUS "Enable Qt5 integration for ${LIBSTORED_LIB_TARGET}")
+			target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_QT=5)
+			target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC Qt5::Core)
+		else()
+			message(STATUS "Enable Qt6 integration for ${LIBSTORED_LIB_TARGET}")
+			target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_QT=6)
+			target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC Qt::Core)
+		endif()
+
+		set_target_properties(${LIBSTORED_LIB_TARGET} PROPERTIES AUTOMOC ON)
 	endif()
 
 	if(WIN32)
@@ -291,7 +305,7 @@ endfunction()
 function(libstored_generate target) # add all other models as varargs
 	if("${target}" STREQUAL "TARGET")
 		cmake_parse_arguments(LIBSTORED_GENERATE
-			"ZTH;ZMQ;NO_ZMQ"
+			"ZTH;ZMQ;NO_ZMQ;QT"
 			"TARGET;DESTINATION"
 			"STORES"
 			${ARGV}
@@ -311,6 +325,9 @@ function(libstored_generate target) # add all other models as varargs
 	endif()
 	if(LIBSTORED_GENERATE_NO_ZMQ)
 		set(LIBSTORED_GENERATE_FLAGS ${LIBSTORED_GENERATE_FLAGS} NO_ZMQ)
+	endif()
+	if(LIBSTORED_GENERATE_QT)
+		set(LIBSTORED_GENERATE_FLAGS ${LIBSTORED_GENERATE_FLAGS} QT)
 	endif()
 
 	if("${LIBSTORED_GENERATE_DESTINATION}" STREQUAL "")

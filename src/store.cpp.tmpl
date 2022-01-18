@@ -102,5 +102,14 @@ uint8_t const* {{store.name}}Data::longDirectory() noexcept
 	return Config::FullNames ? (uint8_t const*){{store.name}}Data_directory_full : shortDirectory();
 }
 
+#ifdef STORED_HAVE_QT
+Qtified{{store.name}}Base::Qtified{{store.name}}Base(QObject* parent)
+	: QObject{parent}
+{}
+
+Qtified{{store.name}}Base::~Qtified{{store.name}}Base() = default;
+
+#	include "moc_{{store.filename}}.cpp"
+#endif // STORED_HAVE_QT
 } // namespace stored
 // clang-format on

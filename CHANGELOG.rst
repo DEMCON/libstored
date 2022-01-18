@@ -13,7 +13,10 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 `Unreleased`_
 -------------
 
-...
+Added
+`````
+
+- Add QObject/QML wrapper for stores to access a store directly in QML.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.1.0...HEAD
 

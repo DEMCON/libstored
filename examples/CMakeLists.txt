@@ -60,3 +60,7 @@ endif()
 if(LIBSTORED_HAVE_ZTH AND LIBSTORED_HAVE_LIBZMQ)
 	add_subdirectory(fibered)
 endif()
+
+if(LIBSTORED_HAVE_QT)
+	add_subdirectory(qt)
+endif()

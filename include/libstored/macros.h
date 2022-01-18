@@ -211,6 +211,22 @@ typedef SSIZE_T ssize_t;
 #	define NVALGRIND
 #endif
 
+#ifdef STORED_HAVE_QT
+#	if STORED_HAVE_QT == 6
+#		define STORED_HAVE_QT6
+#		if STORED_cplusplus < 201703L
+#			error Qt6 requires C++17 or later.
+#		endif
+#	elif STORED_HAVE_QT == 5
+#		define STORED_HAVE_QT5
+#		if STORED_cplusplus < 201103L
+#			error Qt5 requires C++11 or later.
+#		endif
+#	else
+#		error Unsupported QT version.
+#	endif
+#endif
+
 
 
 //////////////////////////////////////////////////
