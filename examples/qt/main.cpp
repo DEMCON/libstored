@@ -5,12 +5,23 @@
 
 #include "ExampleQtStore.h"
 
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include <QSocketNotifier>
+#include <QUrl>
+#include <iostream>
 #include <stored>
 
-int main()
+int main(int argc, char** argv)
 {
-	puts(stored::banner());
+	std::cout << stored::banner() << std::endl;
 
+	// Initialize Qt.
+	QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+	QGuiApplication app(argc, argv);
+
+	// Initialize the store.
 	stored::QExampleQtStore store;
 	stored::Debugger debugger("qt");
 	debugger.map(store);
@@ -18,29 +29,32 @@ int main()
 	stored::DebugZmqLayer zmqLayer;
 	zmqLayer.wrap(debugger);
 
-	printf("Connect via ZMQ to debug this application.\n");
+	// Prepare polling the socket from Qt's event loop.
+	QSocketNotifier socketNotifier(zmqLayer.fd(), QSocketNotifier::Read);
 
-	stored::Poller poller;
-	stored::PollableZmqLayer pollableZmq(zmqLayer, stored::Pollable::PollIn);
-
-	if((errno = poller.add(pollableZmq))) {
-		perror("Cannot add to poller");
-		exit(1);
-	}
-
-	while(true) {
-		if(poller.poll().empty()) {
-			switch(errno) {
-			case EINTR:
-			case EAGAIN:
-				break;
-			default:
-				perror("Cannot poll");
-				exit(1);
-			} // else timeout
-		} else if((errno = zmqLayer.recv())) {
+	QObject::connect(&socketNotifier, &QSocketNotifier::activated, [&]() {
+		switch((errno = zmqLayer.recv())) {
+		case 0:
+		case EINTR:
+		case EAGAIN:
+			break; // Ok.
+		default:
 			perror("Cannot recv");
-			exit(1);
+			app.exit(1);
 		}
-	}
+	});
+
+	std::cout << "Connect via ZMQ to debug this application." << std::endl;
+
+	// Initialize QML
+	QQmlApplicationEngine engine;
+
+	// Pass the store to QML.
+	engine.rootContext()->setContextProperty("store", &store);
+
+	// Load the main window.
+	engine.load(QUrl("qrc:/main.qml"));
+
+	// There we go!
+	return app.exec();
 }
