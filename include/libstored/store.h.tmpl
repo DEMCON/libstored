@@ -723,21 +723,19 @@ public:
 		Q_OBJECT
 {% for o in store.objects %}
 {%   if o is variable %}
-{%     if o is string %}
-		Q_PROPERTY(QString {{o.cname}} READ q_get{{o.cname}} WRITE q_set{{o.cname}} NOTIFY {{o.cname}}Changed)
-{%     elif not o is blob %}
-		Q_PROPERTY({{o|ctype}} {{o.cname}} READ q_get{{o.cname}} WRITE q_set{{o.cname}} NOTIFY {{o.cname}}Changed)
+{%     if o is string or o is qml_compatible %}
+		Q_PROPERTY({{o|qtype}} {{o.cname}} READ q_get{{o.cname}} WRITE q_set{{o.cname}} NOTIFY {{o.cname}}Changed)
 {%     endif %}
 {%   endif %}
 {% endfor %}
 	protected:
-		Qtified{{store.name}}Base(QObject* parent = nullptr);
+		explicit Qtified{{store.name}}Base(QObject* parent = nullptr);
 	public:
 		virtual ~Qtified{{store.name}}Base() override;
 
 	signals:
 {% for o in store.objects %}
-{%   if o is variable and (o is string or not o is blob) %}
+{%   if o is variable and (o is string or o is qml_compatible) %}
 		void {{o.cname}}Changed();
 {%   endif %}
 {% endfor %}
@@ -748,9 +746,9 @@ public:
 {%     if o is string %}
 		virtual QString {{o.cname}}() const = 0;
 		virtual void {{o.cname}}(QString const& value) = 0;
-{%     elif not o is blob %}
-		virtual {{o|ctype}} {{o.cname}}() const = 0;
-		virtual void {{o.cname}}({{o|ctype}} value) = 0;
+{%     elif o is qml_compatible %}
+		virtual {{o|qtype}} {{o.cname}}() const = 0;
+		virtual void {{o.cname}}({{o|qtype}} value) = 0;
 {%     endif %}
 {%   endif %}
 {% endfor %}
@@ -763,9 +761,9 @@ public:
 {%     if o is string %}
 		virtual QString q_get{{o.cname}}() const = 0;
 		virtual void q_set{{o.cname}}(QString const& value) = 0;
-{%     elif o is not blob %}
-		virtual {{o|ctype}} q_get{{o.cname}}() const = 0;
-		virtual void q_set{{o.cname}}({{o|ctype}} value) = 0;
+{%     elif o is qml_compatible %}
+		virtual {{o|qtype}} q_get{{o.cname}}() const = 0;
+		virtual void q_set{{o.cname}}({{o|qtype}} value) = 0;
 {%     endif %}
 {%   endif %}
 {% endfor %}
@@ -781,7 +779,7 @@ public:
 
 		STORE_WRAPPER_CLASS(Qtified{{store.name}}, Base)
 	protected:
-		Qtified{{store.name}}(QObject* parent = nullptr)
+		explicit Qtified{{store.name}}(QObject* parent = nullptr)
 			: Qtified{{store.name}}Base(parent)
 		{}
 
@@ -805,15 +803,15 @@ public:
 			base::{{o.cname}}.set(buf.data(), buf.size());
 		}
 
-{%     elif not o is blob %}
-		virtual {{o|ctype}} {{o.cname}}() const final
+{%     elif o is qml_compatible %}
+		virtual {{o|qtype}} {{o.cname}}() const final
 		{
-			return base::{{o.cname}}();
+			return static_cast<{{o|qtype}}>(base::{{o.cname}}());
 		}
 
-		virtual void {{o.cname}}({{o|ctype}} value) final
+		virtual void {{o.cname}}({{o|qtype}} value) final
 		{
-			base::{{o.cname}}(value);
+			base::{{o.cname}}(static_cast<{{o|ctype}}>(value));
 		}
 
 {%     endif %}
@@ -833,18 +831,19 @@ public:
 
 		virtual void q_set{{o.cname}}(QString const& value) final
 		{
-			base::{{o.cname}}.set(value.toUtf8().data());
+			auto buf = value.toUtf8();
+			base::{{o.cname}}.set(buf.data(), buf.size());
 		}
 
-{%     elif o is not blob %}
-		virtual {{o|ctype}} q_get{{o.cname}}() const final
+{%     elif o is qml_compatible %}
+		virtual {{o|qtype}} q_get{{o.cname}}() const final
 		{
-			return base::{{o.cname}}.get();
+			return static_cast<{{o|qtype}}>(base::{{o.cname}}.get());
 		}
 
-		virtual void q_set{{o.cname}}({{o|ctype}} value) final
+		virtual void q_set{{o.cname}}({{o|qtype}} value) final
 		{
-			base::{{o.cname}}.set(value);
+			base::{{o.cname}}.set(static_cast<{{o|ctype}}>(value));
 		}
 
 {%     endif %}
@@ -857,7 +856,7 @@ public:
 			if(changed) {
 				switch(this->bufferToKey(buffer)) {
 {% for o in store.objects|sort(attribute='offset') %}
-{%   if o is variable and (o is string or not o is blob) %}
+{%   if o is variable and (o is string or o is qml_compatible) %}
 				case {{o.offset}}:
 					{{o.cname}}Changed();
 					break;
@@ -880,8 +879,8 @@ public:
 		STORE_CLASS(Q{{store.name}}, Qtified{{store.name}}, {{store.name}}Base)
 	public:
 		/*! \copydoc stored::Qtified{{store.name}}::Qtified{{store.name}}() */
-		Q{{store.name}}() = default;
-		virtual ~Q{{store.name}}() override = default;
+		explicit Q{{store.name}}(QObject* parent = nullptr);
+		virtual ~Q{{store.name}}() override;
 	};
 #	endif // STORED_HAVE_QT
 } // namespace stored

@@ -109,6 +109,12 @@ Qtified{{store.name}}Base::Qtified{{store.name}}Base(QObject* parent)
 
 Qtified{{store.name}}Base::~Qtified{{store.name}}Base() = default;
 
+Q{{store.name}}::Q{{store.name}}(QObject* parent)
+	: base{parent}
+{}
+
+Q{{store.name}}::~Q{{store.name}}() = default;
+
 #	include "moc_{{store.filename}}.cpp"
 #endif // STORED_HAVE_QT
 } // namespace stored

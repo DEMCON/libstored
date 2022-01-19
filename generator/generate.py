@@ -78,6 +78,28 @@ def ctype(o):
             'string': 'char'
     }[o.type]
 
+def qtype(o):
+    return {
+            'bool': 'bool',
+            'int8': 'int',
+            'uint8': 'uint',
+            'int16': 'int',
+            'uint16': 'uint',
+            'int32': 'int',
+            'uint32': 'uint',
+            'int64': 'qlonglong',
+            'uint64': 'qulonglong',
+            'float': 'float',
+            'double': 'double',
+            'ptr32': None,
+            'ptr64': None,
+            'blob': None,
+            'string': 'QString'
+    }[o.type]
+
+def is_qml_compatible(o):
+    return qtype(o) is not None
+
 def stype(o):
     t = {
         'bool': 'Type::Bool',
@@ -286,6 +308,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
             lstrip_blocks = True)
 
     jenv.filters['ctype'] = ctype
+    jenv.filters['qtype'] = qtype
     jenv.filters['stype'] = stype
     jenv.filters['vhdltype'] = vhdltype
     jenv.filters['vhdlinit'] = vhdlinit
@@ -304,6 +327,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.tests['blob'] = is_blob
     jenv.tests['string'] = is_string
     jenv.tests['pointer'] = is_pointer
+    jenv.tests['qml_compatible'] = is_qml_compatible
 
     store_h_tmpl = jenv.get_template('store.h.tmpl')
     store_cpp_tmpl = jenv.get_template('store.cpp.tmpl')
