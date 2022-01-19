@@ -555,10 +555,7 @@ class Object(QObject):
             return ""
         else:
             try:
-                #return self._formatter(v)
-                f = self._formatter(v)
-                print(f"{v} = {f}")
-                return f
+                return self._formatter(v)
             except:
                 return "?"
 
