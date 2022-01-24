@@ -33,6 +33,7 @@
 #	if STORED_cplusplus >= 201103L
 #		include <array>
 #		include <functional>
+#		include <unordered_map>
 #		include <utility>
 #	endif
 
@@ -559,6 +560,18 @@ struct Map {
 		Key, T, Compare, typename Config::Allocator<std::pair<Key const, T> /**/>::type>
 		type;
 };
+
+#	if STORED_cplusplus >= 201103L
+/*!
+ * \brief libstored-allocator-aware \c std::unordered_map.
+ */
+template <
+	typename Key, typename T, class Hash = std::hash<Key>, class KeyEqual = std::equal_to<Key>>
+struct UnorderedMap {
+	using type = typename std::unordered_map<
+		Key, T, Hash, KeyEqual, typename Config::Allocator<std::pair<Key const, T>>::type>;
+};
+#	endif
 
 /*!
  * \brief libstored-allocator-aware \c std::set.
