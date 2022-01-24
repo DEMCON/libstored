@@ -779,9 +779,14 @@ public:
 
 		STORE_WRAPPER_CLASS(Qtified{{store.name}}, Base)
 	protected:
-		explicit Qtified{{store.name}}(QObject* parent = nullptr)
-			: Qtified{{store.name}}Base(parent)
-		{}
+		template <typename... Arg>
+		explicit Qtified{{store.name}}(QObject* parent = nullptr, Arg&&... arg)
+			: Qtified{{store.name}}Base{parent}
+			, base{std::forward<Arg>(arg)...}
+		{
+			// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert)
+			stored_assert(Config::EnableHooks);
+		}
 
 	public:
 		virtual ~Qtified{{store.name}}() override = default;
