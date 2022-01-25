@@ -1823,6 +1823,11 @@ public:
 	typedef Variable<type, Implementation> Variable_type;
 	typedef Variant<Implementation> Variant_type;
 
+	static constexpr uintptr_t key() noexcept
+	{
+		return static_cast<uintptr_t>(offset);
+	}
+
 	constexpr Variable_type variable() const noexcept
 	{
 		static_assert(size_ == sizeof(type), "");
@@ -1903,6 +1908,11 @@ public:
 	typedef typename FunctionMap<Implementation, F>::type type;
 	typedef Function<type, Implementation> Function_type;
 	typedef Variant<Implementation> Variant_type;
+
+	static constexpr unsigned int id() noexcept
+	{
+		return F;
+	}
 
 	constexpr Function_type function() const noexcept
 	{
@@ -2019,6 +2029,11 @@ public:
 
 	typedef Variant<Implementation> Variant_type;
 
+	static constexpr uintptr_t key() noexcept
+	{
+		return static_cast<uintptr_t>(offset);
+	}
+
 	constexpr Variant_type variant() const noexcept
 	{
 		return objectToStore<Store>(*this)._variantv(type_, offset, size_);
@@ -2085,6 +2100,11 @@ public:
 #	endif
 
 	typedef Variant<Implementation> Variant_type;
+
+	static constexpr unsigned int id() noexcept
+	{
+		return F;
+	}
 
 	constexpr Variant_type variant() const noexcept
 	{
