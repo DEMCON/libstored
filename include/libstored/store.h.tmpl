@@ -534,9 +534,19 @@ public:
 		 * \copydoc hookExitX()
 		 * \details Default implementation does nothing. Override in subclass.
 		 */
-		void __hookExitX(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer),
-			size_t UNUSED_PAR(len), bool UNUSED_PAR(changed)) noexcept
-		{}
+		void __hookExitX(Type::type UNUSED_PAR(type), void* buffer,
+			size_t UNUSED_PAR(len), bool changed) noexcept
+		{
+			if(changed) {
+				switch(bufferToKey(buffer)) {
+{% for o in store.objects|select('variable')|sort(attribute='offset') %}
+				case {{o.offset}}:
+					implementation().__{{o.cname}}__changed();
+					break;
+{% endfor %}
+				}
+			}
+		}
 
 		/*!
 		 * \copydoc hookEntryRO()
@@ -553,6 +563,14 @@ public:
 		void __hookExitRO(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer),
 			size_t UNUSED_PAR(len)) noexcept
 		{}
+{% for o in store.objects|select('variable') %}
+
+		/*!
+		 * \brief Callback when {{o.name}} has changed.
+		 * \details Default implementation does nothing. Override in subclass.
+		 */
+		void __{{o.cname}}__changed() noexcept {}
+{% endfor %}
 
 	public:
 {% for a in store.arrays %}
@@ -856,23 +874,16 @@ public:
 {% endfor %}
 
 	protected:
-		void __hookExitX(Type::type type, void* buffer, size_t len, bool changed) noexcept
+{% for o in store.objects|select('variable')|sort(attribute='offset') %}
+{%   if (o is string or o is qml_compatible) %}
+		void __{{o.cname}}__changed() noexcept
 		{
-			if(changed) {
-				switch(this->bufferToKey(buffer)) {
-{% for o in store.objects|sort(attribute='offset') %}
-{%   if o is variable and (o is string or o is qml_compatible) %}
-				case {{o.offset}}:
-					{{o.cname}}Changed();
-					break;
+			{{o.cname}}Changed();
+			base::__{{o.cname}}__changed();
+		}
+
 {%   endif %}
 {% endfor %}
-				default:;
-				}
-			}
-
-			base::__hookExitX(type, buffer, len, changed);
-		}
 	};
 
 	/*!

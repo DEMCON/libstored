@@ -639,11 +639,11 @@ public:
 	 */
 	void entryX() const noexcept
 	{
+		container().hookEntryX(toType<T>::type, &this->buffer(), sizeof(type));
 #	ifdef _DEBUG
 		stored_assert(m_entry == EntryNone);
 		m_entry = EntryX;
 #	endif
-		container().hookEntryX(toType<T>::type, &this->buffer(), sizeof(type));
 	}
 
 	/*!
@@ -652,11 +652,11 @@ public:
 	 */
 	void exitX(bool changed) const noexcept
 	{
-		container().hookExitX(toType<T>::type, &this->buffer(), sizeof(type), changed);
 #	ifdef _DEBUG
 		stored_assert(m_entry == EntryX);
 		m_entry = EntryNone;
 #	endif
+		container().hookExitX(toType<T>::type, &this->buffer(), sizeof(type), changed);
 	}
 
 	/*!
@@ -665,11 +665,11 @@ public:
 	 */
 	void entryRO() const noexcept
 	{
+		container().hookEntryRO(toType<T>::type, &this->buffer(), sizeof(type));
 #	ifdef _DEBUG
 		stored_assert(m_entry == EntryNone);
 		m_entry = EntryRO;
 #	endif
-		container().hookEntryRO(toType<T>::type, &this->buffer(), sizeof(type));
 	}
 
 	/*!
@@ -678,11 +678,11 @@ public:
 	 */
 	void exitRO() const noexcept
 	{
-		container().hookExitRO(toType<T>::type, &this->buffer(), sizeof(type));
 #	ifdef _DEBUG
 		stored_assert(m_entry == EntryRO);
 		m_entry = EntryNone;
 #	endif
+		container().hookExitRO(toType<T>::type, &this->buffer(), sizeof(type));
 	}
 
 private:
@@ -1320,11 +1320,11 @@ public:
 	void entryX(size_t len) const noexcept
 	{
 		if(Config::EnableHooks) {
+			container().hookEntryX(type(), m_buffer, len);
 #	ifdef _DEBUG
 			stored_assert(m_entry == EntryNone);
 			m_entry = EntryX;
 #	endif
-			container().hookEntryX(type(), m_buffer, len);
 		}
 	}
 
@@ -1340,11 +1340,11 @@ public:
 	void exitX(bool changed, size_t len) const noexcept
 	{
 		if(Config::EnableHooks) {
-			container().hookExitX(type(), m_buffer, len, changed);
 #	ifdef _DEBUG
 			stored_assert(m_entry == EntryX);
 			m_entry = EntryNone;
 #	endif
+			container().hookExitX(type(), m_buffer, len, changed);
 		}
 	}
 
@@ -1360,11 +1360,11 @@ public:
 	void entryRO(size_t len) const noexcept
 	{
 		if(Config::EnableHooks) {
+			container().hookExitRO(type(), m_buffer, len);
 #	ifdef _DEBUG
 			stored_assert(m_entry == EntryNone);
 			m_entry = EntryRO;
 #	endif
-			container().hookExitRO(type(), m_buffer, len);
 		}
 	}
 
@@ -1380,11 +1380,11 @@ public:
 	void exitRO(size_t len) const noexcept
 	{
 		if(Config::EnableHooks) {
-			container().hookExitRO(type(), m_buffer, len);
 #	ifdef _DEBUG
 			stored_assert(m_entry == EntryRO);
 			m_entry = EntryNone;
 #	endif
+			container().hookExitRO(type(), m_buffer, len);
 		}
 	}
 
