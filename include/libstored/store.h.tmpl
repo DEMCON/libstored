@@ -762,11 +762,31 @@ public:
 {% for o in store.objects %}
 {%   if o is function %}
 {%     if o is string %}
-		virtual QString {{o.cname}}() const = 0;
-		virtual void {{o.cname}}(QString const& value) = 0;
+		virtual QString q_{{o.cname}}() const = 0;
+		virtual void q_{{o.cname}}(QString const& value) = 0;
+
+		String {{o.cname}}() const
+		{
+			return q_{{o.cname}}();
+		}
+
+		void {{o.cname}}(QString const& value)
+		{
+			q_{{o.cname}}(value);
+		}
 {%     elif o is qml_compatible %}
-		virtual {{o|qtype}} {{o.cname}}() const = 0;
-		virtual void {{o.cname}}({{o|qtype}} value) = 0;
+		virtual {{o|qtype}} q_{{o.cname}}() const = 0;
+		virtual void q_{{o.cname}}({{o|qtype}} value) = 0;
+
+		{{o|qtype}} {{o.cname}}() const
+		{
+			return q_{{o.cname}}();
+		}
+
+		void {{o.cname}}({{o|qtype}} value)
+		{
+			q_{{o.cname}}(value);
+		}
 {%     endif %}
 {%   endif %}
 {% endfor %}
@@ -813,29 +833,33 @@ public:
 {% for o in store.objects %}
 {%   if o is function %}
 {%     if o is string %}
-		virtual QString {{o.cname}}() const final
+		virtual QString q_{{o.cname}}() const final
 		{
 			char buf[{{o.size}} + 1]{};
 			base::{{o.cname}}.get(buf, sizeof(buf));
 			return buf;
 		}
 
-		virtual void {{o.cname}}(QString const& value) final
+		virtual void q_{{o.cname}}(QString const& value) final
 		{
 			auto buf = value.toUtf8();
 			base::{{o.cname}}.set(buf.data(), buf.size());
 		}
 
+		using Base::{{o.cname}};
+
 {%     elif o is qml_compatible %}
-		virtual {{o|qtype}} {{o.cname}}() const final
+		virtual {{o|qtype}} q_{{o.cname}}() const final
 		{
 			return static_cast<{{o|qtype}}>(base::{{o.cname}}());
 		}
 
-		virtual void {{o.cname}}({{o|qtype}} value) final
+		virtual void q_{{o.cname}}({{o|qtype}} value) final
 		{
 			base::{{o.cname}}(static_cast<{{o|ctype}}>(value));
 		}
+
+		using Base::{{o.cname}};
 
 {%     endif %}
 {%   endif %}
