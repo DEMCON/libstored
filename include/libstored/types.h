@@ -35,6 +35,10 @@
 #		include <inttypes.h>
 #	endif
 
+#	ifdef STORED_HAVE_QT
+#		include <QVariant>
+#	endif
+
 namespace stored {
 
 /*!
@@ -1316,6 +1320,88 @@ public:
 		set(&data[0], data.size());
 	}
 
+#	ifdef STORED_HAVE_QT
+	/*!
+	 * \brief Convert the value to a QVariant.
+	 */
+	QVariant toQVariant() const
+	{
+		switch(type()) {
+		case Type::Int8:
+			return (int)get<int8_t>();
+		case Type::Int16:
+			return (int)get<int16_t>();
+		case Type::Int32:
+			return get<int32_t>();
+		case Type::Int64:
+			return (qlonglong)get<int64_t>();
+		case Type::Uint8:
+			return (unsigned int)get<uint8_t>();
+		case Type::Uint16:
+			return (unsigned int)get<uint16_t>();
+		case Type::Uint32:
+			return get<uint32_t>();
+		case Type::Uint64:
+			return (qulonglong)get<uint64_t>();
+		case Type::Float:
+			return get<float>();
+		case Type::Double:
+			return get<double>();
+		case Type::Bool:
+			return get<bool>();
+		case Type::String: {
+			QByteArray buf{(int)size(), 0};
+			get(buf.data(), (size_t)buf.size());
+			return QString{buf};
+		}
+		default:
+			return QVariant{};
+		}
+	}
+
+	/*!
+	 * \brief Set the value, given a QVariant.
+	 * \return \c true upon success
+	 */
+	bool set(QVariant const& v)
+	{
+		if(!v.isValid())
+			return false;
+
+#		define CASE_TYPE(T)           \
+		case stored::toType<T>::type:  \
+			if(!v.canConvert<T>()) \
+				return false;  \
+			set<T>(v.value<T>());  \
+			return true;
+
+		switch(type()) {
+			CASE_TYPE(int8_t)
+			CASE_TYPE(uint8_t)
+			CASE_TYPE(int16_t)
+			CASE_TYPE(uint16_t)
+			CASE_TYPE(int32_t)
+			CASE_TYPE(uint32_t)
+			CASE_TYPE(qlonglong)
+			CASE_TYPE(qulonglong)
+			CASE_TYPE(float)
+			CASE_TYPE(double)
+			CASE_TYPE(bool)
+		case stored::Type::String: {
+			if(!v.canConvert<QString>())
+				return false;
+
+			auto s = v.value<QString>().toUtf8();
+			set(s.data(), (size_t)s.size());
+			return true;
+		}
+		default:
+			return false;
+		}
+#		undef CASE_TYPE
+	}
+#	endif // STORED_HAVE_QT
+
 	/*!
 	 * \brief Invokes \c hookEntryX() on the #container().
 	 */
@@ -1408,8 +1494,11 @@ public:
 
 	/*!
 	 * \brief Returns the size.
-	 * \details In case #type() is Type::String, this returns the maximum size of the string,
-	 * excluding null terminator. \details Only call this function when it is #valid().
+	 *
+	 * In case #type() is Type::String, this returns the maximum size of
+	 * the string, excluding null terminator.
+	 *
+	 * Only call this function when it is #valid().
 	 */
 	size_t size() const noexcept
 	{
@@ -1531,6 +1620,56 @@ public:
 	bool operator!=(Variant const& rhs) const noexcept
 	{
 		return !(*this == rhs);
+	}
+
+	/*!
+	 * \brief Copies data from a Variant from another Container.
+	 *
+	 * This copies data directly, without type conversion.  This may come
+	 * in handy when data of the same variable of different stores (or
+	 * between stores with different wrappers) should be copied.
+	 *
+	 * Only use this when:
+	 *
+	 * - this and other are valid()
+	 * - this and other are not equal
+	 * - this and other have the same type()
+	 * - this and other have the same size()
+	 * - this and other are variables
+	 */
+	template <typename C>
+	void copy(Variant<C> const& other) noexcept
+	{
+		stored_assert(valid() && other.valid());
+		stored_assert(buffer() != other.buffer());
+		stored_assert(type() == other.type());
+		stored_assert(size() == other.size());
+		stored_assert(isVariable() && other.isVariable());
+
+		size_t len = size();
+		bool changed = true;
+
+		other.entryRO(len);
+		entryX(len);
+
+		if(type() == Type::String) {
+			if(Config::EnableHooks)
+				changed = ::strncmp(
+						  static_cast<char*>(buffer()),
+						  static_cast<char const*>(other.buffer()), len)
+					  != 0;
+			if(changed)
+				strncpy(static_cast<char*>(buffer()),
+					static_cast<char const*>(other.buffer()), len);
+		} else {
+			if(Config::EnableHooks)
+				changed = memcmp(buffer(), other.buffer(), len) != 0;
+			if(changed)
+				memcpy(buffer(), other.buffer(), len);
+		}
+
+		exitX(changed, len);
+		other.exitRO(len);
 	}
 
 private:
