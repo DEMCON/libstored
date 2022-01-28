@@ -843,7 +843,7 @@ public:
 		virtual void q_{{o.cname}}(QString const& value) final
 		{
 			auto buf = value.toUtf8();
-			base::{{o.cname}}.set(buf.data(), buf.size());
+			base::{{o.cname}}.set(buf.data(), (size_t)buf.size());
 		}
 
 		using Base::{{o.cname}};
@@ -879,7 +879,7 @@ public:
 		virtual void q_set{{o.cname}}(QString const& value) final
 		{
 			auto buf = value.toUtf8();
-			base::{{o.cname}}.set(buf.data(), buf.size());
+			base::{{o.cname}}.set(buf.data(), (size_t)buf.size());
 		}
 
 {%     elif o is qml_compatible %}
