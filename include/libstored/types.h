@@ -28,7 +28,6 @@
 #	include <cstdlib>
 #	include <cstring>
 #	include <limits>
-#	include <vector>
 
 #	if STORED_cplusplus >= 201103L
 #		include <cinttypes>
@@ -1306,6 +1305,15 @@ public:
 		stored_assert(toType<T>::type == type());
 		stored_assert(sizeof(T) == size());
 		set(&value, sizeof(T));
+	}
+
+	/*!
+	 * \brief Sets the value.
+	 * \see #set(void*, size_t) const
+	 */
+	void set(Vector<char>::type const& data)
+	{
+		set(&data[0], data.size());
 	}
 
 	/*!

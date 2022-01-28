@@ -322,7 +322,7 @@ TEST(Synchronizer, Sync5)
 			// Flip a bit of that object.
 			auto data = o.get();
 			data[0] = (char)(data[0] + 1);
-			o.set((void const*)&data[0], data.size());
+			o.set(data);
 			count++;
 		}
 
