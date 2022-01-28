@@ -21,7 +21,10 @@ hi def link stInt Number
 syn keyword stBool contained true false True False
 hi def link stBool Boolean
 
-syn match stFullType '^\s*(\?\<[a-z0-9]\+\>\(:[0-9A-Fa-fx]\+\)\?)\?\(\[[0-9A-Fa-fx]\+\]\)\?\(=[^[:space:]]\+\)\?' contains=stTypes,stFloat,stInt,stBool nextgroup=stName skipnl
+syn match stString contained '"\([^"\\]\|\\.\)*"'
+hi def link stString Constant
+
+syn match stFullType '^\s*(\?\<[a-z0-9]\+\>\(:[0-9A-Fa-fx]\+\)\?)\?\(\[[0-9A-Fa-fx]\+\]\)\?\(=[^[:space:]"]\+\|="\([^"\\]\|\\.\)*"\)\?' contains=stTypes,stFloat,stInt,stBool,stString nextgroup=stName skipnl
 hi def link stFullType Type
 
 syn match stName contained '.*' contains=stComment

@@ -765,7 +765,7 @@ public:
 		virtual QString q_{{o.cname}}() const = 0;
 		virtual void q_{{o.cname}}(QString const& value) = 0;
 
-		String {{o.cname}}() const
+		QString {{o.cname}}() const
 		{
 			return q_{{o.cname}}();
 		}

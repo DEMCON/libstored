@@ -18,6 +18,7 @@ Added
 
 - Add QObject/QML wrapper for stores to access a store directly in QML.
 - Generate store variable changed callbacks.
+- Allow string variables to be initialized.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.1.0...HEAD
 

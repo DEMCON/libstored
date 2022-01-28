@@ -608,12 +608,19 @@ class Variable(Object):
         else:
             self.type = type.blob.type
             self.size = type.blob.size
-            self.init = None
+            self.init = None if type.init == None else type.init
+            if self.type == 'string' and isinstance(self.init, str) and self.size < len(self.init.encode()):
+                sys.exit(f'String initializer is too long')
             self.len = type.blob.len
         self.axi = None
 
     def isBlob(self):
         return self.type in ['blob', 'string']
+
+    def _encode_string(self, x):
+        s = x.encode()
+        assert len(s) <= self.size
+        return s + bytes([0] * (self.buffersize() - len(s)))
 
     def encode(self, x, littleEndian=True):
         endian = '<' if littleEndian else '>'
@@ -632,7 +639,7 @@ class Variable(Object):
                 'ptr32': lambda x: struct.pack(endian + 'L', int(x)),
                 'ptr64': lambda x: struct.pack(endian + 'Q', int(x)),
                 'blob': lambda x: bytearray(x),
-                'string': lambda x: x.encode(),
+                'string': self._encode_string
         }[self.type](x)
         return res
 
@@ -685,6 +692,10 @@ class BlobType(object):
         self.type = type
         self.len = len if len != None and len > 1 else 1
         self.size = size if size > 0 else 0
+
+class StringType(BlobType):
+    def __init__(self, parent, type, size, len):
+        super().__init__(parent, type, size, len)
 
 class Immediate(object):
     def __init__(self, parent, value):

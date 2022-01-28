@@ -249,7 +249,7 @@ def load_model(filename, littleEndian=True, debug=False):
         os.path.join(generator_dir, 'dsl', 'grammar.tx'),
         classes=[types.Store,
             types.Variable, types.Function, types.Scope,
-            types.BlobType, types.Immediate
+            types.BlobType, types.StringType, types.Immediate
         ],
         debug=debug)
 
