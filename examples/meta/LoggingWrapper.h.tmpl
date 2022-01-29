@@ -1,0 +1,72 @@
+// clang-format off
+{#
+vim:filetype=cpp
+
+/*
+ * libstored, distributed debuggable data stores.
+ * Copyright (C) 2020-2022  Jochem Rutgers
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+-#}
+
+#ifndef LOGGING{{store.name|upper}}_H
+#define LOGGING{{store.name|upper}}_H
+
+#ifdef __cplusplus
+
+#	include "{{store.name}}.h"
+
+#	include <cstdio>
+#	include <stored>
+
+#	if STORED_cplusplus >= 201103L
+#		include <utility>
+#	endif
+
+template <typename Base>
+class Logging{{store.name}} : public Base {
+	STORE_WRAPPER_CLASS(Logging{{store.name}}, Base)
+protected:
+#	if STORED_cplusplus >= 201103L
+	template <typename... Args>
+	explicit Logging{{store.name}}(Args&&... args)
+		: base(std::forward<Args>(args)...)
+#	else
+	Logging{{store.name}}()
+		: base()
+#	endif
+	{}
+
+protected:
+{% for o in store.variables %}
+	void __{{o.cname}}__changed() noexcept
+	{
+{%  if o.type == 'blob' %}
+		puts("'" {{o.name|cstr}} "' changed");
+{%  elif o.type == 'string' %}
+		fputs("'" {{o.name|cstr}} "'", stdout);
+		printf(" changed to \"%s\"\n", (char const*)base::{{o.cname}}.buffer());
+{%  else %}
+		fputs("'" {{o.name|cstr}} "'", stdout);
+		printf(" changed to %g\n", (double)base::{{o.cname}}.get());
+{%  endif %}
+		base::__{{o.cname}}__changed();
+	}
+
+{% endfor %}
+};
+#endif // __cplusplus
+#endif // LOGGING{{store.name|upper}}_H
+// clang-format on

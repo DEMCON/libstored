@@ -1,0 +1,2 @@
+'a double' changed to 2.718
+'world' changed to "hi"
