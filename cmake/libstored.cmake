@@ -345,6 +345,7 @@ function(libstored_generate target) # add all other models as varargs
 		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/src/${model_base}.cpp)
 		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/doc/${model_base}.rtf)
 		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/doc/${model_base}.csv)
+		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/doc/${model_base}Meta.py)
 		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/rtl/${model_base}.vhd)
 		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/rtl/${model_base}_pkg.vhd)
 	endforeach()
@@ -355,6 +356,7 @@ function(libstored_generate target) # add all other models as varargs
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/src/store.cpp.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.rtf.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.csv.tmpl
+		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.py.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store.vhd.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store_pkg.vhd.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/CMakeLists.txt.tmpl

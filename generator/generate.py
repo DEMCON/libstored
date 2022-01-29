@@ -222,6 +222,19 @@ def csvstring(s):
 
     return '"' + re.sub(r'"', r'""', s) + '"'
 
+def pystring(s):
+    return repr(str(s))
+
+def pyliteral(x):
+    if isinstance(x, float):
+        return f'float(\'{x}\')'
+    elif isinstance(x, bool):
+        return 'True' if x else 'False'
+    elif isinstance(x, int):
+        return f'int({x})'
+    else:
+        return repr(x)
+
 def tab_indent(s, num):
     return ('\t' * num).join(s.splitlines(True))
 
@@ -321,6 +334,8 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.filters['hasfunction'] = has_function
     jenv.filters['rtfstring'] = rtfstring
     jenv.filters['csvstring'] = csvstring
+    jenv.filters['pystring'] = pystring
+    jenv.filters['pyliteral'] = pyliteral
     jenv.filters['tab_indent'] = tab_indent
     jenv.tests['variable'] = is_variable
     jenv.tests['function'] = is_function
@@ -333,6 +348,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
     store_cpp_tmpl = jenv.get_template('store.cpp.tmpl')
     store_rtf_tmpl = jenv.get_template('store.rtf.tmpl')
     store_csv_tmpl = jenv.get_template('store.csv.tmpl')
+    store_py_tmpl = jenv.get_template('store.py.tmpl')
     store_vhd_tmpl = jenv.get_template('store.vhd.tmpl')
     store_pkg_vhd_tmpl = jenv.get_template('store_pkg.vhd.tmpl')
 
@@ -347,6 +363,9 @@ def generate_store(model_file, output_dir, littleEndian=True):
 
     with open(os.path.join(output_dir, 'doc', mname + '.csv'), 'w') as f:
         f.write(store_csv_tmpl.render(store=model))
+
+    with open(os.path.join(output_dir, 'doc', mname + 'Meta.py'), 'w') as f:
+        f.write(store_py_tmpl.render(store=model))
 
     with open(os.path.join(output_dir, 'rtl', mname + '.vhd'), 'w') as f:
         f.write(store_vhd_tmpl.render(store=model))
