@@ -608,9 +608,11 @@ class Variable(Object):
         else:
             self.type = type.blob.type
             self.size = type.blob.size
-            self.init = None if type.init == None else type.init
-            if self.type == 'string' and isinstance(self.init, str) and self.size < len(self.init.encode()):
-                sys.exit(f'String initializer is too long')
+            self.init = None
+            if self.type == 'string' and type.init is not None:
+                self.init = bytes(str(type.init), "utf-8").decode("unicode_escape")
+                if self.size < len(self.init.encode()):
+                    sys.exit(f'String initializer is too long')
             self.len = type.blob.len
         self.axi = None
 

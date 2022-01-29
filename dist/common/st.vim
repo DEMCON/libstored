@@ -21,8 +21,11 @@ hi def link stInt Number
 syn keyword stBool contained true false True False
 hi def link stBool Boolean
 
-syn match stString contained '"\([^"\\]\|\\.\)*"'
-hi def link stString Constant
+syn match stEscapedChar contained '\\\([rnt]\|x[0-9a-fA-F]\{2\}\|u[0-9a-fA-F]\{4\}\|0[0-7]\{1,2\}\)'
+hi def link stEscapedChar SpecialChar
+
+syn match stString contained '"\([^"\\]\|\\.\)*"' contains=stEscapedChar
+hi def link stString String
 
 syn match stFullType '^\s*(\?\<[a-z0-9]\+\>\(:[0-9A-Fa-fx]\+\)\?)\?\(\[[0-9A-Fa-fx]\+\]\)\?\(=[^[:space:]"]\+\|="\([^"\\]\|\\.\)*"\)\?' contains=stTypes,stFloat,stInt,stBool,stString nextgroup=stName skipnl
 hi def link stFullType Type
@@ -41,4 +44,3 @@ hi def link stTodo Todo
 
 syn match stComment "//.*$" contains=stTodo
 hi def link stComment Comment
-
