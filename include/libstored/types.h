@@ -1320,6 +1320,16 @@ public:
 		set(&data[0], data.size());
 	}
 
+	/*!
+	 * \brief Sets a string.
+	 * \details Only works if this variant is a string.
+	 */
+	void set(char const* data)
+	{
+		stored_assert((type() & ~Type::FlagFunction) == Type::String);
+		set(data, strlen(data));
+	}
+
 #	ifdef STORED_HAVE_QT
 	/*!
 	 * \brief Convert the value to a QVariant.
@@ -2214,6 +2224,11 @@ public:
 		variant().template set<T>(value);
 	}
 
+	void set(char const* s) noexcept
+	{
+		variant().set(s);
+	}
+
 	static constexpr Type::type type() noexcept
 	{
 		return type_;
@@ -2284,6 +2299,11 @@ public:
 	void set(T value)
 	{
 		variant().template set<T>(value);
+	}
+
+	void set(char const* s) noexcept
+	{
+		variant().set(s);
 	}
 
 	static constexpr Type::type type() noexcept
