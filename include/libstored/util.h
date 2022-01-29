@@ -641,7 +641,7 @@ struct identity {
  * When deriving from the base store class, instantiate your class as follows:
  *
  * \code
- * class MyStore : public typename stored::store<MyStore, stored::MyStoreBase>::type {
+ * class MyStore : public stored::store<MyStore, stored::MyStoreBase>::type {
  *	STORED_STORE(MyStore, stored::MyStoreBase)
  * public:
  *	...
