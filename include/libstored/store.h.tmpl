@@ -184,8 +184,8 @@ public:
 	 * To inherit the base class, you can use the following template:
 	 *
 	 * \code
-	 * class {{store.name}} : public STORE_BASE_CLASS({{store.name}}Base, {{store.name}}) {
-	 *     STORE_CLASS_BODY({{store.name}}Base, {{store.name}})
+	 * class {{store.name}} : public stored::store<{{store.name}}, {{store.name}}Base>::type {
+	 *     STORE_CLASS({{store.name}}, {{store.name}}Base)
 	 * public:
 	 *     // Your class implementation, such as:
 	 *     {{store.name}}() is_default
@@ -722,8 +722,8 @@ public:
 	/*!
 	 * \brief Default {{store.name}}Base implementation.
 	 */
-	class {{store.name}} : public STORE_BASE_CLASS({{store.name}}Base, {{store.name}}) {
-		STORE_CLASS_BODY({{store.name}}Base, {{store.name}})
+	class {{store.name}} : public store<{{store.name}}, {{store.name}}Base>::type {
+		STORE_CLASS({{store.name}}, {{store.name}}Base)
 	public:
 		/*! \copydoc stored::{{store.name}}Base::{{store.name}}Base() */
 		{{store.name}}() is_default
