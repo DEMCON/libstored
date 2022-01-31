@@ -1385,7 +1385,7 @@ public:
 			set<T>(v.value<T>());  \
 			return true;
 
-		switch(type()) {
+		switch(type() & ~Type::FlagFunction) {
 			CASE_TYPE(int8_t)
 			CASE_TYPE(uint8_t)
 			CASE_TYPE(int16_t)
@@ -1409,6 +1409,29 @@ public:
 			return false;
 		}
 #		undef CASE_TYPE
+	}
+
+	/*!
+	 * \brief Convert the value to a QString.
+	 *
+	 * Only works if the #type() is String.
+	 */
+	QString toQString() const
+	{
+		stored_assert((type() & ~Type::FlagFunction) == Type::String);
+		QByteArray buf{(int)size(), 0};
+		get(buf.data(), (size_t)buf.size());
+		return QString{buf};
+	}
+
+	/*!
+	 * \brief Sets a string.
+	 * \details Only works if this variant is a string.
+	 */
+	void set(QString const& value)
+	{
+		auto buf = value.toUtf8();
+		set(buf.constData());
 	}
 #	endif // STORED_HAVE_QT
 
@@ -2243,6 +2266,28 @@ public:
 	{
 		return variant().buffer();
 	}
+
+#	ifdef STORED_HAVE_QT
+	QVariant toQVariant() const
+	{
+		return variant().toQVariant();
+	}
+
+	bool set(QVariant const& v)
+	{
+		return variant().set(v);
+	}
+
+	QString toQString() const
+	{
+		return variant().toQString();
+	}
+
+	void set(QString const& value)
+	{
+		variant().set(value);
+	}
+#	endif // STORED_HAVE_QT
 };
 
 /*!
@@ -2315,6 +2360,28 @@ public:
 	{
 		return size_;
 	}
+
+#	ifdef STORED_HAVE_QT
+	QVariant toQVariant() const
+	{
+		return variant().toQVariant();
+	}
+
+	bool set(QVariant const& v)
+	{
+		return variant().set(v);
+	}
+
+	QString toQString() const
+	{
+		return variant().toQString();
+	}
+
+	void set(QString const& value)
+	{
+		variant().set(value);
+	}
+#	endif // STORED_HAVE_QT
 };
 } // namespace impl
 
