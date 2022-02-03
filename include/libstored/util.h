@@ -547,8 +547,10 @@ struct saturated_cast_helper {
 #	pragma GCC diagnostic push
 #	pragma GCC diagnostic ignored "-Woverflow" // This error triggers when R is integer, but
 						    // this code path is not triggered then.
-			if(value <= -std::numeric_limits<R>::max()) // NOLINT(clang-diagnostic-sign-conversion)
-				return -std::numeric_limits<R>::max(); // NOLINT(clang-diagnostic-sign-conversion)
+			// NOLINTNEXTLINE(clang-diagnostic-sign-conversion,clang-diagnostic-constant-conversion)
+			if(value <= -std::numeric_limits<R>::max())
+				// NOLINTNEXTLINE(clang-diagnostic-sign-conversion,clang-diagnostic-constant-conversion)
+				return -std::numeric_limits<R>::max();
 #	pragma GCC diagnostic pop
 
 #	ifdef STORED_COMPILER_MSVC
