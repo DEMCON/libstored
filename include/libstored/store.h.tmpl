@@ -41,6 +41,13 @@ vim:filetype=cpp
 #		include <QObject>
 #	endif
 
+#	if defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG)
+// The generated store objects may shadow other variables.  So, silence these
+// warnings.
+#		pragma GCC diagnostic push
+#		pragma GCC diagnostic ignored "-Wshadow"
+#	endif
+
 namespace stored {
 
 	/*!
@@ -291,6 +298,13 @@ public:
 
 		template <typename T_, typename Container_>
 		friend class stored::FreeVariable;
+
+	public:
+		// Explicitly bring all objects into scope, which solves some
+		// issues with tools that trip on the Objects's union.
+{% for o in store.objects %}
+		using Objects::{{o.cname}};
+{% endfor %}
 
 	private:
 		/*! \brief The store's data. */
@@ -924,6 +938,10 @@ public:
 	};
 #	endif // STORED_HAVE_QT
 } // namespace stored
+
+#	if defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG)
+#		pragma GCC diagnostic pop
+#	endif
 #endif // __cplusplus
 #endif // LIBSTORED_STORE_H_{{store.name}}
 // clang-format on
