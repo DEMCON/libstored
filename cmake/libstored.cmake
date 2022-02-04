@@ -57,6 +57,12 @@ function(libstored_lib libprefix libpath)
 		set(LIBSTORED_LIB_ZMQ FALSE)
 	endif()
 
+	set(LIBTORED_LIB_TARGET_SRC "")
+	foreach(m IN ITEMS ${LIBSTORED_LIB_STORES})
+		list(APPEND LIBSTORED_LIB_TARGET_SRC "${LIBSTORED_LIB_DESTINATION}/include/${m}.h")
+		list(APPEND LIBSTORED_LIB_TARGET_SRC "${LIBSTORED_LIB_DESTINATION}/src/${m}.cpp")
+	endforeach()
+
 	add_library(${LIBSTORED_LIB_TARGET} STATIC
 		${LIBSTORED_SOURCE_DIR}/include/stored
 		${LIBSTORED_SOURCE_DIR}/include/stored.h
@@ -83,16 +89,8 @@ function(libstored_lib libprefix libpath)
 		${LIBSTORED_SOURCE_DIR}/src/synchronizer.cpp
 		${LIBSTORED_SOURCE_DIR}/src/util.cpp
 		${LIBSTORED_SOURCE_DIR}/src/zmq.cpp
+		${LIBSTORED_LIB_TARGET_SRC}
 	)
-
-	foreach(m IN ITEMS ${LIBSTORED_LIB_STORES})
-		target_sources(${LIBSTORED_LIB_TARGET} PRIVATE
-			${LIBSTORED_LIB_DESTINATION}/include/${m}.h
-			${LIBSTORED_LIB_DESTINATION}/src/${m}.cpp)
-
-		set_property(TARGET ${LIBSTORED_LIB_TARGET} APPEND PROPERTY PUBLIC_HEADER ${LIBSTORED_LIB_DESTINATION}/include/${m}.h)
-		install(DIRECTORY ${LIBSTORED_LIB_DESTINATION}/doc/ DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored)
-	endforeach()
 
 	target_include_directories(${LIBSTORED_LIB_TARGET} PUBLIC
 		$<BUILD_INTERFACE:${LIBSTORED_PREPEND_INCLUDE_DIRECTORIES}>
@@ -272,6 +270,7 @@ function(libstored_lib libprefix libpath)
 			PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 		)
 
+		install(DIRECTORY ${LIBSTORED_LIB_DESTINATION}/doc/ DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored)
 		install(EXPORT ${LIBSTORED_LIB_TARGET}Store DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake)
 	endif()
 endfunction()
