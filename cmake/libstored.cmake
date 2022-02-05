@@ -57,7 +57,7 @@ function(libstored_lib libprefix libpath)
 		set(LIBSTORED_LIB_ZMQ FALSE)
 	endif()
 
-	set(LIBTORED_LIB_TARGET_SRC "")
+	set(LIBSTORED_LIB_TARGET_SRC "")
 	foreach(m IN ITEMS ${LIBSTORED_LIB_STORES})
 		list(APPEND LIBSTORED_LIB_TARGET_SRC "${LIBSTORED_LIB_DESTINATION}/include/${m}.h")
 		list(APPEND LIBSTORED_LIB_TARGET_SRC "${LIBSTORED_LIB_DESTINATION}/src/${m}.cpp")
