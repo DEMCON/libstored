@@ -396,9 +396,12 @@ public:
 		 * converts a call to the function identifier to an actual
 		 * function call within the Implementation.
 		 */
-		size_t callback(bool UNUSED_PAR(set), void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len),
-			unsigned int UNUSED_PAR(f))
+		size_t callback(bool set, void* buffer, size_t len, unsigned int f)
 		{
+			UNUSED(set)
+			UNUSED(buffer)
+			UNUSED(len)
+			UNUSED(f)
 {% if store.objects|hasfunction %}
 			switch(f) {
 {%   for o in store.objects %}
@@ -432,9 +435,11 @@ public:
 {%     if o is function %}
 {%       if o is blob %}
 		/*! \brief Callback for {{o}} */
-		size_t __{{o.cname}}(bool UNUSED_PAR(set), {{o|ctype}}* UNUSED_PAR(value),
-			size_t UNUSED_PAR(len))
+		size_t __{{o.cname}}(bool set, {{o|ctype}}* value, size_t len)
 		{
+			UNUSED(set)
+			UNUSED(value)
+			UNUSED(len)
 			return 0;
 		}
 {%       else %}
@@ -540,17 +545,21 @@ public:
 		 * \copydoc hookEntryX()
 		 * \details Default implementation does nothing. Override in subclass.
 		 */
-		void __hookEntryX(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer),
-			size_t UNUSED_PAR(len)) noexcept
-		{}
+		void __hookEntryX(Type::type type, void* buffer, size_t len) noexcept
+		{
+			UNUSED(type)
+			UNUSED(buffer)
+			UNUSED(len)
+		}
 
 		/*!
 		 * \copydoc hookExitX()
 		 * \details Default implementation does nothing. Override in subclass.
 		 */
-		void __hookExitX(Type::type UNUSED_PAR(type), void* buffer,
-			size_t UNUSED_PAR(len), bool changed) noexcept
+		void __hookExitX(Type::type type, void* buffer, size_t len, bool changed) noexcept
 		{
+			UNUSED(type)
+			UNUSED(len)
 			if(changed) {
 				switch(bufferToKey(buffer)) {
 {% for o in store.objects|select('variable')|sort(attribute='offset') %}
@@ -566,17 +575,23 @@ public:
 		 * \copydoc hookEntryRO()
 		 * \details Default implementation does nothing. Override in subclass.
 		 */
-		void __hookEntryRO(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer),
-			size_t UNUSED_PAR(len)) noexcept
-		{}
+		void __hookEntryRO(Type::type type, void* buffer, size_t len) noexcept
+		{
+			UNUSED(type)
+			UNUSED(buffer)
+			UNUSED(len)
+		}
 
 		/*!
 		 * \copydoc hookExitRO()
 		 * \details Default implementation does nothing. Override in subclass.
 		 */
-		void __hookExitRO(Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer),
-			size_t UNUSED_PAR(len)) noexcept
-		{}
+		void __hookExitRO(Type::type type, void* buffer, size_t len) noexcept
+		{
+			UNUSED(type)
+			UNUSED(buffer)
+			UNUSED(len)
+		}
 {% for o in store.objects|select('variable') %}
 
 		/*!

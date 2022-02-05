@@ -71,14 +71,18 @@ public:
 		if(!set)
 			value = (int32_t)0;
 	}
-	size_t
-	__array_f_blob_0(bool UNUSED_PAR(set), void* UNUSED_PAR(value), size_t UNUSED_PAR(len))
+	size_t __array_f_blob_0(bool set, void* value, size_t len)
 	{
+		UNUSED(set)
+		UNUSED(value)
+		UNUSED(len)
 		return 0;
 	}
-	size_t
-	__array_f_blob_1(bool UNUSED_PAR(set), void* UNUSED_PAR(value), size_t UNUSED_PAR(len))
+	size_t __array_f_blob_1(bool set, void* value, size_t len)
 	{
+		UNUSED(set)
+		UNUSED(value)
+		UNUSED(len)
 		return 0;
 	}
 

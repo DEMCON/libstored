@@ -21,6 +21,11 @@ Added
 - Allow string variables to be initialized.
 - Generate store meta data in ``doc/<store>Meta.py``
 
+Changed
+```````
+
+- Replaced ``UNUSED_PAR`` by a more portable ``UNUSED`` macro.
+
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.1.0...HEAD
 
 

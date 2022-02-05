@@ -79,10 +79,11 @@ protected:
 		}
 	}
 
-	void __hookSet(
-		stored::Type::type UNUSED_PAR(type), void* UNUSED_PAR(buffer),
-		size_t UNUSED_PAR(len))
+	void __hookSet(stored::Type::type type, void* buffer, size_t len)
 	{
+		UNUSED(type)
+		UNUSED(buffer)
+		UNUSED(len)
 		m_writes++;
 	}
 

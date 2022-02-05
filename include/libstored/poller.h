@@ -501,7 +501,11 @@ protected:
 
 protected:
 	virtual int init(Pollable const& p, PollItem& item) noexcept = 0;
-	virtual void deinit(Pollable const& UNUSED_PAR(p), PollItem& UNUSED_PAR(item)) noexcept {}
+	virtual void deinit(Pollable const& p, PollItem& item) noexcept
+	{
+		UNUSED(p)
+		UNUSED(item)
+	}
 	virtual int doPoll(int timeout_ms, PollItemList& items) noexcept = 0;
 };
 #	endif // !STORED_HAVE_ZTH
@@ -1060,8 +1064,9 @@ public:
 	static Pollable::Events_value const PollHup = Pollable::PollHup;
 
 	STORED_DEPRECATED("Use the new Pollables instead")
-	Result const& poll(long timeout_us, bool UNUSED_PAR(suspend) = false)
+	Result const& poll(long timeout_us, bool suspend = false)
 	{
+		UNUSED(suspend)
 		return base::poll((int)(timeout_us / 1000L));
 	}
 

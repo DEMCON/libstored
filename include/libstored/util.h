@@ -85,6 +85,13 @@
 #define STORED_STRINGIFY_(x) #x
 #define STORED_STRINGIFY(x)  STORED_STRINGIFY_(x)
 
+#ifndef UNUSED
+/*!
+ * \def UNUSED
+ * \brief Mark one or more variables or parameters as unused.
+ */
+#	define UNUSED(x) (void)x;
+#endif
 
 #ifdef __cplusplus
 #	include <cassert>

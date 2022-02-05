@@ -79,13 +79,6 @@
 #		define GCC_VERSION \
 			(__GNUC__ * 10000L + __GNUC_MINOR__ * 100L + __GNUC_PATCHLEVEL__)
 #	endif
-#	ifndef UNUSED_PAR
-#		if STORED_cplusplus >= 201703L
-#			define UNUSED_PAR(name) name [[maybe_unused]]
-#		else
-#			define UNUSED_PAR(name) name __attribute__((unused))
-#		endif
-#	endif
 #	define STORED_DEPRECATED(msg) __attribute__((deprecated(msg)))
 #elif defined(_MSC_VER)
 #	define STORED_COMPILER_MSVC
@@ -94,18 +87,6 @@
 #	ifdef __cplusplus
 #		undef STORED_cplusplus
 #		define STORED_cplusplus _MSVC_LANG
-#	endif
-#	ifndef UNUSED_PAR
-#		if STORED_cplusplus >= 201703L
-#			define UNUSED_PAR(name) name [[maybe_unused]]
-#		elif defined(__clang__)
-// That's odd. Probably clang-tidy.
-#			define UNUSED_PAR(name)                                                         \
-				name /* NOLINT(clang-diagnostic-unused-parameter,misc-unused-parameters) \
-				      */
-#		else
-#			define UNUSED_PAR(name) name
-#		endif
 #	endif
 #	define NOMINMAX
 #	define _USE_MATH_DEFINES

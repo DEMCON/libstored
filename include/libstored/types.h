@@ -290,9 +290,10 @@ public:
 	 * \param buffer the reference to this Variable's buffer inside container's buffer
 	 */
 	// cppcheck-suppress uninitMemberVar
-	Variable(Container& UNUSED_PAR(container), type& buffer) noexcept
+	Variable(Container& container, type& buffer) noexcept
 		: m_buffer(&buffer)
 	{
+		UNUSED(container)
 		stored_assert(((uintptr_t)m_buffer & (sizeof(type) - 1U)) == 0U);
 	}
 
@@ -1844,8 +1845,10 @@ public:
 	}
 
 	/*! \brief Don't use. */
-	size_t get(void* UNUSED_PAR(dst), size_t UNUSED_PAR(len) = 0) const noexcept
+	size_t get(void* dst, size_t len = 0) const noexcept
 	{
+		UNUSED(dst)
+		UNUSED(len)
 		stored_assert(valid());
 		return 0;
 	}
@@ -1859,27 +1862,34 @@ public:
 	}
 
 	/*! \brief Don't use. */
-	size_t set(void const* UNUSED_PAR(src), size_t UNUSED_PAR(len) = 0) noexcept
+	size_t set(void const* src, size_t len = 0) noexcept
 	{
+		UNUSED(src)
+		UNUSED(len)
 		stored_assert(valid());
 		return 0;
 	}
 
 	/*! \brief Don't use. */
 	template <typename T>
-	void set(T UNUSED_PAR(value)) noexcept
+	void set(T value) noexcept
 	{
+		UNUSED(value)
 		stored_assert(valid());
 	}
 
 	/*! \brief Don't use. */
-	void entryX(size_t UNUSED_PAR(len) = 0) const noexcept {}
+	void entryX(size_t len = 0) const noexcept { UNUSED(len) }
 	/*! \brief Don't use. */
-	void exitX(bool UNUSED_PAR(changed), size_t UNUSED_PAR(len) = 0) const noexcept {}
+	void exitX(bool changed, size_t len = 0) const noexcept
+	{
+		UNUSED(changed)
+		UNUSED(len)
+	}
 	/*! \brief Don't use. */
-	void entryRO(size_t UNUSED_PAR(len) = 0) const noexcept {}
+	void entryRO(size_t len = 0) const noexcept { UNUSED(len) }
 	/*! \brief Don't use. */
-	void exitRO(size_t UNUSED_PAR(len) = 0) const noexcept {}
+	void exitRO(size_t len = 0) const noexcept { UNUSED(len) }
 	/*! \copybrief Variant::type() */
 	constexpr Type::type type() const noexcept
 	{
@@ -2137,8 +2147,9 @@ public:
 		return saturated_cast<U>(get());
 	}
 
-	size_t get(void* dst, size_t UNUSED_PAR(len)) const
+	size_t get(void* dst, size_t len) const
 	{
+		UNUSED(len)
 		stored_assert(len == sizeof(type));
 		stored_assert(dst);
 		call(false, *static_cast<type*>(dst));
@@ -2155,8 +2166,9 @@ public:
 		call(true, value);
 	}
 
-	size_t set(void* src, size_t UNUSED_PAR(len))
+	size_t set(void* src, size_t len)
 	{
+		UNUSED(len)
 		stored_assert(len == sizeof(type));
 		stored_assert(src);
 		call(true, *static_cast<type*>(src));

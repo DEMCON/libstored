@@ -1427,8 +1427,9 @@ protected:
 			: m_xsim(xsim)
 		{}
 		~DecodeCallback() final is_default
-		void decode(void* UNUSED_PAR(buffer), size_t len) final
+		void decode(void* buffer, size_t len) final
 		{
+			UNUSED(buffer)
 			m_xsim.decoded(len);
 		}
 

@@ -80,23 +80,25 @@ static inline void deallocate(T* p, size_t n = 1) noexcept
  *
  * \param T the type of the class for which the operators are to be defined
  */
-#	define STORED_CLASS_NEW_DELETE(T)                                            \
-	public:                                                                       \
-		void* operator new(std::size_t UNUSED_PAR(n))                         \
-		{                                                                     \
-			stored_assert(n == sizeof(T));                                \
-			return ::stored::allocate<T>();                               \
-		}                                                                     \
-		void* operator new(std::size_t UNUSED_PAR(n), void* ptr) /* NOLINT */ \
-		{                                                                     \
-			stored_assert(n == sizeof(T));                                \
-			return ptr;                                                   \
-		}                                                                     \
-		void operator delete(void* ptr)                                       \
-		{                                                                     \
-			::stored::deallocate<T>(static_cast<T*>(ptr)); /* NOLINT */   \
-		}                                                                     \
-                                                                                      \
+#	define STORED_CLASS_NEW_DELETE(T)                                          \
+	public:                                                                     \
+		void* operator new(std::size_t n)                                   \
+		{                                                                   \
+			UNUSED(n)                                                   \
+			stored_assert(n == sizeof(T));                              \
+			return ::stored::allocate<T>();                             \
+		}                                                                   \
+		void* operator new(std::size_t n, void* ptr) /* NOLINT */           \
+		{                                                                   \
+			UNUSED(n)                                                   \
+			stored_assert(n == sizeof(T));                              \
+			return ptr;                                                 \
+		}                                                                   \
+		void operator delete(void* ptr)                                     \
+		{                                                                   \
+			::stored::deallocate<T>(static_cast<T*>(ptr)); /* NOLINT */ \
+		}                                                                   \
+                                                                                    \
 	private:
 
 /*!
@@ -197,7 +199,7 @@ protected:
 		// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
 		~Reset() noexcept final = default;
 
-		R operator()(typename CallableArgType<Args>::type... UNUSED_PAR(args)) const final
+		R operator()(typename CallableArgType<Args>::type... /*args*/) const final
 		{
 			throw std::bad_function_call();
 		}
