@@ -1314,7 +1314,7 @@ public:
 
 	/*!
 	 * \brief Sets the value.
-	 * \see #set(void*, size_t) const
+	 * \see #set(void const*, size_t)
 	 */
 	void set(Vector<char>::type const& data)
 	{

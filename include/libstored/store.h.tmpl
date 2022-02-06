@@ -755,11 +755,11 @@ public:
 
 #	ifdef STORED_HAVE_QT
 /*!
- * \brief Base class of #Qtified{{store.name}}.
+ * \brief Base class of #stored::Qtified{{store.name}}.
  *
  * This class only exists, because a subclass of QObject with signals/slots
  * cannot be templated. Do not use this class directly, use
- * #Qtified{{store.name}} instead.
+ * #stored::Qtified{{store.name}} instead.
  */
 class Qtified{{store.name}}Base : public QObject {
 	Q_OBJECT
@@ -832,7 +832,7 @@ private:
 };
 
 /*!
- * \brief A wrapper for #{{store.name}}Base to add signals/slots/properties for Qt/QML.
+ * \brief A wrapper for #stored::{{store.name}}Base to add signals/slots/properties for Qt/QML.
  */
 template <typename Base>
 class Qtified{{store.name}}

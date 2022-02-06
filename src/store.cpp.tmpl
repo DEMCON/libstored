@@ -115,7 +115,9 @@ Q{{store.name}}::Q{{store.name}}(QObject* parent)
 
 Q{{store.name}}::~Q{{store.name}}() = default;
 
-#	include "moc_{{store.filename}}.cpp"
+#	ifndef DOXYGEN
+#		include "moc_{{store.filename}}.cpp"
+#	endif // !DOXYGEN
 #endif // STORED_HAVE_QT
 } // namespace stored
 // clang-format on
