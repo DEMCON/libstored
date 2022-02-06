@@ -32,6 +32,11 @@ if(NOT PYTHON_EXECUTABLE)
 	endif()
 endif()
 
+# A dummy target that depends on all ...-generated targets.  May be handy in
+# case of generating documentation, for example, where all generated header
+# files are required.
+add_custom_target(all-libstored-generate)
+
 # Create the libstored library based on the generated files.
 # Old interface: libstored_lib(libprefix libpath store1 store2 ...)
 # New interface: libstored_lib(TARGET lib DESTINATION libpath STORES store1 store1 ... [ZTH] [ZMQ|NO_ZMQ] [QT])
@@ -371,6 +376,7 @@ function(libstored_generate target) # add all other models as varargs
 	add_custom_target(${LIBSTORED_GENERATE_TARGET}-libstored-generate
 		DEPENDS ${LIBSTORED_GENERATE_TARGET}-libstored.timestamp
 	)
+	add_dependencies(all-libstored-generate ${LIBSTORED_GENERATE_TARGET}-libstored-generate)
 
 	libstored_lib(TARGET ${LIBSTORED_GENERATE_TARGET}-libstored DESTINATION ${LIBSTORED_GENERATE_DESTINATION} STORES ${model_bases} ${LIBSTORED_GENERATE_FLAGS})
 

@@ -746,7 +746,7 @@ private:
 /*!
  * \brief Default {{store.name}}Base implementation.
  */
-class {{store.name}} : public store<{{store.name}}, {{store.name}}Base>::type {
+class {{store.name}} : public {{store.name}}Base<{{store.name}}> {
 	STORE_CLASS({{store.name}}, {{store.name}}Base)
 public:
 	/*! \copydoc stored::{{store.name}}Base::{{store.name}}Base() */
@@ -938,7 +938,7 @@ protected:
  * \brief Default Qtified{{store.name}} implementation of {{store.name}}.
  */
 class Q{{store.name}}
-	: public store_t<Q{{store.name}}, Qtified{{store.name}}, {{store.name}}Base> {
+	: public Qtified{{store.name}}<{{store.name}}Base<Q{{store.name}}>> {
 
 	STORE_CLASS(Q{{store.name}}, Qtified{{store.name}}, {{store.name}}Base)
 public:

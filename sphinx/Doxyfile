@@ -2060,10 +2060,14 @@ PREDEFINED             = DOXYGEN \
 			 __restrict__= \
 			 EXTERN_C= \
 			 _DEBUG \
+			 STORED_HAVE_QT \
 			 STORED_HAVE_ZMQ \
 			 STORED_HAVE_HEATSHRINK \
 			 STORED_DRAFT_API \
 			 zth_fiber= \
+			 UNUSED(x)= \
+			 is_default==default; \
+			 STORE_CLASS(...)= \
 
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
@@ -2074,13 +2078,16 @@ PREDEFINED             = DOXYGEN \
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
 EXPAND_AS_DEFINED      = \
-			UNUSED_PAR \
 			is_default \
 			CLASS_NOCOPY \
 			STORE_SYNC_BASE_CLASS \
 			STORE_SYNC_CLASS_BODY \
 			STORE_BASE_CLASS \
 			STORE_CLASS_BODY \
+			STORE_CLASS \
+			STORE_WRAPPER_CLASS \
+			STORED_CLASS_NOCOPY \
+			STORED_CLASS_NEW_DELETE \
 			constexpr14 \
 
 

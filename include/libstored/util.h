@@ -669,6 +669,15 @@ struct identity {
  *
  * Note the usage of \c stored::stored_t, which is equivalent to \c
  * stored::store, but only available for C++11 and later.
+ *
+ * N.B. Although \c store_t is perfectly fine to use for C++11 and later,
+ * doxygen gets confused about it. It does not seem to process the inheritance
+ * properly. Using \c stored::store<...>::type instead works better, but only
+ * sees the ...Base class somehow... To make it work properly, you might just
+ * have to spell out the inheritance: \c
+ * OuterWrapper<MoreWrappers<InnerWrapper<StoreBase<StoreImpl>>>>.  So, \c
+ * stored::Synchronizable<stored::MyStoreBase<MyStore>> in this case.
+ * This breaks the API symmetry with \c STORED_STORE, though.
  */
 template <
 	typename Impl,
