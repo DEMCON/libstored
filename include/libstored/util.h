@@ -673,10 +673,9 @@ struct identity {
 template <
 	typename Impl,
 	// ad infinitum
-	template <typename> typename Wrapper3, template <typename> typename Wrapper2 = identity,
-	template <typename> typename Wrapper1 = identity,
-	template <typename> typename Wrapper0 = identity,
-	template <typename> typename Base = identity>
+	template <typename> class Wrapper3, template <typename> class Wrapper2 = identity,
+	template <typename> class Wrapper1 = identity,
+	template <typename> class Wrapper0 = identity, template <typename> class Base = identity>
 struct store {
 	typedef typename Wrapper3<typename Wrapper2<typename Wrapper1<
 		typename Wrapper0<typename Base<Impl>::self>::self>::self>::self>::self type;
@@ -715,7 +714,7 @@ struct store {
 #	define STORE_WRAPPER_CLASS(Impl, Base) STORE_CLASS_(Impl, Base)
 
 #	if STORED_cplusplus >= 201103L
-template <typename Impl, template <typename> typename... Base>
+template <typename Impl, template <typename> class... Base>
 using store_t = typename store<Impl, Base...>::type;
 #	endif
 
