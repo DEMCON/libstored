@@ -1276,8 +1276,10 @@ public:
 				if(Config::EnableHooks)
 					changed = strncmp(src_, len, buffer_, len + 1) != 0;
 
-				if(changed)
-					buffer_[len = strncpy(buffer_, src_, len)] = '\0';
+				if(changed) {
+					len = strncpy(buffer_, src_, len);
+					buffer_[len++] = '\0';
+				}
 			} else {
 				if(Config::EnableHooks) {
 					if(Type::isStoreSwapped(type()))
@@ -1879,7 +1881,10 @@ public:
 	}
 
 	/*! \brief Don't use. */
-	void entryX(size_t len = 0) const noexcept { UNUSED(len) }
+	void entryX(size_t len = 0) const noexcept
+	{
+		UNUSED(len)
+	}
 	/*! \brief Don't use. */
 	void exitX(bool changed, size_t len = 0) const noexcept
 	{
@@ -1887,9 +1892,15 @@ public:
 		UNUSED(len)
 	}
 	/*! \brief Don't use. */
-	void entryRO(size_t len = 0) const noexcept { UNUSED(len) }
+	void entryRO(size_t len = 0) const noexcept
+	{
+		UNUSED(len)
+	}
 	/*! \brief Don't use. */
-	void exitRO(size_t len = 0) const noexcept { UNUSED(len) }
+	void exitRO(size_t len = 0) const noexcept
+	{
+		UNUSED(len)
+	}
 	/*! \copybrief Variant::type() */
 	constexpr Type::type type() const noexcept
 	{
