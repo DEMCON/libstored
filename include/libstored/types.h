@@ -1264,6 +1264,7 @@ public:
 				true, const_cast<void*>(src), len, (unsigned int)m_f);
 		} else {
 			bool changed = true;
+			size_t changed_len = len;
 
 			entryX(len);
 
@@ -1278,7 +1279,8 @@ public:
 
 				if(changed) {
 					len = strncpy(buffer_, src_, len);
-					buffer_[len++] = '\0';
+					buffer_[len] = '\0';
+					changed_len = len + 1;
 				}
 			} else {
 				if(Config::EnableHooks) {
@@ -1296,7 +1298,7 @@ public:
 				}
 			}
 
-			exitX(changed, len);
+			exitX(changed, changed_len);
 		}
 		return len;
 	}
