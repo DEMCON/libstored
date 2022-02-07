@@ -685,9 +685,12 @@ struct identity {
 template <
 	typename Impl,
 	// ad infinitum
-	template <typename> class Wrapper7, template <typename> class Wrapper6 = identity,
-	template <typename> class Wrapper5, template <typename> class Wrapper4 = identity,
-	template <typename> class Wrapper3, template <typename> class Wrapper2 = identity,
+	template <typename> class Wrapper7 = identity,
+	template <typename> class Wrapper6 = identity,
+	template <typename> class Wrapper5 = identity,
+	template <typename> class Wrapper4 = identity,
+	template <typename> class Wrapper3 = identity,
+	template <typename> class Wrapper2 = identity,
 	template <typename> class Wrapper1 = identity,
 	template <typename> class Wrapper0 = identity, template <typename> class Base = identity>
 struct store {
