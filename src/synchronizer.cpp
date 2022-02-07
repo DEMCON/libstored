@@ -200,7 +200,7 @@ bool StoreJournal::update(
 }
 
 /*!
- * \brief Regenerate the adminstration.
+ * \brief Regenerate the administration.
  * \details This must be done if elements are added or removed from \c m_changes.
  */
 void StoreJournal::regenerate()
