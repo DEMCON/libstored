@@ -19,8 +19,7 @@
 
 // Create an ExampleMeta store, which uses the generated LoggingExampleMeta as
 // a wrapper.
-class ExampleMeta
-	: public stored::store<ExampleMeta, LoggingExampleMeta, stored::ExampleMetaBase>::type {
+class ExampleMeta : public STORE_T(ExampleMeta, LoggingExampleMeta, stored::ExampleMetaBase) {
 	STORE_CLASS(ExampleMeta, LoggingExampleMeta, stored::ExampleMetaBase)
 public:
 	ExampleMeta() is_default

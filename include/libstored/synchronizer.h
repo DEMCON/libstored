@@ -364,9 +364,9 @@ private:
 	StoreJournal m_journal;
 };
 
-/*! \deprecated Use \c stored::store instead. */
+/*! \deprecated Use \c stored::store or \c STORE_T instead. */
 #	define STORE_SYNC_BASE_CLASS(Base, Impl) \
-		::stored::store<Impl, ::stored::Synchronizable, ::stored::Base>::type
+		STORE_T(Impl, ::stored::Synchronizable, ::stored::Base)
 
 /*! \deprecated Use \c STORE_CLASS instead. */
 #	define STORE_SYNC_CLASS_BODY(Base, Impl) \
