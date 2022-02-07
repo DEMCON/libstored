@@ -680,7 +680,7 @@ struct identity {
  * N.B. Although \c store_t is perfectly fine to use for C++11 and later,
  * doxygen and MSVC get confused about it. It does not seem to process the
  * inheritance properly. Try using \c STORE_T(...) instead of \c
- * stored::store<...>::type or \c store::store_t<...>.
+ * stored::store<...>::type or \c stored::store_t<...>.
  */
 template <
 	typename Impl,
@@ -698,6 +698,9 @@ struct store {
 };
 
 #	if STORED_cplusplus >= 201103L
+/*!
+ * \brief Convenience typedef for <tt>typename storeD::store<...>::type</tt>.
+ */
 template <typename Impl, template <typename> class... Base>
 using store_t = typename store<Impl, Base...>::type;
 #	endif
@@ -717,6 +720,13 @@ using store_t = typename store<Impl, Base...>::type;
 
 #	define STORED_GET_MACRO_ARGN(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, m, ...) m
 
+/*!
+ * \brief Type constructor for (wrapped) store base class types.
+ *
+ * This is the macro version of \c stored::store_t and #stored::store.
+ *
+ * \hideinitializer
+ */
 #	define STORE_T(Impl, ...)                                                       \
 		EXPAND(STORED_GET_MACRO_ARGN(                                            \
 			Impl, ##__VA_ARGS__, STORE_T_9, STORE_T_8, STORE_T_7, STORE_T_6, \
@@ -761,10 +771,19 @@ using store_t = typename store<Impl, Base...>::type;
                                                                          \
 	private:
 
+/*!
+ * \brief Class helper macro to get a store implementation class right.
+ * \see #stored::store
+ * \hideinitializer
+ */
 #	define STORE_CLASS(Impl, ...)                         \
 		STORE_CLASS_(Impl, STORE_T(Impl, __VA_ARGS__)) \
 		friend class STORE_CLASS_BASE(Impl, ##__VA_ARGS__);
 
+/*!
+ * \brief Class helper macro to get a store wrapper class right.
+ * \hideinitializer
+ */
 #	define STORE_WRAPPER_CLASS(Impl, Base) STORE_CLASS_(Impl, Base)
 
 } // namespace stored

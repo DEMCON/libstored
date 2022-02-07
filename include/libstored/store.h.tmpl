@@ -199,6 +199,11 @@ public:
  * };
  * \endcode
  *
+ * Some compilers or tools may get confused by the inheritance using \c
+ * stored::store or \c stored::store_t.  Alternatively, use \c STORE_T(...)
+ * instead, providing the template parameters of \c stored::store as macro
+ * arguments.
+ *
  * \see #stored::{{store.name}}
  * \see #stored::{{store.name}}Data
  */
@@ -746,7 +751,7 @@ private:
 /*!
  * \brief Default {{store.name}}Base implementation.
  */
-class {{store.name}} : public {{store.name}}Base<{{store.name}}> {
+class {{store.name}} : public STORE_T({{store.name}}, {{store.name}}Base) {
 	STORE_CLASS({{store.name}}, {{store.name}}Base)
 public:
 	/*! \copydoc stored::{{store.name}}Base::{{store.name}}Base() */
@@ -938,7 +943,7 @@ protected:
  * \brief Default Qtified{{store.name}} implementation of {{store.name}}.
  */
 class Q{{store.name}}
-	: public Qtified{{store.name}}<{{store.name}}Base<Q{{store.name}}>> {
+	: public STORE_T(Q{{store.name}}, Qtified{{store.name}}, {{store.name}}Base) {
 
 	STORE_CLASS(Q{{store.name}}, Qtified{{store.name}}, {{store.name}}Base)
 public:
