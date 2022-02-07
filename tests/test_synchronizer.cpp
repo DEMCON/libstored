@@ -333,7 +333,8 @@ TEST(Synchronizer, Sync5)
 
 		for(size_t i = 1; i < 5; i++)
 			EXPECT_SYNCED(store[0], store[i]);
-	} while(std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() < 1);
+	} while(std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count()
+		< 1);
 
 	EXPECT_GT(count, 100);
 }
