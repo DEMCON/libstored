@@ -60,4 +60,12 @@ TEST(Init, Float)
 	EXPECT_FLOAT_EQ(store.init_float_neg_inf.get(), -std::numeric_limits<float>::infinity());
 }
 
+TEST(Init, String)
+{
+	stored::TestStore store;
+	char buf[16] = {};
+	store.init_string.get(buf, sizeof(buf) - 1);
+	EXPECT_TRUE(strcmp(buf, "a b\"c") == 0);
+}
+
 } // namespace

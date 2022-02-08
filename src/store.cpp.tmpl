@@ -1,3 +1,4 @@
+// clang-format off
 {#
 vim:filetype=cpp
 
@@ -20,7 +21,7 @@ vim:filetype=cpp
  */
 -#}
 
-#include "{{store.name}}.h"
+#include "{{store.filename}}.h"
 
 #include <cstring>
 
@@ -63,11 +64,11 @@ static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len
  * \see include/libstored/directory.h for the format
  */
 #if STORED_cplusplus >= 201402L
-#  if STORED_cplusplus < 201703L
+#	if STORED_cplusplus < 201703L
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,readability-redundant-declaration)
 constexpr uint8_t {{store.name}}Data::directory[];
-#  endif
-#else
+#	endif
+#else // < C++14
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
 static uint8_t const {{store.name}}Data_directory[{{store.directory.data|len}}] = {
 	{{store.directory.data|carray|tab_indent(1)}}
@@ -80,7 +81,7 @@ uint8_t const* {{store.name}}Data::shortDirectory() noexcept
 {
 	return (uint8_t const*){{store.name}}Data_directory;
 }
-#endif
+#endif // < C++14
 
 /*!
  * \brief Directory listing with full names in binary directory format.
@@ -101,5 +102,22 @@ uint8_t const* {{store.name}}Data::longDirectory() noexcept
 	return Config::FullNames ? (uint8_t const*){{store.name}}Data_directory_full : shortDirectory();
 }
 
-} // namespace stored
+#ifdef STORED_HAVE_QT
+Qtified{{store.name}}Base::Qtified{{store.name}}Base(QObject* parent)
+	: QObject{parent}
+{}
 
+Qtified{{store.name}}Base::~Qtified{{store.name}}Base() = default;
+
+Q{{store.name}}::Q{{store.name}}(QObject* parent)
+	: base{parent}
+{}
+
+Q{{store.name}}::~Q{{store.name}}() = default;
+
+#	ifndef DOXYGEN
+#		include "moc_{{store.filename}}.cpp"
+#	endif // !DOXYGEN
+#endif // STORED_HAVE_QT
+} // namespace stored
+// clang-format on

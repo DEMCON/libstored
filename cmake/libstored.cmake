@@ -16,17 +16,34 @@
 
 include(CheckIncludeFileCXX)
 include(CMakeParseArguments)
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
-get_filename_component(libstored_dir_ "${CMAKE_CURRENT_LIST_DIR}" DIRECTORY)
-set(libstored_dir "${libstored_dir_}" CACHE INTERNAL "")
+if(NOT LIBSTORED_SOURCE_DIR)
+	get_filename_component(LIBSTORED_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}" DIRECTORY)
+	set(LIBSTORED_SOURCE_DIR "${LIBSTORED_SOURCE_DIR}" CACHE INTERNAL "")
+endif()
+
+if(NOT PYTHON_EXECUTABLE)
+	if(CMAKE_HOST_WIN32)
+		find_program(PYTHON_EXECUTABLE python REQUIRED)
+	else()
+		find_program(PYTHON_EXECUTABLE python3 REQUIRED)
+	endif()
+endif()
+
+# A dummy target that depends on all ...-generated targets.  May be handy in
+# case of generating documentation, for example, where all generated header
+# files are required.
+add_custom_target(all-libstored-generate)
 
 # Create the libstored library based on the generated files.
 # Old interface: libstored_lib(libprefix libpath store1 store2 ...)
-# New interface: libstored_lib(TARGET lib DESTINATION libpath STORES store1 store1 ... [ZTH] [ZMQ|NO_ZMQ])
+# New interface: libstored_lib(TARGET lib DESTINATION libpath STORES store1 store1 ... [ZTH] [ZMQ|NO_ZMQ] [QT])
 function(libstored_lib libprefix libpath)
 	if("${libprefix}" STREQUAL "TARGET")
 		cmake_parse_arguments(LIBSTORED_LIB
-			"ZTH;ZMQ;NO_ZMQ"
+			"ZTH;ZMQ;NO_ZMQ;QT"
 			"TARGET;DESTINATION"
 			"STORES"
 			${ARGV}
@@ -45,53 +62,51 @@ function(libstored_lib libprefix libpath)
 		set(LIBSTORED_LIB_ZMQ FALSE)
 	endif()
 
-	add_library(${LIBSTORED_LIB_TARGET} STATIC
-		${libstored_dir}/include/stored
-		${libstored_dir}/include/stored.h
-		${libstored_dir}/include/stored_config.h
-		${libstored_dir}/include/libstored/allocator.h
-		${libstored_dir}/include/libstored/compress.h
-		${libstored_dir}/include/libstored/config.h
-		${libstored_dir}/include/libstored/components.h
-		${libstored_dir}/include/libstored/debugger.h
-		${libstored_dir}/include/libstored/directory.h
-		${libstored_dir}/include/libstored/macros.h
-		${libstored_dir}/include/libstored/poller.h
-		${libstored_dir}/include/libstored/spm.h
-		${libstored_dir}/include/libstored/synchronizer.h
-		${libstored_dir}/include/libstored/types.h
-		${libstored_dir}/include/libstored/util.h
-		${libstored_dir}/include/libstored/version.h
-		${libstored_dir}/include/libstored/zmq.h
-		${libstored_dir}/src/compress.cpp
-		${libstored_dir}/src/directory.cpp
-		${libstored_dir}/src/debugger.cpp
-		${libstored_dir}/src/poller.cpp
-		${libstored_dir}/src/protocol.cpp
-		${libstored_dir}/src/synchronizer.cpp
-		${libstored_dir}/src/util.cpp
-		${libstored_dir}/src/zmq.cpp
-	)
-
+	set(LIBSTORED_LIB_TARGET_SRC "")
 	foreach(m IN ITEMS ${LIBSTORED_LIB_STORES})
-		target_sources(${LIBSTORED_LIB_TARGET} PRIVATE
-			${LIBSTORED_LIB_DESTINATION}/include/${m}.h
-			${LIBSTORED_LIB_DESTINATION}/src/${m}.cpp)
-
-		set_property(TARGET ${LIBSTORED_LIB_TARGET} APPEND PROPERTY PUBLIC_HEADER ${LIBSTORED_LIB_DESTINATION}/include/${m}.h)
-		install(DIRECTORY ${LIBSTORED_LIB_DESTINATION}/doc/ DESTINATION share/libstored)
+		list(APPEND LIBSTORED_LIB_TARGET_SRC "${LIBSTORED_LIB_DESTINATION}/include/${m}.h")
+		list(APPEND LIBSTORED_LIB_TARGET_SRC "${LIBSTORED_LIB_DESTINATION}/src/${m}.cpp")
 	endforeach()
+
+	add_library(${LIBSTORED_LIB_TARGET} STATIC
+		${LIBSTORED_SOURCE_DIR}/include/stored
+		${LIBSTORED_SOURCE_DIR}/include/stored.h
+		${LIBSTORED_SOURCE_DIR}/include/stored_config.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/allocator.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/compress.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/config.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/components.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/debugger.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/directory.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/macros.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/poller.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/spm.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/synchronizer.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/types.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/util.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/version.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/zmq.h
+		${LIBSTORED_SOURCE_DIR}/src/compress.cpp
+		${LIBSTORED_SOURCE_DIR}/src/directory.cpp
+		${LIBSTORED_SOURCE_DIR}/src/debugger.cpp
+		${LIBSTORED_SOURCE_DIR}/src/poller.cpp
+		${LIBSTORED_SOURCE_DIR}/src/protocol.cpp
+		${LIBSTORED_SOURCE_DIR}/src/synchronizer.cpp
+		${LIBSTORED_SOURCE_DIR}/src/util.cpp
+		${LIBSTORED_SOURCE_DIR}/src/zmq.cpp
+		${LIBSTORED_LIB_TARGET_SRC}
+	)
 
 	target_include_directories(${LIBSTORED_LIB_TARGET} PUBLIC
 		$<BUILD_INTERFACE:${LIBSTORED_PREPEND_INCLUDE_DIRECTORIES}>
-		$<BUILD_INTERFACE:${libstored_dir}/include>
+		$<BUILD_INTERFACE:${LIBSTORED_SOURCE_DIR}/include>
 		$<BUILD_INTERFACE:${LIBSTORED_LIB_DESTINATION}/include>
 		$<INSTALL_INTERFACE:include>
 	)
 
 	string(REGEX REPLACE "^(.*)-libstored$" "stored-\\1" libname ${LIBSTORED_LIB_TARGET})
 	set_target_properties(${LIBSTORED_LIB_TARGET} PROPERTIES OUTPUT_NAME ${libname})
-	target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_NAME=${libname})
+	target_compile_definitions(${LIBSTORED_LIB_TARGET} PRIVATE -DSTORED_NAME=${libname})
 
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -D_DEBUG=1)
@@ -126,6 +141,20 @@ function(libstored_lib libprefix libpath)
 	if(LIBSTORED_HAVE_LIBZMQ AND LIBSTORED_LIB_ZMQ)
 		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_ZMQ=1)
 		target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC libzmq)
+	endif()
+
+	if(LIBSTORED_HAVE_QT AND LIBSTORED_LIB_QT)
+		if(TARGET Qt5::Core)
+			message(STATUS "Enable Qt5 integration for ${LIBSTORED_LIB_TARGET}")
+			target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_QT=5)
+			target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC Qt5::Core)
+		else()
+			message(STATUS "Enable Qt6 integration for ${LIBSTORED_LIB_TARGET}")
+			target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_QT=6)
+			target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC Qt::Core)
+		endif()
+
+		set_target_properties(${LIBSTORED_LIB_TARGET} PROPERTIES AUTOMOC ON)
 	endif()
 
 	if(WIN32)
@@ -194,7 +223,7 @@ function(libstored_lib libprefix libpath)
 				"portability-*,"
 			)
 			set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
-				"--extra-arg=-I${libstored_dir}/include"
+				"--extra-arg=-I${LIBSTORED_SOURCE_DIR}/include"
 				"--extra-arg=-I${CMAKE_BINARY_DIR}/include"
 				"--extra-arg=-I${LIBSTORED_LIB_DESTINATION}/include"
 				"--header-filter=.*include/libstored.*"
@@ -241,10 +270,13 @@ function(libstored_lib libprefix libpath)
 	endif()
 
 	if(LIBSTORED_INSTALL_STORE_LIBS)
-		install(TARGETS ${LIBSTORED_LIB_TARGET} EXPORT libstored
-			ARCHIVE DESTINATION lib
-			PUBLIC_HEADER DESTINATION include
+		install(TARGETS ${LIBSTORED_LIB_TARGET} EXPORT ${LIBSTORED_LIB_TARGET}Store
+			ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+			PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 		)
+
+		install(DIRECTORY ${LIBSTORED_LIB_DESTINATION}/doc/ DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored)
+		install(EXPORT ${LIBSTORED_LIB_TARGET}Store DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake)
 	endif()
 endfunction()
 
@@ -277,7 +309,7 @@ endfunction()
 function(libstored_generate target) # add all other models as varargs
 	if("${target}" STREQUAL "TARGET")
 		cmake_parse_arguments(LIBSTORED_GENERATE
-			"ZTH;ZMQ;NO_ZMQ"
+			"ZTH;ZMQ;NO_ZMQ;QT"
 			"TARGET;DESTINATION"
 			"STORES"
 			${ARGV}
@@ -298,6 +330,9 @@ function(libstored_generate target) # add all other models as varargs
 	if(LIBSTORED_GENERATE_NO_ZMQ)
 		set(LIBSTORED_GENERATE_FLAGS ${LIBSTORED_GENERATE_FLAGS} NO_ZMQ)
 	endif()
+	if(LIBSTORED_GENERATE_QT)
+		set(LIBSTORED_GENERATE_FLAGS ${LIBSTORED_GENERATE_FLAGS} QT)
+	endif()
 
 	if("${LIBSTORED_GENERATE_DESTINATION}" STREQUAL "")
 		set(LIBSTORED_GENERATE_DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/libstored)
@@ -306,13 +341,15 @@ function(libstored_generate target) # add all other models as varargs
 	set(model_bases "")
 	set(generated_files "")
 	foreach(model IN ITEMS ${LIBSTORED_GENERATE_STORES})
-		list(APPEND models ${CMAKE_CURRENT_SOURCE_DIR}/${model})
-		get_filename_component(model_base ${model} NAME_WE)
+		get_filename_component(model_abs "${model}" ABSOLUTE)
+		list(APPEND models ${model_abs})
+		get_filename_component(model_base "${model}" NAME_WE)
 		list(APPEND model_bases ${model_base})
 		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/include/${model_base}.h)
 		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/src/${model_base}.cpp)
 		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/doc/${model_base}.rtf)
 		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/doc/${model_base}.csv)
+		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/doc/${model_base}Meta.py)
 		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/rtl/${model_base}.vhd)
 		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/rtl/${model_base}_pkg.vhd)
 	endforeach()
@@ -323,6 +360,7 @@ function(libstored_generate target) # add all other models as varargs
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/src/store.cpp.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.rtf.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.csv.tmpl
+		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.py.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store.vhd.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store_pkg.vhd.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/CMakeLists.txt.tmpl
@@ -338,6 +376,7 @@ function(libstored_generate target) # add all other models as varargs
 	add_custom_target(${LIBSTORED_GENERATE_TARGET}-libstored-generate
 		DEPENDS ${LIBSTORED_GENERATE_TARGET}-libstored.timestamp
 	)
+	add_dependencies(all-libstored-generate ${LIBSTORED_GENERATE_TARGET}-libstored-generate)
 
 	libstored_lib(TARGET ${LIBSTORED_GENERATE_TARGET}-libstored DESTINATION ${LIBSTORED_GENERATE_DESTINATION} STORES ${model_bases} ${LIBSTORED_GENERATE_FLAGS})
 
@@ -369,9 +408,3 @@ function(libstored_generate target) # add all other models as varargs
 
 	libstored_copy_dlls(${LIBSTORED_GENERATE_TARGET})
 endfunction()
-
-configure_file(${libstored_dir}/cmake/libstored.cmake.in ${CMAKE_BINARY_DIR}/libstored.cmake)
-install(DIRECTORY ${libstored_dir}/include/ DESTINATION include FILES_MATCHING PATTERN "*.h")
-install(FILES ${libstored_dir}/include/stored DESTINATION include)
-install(EXPORT libstored DESTINATION share/libstored/cmake)
-install(FILES ${CMAKE_BINARY_DIR}/libstored.cmake DESTINATION share/cmake/libstored)

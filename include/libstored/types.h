@@ -28,12 +28,15 @@
 #	include <cstdlib>
 #	include <cstring>
 #	include <limits>
-#	include <vector>
 
 #	if STORED_cplusplus >= 201103L
 #		include <cinttypes>
 #	else
 #		include <inttypes.h>
+#	endif
+
+#	ifdef STORED_HAVE_QT
+#		include <QVariant>
 #	endif
 
 namespace stored {
@@ -287,9 +290,10 @@ public:
 	 * \param buffer the reference to this Variable's buffer inside container's buffer
 	 */
 	// cppcheck-suppress uninitMemberVar
-	Variable(Container& UNUSED_PAR(container), type& buffer) noexcept
+	Variable(Container& container, type& buffer) noexcept
 		: m_buffer(&buffer)
 	{
+		UNUSED(container)
 		stored_assert(((uintptr_t)m_buffer & (sizeof(type) - 1U)) == 0U);
 	}
 
@@ -639,11 +643,11 @@ public:
 	 */
 	void entryX() const noexcept
 	{
+		container().hookEntryX(toType<T>::type, &this->buffer(), sizeof(type));
 #	ifdef _DEBUG
 		stored_assert(m_entry == EntryNone);
 		m_entry = EntryX;
 #	endif
-		container().hookEntryX(toType<T>::type, &this->buffer(), sizeof(type));
 	}
 
 	/*!
@@ -652,11 +656,11 @@ public:
 	 */
 	void exitX(bool changed) const noexcept
 	{
-		container().hookExitX(toType<T>::type, &this->buffer(), sizeof(type), changed);
 #	ifdef _DEBUG
 		stored_assert(m_entry == EntryX);
 		m_entry = EntryNone;
 #	endif
+		container().hookExitX(toType<T>::type, &this->buffer(), sizeof(type), changed);
 	}
 
 	/*!
@@ -665,11 +669,11 @@ public:
 	 */
 	void entryRO() const noexcept
 	{
+		container().hookEntryRO(toType<T>::type, &this->buffer(), sizeof(type));
 #	ifdef _DEBUG
 		stored_assert(m_entry == EntryNone);
 		m_entry = EntryRO;
 #	endif
-		container().hookEntryRO(toType<T>::type, &this->buffer(), sizeof(type));
 	}
 
 	/*!
@@ -678,11 +682,11 @@ public:
 	 */
 	void exitRO() const noexcept
 	{
-		container().hookExitRO(toType<T>::type, &this->buffer(), sizeof(type));
 #	ifdef _DEBUG
 		stored_assert(m_entry == EntryRO);
 		m_entry = EntryNone;
 #	endif
+		container().hookExitRO(toType<T>::type, &this->buffer(), sizeof(type));
 	}
 
 private:
@@ -1260,6 +1264,7 @@ public:
 				true, const_cast<void*>(src), len, (unsigned int)m_f);
 		} else {
 			bool changed = true;
+			size_t changed_len = len;
 
 			entryX(len);
 
@@ -1272,8 +1277,11 @@ public:
 				if(Config::EnableHooks)
 					changed = strncmp(src_, len, buffer_, len + 1) != 0;
 
-				if(changed)
-					buffer_[len = strncpy(buffer_, src_, len)] = '\0';
+				if(changed) {
+					len = strncpy(buffer_, src_, len);
+					buffer_[len] = '\0';
+					changed_len = len + 1;
+				}
 			} else {
 				if(Config::EnableHooks) {
 					if(Type::isStoreSwapped(type()))
@@ -1290,7 +1298,7 @@ public:
 				}
 			}
 
-			exitX(changed, len);
+			exitX(changed, changed_len);
 		}
 		return len;
 	}
@@ -1309,6 +1317,130 @@ public:
 	}
 
 	/*!
+	 * \brief Sets the value.
+	 * \see #set(void const*, size_t)
+	 */
+	void set(Vector<char>::type const& data)
+	{
+		set(&data[0], data.size());
+	}
+
+	/*!
+	 * \brief Sets a string.
+	 * \details Only works if this variant is a string.
+	 */
+	void set(char const* data)
+	{
+		stored_assert((type() & ~Type::FlagFunction) == Type::String);
+		set(data, strlen(data));
+	}
+
+#	ifdef STORED_HAVE_QT
+	/*!
+	 * \brief Convert the value to a QVariant.
+	 */
+	QVariant toQVariant() const
+	{
+		switch(type()) {
+		case Type::Int8:
+			return (int)get<int8_t>();
+		case Type::Int16:
+			return (int)get<int16_t>();
+		case Type::Int32:
+			return get<int32_t>();
+		case Type::Int64:
+			return (qlonglong)get<int64_t>();
+		case Type::Uint8:
+			return (unsigned int)get<uint8_t>();
+		case Type::Uint16:
+			return (unsigned int)get<uint16_t>();
+		case Type::Uint32:
+			return get<uint32_t>();
+		case Type::Uint64:
+			return (qulonglong)get<uint64_t>();
+		case Type::Float:
+			return get<float>();
+		case Type::Double:
+			return get<double>();
+		case Type::Bool:
+			return get<bool>();
+		case Type::String: {
+			QByteArray buf{(int)size(), 0};
+			get(buf.data(), (size_t)buf.size());
+			return QString{buf};
+		}
+		default:
+			return QVariant{};
+		}
+	}
+
+	/*!
+	 * \brief Set the value, given a QVariant.
+	 * \return \c true upon success
+	 */
+	bool set(QVariant const& v)
+	{
+		if(!v.isValid())
+			return false;
+
+#		define CASE_TYPE(T)           \
+		case stored::toType<T>::type:  \
+			if(!v.canConvert<T>()) \
+				return false;  \
+			set<T>(v.value<T>());  \
+			return true;
+
+		switch(type() & ~Type::FlagFunction) {
+			CASE_TYPE(int8_t)
+			CASE_TYPE(uint8_t)
+			CASE_TYPE(int16_t)
+			CASE_TYPE(uint16_t)
+			CASE_TYPE(int32_t)
+			CASE_TYPE(uint32_t)
+			CASE_TYPE(qlonglong)
+			CASE_TYPE(qulonglong)
+			CASE_TYPE(float)
+			CASE_TYPE(double)
+			CASE_TYPE(bool)
+		case stored::Type::String: {
+			if(!v.canConvert<QString>())
+				return false;
+
+			auto s = v.value<QString>().toUtf8();
+			set(s.data(), (size_t)s.size());
+			return true;
+		}
+		default:
+			return false;
+		}
+#		undef CASE_TYPE
+	}
+
+	/*!
+	 * \brief Convert the value to a QString.
+	 *
+	 * Only works if the #type() is String.
+	 */
+	QString toQString() const
+	{
+		stored_assert((type() & ~Type::FlagFunction) == Type::String);
+		QByteArray buf{(int)size(), 0};
+		get(buf.data(), (size_t)buf.size());
+		return QString{buf};
+	}
+
+	/*!
+	 * \brief Sets a string.
+	 * \details Only works if this variant is a string.
+	 */
+	void set(QString const& value)
+	{
+		auto buf = value.toUtf8();
+		set(buf.constData());
+	}
+#	endif // STORED_HAVE_QT
+
+	/*!
 	 * \brief Invokes \c hookEntryX() on the #container().
 	 */
 	void entryX() const noexcept
@@ -1320,11 +1452,11 @@ public:
 	void entryX(size_t len) const noexcept
 	{
 		if(Config::EnableHooks) {
+			container().hookEntryX(type(), m_buffer, len);
 #	ifdef _DEBUG
 			stored_assert(m_entry == EntryNone);
 			m_entry = EntryX;
 #	endif
-			container().hookEntryX(type(), m_buffer, len);
 		}
 	}
 
@@ -1340,11 +1472,11 @@ public:
 	void exitX(bool changed, size_t len) const noexcept
 	{
 		if(Config::EnableHooks) {
-			container().hookExitX(type(), m_buffer, len, changed);
 #	ifdef _DEBUG
 			stored_assert(m_entry == EntryX);
 			m_entry = EntryNone;
 #	endif
+			container().hookExitX(type(), m_buffer, len, changed);
 		}
 	}
 
@@ -1360,11 +1492,11 @@ public:
 	void entryRO(size_t len) const noexcept
 	{
 		if(Config::EnableHooks) {
+			container().hookExitRO(type(), m_buffer, len);
 #	ifdef _DEBUG
 			stored_assert(m_entry == EntryNone);
 			m_entry = EntryRO;
 #	endif
-			container().hookExitRO(type(), m_buffer, len);
 		}
 	}
 
@@ -1380,11 +1512,11 @@ public:
 	void exitRO(size_t len) const noexcept
 	{
 		if(Config::EnableHooks) {
-			container().hookExitRO(type(), m_buffer, len);
 #	ifdef _DEBUG
 			stored_assert(m_entry == EntryRO);
 			m_entry = EntryNone;
 #	endif
+			container().hookExitRO(type(), m_buffer, len);
 		}
 	}
 
@@ -1400,8 +1532,11 @@ public:
 
 	/*!
 	 * \brief Returns the size.
-	 * \details In case #type() is Type::String, this returns the maximum size of the string,
-	 * excluding null terminator. \details Only call this function when it is #valid().
+	 *
+	 * In case #type() is Type::String, this returns the maximum size of
+	 * the string, excluding null terminator.
+	 *
+	 * Only call this function when it is #valid().
 	 */
 	size_t size() const noexcept
 	{
@@ -1523,6 +1658,56 @@ public:
 	bool operator!=(Variant const& rhs) const noexcept
 	{
 		return !(*this == rhs);
+	}
+
+	/*!
+	 * \brief Copies data from a Variant from another Container.
+	 *
+	 * This copies data directly, without type conversion.  This may come
+	 * in handy when data of the same variable of different stores (or
+	 * between stores with different wrappers) should be copied.
+	 *
+	 * Only use this when:
+	 *
+	 * - this and other are valid()
+	 * - this and other are not equal
+	 * - this and other have the same type()
+	 * - this and other have the same size()
+	 * - this and other are variables
+	 */
+	template <typename C>
+	void copy(Variant<C> const& other) noexcept
+	{
+		stored_assert(valid() && other.valid());
+		stored_assert(buffer() != other.buffer());
+		stored_assert(type() == other.type());
+		stored_assert(size() == other.size());
+		stored_assert(isVariable() && other.isVariable());
+
+		size_t len = size();
+		bool changed = true;
+
+		other.entryRO(len);
+		entryX(len);
+
+		if(type() == Type::String) {
+			if(Config::EnableHooks)
+				changed = ::strncmp(
+						  static_cast<char*>(buffer()),
+						  static_cast<char const*>(other.buffer()), len)
+					  != 0;
+			if(changed)
+				strncpy(static_cast<char*>(buffer()),
+					static_cast<char const*>(other.buffer()), len);
+		} else {
+			if(Config::EnableHooks)
+				changed = memcmp(buffer(), other.buffer(), len) != 0;
+			if(changed)
+				memcpy(buffer(), other.buffer(), len);
+		}
+
+		exitX(changed, len);
+		other.exitRO(len);
 	}
 
 private:
@@ -1664,8 +1849,10 @@ public:
 	}
 
 	/*! \brief Don't use. */
-	size_t get(void* UNUSED_PAR(dst), size_t UNUSED_PAR(len) = 0) const noexcept
+	size_t get(void* dst, size_t len = 0) const noexcept
 	{
+		UNUSED(dst)
+		UNUSED(len)
 		stored_assert(valid());
 		return 0;
 	}
@@ -1679,27 +1866,43 @@ public:
 	}
 
 	/*! \brief Don't use. */
-	size_t set(void const* UNUSED_PAR(src), size_t UNUSED_PAR(len) = 0) noexcept
+	size_t set(void const* src, size_t len = 0) noexcept
 	{
+		UNUSED(src)
+		UNUSED(len)
 		stored_assert(valid());
 		return 0;
 	}
 
 	/*! \brief Don't use. */
 	template <typename T>
-	void set(T UNUSED_PAR(value)) noexcept
+	void set(T value) noexcept
 	{
+		UNUSED(value)
 		stored_assert(valid());
 	}
 
 	/*! \brief Don't use. */
-	void entryX(size_t UNUSED_PAR(len) = 0) const noexcept {}
+	void entryX(size_t len = 0) const noexcept
+	{
+		UNUSED(len)
+	}
 	/*! \brief Don't use. */
-	void exitX(bool UNUSED_PAR(changed), size_t UNUSED_PAR(len) = 0) const noexcept {}
+	void exitX(bool changed, size_t len = 0) const noexcept
+	{
+		UNUSED(changed)
+		UNUSED(len)
+	}
 	/*! \brief Don't use. */
-	void entryRO(size_t UNUSED_PAR(len) = 0) const noexcept {}
+	void entryRO(size_t len = 0) const noexcept
+	{
+		UNUSED(len)
+	}
 	/*! \brief Don't use. */
-	void exitRO(size_t UNUSED_PAR(len) = 0) const noexcept {}
+	void exitRO(size_t len = 0) const noexcept
+	{
+		UNUSED(len)
+	}
 	/*! \copybrief Variant::type() */
 	constexpr Type::type type() const noexcept
 	{
@@ -1823,6 +2026,11 @@ public:
 	typedef Variable<type, Implementation> Variable_type;
 	typedef Variant<Implementation> Variant_type;
 
+	static constexpr uintptr_t key() noexcept
+	{
+		return static_cast<uintptr_t>(offset);
+	}
+
 	constexpr Variable_type variable() const noexcept
 	{
 		static_assert(size_ == sizeof(type), "");
@@ -1904,6 +2112,11 @@ public:
 	typedef Function<type, Implementation> Function_type;
 	typedef Variant<Implementation> Variant_type;
 
+	static constexpr unsigned int id() noexcept
+	{
+		return F;
+	}
+
 	constexpr Function_type function() const noexcept
 	{
 		return objectToStore<Store>(*this).template _function<type>(F);
@@ -1947,8 +2160,9 @@ public:
 		return saturated_cast<U>(get());
 	}
 
-	size_t get(void* dst, size_t UNUSED_PAR(len)) const
+	size_t get(void* dst, size_t len) const
 	{
+		UNUSED(len)
 		stored_assert(len == sizeof(type));
 		stored_assert(dst);
 		call(false, *static_cast<type*>(dst));
@@ -1965,8 +2179,9 @@ public:
 		call(true, value);
 	}
 
-	size_t set(void* src, size_t UNUSED_PAR(len))
+	size_t set(void* src, size_t len)
 	{
+		UNUSED(len)
 		stored_assert(len == sizeof(type));
 		stored_assert(src);
 		call(true, *static_cast<type*>(src));
@@ -2019,6 +2234,11 @@ public:
 
 	typedef Variant<Implementation> Variant_type;
 
+	static constexpr uintptr_t key() noexcept
+	{
+		return static_cast<uintptr_t>(offset);
+	}
+
 	constexpr Variant_type variant() const noexcept
 	{
 		return objectToStore<Store>(*this)._variantv(type_, offset, size_);
@@ -2052,6 +2272,11 @@ public:
 		variant().template set<T>(value);
 	}
 
+	void set(char const* s) noexcept
+	{
+		variant().set(s);
+	}
+
 	static constexpr Type::type type() noexcept
 	{
 		return type_;
@@ -2066,6 +2291,28 @@ public:
 	{
 		return variant().buffer();
 	}
+
+#	ifdef STORED_HAVE_QT
+	QVariant toQVariant() const
+	{
+		return variant().toQVariant();
+	}
+
+	bool set(QVariant const& v)
+	{
+		return variant().set(v);
+	}
+
+	QString toQString() const
+	{
+		return variant().toQString();
+	}
+
+	void set(QString const& value)
+	{
+		variant().set(value);
+	}
+#	endif // STORED_HAVE_QT
 };
 
 /*!
@@ -2085,6 +2332,11 @@ public:
 #	endif
 
 	typedef Variant<Implementation> Variant_type;
+
+	static constexpr unsigned int id() noexcept
+	{
+		return F;
+	}
 
 	constexpr Variant_type variant() const noexcept
 	{
@@ -2119,6 +2371,11 @@ public:
 		variant().template set<T>(value);
 	}
 
+	void set(char const* s) noexcept
+	{
+		variant().set(s);
+	}
+
 	static constexpr Type::type type() noexcept
 	{
 		return type_;
@@ -2128,6 +2385,28 @@ public:
 	{
 		return size_;
 	}
+
+#	ifdef STORED_HAVE_QT
+	QVariant toQVariant() const
+	{
+		return variant().toQVariant();
+	}
+
+	bool set(QVariant const& v)
+	{
+		return variant().set(v);
+	}
+
+	QString toQString() const
+	{
+		return variant().toQString();
+	}
+
+	void set(QString const& value)
+	{
+		variant().set(value);
+	}
+#	endif // STORED_HAVE_QT
 };
 } // namespace impl
 

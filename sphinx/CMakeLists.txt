@@ -21,6 +21,7 @@ endif()
 
 add_custom_target(
 	doc ALL
+	DEPENDS all-libstored-generate
 	COMMAND $<TARGET_FILE:Doxygen::doxygen>
 	COMMAND ${SPHINX_EXECUTABLE} -M html $<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}> $<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/_build> -c $<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}> ${SPHINX_CONDITIONAL}
 	COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/presentation/libstored.sozi.html ${CMAKE_CURRENT_SOURCE_DIR}/_build/html
@@ -28,4 +29,3 @@ add_custom_target(
 	COMMENT "Generating API documentation (see sphinx/_build/html/sphinx/index.html)"
 	VERBATIM
 )
-

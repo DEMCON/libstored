@@ -59,10 +59,16 @@ public:
 
 	~Stream() final is_default
 
-	void decode(void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) final {}
-
-	void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final
+	void decode(void* buffer, size_t len) final
 	{
+		UNUSED(buffer)
+		UNUSED(len)
+	}
+
+	void encode(void const* buffer, size_t len, bool last = true) final
+	{
+		UNUSED(last)
+
 		if(blocked())
 			return;
 
@@ -133,10 +139,16 @@ public:
 
 	~Stream() final is_default
 
-	void decode(void* UNUSED_PAR(buffer), size_t UNUSED_PAR(len)) final {}
-
-	void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final
+	void decode(void* buffer, size_t len) final
 	{
+		UNUSED(buffer)
+		UNUSED(len)
+	}
+
+	void encode(void const* buffer, size_t len, bool last = true) final
+	{
+		UNUSED(last)
+
 		if(blocked())
 			return;
 

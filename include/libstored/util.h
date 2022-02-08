@@ -85,6 +85,20 @@
 #define STORED_STRINGIFY_(x) #x
 #define STORED_STRINGIFY(x)  STORED_STRINGIFY_(x)
 
+#ifndef UNUSED
+/*!
+ * \def UNUSED
+ * \brief Mark one or more variables or parameters as unused.
+ */
+#	define UNUSED(x) (void)x;
+#endif
+
+#ifndef EXPAND
+/*!
+ * \brief Force macro expansion before evaluating it.
+ */
+#	define EXPAND(x) x
+#endif
 
 #ifdef __cplusplus
 #	include <cassert>
@@ -547,7 +561,9 @@ struct saturated_cast_helper {
 #	pragma GCC diagnostic push
 #	pragma GCC diagnostic ignored "-Woverflow" // This error triggers when R is integer, but
 						    // this code path is not triggered then.
+			// NOLINTNEXTLINE(clang-diagnostic-sign-conversion,clang-diagnostic-constant-conversion)
 			if(value <= -std::numeric_limits<R>::max())
+				// NOLINTNEXTLINE(clang-diagnostic-sign-conversion,clang-diagnostic-constant-conversion)
 				return -std::numeric_limits<R>::max();
 #	pragma GCC diagnostic pop
 
@@ -629,6 +645,150 @@ int strncmp(
 	size_t len2 = std::numeric_limits<size_t>::max()) noexcept;
 
 char const* banner() noexcept;
+
+template <typename T>
+struct identity {
+	typedef T self;
+};
+
+/*!
+ * \brief Type constructor for (wrapped) store base class types.
+ *
+ * When deriving from the base store class, instantiate your class as follows:
+ *
+ * \code
+ * class MyStore : public stored::store<MyStore, stored::MyStoreBase>::type {
+ *	STORED_STORE(MyStore, stored::MyStoreBase)
+ * public:
+ *	...
+ * };
+ * \endcode
+ *
+ * When wrappers are used, inject them in the sequence of inheritance:
+ *
+ * \code
+ * class MyStore : public stored::store_t<MyStore, stored::Synchronizable, stored::MyStoreBase> {
+ *	STORED_STORE(MyStore, stored::Synchronizable, stored::MyStoreBase)
+ * public:
+ *	...
+ * };
+ * \endcode
+ *
+ * Note the usage of \c stored::stored_t, which is equivalent to \c
+ * stored::store, but only available for C++11 and later.
+ *
+ * N.B. Although \c store_t is perfectly fine to use for C++11 and later,
+ * doxygen and MSVC get confused about it. It does not seem to process the
+ * inheritance properly. Try using \c STORE_T(...) instead of \c
+ * stored::store<...>::type or \c stored::store_t<...>.
+ */
+template <
+	typename Impl,
+	// ad infinitum
+	template <typename> class Wrapper7 = identity,
+	template <typename> class Wrapper6 = identity,
+	template <typename> class Wrapper5 = identity,
+	template <typename> class Wrapper4 = identity,
+	template <typename> class Wrapper3 = identity,
+	template <typename> class Wrapper2 = identity,
+	template <typename> class Wrapper1 = identity,
+	template <typename> class Wrapper0 = identity, template <typename> class Base = identity>
+struct store {
+	typedef typename Wrapper7<typename Wrapper6<typename Wrapper5<
+		typename Wrapper4<typename Wrapper3<typename Wrapper2<typename Wrapper1<
+			typename Wrapper0<typename Base<Impl>::self>::self>::self>::self>::self>::
+			self>::self>::self>::self type;
+};
+
+#	if STORED_cplusplus >= 201103L
+/*!
+ * \brief Convenience typedef for <tt>typename storeD::store<...>::type</tt>.
+ */
+template <typename Impl, template <typename> class... Base>
+using store_t = typename store<Impl, Base...>::type;
+#	endif
+
+// There seem to be issues with the store type above. Both MSVC and Doxygen do not understand it.
+// Use a macro as fallback.
+// Make sure to match the number of template arguments of stored::store.
+#	define STORE_T_1(Impl, x)	x<Impl /**/>
+#	define STORE_T_2(Impl, x, ...) x<EXPAND(STORE_T_1(Impl, __VA_ARGS__)) /**/>
+#	define STORE_T_3(Impl, x, ...) x<EXPAND(STORE_T_2(Impl, __VA_ARGS__)) /**/>
+#	define STORE_T_4(Impl, x, ...) x<EXPAND(STORE_T_3(Impl, __VA_ARGS__)) /**/>
+#	define STORE_T_5(Impl, x, ...) x<EXPAND(STORE_T_4(Impl, __VA_ARGS__)) /**/>
+#	define STORE_T_6(Impl, x, ...) x<EXPAND(STORE_T_5(Impl, __VA_ARGS__)) /**/>
+#	define STORE_T_7(Impl, x, ...) x<EXPAND(STORE_T_6(Impl, __VA_ARGS__)) /**/>
+#	define STORE_T_8(Impl, x, ...) x<EXPAND(STORE_T_7(Impl, __VA_ARGS__)) /**/>
+#	define STORE_T_9(Impl, x, ...) x<EXPAND(STORE_T_8(Impl, __VA_ARGS__)) /**/>
+
+#	define STORED_GET_MACRO_ARGN(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, m, ...) m
+
+/*!
+ * \brief Type constructor for (wrapped) store base class types.
+ *
+ * This is the macro version of \c stored::store_t and #stored::store.
+ *
+ * \hideinitializer
+ */
+#	define STORE_T(Impl, ...)                                                       \
+		EXPAND(STORED_GET_MACRO_ARGN(                                            \
+			Impl, ##__VA_ARGS__, STORE_T_9, STORE_T_8, STORE_T_7, STORE_T_6, \
+			STORE_T_5, STORE_T_4, STORE_T_3, STORE_T_2,                      \
+			STORE_T_1)(Impl, ##__VA_ARGS__))
+
+// Make sure to match the number of template arguments of stored::store.
+#	define STORE_BASE_CLASS_1(x)	   x
+#	define STORE_BASE_CLASS_2(x, ...) EXPAND(STORE_BASE_CLASS_1(__VA_ARGS__))
+#	define STORE_BASE_CLASS_3(x, ...) EXPAND(STORE_BASE_CLASS_2(__VA_ARGS__))
+#	define STORE_BASE_CLASS_4(x, ...) EXPAND(STORE_BASE_CLASS_3(__VA_ARGS__))
+#	define STORE_BASE_CLASS_5(x, ...) EXPAND(STORE_BASE_CLASS_4(__VA_ARGS__))
+#	define STORE_BASE_CLASS_6(x, ...) EXPAND(STORE_BASE_CLASS_5(__VA_ARGS__))
+#	define STORE_BASE_CLASS_7(x, ...) EXPAND(STORE_BASE_CLASS_6(__VA_ARGS__))
+#	define STORE_BASE_CLASS_8(x, ...) EXPAND(STORE_BASE_CLASS_7(__VA_ARGS__))
+#	define STORE_BASE_CLASS_9(x, ...) EXPAND(STORE_BASE_CLASS_8(__VA_ARGS__))
+
+#	define STORE_CLASS_BASE(Impl, ...)                                             \
+		EXPAND(STORED_GET_MACRO_ARGN(                                           \
+			0, Impl, ##__VA_ARGS__, STORE_BASE_CLASS_9, STORE_BASE_CLASS_8, \
+			STORE_BASE_CLASS_7, STORE_BASE_CLASS_6, STORE_BASE_CLASS_5,     \
+			STORE_BASE_CLASS_4, STORE_BASE_CLASS_3, STORE_BASE_CLASS_2,     \
+			STORE_BASE_CLASS_1)(Impl, ##__VA_ARGS__))<Impl /**/>
+
+#	ifdef STORED_COMPILER_MSVC
+// https://developercommunity.visualstudio.com/t/compile-error-when-using-using-declaration-referen/486683
+// MSVC is always C++14 or later, so this is safe.
+#		define STORE_CLASS_USING_BASE_TYPE(type, ...) \
+			using type = typename __VA_ARGS__::type;
+#	else
+#		define STORE_CLASS_USING_BASE_TYPE(type, ...) using typename __VA_ARGS__::type;
+#	endif
+
+#	define STORE_CLASS_(Impl, ...)                                  \
+		STORED_CLASS_NOCOPY(Impl)                                \
+		STORED_CLASS_NEW_DELETE(Impl)                            \
+	public:                                                          \
+		typedef Impl self;                                       \
+		typedef __VA_ARGS__ base;                                \
+		STORE_CLASS_USING_BASE_TYPE(root, __VA_ARGS__)           \
+		STORE_CLASS_USING_BASE_TYPE(Implementation, __VA_ARGS__) \
+                                                                         \
+	private:
+
+/*!
+ * \brief Class helper macro to get a store implementation class right.
+ * \see #stored::store
+ * \hideinitializer
+ */
+#	define STORE_CLASS(Impl, ...)                         \
+		STORE_CLASS_(Impl, STORE_T(Impl, __VA_ARGS__)) \
+		friend class STORE_CLASS_BASE(Impl, ##__VA_ARGS__);
+
+/*!
+ * \brief Class helper macro to get a store wrapper class right.
+ * \hideinitializer
+ */
+#	define STORE_WRAPPER_CLASS(Impl, Base) STORE_CLASS_(Impl, Base)
+
 } // namespace stored
 
 #	include <libstored/allocator.h>
@@ -682,16 +842,11 @@ Sub down_cast(Base& p) noexcept
 	return static_cast<Sub>(p);
 }
 
-#	define STORE_BASE_CLASS(Base, Impl) ::stored::Base<Impl>
+/*! \deprecated Use \c stored::store or \c STORE_T instead. */
+#	define STORE_BASE_CLASS(Base, Impl) ::stored::Base</**/ Impl /**/>
 
-#	define STORE_CLASS_BODY(Base, Impl)               \
-		STORED_CLASS_NOCOPY(Impl)                  \
-	public:                                            \
-		typedef STORE_BASE_CLASS(Base, Impl) base; \
-		using typename base::Implementation;       \
-		friend class ::stored::Base<Impl>;         \
-                                                           \
-	private:
+/*! \deprecated Use \c STORE_CLASS instead. */
+#	define STORE_CLASS_BODY(Base, Impl) STORE_CLASS(Impl, ::stored::Base)
 
 #endif // __cplusplus
 #endif // LIBSTORED_UTIL_H

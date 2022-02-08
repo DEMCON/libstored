@@ -2051,6 +2051,9 @@ INCLUDE_FILE_PATTERNS  =
 # recursively expanded use the := operator instead of the = operator.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
+# Doxygen cannot process the STORE_T by itself. The list below helps it, although
+# only recent versions handle __VA_ARGS__ properly.
+
 PREDEFINED             = DOXYGEN \
 			 __cplusplus=201402L \
 			 __linux__ \
@@ -2060,10 +2063,29 @@ PREDEFINED             = DOXYGEN \
 			 __restrict__= \
 			 EXTERN_C= \
 			 _DEBUG \
+			 STORED_HAVE_QT \
 			 STORED_HAVE_ZMQ \
 			 STORED_HAVE_HEATSHRINK \
 			 STORED_DRAFT_API \
 			 zth_fiber= \
+			 UNUSED(x)= \
+			 is_default==default; \
+			 STORE_CLASS(...)= \
+			 STORED_CLASS_NOCOPY(...)= \
+			 STORED_CLASS_NEW_DELETE(...)= \
+			 STORE_WRAPPER_CLASS(...)= \
+			 Q_PROPERTY(...)= \
+			 "STORE_T_1(a,b,...)=b<a>" \
+			 "STORE_T_2(a,b,...)=b<STORE_T_1(a,__VA_ARGS__)>" \
+			 "STORE_T_3(a,b,...)=b<STORE_T_2(a,__VA_ARGS__)>" \
+			 "STORE_T_4(a,b,...)=b<STORE_T_3(a,__VA_ARGS__)>" \
+			 "STORE_T_5(a,b,...)=b<STORE_T_4(a,__VA_ARGS__)>" \
+			 "STORE_T_6(a,b,...)=b<STORE_T_5(a,__VA_ARGS__)>" \
+			 "STORE_T_7(a,b,...)=b<STORE_T_6(a,__VA_ARGS__)>" \
+			 "STORE_T_8(a,b,...)=b<STORE_T_7(a,__VA_ARGS__)>" \
+			 "STORE_T_9(a,b,...)=b<STORE_T_8(a,__VA_ARGS__)>" \
+			"STORED_GET_MACRO_ARGN(_0,_1,_2,_3,_4,_5,_6,_7,_8,_9,m,...)=m" \
+			"STORE_T(Impl,...)=STORED_GET_MACRO_ARGN(Impl,__VA_ARGS__,STORE_T_9,STORE_T_8,STORE_T_7,STORE_T_6,STORE_T_5,STORE_T_4,STORE_T_3,STORE_T_2,STORE_T_1)(Impl,__VA_ARGS__)" \
 
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
@@ -2074,13 +2096,16 @@ PREDEFINED             = DOXYGEN \
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
 EXPAND_AS_DEFINED      = \
-			UNUSED_PAR \
 			is_default \
 			CLASS_NOCOPY \
 			STORE_SYNC_BASE_CLASS \
 			STORE_SYNC_CLASS_BODY \
 			STORE_BASE_CLASS \
 			STORE_CLASS_BODY \
+			STORE_CLASS \
+			STORE_WRAPPER_CLASS \
+			STORED_CLASS_NOCOPY \
+			STORED_CLASS_NEW_DELETE \
 			constexpr14 \
 
 
@@ -2157,7 +2182,7 @@ EXTERNAL_PAGES         = YES
 # powerful graphs.
 # The default value is: YES.
 
-CLASS_DIAGRAMS         = YES
+#CLASS_DIAGRAMS         = YES
 
 # You can define message sequence charts within doxygen comments using the \msc
 # command. Doxygen will then run the mscgen tool (see:

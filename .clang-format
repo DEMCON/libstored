@@ -44,7 +44,7 @@ BraceWrapping:
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Custom
 BreakBeforeInheritanceComma: false
-BreakInheritanceList: BeforeComma
+BreakInheritanceList: BeforeColon
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializersBeforeComma: true
 BreakConstructorInitializers: BeforeComma
@@ -128,6 +128,7 @@ SpacesInSquareBrackets: false
 SpaceBeforeSquareBrackets: false
 Standard:        c++17
 StatementMacros:
+  - UNUSED
   - Q_UNUSED
   - QT_REQUIRE_VERSION
   - is_default

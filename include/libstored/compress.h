@@ -79,7 +79,10 @@ public:
 #		endif
 	virtual size_t mtu() const override;
 
-	void setPurgeableResponse(bool UNUSED_PAR(purgeable) = true) final {}
+	void setPurgeableResponse(bool purgeable = true) final
+	{
+		UNUSED(purgeable)
+	}
 
 	bool idle() const;
 

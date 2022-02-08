@@ -61,8 +61,11 @@ static void receiver()
 }
 zth_fiber(receiver)
 
-int main_fiber(int UNUSED_PAR(argc), char** UNUSED_PAR(argv))
+int main_fiber(int argc, char** argv)
 {
+	UNUSED(argc)
+	UNUSED(argv)
+
 	puts(zth::banner());
 	puts(stored::banner());
 

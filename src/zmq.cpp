@@ -118,8 +118,9 @@ ZmqLayer::fd_type ZmqLayer::fd() const
 	return socket;
 }
 
-int ZmqLayer::block(fd_type UNUSED_PAR(fd), bool forReading, long timeout_us, bool suspend)
+int ZmqLayer::block(fd_type fd, bool forReading, long timeout_us, bool suspend)
 {
+	UNUSED(fd)
 	// Just use our socket.
 	return block(forReading, timeout_us, suspend);
 }
@@ -127,8 +128,10 @@ int ZmqLayer::block(fd_type UNUSED_PAR(fd), bool forReading, long timeout_us, bo
 /*!
  * \brief Like #block(fd_type,bool,long,bool), but using the #socket() by default.
  */
-int ZmqLayer::block(bool forReading, long timeout_us, bool UNUSED_PAR(suspend))
+int ZmqLayer::block(bool forReading, long timeout_us, bool suspend)
 {
+	UNUSED(suspend)
+
 	setLastError(0);
 
 	Poller& poller = this->poller();

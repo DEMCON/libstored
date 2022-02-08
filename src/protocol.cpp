@@ -69,8 +69,9 @@ ProtocolLayer::~ProtocolLayer()
 
 /*!
  * \copydoc stored::ProtocolLayer::ProtocolLayer()
- * \param all when \c true, convert all control characters, instead of only those that conflict with
- * other protocols
+ *
+ * When \p all is \c true, convert all control characters, instead of only
+ * those that conflict with other protocols
  */
 AsciiEscapeLayer::AsciiEscapeLayer(bool all, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
@@ -1632,8 +1633,10 @@ PolledFileLayer::~PolledFileLayer() is_default
  * switching (when using Zth) \return 0 on success, otherwise an \c errno
  */
 int PolledFileLayer::block(
-	PolledFileLayer::fd_type fd, bool forReading, long timeout_us, bool UNUSED_PAR(suspend))
+	PolledFileLayer::fd_type fd, bool forReading, long timeout_us, bool suspend)
 {
+	UNUSED(suspend)
+
 	setLastError(0);
 
 	Poller& poller = this->poller();
@@ -2341,8 +2344,10 @@ error:
  */
 void FileLayer::writeCompletionRoutine(
 	// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-	DWORD dwErrorCode, DWORD UNUSED_PAR(dwNumberOfBytesTransfered), LPOVERLAPPED lpOverlapped)
+	DWORD dwErrorCode, DWORD dwNumberOfBytesTransfered, LPOVERLAPPED lpOverlapped)
 {
+	UNUSED(dwNumberOfBytesTransfered)
+
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 	FileLayer* that = *(FileLayer**)((uintptr_t)lpOverlapped + sizeof(*lpOverlapped));
 	stored_assert(that);
@@ -3079,10 +3084,12 @@ bool StdioLayer::isPipeOut() const
 	return m_pipe_w;
 }
 
-int StdioLayer::block(
-	fd_type UNUSED_PAR(fd), bool UNUSED_PAR(forReading), long UNUSED_PAR(timeout_us),
-	bool UNUSED_PAR(suspend))
+int StdioLayer::block(fd_type fd, bool forReading, long timeout_us, bool suspend)
 {
+	UNUSED(fd)
+	UNUSED(forReading)
+	UNUSED(timeout_us)
+	UNUSED(suspend)
 	stored_assert(false);
 	return setLastError(EINVAL);
 }

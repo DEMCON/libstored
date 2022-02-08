@@ -262,11 +262,9 @@ private:
  */
 template <typename Base>
 class Synchronizable : public Base {
-	STORED_CLASS_NOCOPY(Synchronizable<Base>)
+	STORE_WRAPPER_CLASS(Synchronizable, Base)
 public:
-	typedef Base base;
 	typedef typename base::Objects Objects;
-	typedef typename base::Implementation Implementation;
 
 #	if STORED_cplusplus >= 201103L
 	template <typename... Args>
@@ -366,18 +364,13 @@ private:
 	StoreJournal m_journal;
 };
 
+/*! \deprecated Use \c stored::store or \c STORE_T instead. */
 #	define STORE_SYNC_BASE_CLASS(Base, Impl) \
-		::stored::Synchronizable</**/ ::stored::Base<Impl> /**/>
+		STORE_T(Impl, ::stored::Synchronizable, ::stored::Base)
 
-#	define STORE_SYNC_CLASS_BODY(Base, Impl)               \
-		STORED_CLASS_NOCOPY(Impl)                       \
-	public:                                                 \
-		typedef STORE_SYNC_BASE_CLASS(Base, Impl) base; \
-		using typename base::Implementation;            \
-		friend class STORE_BASE_CLASS(Base, Impl);      \
-                                                                \
-	private:
-
+/*! \deprecated Use \c STORE_CLASS instead. */
+#	define STORE_SYNC_CLASS_BODY(Base, Impl) \
+		STORE_CLASS(Impl, ::stored::Synchronizable, ::stored::Base)
 
 class Synchronizer;
 

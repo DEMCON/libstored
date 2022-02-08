@@ -59,5 +59,6 @@ install(TARGETS heatshrink EXPORT libstored
 	PUBLIC_HEADER DESTINATION include
 )
 
+set(LIBSTORED_DO_INSTALL_LIBSTORED ON)
 set(Heatshrink_FOUND 1)
 

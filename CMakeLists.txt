@@ -125,6 +125,9 @@ option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" ${LIBSTORED_ENABLE_A
 option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" ${LIBSTORED_ENABLE_LSAN_DEFAULT})
 option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" ${LIBSTORED_ENABLE_UBSAN_DEFAULT})
 
+# find_package(Heatshrink) may do install(...EXPORT libstored).
+set(LIBSTORED_DO_INSTALL_LIBSTORED OFF)
+
 option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
 
 if(LIBSTORED_HAVE_HEATSHRINK)
@@ -141,6 +144,37 @@ option(LIBSTORED_HAVE_ZTH "Use Zth" OFF)
 
 if(LIBSTORED_HAVE_ZTH)
 	find_package(Zth REQUIRED)
+endif()
+
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10")
+	cmake_policy(SET CMP0071 NEW)
+
+	find_package(Qt6 COMPONENTS Core QUIET)
+	if(Qt6_FOUND)
+		set(LIBSTORED_FOUND_QT ON)
+	else()
+		# Fallback to Qt5
+		find_package(Qt5 COMPONENTS Core QUIET)
+		if(Qt5_FOUND)
+			set(LIBSTORED_FOUND_QT ON)
+		endif()
+	endif()
+
+	option(LIBSTORED_HAVE_QT "Use Qt" ${LIBSTORED_FOUND_QT})
+
+	if(NOT LIBSTORED_FOUND_QT AND LIBSTORED_HAVE_QT)
+		message(FATAL_ERROR "Cannot find Qt")
+	endif()
+
+	if(LIBSTORED_HAVE_QT)
+		if(Qt6_FOUND)
+			message(STATUS "Found Qt6")
+		elseif(Qt5_FOUND)
+			message(STATUS "Found Qt5")
+		else()
+			message(WARNING "Found unknown Qt version")
+		endif()
+	endif()
 endif()
 
 set(LIBSTORED_CLANG_TIDY_DEFAULT OFF)
@@ -191,6 +225,30 @@ list(APPEND CMAKE_MODULE_PATH ${LIBSTORED_SOURCE_DIR}/cmake)
 add_subdirectory(extern)
 
 include(libstored)
+
+install(DIRECTORY ${LIBSTORED_SOURCE_DIR}/include/libstored/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libstored FILES_MATCHING PATTERN "*.h")
+install(FILES ${LIBSTORED_SOURCE_DIR}/include/stored ${LIBSTORED_SOURCE_DIR}/include/stored.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+set(LIBSTORED_CONFIG_FILE ${LIBSTORED_SOURCE_DIR}/include/stored_config.h)
+foreach(d IN LISTS LIBSTORED_PREPEND_INCLUDE_DIRECTORIES)
+	if(EXISTS ${d}/stored_config.h)
+		set(LIBSTORED_CONFIG_FILE ${d}/stored_config.h)
+		break()
+	endif()
+endforeach()
+install(FILES ${LIBSTORED_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+if(LIBSTORED_DO_INSTALL_LIBSTORED)
+	install(EXPORT libstored DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake)
+endif()
+
+configure_package_config_file(
+	"${LIBSTORED_SOURCE_DIR}/cmake/LibstoredStoresConfig.cmake.in"
+	"${PROJECT_BINARY_DIR}/LibstoredStoresConfig.cmake"
+	INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/LibstoredStores
+)
+
+install(FILES ${PROJECT_BINARY_DIR}/LibstoredStoresConfig.cmake DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/LibstoredStores)
 
 if(DEFINED ENV{XILINX_VIVADO})
 	find_program(VIVADO_CMD NAMES vivado PATHS "$ENV{XILINX_VIVADO}/bin")

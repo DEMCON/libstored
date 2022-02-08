@@ -70,8 +70,9 @@ static int socket_to_SOCKET(void* zmq, SOCKET& win)
 }
 #	endif // STORED_HAVE_ZMQ
 
-static int SOCKET_to_HANDLE(SOCKET UNUSED_PAR(s), HANDLE& h)
+static int SOCKET_to_HANDLE(SOCKET s, HANDLE& h)
 {
+	UNUSED(s)
 	stored_assert(s != INVALID_SOCKET); // NOLINT(hicpp-signed-bitwise)
 
 	if(!h) {

@@ -26,8 +26,12 @@ blob:16    blob
 int8=42    test42
 
 // An initializer can be an int, as shown above, but also hex (0x12ab), binary
-// (0b01101), and float (1.4, -3.2e-4, inf, nan). Initializer don't work on a
-// string and blob, though.
+// (0b01101), and float (1.4, -3.2e-4, inf, nan). For a string, wrap it in
+// double quotes, and escape quotes appropriately. Escaping works like python
+// strings.
+string:8="hello" string hello
+
+// Initializer don't work on a blob, though.
 
 // Note that there should not be any whitespace around the =, because after
 // from the first whitespace, the name is taken. So, this is not what you would

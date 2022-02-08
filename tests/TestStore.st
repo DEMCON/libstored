@@ -28,6 +28,7 @@ float=-4.0e3	init float -4000
 float=nan	init float nan
 float=inf	init float inf
 float=-Infinity	init float neg inf
+string:8="a b\"c"	init string
 
 (double)	f read/write
 (uint16)	f read-only

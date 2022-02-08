@@ -9,7 +9,7 @@ Object:
 ;
 
 Variable[noskipws]:
-	type=InitializedType name=Name 
+	type=InitializedType name=Name
 ;
 
 Function[noskipws]:
@@ -21,11 +21,13 @@ Scope[noskipws]:
 ;
 
 InitializedType[noskipws]:
-	fixed=FixedTypeArray ('=' init=Immediate ) ? | blob=BlobType
+	fixed=FixedTypeArray ('=' init=Immediate ) ? |
+	blob=StringType ('=' init=STRING ) ? |
+	blob=BlobType
 ;
 
 Type[noskipws]:
-	fixed=FixedTypeArray | blob=BlobType
+	fixed=FixedTypeArray | blob=StringType | blob=BlobType
 ;
 
 FixedTypeArray[noskipws]:
@@ -46,12 +48,12 @@ FixedType[noskipws]:
 	'ptr32' | 'ptr64'
 ;
 
-BlobType[noskipws]:
-	type=BlobBaseType ':' size=INT ( '[' len=INT ']' ) ?
+StringType[noskipws]:
+	type='string' ':' size=INT ( '[' len=INT ']' ) ?
 ;
 
-BlobBaseType[noskipws]:
-	( 'string' | 'blob' ) 
+BlobType[noskipws]:
+	type='blob' ':' size=INT ( '[' len=INT ']' ) ?
 ;
 
 Name[noskipws]:
@@ -60,10 +62,12 @@ Name[noskipws]:
 ;
 
 Immediate[noskipws]:
-	value=/0x[0-9a-fA-F]+|0b[01]+/ | value=NUMBER | value=BOOL | value=/[Nn]a[Nn]|-?[Ii]nf(inity)?/
+	value=/0x[0-9a-fA-F]+|0b[01]+/ |
+	value=NUMBER |
+	value=BOOL |
+	value=/[Nn]a[Nn]|-?[Ii]nf(inity)?/
 ;
 
 Comment:
 	/\s*\/\/.*$/
 ;
-

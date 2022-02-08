@@ -570,6 +570,12 @@ class Object(QObject):
         locale.setlocale(locale.LC_NUMERIC, '')
         return f'{x:n}'
 
+    def _format_float(self, x, f, prec):
+        # QLocale seems to pick toString(float) instead of toString(double),
+        # resulting in rounding errors. Use python locale formatting instead.
+        locale.setlocale(locale.LC_NUMERIC, '')
+        return locale.format_string(f'%.{prec}{f}', x, True)
+
     def _format_get(self):
         return self._format
 
@@ -586,9 +592,9 @@ class Object(QObject):
         elif f == 'bytes':
             self._formatter = self._formatBytes
         elif self._type & ~self.FlagFunction == self.Float:
-            self._formatter = lambda x: self.locale.toString(x, 'g', 6)
+            self._formatter = lambda x: self._format_float(x, 'g', 6)
         elif self._type & ~self.FlagFunction == self.Double:
-            self._formatter = lambda x: self.locale.toString(x, 'g', 15)
+            self._formatter = lambda x: self._format_float(x, 'g', 15)
         elif self._type & self.FlagInt:
             self._formatter = self._format_int
         else:

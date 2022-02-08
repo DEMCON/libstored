@@ -283,7 +283,7 @@ TEST(Synchronizer, Sync5)
 	EXPECT_EQ(store[4].default_uint8.get(), 1);
 
 	for(size_t i = 1; i < 5; i++)
-		EXPECT_SYNCED(store[0], store[1]);
+		EXPECT_SYNCED(store[0], store[i]);
 
 	store[3].default_int16 = 2;
 	store[2].default_int32 = 3;
@@ -296,7 +296,7 @@ TEST(Synchronizer, Sync5)
 			s[i].process();
 
 	for(size_t i = 1; i < 5; i++)
-		EXPECT_SYNCED(store[0], store[1]);
+		EXPECT_SYNCED(store[0], store[i]);
 
 	SyncTestStore::ObjectMap map[5];
 	std::vector<SyncTestStore::ObjectMap::mapped_type> list[5];
@@ -309,7 +309,7 @@ TEST(Synchronizer, Sync5)
 
 	auto start = std::chrono::steady_clock::now();
 	int count = 0;
-	while(std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() < 1) {
+	do {
 		for(size_t batch = 0; batch < 10; batch++) {
 			// Pick a random store
 			int i = rand() % 5;
@@ -322,7 +322,7 @@ TEST(Synchronizer, Sync5)
 			// Flip a bit of that object.
 			auto data = o.get();
 			data[0] = (char)(data[0] + 1);
-			o.set((void const*)&data[0]);
+			o.set(data);
 			count++;
 		}
 
@@ -332,8 +332,9 @@ TEST(Synchronizer, Sync5)
 				s[i].process();
 
 		for(size_t i = 1; i < 5; i++)
-			EXPECT_SYNCED(store[0], store[1]);
-	}
+			EXPECT_SYNCED(store[0], store[i]);
+	} while(std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count()
+		< 1);
 
 	EXPECT_GT(count, 100);
 }

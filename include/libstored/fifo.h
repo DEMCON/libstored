@@ -873,8 +873,9 @@ public:
 	 * FIFO is empty.  This value is not saved in #lastError(), as that
 	 * field is only used by #encode() and is not thread-safe.
 	 */
-	virtual int recv(long UNUSED_PAR(timeout_us) = 0) override
+	virtual int recv(long timeout_us = 0) override
 	{
+		UNUSED(timeout_us)
 		stored_assert(timeout_us == 0);
 
 		if(m_fifo.empty())

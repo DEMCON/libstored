@@ -53,8 +53,11 @@ def has_function(os):
 def is_blob(o):
     return o.isBlob()
 
+def is_string(o):
+    return o.type == 'string'
+
 def is_pointer(o):
-    return o.type in ['ptr32', 'ptr64'];
+    return o.type in ['ptr32', 'ptr64']
 
 def ctype(o):
     return {
@@ -74,6 +77,28 @@ def ctype(o):
             'blob': 'void',
             'string': 'char'
     }[o.type]
+
+def qtype(o):
+    return {
+            'bool': 'bool',
+            'int8': 'int',
+            'uint8': 'uint',
+            'int16': 'int',
+            'uint16': 'uint',
+            'int32': 'int',
+            'uint32': 'uint',
+            'int64': 'qlonglong',
+            'uint64': 'qulonglong',
+            'float': 'float',
+            'double': 'double',
+            'ptr32': None,
+            'ptr64': None,
+            'blob': None,
+            'string': 'QString'
+    }[o.type]
+
+def is_qml_compatible(o):
+    return qtype(o) is not None
 
 def stype(o):
     t = {
@@ -197,6 +222,19 @@ def csvstring(s):
 
     return '"' + re.sub(r'"', r'""', s) + '"'
 
+def pystring(s):
+    return repr(str(s))
+
+def pyliteral(x):
+    if isinstance(x, float):
+        return f'float(\'{x}\')'
+    elif isinstance(x, bool):
+        return 'True' if x else 'False'
+    elif isinstance(x, int):
+        return f'int({x})'
+    else:
+        return repr(x)
+
 def tab_indent(s, num):
     return ('\t' * num).join(s.splitlines(True))
 
@@ -211,6 +249,9 @@ def model_cname(model_file):
     s = s[0].upper() + s[1:]
     return s
 
+model_names = set()
+model_cnames = set()
+
 ##
 # @brief Load a model from a file
 # @param filename The name of the file to load
@@ -221,13 +262,27 @@ def load_model(filename, littleEndian=True, debug=False):
         os.path.join(generator_dir, 'dsl', 'grammar.tx'),
         classes=[types.Store,
             types.Variable, types.Function, types.Scope,
-            types.BlobType, types.Immediate
+            types.BlobType, types.StringType, types.Immediate
         ],
         debug=debug)
 
+    mname = model_name(filename)
+    if mname in model_names:
+        logger.critical(f'Model {mname} already exists')
+        sys.exit(1)
+
+    model_names.add(mname)
+
+    mcname = model_cname(filename)
+    if mcname in model_cnames:
+        logger.critical(f'Model {mname}\'s class name {mcname} is ambiguous')
+        sys.exit(1)
+
+    model_cnames.add(mcname)
 
     model = meta.model_from_file(filename, debug=debug)
-    model.name = model_cname(filename)
+    model.filename = mname
+    model.name = mcname
     model.littleEndian = littleEndian
     model.process()
     return model
@@ -236,6 +291,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
     logger.info(f"generating store {model_name(model_file)}")
 
     model = load_model(model_file, littleEndian)
+    mname = model_name(model_file)
 
     with open(model_file, 'rb') as f:
         model.hash = hashlib.sha1(f.read().replace(b'\r\n', b'\n')).hexdigest()
@@ -265,6 +321,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
             lstrip_blocks = True)
 
     jenv.filters['ctype'] = ctype
+    jenv.filters['qtype'] = qtype
     jenv.filters['stype'] = stype
     jenv.filters['vhdltype'] = vhdltype
     jenv.filters['vhdlinit'] = vhdlinit
@@ -277,35 +334,43 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.filters['hasfunction'] = has_function
     jenv.filters['rtfstring'] = rtfstring
     jenv.filters['csvstring'] = csvstring
+    jenv.filters['pystring'] = pystring
+    jenv.filters['pyliteral'] = pyliteral
     jenv.filters['tab_indent'] = tab_indent
     jenv.tests['variable'] = is_variable
     jenv.tests['function'] = is_function
     jenv.tests['blob'] = is_blob
+    jenv.tests['string'] = is_string
     jenv.tests['pointer'] = is_pointer
+    jenv.tests['qml_compatible'] = is_qml_compatible
 
     store_h_tmpl = jenv.get_template('store.h.tmpl')
     store_cpp_tmpl = jenv.get_template('store.cpp.tmpl')
     store_rtf_tmpl = jenv.get_template('store.rtf.tmpl')
     store_csv_tmpl = jenv.get_template('store.csv.tmpl')
+    store_py_tmpl = jenv.get_template('store.py.tmpl')
     store_vhd_tmpl = jenv.get_template('store.vhd.tmpl')
     store_pkg_vhd_tmpl = jenv.get_template('store_pkg.vhd.tmpl')
 
-    with open(os.path.join(output_dir, 'include', model_name(model_file) + '.h'), 'w') as f:
+    with open(os.path.join(output_dir, 'include', mname + '.h'), 'w') as f:
         f.write(store_h_tmpl.render(store=model))
 
-    with open(os.path.join(output_dir, 'src', model_name(model_file) + '.cpp'), 'w') as f:
+    with open(os.path.join(output_dir, 'src', mname + '.cpp'), 'w') as f:
         f.write(store_cpp_tmpl.render(store=model))
 
-    with open(os.path.join(output_dir, 'doc', model_name(model_file) + '.rtf'), 'w') as f:
+    with open(os.path.join(output_dir, 'doc', mname + '.rtf'), 'w') as f:
         f.write(store_rtf_tmpl.render(store=model))
 
-    with open(os.path.join(output_dir, 'doc', model_name(model_file) + '.csv'), 'w') as f:
+    with open(os.path.join(output_dir, 'doc', mname + '.csv'), 'w') as f:
         f.write(store_csv_tmpl.render(store=model))
 
-    with open(os.path.join(output_dir, 'rtl', model_name(model_file) + '.vhd'), 'w') as f:
+    with open(os.path.join(output_dir, 'doc', mname + 'Meta.py'), 'w') as f:
+        f.write(store_py_tmpl.render(store=model))
+
+    with open(os.path.join(output_dir, 'rtl', mname + '.vhd'), 'w') as f:
         f.write(store_vhd_tmpl.render(store=model))
 
-    with open(os.path.join(output_dir, 'rtl', model_name(model_file) + '_pkg.vhd'), 'w') as f:
+    with open(os.path.join(output_dir, 'rtl', mname + '_pkg.vhd'), 'w') as f:
         f.write(store_pkg_vhd_tmpl.render(store=model))
 
 def generate_cmake(libprefix, model_files, output_dir):
@@ -341,6 +406,7 @@ def generate_cmake(libprefix, model_files, output_dir):
             libstored_dir=libstored_reldir,
             models=models,
             libprefix=libprefix,
+            python_executable=sys.executable,
             ))
 
     with open(os.path.join(output_dir, 'rtl', 'vivado.tcl'), 'w') as f:

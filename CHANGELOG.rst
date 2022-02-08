@@ -13,7 +13,18 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 `Unreleased`_
 -------------
 
-...
+Added
+`````
+
+- Add QObject/QML wrapper for stores to access a store directly in QML.
+- Generate store variable changed callbacks.
+- Allow string variables to be initialized.
+- Generate store meta data in ``doc/<store>Meta.py``
+
+Changed
+```````
+
+- Replaced ``UNUSED_PAR`` by a more portable ``UNUSED`` macro.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.1.0...HEAD
 

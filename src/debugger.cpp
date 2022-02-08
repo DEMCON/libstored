@@ -859,14 +859,18 @@ public:
 		: base(nullptr, &down)
 	{}
 
-	void encode(void const* buffer, size_t len, bool UNUSED_PAR(last) = true) final
+	void encode(void const* buffer, size_t len, bool last = true) final
 	{
+		UNUSED(last)
 		base::encode(buffer, len, false);
 	}
 
 	using base::encode;
 
-	void setPurgeableResponse(bool UNUSED_PAR(purgeable) = true) final {}
+	void setPurgeableResponse(bool purgeable = true) final
+	{
+		UNUSED(purgeable)
+	}
 };
 
 /*!

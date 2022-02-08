@@ -25,12 +25,3 @@ Output
    Sending...
     < From sender fiber: 1
 
-Store reference
----------------
-
-.. doxygenclass:: stored::ExampleFiberedObjects
-
-.. doxygenclass:: stored::ExampleFiberedBase
-
-.. doxygenclass:: stored::ExampleFibered
-
