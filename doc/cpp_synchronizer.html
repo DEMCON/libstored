@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Synchronizer &mdash; libstored 1.1.0 documentation</title>
+  <title>Synchronizer &mdash; libstored 1.1.1-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.1.0
+                1.1.1.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -231,10 +231,10 @@ versions are defined for symmetry.</p>
 <p>Internally, only the last bytes of the sequence number is stored (short seq). Therefore, there is a window (now-ShortSeqWindow .. now) of which a short seq can be converted back to a real seq. Changes that are older than the safe margin (now-SeqLowerMargin), are automatically shifted in time to stay within the window. This may lead to some false positives when determining which objects have changed since an old seq number. This is safe behavior, but slightly less efficient for encoding updates.</p>
 <p>The administration is a binary tree, stored in a <code class="docutils literal notranslate"><span class="pre">std::vector</span></code>. Every node in the tree contains the maximum seq of any node below it, so a search like ‘find objects with a seq higher than x’ can terminate early. The vector must be regenerated when elements are inserted or removed. This is expensive, but usually only happens during the initial phase of the application.</p>
 <p>A store has only one journal, via <a class="reference internal" href="#classstored_1_1_synchronizable"><span class="std std-ref">stored::Synchronizable</span></a>. Multiple instances of <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">stored::SyncConnection</span></a> use the same journal.</p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_synchronizable"><span class="std std-ref">stored::Synchronizable</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_synchronizable"><span class="std std-ref">stored::Synchronizable</span></a> </p>
+</div>
 </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -496,10 +496,10 @@ versions are defined for symmetry.</p>
 <li><p>B can send ‘Bye’ to A too, but this will probably break the application, as A usually cannot handle this.</p></li>
 </ul>
 </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a> </p>
+</div>
 </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -651,18 +651,8 @@ public:
 </dd></dl>
 
 <dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14Synchronizable4baseE">
-<span id="_CPPv3N6stored14Synchronizable4baseE"></span><span id="_CPPv2N6stored14Synchronizable4baseE"></span><span id="stored::Synchronizable::base"></span><span class="target" id="classstored_1_1_synchronizable_1a4e7c1bda607d10c32470355a438132e4"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable::Base"><span class="n"><span class="pre">Base</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base</span></span></span><a class="headerlink" href="#_CPPv4N6stored14Synchronizable4baseE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14Synchronizable14ImplementationE">
-<span id="_CPPv3N6stored14Synchronizable14ImplementationE"></span><span id="_CPPv2N6stored14Synchronizable14ImplementationE"></span><span id="stored::Synchronizable::Implementation"></span><span class="target" id="classstored_1_1_synchronizable_1a3ebedce88b06ef81aee9f323bb82f579"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored14Synchronizable4baseE" title="stored::Synchronizable::base"><span class="n"><span class="pre">base</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Implementation</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Implementation</span></span></span><a class="headerlink" href="#_CPPv4N6stored14Synchronizable14ImplementationE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14Synchronizable7ObjectsE">
-<span id="_CPPv3N6stored14Synchronizable7ObjectsE"></span><span id="_CPPv2N6stored14Synchronizable7ObjectsE"></span><span id="stored::Synchronizable::Objects"></span><span class="target" id="classstored_1_1_synchronizable_1ad12fb534062dfcbf9ea45d7a471bdfaa"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored14Synchronizable4baseE" title="stored::Synchronizable::base"><span class="n"><span class="pre">base</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Objects</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Objects</span></span></span><a class="headerlink" href="#_CPPv4N6stored14Synchronizable7ObjectsE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored14Synchronizable7ObjectsE"></span><span id="_CPPv2N6stored14Synchronizable7ObjectsE"></span><span id="stored::Synchronizable::Objects"></span><span class="target" id="classstored_1_1_synchronizable_1ad12fb534062dfcbf9ea45d7a471bdfaa"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">base</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Objects</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Objects</span></span></span><a class="headerlink" href="#_CPPv4N6stored14Synchronizable7ObjectsE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>

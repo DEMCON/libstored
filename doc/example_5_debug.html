@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>5_debug &mdash; libstored 1.1.0 documentation</title>
+  <title>5_debug &mdash; libstored 1.1.1-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.1.0
+                1.1.1.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -72,6 +72,7 @@
 <li class="toctree-l2"><a class="reference internal" href="example_components.html">components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_concurrency.html">concurrency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_control.html">control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_meta.html">meta</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_fibered.html">fibered</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_zmqserver.html">zmqserver</a></li>
@@ -420,8 +421,8 @@ mem = 0xfeca
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_debug_some_store"><span class="std std-ref">stored::ExampleDebugSomeStore</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleDebugSomeStore : public STORE_BASE_CLASS(ExampleDebugSomeStoreBase, ExampleDebugSomeStore) {
-    STORE_CLASS_BODY(ExampleDebugSomeStoreBase, ExampleDebugSomeStore)
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleDebugSomeStore : public stored::store&lt;ExampleDebugSomeStore, ExampleDebugSomeStoreBase&gt;::type {
+    STORE_CLASS(ExampleDebugSomeStore, ExampleDebugSomeStoreBase)
 public:
     // Your class implementation, such as:
     ExampleDebugSomeStore() is_default
@@ -430,12 +431,15 @@ public:
 </pre></div>
 </div>
 </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_debug_some_store"><span class="std std-ref">stored::ExampleDebugSomeStore</span></a> </p>
-</dd>
-<dt><strong>See</strong></dt><dd><p>stored::ExampleDebugSomeStoreData </p>
-</dd>
-</dl>
+<p>Some compilers or tools may get confused by the inheritance using <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> or <code class="docutils literal notranslate"><span class="pre">stored::store_t</span></code>. Alternatively, use <code class="docutils literal notranslate"><span class="pre">STORE_T(...)</span></code> instead, providing the template parameters of <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> as macro arguments.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_example_debug_some_store"><span class="std std-ref">stored::ExampleDebugSomeStore</span></a> </p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>stored::ExampleDebugSomeStoreData </p>
+</div>
 </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -479,10 +483,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBase3KeyE">
 <span id="_CPPv3N6stored25ExampleDebugSomeStoreBase3KeyE"></span><span id="_CPPv2N6stored25ExampleDebugSomeStoreBase3KeyE"></span><span id="stored::ExampleDebugSomeStoreBase::Key"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1ac097ddb73d0efca1a3d3aae51c0796ef"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">uintptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Key</span></span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase3KeyE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Type of a key. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_debug_some_store_base_1af17d56331310e8d9b68b6a2143e117db"><span class="std std-ref">bufferToKey()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_example_debug_some_store_base_1af17d56331310e8d9b68b6a2143e117db"><span class="std std-ref">bufferToKey()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -496,6 +500,18 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBase7ObjectsE">
 <span id="_CPPv3N6stored25ExampleDebugSomeStoreBase7ObjectsE"></span><span id="_CPPv2N6stored25ExampleDebugSomeStoreBase7ObjectsE"></span><span id="stored::ExampleDebugSomeStoreBase::Objects"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1a349bf32ea241c379a0de566ced3f91f8"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN6stored28ExampleDebugSomeStoreObjectsE" title="stored::ExampleDebugSomeStoreObjects"><span class="n"><span class="pre">ExampleDebugSomeStoreObjects</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored25ExampleDebugSomeStoreBaseE" title="stored::ExampleDebugSomeStoreBase"><span class="n"><span class="pre">ExampleDebugSomeStoreBase</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored25ExampleDebugSomeStoreBaseE" title="stored::ExampleDebugSomeStoreBase::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Objects</span></span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase7ObjectsE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBase4rootE">
+<span id="_CPPv3N6stored25ExampleDebugSomeStoreBase4rootE"></span><span id="_CPPv2N6stored25ExampleDebugSomeStoreBase4rootE"></span><span id="stored::ExampleDebugSomeStoreBase::root"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1a35673e96faeee6709ab34221aca7396a"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored25ExampleDebugSomeStoreBaseE" title="stored::ExampleDebugSomeStoreBase"><span class="n"><span class="pre">ExampleDebugSomeStoreBase</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">root</span></span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase4rootE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>We are the root, as used by <code class="docutils literal notranslate"><span class="pre">STORE_CLASS</span></code>. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBase4selfE">
+<span id="_CPPv3N6stored25ExampleDebugSomeStoreBase4selfE"></span><span id="_CPPv2N6stored25ExampleDebugSomeStoreBase4selfE"></span><span id="stored::ExampleDebugSomeStoreBase::self"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1aa750cfc86dbff6c66045a3dc0f36da80"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored25ExampleDebugSomeStoreBaseE" title="stored::ExampleDebugSomeStoreBase"><span class="n"><span class="pre">ExampleDebugSomeStoreBase</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">self</span></span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase4selfE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Define <code class="docutils literal notranslate"><span class="pre">self</span></code> for <code class="docutils literal notranslate"><span class="pre">stored::store</span></code>. </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -543,10 +559,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored25ExampleDebugSomeStoreBase4listEvRR1F">
 <span id="_CPPv3I0EN6stored25ExampleDebugSomeStoreBase4listERR1F"></span><span id="_CPPv2I0EN6stored25ExampleDebugSomeStoreBase4listERR1F"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_debug_some_store_base_1a155c4c00c43c00def9d27667ed5986c9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored25ExampleDebugSomeStoreBase4listEvRR1F" title="stored::ExampleDebugSomeStoreBase::list::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">f</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored25ExampleDebugSomeStoreBase4listEvRR1F" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_debug_some_store_base_1aa8d6c78346a693f12ebd1e248e5d2ba6"><span class="std std-ref">longDirectory()</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -554,10 +570,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored25ExampleDebugSomeStoreBase4listEv1FPvPKc">
 <span id="_CPPv3I0EN6stored25ExampleDebugSomeStoreBase4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored25ExampleDebugSomeStoreBase4listE1FPvPKc"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_debug_some_store_base_1a8f5ec96dd2d9af613a673ab4bb7a7782"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored25ExampleDebugSomeStoreBase4listEv1FPvPKc" title="stored::ExampleDebugSomeStoreBase::list::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">f</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">arg</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefix</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored25ExampleDebugSomeStoreBase4listEv1FPvPKc" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_debug_some_store_base_1aa8d6c78346a693f12ebd1e248e5d2ba6"><span class="std std-ref">longDirectory()</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -592,6 +608,15 @@ public:
 <span id="_CPPv3I0EN6stored25ExampleDebugSomeStoreBase8variableEPKc6size_t"></span><span id="_CPPv2I0EN6stored25ExampleDebugSomeStoreBase8variableEPKc6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_debug_some_store_base_1aecc3d587d44a533840a1a7293301de8b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="cpp_types.html#_CPPv4I00_bEN6stored8VariableE" title="stored::Variable"><span class="n"><span class="pre">Variable</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored25ExampleDebugSomeStoreBase8variableE8VariableI1T14ImplementationEPKc6size_t" title="stored::ExampleDebugSomeStoreBase::variable::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase14ImplementationE" title="stored::ExampleDebugSomeStoreBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">variable</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">numeric_limits</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored25ExampleDebugSomeStoreBase8variableE8VariableI1T14ImplementationEPKc6size_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Finds a variable with the given name. </p>
 <p>The variable, when it exists, must have the given (fixed) type. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleDebugSomeStoreBase1iE">
+<span id="_CPPv3N6stored25ExampleDebugSomeStoreBase1iE"></span><span id="_CPPv2N6stored25ExampleDebugSomeStoreBase1iE"></span><span id="stored::ExampleDebugSomeStoreBase::i__impl::StoreVariable:Base.Implementation.int32_t.0u.4:"></span><span class="target" id="classstored_1_1_example_debug_some_store_base_1af5bfa089148d7ed3f25dfb59a92cec18"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase14ImplementationE" title="stored::ExampleDebugSomeStoreBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int32_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">i</span></span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleDebugSomeStoreBase1iE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>i </p>
 </dd></dl>
 
 </div>
@@ -658,52 +683,12 @@ public:
 <span id="_CPPv3N6stored21ExampleDebugSomeStoreE"></span><span id="_CPPv2N6stored21ExampleDebugSomeStoreE"></span><span id="stored::ExampleDebugSomeStore"></span><span class="target" id="classstored_1_1_example_debug_some_store"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored25ExampleDebugSomeStoreBaseE" title="stored::ExampleDebugSomeStoreBase"><span class="n"><span class="pre">ExampleDebugSomeStoreBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored21ExampleDebugSomeStoreE" title="stored::ExampleDebugSomeStore"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleDebugSomeStoreE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default <a class="reference internal" href="#classstored_1_1_example_debug_some_store_base"><span class="std std-ref">ExampleDebugSomeStoreBase</span></a> implementation. </p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleDebugSomeStore4baseE">
-<span id="_CPPv3N6stored21ExampleDebugSomeStore4baseE"></span><span id="_CPPv2N6stored21ExampleDebugSomeStore4baseE"></span><span id="stored::ExampleDebugSomeStore::base"></span><span class="target" id="classstored_1_1_example_debug_some_store_1a091bbc2a1b8714c5d88f83b3416afd6d"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored25ExampleDebugSomeStoreBaseE" title="stored::ExampleDebugSomeStoreBase"><span class="n"><span class="pre">ExampleDebugSomeStoreBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored21ExampleDebugSomeStoreE" title="stored::ExampleDebugSomeStore"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base</span></span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleDebugSomeStore4baseE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreEv">
 <span id="_CPPv3N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreEv"></span><span id="_CPPv2N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreEv"></span><span id="stored::ExampleDebugSomeStore::ExampleDebugSomeStore"></span><span class="target" id="classstored_1_1_example_debug_some_store_1a45f9f5dfd943888b9b7eaa2559b28a82"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default constructor. </p>
 </dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERR21ExampleDebugSomeStore">
-<span id="_CPPv3N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERR21ExampleDebugSomeStore"></span><span id="_CPPv2N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERR21ExampleDebugSomeStore"></span><span id="stored::ExampleDebugSomeStore::ExampleDebugSomeStore__ExampleDebugSomeStoreRR"></span><span class="target" id="classstored_1_1_example_debug_some_store_1aa5415fadfa11e99bef35557364d271ae"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERR21ExampleDebugSomeStore" title="stored::ExampleDebugSomeStore::ExampleDebugSomeStore"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERR21ExampleDebugSomeStore" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Default move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERK21ExampleDebugSomeStore">
-<span id="_CPPv3N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERK21ExampleDebugSomeStore"></span><span id="_CPPv2N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERK21ExampleDebugSomeStore"></span><span id="stored::ExampleDebugSomeStore::ExampleDebugSomeStore__ExampleDebugSomeStoreCR"></span><span class="target" id="classstored_1_1_example_debug_some_store_1a132bdd64756e5862831dbaa115f5aa43"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERK21ExampleDebugSomeStore" title="stored::ExampleDebugSomeStore::ExampleDebugSomeStore"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleDebugSomeStore21ExampleDebugSomeStoreERK21ExampleDebugSomeStore" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleDebugSomeStoreaSERR21ExampleDebugSomeStore">
-<span id="_CPPv3N6stored21ExampleDebugSomeStoreaSERR21ExampleDebugSomeStore"></span><span id="_CPPv2N6stored21ExampleDebugSomeStoreaSERR21ExampleDebugSomeStore"></span><span id="stored::ExampleDebugSomeStore::assign-operator__ExampleDebugSomeStoreRR"></span><span class="target" id="classstored_1_1_example_debug_some_store_1a5dcca6fe344195fc994d84c009306a7b"></span><a class="reference internal" href="#_CPPv4N6stored21ExampleDebugSomeStoreE" title="stored::ExampleDebugSomeStore"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored21ExampleDebugSomeStoreE" title="stored::ExampleDebugSomeStore"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleDebugSomeStoreaSERR21ExampleDebugSomeStore" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleDebugSomeStoreaSERK21ExampleDebugSomeStore">
-<span id="_CPPv3N6stored21ExampleDebugSomeStoreaSERK21ExampleDebugSomeStore"></span><span id="_CPPv2N6stored21ExampleDebugSomeStoreaSERK21ExampleDebugSomeStore"></span><span id="stored::ExampleDebugSomeStore::assign-operator__ExampleDebugSomeStoreCR"></span><span class="target" id="classstored_1_1_example_debug_some_store_1a10c8320b0c253dc5f87385ff75eecdc9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored21ExampleDebugSomeStoreE" title="stored::ExampleDebugSomeStore"><span class="n"><span class="pre">ExampleDebugSomeStore</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleDebugSomeStoreaSERK21ExampleDebugSomeStore" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
-</dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
-<dl>
-<dt class="sig sig-object cpp">
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">::stored::ExampleDebugSomeStoreBase&lt;</span> <span class="pre">ExampleDebugSomeStore</span> <span class="pre">&gt;</span></dt>
-</dl>
 
 </div>
 </dd></dl>
@@ -743,8 +728,8 @@ public:
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_debug_another_store"><span class="std std-ref">stored::ExampleDebugAnotherStore</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleDebugAnotherStore : public STORE_BASE_CLASS(ExampleDebugAnotherStoreBase, ExampleDebugAnotherStore) {
-    STORE_CLASS_BODY(ExampleDebugAnotherStoreBase, ExampleDebugAnotherStore)
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleDebugAnotherStore : public stored::store&lt;ExampleDebugAnotherStore, ExampleDebugAnotherStoreBase&gt;::type {
+    STORE_CLASS(ExampleDebugAnotherStore, ExampleDebugAnotherStoreBase)
 public:
     // Your class implementation, such as:
     ExampleDebugAnotherStore() is_default
@@ -753,12 +738,15 @@ public:
 </pre></div>
 </div>
 </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_debug_another_store"><span class="std std-ref">stored::ExampleDebugAnotherStore</span></a> </p>
-</dd>
-<dt><strong>See</strong></dt><dd><p>stored::ExampleDebugAnotherStoreData </p>
-</dd>
-</dl>
+<p>Some compilers or tools may get confused by the inheritance using <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> or <code class="docutils literal notranslate"><span class="pre">stored::store_t</span></code>. Alternatively, use <code class="docutils literal notranslate"><span class="pre">STORE_T(...)</span></code> instead, providing the template parameters of <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> as macro arguments.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_example_debug_another_store"><span class="std std-ref">stored::ExampleDebugAnotherStore</span></a> </p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>stored::ExampleDebugAnotherStoreData </p>
+</div>
 </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -802,10 +790,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBase3KeyE">
 <span id="_CPPv3N6stored28ExampleDebugAnotherStoreBase3KeyE"></span><span id="_CPPv2N6stored28ExampleDebugAnotherStoreBase3KeyE"></span><span id="stored::ExampleDebugAnotherStoreBase::Key"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1af312c2fc20cef8708c707de015c87551"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">uintptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Key</span></span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase3KeyE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Type of a key. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_debug_another_store_base_1aae786687f6710bbc909cc39b8733b6cc"><span class="std std-ref">bufferToKey()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_example_debug_another_store_base_1aae786687f6710bbc909cc39b8733b6cc"><span class="std std-ref">bufferToKey()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -819,6 +807,18 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBase7ObjectsE">
 <span id="_CPPv3N6stored28ExampleDebugAnotherStoreBase7ObjectsE"></span><span id="_CPPv2N6stored28ExampleDebugAnotherStoreBase7ObjectsE"></span><span id="stored::ExampleDebugAnotherStoreBase::Objects"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1ae1fceb12a1e9d82a242a2450a879e376"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN6stored31ExampleDebugAnotherStoreObjectsE" title="stored::ExampleDebugAnotherStoreObjects"><span class="n"><span class="pre">ExampleDebugAnotherStoreObjects</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBaseE" title="stored::ExampleDebugAnotherStoreBase"><span class="n"><span class="pre">ExampleDebugAnotherStoreBase</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBaseE" title="stored::ExampleDebugAnotherStoreBase::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Objects</span></span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase7ObjectsE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBase4rootE">
+<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBase4rootE"></span><span id="_CPPv2N6stored28ExampleDebugAnotherStoreBase4rootE"></span><span id="stored::ExampleDebugAnotherStoreBase::root"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1a3e154381501a4050e23aab853b42643b"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBaseE" title="stored::ExampleDebugAnotherStoreBase"><span class="n"><span class="pre">ExampleDebugAnotherStoreBase</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">root</span></span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase4rootE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>We are the root, as used by <code class="docutils literal notranslate"><span class="pre">STORE_CLASS</span></code>. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBase4selfE">
+<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBase4selfE"></span><span id="_CPPv2N6stored28ExampleDebugAnotherStoreBase4selfE"></span><span id="stored::ExampleDebugAnotherStoreBase::self"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1a5b35c61ad99ee3bd05b3db94a10a8c3d"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBaseE" title="stored::ExampleDebugAnotherStoreBase"><span class="n"><span class="pre">ExampleDebugAnotherStoreBase</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">self</span></span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase4selfE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Define <code class="docutils literal notranslate"><span class="pre">self</span></code> for <code class="docutils literal notranslate"><span class="pre">stored::store</span></code>. </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -866,10 +866,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored28ExampleDebugAnotherStoreBase4listEvRR1F">
 <span id="_CPPv3I0EN6stored28ExampleDebugAnotherStoreBase4listERR1F"></span><span id="_CPPv2I0EN6stored28ExampleDebugAnotherStoreBase4listERR1F"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_debug_another_store_base_1a3ad40840e43443decf6e8ebc362284c2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBase4listEvRR1F" title="stored::ExampleDebugAnotherStoreBase::list::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">f</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBase4listEvRR1F" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_debug_another_store_base_1aae4f1abff3d9cbea60d677a961a5be2b"><span class="std std-ref">longDirectory()</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -877,10 +877,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored28ExampleDebugAnotherStoreBase4listEv1FPvPKc">
 <span id="_CPPv3I0EN6stored28ExampleDebugAnotherStoreBase4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored28ExampleDebugAnotherStoreBase4listE1FPvPKc"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_debug_another_store_base_1afdb0ca70e5023e63cf293a9545e37e09"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBase4listEv1FPvPKc" title="stored::ExampleDebugAnotherStoreBase::list::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">f</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">arg</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefix</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBase4listEv1FPvPKc" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_debug_another_store_base_1aae4f1abff3d9cbea60d677a961a5be2b"><span class="std std-ref">longDirectory()</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -915,6 +915,15 @@ public:
 <span id="_CPPv3I0EN6stored28ExampleDebugAnotherStoreBase8variableEPKc6size_t"></span><span id="_CPPv2I0EN6stored28ExampleDebugAnotherStoreBase8variableEPKc6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_debug_another_store_base_1a8299a95c8893c0452579208766612f04"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="cpp_types.html#_CPPv4I00_bEN6stored8VariableE" title="stored::Variable"><span class="n"><span class="pre">Variable</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBase8variableE8VariableI1T14ImplementationEPKc6size_t" title="stored::ExampleDebugAnotherStoreBase::variable::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase14ImplementationE" title="stored::ExampleDebugAnotherStoreBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">variable</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">numeric_limits</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBase8variableE8VariableI1T14ImplementationEPKc6size_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Finds a variable with the given name. </p>
 <p>The variable, when it exists, must have the given (fixed) type. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored28ExampleDebugAnotherStoreBase1jE">
+<span id="_CPPv3N6stored28ExampleDebugAnotherStoreBase1jE"></span><span id="_CPPv2N6stored28ExampleDebugAnotherStoreBase1jE"></span><span id="stored::ExampleDebugAnotherStoreBase::j__impl::StoreVariable:Base.Implementation.int32_t.0u.4:"></span><span class="target" id="classstored_1_1_example_debug_another_store_base_1aacbbd684787041a163f2dc13c710e496"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase14ImplementationE" title="stored::ExampleDebugAnotherStoreBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int32_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">j</span></span></span><a class="headerlink" href="#_CPPv4N6stored28ExampleDebugAnotherStoreBase1jE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>j </p>
 </dd></dl>
 
 </div>
@@ -981,52 +990,12 @@ public:
 <span id="_CPPv3N6stored24ExampleDebugAnotherStoreE"></span><span id="_CPPv2N6stored24ExampleDebugAnotherStoreE"></span><span id="stored::ExampleDebugAnotherStore"></span><span class="target" id="classstored_1_1_example_debug_another_store"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBaseE" title="stored::ExampleDebugAnotherStoreBase"><span class="n"><span class="pre">ExampleDebugAnotherStoreBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored24ExampleDebugAnotherStoreE" title="stored::ExampleDebugAnotherStore"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored24ExampleDebugAnotherStoreE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default <a class="reference internal" href="#classstored_1_1_example_debug_another_store_base"><span class="std std-ref">ExampleDebugAnotherStoreBase</span></a> implementation. </p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored24ExampleDebugAnotherStore4baseE">
-<span id="_CPPv3N6stored24ExampleDebugAnotherStore4baseE"></span><span id="_CPPv2N6stored24ExampleDebugAnotherStore4baseE"></span><span id="stored::ExampleDebugAnotherStore::base"></span><span class="target" id="classstored_1_1_example_debug_another_store_1a8f4539d220e79113f277d675fbd9e85f"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored28ExampleDebugAnotherStoreBaseE" title="stored::ExampleDebugAnotherStoreBase"><span class="n"><span class="pre">ExampleDebugAnotherStoreBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored24ExampleDebugAnotherStoreE" title="stored::ExampleDebugAnotherStore"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base</span></span></span><a class="headerlink" href="#_CPPv4N6stored24ExampleDebugAnotherStore4baseE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreEv">
 <span id="_CPPv3N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreEv"></span><span id="_CPPv2N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreEv"></span><span id="stored::ExampleDebugAnotherStore::ExampleDebugAnotherStore"></span><span class="target" id="classstored_1_1_example_debug_another_store_1a17233813d4583150d1bf1cfe7ec60ca1"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default constructor. </p>
 </dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERR24ExampleDebugAnotherStore">
-<span id="_CPPv3N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERR24ExampleDebugAnotherStore"></span><span id="_CPPv2N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERR24ExampleDebugAnotherStore"></span><span id="stored::ExampleDebugAnotherStore::ExampleDebugAnotherStore__ExampleDebugAnotherStoreRR"></span><span class="target" id="classstored_1_1_example_debug_another_store_1a01bdf53575f63a3a8b978adedcb02299"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERR24ExampleDebugAnotherStore" title="stored::ExampleDebugAnotherStore::ExampleDebugAnotherStore"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERR24ExampleDebugAnotherStore" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Default move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERK24ExampleDebugAnotherStore">
-<span id="_CPPv3N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERK24ExampleDebugAnotherStore"></span><span id="_CPPv2N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERK24ExampleDebugAnotherStore"></span><span id="stored::ExampleDebugAnotherStore::ExampleDebugAnotherStore__ExampleDebugAnotherStoreCR"></span><span class="target" id="classstored_1_1_example_debug_another_store_1af5f1d3e19bebc2665624c59a5fc35b5b"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERK24ExampleDebugAnotherStore" title="stored::ExampleDebugAnotherStore::ExampleDebugAnotherStore"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored24ExampleDebugAnotherStore24ExampleDebugAnotherStoreERK24ExampleDebugAnotherStore" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored24ExampleDebugAnotherStoreaSERR24ExampleDebugAnotherStore">
-<span id="_CPPv3N6stored24ExampleDebugAnotherStoreaSERR24ExampleDebugAnotherStore"></span><span id="_CPPv2N6stored24ExampleDebugAnotherStoreaSERR24ExampleDebugAnotherStore"></span><span id="stored::ExampleDebugAnotherStore::assign-operator__ExampleDebugAnotherStoreRR"></span><span class="target" id="classstored_1_1_example_debug_another_store_1a68611133223276a598b9f359e18b7a15"></span><a class="reference internal" href="#_CPPv4N6stored24ExampleDebugAnotherStoreE" title="stored::ExampleDebugAnotherStore"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored24ExampleDebugAnotherStoreE" title="stored::ExampleDebugAnotherStore"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored24ExampleDebugAnotherStoreaSERR24ExampleDebugAnotherStore" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored24ExampleDebugAnotherStoreaSERK24ExampleDebugAnotherStore">
-<span id="_CPPv3N6stored24ExampleDebugAnotherStoreaSERK24ExampleDebugAnotherStore"></span><span id="_CPPv2N6stored24ExampleDebugAnotherStoreaSERK24ExampleDebugAnotherStore"></span><span id="stored::ExampleDebugAnotherStore::assign-operator__ExampleDebugAnotherStoreCR"></span><span class="target" id="classstored_1_1_example_debug_another_store_1afb4259ad912a7b19640d1c65983454fa"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored24ExampleDebugAnotherStoreE" title="stored::ExampleDebugAnotherStore"><span class="n"><span class="pre">ExampleDebugAnotherStore</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored24ExampleDebugAnotherStoreaSERK24ExampleDebugAnotherStore" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
-</dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
-<dl>
-<dt class="sig sig-object cpp">
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">::stored::ExampleDebugAnotherStoreBase&lt;</span> <span class="pre">ExampleDebugAnotherStore</span> <span class="pre">&gt;</span></dt>
-</dl>
 
 </div>
 </dd></dl>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Protocol &mdash; libstored 1.1.0 documentation</title>
+  <title>Protocol &mdash; libstored 1.1.1-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.1.0
+                1.1.1.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -251,12 +251,13 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dt class="sig sig-object cpp" id="_CPPv4N6stored16AsciiEscapeLayer16AsciiEscapeLayerEbP13ProtocolLayerP13ProtocolLayer">
 <span id="_CPPv3N6stored16AsciiEscapeLayer16AsciiEscapeLayerEbP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored16AsciiEscapeLayer16AsciiEscapeLayerEbP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::AsciiEscapeLayer::AsciiEscapeLayer__b.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_ascii_escape_layer_1ad98a4887d4b5c0d8559c0b02e4cad982"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AsciiEscapeLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">all</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16AsciiEscapeLayer16AsciiEscapeLayerEbP13ProtocolLayerP13ProtocolLayer" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Constructor. </p>
+<p>
+When <code class="docutils literal notranslate"><span class="pre">all</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>, convert all control characters, instead of only those that conflict with other protocols </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>up</strong> – the layer above, which receives our decoded frames </p></li>
-<li><p><strong>down</strong> – the layer below, which receives our encoded frames </p></li>
-<li><p><strong>all</strong> – when <code class="docutils literal notranslate"><span class="pre">true</span></code>, convert all control characters, instead of only those that conflict with other protocols </p></li>
+<li><p><strong>down</strong> – the layer below, which receives our encoded frames</p></li>
 </ul>
 </dd>
 </dl>
@@ -825,10 +826,10 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <span id="_CPPv3N6stored13DebugZmqLayer13DebugZmqLayerEPviP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored13DebugZmqLayer13DebugZmqLayerEPviP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::DebugZmqLayer::DebugZmqLayer__voidP.i.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_debug_zmq_layer_1a53d99c8a2bf36828686aec34b9175999"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DebugZmqLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">context</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">port</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored13DebugZmqLayerUt2_3611DefaultPortE" title="stored::DebugZmqLayer::[anonymous]::DefaultPort"><span class="n"><span class="pre">DefaultPort</span></span></a>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored13DebugZmqLayer13DebugZmqLayerEPviP13ProtocolLayerP13ProtocolLayer" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Constructor. </p>
 <p>The given <code class="docutils literal notranslate"><span class="pre">port</span></code> used for a REQ/REP socket over TCP. This is the listening side, where a client like the <code class="docutils literal notranslate"><span class="pre">libstored.gui</span></code> can connect to.</p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -1050,10 +1051,10 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dd><p>Encode a (partial) frame and forward it to the lower layer. </p>
 <p>The given buffer will not be modified. A new buffer is allocated when required.</p>
 <p>When the FIFO is full and new messages are dropped, the <a class="reference internal" href="#classstored_1_1_fifo_loopback1_1ab6ab82116881de5dc3eb6c9260ab1d6c"><span class="std std-ref">overflow()</span></a> is invoked. As long as it returns <code class="docutils literal notranslate"><span class="pre">true</span></code>, the FIFO push is retried.</p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_fifo_loopback1_1ac47f03a2f805e53dadcd2b19c4ecde98"><span class="std std-ref">setOverflowHandler()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_fifo_loopback1_1ac47f03a2f805e53dadcd2b19c4ecde98"><span class="std std-ref">setOverflowHandler()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -1079,10 +1080,10 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <span id="_CPPv3N6stored13FifoLoopback18overflowEv"></span><span id="_CPPv2N6stored13FifoLoopback18overflowEv"></span><span id="stored::FifoLoopback1::overflow"></span><span class="target" id="classstored_1_1_fifo_loopback1_1ab6ab82116881de5dc3eb6c9260ab1d6c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">overflow</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored13FifoLoopback18overflowEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Invoke overflow handler. </p>
 <p>If no callback is set, <a class="reference internal" href="#classstored_1_1_polled_layer_1a5f93b36636abab8f4cacb5f1b4fbcd82"><span class="std std-ref">lastError()</span></a> is set to <code class="docutils literal notranslate"><span class="pre">ENOMEM</span></code>, and <code class="docutils literal notranslate"><span class="pre">false</span></code> is returned. This flag is only reset by <a class="reference internal" href="#classstored_1_1_fifo_loopback1_1abab48eaa4ab02b0fab6489aca3000ddc"><span class="std std-ref">reset()</span></a>.</p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_fifo_loopback1_1ac47f03a2f805e53dadcd2b19c4ecde98"><span class="std std-ref">setOverflowHandler()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_fifo_loopback1_1ac47f03a2f805e53dadcd2b19c4ecde98"><span class="std std-ref">setOverflowHandler()</span></a> </p>
+</div>
 </p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1440,10 +1441,10 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <span id="_CPPv3N6stored10PrintLayer10PrintLayerEP4FILEPKcP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored10PrintLayer10PrintLayerEP4FILEPKcP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::PrintLayer::PrintLayer__FILEP.cCP.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_print_layer_1a7ed0289ba08ea88ce711354ffef603a6"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintLayer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">FILE</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">f</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">stdout</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored10PrintLayer10PrintLayerEP4FILEPKcP13ProtocolLayerP13ProtocolLayer" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Constructor to print all decoding/encoding messages to the given <code class="docutils literal notranslate"><span class="pre">FILE</span></code>. </p>
 <p>If <code class="docutils literal notranslate"><span class="pre">f</span></code> is <code class="docutils literal notranslate"><span class="pre">nullptr</span></code>, printing is suppressed. The name is used as prefix of the printed messages.</p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_print_layer_1aea312a1d43697789e614a761927288f9"><span class="std std-ref">setFile()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_print_layer_1aea312a1d43697789e614a761927288f9"><span class="std std-ref">setFile()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -1732,10 +1733,10 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <span id="_CPPv3N6stored12SyncZmqLayer12SyncZmqLayerEPvPKcbP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored12SyncZmqLayer12SyncZmqLayerEPvPKcbP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::SyncZmqLayer::SyncZmqLayer__voidP.cCP.b.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_sync_zmq_layer_1abf8d1c6a87614376aaa82230ba9e5a56"></span><span class="sig-name descname"><span class="n"><span class="pre">SyncZmqLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">context</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">endpoint</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">listen</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12SyncZmqLayer12SyncZmqLayerEPvPKcbP13ProtocolLayerP13ProtocolLayer" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Constructor. </p>
 <p>The given <code class="docutils literal notranslate"><span class="pre">endpoint</span></code> is used for a PAIR socket. If <code class="docutils literal notranslate"><span class="pre">listen</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>, it binds to the endpoint, otherwise it connects to it.</p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -2045,10 +2046,10 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dd><p>Checks if a full message has been transmitted. </p>
 <p>This function can be used to determine if this layer transmitted anything. For example, when a response is decoded, this function can be used to check if anything has sent back, or the message was dropped. Or, when <a class="reference internal" href="#classstored_1_1_arq_layer_1abf63088fb9952dcc6599a023d0491d12"><span class="std std-ref">flush()</span></a> is called, this flag can be used to check if anything was actually flushed.</p>
 <p>To use the function, first call <a class="reference internal" href="#classstored_1_1_arq_layer_1ad385593c1549539ec000943046860404"><span class="std std-ref">resetDidTransmit()</span></a>, then execute the code you want to check, and then check <a class="reference internal" href="#classstored_1_1_arq_layer_1a72a34dd87ec3fcee83db2a44f7e8a8e5"><span class="std std-ref">didTransmit()</span></a>.</p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_arq_layer_1ad385593c1549539ec000943046860404"><span class="std std-ref">resetDidTransmit()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_arq_layer_1ad385593c1549539ec000943046860404"><span class="std std-ref">resetDidTransmit()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -2100,10 +2101,10 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dt class="sig sig-object cpp" id="_CPPv4N6stored8ArqLayer16resetDidTransmitEv">
 <span id="_CPPv3N6stored8ArqLayer16resetDidTransmitEv"></span><span id="_CPPv2N6stored8ArqLayer16resetDidTransmitEv"></span><span id="stored::ArqLayer::resetDidTransmit"></span><span class="target" id="classstored_1_1_arq_layer_1ad385593c1549539ec000943046860404"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">resetDidTransmit</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8ArqLayer16resetDidTransmitEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Reset the flag for <a class="reference internal" href="#classstored_1_1_arq_layer_1a72a34dd87ec3fcee83db2a44f7e8a8e5"><span class="std std-ref">didTransmit()</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_arq_layer_1a72a34dd87ec3fcee83db2a44f7e8a8e5"><span class="std std-ref">didTransmit()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_arq_layer_1a72a34dd87ec3fcee83db2a44f7e8a8e5"><span class="std std-ref">didTransmit()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 

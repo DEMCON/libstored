@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>8_sync &mdash; libstored 1.1.0 documentation</title>
+  <title>8_sync &mdash; libstored 1.1.1-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.1.0
+                1.1.1.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -71,6 +71,7 @@
 <li class="toctree-l2"><a class="reference internal" href="example_components.html">components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_concurrency.html">concurrency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_control.html">control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_meta.html">meta</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_fibered.html">fibered</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_zmqserver.html">zmqserver</a></li>
@@ -406,8 +407,8 @@ bool b
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_sync1"><span class="std std-ref">stored::ExampleSync1</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleSync1 : public STORE_BASE_CLASS(ExampleSync1Base, ExampleSync1) {
-    STORE_CLASS_BODY(ExampleSync1Base, ExampleSync1)
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleSync1 : public stored::store&lt;ExampleSync1, ExampleSync1Base&gt;::type {
+    STORE_CLASS(ExampleSync1, ExampleSync1Base)
 public:
     // Your class implementation, such as:
     ExampleSync1() is_default
@@ -416,14 +417,16 @@ public:
 </pre></div>
 </div>
 </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_sync1"><span class="std std-ref">stored::ExampleSync1</span></a> </p>
-</dd>
-<dt><strong>See</strong></dt><dd><p>stored::ExampleSync1Data </p>
-</dd>
-</dl>
+<p>Some compilers or tools may get confused by the inheritance using <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> or <code class="docutils literal notranslate"><span class="pre">stored::store_t</span></code>. Alternatively, use <code class="docutils literal notranslate"><span class="pre">STORE_T(...)</span></code> instead, providing the template parameters of <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> as macro arguments.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_example_sync1"><span class="std std-ref">stored::ExampleSync1</span></a> </p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>stored::ExampleSync1Data </p>
+</div>
 </p>
-<p>Subclassed by <a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_synchronizable"><span class="std std-ref">stored::Synchronizable&lt; ::stored::ExampleSync1Base&lt; ExampleSync1 &gt; &gt;</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
@@ -466,10 +469,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleSync1Base3KeyE">
 <span id="_CPPv3N6stored16ExampleSync1Base3KeyE"></span><span id="_CPPv2N6stored16ExampleSync1Base3KeyE"></span><span id="stored::ExampleSync1Base::Key"></span><span class="target" id="classstored_1_1_example_sync1_base_1a6df1a7940f251a502566a7bf6069da63"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">uintptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Key</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base3KeyE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Type of a key. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_sync1_base_1a28115b3d64382db631bf158fa926f2f3"><span class="std std-ref">bufferToKey()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_example_sync1_base_1a28115b3d64382db631bf158fa926f2f3"><span class="std std-ref">bufferToKey()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -483,6 +486,18 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleSync1Base7ObjectsE">
 <span id="_CPPv3N6stored16ExampleSync1Base7ObjectsE"></span><span id="_CPPv2N6stored16ExampleSync1Base7ObjectsE"></span><span id="stored::ExampleSync1Base::Objects"></span><span class="target" id="classstored_1_1_example_sync1_base_1ae47009919883424ace9141d1b43b886a"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleSync1ObjectsE" title="stored::ExampleSync1Objects"><span class="n"><span class="pre">ExampleSync1Objects</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1BaseE" title="stored::ExampleSync1Base"><span class="n"><span class="pre">ExampleSync1Base</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1BaseE" title="stored::ExampleSync1Base::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Objects</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base7ObjectsE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleSync1Base4rootE">
+<span id="_CPPv3N6stored16ExampleSync1Base4rootE"></span><span id="_CPPv2N6stored16ExampleSync1Base4rootE"></span><span id="stored::ExampleSync1Base::root"></span><span class="target" id="classstored_1_1_example_sync1_base_1a1365acf9d2f5ba527e4150fc6ceda710"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1BaseE" title="stored::ExampleSync1Base"><span class="n"><span class="pre">ExampleSync1Base</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">root</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base4rootE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>We are the root, as used by <code class="docutils literal notranslate"><span class="pre">STORE_CLASS</span></code>. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleSync1Base4selfE">
+<span id="_CPPv3N6stored16ExampleSync1Base4selfE"></span><span id="_CPPv2N6stored16ExampleSync1Base4selfE"></span><span id="stored::ExampleSync1Base::self"></span><span class="target" id="classstored_1_1_example_sync1_base_1acc426afad64ee6256109bba0b135e628"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1BaseE" title="stored::ExampleSync1Base"><span class="n"><span class="pre">ExampleSync1Base</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">self</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base4selfE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Define <code class="docutils literal notranslate"><span class="pre">self</span></code> for <code class="docutils literal notranslate"><span class="pre">stored::store</span></code>. </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -536,10 +551,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored16ExampleSync1Base4listEvRR1F">
 <span id="_CPPv3I0EN6stored16ExampleSync1Base4listERR1F"></span><span id="_CPPv2I0EN6stored16ExampleSync1Base4listERR1F"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_sync1_base_1af603d0e7e3621015d9534c36398cd491"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1Base4listEvRR1F" title="stored::ExampleSync1Base::list::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">f</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleSync1Base4listEvRR1F" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_sync1_base_1a310a10eb9c40ae8e351866233e3962df"><span class="std std-ref">longDirectory()</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -547,10 +562,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored16ExampleSync1Base4listEv1FPvPKc">
 <span id="_CPPv3I0EN6stored16ExampleSync1Base4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored16ExampleSync1Base4listE1FPvPKc"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_sync1_base_1a8a1c3e8d6ea0fd778873d2251d46df44"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1Base4listEv1FPvPKc" title="stored::ExampleSync1Base::list::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">f</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">arg</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefix</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleSync1Base4listEv1FPvPKc" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_sync1_base_1a310a10eb9c40ae8e351866233e3962df"><span class="std std-ref">longDirectory()</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -585,6 +600,27 @@ public:
 <span id="_CPPv3I0EN6stored16ExampleSync1Base8variableEPKc6size_t"></span><span id="_CPPv2I0EN6stored16ExampleSync1Base8variableEPKc6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_sync1_base_1af9a58e8b7e7ed691e64836a04607af5c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="cpp_types.html#_CPPv4I00_bEN6stored8VariableE" title="stored::Variable"><span class="n"><span class="pre">Variable</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1Base8variableE8VariableI1T14ImplementationEPKc6size_t" title="stored::ExampleSync1Base::variable::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync1Base14ImplementationE" title="stored::ExampleSync1Base::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">variable</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">numeric_limits</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleSync1Base8variableE8VariableI1T14ImplementationEPKc6size_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Finds a variable with the given name. </p>
 <p>The variable, when it exists, must have the given (fixed) type. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleSync1Base1dE">
+<span id="_CPPv3N6stored16ExampleSync1Base1dE"></span><span id="_CPPv2N6stored16ExampleSync1Base1dE"></span><span id="stored::ExampleSync1Base::d__impl::StoreVariable:Base.Implementation.double.0u.8:"></span><span class="target" id="classstored_1_1_example_sync1_base_1aab6d6abec14903de193502104eef21cf"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync1Base14ImplementationE" title="stored::ExampleSync1Base::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">8</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base1dE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>d </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleSync1Base1iE">
+<span id="_CPPv3N6stored16ExampleSync1Base1iE"></span><span id="_CPPv2N6stored16ExampleSync1Base1iE"></span><span id="stored::ExampleSync1Base::i__impl::StoreVariable:Base.Implementation.int32_t.8u.4:"></span><span class="target" id="classstored_1_1_example_sync1_base_1a50d5a5093774f1be6e46b4ea8cfc3404"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync1Base14ImplementationE" title="stored::ExampleSync1Base::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int32_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">8u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">i</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base1iE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>i </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleSync1Base17sync_ExampleSync2E">
+<span id="_CPPv3N6stored16ExampleSync1Base17sync_ExampleSync2E"></span><span id="_CPPv2N6stored16ExampleSync1Base17sync_ExampleSync2E"></span><span id="stored::ExampleSync1Base::sync_ExampleSync2__impl::StoreFunction:Base.Implementation.ExampleSync1FunctionMap.1u:"></span><span class="target" id="classstored_1_1_example_sync1_base_1aadc7566e9534b1ab604fae521f2b65a8"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreFunction</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync1Base14ImplementationE" title="stored::ExampleSync1Base::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">ExampleSync1FunctionMap</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1u</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sync_ExampleSync2</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base17sync_ExampleSync2E" title="Permalink to this definition"></a><br /></dt>
+<dd><p>sync <a class="reference internal" href="#classstored_1_1_example_sync2"><span class="std std-ref">ExampleSync2</span></a> </p>
 </dd></dl>
 
 </div>
@@ -651,52 +687,12 @@ public:
 <span id="_CPPv3N6stored12ExampleSync1E"></span><span id="_CPPv2N6stored12ExampleSync1E"></span><span id="stored::ExampleSync1"></span><span class="target" id="classstored_1_1_example_sync1"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleSync1</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1BaseE" title="stored::ExampleSync1Base"><span class="n"><span class="pre">ExampleSync1Base</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync1E" title="stored::ExampleSync1"><span class="n"><span class="pre">ExampleSync1</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleSync1E" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default <a class="reference internal" href="#classstored_1_1_example_sync1_base"><span class="std std-ref">ExampleSync1Base</span></a> implementation. </p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleSync14baseE">
-<span id="_CPPv3N6stored12ExampleSync14baseE"></span><span id="_CPPv2N6stored12ExampleSync14baseE"></span><span id="stored::ExampleSync1::base"></span><span class="target" id="classstored_1_1_example_sync1_1ad1abdfa225b3b5b2c8bc334c4d362b58"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync1BaseE" title="stored::ExampleSync1Base"><span class="n"><span class="pre">ExampleSync1Base</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync1E" title="stored::ExampleSync1"><span class="n"><span class="pre">ExampleSync1</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base</span></span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleSync14baseE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleSync112ExampleSync1Ev">
 <span id="_CPPv3N6stored12ExampleSync112ExampleSync1Ev"></span><span id="_CPPv2N6stored12ExampleSync112ExampleSync1Ev"></span><span id="stored::ExampleSync1::ExampleSync1"></span><span class="target" id="classstored_1_1_example_sync1_1a70103477f0c116b2b6581eef080bfe5f"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleSync1</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleSync112ExampleSync1Ev" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default constructor. </p>
 </dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleSync112ExampleSync1ERR12ExampleSync1">
-<span id="_CPPv3N6stored12ExampleSync112ExampleSync1ERR12ExampleSync1"></span><span id="_CPPv2N6stored12ExampleSync112ExampleSync1ERR12ExampleSync1"></span><span id="stored::ExampleSync1::ExampleSync1__ExampleSync1RR"></span><span class="target" id="classstored_1_1_example_sync1_1af8431908d7cff32fb0c3484a244ca92a"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleSync1</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync112ExampleSync1ERR12ExampleSync1" title="stored::ExampleSync1::ExampleSync1"><span class="n"><span class="pre">ExampleSync1</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleSync112ExampleSync1ERR12ExampleSync1" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Default move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleSync112ExampleSync1ERK12ExampleSync1">
-<span id="_CPPv3N6stored12ExampleSync112ExampleSync1ERK12ExampleSync1"></span><span id="_CPPv2N6stored12ExampleSync112ExampleSync1ERK12ExampleSync1"></span><span id="stored::ExampleSync1::ExampleSync1__ExampleSync1CR"></span><span class="target" id="classstored_1_1_example_sync1_1acdffd4bbd326aeea7643516a42e8a88e"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleSync1</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync112ExampleSync1ERK12ExampleSync1" title="stored::ExampleSync1::ExampleSync1"><span class="n"><span class="pre">ExampleSync1</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleSync112ExampleSync1ERK12ExampleSync1" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleSync1aSERR12ExampleSync1">
-<span id="_CPPv3N6stored12ExampleSync1aSERR12ExampleSync1"></span><span id="_CPPv2N6stored12ExampleSync1aSERR12ExampleSync1"></span><span id="stored::ExampleSync1::assign-operator__ExampleSync1RR"></span><span class="target" id="classstored_1_1_example_sync1_1a59c877e336c9b38a2c5720c6047d0fb7"></span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync1E" title="stored::ExampleSync1"><span class="n"><span class="pre">ExampleSync1</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync1E" title="stored::ExampleSync1"><span class="n"><span class="pre">ExampleSync1</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleSync1aSERR12ExampleSync1" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleSync1aSERK12ExampleSync1">
-<span id="_CPPv3N6stored12ExampleSync1aSERK12ExampleSync1"></span><span id="_CPPv2N6stored12ExampleSync1aSERK12ExampleSync1"></span><span id="stored::ExampleSync1::assign-operator__ExampleSync1CR"></span><span class="target" id="classstored_1_1_example_sync1_1a2cc14cd4f69a4bb0fa5b2227d630d56e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync1E" title="stored::ExampleSync1"><span class="n"><span class="pre">ExampleSync1</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleSync1aSERK12ExampleSync1" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
-</dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
-<dl>
-<dt class="sig sig-object cpp">
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">::stored::ExampleSync1Base&lt;</span> <span class="pre">ExampleSync1</span> <span class="pre">&gt;</span></dt>
-</dl>
 
 </div>
 </dd></dl>
@@ -742,8 +738,8 @@ public:
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_sync2"><span class="std std-ref">stored::ExampleSync2</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleSync2 : public STORE_BASE_CLASS(ExampleSync2Base, ExampleSync2) {
-    STORE_CLASS_BODY(ExampleSync2Base, ExampleSync2)
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleSync2 : public stored::store&lt;ExampleSync2, ExampleSync2Base&gt;::type {
+    STORE_CLASS(ExampleSync2, ExampleSync2Base)
 public:
     // Your class implementation, such as:
     ExampleSync2() is_default
@@ -752,14 +748,16 @@ public:
 </pre></div>
 </div>
 </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_sync2"><span class="std std-ref">stored::ExampleSync2</span></a> </p>
-</dd>
-<dt><strong>See</strong></dt><dd><p>stored::ExampleSync2Data </p>
-</dd>
-</dl>
+<p>Some compilers or tools may get confused by the inheritance using <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> or <code class="docutils literal notranslate"><span class="pre">stored::store_t</span></code>. Alternatively, use <code class="docutils literal notranslate"><span class="pre">STORE_T(...)</span></code> instead, providing the template parameters of <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> as macro arguments.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_example_sync2"><span class="std std-ref">stored::ExampleSync2</span></a> </p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>stored::ExampleSync2Data </p>
+</div>
 </p>
-<p>Subclassed by <a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_synchronizable"><span class="std std-ref">stored::Synchronizable&lt; ::stored::ExampleSync2Base&lt; ExampleSync2 &gt; &gt;</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
@@ -802,10 +800,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleSync2Base3KeyE">
 <span id="_CPPv3N6stored16ExampleSync2Base3KeyE"></span><span id="_CPPv2N6stored16ExampleSync2Base3KeyE"></span><span id="stored::ExampleSync2Base::Key"></span><span class="target" id="classstored_1_1_example_sync2_base_1a60bfcf74a2e1a6b68790eb89226fef0d"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">uintptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Key</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2Base3KeyE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Type of a key. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_sync2_base_1a77ff42de24a3643448b63688155be195"><span class="std std-ref">bufferToKey()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_example_sync2_base_1a77ff42de24a3643448b63688155be195"><span class="std std-ref">bufferToKey()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -819,6 +817,18 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleSync2Base7ObjectsE">
 <span id="_CPPv3N6stored16ExampleSync2Base7ObjectsE"></span><span id="_CPPv2N6stored16ExampleSync2Base7ObjectsE"></span><span id="stored::ExampleSync2Base::Objects"></span><span class="target" id="classstored_1_1_example_sync2_base_1a0ec90fed495b5de583cdcd9680f1e40d"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleSync2ObjectsE" title="stored::ExampleSync2Objects"><span class="n"><span class="pre">ExampleSync2Objects</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2BaseE" title="stored::ExampleSync2Base"><span class="n"><span class="pre">ExampleSync2Base</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2BaseE" title="stored::ExampleSync2Base::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Objects</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2Base7ObjectsE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleSync2Base4rootE">
+<span id="_CPPv3N6stored16ExampleSync2Base4rootE"></span><span id="_CPPv2N6stored16ExampleSync2Base4rootE"></span><span id="stored::ExampleSync2Base::root"></span><span class="target" id="classstored_1_1_example_sync2_base_1af528336df321193ee2d729d05dab09ba"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2BaseE" title="stored::ExampleSync2Base"><span class="n"><span class="pre">ExampleSync2Base</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">root</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2Base4rootE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>We are the root, as used by <code class="docutils literal notranslate"><span class="pre">STORE_CLASS</span></code>. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleSync2Base4selfE">
+<span id="_CPPv3N6stored16ExampleSync2Base4selfE"></span><span id="_CPPv2N6stored16ExampleSync2Base4selfE"></span><span id="stored::ExampleSync2Base::self"></span><span class="target" id="classstored_1_1_example_sync2_base_1a0c2c2442dfc4aef7c452824ffb0d2b3e"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2BaseE" title="stored::ExampleSync2Base"><span class="n"><span class="pre">ExampleSync2Base</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">self</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2Base4selfE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Define <code class="docutils literal notranslate"><span class="pre">self</span></code> for <code class="docutils literal notranslate"><span class="pre">stored::store</span></code>. </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -866,10 +876,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored16ExampleSync2Base4listEvRR1F">
 <span id="_CPPv3I0EN6stored16ExampleSync2Base4listERR1F"></span><span id="_CPPv2I0EN6stored16ExampleSync2Base4listERR1F"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_sync2_base_1a39152699fb3e8b843c6ea3f912407169"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2Base4listEvRR1F" title="stored::ExampleSync2Base::list::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">f</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleSync2Base4listEvRR1F" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_sync2_base_1ac97ee1bec74cd0dbd8b4e5214d90bb46"><span class="std std-ref">longDirectory()</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -877,10 +887,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored16ExampleSync2Base4listEv1FPvPKc">
 <span id="_CPPv3I0EN6stored16ExampleSync2Base4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored16ExampleSync2Base4listE1FPvPKc"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_sync2_base_1a93471f021237f792ffeb066c1b7c40bb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2Base4listEv1FPvPKc" title="stored::ExampleSync2Base::list::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">f</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">arg</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefix</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleSync2Base4listEv1FPvPKc" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_sync2_base_1ac97ee1bec74cd0dbd8b4e5214d90bb46"><span class="std std-ref">longDirectory()</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -915,6 +925,21 @@ public:
 <span id="_CPPv3I0EN6stored16ExampleSync2Base8variableEPKc6size_t"></span><span id="_CPPv2I0EN6stored16ExampleSync2Base8variableEPKc6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_sync2_base_1ab6c4b1d9b4d9185e37e9c0b60d1ef258"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="cpp_types.html#_CPPv4I00_bEN6stored8VariableE" title="stored::Variable"><span class="n"><span class="pre">Variable</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2Base8variableE8VariableI1T14ImplementationEPKc6size_t" title="stored::ExampleSync2Base::variable::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync2Base14ImplementationE" title="stored::ExampleSync2Base::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">variable</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">numeric_limits</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleSync2Base8variableE8VariableI1T14ImplementationEPKc6size_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Finds a variable with the given name. </p>
 <p>The variable, when it exists, must have the given (fixed) type. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleSync2Base1bE">
+<span id="_CPPv3N6stored16ExampleSync2Base1bE"></span><span id="_CPPv2N6stored16ExampleSync2Base1bE"></span><span id="stored::ExampleSync2Base::b__impl::StoreVariable:Base.Implementation.b.1u.1:"></span><span class="target" id="classstored_1_1_example_sync2_base_1aea5a66ea30e67b29264cba250add19af"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync2Base14ImplementationE" title="stored::ExampleSync2Base::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">b</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2Base1bE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>b </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleSync2Base1uE">
+<span id="_CPPv3N6stored16ExampleSync2Base1uE"></span><span id="_CPPv2N6stored16ExampleSync2Base1uE"></span><span id="stored::ExampleSync2Base::u__impl::StoreVariable:Base.Implementation.uint8_t.0u.1:"></span><span class="target" id="classstored_1_1_example_sync2_base_1ab60bdc990f35f2221e96296c5b1af69e"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync2Base14ImplementationE" title="stored::ExampleSync2Base::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">u</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync2Base1uE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>u </p>
 </dd></dl>
 
 </div>
@@ -981,52 +1006,12 @@ public:
 <span id="_CPPv3N6stored12ExampleSync2E"></span><span id="_CPPv2N6stored12ExampleSync2E"></span><span id="stored::ExampleSync2"></span><span class="target" id="classstored_1_1_example_sync2"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleSync2</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2BaseE" title="stored::ExampleSync2Base"><span class="n"><span class="pre">ExampleSync2Base</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync2E" title="stored::ExampleSync2"><span class="n"><span class="pre">ExampleSync2</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleSync2E" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default <a class="reference internal" href="#classstored_1_1_example_sync2_base"><span class="std std-ref">ExampleSync2Base</span></a> implementation. </p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleSync24baseE">
-<span id="_CPPv3N6stored12ExampleSync24baseE"></span><span id="_CPPv2N6stored12ExampleSync24baseE"></span><span id="stored::ExampleSync2::base"></span><span class="target" id="classstored_1_1_example_sync2_1a8a311584f19f5fcba753f5380361f975"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleSync2BaseE" title="stored::ExampleSync2Base"><span class="n"><span class="pre">ExampleSync2Base</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync2E" title="stored::ExampleSync2"><span class="n"><span class="pre">ExampleSync2</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base</span></span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleSync24baseE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleSync212ExampleSync2Ev">
 <span id="_CPPv3N6stored12ExampleSync212ExampleSync2Ev"></span><span id="_CPPv2N6stored12ExampleSync212ExampleSync2Ev"></span><span id="stored::ExampleSync2::ExampleSync2"></span><span class="target" id="classstored_1_1_example_sync2_1a3af85293e61b94cefa5bbae644cd545b"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleSync2</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleSync212ExampleSync2Ev" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default constructor. </p>
 </dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleSync212ExampleSync2ERR12ExampleSync2">
-<span id="_CPPv3N6stored12ExampleSync212ExampleSync2ERR12ExampleSync2"></span><span id="_CPPv2N6stored12ExampleSync212ExampleSync2ERR12ExampleSync2"></span><span id="stored::ExampleSync2::ExampleSync2__ExampleSync2RR"></span><span class="target" id="classstored_1_1_example_sync2_1a455a373dcb1c438eab4ab68f084ff7b9"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleSync2</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync212ExampleSync2ERR12ExampleSync2" title="stored::ExampleSync2::ExampleSync2"><span class="n"><span class="pre">ExampleSync2</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleSync212ExampleSync2ERR12ExampleSync2" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Default move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleSync212ExampleSync2ERK12ExampleSync2">
-<span id="_CPPv3N6stored12ExampleSync212ExampleSync2ERK12ExampleSync2"></span><span id="_CPPv2N6stored12ExampleSync212ExampleSync2ERK12ExampleSync2"></span><span id="stored::ExampleSync2::ExampleSync2__ExampleSync2CR"></span><span class="target" id="classstored_1_1_example_sync2_1a16f1fca3e9e648237feffe286b7e8e29"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleSync2</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync212ExampleSync2ERK12ExampleSync2" title="stored::ExampleSync2::ExampleSync2"><span class="n"><span class="pre">ExampleSync2</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleSync212ExampleSync2ERK12ExampleSync2" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleSync2aSERR12ExampleSync2">
-<span id="_CPPv3N6stored12ExampleSync2aSERR12ExampleSync2"></span><span id="_CPPv2N6stored12ExampleSync2aSERR12ExampleSync2"></span><span id="stored::ExampleSync2::assign-operator__ExampleSync2RR"></span><span class="target" id="classstored_1_1_example_sync2_1a1c0cdf56edee7203230f460e7e8fa1f4"></span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync2E" title="stored::ExampleSync2"><span class="n"><span class="pre">ExampleSync2</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync2E" title="stored::ExampleSync2"><span class="n"><span class="pre">ExampleSync2</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleSync2aSERR12ExampleSync2" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleSync2aSERK12ExampleSync2">
-<span id="_CPPv3N6stored12ExampleSync2aSERK12ExampleSync2"></span><span id="_CPPv2N6stored12ExampleSync2aSERK12ExampleSync2"></span><span id="stored::ExampleSync2::assign-operator__ExampleSync2CR"></span><span class="target" id="classstored_1_1_example_sync2_1aa894be85120d919540a6d16be240599f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleSync2E" title="stored::ExampleSync2"><span class="n"><span class="pre">ExampleSync2</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleSync2aSERK12ExampleSync2" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
-</dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
-<dl>
-<dt class="sig sig-object cpp">
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">::stored::ExampleSync2Base&lt;</span> <span class="pre">ExampleSync2</span> <span class="pre">&gt;</span></dt>
-</dl>
 
 </div>
 </dd></dl>

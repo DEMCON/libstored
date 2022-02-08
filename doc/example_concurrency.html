@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>concurrency &mdash; libstored 1.1.0 documentation</title>
+  <title>concurrency &mdash; libstored 1.1.1-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.1.0
+                1.1.1.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -72,6 +72,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="example_control.html">control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_meta.html">meta</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_fibered.html">fibered</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_zmqserver.html">zmqserver</a></li>
@@ -407,8 +408,8 @@ actual = 3
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_concurrency_main"><span class="std std-ref">stored::ExampleConcurrencyMain</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleConcurrencyMain : public STORE_BASE_CLASS(ExampleConcurrencyMainBase, ExampleConcurrencyMain) {
-    STORE_CLASS_BODY(ExampleConcurrencyMainBase, ExampleConcurrencyMain)
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleConcurrencyMain : public stored::store&lt;ExampleConcurrencyMain, ExampleConcurrencyMainBase&gt;::type {
+    STORE_CLASS(ExampleConcurrencyMain, ExampleConcurrencyMainBase)
 public:
     // Your class implementation, such as:
     ExampleConcurrencyMain() is_default
@@ -417,12 +418,15 @@ public:
 </pre></div>
 </div>
 </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_concurrency_main"><span class="std std-ref">stored::ExampleConcurrencyMain</span></a> </p>
-</dd>
-<dt><strong>See</strong></dt><dd><p>stored::ExampleConcurrencyMainData </p>
-</dd>
-</dl>
+<p>Some compilers or tools may get confused by the inheritance using <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> or <code class="docutils literal notranslate"><span class="pre">stored::store_t</span></code>. Alternatively, use <code class="docutils literal notranslate"><span class="pre">STORE_T(...)</span></code> instead, providing the template parameters of <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> as macro arguments.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_example_concurrency_main"><span class="std std-ref">stored::ExampleConcurrencyMain</span></a> </p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>stored::ExampleConcurrencyMainData </p>
+</div>
 </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -466,10 +470,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBase3KeyE">
 <span id="_CPPv3N6stored26ExampleConcurrencyMainBase3KeyE"></span><span id="_CPPv2N6stored26ExampleConcurrencyMainBase3KeyE"></span><span id="stored::ExampleConcurrencyMainBase::Key"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a8ed1f71c8e97f74b1fa89a8294288e52"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">uintptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Key</span></span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBase3KeyE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Type of a key. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_concurrency_main_base_1a2d61cd2539ea43b4192a251adfd42a48"><span class="std std-ref">bufferToKey()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_example_concurrency_main_base_1a2d61cd2539ea43b4192a251adfd42a48"><span class="std std-ref">bufferToKey()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -483,6 +487,18 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBase7ObjectsE">
 <span id="_CPPv3N6stored26ExampleConcurrencyMainBase7ObjectsE"></span><span id="_CPPv2N6stored26ExampleConcurrencyMainBase7ObjectsE"></span><span id="stored::ExampleConcurrencyMainBase::Objects"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a66615a2cfef407c94f4d1a83495093a3"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN6stored29ExampleConcurrencyMainObjectsE" title="stored::ExampleConcurrencyMainObjects"><span class="n"><span class="pre">ExampleConcurrencyMainObjects</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored26ExampleConcurrencyMainBaseE" title="stored::ExampleConcurrencyMainBase"><span class="n"><span class="pre">ExampleConcurrencyMainBase</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored26ExampleConcurrencyMainBaseE" title="stored::ExampleConcurrencyMainBase::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Objects</span></span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBase7ObjectsE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBase4rootE">
+<span id="_CPPv3N6stored26ExampleConcurrencyMainBase4rootE"></span><span id="_CPPv2N6stored26ExampleConcurrencyMainBase4rootE"></span><span id="stored::ExampleConcurrencyMainBase::root"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a6da3eaa3b568004b4ac4293f81e0397d"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored26ExampleConcurrencyMainBaseE" title="stored::ExampleConcurrencyMainBase"><span class="n"><span class="pre">ExampleConcurrencyMainBase</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">root</span></span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBase4rootE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>We are the root, as used by <code class="docutils literal notranslate"><span class="pre">STORE_CLASS</span></code>. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBase4selfE">
+<span id="_CPPv3N6stored26ExampleConcurrencyMainBase4selfE"></span><span id="_CPPv2N6stored26ExampleConcurrencyMainBase4selfE"></span><span id="stored::ExampleConcurrencyMainBase::self"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1af237c3da68aa55f0eaf002957e14a855"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored26ExampleConcurrencyMainBaseE" title="stored::ExampleConcurrencyMainBase"><span class="n"><span class="pre">ExampleConcurrencyMainBase</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">self</span></span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBase4selfE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Define <code class="docutils literal notranslate"><span class="pre">self</span></code> for <code class="docutils literal notranslate"><span class="pre">stored::store</span></code>. </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -530,10 +546,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored26ExampleConcurrencyMainBase4listEvRR1F">
 <span id="_CPPv3I0EN6stored26ExampleConcurrencyMainBase4listERR1F"></span><span id="_CPPv2I0EN6stored26ExampleConcurrencyMainBase4listERR1F"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_concurrency_main_base_1a26ba34c721a83b3a17df17535d3ea19e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored26ExampleConcurrencyMainBase4listEvRR1F" title="stored::ExampleConcurrencyMainBase::list::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">f</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored26ExampleConcurrencyMainBase4listEvRR1F" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_concurrency_main_base_1af6ae4a73d7b6594d108967b43517a222"><span class="std std-ref">longDirectory()</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -541,10 +557,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored26ExampleConcurrencyMainBase4listEv1FPvPKc">
 <span id="_CPPv3I0EN6stored26ExampleConcurrencyMainBase4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored26ExampleConcurrencyMainBase4listE1FPvPKc"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_concurrency_main_base_1a49db13041464d44d3831e81bc0dfd74b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored26ExampleConcurrencyMainBase4listEv1FPvPKc" title="stored::ExampleConcurrencyMainBase::list::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">f</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">arg</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefix</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored26ExampleConcurrencyMainBase4listEv1FPvPKc" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_concurrency_main_base_1af6ae4a73d7b6594d108967b43517a222"><span class="std std-ref">longDirectory()</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -579,6 +595,15 @@ public:
 <span id="_CPPv3I0EN6stored26ExampleConcurrencyMainBase8variableEPKc6size_t"></span><span id="_CPPv2I0EN6stored26ExampleConcurrencyMainBase8variableEPKc6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_concurrency_main_base_1a83765cd5a6735a40ae3a4bbe69a095a0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="cpp_types.html#_CPPv4I00_bEN6stored8VariableE" title="stored::Variable"><span class="n"><span class="pre">Variable</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored26ExampleConcurrencyMainBase8variableE8VariableI1T14ImplementationEPKc6size_t" title="stored::ExampleConcurrencyMainBase::variable::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored26ExampleConcurrencyMainBase14ImplementationE" title="stored::ExampleConcurrencyMainBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">variable</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">numeric_limits</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored26ExampleConcurrencyMainBase8variableE8VariableI1T14ImplementationEPKc6size_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Finds a variable with the given name. </p>
 <p>The variable, when it exists, must have the given (fixed) type. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored26ExampleConcurrencyMainBase32not_synchronized_to_other_threadE">
+<span id="_CPPv3N6stored26ExampleConcurrencyMainBase32not_synchronized_to_other_threadE"></span><span id="_CPPv2N6stored26ExampleConcurrencyMainBase32not_synchronized_to_other_threadE"></span><span id="stored::ExampleConcurrencyMainBase::not_synchronized_to_other_thread__impl::StoreVariable:Base.Implementation.uint32_t.0u.4:"></span><span class="target" id="classstored_1_1_example_concurrency_main_base_1a6049897c0b6e682d9075ad2cf2458051"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored26ExampleConcurrencyMainBase14ImplementationE" title="stored::ExampleConcurrencyMainBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">not_synchronized_to_other_thread</span></span></span><a class="headerlink" href="#_CPPv4N6stored26ExampleConcurrencyMainBase32not_synchronized_to_other_threadE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>not synchronized to other thread </p>
 </dd></dl>
 
 </div>
@@ -645,52 +670,12 @@ public:
 <span id="_CPPv3N6stored22ExampleConcurrencyMainE"></span><span id="_CPPv2N6stored22ExampleConcurrencyMainE"></span><span id="stored::ExampleConcurrencyMain"></span><span class="target" id="classstored_1_1_example_concurrency_main"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored26ExampleConcurrencyMainBaseE" title="stored::ExampleConcurrencyMainBase"><span class="n"><span class="pre">ExampleConcurrencyMainBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored22ExampleConcurrencyMainE" title="stored::ExampleConcurrencyMain"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored22ExampleConcurrencyMainE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default <a class="reference internal" href="#classstored_1_1_example_concurrency_main_base"><span class="std std-ref">ExampleConcurrencyMainBase</span></a> implementation. </p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored22ExampleConcurrencyMain4baseE">
-<span id="_CPPv3N6stored22ExampleConcurrencyMain4baseE"></span><span id="_CPPv2N6stored22ExampleConcurrencyMain4baseE"></span><span id="stored::ExampleConcurrencyMain::base"></span><span class="target" id="classstored_1_1_example_concurrency_main_1ad5eb809f53152e83940f9705ae9981d0"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored26ExampleConcurrencyMainBaseE" title="stored::ExampleConcurrencyMainBase"><span class="n"><span class="pre">ExampleConcurrencyMainBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored22ExampleConcurrencyMainE" title="stored::ExampleConcurrencyMain"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base</span></span></span><a class="headerlink" href="#_CPPv4N6stored22ExampleConcurrencyMain4baseE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainEv">
 <span id="_CPPv3N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainEv"></span><span id="_CPPv2N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainEv"></span><span id="stored::ExampleConcurrencyMain::ExampleConcurrencyMain"></span><span class="target" id="classstored_1_1_example_concurrency_main_1a31cb5cf434247b2c9d98cde1fdd32184"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default constructor. </p>
 </dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERR22ExampleConcurrencyMain">
-<span id="_CPPv3N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERR22ExampleConcurrencyMain"></span><span id="_CPPv2N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERR22ExampleConcurrencyMain"></span><span id="stored::ExampleConcurrencyMain::ExampleConcurrencyMain__ExampleConcurrencyMainRR"></span><span class="target" id="classstored_1_1_example_concurrency_main_1a9591066612b117e90997cc88ab08b79f"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERR22ExampleConcurrencyMain" title="stored::ExampleConcurrencyMain::ExampleConcurrencyMain"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERR22ExampleConcurrencyMain" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Default move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERK22ExampleConcurrencyMain">
-<span id="_CPPv3N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERK22ExampleConcurrencyMain"></span><span id="_CPPv2N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERK22ExampleConcurrencyMain"></span><span id="stored::ExampleConcurrencyMain::ExampleConcurrencyMain__ExampleConcurrencyMainCR"></span><span class="target" id="classstored_1_1_example_concurrency_main_1a82a7516c3058721050e920219c9de8f5"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERK22ExampleConcurrencyMain" title="stored::ExampleConcurrencyMain::ExampleConcurrencyMain"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored22ExampleConcurrencyMain22ExampleConcurrencyMainERK22ExampleConcurrencyMain" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored22ExampleConcurrencyMainaSERR22ExampleConcurrencyMain">
-<span id="_CPPv3N6stored22ExampleConcurrencyMainaSERR22ExampleConcurrencyMain"></span><span id="_CPPv2N6stored22ExampleConcurrencyMainaSERR22ExampleConcurrencyMain"></span><span id="stored::ExampleConcurrencyMain::assign-operator__ExampleConcurrencyMainRR"></span><span class="target" id="classstored_1_1_example_concurrency_main_1a5ea3d86bd76bc84120c0f9326403b112"></span><a class="reference internal" href="#_CPPv4N6stored22ExampleConcurrencyMainE" title="stored::ExampleConcurrencyMain"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored22ExampleConcurrencyMainE" title="stored::ExampleConcurrencyMain"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored22ExampleConcurrencyMainaSERR22ExampleConcurrencyMain" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored22ExampleConcurrencyMainaSERK22ExampleConcurrencyMain">
-<span id="_CPPv3N6stored22ExampleConcurrencyMainaSERK22ExampleConcurrencyMain"></span><span id="_CPPv2N6stored22ExampleConcurrencyMainaSERK22ExampleConcurrencyMain"></span><span id="stored::ExampleConcurrencyMain::assign-operator__ExampleConcurrencyMainCR"></span><span class="target" id="classstored_1_1_example_concurrency_main_1a80cc8c943613ce9a580c176e1ea98105"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored22ExampleConcurrencyMainE" title="stored::ExampleConcurrencyMain"><span class="n"><span class="pre">ExampleConcurrencyMain</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored22ExampleConcurrencyMainaSERK22ExampleConcurrencyMain" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
-</dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
-<dl>
-<dt class="sig sig-object cpp">
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">::stored::ExampleConcurrencyMainBase&lt;</span> <span class="pre">ExampleConcurrencyMain</span> <span class="pre">&gt;</span></dt>
-</dl>
 
 </div>
 </dd></dl>
@@ -748,8 +733,8 @@ public:
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_concurrency_control"><span class="std std-ref">stored::ExampleConcurrencyControl</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleConcurrencyControl : public STORE_BASE_CLASS(ExampleConcurrencyControlBase, ExampleConcurrencyControl) {
-    STORE_CLASS_BODY(ExampleConcurrencyControlBase, ExampleConcurrencyControl)
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleConcurrencyControl : public stored::store&lt;ExampleConcurrencyControl, ExampleConcurrencyControlBase&gt;::type {
+    STORE_CLASS(ExampleConcurrencyControl, ExampleConcurrencyControlBase)
 public:
     // Your class implementation, such as:
     ExampleConcurrencyControl() is_default
@@ -758,14 +743,16 @@ public:
 </pre></div>
 </div>
 </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_concurrency_control"><span class="std std-ref">stored::ExampleConcurrencyControl</span></a> </p>
-</dd>
-<dt><strong>See</strong></dt><dd><p>stored::ExampleConcurrencyControlData </p>
-</dd>
-</dl>
+<p>Some compilers or tools may get confused by the inheritance using <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> or <code class="docutils literal notranslate"><span class="pre">stored::store_t</span></code>. Alternatively, use <code class="docutils literal notranslate"><span class="pre">STORE_T(...)</span></code> instead, providing the template parameters of <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> as macro arguments.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_example_concurrency_control"><span class="std std-ref">stored::ExampleConcurrencyControl</span></a> </p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>stored::ExampleConcurrencyControlData </p>
+</div>
 </p>
-<p>Subclassed by <a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_synchronizable"><span class="std std-ref">stored::Synchronizable&lt; ::stored::ExampleConcurrencyControlBase&lt; ControlStore &gt; &gt;</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
@@ -808,10 +795,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBase3KeyE">
 <span id="_CPPv3N6stored29ExampleConcurrencyControlBase3KeyE"></span><span id="_CPPv2N6stored29ExampleConcurrencyControlBase3KeyE"></span><span id="stored::ExampleConcurrencyControlBase::Key"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a9696b8768b306d0f1405e7f7639f79a5"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">uintptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Key</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBase3KeyE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Type of a key. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_concurrency_control_base_1a3a45267be1c1fb629428ae3ce1d4dcd9"><span class="std std-ref">bufferToKey()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_example_concurrency_control_base_1a3a45267be1c1fb629428ae3ce1d4dcd9"><span class="std std-ref">bufferToKey()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -825,6 +812,18 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBase7ObjectsE">
 <span id="_CPPv3N6stored29ExampleConcurrencyControlBase7ObjectsE"></span><span id="_CPPv2N6stored29ExampleConcurrencyControlBase7ObjectsE"></span><span id="stored::ExampleConcurrencyControlBase::Objects"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a65f3309c01ac9f3c48694a877a198cc4"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN6stored32ExampleConcurrencyControlObjectsE" title="stored::ExampleConcurrencyControlObjects"><span class="n"><span class="pre">ExampleConcurrencyControlObjects</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored29ExampleConcurrencyControlBaseE" title="stored::ExampleConcurrencyControlBase"><span class="n"><span class="pre">ExampleConcurrencyControlBase</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored29ExampleConcurrencyControlBaseE" title="stored::ExampleConcurrencyControlBase::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Objects</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBase7ObjectsE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBase4rootE">
+<span id="_CPPv3N6stored29ExampleConcurrencyControlBase4rootE"></span><span id="_CPPv2N6stored29ExampleConcurrencyControlBase4rootE"></span><span id="stored::ExampleConcurrencyControlBase::root"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a2506301f1fe71ceb2279d01961b5b5c7"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored29ExampleConcurrencyControlBaseE" title="stored::ExampleConcurrencyControlBase"><span class="n"><span class="pre">ExampleConcurrencyControlBase</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">root</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBase4rootE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>We are the root, as used by <code class="docutils literal notranslate"><span class="pre">STORE_CLASS</span></code>. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBase4selfE">
+<span id="_CPPv3N6stored29ExampleConcurrencyControlBase4selfE"></span><span id="_CPPv2N6stored29ExampleConcurrencyControlBase4selfE"></span><span id="stored::ExampleConcurrencyControlBase::self"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1aa0539bf895308469441a3b146b87119f"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored29ExampleConcurrencyControlBaseE" title="stored::ExampleConcurrencyControlBase"><span class="n"><span class="pre">ExampleConcurrencyControlBase</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">self</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBase4selfE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Define <code class="docutils literal notranslate"><span class="pre">self</span></code> for <code class="docutils literal notranslate"><span class="pre">stored::store</span></code>. </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -872,10 +871,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored29ExampleConcurrencyControlBase4listEvRR1F">
 <span id="_CPPv3I0EN6stored29ExampleConcurrencyControlBase4listERR1F"></span><span id="_CPPv2I0EN6stored29ExampleConcurrencyControlBase4listERR1F"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_concurrency_control_base_1a790ab21129cd317bca52128b3ab5395f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored29ExampleConcurrencyControlBase4listEvRR1F" title="stored::ExampleConcurrencyControlBase::list::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">f</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored29ExampleConcurrencyControlBase4listEvRR1F" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_concurrency_control_base_1aaf3234d1bdfff4bdbb5b604101b02100"><span class="std std-ref">longDirectory()</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -883,10 +882,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored29ExampleConcurrencyControlBase4listEv1FPvPKc">
 <span id="_CPPv3I0EN6stored29ExampleConcurrencyControlBase4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored29ExampleConcurrencyControlBase4listE1FPvPKc"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_concurrency_control_base_1ad902fe4b16a03fe69dcdbffa408075b5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored29ExampleConcurrencyControlBase4listEv1FPvPKc" title="stored::ExampleConcurrencyControlBase::list::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">f</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">arg</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefix</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored29ExampleConcurrencyControlBase4listEv1FPvPKc" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_concurrency_control_base_1aaf3234d1bdfff4bdbb5b604101b02100"><span class="std std-ref">longDirectory()</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -921,6 +920,33 @@ public:
 <span id="_CPPv3I0EN6stored29ExampleConcurrencyControlBase8variableEPKc6size_t"></span><span id="_CPPv2I0EN6stored29ExampleConcurrencyControlBase8variableEPKc6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_concurrency_control_base_1abd5b7ef7af120e16cd0369f002199869"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="cpp_types.html#_CPPv4I00_bEN6stored8VariableE" title="stored::Variable"><span class="n"><span class="pre">Variable</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored29ExampleConcurrencyControlBase8variableE8VariableI1T14ImplementationEPKc6size_t" title="stored::ExampleConcurrencyControlBase::variable::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored29ExampleConcurrencyControlBase14ImplementationE" title="stored::ExampleConcurrencyControlBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">variable</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">numeric_limits</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored29ExampleConcurrencyControlBase8variableE8VariableI1T14ImplementationEPKc6size_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Finds a variable with the given name. </p>
 <p>The variable, when it exists, must have the given (fixed) type. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBase6actualE">
+<span id="_CPPv3N6stored29ExampleConcurrencyControlBase6actualE"></span><span id="_CPPv2N6stored29ExampleConcurrencyControlBase6actualE"></span><span id="stored::ExampleConcurrencyControlBase::actual__impl::StoreVariable:Base.Implementation.uint32_t.12u.4:"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a6c0b78aeac6bf921c98fe23e763865da"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored29ExampleConcurrencyControlBase14ImplementationE" title="stored::ExampleConcurrencyControlBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">12u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">actual</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBase6actualE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>actual </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBase12override_objE">
+<span id="_CPPv3N6stored29ExampleConcurrencyControlBase12override_objE"></span><span id="_CPPv2N6stored29ExampleConcurrencyControlBase12override_objE"></span><span id="stored::ExampleConcurrencyControlBase::override_obj__impl::StoreVariable:Base.Implementation.int32_t.0u.4:"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a9e01f23de5968d234da17a251ae6825e"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored29ExampleConcurrencyControlBase14ImplementationE" title="stored::ExampleConcurrencyControlBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int32_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">override_obj</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBase12override_objE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>override </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBase3runE">
+<span id="_CPPv3N6stored29ExampleConcurrencyControlBase3runE"></span><span id="_CPPv2N6stored29ExampleConcurrencyControlBase3runE"></span><span id="stored::ExampleConcurrencyControlBase::run__impl::StoreVariable:Base.Implementation.b.4u.1:"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1a3d53fb88af14d3cb42e5ac69b9780332"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored29ExampleConcurrencyControlBase14ImplementationE" title="stored::ExampleConcurrencyControlBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">4u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBase3runE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>run </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored29ExampleConcurrencyControlBase8setpointE">
+<span id="_CPPv3N6stored29ExampleConcurrencyControlBase8setpointE"></span><span id="_CPPv2N6stored29ExampleConcurrencyControlBase8setpointE"></span><span id="stored::ExampleConcurrencyControlBase::setpoint__impl::StoreVariable:Base.Implementation.uint32_t.8u.4:"></span><span class="target" id="classstored_1_1_example_concurrency_control_base_1ae23a8d8dbe81dd96638ac20aad747d70"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored29ExampleConcurrencyControlBase14ImplementationE" title="stored::ExampleConcurrencyControlBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">8u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setpoint</span></span></span><a class="headerlink" href="#_CPPv4N6stored29ExampleConcurrencyControlBase8setpointE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>setpoint </p>
 </dd></dl>
 
 </div>
@@ -987,52 +1013,12 @@ public:
 <span id="_CPPv3N6stored25ExampleConcurrencyControlE"></span><span id="_CPPv2N6stored25ExampleConcurrencyControlE"></span><span id="stored::ExampleConcurrencyControl"></span><span class="target" id="classstored_1_1_example_concurrency_control"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored29ExampleConcurrencyControlBaseE" title="stored::ExampleConcurrencyControlBase"><span class="n"><span class="pre">ExampleConcurrencyControlBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored25ExampleConcurrencyControlE" title="stored::ExampleConcurrencyControl"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleConcurrencyControlE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default <a class="reference internal" href="#classstored_1_1_example_concurrency_control_base"><span class="std std-ref">ExampleConcurrencyControlBase</span></a> implementation. </p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleConcurrencyControl4baseE">
-<span id="_CPPv3N6stored25ExampleConcurrencyControl4baseE"></span><span id="_CPPv2N6stored25ExampleConcurrencyControl4baseE"></span><span id="stored::ExampleConcurrencyControl::base"></span><span class="target" id="classstored_1_1_example_concurrency_control_1a24b06e4bb7b7912f78d9b8338864ff3f"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored29ExampleConcurrencyControlBaseE" title="stored::ExampleConcurrencyControlBase"><span class="n"><span class="pre">ExampleConcurrencyControlBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored25ExampleConcurrencyControlE" title="stored::ExampleConcurrencyControl"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base</span></span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleConcurrencyControl4baseE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlEv">
 <span id="_CPPv3N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlEv"></span><span id="_CPPv2N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlEv"></span><span id="stored::ExampleConcurrencyControl::ExampleConcurrencyControl"></span><span class="target" id="classstored_1_1_example_concurrency_control_1a8803ae9f1d3137ce4d5df566b458460b"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default constructor. </p>
 </dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERR25ExampleConcurrencyControl">
-<span id="_CPPv3N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERR25ExampleConcurrencyControl"></span><span id="_CPPv2N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERR25ExampleConcurrencyControl"></span><span id="stored::ExampleConcurrencyControl::ExampleConcurrencyControl__ExampleConcurrencyControlRR"></span><span class="target" id="classstored_1_1_example_concurrency_control_1a92d184298382e0d0e2225d71a242fdf2"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERR25ExampleConcurrencyControl" title="stored::ExampleConcurrencyControl::ExampleConcurrencyControl"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERR25ExampleConcurrencyControl" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Default move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERK25ExampleConcurrencyControl">
-<span id="_CPPv3N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERK25ExampleConcurrencyControl"></span><span id="_CPPv2N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERK25ExampleConcurrencyControl"></span><span id="stored::ExampleConcurrencyControl::ExampleConcurrencyControl__ExampleConcurrencyControlCR"></span><span class="target" id="classstored_1_1_example_concurrency_control_1a905dce584ae3e857f813a0b4a800a458"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERK25ExampleConcurrencyControl" title="stored::ExampleConcurrencyControl::ExampleConcurrencyControl"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleConcurrencyControl25ExampleConcurrencyControlERK25ExampleConcurrencyControl" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleConcurrencyControlaSERR25ExampleConcurrencyControl">
-<span id="_CPPv3N6stored25ExampleConcurrencyControlaSERR25ExampleConcurrencyControl"></span><span id="_CPPv2N6stored25ExampleConcurrencyControlaSERR25ExampleConcurrencyControl"></span><span id="stored::ExampleConcurrencyControl::assign-operator__ExampleConcurrencyControlRR"></span><span class="target" id="classstored_1_1_example_concurrency_control_1a7d9b385fbd4b916838e55dcbcbea666d"></span><a class="reference internal" href="#_CPPv4N6stored25ExampleConcurrencyControlE" title="stored::ExampleConcurrencyControl"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored25ExampleConcurrencyControlE" title="stored::ExampleConcurrencyControl"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleConcurrencyControlaSERR25ExampleConcurrencyControl" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored25ExampleConcurrencyControlaSERK25ExampleConcurrencyControl">
-<span id="_CPPv3N6stored25ExampleConcurrencyControlaSERK25ExampleConcurrencyControl"></span><span id="_CPPv2N6stored25ExampleConcurrencyControlaSERK25ExampleConcurrencyControl"></span><span id="stored::ExampleConcurrencyControl::assign-operator__ExampleConcurrencyControlCR"></span><span class="target" id="classstored_1_1_example_concurrency_control_1ac15c3abbd07eb20d156acc80d9315f14"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored25ExampleConcurrencyControlE" title="stored::ExampleConcurrencyControl"><span class="n"><span class="pre">ExampleConcurrencyControl</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored25ExampleConcurrencyControlaSERK25ExampleConcurrencyControl" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
-</dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
-<dl>
-<dt class="sig sig-object cpp">
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">::stored::ExampleConcurrencyControlBase&lt;</span> <span class="pre">ExampleConcurrencyControl</span> <span class="pre">&gt;</span></dt>
-</dl>
 
 </div>
 </dd></dl>

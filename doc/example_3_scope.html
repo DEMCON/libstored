@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3_scope &mdash; libstored 1.1.0 documentation</title>
+  <title>3_scope &mdash; libstored 1.1.1-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.1.0
+                1.1.1.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -68,6 +68,7 @@
 <li class="toctree-l2"><a class="reference internal" href="example_components.html">components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_concurrency.html">concurrency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_control.html">control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_meta.html">meta</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_fibered.html">fibered</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_zmqserver.html">zmqserver</a></li>
@@ -250,8 +251,8 @@ G = 9.81
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_scope"><span class="std std-ref">stored::ExampleScope</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleScope : public STORE_BASE_CLASS(ExampleScopeBase, ExampleScope) {
-    STORE_CLASS_BODY(ExampleScopeBase, ExampleScope)
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleScope : public stored::store&lt;ExampleScope, ExampleScopeBase&gt;::type {
+    STORE_CLASS(ExampleScope, ExampleScopeBase)
 public:
     // Your class implementation, such as:
     ExampleScope() is_default
@@ -260,12 +261,15 @@ public:
 </pre></div>
 </div>
 </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_scope"><span class="std std-ref">stored::ExampleScope</span></a> </p>
-</dd>
-<dt><strong>See</strong></dt><dd><p>stored::ExampleScopeData </p>
-</dd>
-</dl>
+<p>Some compilers or tools may get confused by the inheritance using <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> or <code class="docutils literal notranslate"><span class="pre">stored::store_t</span></code>. Alternatively, use <code class="docutils literal notranslate"><span class="pre">STORE_T(...)</span></code> instead, providing the template parameters of <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> as macro arguments.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_example_scope"><span class="std std-ref">stored::ExampleScope</span></a> </p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>stored::ExampleScopeData </p>
+</div>
 </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -309,10 +313,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBase3KeyE">
 <span id="_CPPv3N6stored16ExampleScopeBase3KeyE"></span><span id="_CPPv2N6stored16ExampleScopeBase3KeyE"></span><span id="stored::ExampleScopeBase::Key"></span><span class="target" id="classstored_1_1_example_scope_base_1aae7f5bd916eeb377049dfb8382c21289"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">uintptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Key</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBase3KeyE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Type of a key. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_scope_base_1abe52f53007665414e68ac63e0b1a7c89"><span class="std std-ref">bufferToKey()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_example_scope_base_1abe52f53007665414e68ac63e0b1a7c89"><span class="std std-ref">bufferToKey()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -326,6 +330,18 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBase7ObjectsE">
 <span id="_CPPv3N6stored16ExampleScopeBase7ObjectsE"></span><span id="_CPPv2N6stored16ExampleScopeBase7ObjectsE"></span><span id="stored::ExampleScopeBase::Objects"></span><span class="target" id="classstored_1_1_example_scope_base_1a4480370291a9d8d4262bd339e79b21a0"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleScopeObjectsE" title="stored::ExampleScopeObjects"><span class="n"><span class="pre">ExampleScopeObjects</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleScopeBaseE" title="stored::ExampleScopeBase"><span class="n"><span class="pre">ExampleScopeBase</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleScopeBaseE" title="stored::ExampleScopeBase::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Objects</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBase7ObjectsE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBase4rootE">
+<span id="_CPPv3N6stored16ExampleScopeBase4rootE"></span><span id="_CPPv2N6stored16ExampleScopeBase4rootE"></span><span id="stored::ExampleScopeBase::root"></span><span class="target" id="classstored_1_1_example_scope_base_1a3199ee0ce0753eb303b830a3f2017f99"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleScopeBaseE" title="stored::ExampleScopeBase"><span class="n"><span class="pre">ExampleScopeBase</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">root</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBase4rootE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>We are the root, as used by <code class="docutils literal notranslate"><span class="pre">STORE_CLASS</span></code>. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBase4selfE">
+<span id="_CPPv3N6stored16ExampleScopeBase4selfE"></span><span id="_CPPv2N6stored16ExampleScopeBase4selfE"></span><span id="stored::ExampleScopeBase::self"></span><span class="target" id="classstored_1_1_example_scope_base_1acd1570538e6b5a65c6a40feb1daf3d9d"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleScopeBaseE" title="stored::ExampleScopeBase"><span class="n"><span class="pre">ExampleScopeBase</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">self</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBase4selfE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Define <code class="docutils literal notranslate"><span class="pre">self</span></code> for <code class="docutils literal notranslate"><span class="pre">stored::store</span></code>. </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -373,10 +389,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored16ExampleScopeBase4listEvRR1F">
 <span id="_CPPv3I0EN6stored16ExampleScopeBase4listERR1F"></span><span id="_CPPv2I0EN6stored16ExampleScopeBase4listERR1F"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_scope_base_1aec46ae9d93d4bb20d034a30bdc84a329"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleScopeBase4listEvRR1F" title="stored::ExampleScopeBase::list::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">f</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleScopeBase4listEvRR1F" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_scope_base_1a78a9796f204871a32aa8c854e07f0bd4"><span class="std std-ref">longDirectory()</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -384,10 +400,10 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored16ExampleScopeBase4listEv1FPvPKc">
 <span id="_CPPv3I0EN6stored16ExampleScopeBase4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored16ExampleScopeBase4listE1FPvPKc"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_scope_base_1a8c2265ae31fac37a35856b153cf4d321"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleScopeBase4listEv1FPvPKc" title="stored::ExampleScopeBase::list::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">f</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">arg</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefix</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleScopeBase4listEv1FPvPKc" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_scope_base_1a78a9796f204871a32aa8c854e07f0bd4"><span class="std std-ref">longDirectory()</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+</div>
 </p>
 </dd></dl>
 
@@ -428,6 +444,57 @@ public:
 <span id="_CPPv3I0EN6stored16ExampleScopeBase8variableEPKc6size_t"></span><span id="_CPPv2I0EN6stored16ExampleScopeBase8variableEPKc6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_scope_base_1ab140c0175e43178f846bb36e921ca4ad"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="cpp_types.html#_CPPv4I00_bEN6stored8VariableE" title="stored::Variable"><span class="n"><span class="pre">Variable</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleScopeBase8variableE8VariableI1T14ImplementationEPKc6size_t" title="stored::ExampleScopeBase::variable::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleScopeBase14ImplementationE" title="stored::ExampleScopeBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">variable</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">numeric_limits</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleScopeBase8variableE8VariableI1T14ImplementationEPKc6size_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Finds a variable with the given name. </p>
 <p>The variable, when it exists, must have the given (fixed) type. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBase29gravitational_constant_m__s_2E">
+<span id="_CPPv3N6stored16ExampleScopeBase29gravitational_constant_m__s_2E"></span><span id="_CPPv2N6stored16ExampleScopeBase29gravitational_constant_m__s_2E"></span><span id="stored::ExampleScopeBase::gravitational_constant_m__s_2__impl::StoreVariable:Base.Implementation.double.0u.8:"></span><span class="target" id="classstored_1_1_example_scope_base_1a427a0edc7cf2fc4dfea02f4285e88c5c"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleScopeBase14ImplementationE" title="stored::ExampleScopeBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">8</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gravitational_constant_m__s_2</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBase29gravitational_constant_m__s_2E" title="Permalink to this definition"></a><br /></dt>
+<dd><p>gravitational constant (m/s^2) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBase13scope__an_intE">
+<span id="_CPPv3N6stored16ExampleScopeBase13scope__an_intE"></span><span id="_CPPv2N6stored16ExampleScopeBase13scope__an_intE"></span><span id="stored::ExampleScopeBase::scope__an_int__impl::StoreVariable:Base.Implementation.int8_t.8u.1:"></span><span class="target" id="classstored_1_1_example_scope_base_1a796b3a65bdd25ccadf03b001516ea35c"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleScopeBase14ImplementationE" title="stored::ExampleScopeBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int8_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">8u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">scope__an_int</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBase13scope__an_intE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>scope/an int </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBase16scope__some_boolE">
+<span id="_CPPv3N6stored16ExampleScopeBase16scope__some_boolE"></span><span id="_CPPv2N6stored16ExampleScopeBase16scope__some_boolE"></span><span id="stored::ExampleScopeBase::scope__some_bool__impl::StoreVariable:Base.Implementation.b.16u.1:"></span><span class="target" id="classstored_1_1_example_scope_base_1a535e6b35397a555b86bcc05f2779e271"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleScopeBase14ImplementationE" title="stored::ExampleScopeBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">16u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">scope__some_bool</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBase16scope__some_boolE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>scope/some bool </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBase29scope__subscope__another_boolE">
+<span id="_CPPv3N6stored16ExampleScopeBase29scope__subscope__another_boolE"></span><span id="_CPPv2N6stored16ExampleScopeBase29scope__subscope__another_boolE"></span><span id="stored::ExampleScopeBase::scope__subscope__another_bool__impl::StoreVariable:Base.Implementation.b.17u.1:"></span><span class="target" id="classstored_1_1_example_scope_base_1aa67e16149576c6694ca8891e1bb80e3e"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleScopeBase14ImplementationE" title="stored::ExampleScopeBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">17u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">scope__subscope__another_bool</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBase29scope__subscope__another_boolE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>scope/subscope/another bool </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBase14top__level1__bE">
+<span id="_CPPv3N6stored16ExampleScopeBase14top__level1__bE"></span><span id="_CPPv2N6stored16ExampleScopeBase14top__level1__bE"></span><span id="stored::ExampleScopeBase::top__level1__b__impl::StoreVariable:Base.Implementation.b.20u.1:"></span><span class="target" id="classstored_1_1_example_scope_base_1a63799d3325afaeacb99aefb162d98c1c"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleScopeBase14ImplementationE" title="stored::ExampleScopeBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">20u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">top__level1__b</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBase14top__level1__bE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>top/level1/b </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBase15top__level1__b2E">
+<span id="_CPPv3N6stored16ExampleScopeBase15top__level1__b2E"></span><span id="_CPPv2N6stored16ExampleScopeBase15top__level1__b2E"></span><span id="stored::ExampleScopeBase::top__level1__b2__impl::StoreVariable:Base.Implementation.b.21u.1:"></span><span class="target" id="classstored_1_1_example_scope_base_1a541c78d0eb11ead4852e4fbce11bd650"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleScopeBase14ImplementationE" title="stored::ExampleScopeBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">21u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">top__level1__b2</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBase15top__level1__b2E" title="Permalink to this definition"></a><br /></dt>
+<dd><p>top/level1/b2 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBase15two_scopes_0__iE">
+<span id="_CPPv3N6stored16ExampleScopeBase15two_scopes_0__iE"></span><span id="_CPPv2N6stored16ExampleScopeBase15two_scopes_0__iE"></span><span id="stored::ExampleScopeBase::two_scopes_0__i__impl::StoreVariable:Base.Implementation.int8_t.18u.1:"></span><span class="target" id="classstored_1_1_example_scope_base_1a9df285951fcfee2cef2cdf34508a6feb"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleScopeBase14ImplementationE" title="stored::ExampleScopeBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int8_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">18u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">two_scopes_0__i</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBase15two_scopes_0__iE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>two scopes[0]/i </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleScopeBase15two_scopes_1__iE">
+<span id="_CPPv3N6stored16ExampleScopeBase15two_scopes_1__iE"></span><span id="_CPPv2N6stored16ExampleScopeBase15two_scopes_1__iE"></span><span id="stored::ExampleScopeBase::two_scopes_1__i__impl::StoreVariable:Base.Implementation.int8_t.19u.1:"></span><span class="target" id="classstored_1_1_example_scope_base_1ad03878194026c39cd0b4c70a7a10b305"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleScopeBase14ImplementationE" title="stored::ExampleScopeBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int8_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">19u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">two_scopes_1__i</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleScopeBase15two_scopes_1__iE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>two scopes[1]/i </p>
 </dd></dl>
 
 </div>
@@ -494,52 +561,12 @@ public:
 <span id="_CPPv3N6stored12ExampleScopeE"></span><span id="_CPPv2N6stored12ExampleScopeE"></span><span id="stored::ExampleScope"></span><span class="target" id="classstored_1_1_example_scope"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleScope</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleScopeBaseE" title="stored::ExampleScopeBase"><span class="n"><span class="pre">ExampleScopeBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored12ExampleScopeE" title="stored::ExampleScope"><span class="n"><span class="pre">ExampleScope</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleScopeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default <a class="reference internal" href="#classstored_1_1_example_scope_base"><span class="std std-ref">ExampleScopeBase</span></a> implementation. </p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleScope4baseE">
-<span id="_CPPv3N6stored12ExampleScope4baseE"></span><span id="_CPPv2N6stored12ExampleScope4baseE"></span><span id="stored::ExampleScope::base"></span><span class="target" id="classstored_1_1_example_scope_1a9b40394b8c124d4e63707e0b0ea4fb4c"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleScopeBaseE" title="stored::ExampleScopeBase"><span class="n"><span class="pre">ExampleScopeBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored12ExampleScopeE" title="stored::ExampleScope"><span class="n"><span class="pre">ExampleScope</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base</span></span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleScope4baseE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleScope12ExampleScopeEv">
 <span id="_CPPv3N6stored12ExampleScope12ExampleScopeEv"></span><span id="_CPPv2N6stored12ExampleScope12ExampleScopeEv"></span><span id="stored::ExampleScope::ExampleScope"></span><span class="target" id="classstored_1_1_example_scope_1a89532d527fde24eb8316ee5686c3c223"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleScope</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleScope12ExampleScopeEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default constructor. </p>
 </dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleScope12ExampleScopeERR12ExampleScope">
-<span id="_CPPv3N6stored12ExampleScope12ExampleScopeERR12ExampleScope"></span><span id="_CPPv2N6stored12ExampleScope12ExampleScopeERR12ExampleScope"></span><span id="stored::ExampleScope::ExampleScope__ExampleScopeRR"></span><span class="target" id="classstored_1_1_example_scope_1a35c2c3d3915761076c50d6eb380fd5cc"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleScope</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleScope12ExampleScopeERR12ExampleScope" title="stored::ExampleScope::ExampleScope"><span class="n"><span class="pre">ExampleScope</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleScope12ExampleScopeERR12ExampleScope" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Default move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleScope12ExampleScopeERK12ExampleScope">
-<span id="_CPPv3N6stored12ExampleScope12ExampleScopeERK12ExampleScope"></span><span id="_CPPv2N6stored12ExampleScope12ExampleScopeERK12ExampleScope"></span><span id="stored::ExampleScope::ExampleScope__ExampleScopeCR"></span><span class="target" id="classstored_1_1_example_scope_1a221cd1b290bcd299f6c66b990725775b"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleScope</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleScope12ExampleScopeERK12ExampleScope" title="stored::ExampleScope::ExampleScope"><span class="n"><span class="pre">ExampleScope</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleScope12ExampleScopeERK12ExampleScope" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleScopeaSERR12ExampleScope">
-<span id="_CPPv3N6stored12ExampleScopeaSERR12ExampleScope"></span><span id="_CPPv2N6stored12ExampleScopeaSERR12ExampleScope"></span><span id="stored::ExampleScope::assign-operator__ExampleScopeRR"></span><span class="target" id="classstored_1_1_example_scope_1af6a8c957408c0fcf40b1af72ddc0984d"></span><a class="reference internal" href="#_CPPv4N6stored12ExampleScopeE" title="stored::ExampleScope"><span class="n"><span class="pre">ExampleScope</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleScopeE" title="stored::ExampleScope"><span class="n"><span class="pre">ExampleScope</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleScopeaSERR12ExampleScope" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleScopeaSERK12ExampleScope">
-<span id="_CPPv3N6stored12ExampleScopeaSERK12ExampleScope"></span><span id="_CPPv2N6stored12ExampleScopeaSERK12ExampleScope"></span><span id="stored::ExampleScope::assign-operator__ExampleScopeCR"></span><span class="target" id="classstored_1_1_example_scope_1a25773fa172fd6467893366b995a6d361"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12ExampleScopeE" title="stored::ExampleScope"><span class="n"><span class="pre">ExampleScope</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleScopeaSERK12ExampleScope" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
-</dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
-<dl>
-<dt class="sig sig-object cpp">
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">::stored::ExampleScopeBase&lt;</span> <span class="pre">ExampleScope</span> <span class="pre">&gt;</span></dt>
-</dl>
 
 </div>
 </dd></dl>

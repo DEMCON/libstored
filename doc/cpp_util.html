@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Utilities &mdash; libstored 1.1.0 documentation</title>
+  <title>Utilities &mdash; libstored 1.1.1-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.1.0
+                1.1.1.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -434,12 +434,11 @@
 <p>The <a class="reference internal" href="#classstored_1_1_scratch_pad"><span class="std std-ref">ScratchPad</span></a> grows automatically, but it is more efficient to manage the <a class="reference internal" href="#classstored_1_1_scratch_pad_1af66ee10f3be5795790c76d5a74d0d058"><span class="std std-ref">capacity()</span></a> on beforehand. The capacity is determined while using the <a class="reference internal" href="#classstored_1_1_scratch_pad"><span class="std std-ref">ScratchPad</span></a>, which may cause some more overhead at the start of the application.</p>
 <p>There is no overhead per <a class="reference internal" href="#classstored_1_1_scratch_pad_1a0d2ebf84b297dfaf3b74bf8e2f15a750"><span class="std std-ref">alloc()</span></a>, but padding bytes may be inserted to word-align allocs. Heap fragmentation is not possible.</p>
 <p>Alloc is very fast, but dealloc or free is not possible. Bump-alloc is like a stack; you can <a class="reference internal" href="#classstored_1_1_scratch_pad_1ac04d7f187a834e001ed761698ce1c14a"><span class="std std-ref">reset()</span></a> it, or make a <a class="reference internal" href="#classstored_1_1_scratch_pad_1aa8cc65302ec7fdc2c697c95c13c02a1e"><span class="std std-ref">snapshot()</span></a>, which you can rollback to.</p>
-<p><dl class="field-list simple">
-<dt class="field-odd">tparam MaxSize</dt>
-<dd class="field-odd"><p>the maximum total size to be allocated, which is used to determine the type of the internal counters. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><p><strong>MaxSize</strong> – the maximum total size to be allocated, which is used to determine the type of the internal counters. </p>
 </dd>
 </dl>
-</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
@@ -568,10 +567,10 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6stored10ScratchPad8snapshotEv">
 <span id="_CPPv3N6stored10ScratchPad8snapshotEv"></span><span id="_CPPv2N6stored10ScratchPad8snapshotEv"></span><span id="stored::ScratchPad::snapshot"></span><span class="target" id="classstored_1_1_scratch_pad_1aa8cc65302ec7fdc2c697c95c13c02a1e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored10ScratchPad8SnapshotE" title="stored::ScratchPad::Snapshot"><span class="n"><span class="pre">Snapshot</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">snapshot</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored10ScratchPad8snapshotEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Get a snapshot of the <a class="reference internal" href="#classstored_1_1_scratch_pad"><span class="std std-ref">ScratchPad</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_scratch_pad_1_1_snapshot"><span class="std std-ref">stored::ScratchPad::Snapshot</span></a>. </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_scratch_pad_1_1_snapshot"><span class="std std-ref">stored::ScratchPad::Snapshot</span></a>. </p>
+</div>
 </p>
 </dd></dl>
 
@@ -590,10 +589,10 @@
 <dd><p>A snapshot of the <a class="reference internal" href="#classstored_1_1_scratch_pad"><span class="std std-ref">ScratchPad</span></a>, which can be rolled back to. </p>
 <p>A <a class="reference internal" href="#classstored_1_1_scratch_pad_1_1_snapshot"><span class="std std-ref">Snapshot</span></a> remains valid, until the <a class="reference internal" href="#classstored_1_1_scratch_pad"><span class="std std-ref">ScratchPad</span></a> is reset, or an earlier snapshot is rolled back. An invalid snapshot cannot be rolled back, and cannot be destructed, as that implies a rollback. Make sure to reset the snapshot before destruction, if it may have become invalid.</p>
 <p>Normally, you would let a snapshot go out of scope before doing anything with older snapshots.</p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_scratch_pad_1aa8cc65302ec7fdc2c697c95c13c02a1e"><span class="std std-ref">stored::ScratchPad::snapshot()</span></a> </p>
-</dd>
-</dl>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_scratch_pad_1aa8cc65302ec7fdc2c697c95c13c02a1e"><span class="std std-ref">stored::ScratchPad::snapshot()</span></a> </p>
+</div>
 </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>

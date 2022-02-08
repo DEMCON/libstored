@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fibered &mdash; libstored 1.1.0 documentation</title>
+  <title>fibered &mdash; libstored 1.1.1-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="terminal" href="example_terminal.html" />
-    <link rel="prev" title="control" href="example_control.html" /> 
+    <link rel="prev" title="meta" href="example_meta.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.1.0
+                1.1.1.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -62,11 +62,11 @@
 <li class="toctree-l2"><a class="reference internal" href="example_components.html">components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_concurrency.html">concurrency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_control.html">control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_meta.html">meta</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">fibered</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#store-definition">Store definition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#application">Application</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#output">Output</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#store-reference">Store reference</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
@@ -173,8 +173,11 @@
 <span class="p">}</span><span class="w"></span>
 <span class="n">zth_fiber</span><span class="p">(</span><span class="n">receiver</span><span class="p">)</span><span class="w"></span>
 
-<span class="kt">int</span><span class="w"> </span><span class="n">main_fiber</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">UNUSED_PAR</span><span class="p">(</span><span class="n">argc</span><span class="p">),</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">UNUSED_PAR</span><span class="p">(</span><span class="n">argv</span><span class="p">))</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="n">main_fiber</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
+<span class="w">	</span><span class="n">UNUSED</span><span class="p">(</span><span class="n">argc</span><span class="p">)</span><span class="w"></span>
+<span class="w">	</span><span class="n">UNUSED</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span><span class="w"></span>
+
 <span class="w">	</span><span class="n">puts</span><span class="p">(</span><span class="n">zth</span><span class="o">::</span><span class="n">banner</span><span class="p">());</span><span class="w"></span>
 <span class="w">	</span><span class="n">puts</span><span class="p">(</span><span class="n">stored</span><span class="o">::</span><span class="n">banner</span><span class="p">());</span><span class="w"></span>
 
@@ -211,339 +214,13 @@ Sending...
 </pre></div>
 </div>
 </section>
-<section id="store-reference">
-<h2>Store reference<a class="headerlink" href="#store-reference" title="Permalink to this headline"></a></h2>
-<dl class="cpp class">
-<dt class="sig sig-object cpp" id="_CPPv4I00EN6stored21ExampleFiberedObjectsE">
-<span id="_CPPv3I00EN6stored21ExampleFiberedObjectsE"></span><span id="_CPPv2I00EN6stored21ExampleFiberedObjectsE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Base_</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Implementation_</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_fibered_objects"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFiberedObjects</span></span></span><a class="headerlink" href="#_CPPv4I00EN6stored21ExampleFiberedObjectsE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>All <a class="reference internal" href="#classstored_1_1_example_fibered_base"><span class="std std-ref">ExampleFiberedBase</span></a>’s objects. </p>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleFiberedObjects4BaseE">
-<span id="_CPPv3N6stored21ExampleFiberedObjects4BaseE"></span><span id="_CPPv2N6stored21ExampleFiberedObjects4BaseE"></span><span id="stored::ExampleFiberedObjects::Base"></span><span class="target" id="classstored_1_1_example_fibered_objects_1af374f2ca02973997b30a2a90a262892b"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN6stored21ExampleFiberedObjectsE" title="stored::ExampleFiberedObjects::Base_"><span class="n"><span class="pre">Base_</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Base</span></span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleFiberedObjects4BaseE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleFiberedObjects14ImplementationE">
-<span id="_CPPv3N6stored21ExampleFiberedObjects14ImplementationE"></span><span id="_CPPv2N6stored21ExampleFiberedObjects14ImplementationE"></span><span id="stored::ExampleFiberedObjects::Implementation"></span><span class="target" id="classstored_1_1_example_fibered_objects_1af3d187ba29a10f228c92745f70fa5443"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN6stored21ExampleFiberedObjectsE" title="stored::ExampleFiberedObjects::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Implementation</span></span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleFiberedObjects14ImplementationE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored21ExampleFiberedObjects1iE">
-<span id="_CPPv3N6stored21ExampleFiberedObjects1iE"></span><span id="_CPPv2N6stored21ExampleFiberedObjects1iE"></span><span id="stored::ExampleFiberedObjects::i__impl::StoreVariable:Base.Implementation.int32_t.0u.4:"></span><span class="target" id="classstored_1_1_example_fibered_objects_1ae1238c3162e727037354786879d62bdc"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreVariable</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored21ExampleFiberedObjects4BaseE" title="stored::ExampleFiberedObjects::Base"><span class="n"><span class="pre">Base</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored21ExampleFiberedObjects14ImplementationE" title="stored::ExampleFiberedObjects::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int32_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0u</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">i</span></span></span><a class="headerlink" href="#_CPPv4N6stored21ExampleFiberedObjects1iE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>i </p>
-</dd></dl>
-
-</div>
-</dd></dl>
-
-<dl class="cpp class">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN6stored18ExampleFiberedBaseE">
-<span id="_CPPv3I0EN6stored18ExampleFiberedBaseE"></span><span id="_CPPv2I0EN6stored18ExampleFiberedBaseE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Implementation_</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_fibered_base"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFiberedBase</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I00EN6stored21ExampleFiberedObjectsE" title="stored::ExampleFiberedObjects"><span class="n"><span class="pre">ExampleFiberedObjects</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored18ExampleFiberedBaseE" title="stored::ExampleFiberedBase"><span class="n"><span class="pre">ExampleFiberedBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored18ExampleFiberedBaseE" title="stored::ExampleFiberedBase::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored18ExampleFiberedBaseE" title="stored::ExampleFiberedBase::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0EN6stored18ExampleFiberedBaseE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Base class with default interface of all <a class="reference internal" href="#classstored_1_1_example_fibered"><span class="std std-ref">ExampleFibered</span></a> implementations. </p>
-<p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
-<p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_fibered"><span class="std std-ref">stored::ExampleFibered</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
-<p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleFibered : public STORE_BASE_CLASS(ExampleFiberedBase, ExampleFibered) {
-    STORE_CLASS_BODY(ExampleFiberedBase, ExampleFibered)
-public:
-    // Your class implementation, such as:
-    ExampleFibered() is_default
-    // ...
-};
-</pre></div>
-</div>
-</p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_fibered"><span class="std std-ref">stored::ExampleFibered</span></a> </p>
-</dd>
-<dt><strong>See</strong></dt><dd><p>stored::ExampleFiberedData </p>
-</dd>
-</dl>
-</p>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleFiberedBaseUt2_53E">
-<span id="_CPPv3N6stored18ExampleFiberedBaseUt2_53E"></span><span class="target" id="classstored_1_1_example_fibered_base_1a4d664f371245bf3120e2cfaa8b7add14"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleFiberedBaseUt2_53E" title="Permalink to this definition"></a><br /></dt>
-<dd><p><em>Values:</em></p>
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleFiberedBaseUt2_5311ObjectCountE">
-<span id="_CPPv3N6stored18ExampleFiberedBaseUt2_5311ObjectCountE"></span><span class="target" id="classstored_1_1_example_fibered_base_1a4d664f371245bf3120e2cfaa8b7add14a2146f525c98c687a4848ae14bcfc6378"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleFiberedBaseUt2_5311ObjectCountE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Number of objects in the store. </p>
-</dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleFiberedBaseUt2_5313VariableCountE">
-<span id="_CPPv3N6stored18ExampleFiberedBaseUt2_5313VariableCountE"></span><span class="target" id="classstored_1_1_example_fibered_base_1a4d664f371245bf3120e2cfaa8b7add14ae3426fba38042e28e60b5b683ebdc8dc"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleFiberedBaseUt2_5313VariableCountE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Number of variables in the store. </p>
-</dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleFiberedBaseUt2_5313FunctionCountE">
-<span id="_CPPv3N6stored18ExampleFiberedBaseUt2_5313FunctionCountE"></span><span class="target" id="classstored_1_1_example_fibered_base_1a4d664f371245bf3120e2cfaa8b7add14a8b1e6841ee912b702e62f7dfc8eb027c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleFiberedBaseUt2_5313FunctionCountE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Number of functions in the store. </p>
-</dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleFiberedBaseUt2_5310BufferSizeE">
-<span id="_CPPv3N6stored18ExampleFiberedBaseUt2_5310BufferSizeE"></span><span class="target" id="classstored_1_1_example_fibered_base_1a4d664f371245bf3120e2cfaa8b7add14a15497f7fce6a024f3c7ab820b6b26538"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleFiberedBaseUt2_5310BufferSizeE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Buffer size. </p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleFiberedBase14ImplementationE">
-<span id="_CPPv3N6stored18ExampleFiberedBase14ImplementationE"></span><span id="_CPPv2N6stored18ExampleFiberedBase14ImplementationE"></span><span id="stored::ExampleFiberedBase::Implementation"></span><span class="target" id="classstored_1_1_example_fibered_base_1ac95fb4d56e57169f2ddf8e64df5fff94"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored18ExampleFiberedBaseE" title="stored::ExampleFiberedBase::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Implementation</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleFiberedBase14ImplementationE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Type of the actual implementation, which is the (lowest) subclass. </p>
-</dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleFiberedBase3KeyE">
-<span id="_CPPv3N6stored18ExampleFiberedBase3KeyE"></span><span id="_CPPv2N6stored18ExampleFiberedBase3KeyE"></span><span id="stored::ExampleFiberedBase::Key"></span><span class="target" id="classstored_1_1_example_fibered_base_1aded62f485e8306326ef9b39e61b041a1"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">uintptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Key</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleFiberedBase3KeyE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Type of a key. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#classstored_1_1_example_fibered_base_1a9163d335d292d4be13e70152668c1217"><span class="std std-ref">bufferToKey()</span></a> </p>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleFiberedBase9ObjectMapE">
-<span id="_CPPv3N6stored18ExampleFiberedBase9ObjectMapE"></span><span id="_CPPv2N6stored18ExampleFiberedBase9ObjectMapE"></span><span id="stored::ExampleFiberedBase::ObjectMap"></span><span class="target" id="classstored_1_1_example_fibered_base_1a13e3a2ea865e509942783bb01e2edc11"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">Map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">String</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant"><span class="n"><span class="pre">Variant</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored18ExampleFiberedBase14ImplementationE" title="stored::ExampleFiberedBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectMap</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleFiberedBase9ObjectMapE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Map as generated by <a class="reference internal" href="#classstored_1_1_example_fibered_base_1a92bf615b95ebcc53f9c08d51996c7ac2"><span class="std std-ref">map()</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleFiberedBase7ObjectsE">
-<span id="_CPPv3N6stored18ExampleFiberedBase7ObjectsE"></span><span id="_CPPv2N6stored18ExampleFiberedBase7ObjectsE"></span><span id="stored::ExampleFiberedBase::Objects"></span><span class="target" id="classstored_1_1_example_fibered_base_1a277869f33bfd41cd114411a41bc2535f"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN6stored21ExampleFiberedObjectsE" title="stored::ExampleFiberedObjects"><span class="n"><span class="pre">ExampleFiberedObjects</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored18ExampleFiberedBaseE" title="stored::ExampleFiberedBase"><span class="n"><span class="pre">ExampleFiberedBase</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored18ExampleFiberedBaseE" title="stored::ExampleFiberedBase::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Objects</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleFiberedBase7ObjectsE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored18ExampleFiberedBase11bufferToKeyEPKv">
-<span id="_CPPv3NK6stored18ExampleFiberedBase11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored18ExampleFiberedBase11bufferToKeyEPKv"></span><span id="stored::ExampleFiberedBase::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_fibered_base_1a9163d335d292d4be13e70152668c1217"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored18ExampleFiberedBase3KeyE" title="stored::ExampleFiberedBase::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bufferToKey</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored18ExampleFiberedBase11bufferToKeyEPKv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Converts a variable’s buffer to a key. </p>
-<p>A key is unique for all variables of the same store, but identical for the same variables across different instances of the same store class. Therefore, the key can be used to synchronize between instances of the same store. A key does not contain meta data, such as type or length. It is up to the synchronization library to make sure that these properties are handled well.</p>
-<p>For synchronization, when hookEntryX() or hookEntryRO() is invoked, one can compute the key of the object that is accessed. The key can be used, for example, in a key-to-Variant map. When data arrives from another party, the key can be used to find the proper <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> in the map.</p>
-<p>This way, data exchange is type-safe, as the <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> can check if the data format matches the expected type. However, one cannot process data if the key is not set yet in the map. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleFiberedBase4findEPKc6size_t">
-<span id="_CPPv3N6stored18ExampleFiberedBase4findEPKc6size_t"></span><span id="_CPPv2N6stored18ExampleFiberedBase4findEPKc6size_t"></span><span id="stored::ExampleFiberedBase::find__cCP.s"></span><span class="target" id="classstored_1_1_example_fibered_base_1ad89be118e95b6b3058d1eb5ca1ce6b25"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="cpp_types.html#_CPPv4I0EN6stored7VariantE" title="stored::Variant"><span class="n"><span class="pre">Variant</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored18ExampleFiberedBase14ImplementationE" title="stored::ExampleFiberedBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">find</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">numeric_limits</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleFiberedBase4findEPKc6size_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Finds an object with the given name. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the object, or an invalid <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">stored::Variant</span></a> if not found. </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN6stored18ExampleFiberedBase8functionE8FunctionI1T14ImplementationEPKc6size_t">
-<span id="_CPPv3I0EN6stored18ExampleFiberedBase8functionEPKc6size_t"></span><span id="_CPPv2I0EN6stored18ExampleFiberedBase8functionEPKc6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_fibered_base_1a0446c112dfbd9be3431ea0a7bc90c6cb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="cpp_types.html#_CPPv4I00EN6stored8FunctionE" title="stored::Function"><span class="n"><span class="pre">Function</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored18ExampleFiberedBase8functionE8FunctionI1T14ImplementationEPKc6size_t" title="stored::ExampleFiberedBase::function::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored18ExampleFiberedBase14ImplementationE" title="stored::ExampleFiberedBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">function</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">numeric_limits</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored18ExampleFiberedBase8functionE8FunctionI1T14ImplementationEPKc6size_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Finds a function with the given name. </p>
-<p>The function, when it exists, must have the given (fixed) type. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored18ExampleFiberedBase14implementationEv">
-<span id="_CPPv3NK6stored18ExampleFiberedBase14implementationEv"></span><span id="_CPPv2NK6stored18ExampleFiberedBase14implementationEv"></span><span id="stored::ExampleFiberedBase::implementationC"></span><span class="target" id="classstored_1_1_example_fibered_base_1a04ed53a3106070cdc2e01ea6207fa5fe"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored18ExampleFiberedBase14ImplementationE" title="stored::ExampleFiberedBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored18ExampleFiberedBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Returns the reference to the implementation. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleFiberedBase14implementationEv">
-<span id="_CPPv3N6stored18ExampleFiberedBase14implementationEv"></span><span id="_CPPv2N6stored18ExampleFiberedBase14implementationEv"></span><span id="stored::ExampleFiberedBase::implementation"></span><span class="target" id="classstored_1_1_example_fibered_base_1af279794cddacfa5f0cbf123e1ae2590b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored18ExampleFiberedBase14ImplementationE" title="stored::ExampleFiberedBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">implementation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleFiberedBase14implementationEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Returns the reference to the implementation. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN6stored18ExampleFiberedBase4listEvRR1F">
-<span id="_CPPv3I0EN6stored18ExampleFiberedBase4listERR1F"></span><span id="_CPPv2I0EN6stored18ExampleFiberedBase4listERR1F"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_fibered_base_1a458c9016b9735d1e61fae9042e67cf77"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored18ExampleFiberedBase4listEvRR1F" title="stored::ExampleFiberedBase::list::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">f</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored18ExampleFiberedBase4listEvRR1F" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_fibered_base_1a6c9da20f49606e97df2b6aa197f92ef3"><span class="std std-ref">longDirectory()</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN6stored18ExampleFiberedBase4listEv1FPvPKc">
-<span id="_CPPv3I0EN6stored18ExampleFiberedBase4listE1FPvPKc"></span><span id="_CPPv2I0EN6stored18ExampleFiberedBase4listE1FPvPKc"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_fibered_base_1a0b72211b0d8e2f6e2b1f0bcc6107f19b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored18ExampleFiberedBase4listEv1FPvPKc" title="stored::ExampleFiberedBase::list::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">f</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">arg</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefix</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored18ExampleFiberedBase4listEv1FPvPKc" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_fibered_base_1a6c9da20f49606e97df2b6aa197f92ef3"><span class="std std-ref">longDirectory()</span></a>. </p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored18ExampleFiberedBase13longDirectoryEv">
-<span id="_CPPv3NK6stored18ExampleFiberedBase13longDirectoryEv"></span><span id="_CPPv2NK6stored18ExampleFiberedBase13longDirectoryEv"></span><span id="stored::ExampleFiberedBase::longDirectoryC"></span><span class="target" id="classstored_1_1_example_fibered_base_1a6c9da20f49606e97df2b6aa197f92ef3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">longDirectory</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored18ExampleFiberedBase13longDirectoryEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Retuns the long directory. </p>
-<p>When not available, the short directory is returned. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleFiberedBase3mapEPKc">
-<span id="_CPPv3N6stored18ExampleFiberedBase3mapEPKc"></span><span id="_CPPv2N6stored18ExampleFiberedBase3mapEPKc"></span><span id="stored::ExampleFiberedBase::map__cCP"></span><span class="target" id="classstored_1_1_example_fibered_base_1a92bf615b95ebcc53f9c08d51996c7ac2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored18ExampleFiberedBase9ObjectMapE" title="stored::ExampleFiberedBase::ObjectMap"><span class="n"><span class="pre">ObjectMap</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">map</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prefix</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored18ExampleFiberedBase3mapEPKc" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Create a name to <a class="reference internal" href="cpp_types.html#classstored_1_1_variant"><span class="std std-ref">Variant</span></a> map for the store. </p>
-<p>Generating the map may be expensive and the result is not cached. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored18ExampleFiberedBase4nameEv">
-<span id="_CPPv3NK6stored18ExampleFiberedBase4nameEv"></span><span id="_CPPv2NK6stored18ExampleFiberedBase4nameEv"></span><span id="stored::ExampleFiberedBase::nameC"></span><span class="target" id="classstored_1_1_example_fibered_base_1a0a5394ca145f4efdd237e71b64cffa18"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored18ExampleFiberedBase4nameEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Returns the name of store, which can be used as prefix for <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored18ExampleFiberedBase14shortDirectoryEv">
-<span id="_CPPv3NK6stored18ExampleFiberedBase14shortDirectoryEv"></span><span id="_CPPv2NK6stored18ExampleFiberedBase14shortDirectoryEv"></span><span id="stored::ExampleFiberedBase::shortDirectoryC"></span><span class="target" id="classstored_1_1_example_fibered_base_1a0fc334ab44b479ff8a57afbed264c5a7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">shortDirectory</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored18ExampleFiberedBase14shortDirectoryEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Returns the short directory. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN6stored18ExampleFiberedBase8variableE8VariableI1T14ImplementationEPKc6size_t">
-<span id="_CPPv3I0EN6stored18ExampleFiberedBase8variableEPKc6size_t"></span><span id="_CPPv2I0EN6stored18ExampleFiberedBase8variableEPKc6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_fibered_base_1af8f74f3077202feeb2750ac16d24e208"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="cpp_types.html#_CPPv4I00_bEN6stored8VariableE" title="stored::Variable"><span class="n"><span class="pre">Variable</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored18ExampleFiberedBase8variableE8VariableI1T14ImplementationEPKc6size_t" title="stored::ExampleFiberedBase::variable::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored18ExampleFiberedBase14ImplementationE" title="stored::ExampleFiberedBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">variable</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">numeric_limits</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored18ExampleFiberedBase8variableE8VariableI1T14ImplementationEPKc6size_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Finds a variable with the given name. </p>
-<p>The variable, when it exists, must have the given (fixed) type. </p>
-</dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN6stored18ExampleFiberedBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">
-<span id="_CPPv3I0EN6stored18ExampleFiberedBase12freeFunctionEPKc6size_t"></span><span id="_CPPv2I0EN6stored18ExampleFiberedBase12freeFunctionEPKc6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_fibered_base_1a8560ffc81a625354f06d16c14c33d0b0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">FreeFunction</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored18ExampleFiberedBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t" title="stored::ExampleFiberedBase::freeFunction::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored18ExampleFiberedBase14ImplementationE" title="stored::ExampleFiberedBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">freeFunction</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">numeric_limits</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored18ExampleFiberedBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Finds a function with the given name. </p>
-<p>The function, when it exists, must have the given (fixed) type. It is returned as a free function; it is not bound yet to a specific store instance. This function is constexpr for C++14. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN6stored18ExampleFiberedBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">
-<span id="_CPPv3I0EN6stored18ExampleFiberedBase12freeVariableEPKc6size_t"></span><span id="_CPPv2I0EN6stored18ExampleFiberedBase12freeVariableEPKc6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_fibered_base_1ad2ec512226c894bdce60478d320f8850"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">FreeVariable</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored18ExampleFiberedBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t" title="stored::ExampleFiberedBase::freeVariable::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored18ExampleFiberedBase14ImplementationE" title="stored::ExampleFiberedBase::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">freeVariable</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">numeric_limits</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6stored18ExampleFiberedBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Finds a variable with the given name. </p>
-<p>The variable, when it exists, must have the given (fixed) type. It is returned as a free variable; it is not bound yet to a specific store instance. This function is constexpr for C++14. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ExampleFiberedBase4hashEv">
-<span id="_CPPv3N6stored18ExampleFiberedBase4hashEv"></span><span id="_CPPv2N6stored18ExampleFiberedBase4hashEv"></span><span id="stored::ExampleFiberedBase::hashCE"></span><span class="target" id="classstored_1_1_example_fibered_base_1a58575ed0925efaef9710d255c45cf464"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">hash</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored18ExampleFiberedBase4hashEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Returns a unique hash of the store. </p>
-</dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
-<dl>
-<dt class="sig sig-object cpp">
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">impl::StoreFunction</span></dt>
-</dl>
-
-<dl>
-<dt class="sig sig-object cpp">
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">impl::StoreVariable</span></dt>
-</dl>
-
-<dl>
-<dt class="sig sig-object cpp">
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">impl::StoreVariantF</span></dt>
-</dl>
-
-<dl>
-<dt class="sig sig-object cpp">
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">impl::StoreVariantV</span></dt>
-</dl>
-
-<dl>
-<dt class="sig sig-object cpp">
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">stored::FreeVariable</span></dt>
-</dl>
-
-<dl>
-<dt class="sig sig-object cpp">
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">stored::Variant&lt;</span> <span class="pre">void</span> <span class="pre">&gt;</span></dt>
-</dl>
-
-</div>
-</dd></dl>
-
-<dl class="cpp class">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14ExampleFiberedE">
-<span id="_CPPv3N6stored14ExampleFiberedE"></span><span id="_CPPv2N6stored14ExampleFiberedE"></span><span id="stored::ExampleFibered"></span><span class="target" id="classstored_1_1_example_fibered"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFibered</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored18ExampleFiberedBaseE" title="stored::ExampleFiberedBase"><span class="n"><span class="pre">ExampleFiberedBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored14ExampleFiberedE" title="stored::ExampleFibered"><span class="n"><span class="pre">ExampleFibered</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored14ExampleFiberedE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Default <a class="reference internal" href="#classstored_1_1_example_fibered_base"><span class="std std-ref">ExampleFiberedBase</span></a> implementation. </p>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14ExampleFibered4baseE">
-<span id="_CPPv3N6stored14ExampleFibered4baseE"></span><span id="_CPPv2N6stored14ExampleFibered4baseE"></span><span id="stored::ExampleFibered::base"></span><span class="target" id="classstored_1_1_example_fibered_1a8bc692f0fbc295eb52cb42ac10e69454"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored18ExampleFiberedBaseE" title="stored::ExampleFiberedBase"><span class="n"><span class="pre">ExampleFiberedBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored14ExampleFiberedE" title="stored::ExampleFibered"><span class="n"><span class="pre">ExampleFibered</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base</span></span></span><a class="headerlink" href="#_CPPv4N6stored14ExampleFibered4baseE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14ExampleFibered14ExampleFiberedEv">
-<span id="_CPPv3N6stored14ExampleFibered14ExampleFiberedEv"></span><span id="_CPPv2N6stored14ExampleFibered14ExampleFiberedEv"></span><span id="stored::ExampleFibered::ExampleFibered"></span><span class="target" id="classstored_1_1_example_fibered_1ac7296422dda70af187d125539a0f8b0c"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFibered</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored14ExampleFibered14ExampleFiberedEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Default constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14ExampleFibered14ExampleFiberedERR14ExampleFibered">
-<span id="_CPPv3N6stored14ExampleFibered14ExampleFiberedERR14ExampleFibered"></span><span id="_CPPv2N6stored14ExampleFibered14ExampleFiberedERR14ExampleFibered"></span><span id="stored::ExampleFibered::ExampleFibered__ExampleFiberedRR"></span><span class="target" id="classstored_1_1_example_fibered_1a7f80d0b3e702fe421340afda2c934f3b"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFibered</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14ExampleFibered14ExampleFiberedERR14ExampleFibered" title="stored::ExampleFibered::ExampleFibered"><span class="n"><span class="pre">ExampleFibered</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored14ExampleFibered14ExampleFiberedERR14ExampleFibered" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Default move constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14ExampleFibered14ExampleFiberedERK14ExampleFibered">
-<span id="_CPPv3N6stored14ExampleFibered14ExampleFiberedERK14ExampleFibered"></span><span id="_CPPv2N6stored14ExampleFibered14ExampleFiberedERK14ExampleFibered"></span><span id="stored::ExampleFibered::ExampleFibered__ExampleFiberedCR"></span><span class="target" id="classstored_1_1_example_fibered_1a5f2ed2eb58db3f9eb07207b99d3a929c"></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFibered</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14ExampleFibered14ExampleFiberedERK14ExampleFibered" title="stored::ExampleFibered::ExampleFibered"><span class="n"><span class="pre">ExampleFibered</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored14ExampleFibered14ExampleFiberedERK14ExampleFibered" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted copy constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14ExampleFiberedaSERR14ExampleFibered">
-<span id="_CPPv3N6stored14ExampleFiberedaSERR14ExampleFibered"></span><span id="_CPPv2N6stored14ExampleFiberedaSERR14ExampleFibered"></span><span id="stored::ExampleFibered::assign-operator__ExampleFiberedRR"></span><span class="target" id="classstored_1_1_example_fibered_1aa89f993e6fa2cac79d44fc822a0d359b"></span><a class="reference internal" href="#_CPPv4N6stored14ExampleFiberedE" title="stored::ExampleFibered"><span class="n"><span class="pre">ExampleFibered</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14ExampleFiberedE" title="stored::ExampleFibered"><span class="n"><span class="pre">ExampleFibered</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored14ExampleFiberedaSERR14ExampleFibered" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted move assignment operator. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14ExampleFiberedaSERK14ExampleFibered">
-<span id="_CPPv3N6stored14ExampleFiberedaSERK14ExampleFibered"></span><span id="_CPPv2N6stored14ExampleFiberedaSERK14ExampleFibered"></span><span id="stored::ExampleFibered::assign-operator__ExampleFiberedCR"></span><span class="target" id="classstored_1_1_example_fibered_1a59b166fddbb5fbcbf8e56aed2dd9bc43"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored14ExampleFiberedE" title="stored::ExampleFibered"><span class="n"><span class="pre">ExampleFibered</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored14ExampleFiberedaSERK14ExampleFibered" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Deleted assignment operator. </p>
-</dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
-<dl>
-<dt class="sig sig-object cpp">
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">::stored::ExampleFiberedBase&lt;</span> <span class="pre">ExampleFibered</span> <span class="pre">&gt;</span></dt>
-</dl>
-
-</div>
-</dd></dl>
-
-</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="example_control.html" class="btn btn-neutral float-left" title="control" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="example_meta.html" class="btn btn-neutral float-left" title="meta" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="example_terminal.html" class="btn btn-neutral float-right" title="terminal" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
