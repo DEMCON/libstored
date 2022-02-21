@@ -50,6 +50,91 @@ vim:filetype=cpp
 
 namespace stored {
 
+#	ifdef STORED_HAVE_QT
+// This definition is at the top of the file, as the code model parser does not
+// like this generated file too much.  Putting it here seems to allow having
+// code completion in QML.
+
+/*!
+ * \brief Base class of #stored::Qtified{{store.name}}.
+ *
+ * This class only exists, because a subclass of QObject with signals/slots
+ * cannot be templated. Do not use this class directly, use
+ * #stored::Qtified{{store.name}} instead.
+ */
+class Qtified{{store.name}}Base : public QObject {
+	Q_OBJECT
+{% for o in store.objects %}
+{%   if o is variable %}
+{%     if o is string or o is qml_compatible %}
+	Q_PROPERTY({{o|qtype}} {{o.cname}} READ q_get{{o.cname}} WRITE q_set{{o.cname}} NOTIFY {{o.cname}}Changed)
+{%     endif %}
+{%   endif %}
+{% endfor %}
+protected:
+	explicit Qtified{{store.name}}Base(QObject* parent = nullptr);
+public:
+	virtual ~Qtified{{store.name}}Base() override;
+
+signals:
+{% for o in store.objects %}
+{%   if o is variable and (o is string or o is qml_compatible) %}
+	void {{o.cname}}Changed();
+{%   endif %}
+{% endfor %}
+
+public slots:
+{% for o in store.objects %}
+{%   if o is function %}
+{%     if o is string %}
+	virtual QString q_{{o.cname}}() const = 0;
+	virtual void q_{{o.cname}}(QString const& value) = 0;
+
+	QString {{o.cname}}() const
+	{
+		return q_{{o.cname}}();
+	}
+
+	void {{o.cname}}(QString const& value)
+	{
+		q_{{o.cname}}(value);
+	}
+
+{%     elif o is qml_compatible %}
+	virtual {{o|qtype}} q_{{o.cname}}() const = 0;
+	virtual void q_{{o.cname}}({{o|qtype}} value) = 0;
+
+	{{o|qtype}} {{o.cname}}() const
+	{
+		return q_{{o.cname}}();
+	}
+
+	void {{o.cname}}({{o|qtype}} value)
+	{
+		q_{{o.cname}}(value);
+	}
+
+{%     endif %}
+{%   endif %}
+{% endfor %}
+
+private:
+	// Stores are templates, but Q_OBJECT does not support templated
+	// classes.  Forward the calls to Qtified{{store.name}}.
+{% for o in store.objects %}
+{%   if o is variable %}
+{%     if o is string %}
+	virtual QString q_get{{o.cname}}() const = 0;
+	virtual void q_set{{o.cname}}(QString const& value) = 0;
+{%     elif o is qml_compatible %}
+	virtual {{o|qtype}} q_get{{o.cname}}() const = 0;
+	virtual void q_set{{o.cname}}({{o|qtype}} value) = 0;
+{%     endif %}
+{%   endif %}
+{% endfor %}
+};
+#	endif // STORED_HAVE_QT
+
 /*!
  * \brief Data storage of {{store.name}}Base.
  */
@@ -759,83 +844,6 @@ public:
 };
 
 #	ifdef STORED_HAVE_QT
-/*!
- * \brief Base class of #stored::Qtified{{store.name}}.
- *
- * This class only exists, because a subclass of QObject with signals/slots
- * cannot be templated. Do not use this class directly, use
- * #stored::Qtified{{store.name}} instead.
- */
-class Qtified{{store.name}}Base : public QObject {
-	Q_OBJECT
-{% for o in store.objects %}
-{%   if o is variable %}
-{%     if o is string or o is qml_compatible %}
-	Q_PROPERTY({{o|qtype}} {{o.cname}} READ q_get{{o.cname}} WRITE q_set{{o.cname}} NOTIFY {{o.cname}}Changed)
-{%     endif %}
-{%   endif %}
-{% endfor %}
-protected:
-	explicit Qtified{{store.name}}Base(QObject* parent = nullptr);
-public:
-	virtual ~Qtified{{store.name}}Base() override;
-
-signals:
-{% for o in store.objects %}
-{%   if o is variable and (o is string or o is qml_compatible) %}
-	void {{o.cname}}Changed();
-{%   endif %}
-{% endfor %}
-
-public slots:
-{% for o in store.objects %}
-{%   if o is function %}
-{%     if o is string %}
-	virtual QString q_{{o.cname}}() const = 0;
-	virtual void q_{{o.cname}}(QString const& value) = 0;
-
-	QString {{o.cname}}() const
-	{
-		return q_{{o.cname}}();
-	}
-
-	void {{o.cname}}(QString const& value)
-	{
-		q_{{o.cname}}(value);
-	}
-{%     elif o is qml_compatible %}
-	virtual {{o|qtype}} q_{{o.cname}}() const = 0;
-	virtual void q_{{o.cname}}({{o|qtype}} value) = 0;
-
-	{{o|qtype}} {{o.cname}}() const
-	{
-		return q_{{o.cname}}();
-	}
-
-	void {{o.cname}}({{o|qtype}} value)
-	{
-		q_{{o.cname}}(value);
-	}
-{%     endif %}
-{%   endif %}
-{% endfor %}
-
-private:
-	// Stores are templates, but Q_OBJECT does not support templated
-	// classes.  Forward the calls to Qtified{{store.name}}.
-{% for o in store.objects %}
-{%   if o is variable %}
-{%     if o is string %}
-	virtual QString q_get{{o.cname}}() const = 0;
-	virtual void q_set{{o.cname}}(QString const& value) = 0;
-{%     elif o is qml_compatible %}
-	virtual {{o|qtype}} q_get{{o.cname}}() const = 0;
-	virtual void q_set{{o.cname}}({{o|qtype}} value) = 0;
-{%     endif %}
-{%   endif %}
-{% endfor %}
-};
-
 /*!
  * \brief A wrapper for #stored::{{store.name}}Base to add signals/slots/properties for Qt/QML.
  */
