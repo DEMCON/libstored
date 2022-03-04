@@ -69,7 +69,8 @@ function(libstored_visu target rcc)
 		VERBATIM
 	)
 
-	add_custom_target(${target} DEPENDS ${rcc})
+	set_property(SOURCE ${rcc}.qrc PROPERTY AUTORCC OFF)
+	add_custom_target(${target} DEPENDS ${rcc} SOURCES ${rcc}.qrc)
 endfunction()
 
 if(LIBSTORED_EXAMPLES)
