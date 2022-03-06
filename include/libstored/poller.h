@@ -830,16 +830,19 @@ protected:
 	{
 		errno = res;
 
-#		ifdef __cpp_exceptions
 		switch(errno) {
 		case 0:
 			break;
+#		ifdef STORED_cpp_exceptions
 		case ENOMEM:
 			throw std::bad_alloc();
 		default:
 			throw std::runtime_error("");
-		}
+#		else
+		default:
+			std::terminate();
 #		endif
+		}
 	}
 
 public:
@@ -1024,6 +1027,7 @@ public:
 	}
 
 #		if STORED_cplusplus >= 201103L
+	// cppcheck-suppress noExplicitConstructor
 	CustomPoller(std::initializer_list<std::reference_wrapper<Pollable>> l)
 	{
 		this->throwing(this->add(l));
@@ -1042,6 +1046,7 @@ public:
 	virtual ~Poller() final;
 
 #		if STORED_cplusplus >= 201103L
+	// cppcheck-suppress noExplicitConstructor
 	Poller(std::initializer_list<std::reference_wrapper<Pollable>> l)
 	{
 		throwing(add(l));

@@ -74,8 +74,13 @@ public:
 	value_type* allocate(size_t n)
 	{
 		value_type* p = (value_type*)malloc(sizeof(value_type) * n);
-		if(!p)
+		if(!p) {
+#		ifdef STORED_cpp_exceptions
 			throw std::bad_alloc();
+#		else
+			std::terminate();
+#		endif
+		}
 
 		if(allocate_cb)
 			allocate_cb(typeid(value_type), p, sizeof(value_type), n);

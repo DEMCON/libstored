@@ -526,7 +526,7 @@ public:
 
 		if(unlikely(m_total + alloc_size + padding < m_total)) {
 			// Wrap around -> overflow.
-#	ifdef __cpp_exceptions
+#	ifdef STORED_cpp_exceptions
 			throw std::bad_alloc();
 #	else
 			std::terminate();

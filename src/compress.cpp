@@ -78,8 +78,13 @@ void CompressLayer::decode(void* buffer, size_t len)
 		return;
 
 	if(unlikely(!m_decoder))
-		if(!(m_decoder = heatshrink_decoder_alloc(DecodeInputBuffer, Window, Lookahead)))
+		if(!(m_decoder = heatshrink_decoder_alloc(DecodeInputBuffer, Window, Lookahead))) {
+#	ifdef STORED_cpp_exceptions
 			throw std::bad_alloc();
+#	else
+			std::terminate();
+#	endif
+		}
 
 	m_state |= (uint8_t)FlagDecoding;
 
@@ -136,8 +141,13 @@ void CompressLayer::encode(void const* buffer, size_t len, bool last)
 	stored_assert(len == 0 || buffer);
 
 	if(unlikely(!m_encoder))
-		if(!(m_encoder = heatshrink_encoder_alloc(Window, Lookahead)))
+		if(!(m_encoder = heatshrink_encoder_alloc(Window, Lookahead))) {
+#	ifdef STORED_cpp_exceptions
 			throw std::bad_alloc();
+#	else
+			std::terminate();
+#	endif
+		}
 
 	m_state |= (uint8_t)FlagEncoding;
 

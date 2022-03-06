@@ -224,7 +224,10 @@ typedef SSIZE_T ssize_t;
 
 #if defined(STORED_cplusplus)
 // All C++
-#	if !defined(__cpp_exceptions)
+#	if defined(STORED_COMPILER_MSVC) || defined(__cpp_exceptions)
+#		define STORED_cpp_exceptions 199711L
+#	endif
+#	if !defined(STORED_cpp_exceptions)
 #		define try if(true)
 #		define catch(...) if(false)
 #	endif
