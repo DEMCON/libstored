@@ -262,7 +262,7 @@ protected:
 		: TypedPollable(e, user)
 	{}
 
-	virtual ~PollableCallbackBase() override is_default;
+	virtual ~PollableCallbackBase() override is_default
 
 public:
 	virtual Events operator()() const noexcept = 0;
