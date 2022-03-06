@@ -837,6 +837,7 @@ private:
  * \brief Default {{store.name}}Base implementation.
  */
 class {{store.name}} : public {{store.name}}Base<{{store.name}}> {
+	// cppcheck-suppress internalAstError
 	STORE_CLASS({{store.name}}, {{store.name}}Base)
 public:
 	/*! \copydoc stored::{{store.name}}Base::{{store.name}}Base() */

@@ -310,6 +310,7 @@ public:
 	explicit TerminalLayer(F&& cb, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr)
 		: TerminalLayer(up, down)
 	{
+		// cppcheck-suppress useInitializationList
 		m_nonDebugDecodeCallback = std::forward<F>(cb);
 	}
 #	else
