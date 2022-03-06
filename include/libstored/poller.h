@@ -199,19 +199,19 @@ public:
 
 	virtual ~TypedPollable() is_default
 
-#	ifdef __cpp_rtti
+#	ifdef STORED_cpp_rtti
 	typedef std::type_info const& Type;
 	static Type staticType() noexcept
 	{
 		return typeid(Pollable);
 	}
-#	else  // __cpp_rtti
+#	else  // STORED_cpp_rtti
 	typedef void const* Type;
 	static Type staticType() noexcept
 	{
 		return nullptr;
 	}
-#	endif // !__cpp_rtti
+#	endif // !STORED_cpp_rtti
 	virtual Type type() const noexcept = 0;
 };
 
@@ -223,7 +223,7 @@ public:
  * The type functions will be final. So, the class cannot be subclassed any
  * further with more specific (sub)types.
  */
-#	ifdef __cpp_rtti
+#	ifdef STORED_cpp_rtti
 #		define STORED_POLLABLE_TYPE(T)                                           \
 		public:                                                                   \
 			static ::stored::TypedPollable::Type staticType() noexcept        \
@@ -237,21 +237,22 @@ public:
                                                                                           \
 		private:                                                                  \
 			STORED_CLASS_NEW_DELETE(T)
-#	else // !__cpp_rtti
-#		define STORED_POLLABLE_TYPE(T)                                        \
-			static ::zth::TypedPollable::Type staticType() noexcept        \
-			{                                                              \
-				static char const t = 0;                               \
-				return (::zth::Pollable::Type)&t;                      \
-			}                                                              \
-			virtual ::zth::TypedPollable::Type type() const noexcept final \
-			{                                                              \
-				return staticType();                                   \
-			}                                                              \
-                                                                                       \
-		private:                                                               \
+#	else // !STORED_cpp_rtti
+#		define STORED_POLLABLE_TYPE(T)                                           \
+		public:                                                                   \
+			static ::stored::TypedPollable::Type staticType() noexcept        \
+			{                                                                 \
+				static char const t = 0;                                  \
+				return (::stored::TypedPollable::Type)&t;                 \
+			}                                                                 \
+			virtual ::stored::TypedPollable::Type type() const noexcept final \
+			{                                                                 \
+				return staticType();                                      \
+			}                                                                 \
+                                                                                          \
+		private:                                                                  \
 			STORED_CLASS_NEW_DELETE(T)
-#	endif // !__cpp_rtti
+#	endif // !STORED_cpp_rtti
 
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class PollableCallbackBase : public TypedPollable {

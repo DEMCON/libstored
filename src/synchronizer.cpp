@@ -1155,7 +1155,9 @@ SyncConnection* Synchronizer::toConnection(ProtocolLayer& connection) const
 	if(m_connections.find(c) == m_connections.end())
 		return nullptr;
 
+#ifdef STORED_cpp_rtti
 	stored_assert(dynamic_cast<SyncConnection*>(c) != nullptr);
+#endif
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
 	return static_cast<SyncConnection*>(c);
 }

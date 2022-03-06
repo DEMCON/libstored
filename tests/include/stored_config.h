@@ -27,33 +27,33 @@ public:
 	static Stats allocate_stats;
 	static Stats deallocate_stats;
 
-	static void allocate_report(std::type_info const& t, void* p, size_t size, size_t n)
+	static void allocate_report(std::type_info const* t, void* p, size_t size, size_t n)
 	{
 		if(n == 1U)
-			printf("Allocated %s at %p\n", t.name(), p);
+			printf("Allocated %s at %p\n", t ? t->name() : "(unknown)", p);
 		else
-			printf("Allocated %s[%zu] at %p\n", t.name(), n, p);
+			printf("Allocated %s[%zu] at %p\n", t ? t->name() : "(unknown)", n, p);
 
 		allocate_stats.calls++;
 		allocate_stats.objects += n;
 		allocate_stats.total += size * n;
 	}
 
-	static std::function<void(std::type_info const&, void*, size_t, size_t)> allocate_cb;
+	static std::function<void(std::type_info const*, void*, size_t, size_t)> allocate_cb;
 
-	static void deallocate_report(std::type_info const& t, void* p, size_t size, size_t n)
+	static void deallocate_report(std::type_info const* t, void* p, size_t size, size_t n)
 	{
 		if(n == 1U)
-			printf("Deallocate %s at %p\n", t.name(), p);
+			printf("Deallocate %s at %p\n", t ? t->name() : "(unknown)", p);
 		else
-			printf("Deallocate %s[%zu] at %p\n", t.name(), n, p);
+			printf("Deallocate %s[%zu] at %p\n", t ? t->name() : "(unknown)", n, p);
 
 		deallocate_stats.calls++;
 		deallocate_stats.objects += n;
 		deallocate_stats.total += size * n;
 	}
 
-	static std::function<void(std::type_info const&, void*, size_t, size_t)> deallocate_cb;
+	static std::function<void(std::type_info const*, void*, size_t, size_t)> deallocate_cb;
 };
 
 template <typename T>
@@ -82,16 +82,26 @@ public:
 #		endif
 		}
 
-		if(allocate_cb)
-			allocate_cb(typeid(value_type), p, sizeof(value_type), n);
+		if(allocate_cb) {
+#		ifdef STORED_cpp_rtti
+			allocate_cb(&typeid(value_type), p, sizeof(value_type), n);
+#		else
+			allocate_cb(nullptr, p, sizeof(value_type), n);
+#		endif
+		}
 
 		return p;
 	}
 
 	void deallocate(value_type* p, size_t n) noexcept
 	{
-		if(deallocate_cb)
-			deallocate_cb(typeid(value_type), p, sizeof(value_type), n);
+		if(deallocate_cb) {
+#		ifdef STORED_cpp_rtti
+			deallocate_cb(&typeid(value_type), p, sizeof(value_type), n);
+#		else
+			deallocate_cb(nullptr, p, sizeof(value_type), n);
+#		endif
+		}
 
 		free(p);
 	}
