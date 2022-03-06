@@ -125,6 +125,9 @@ option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" ${LIBSTORED_ENABLE_A
 option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" ${LIBSTORED_ENABLE_LSAN_DEFAULT})
 option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" ${LIBSTORED_ENABLE_UBSAN_DEFAULT})
 
+option(LIBSTORED_DISABLE_EXCEPTIONS "Disable exception support" OFF)
+option(LIBSTORED_DISABLE_RTTI "Disable run-time type information support" OFF)
+
 # find_package(Heatshrink) may do install(...EXPORT libstored).
 set(LIBSTORED_DO_INSTALL_LIBSTORED OFF)
 
@@ -329,8 +332,10 @@ if(CPPCHECK_CMD)
 		cppcheck_add(8_sync)
 		cppcheck_add(9_fpga)
 		cppcheck_add(components)
-		cppcheck_add(concurrency)
+#		cppcheck_add(concurrency) # This one somehow makes cppcheck choke.
 		cppcheck_add(control)
+		cppcheck_add(meta)
+		cppcheck_add(qt)
 		cppcheck_add(terminal)
 		cppcheck_add(zmqserver)
 	endif()
@@ -344,7 +349,12 @@ if(CPPCHECK_CMD)
 			--quiet
 			--suppressions-list=${CMAKE_CURRENT_SOURCE_DIR}/.cppcheck_suppr
 			--error-exitcode=1
+			-j 4
+			--library=gnu
+			"--template=[{file}:{line}]: ({severity},{id}) {message}"
+			--std=c++17 --language=c++ -D__cplusplus=201703L
 			-DCPPCHECK
+			-D__GNUC__
 #			--xml
 			-I include
 			${CPPCHECK_EXAMPLES}
