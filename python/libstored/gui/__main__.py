@@ -465,5 +465,6 @@ if __name__ == '__main__':
     res = app.exec()
 
     client.saveState()
+    client.close()
     sys.exit(res)
 

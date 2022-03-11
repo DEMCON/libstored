@@ -132,20 +132,14 @@ class CsvExport(QObject):
             return
 
         self._objects.add(o)
-        if self._paused:
-            self._postponedAutoRestart = True
-        else:
-            self.restart()
+        self._postponedAutoRestart = True
 
     def remove(self, o):
         if not o in self._objects:
             return
 
         self._objects.remove(o)
-        if self._paused:
-            self._postponedAutoRestart = True
-        else:
-            self.restart()
+        self._postponedAutoRestart = True
 
     def restart(self, filename=None):
         self._postponedAutoRestart = False
@@ -196,8 +190,6 @@ class CsvExport(QObject):
 
         self.logger.info('Continue')
         self._paused = False
-        if self._postponedAutoRestart:
-            self.restart()
 
     @property
     def paused(self):
@@ -221,6 +213,9 @@ class CsvExport(QObject):
         data = [t]
         data.extend(map(lambda x: x(), self._objValues))
 
+        if self._postponedAutoRestart:
+            self.restart()
+
         if self._queue is None:
             self._write(data)
         else:
@@ -237,6 +232,7 @@ class CsvExport(QObject):
             self._thread = None
 
         if not self._file is None:
+            self.logger.info('Close')
             self._file.close()
             self._file = None
 
