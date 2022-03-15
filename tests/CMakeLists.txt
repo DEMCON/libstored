@@ -8,7 +8,7 @@
 # The value will be appended to a STORED_POLL_ define.
 set(LIBSTORED_POLL "AUTO" CACHE STRING "Poll method")
 
-				option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ${LIBSTORED_DEV_OPTION})
+option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ${LIBSTORED_DEV_OPTION})
 set(LIBSTORED_CLANG_TIDY "OFF")
 set(LIBSTORED_INSTALL_STORE_LIBS "OFF")
 set(LIBSTORED_DRAFT_API "ON")
@@ -46,7 +46,7 @@ if(APPLE)
 	set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 endif()
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(FetchContent)
@@ -98,6 +98,7 @@ libstored_add_test(test_fifo test_fifo.cpp)
 libstored_add_test(test_components test_components.cpp)
 libstored_add_test(test_weak test_weak.cpp)
 libstored_add_test(test_weak_override test_weak_override.cpp)
+libstored_add_test(test_pipes test_pipes.cpp)
 if(WIN32)
 	libstored_add_test(test_poller test_poller_win.cpp)
 	if(LIBSTORED_HAVE_LIBZMQ)
