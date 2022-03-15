@@ -39,6 +39,25 @@ TEST(Pipes, Basic)
 	p1_move.inject(2);
 }
 
+TEST(Pipes, Connect)
+{
+	using namespace stored::pipes;
+
+	auto p1 = Entry<int>{} >> Log<int>("p1") >> Buffer<int>{} >> Exit{};
+	auto p2 = Entry<int>{} >> Log<int>("p2") >> Buffer<int>{} >> Exit{};
+	auto p3 = Entry<int>{} >> Log<int>("p3") >> Buffer<int>{} >> Exit{};
+
+	p1 >> p2 >> p3;
+
+	p1.inject(1);
+	EXPECT_EQ(p3.extract(), 1);
+
+	p1 >> p3;
+	p1.inject(2);
+	EXPECT_EQ(p2.extract(), 1);
+	EXPECT_EQ(p3.extract(), 2);
+}
+
 TEST(Pipes, Misc)
 {
 	auto c = stored::pipes::Entry<int>{} >> stored::pipes::Identity<int>{}
