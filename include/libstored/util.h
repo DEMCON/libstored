@@ -161,6 +161,17 @@
 #		endif
 #	endif
 
+#	if STORED_cplusplus >= 201103L && !defined(STORED_CLASS_DEFAULT_COPY_MOVE)
+#		define STORED_CLASS_DEFAULT_COPY_MOVE(type)    \
+		public:                                         \
+			type(type const&) = default;            \
+			type(type&&) = default;                 \
+			type& operator=(type const&) = default; \
+			type& operator=(type&&) = default;      \
+                                                                \
+		private:
+#	endif
+
 #	ifndef CLASS_NO_WEAK_VTABLE
 /*!
  * \brief Macro to make sure that the containing class emits its vtable in one translation unit.
