@@ -29,6 +29,7 @@
 #	include <functional>
 #	include <string>
 #	include <utility>
+#	include <limits>
 
 #	include <cassert>
 
@@ -38,6 +39,19 @@ namespace pipes {
 // Forward declares.
 template <typename S>
 class Segment;
+
+class Exit {};
+class Cap {};
+
+template <typename In, typename Out>
+class Pipe;
+
+template <typename S>
+class SpecificCappedPipe;
+
+template <typename S>
+class SpecificOpenPipe;
+
 
 
 namespace impl {
@@ -133,11 +147,20 @@ public:
 	using type_out = decltype(type_out_helper(&S::inject));
 };
 
-template <typename S>
-struct segment_traits<Segment<S>> : segment_traits<S> {
-	using typename segment_traits<S>::type_in;
-	using typename segment_traits<S>::type_out;
+template <>
+struct segment_traits<Exit> : impl::segment_traits_base {
+	using type_in = void;
+	using type_out = void;
 };
+
+template <>
+struct segment_traits<Cap> : impl::segment_traits_base {
+	using type_in = void;
+	using type_out = void;
+};
+
+template <typename S>
+struct segment_traits<Segment<S>> : segment_traits<S> {};
 
 template <typename... S>
 struct segments_traits {};
@@ -151,9 +174,6 @@ struct segments_traits<S0, S1, S...> {
 template <typename S0>
 struct segments_traits<S0> : public segment_traits<S0> {};
 
-template <>
-struct segments_traits<> {};
-
 
 
 //////////////////////////////////
@@ -164,6 +184,7 @@ struct segments_traits<> {};
 // for all optional functions.
 template <typename S>
 class Segment : protected S, public segment_traits<S> {
+	STORED_CLASS_DEFAULT_COPY_MOVE(Segment)
 public:
 	using traits = segment_traits<S>;
 	using typename traits::type_in;
@@ -174,10 +195,6 @@ public:
 		: S{std::forward<S_>(s)}
 	{}
 
-	Segment(Segment const&) = default;
-	Segment(Segment&&) = default;
-	Segment& operator=(Segment const&) = default;
-	Segment& operator=(Segment&&) = default;
 	~Segment() = default;
 
 	type_out inject(type_in x)
@@ -235,7 +252,7 @@ private:
 	template <typename S_, std::enable_if_t<!traits::template has_inject_<S_>(), int> = 0>
 	type_out inject_(type_in x)
 	{
-		(void)x;
+		UNUSED(x)
 		return extract_<S_>();
 	}
 
@@ -361,15 +378,6 @@ struct segments_type_out<Out const&, Out const&> {
 	using type = Out;
 };
 
-class Exit {
-public:
-	// Seems to be required for segment_traits to work.
-	int inject(int);
-};
-
-template <typename S>
-class SpecificPipe;
-
 template <typename S0, typename S1, typename... S>
 class Segments<S0, S1, S...> {
 	static_assert(
@@ -417,15 +425,14 @@ public:
 	template <
 		typename S_,
 		std::enable_if_t<
-			std::is_convertible<type_out, typename segment_traits<S_>::type_in>::value,
+			std::is_convertible<type_out, typename segment_traits<S_>::type_in>::value
+				&& !std::is_lvalue_reference<S_>::value,
 			int> = 0>
 	constexpr auto operator>>(S_&& s) &&
 	{
 		return Segments<S0, S1, S..., std::decay_t<S_>>{
 			std::move(*this), std::forward<S_>(s)};
 	}
-
-	SpecificPipe<Segments> operator>>(Exit&& e) &&;
 
 	template <typename... S_>
 	friend class Segments;
@@ -457,15 +464,14 @@ public:
 	template <
 		typename S_,
 		std::enable_if_t<
-			std::is_convertible<type_out, typename segment_traits<S_>::type_in>::value,
+			std::is_convertible<type_out, typename segment_traits<S_>::type_in>::value
+				&& !std::is_lvalue_reference<S_>::value,
 			int> = 0>
 	constexpr auto operator>>(S_&& s) &&
 	{
 		return Segments<Segment<S0>, std::decay_t<S_>>{
 			std::move(*this), std::forward<S_>(s)};
 	}
-
-	SpecificPipe<Segments> operator>>(Exit&& e) &&;
 };
 
 
@@ -474,126 +480,131 @@ public:
 // Pipe
 //
 
+// Start of a pipe. Finish with either Exit or Cap.
 template <typename T>
 class Entry {
 public:
 	template <
-		typename S,
+		typename S_,
 		std::enable_if_t<
-			std::is_convertible<T, typename segment_traits<S>::type_in>::value, int> =
+			std::is_convertible<T, typename segment_traits<S_>::type_in>::value, int> =
 			0>
-	constexpr auto operator>>(S&& s) &&
+	constexpr auto operator>>(S_&& s) &&
 	{
-		return Segments<std::decay_t<S>>{std::forward<S>(s)};
+		return Segments<std::decay_t<S_>>{std::forward<S_>(s)};
 	}
 };
 
 // Virtual base class for any segment/pipe with specific in/out types.
 template <typename In>
 class PipeEntry {
+	STORED_CLASS_DEFAULT_COPY_MOVE(PipeEntry)
 public:
 	using type_in = In;
 
 protected:
-	constexpr explicit PipeEntry() = default;
+	constexpr PipeEntry() = default;
 
 public:
-	PipeEntry(PipeEntry const&) = default;
-	PipeEntry(PipeEntry&&) = default;
-	PipeEntry& operator=(PipeEntry const&) = default;
-	PipeEntry& operator=(PipeEntry&&) = default;
-
 	virtual ~PipeEntry() = default;
 
-	void inject(type_in x)
+	void inject(type_in const& x)
 	{
 		justInject(x);
 	}
 
-	void operator()(type_in x)
+	void operator()(type_in const& x)
 	{
 		inject(x);
 	}
 
-	friend void operator>>(type_in x, PipeEntry& p)
+	friend void operator>>(type_in const& x, PipeEntry& p)
 	{
 		p.inject(x);
 	}
 
-	friend void operator<<(PipeEntry& p, type_in x)
+	friend void operator<<(PipeEntry& p, type_in const& x)
 	{
 		p.inject(x);
 	}
 
 private:
-	virtual void justInject(type_in x) = 0;
+	virtual void justInject(type_in const& x) = 0;
 };
 
 template <typename Out>
 class PipeExit {
+	STORED_CLASS_DEFAULT_COPY_MOVE(PipeExit)
 public:
 	using type_out = Out;
 
 protected:
-	constexpr explicit PipeExit() = default;
+	constexpr PipeExit() = default;
 
 public:
-	PipeExit(PipeExit const&) = default;
-	PipeExit(PipeExit&&) = default;
-	PipeExit& operator=(PipeExit const&) = default;
-	PipeExit& operator=(PipeExit&&) = default;
-
 	virtual ~PipeExit() = default;
 
 	virtual type_out extract() = 0;
 
-	friend auto operator>>(PipeExit& p, type_out& x)
+	friend type_out& operator>>(PipeExit& p, type_out& x)
 	{
 		return x = p.extract();
 	}
 
-	friend auto operator<<(type_out& x, PipeExit& p)
+	friend type_out& operator<<(type_out& x, PipeExit& p)
 	{
 		return x = p.extract();
 	}
+
+	virtual void connect(PipeEntry<Out>& p)
+	{
+		UNUSED(p)
+		// Do not connect a capped pipe.
+		std::unexpected();
+	}
+
+	template <typename Out_>
+	Pipe<Out, Out_>& operator>>(Pipe<Out, Out_>& p) &
+	{
+		connect(p);
+		return p;
+	}
+
+	virtual void disconnect() noexcept {}
 };
 
 template <typename In, typename Out>
 class Pipe : public PipeEntry<In>, public PipeExit<Out> {
+	STORED_CLASS_DEFAULT_COPY_MOVE(Pipe)
 public:
 	using typename PipeEntry<In>::type_in;
 	using typename PipeExit<Out>::type_out;
 
 protected:
-	constexpr explicit Pipe() = default;
+	constexpr Pipe() = default;
 
 public:
-	Pipe(Pipe const&) = default;
-	Pipe(Pipe&&) = default;
-	Pipe& operator=(Pipe const&) = default;
-	Pipe& operator=(Pipe&&) = default;
-
 	virtual ~Pipe() override = default;
 
-	virtual type_out inject(type_in x) = 0;
+	virtual type_out inject(type_in const& x) = 0;
 
-	type_out operator()(type_in x)
+	type_out operator()(type_in const& x)
 	{
 		return inject(x);
 	}
 
-	friend type_out operator>>(type_in x, Pipe& p)
+	friend type_out operator>>(type_in const& x, Pipe& p)
 	{
 		p.inject(x);
 	}
 
-	friend type_out operator<<(Pipe& p, type_in x)
+	friend type_out operator<<(Pipe& p, type_in const& x)
 	{
 		p.inject(x);
 	}
 
 private:
-	void justInject(type_in x) final
+	void justInject(type_in const& x) final
 	{
 		inject(x);
 	}
@@ -601,9 +612,10 @@ private:
 
 // Concrete implementation of Pipe, given a segment/pipe.
 template <typename S>
-class SpecificPipe
+class SpecificCappedPipe
 	: public Pipe<typename segment_traits<S>::type_in, typename segment_traits<S>::type_out>,
 	  public S {
+	STORED_CLASS_DEFAULT_COPY_MOVE(SpecificCappedPipe)
 public:
 	using segments_type = S;
 	using type_in = typename segment_traits<segments_type>::type_in;
@@ -614,7 +626,7 @@ protected:
 	template <
 		typename S_,
 		std::enable_if_t<std::is_constructible<segments_type, S_>::value, int> = 0>
-	explicit SpecificPipe(S_&& s)
+	explicit SpecificCappedPipe(S_&& s)
 		: segments_type{std::forward<S_>(s)}
 	{}
 
@@ -622,16 +634,12 @@ protected:
 	friend class Segments;
 
 public:
-	SpecificPipe(SpecificPipe const&) = default;
-	SpecificPipe(SpecificPipe&&) = default;
-	SpecificPipe& operator=(SpecificPipe const&) = default;
-	SpecificPipe& operator=(SpecificPipe&&) = default;
+	virtual ~SpecificCappedPipe() override = default;
 
-	virtual ~SpecificPipe() override = default;
-
-	virtual type_out inject(type_in x) override
+	virtual type_out inject(type_in const& x) override
 	{
-		return segments_type::inject(x);
+		type_out y = segments_type::inject(x);
+		return y;
 	}
 
 	virtual type_out extract() override
@@ -640,22 +648,82 @@ public:
 	}
 
 	using Pipe_type::operator();
+	using Pipe_type::operator>>;
+
+	template <typename... S_>
+	friend constexpr auto operator>>(Segments<S_...>&& s, Cap&& e);
 };
 
-template <typename S0, typename S1, typename... S>
-SpecificPipe<Segments<S0, S1, S...>> Segments<S0, S1, S...>::operator>>(Exit&& e) &&
+template <typename... S_>
+constexpr auto operator>>(Segments<S_...>&& s, Cap&& e)
 {
 	UNUSED(e)
-	return SpecificPipe<Segments>{std::move(*this)};
+	return SpecificCappedPipe<Segments<S_...>>{std::move(s)};
 }
 
-template <typename S0>
-SpecificPipe<Segments<S0>> Segments<S0>::operator>>(Exit&& e) &&
+template <typename S>
+class SpecificOpenPipe : public SpecificCappedPipe<S> {
+	STORED_CLASS_DEFAULT_COPY_MOVE(SpecificOpenPipe)
+	using base = SpecificCappedPipe<S>;
+
+public:
+	using segments_type = S;
+	using type_in = typename base::type_in;
+	using type_out = typename base::type_out;
+	using Pipe_type = typename base::Pipe_type;
+
+protected:
+	template <
+		typename S_,
+		std::enable_if_t<std::is_constructible<segments_type, S_>::value, int> = 0>
+	explicit SpecificOpenPipe(S_&& s)
+		: base{std::forward<S_>(s)}
+	{}
+
+	template <typename... S_>
+	friend class Segments;
+
+public:
+	virtual ~SpecificOpenPipe() override = default;
+
+	virtual type_out inject(type_in const& x) override
+	{
+		type_out y = base::inject(x);
+		forward(y);
+		return y;
+	}
+
+	virtual void connect(PipeEntry<type_out>& p) final
+	{
+		m_forward = &p;
+		forward(this->extract());
+	}
+
+	virtual void disconnect() noexcept final
+	{
+		m_forward = nullptr;
+	}
+
+	template <typename... S_>
+	friend constexpr auto operator>>(Segments<S_...>&& s, Exit&& e);
+
+private:
+	void forward(type_out const& x)
+	{
+		if(m_forward)
+			m_forward->inject(x);
+	}
+
+private:
+	PipeEntry<type_out>* m_forward = nullptr;
+};
+
+template <typename... S_>
+constexpr auto operator>>(Segments<S_...>&& s, Exit&& e)
 {
 	UNUSED(e)
-	return SpecificPipe<Segments>{std::move(*this)};
+	return SpecificOpenPipe<Segments<S_...>>{std::move(s)};
 }
-
 
 
 //////////////////////////////////
@@ -677,8 +745,37 @@ auto operator>>(Entry<T>&& entry, Exit&& e)
 	return std::move(entry) >> Identity<T>{} >> std::move(e);
 }
 
+namespace impl {
+
+template <
+	typename In, typename Out,
+	bool is_number =
+		std::numeric_limits<In>::is_specialized&& std::numeric_limits<Out>::is_specialized>
+class Cast {};
+
+// This is a cast between numbers. Use saturated_cast<>.
 template <typename In, typename Out>
-class Cast {
+class Cast<In, Out, true> {
+public:
+	Out inject(In x)
+	{
+		return exit_cast(x);
+	}
+
+	Out exit_cast(In x) const
+	{
+		return saturated_cast<Out>(x);
+	}
+
+	In entry_cast(Out x) const
+	{
+		return saturated_cast<In>(x);
+	}
+};
+
+// This is a cast between other types than numbers. Use static_cast<>.
+template <typename In, typename Out>
+class Cast<In, Out, false> {
 public:
 	Out inject(In x)
 	{
@@ -697,6 +794,17 @@ public:
 };
 
 template <typename T>
+class Cast<T, T, false> : public Identity<T> {};
+
+template <typename T>
+class Cast<T, T, true> : public Identity<T> {};
+
+} // namespace impl
+
+template <typename In, typename Out>
+using Cast = impl::Cast<In, Out>;
+
+template <typename T>
 class Buffer {
 public:
 	using type_in = T;
@@ -709,6 +817,8 @@ public:
 	constexpr explicit Buffer(type_&& x)
 		: m_x{std::forward<type_>(x)}
 	{}
+
+	constexpr Buffer() = default;
 
 	type_out inject(type_in x)
 	{
