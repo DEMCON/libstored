@@ -207,29 +207,9 @@ public:
 		return inject(x);
 	}
 
-	friend type_out operator<<(Segment& s, type_in x)
-	{
-		return s.inject(x);
-	}
-
-	friend type_out operator>>(type_in x, Segment& s)
-	{
-		return s.inject(x);
-	}
-
 	type_out extract()
 	{
 		return extract_<S>();
-	}
-
-	friend auto operator<<(type_out& x, Segment& s)
-	{
-		return x = s.extract();
-	}
-
-	friend auto operator>>(Segment& s, type_out& x)
-	{
-		return x = s.extract();
 	}
 
 	auto entry_cast(type_out x) const
@@ -378,22 +358,68 @@ struct segments_type_out<Out const&, Out const&> {
 	using type = Out;
 };
 
+namespace impl {
+/*
+ * Last wraps a single Segment to be used as a Segments base class.  Consider
+ * the class Segments<A,A>. In this case, Segments inheritance is:
+ *
+ *      A
+ *      ^
+ *      |
+ * Segment<A>     A
+ *      ^         ^
+ *      |         |
+ * Segments<A>   Segment<A>
+ *      ^         ^
+ *     Init      Last
+ *      |         |
+ *     Segments<A,A>
+ *
+ * As Segment<A> is a direct base of Segments<A,A>, and a base via Init, so a
+ * cast to Segment<A> is ambiguous. When Last = Segment<A> is wrapped in
+ * another type, this ambiguity is solved. For this, we use impl::Last.
+ */
+template <typename... S>
+struct Last : public Segment<typename segments_type<S...>::last> {
+	using base = Segment<typename segments_type<S...>::last>;
+	template <typename S_>
+	constexpr explicit Last(S_&& s)
+		: base{std::forward<S_>(s)}
+	{}
+};
+} // namespace impl
+
+/*
+ * Segments<S...> is a recursive type, containing the given sequence of
+ * segments S.  It has two base classes:
+ * - Init: a Segments<...>, having all S... types, except for the last one.
+ * - Last: a Segment<>, with the last S type.
+ *
+ * Calls like inject() and extract() recursively process Init, and specifically
+ * handle Last.
+ *
+ * All S types are plain/simple Segment-compatible types (like Identity), where
+ * optional functions may be missing.  These types are wrapped in a Segment,
+ * such that the interface is completed.
+ */
 template <typename S0, typename S1, typename... S>
-class Segments<S0, S1, S...> {
+class Segments<S0, S1, S...> : private segments_type<S0, S1, S...>::init,
+			       private impl::Last<S0, S1, S...> {
 	static_assert(
 		std::is_convertible<
 			typename segment_traits<S0>::type_out,
 			typename segment_traits<S1>::type_in>::value,
-		"Incompatible segment types");
+		"Incompatible segment interface types");
+
 	static_assert(
 		std::is_same<
 			std::decay_t<typename segment_traits<S0>::type_out>,
 			std::decay_t<typename segment_traits<S1>::type_in>>::value,
-		"Different pipe connection types");
+		"Different segment types");
 
 public:
 	using Init = typename segments_type<S0, S1, S...>::init;
-	using Last = Segment<typename segments_type<S0, S1, S...>::last>;
+	using Last = impl::Last<S0, S1, S...>;
 
 	using type_in = typename segment_traits<Init>::type_in;
 	using type_out = typename segments_type_out<
@@ -404,22 +430,22 @@ public:
 protected:
 	template <typename... S_, typename SN_>
 	constexpr explicit Segments(Segments<S_...>&& init, SN_&& last)
-		: m_init{std::move(init)}
-		, m_last{std::forward<SN_>(last)}
+		: Init{std::move(init)}
+		, Last{std::forward<SN_>(last)}
 	{}
 
 public:
 	type_out inject(type_in x)
 	{
-		return m_last(m_init.inject(x));
+		return Last::inject(Init::inject(x));
 	}
 
 	type_out extract()
 	{
-		if(m_last.has_extract)
-			return m_last.extract();
+		if(Last::has_extract)
+			return Last::extract();
 
-		return m_last.exit_cast(m_init.extract());
+		return Last::exit_cast(Init::extract());
 	}
 
 	template <
@@ -436,10 +462,6 @@ public:
 
 	template <typename... S_>
 	friend class Segments;
-
-private:
-	Init m_init;
-	Last m_last;
 };
 
 template <typename S0>
@@ -520,12 +542,12 @@ public:
 
 	friend void operator>>(type_in const& x, PipeEntry& p)
 	{
-		p.inject(x);
+		return p.inject(x);
 	}
 
 	friend void operator<<(PipeEntry& p, type_in const& x)
 	{
-		p.inject(x);
+		return p.inject(x);
 	}
 
 private:
@@ -546,12 +568,12 @@ public:
 
 	virtual type_out extract() = 0;
 
-	friend type_out& operator>>(PipeExit& p, type_out& x)
+	friend auto& operator>>(PipeExit& p, std::decay_t<type_out>& x)
 	{
 		return x = p.extract();
 	}
 
-	friend type_out& operator<<(type_out& x, PipeExit& p)
+	friend auto& operator<<(std::decay_t<type_out>& x, PipeExit& p)
 	{
 		return x = p.extract();
 	}
@@ -595,12 +617,12 @@ public:
 
 	friend type_out operator>>(type_in const& x, Pipe& p)
 	{
-		p.inject(x);
+		return p.inject(x);
 	}
 
 	friend type_out operator<<(Pipe& p, type_in const& x)
 	{
-		p.inject(x);
+		return p.inject(x);
 	}
 
 private:
@@ -730,6 +752,9 @@ constexpr auto operator>>(Segments<S_...>&& s, Exit&& e)
 // Common segments
 //
 
+/*!
+ * \brief Pipe segment without side effects.
+ */
 template <typename T>
 class Identity {
 public:
@@ -740,9 +765,15 @@ public:
 };
 
 template <typename T>
-auto operator>>(Entry<T>&& entry, Exit&& e)
+auto operator>>(Entry<T>&& entry, Exit&& exit)
 {
-	return std::move(entry) >> Identity<T>{} >> std::move(e);
+	return std::move(entry) >> Identity<T>{} >> std::move(exit);
+}
+
+template <typename T>
+auto operator>>(Entry<T>&& entry, Cap&& cap)
+{
+	return std::move(entry) >> Identity<T>{} >> std::move(cap);
 }
 
 namespace impl {
@@ -801,9 +832,20 @@ class Cast<T, T, true> : public Identity<T> {};
 
 } // namespace impl
 
+/*!
+ * \brief A pipe segment that casts between types.
+ *
+ * Numeric types are cast using \c saturated_cast. For other types, \c
+ * static_cast is used.
+ */
 template <typename In, typename Out>
 using Cast = impl::Cast<In, Out>;
 
+/*!
+ * \brief Memory element for injected values.
+ *
+ * Extracted data is returned from this memory.
+ */
 template <typename T>
 class Buffer {
 public:
@@ -835,6 +877,9 @@ private:
 	type m_x{};
 };
 
+/*!
+ * \brief Forwards injected data into a fixed list of other pipes.
+ */
 template <typename T, size_t N>
 class Tee {
 public:
@@ -860,21 +905,32 @@ template <typename T, typename... P>
 Tee(PipeEntry<T>&, P&...) -> Tee<T, sizeof...(P) + 1>;
 #	endif // >= C++17
 
+/*!
+ * \brief Invokes a logger function for injected values.
+ *
+ * By default, the value is printed to stdout. If a custom logger function is
+ * provided, it must accept a name (std::string const&) and value (T).
+ */
 template <typename T>
 class Log {
 public:
-	template <typename F>
+	using type = T;
+	using logger_type = void(std::string const&, type);
+
+	template <
+		typename F,
+		std::enable_if_t<std::is_assignable<std::function<logger_type>, F>::value, int> = 0>
 	Log(std::string name, F&& logger)
 		: m_name{std::move(name)}
 		, m_logger{std::forward<F>(logger)}
 	{}
 
-	Log(std::string name)
+	explicit Log(std::string name)
 		: m_name{std::move(name)}
-		, m_logger{&Log::template print<T>}
+		, m_logger{&Log::template print<type>}
 	{}
 
-	T inject(T x)
+	type inject(type x)
 	{
 		if(m_logger)
 			m_logger(m_name, x);
@@ -884,20 +940,20 @@ public:
 
 protected:
 	template <typename T_, std::enable_if_t<std::is_constructible<double, T_>::value, int> = 0>
-	static void print(std::string const& name, T x)
+	static void print(std::string const& name, T_ x)
 	{
 		printf("%s = %g\n", name.c_str(), static_cast<double>(x));
 	}
 
 	template <typename T_, std::enable_if_t<!std::is_constructible<double, T_>::value, int> = 0>
-	static void print(std::string const& name, T x)
+	static void print(std::string const& name, T_ x)
 	{
 		printf("%s injected\n", name.c_str());
 	}
 
 private:
 	std::string m_name;
-	std::function<void(std::string const&, T)> m_logger;
+	std::function<void(std::string const&, type)> m_logger;
 };
 
 } // namespace pipes
