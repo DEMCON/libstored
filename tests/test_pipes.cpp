@@ -19,6 +19,8 @@
 #include "libstored/pipes.h"
 #include "gtest/gtest.h"
 
+#include <typeinfo>
+
 namespace {
 
 TEST(Pipes, Size)
@@ -176,6 +178,71 @@ TEST(Pipes, Cast)
 
 	-3.1 >> p;
 	EXPECT_EQ(p.extract(), 0);
+}
+
+TEST(Pipes, Types)
+{
+	using namespace stored::pipes;
+
+	auto a = Entry<int>{} >> Exit{};
+	static_assert(std::is_base_of_v<Pipe<int, int>, decltype(a)>);
+
+	auto b = Entry<int>{} >> Buffer<int>{} >> Exit{};
+	static_assert(std::is_base_of_v<Pipe<int, int>, decltype(b)>);
+}
+
+TEST(Pipes, Transistor)
+{
+	using namespace stored::pipes;
+
+	auto AND = [](PipeExit<bool>& a, PipeExit<bool>& b) {
+		return Entry<bool>{} >> Transistor<bool>{a} >> Transistor<bool>{b}
+		       >> Buffer<bool>{} >> Exit{};
+	};
+
+	auto NOT = [](PipeExit<bool>& i) {
+		return Entry<bool>{} >> Transistor<bool, true>{i} >> Buffer<bool>{} >> Exit{};
+	};
+
+	auto i0 = Entry<bool>{} >> Buffer<bool>{} >> Exit{};
+	auto i1 = Entry<bool>{} >> Buffer<bool>{} >> Exit{};
+
+	auto and0 = AND(i0, i1);
+	auto not0 = NOT(and0);
+
+	auto and1 = AND(i0, not0);
+	auto not1 = NOT(and1);
+
+	auto and2 = AND(i1, not0);
+	auto not2 = NOT(and2);
+
+	auto and3 = AND(not1, not2);
+	auto o0 = NOT(and3);
+	auto& o1 = and0;
+
+	// Create active circuit. Input a 1 to evaluate the output.
+	auto half_adder =
+		Entry<bool>{} >> Tee{and0, not0, and1, not1, and2, not2, and3, o0} >> Exit{};
+
+	// Set input.
+	true >> i0;
+	false >> i1;
+
+	// Evaluate half-adder.
+	true >> half_adder;
+	EXPECT_TRUE(o0.extract());
+	EXPECT_FALSE(o1.extract());
+
+	// Set another input.
+	true >> i0;
+	true >> i1;
+
+	// Evaluate.
+	true >> half_adder;
+	EXPECT_FALSE(o0.extract());
+	EXPECT_TRUE(o1.extract());
+
+	// QED, pipes are functionally complete.
 }
 
 } // namespace
