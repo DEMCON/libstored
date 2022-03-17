@@ -355,7 +355,7 @@ struct segments_type_out<Out const&, Out> {
 
 template <typename Out>
 struct segments_type_out<Out const&, Out const&> {
-	using type = Out;
+	using type = Out const&;
 };
 
 namespace impl {
@@ -446,6 +446,16 @@ public:
 			return Last::extract();
 
 		return Last::exit_cast(Init::extract());
+	}
+
+	type_out exit_cast(type_in x) const
+	{
+		return Last::exit_cast(Init::exit_cast(x));
+	}
+
+	type_in entry_cast(type_out x) const
+	{
+		return Init::entry_cast(Last::entry_cast(x));
 	}
 
 	template <
@@ -634,14 +644,15 @@ private:
 
 // Concrete implementation of Pipe, given a segment/pipe.
 template <typename S>
-class SpecificCappedPipe
-	: public Pipe<typename segment_traits<S>::type_in, typename segment_traits<S>::type_out>,
-	  public S {
+class SpecificCappedPipe : public Pipe<
+				   std::decay_t<typename segment_traits<S>::type_in>,
+				   std::decay_t<typename segment_traits<S>::type_out>>,
+			   public S {
 	STORED_CLASS_DEFAULT_COPY_MOVE(SpecificCappedPipe)
 public:
 	using segments_type = S;
-	using type_in = typename segment_traits<segments_type>::type_in;
-	using type_out = typename segment_traits<segments_type>::type_out;
+	using type_in = std::decay_t<typename segment_traits<segments_type>::type_in>;
+	using type_out = std::decay_t<typename segment_traits<segments_type>::type_out>;
 	using Pipe_type = Pipe<type_in, type_out>;
 
 protected:
@@ -873,6 +884,11 @@ public:
 		return m_x;
 	}
 
+	type exit_cast(type_in x) const
+	{
+		return x;
+	}
+
 private:
 	type m_x{};
 };
@@ -954,6 +970,25 @@ protected:
 private:
 	std::string m_name;
 	std::function<void(std::string const&, type)> m_logger;
+};
+
+template <typename T, bool invert = false, typename Gate = bool>
+class Transistor {
+public:
+	explicit Transistor(PipeExit<Gate>& gate)
+		: m_gate{&gate}
+	{}
+
+	T inject(T x)
+	{
+		if(invert)
+			return m_gate->extract() ? T{} : x;
+		else
+			return m_gate->extract() ? x : T{};
+	}
+
+private:
+	PipeExit<Gate>* m_gate;
 };
 
 } // namespace pipes
