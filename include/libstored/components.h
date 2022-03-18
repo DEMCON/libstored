@@ -1958,7 +1958,8 @@ public:
 	}
 
 	/*!
-	 * \brief Create the list of objects in the store, used to compute the \p flags parameter.
+	 * \brief Create the list of objects in the store, used to compute the
+	 *	\p flags parameter.
 	 */
 	template <char... OnlyId, size_t N>
 	static constexpr auto objects(char const (&prefix)[N]) noexcept
@@ -2019,16 +2020,17 @@ public:
 	}
 
 	/*!
-	 * \brief Compute and set the hardware pin status, given the last provided application's
-	 * output value.
+	 * \brief Compute and set the hardware pin status, given the last
+	 *	provided application's output value.
 	 */
 	bool operator()() noexcept
 	{
-		return (*this)(output());
+		return run(output());
 	}
 
 	/*!
-	 * \brief Compute and set the hardware pin status, given the application's output value.
+	 * \brief Compute and set the hardware pin status, given the
+	 *	application's output value.
 	 */
 	bool operator()(bool output) noexcept
 	{
