@@ -207,7 +207,7 @@ public:
 		return inject(x);
 	}
 
-	type_out extract()
+	auto extract()
 	{
 		return extract_<S>();
 	}
@@ -237,13 +237,13 @@ private:
 	}
 
 	template <typename S_, std::enable_if_t<traits::template has_extract_<S_>(), int> = 0>
-	type_out extract_()
+	auto extract_()
 	{
 		return S_::extract();
 	}
 
 	template <typename S_, std::enable_if_t<!traits::template has_extract_<S_>(), int> = 0>
-	type_out extract_()
+	auto extract_()
 	{
 		return type_out{};
 	}
@@ -440,6 +440,8 @@ public:
 		return Last::inject(Init::inject(x));
 	}
 
+	static constexpr bool has_inject = Init::has_inject || Last::has_inject;
+
 	type_out extract()
 	{
 		if(Last::has_extract)
@@ -448,15 +450,21 @@ public:
 		return Last::exit_cast(Init::extract());
 	}
 
+	static constexpr bool has_extract = Init::has_extract || Last::has_extract;
+
 	type_out exit_cast(type_in x) const
 	{
 		return Last::exit_cast(Init::exit_cast(x));
 	}
 
+	static constexpr bool has_exit_cast = Init::has_exit_cast || Last::has_exit_cast;
+
 	type_in entry_cast(type_out x) const
 	{
 		return Init::entry_cast(Last::entry_cast(x));
 	}
+
+	static constexpr bool has_entry_cast = Init::has_entry_cast || Last::has_entry_cast;
 
 	template <
 		typename S_,
@@ -476,6 +484,7 @@ public:
 
 template <typename S0>
 class Segments<S0> : public Segment<S0> {
+	STORED_CLASS_DEFAULT_COPY_MOVE(Segments)
 public:
 	using typename Segment<S0>::type_in;
 	using typename Segment<S0>::type_out;
@@ -501,8 +510,7 @@ public:
 			int> = 0>
 	constexpr auto operator>>(S_&& s) &&
 	{
-		return Segments<Segment<S0>, std::decay_t<S_>>{
-			std::move(*this), std::forward<S_>(s)};
+		return Segments<S0, std::decay_t<S_>>{std::move(*this), std::forward<S_>(s)};
 	}
 };
 
@@ -603,6 +611,27 @@ public:
 	}
 
 	virtual void disconnect() noexcept {}
+
+	virtual PipeEntry<Out>* connection() const noexcept
+	{
+		return nullptr;
+	}
+
+	bool connected() const noexcept
+	{
+		return connection();
+	}
+
+	void extend(Pipe<Out, Out>& p)
+	{
+		auto* c = connection();
+		if(c)
+			p.connect(*c);
+		else
+			p.disconnect();
+
+		connect(p);
+	}
 };
 
 template <typename In, typename Out>
@@ -729,7 +758,8 @@ public:
 	virtual void connect(PipeEntry<type_out>& p) final
 	{
 		m_forward = &p;
-		forward(this->extract());
+		if(this->has_extract)
+			forward(this->extract());
 	}
 
 	virtual void disconnect() noexcept final
@@ -739,6 +769,11 @@ public:
 
 	template <typename... S_>
 	friend constexpr auto operator>>(Segments<S_...>&& s, Exit&& e);
+
+	virtual PipeEntry<type_out>* connection() const noexcept final
+	{
+		return m_forward;
+	}
 
 private:
 	void forward(type_out const& x)
@@ -990,6 +1025,102 @@ public:
 private:
 	PipeExit<Gate>* m_gate;
 };
+
+template <typename T, typename F = void(T)>
+class Call {
+public:
+	using function_type = F;
+
+	template <
+		typename F_,
+		std::enable_if_t<
+			std::is_constructible<std::function<function_type>, F_>::value, int> = 0>
+	explicit Call(F_&& f)
+		: m_f{std::forward<F_>(f)}
+	{}
+
+	T const& inject(T const& x)
+	{
+		m_f(x);
+		return x;
+	}
+
+private:
+	std::function<function_type> m_f;
+};
+
+template <typename T>
+class Call<T, void(T&)> {
+public:
+	using function_type = void(T&);
+
+	template <
+		typename F_,
+		std::enable_if_t<
+			std::is_constructible<std::function<function_type>, F_>::value, int> = 0>
+	explicit Call(F_&& f)
+		: m_f{std::forward<F_>(f)}
+	{}
+
+	T inject(T x)
+	{
+		m_f(x);
+		return x;
+	}
+
+private:
+	std::function<function_type> m_f;
+};
+
+template <typename T>
+class Call<T, T(T)> {
+public:
+	using function_type = T(T);
+
+	template <
+		typename F_,
+		std::enable_if_t<
+			std::is_constructible<std::function<function_type>, F_>::value, int> = 0>
+	explicit Call(F_&& f)
+		: m_f{std::forward<F_>(f)}
+	{}
+
+	T inject(T x)
+	{
+		return m_f(std::move(x));
+	}
+
+private:
+	std::function<function_type> m_f;
+};
+
+#	if STORED_cplusplus >= 201703L
+namespace impl {
+template <typename F>
+struct call_type_in {};
+
+template <typename R, typename A>
+struct call_type_in<R(A)> {
+	using type = std::decay_t<A>;
+};
+
+template <typename F>
+struct call_type_in<std::function<F>> : public call_type_in<F> {};
+
+template <typename F>
+struct call_f_type {};
+
+template <typename F>
+struct call_f_type<std::function<F>> {
+	using type = F;
+};
+} // namespace impl
+
+template <typename F_>
+Call(F_ &&)
+	-> Call<typename impl::call_type_in<decltype(std::function{std::declval<F_>()})>::type,
+		typename impl::call_f_type<decltype(std::function{std::declval<F_>()})>::type>;
+#	endif // >= C++17
 
 } // namespace pipes
 } // namespace stored
