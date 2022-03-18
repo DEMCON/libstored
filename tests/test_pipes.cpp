@@ -196,8 +196,8 @@ TEST(Pipes, Transistor)
 	using namespace stored::pipes;
 
 	auto AND = [](PipeExit<bool>& a, PipeExit<bool>& b) {
-		return Entry<bool>{} >> Transistor<bool>{a} >> Transistor<bool>{b}
-		       >> Buffer<bool>{} >> Exit{};
+		return Entry<bool>{} >> Transistor<bool>{a} >> Transistor<bool>{b} >> Buffer<bool>{}
+		       >> Exit{};
 	};
 
 	auto NOT = [](PipeExit<bool>& i) {
@@ -243,6 +243,75 @@ TEST(Pipes, Transistor)
 	EXPECT_TRUE(o1.extract());
 
 	// QED, pipes are functionally complete.
+}
+
+TEST(Pipes, Call)
+{
+	using namespace stored::pipes;
+
+	// Callback by value.
+	int sum = 0;
+	auto p0 = Entry<int>{} >> Call{[&](int x) { sum += x; }} >> Exit{};
+
+	1 >> p0;
+	2 >> p0;
+
+	EXPECT_EQ(sum, 3);
+
+
+	// Callback by const reference.
+	sum = 0;
+	auto p1 = Entry<int>{} >> Call{[&](int const& x) { sum += x; }} >> Exit{};
+
+	1 >> p1;
+	2 >> p1;
+
+	EXPECT_EQ(sum, 3);
+
+
+	// Callback by reference.
+	auto p2 = Entry<int>{} >> Call{[](int& x) { x++; }} >> Buffer<int>{} >> Exit{};
+
+	1 >> p2;
+
+	EXPECT_EQ(p2.extract(), 2);
+
+
+	// Callback as filter.
+	auto p3 = Entry<int>{} >> Call{[](int x) { return x + 1; }} >> Buffer<int>{} >> Exit{};
+
+	2 >> p3;
+
+	EXPECT_EQ(p3.extract(), 3);
+}
+
+TEST(Pipes, Extend)
+{
+	using namespace stored::pipes;
+
+	int injects = 0;
+	auto p0 = Entry<int>{} >> Buffer<int>{} >> Log<int>{"p0"} >> Exit{};
+	auto p1 = Entry<int>{} >> Buffer<int>{} >> Log<int>{"p1"} >> Call{[&](int) { injects++; }}
+		  >> Exit{};
+	p0 >> p1;
+	1 >> p0;
+
+	auto p2 = Entry<int>{} >> Buffer<int>{} >> Log<int>{"p2"} >> Exit{};
+	2 >> p2;
+
+	// This will actually inject both 2 and 1 into p1.
+	injects = 0;
+	p0.extend(p2);
+	EXPECT_EQ(p2.extract(), 1);
+	EXPECT_EQ(p1.extract(), 1);
+	EXPECT_EQ(injects, 2);
+
+	auto p3 = Entry<int>{} >> Log<int>{"p3"} >> Exit{};
+	// Now, only 1 is injected (again).
+	injects = 0;
+	p2.extend(p3);
+	EXPECT_EQ(p1.extract(), 1);
+	EXPECT_EQ(injects, 1);
 }
 
 } // namespace
