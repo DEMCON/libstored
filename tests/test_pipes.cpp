@@ -17,9 +17,9 @@
  */
 
 #include "libstored/pipes.h"
-#include "gtest/gtest.h"
+#include "TestStore.h"
 
-#include <typeinfo>
+#include "gtest/gtest.h"
 
 namespace {
 
@@ -312,6 +312,67 @@ TEST(Pipes, Extend)
 	p2.extend(p3);
 	EXPECT_EQ(p1.extract(), 1);
 	EXPECT_EQ(injects, 1);
+}
+
+TEST(Pipes, Get)
+{
+	using namespace stored::pipes;
+
+	stored::TestStore store;
+
+	auto p0 = Entry<bool>{}
+		  >> Get<int32_t, stored::Variant<stored::TestStore>>{store.init_decimal.variant()}
+		  >> Buffer<int32_t>{} >> Exit{};
+
+	true >> p0;
+	EXPECT_EQ(p0.extract(), 42);
+
+	auto p1 = Entry<bool>{} >> Get<int32_t, decltype(store.init_decimal)&>{store.init_decimal}
+		  >> Exit{};
+
+	EXPECT_EQ(p1.extract(), 42);
+
+	// Auto-deduct StoreVariable
+	auto p2 = Entry<bool>{} >> Get{store.init_decimal} >> Exit{};
+	store.init_decimal = 43;
+	EXPECT_EQ(p2.extract(), 43);
+
+	// Auto-deduct StoreFunction
+	auto p3 = Entry<bool>{} >> Get{store.f_read_only} >> Exit{};
+	EXPECT_EQ(p3.extract(), 0);
+}
+
+TEST(Pipes, Set)
+{
+	using namespace stored::pipes;
+
+	stored::TestStore store;
+
+	auto p0 = Entry<int32_t>{}
+		  >> Set<int32_t, stored::Variant<stored::TestStore>>{store.init_decimal.variant()}
+		  >> Cap{};
+
+	1 >> p0;
+	EXPECT_EQ(p0.extract(), 1);
+	EXPECT_EQ(store.init_decimal.get(), 1);
+
+	auto p1 = Entry<int32_t>{} >> Set<int32_t, decltype(store.init_decimal)&>{store.init_decimal}
+		  >> Exit{};
+
+	2 >> p1;
+	EXPECT_EQ(p1.extract(), 2);
+	EXPECT_EQ(store.init_decimal.get(), 2);
+
+	// Auto-deduct StoreVariable
+	auto p2 = Entry<int32_t>{} >> Set{store.init_decimal} >> Exit{};
+	3 >> p2;
+	EXPECT_EQ(p2.extract(), 3);
+	EXPECT_EQ(store.init_decimal.get(), 3);
+
+	// Auto-deduct StoreFunction
+	auto p3 = Entry<int32_t>{} >> Set{store.f_read_only} >> Exit{};
+	4 >> p3;
+	EXPECT_EQ(p3.extract(), 0);
 }
 
 } // namespace
