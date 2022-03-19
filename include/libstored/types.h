@@ -185,6 +185,83 @@ template <>
 struct toIntType<false, 8> {
 	static stored::Type::type const type = Type::Uint64;
 };
+
+template <Type::type T>
+struct fromType {
+	typedef char* type; // Blob
+};
+
+template <>
+struct fromType<stored::Type::Int8> {
+	typedef int8_t type;
+};
+
+template <>
+struct fromType<stored::Type::Uint8> {
+	typedef uint8_t type;
+};
+
+template <>
+struct fromType<stored::Type::Int16> {
+	typedef int16_t type;
+};
+
+template <>
+struct fromType<stored::Type::Uint16> {
+	typedef uint16_t type;
+};
+
+template <>
+struct fromType<stored::Type::Int32> {
+	typedef int32_t type;
+};
+
+template <>
+struct fromType<stored::Type::Uint32> {
+	typedef uint32_t type;
+};
+
+#	ifdef ULLONG_MAX
+template <>
+struct fromType<stored::Type::Int64> {
+	typedef int64_t type;
+};
+
+template <>
+struct fromType<stored::Type::Uint64> {
+	typedef uint64_t type;
+};
+#	endif
+
+template <>
+struct fromType<stored::Type::Float> {
+	typedef float type;
+};
+
+template <>
+struct fromType<stored::Type::Double> {
+	typedef double type;
+};
+
+template <>
+struct fromType<stored::Type::Bool> {
+	typedef bool type;
+};
+
+template <>
+struct fromType<stored::Type::Pointer> {
+	typedef void* type;
+};
+
+template <>
+struct fromType<stored::Type::Void> {
+	typedef void type;
+};
+
+template <>
+struct fromType<stored::Type::String> {
+	typedef char* type;
+};
 } // namespace impl
 
 /*!
@@ -256,6 +333,11 @@ struct toType<char*> {
 template <typename T>
 struct toType<T*> {
 	static Type::type const type = Type::Pointer;
+};
+
+template <Type::type T>
+struct fromType {
+	typedef typename impl::fromType<(Type::type)(T & ~Type::FlagFunction)>::type type;
 };
 
 template <typename Container = void>

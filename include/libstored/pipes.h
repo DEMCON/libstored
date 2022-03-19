@@ -23,6 +23,7 @@
 #if defined(__cplusplus) && STORED_cplusplus >= 201402L && defined(STORED_DRAFT_API)
 
 #	include <libstored/util.h>
+#	include <libstored/types.h>
 
 #	include <array>
 #	include <cstdio>
@@ -1121,6 +1122,205 @@ Call(F_ &&)
 	-> Call<typename impl::call_type_in<decltype(std::function{std::declval<F_>()})>::type,
 		typename impl::call_f_type<decltype(std::function{std::declval<F_>()})>::type>;
 #	endif // >= C++17
+
+template <typename T, typename V>
+class Get {};
+
+template <typename T, typename Container>
+class Get<T, stored::Variant<Container>> {
+public:
+	using Variant_type = stored::Variant<Container>;
+
+	explicit Get(Variant_type v)
+		: m_v{v}
+	{}
+
+	T inject(bool x)
+	{
+		UNUSED(x)
+		return extract();
+	}
+
+	T extract()
+	{
+		return m_v.valid() ? m_v.template get<T>() : T{};
+	}
+
+	bool entry_cast(T x) const
+	{
+		UNUSED(x)
+		return false;
+	}
+
+	T exit_cast(bool x) const
+	{
+		UNUSED(x)
+		return T{};
+	}
+
+private:
+	Variant_type m_v;
+};
+
+template <typename T, typename Object>
+class Get<T, Object&> {
+public:
+	explicit Get(Object& o)
+		: m_o{o}
+	{}
+
+	T inject(bool x)
+	{
+		UNUSED(x)
+		return extract();
+	}
+
+	T extract()
+	{
+		return m_o.get().get();
+	}
+
+	bool entry_cast(T x) const
+	{
+		UNUSED(x)
+		return false;
+	}
+
+	T exit_cast(bool x) const
+	{
+		UNUSED(x)
+		return T{};
+	}
+
+private:
+	std::reference_wrapper<Object> m_o;
+};
+
+#	if STORED_cplusplus >= 201703L
+namespace impl {
+template <typename V>
+struct object_data_type {};
+
+template <typename Store, typename Implementation, typename T, size_t offset, size_t size_>
+struct object_data_type<stored::impl::StoreVariable<Store, Implementation, T, offset, size_>> {
+	using type = T;
+};
+
+template <
+	typename Store, typename Implementation,
+	template <typename, unsigned int> class FunctionMap, unsigned int F>
+struct object_data_type<stored::impl::StoreFunction<Store, Implementation, FunctionMap, F>> {
+	using type =
+		typename stored::impl::StoreFunction<Store, Implementation, FunctionMap, F>::type;
+};
+
+template <typename Store, typename Implementation, Type::type type_, size_t offset, size_t size_>
+struct object_data_type<stored::impl::StoreVariantV<Store, Implementation, type_, offset, size_>> {
+	static_assert(type_ & stored::Type::FlagFixed, "Only fixed types are supported");
+	using type = typename stored::fromType<type_>::type;
+};
+
+template <typename Store, typename Implementation, Type::type type_, unsigned int F, size_t size_>
+struct object_data_type<stored::impl::StoreVariantF<Store, Implementation, type_, F, size_>> {
+	static_assert(type_ & stored::Type::FlagFixed, "Only fixed types are supported");
+	using type = typename stored::fromType<type_>::type;
+};
+
+template <typename V>
+struct object_type {};
+
+template <typename Store, typename Implementation, typename T, size_t offset, size_t size_>
+struct object_type<stored::impl::StoreVariable<Store, Implementation, T, offset, size_>> {
+	using type = stored::impl::StoreVariable<Store, Implementation, T, offset, size_>&;
+};
+
+template <
+	typename Store, typename Implementation,
+	template <typename, unsigned int> class FunctionMap, unsigned int F>
+struct object_type<stored::impl::StoreFunction<Store, Implementation, FunctionMap, F>> {
+	using type = stored::impl::StoreFunction<Store, Implementation, FunctionMap, F>&;
+};
+
+template <typename Store, typename Implementation, Type::type type_, size_t offset, size_t size_>
+struct object_type<stored::impl::StoreVariantV<Store, Implementation, type_, offset, size_>> {
+	using type = typename stored::impl::StoreVariantV<
+		Store, Implementation, type_, offset, size_>::Variant_type;
+};
+
+template <typename Store, typename Implementation, Type::type type_, unsigned int F, size_t size_>
+struct object_type<stored::impl::StoreVariantF<Store, Implementation, type_, F, size_>> {
+	using type = typename stored::impl::StoreVariantF<
+		Store, Implementation, type_, F, size_>::Variant_type;
+};
+} // namespace impl
+
+// It can only deduct StoreVariable/StoreFunction. Variant does not include the
+// type in the template, so T would be unknown, although it is perfectly
+// supported by Get. StoreVariant* is supported, as long as it holds fixed-size
+// data (which is usually not what it is used for...)
+template <typename V>
+Get(V &&)
+	-> Get<typename impl::object_data_type<std::decay_t<V>>::type,
+	       typename impl::object_type<std::decay_t<V>>::type>;
+#	endif // C++17
+
+template <typename T, typename V>
+class Set {};
+
+template <typename T, typename Container>
+class Set<T, stored::Variant<Container>> {
+public:
+	using Variant_type = stored::Variant<Container>;
+
+	explicit Set(Variant_type v)
+		: m_v{v}
+	{}
+
+	T inject(T x)
+	{
+		if(m_v.valid())
+			m_v.template set<T>(x);
+
+		return x;
+	}
+
+	T extract()
+	{
+		return m_v.valid() ? m_v.template get<T>() : T{};
+	}
+
+private:
+	Variant_type m_v;
+};
+
+template <typename T, typename Object>
+class Set<T, Object&> {
+public:
+	explicit Set(Object& o)
+		: m_o{o}
+	{}
+
+	T inject(T x)
+	{
+		m_o.get().set(x);
+		return x;
+	}
+
+	T extract()
+	{
+		return m_o.get().get();
+	}
+
+private:
+	std::reference_wrapper<Object> m_o;
+};
+
+#	if STORED_cplusplus >= 201703L
+template <typename V>
+Set(V &&)
+	-> Set<typename impl::object_data_type<std::decay_t<V>>::type,
+	       typename impl::object_type<std::decay_t<V>>::type>;
+#	endif // C++17
 
 } // namespace pipes
 } // namespace stored
