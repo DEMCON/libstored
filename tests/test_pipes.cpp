@@ -356,8 +356,8 @@ TEST(Pipes, Set)
 	EXPECT_EQ(p0.extract(), 1);
 	EXPECT_EQ(store.init_decimal.get(), 1);
 
-	auto p1 = Entry<int32_t>{} >> Set<int32_t, decltype(store.init_decimal)&>{store.init_decimal}
-		  >> Exit{};
+	auto p1 = Entry<int32_t>{}
+		  >> Set<int32_t, decltype(store.init_decimal)&>{store.init_decimal} >> Exit{};
 
 	2 >> p1;
 	EXPECT_EQ(p1.extract(), 2);
@@ -373,6 +373,58 @@ TEST(Pipes, Set)
 	auto p3 = Entry<int32_t>{} >> Set{store.f_read_only} >> Exit{};
 	4 >> p3;
 	EXPECT_EQ(p3.extract(), 0);
+}
+
+TEST(Pipes, Mux)
+{
+	using namespace stored::pipes;
+
+	auto p0 = Entry<short>{} >> Buffer<short>{(short)10} >> Exit{};
+	auto p1 = Entry<short>{} >> Buffer<short>{(short)11} >> Exit{};
+	auto p2 = Entry<short>{} >> Buffer<short>{(short)12} >> Exit{};
+	auto mux = Entry<size_t>{} >> Mux{p0, p1, p2} >> Exit{};
+
+	EXPECT_EQ(mux.extract(), 10);
+
+	1 >> mux;
+	EXPECT_EQ(mux.extract(), 11);
+
+	2 >> mux;
+	EXPECT_EQ(mux.extract(), 12);
+
+	3 >> mux;
+	EXPECT_EQ(mux.extract(), 0);
+
+	// The one-input mux is optimized by ignoring the index.
+	auto mux1 = Entry<size_t>{} >> Mux{p0} >> Exit{};
+	EXPECT_EQ(mux1.extract(), 10);
+	1 >> mux1;
+	EXPECT_EQ(mux1.extract(), 10);
+}
+
+TEST(Pipes, Cache)
+{
+	using namespace stored::pipes;
+
+	auto candidate = Entry<int>{} >> Log<int>{"candidate"} >> Buffer<int>{} >> Exit{};
+	auto actual = Entry<int>{} >> Log<int>{"actual"} >> Buffer<int>{} >> Exit{};
+	auto cache = Entry<size_t>{} >> Mux{actual, candidate} >> Buffer<int>{} >> Log<int>{"set"}
+		     >> Exit{};
+
+	10 >> actual;
+	0 >> cache;
+	EXPECT_EQ(cache.extract(), 10);
+
+	1 >> candidate;
+	EXPECT_EQ(cache.extract(), 10);
+	2 >> candidate;
+	EXPECT_EQ(cache.extract(), 10);
+	1 >> cache;
+	EXPECT_EQ(cache.extract(), 2);
+	3 >> candidate;
+	EXPECT_EQ(cache.extract(), 2);
+	0 >> cache;
+	EXPECT_EQ(cache.extract(), 10);
 }
 
 } // namespace

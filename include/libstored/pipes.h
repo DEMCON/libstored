@@ -1322,6 +1322,81 @@ Set(V &&)
 	       typename impl::object_type<std::decay_t<V>>::type>;
 #	endif // C++17
 
+template <typename T, size_t N>
+class Mux {
+public:
+	template <typename... P, std::enable_if_t<sizeof...(P) + 1 == N, int> = 0>
+	constexpr explicit Mux(PipeExit<T>& p0, P&... p)
+		: m_p{p0, p...}
+	{}
+
+	T inject(size_t i)
+	{
+		m_i = i;
+		return extract();
+	}
+
+	T extract()
+	{
+		return m_i < N ? m_p[m_i].get().extract() : T{};
+	}
+
+	size_t entry_cast(T x) const
+	{
+		UNUSED(x)
+		return 0;
+	}
+
+	T exit_cast(size_t x) const
+	{
+		UNUSED(x)
+		return T{};
+	}
+
+private:
+	std::array<std::reference_wrapper<PipeExit<T>>, N> m_p;
+	size_t m_i = 0;
+};
+
+template <typename T>
+class Mux<T, 1> {
+public:
+	constexpr explicit Mux(PipeExit<T>& p)
+		: m_p{p}
+	{}
+
+	T inject(size_t i)
+	{
+		UNUSED(i)
+		return extract();
+	}
+
+	T extract()
+	{
+		return m_p.get().extract();
+	}
+
+	size_t entry_cast(T x) const
+	{
+		UNUSED(x)
+		return 0;
+	}
+
+	T exit_cast(size_t x) const
+	{
+		UNUSED(x)
+		return T{};
+	}
+
+private:
+	std::reference_wrapper<PipeExit<T>> m_p;
+};
+
+#	if STORED_cplusplus >= 201703L
+template <typename T, typename... P>
+Mux(PipeExit<T>&, P&...) -> Mux<T, sizeof...(P) + 1>;
+#	endif // >= C++17
+
 } // namespace pipes
 } // namespace stored
 
