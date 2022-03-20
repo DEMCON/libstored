@@ -28,9 +28,10 @@
 #	include <array>
 #	include <cstdio>
 #	include <functional>
+#	include <limits>
+#	include <new>
 #	include <string>
 #	include <utility>
-#	include <limits>
 
 #	include <cassert>
 
@@ -145,7 +146,14 @@ public:
 	STORED_PIPE_TRAITS_HAS_F(S, exit_cast)
 
 	using type_in = decltype(type_in_helper(&S::inject));
+	static_assert(
+		std::is_default_constructible<std::decay_t<type_in>>::value,
+		"Segment's type in must be default-constructible");
+
 	using type_out = decltype(type_out_helper(&S::inject));
+	static_assert(
+		std::is_default_constructible<std::decay_t<type_out>>::value,
+		"Segment's type out must be default-constructible");
 };
 
 template <>
@@ -198,47 +206,47 @@ public:
 
 	~Segment() = default;
 
-	type_out inject(type_in x)
+	decltype(auto) inject(type_in x)
 	{
 		return inject_<S>(x);
 	}
 
-	type_out operator()(type_in x)
+	decltype(auto) operator()(type_in x)
 	{
 		return inject(x);
 	}
 
-	auto extract()
+	decltype(auto) extract()
 	{
 		return extract_<S>();
 	}
 
-	auto entry_cast(type_out x) const
+	decltype(auto) entry_cast(type_out x) const
 	{
 		return entry_cast_<S>(x);
 	}
 
-	auto exit_cast(type_in x) const
+	decltype(auto) exit_cast(type_in x) const
 	{
 		return exit_cast_<S>(x);
 	}
 
 private:
 	template <typename S_, std::enable_if_t<traits::template has_inject_<S_>(), int> = 0>
-	type_out inject_(type_in x)
+	decltype(auto) inject_(type_in x)
 	{
 		return S_::inject(x);
 	}
 
 	template <typename S_, std::enable_if_t<!traits::template has_inject_<S_>(), int> = 0>
-	type_out inject_(type_in x)
+	decltype(auto) inject_(type_in x)
 	{
 		UNUSED(x)
 		return extract_<S_>();
 	}
 
 	template <typename S_, std::enable_if_t<traits::template has_extract_<S_>(), int> = 0>
-	auto extract_()
+	decltype(auto) extract_()
 	{
 		return S_::extract();
 	}
@@ -250,7 +258,7 @@ private:
 	}
 
 	template <typename S_, std::enable_if_t<traits::template has_entry_cast_<S_>(), int> = 0>
-	auto entry_cast_(type_out x) const
+	decltype(auto) entry_cast_(type_out x) const
 	{
 		return S_::entry_cast(x);
 	}
@@ -276,7 +284,7 @@ private:
 	}
 
 	template <typename S_, std::enable_if_t<traits::template has_exit_cast_<S_>(), int> = 0>
-	auto exit_cast_(type_in x) const
+	decltype(auto) exit_cast_(type_in x) const
 	{
 		return S_::exit_cast(x);
 	}
@@ -436,31 +444,28 @@ protected:
 	{}
 
 public:
-	type_out inject(type_in x)
+	decltype(auto) inject(type_in x)
 	{
 		return Last::inject(Init::inject(x));
 	}
 
 	static constexpr bool has_inject = Init::has_inject || Last::has_inject;
 
-	type_out extract()
+	decltype(auto) extract()
 	{
-		if(Last::has_extract)
-			return Last::extract();
-
-		return Last::exit_cast(Init::extract());
+		return extract_helper<Last>();
 	}
 
 	static constexpr bool has_extract = Init::has_extract || Last::has_extract;
 
-	type_out exit_cast(type_in x) const
+	decltype(auto) exit_cast(type_in x) const
 	{
 		return Last::exit_cast(Init::exit_cast(x));
 	}
 
 	static constexpr bool has_exit_cast = Init::has_exit_cast || Last::has_exit_cast;
 
-	type_in entry_cast(type_out x) const
+	decltype(auto) entry_cast(type_out x) const
 	{
 		return Init::entry_cast(Last::entry_cast(x));
 	}
@@ -481,6 +486,19 @@ public:
 
 	template <typename... S_>
 	friend class Segments;
+
+private:
+	template <typename Last_, std::enable_if_t<Last_::has_extract, int> = 0>
+	decltype(auto) extract_helper()
+	{
+		return Last_::extract();
+	}
+
+	template <typename Last_, std::enable_if_t<!Last_::has_extract, int> = 0>
+	decltype(auto) extract_helper()
+	{
+		return Last_::exit_cast(Init::extract());
+	}
 };
 
 template <typename S0>
@@ -573,11 +591,106 @@ private:
 	virtual void justInject(type_in const& x) = 0;
 };
 
+template <typename T>
+class ExitValue {
+public:
+	using type = T;
+
+protected:
+	explicit ExitValue(type const& v)
+		: m_p{&v}
+	{}
+
+	explicit ExitValue(type&& v)
+		: m_p{}
+	{
+		new(m_v) type{std::move(v)};
+	}
+
+	template <typename S>
+	friend class SpecificCappedPipe;
+
+public:
+	ExitValue(ExitValue const&) = delete;
+	void operator=(ExitValue const&) = delete;
+
+	ExitValue(ExitValue&& v) noexcept
+		: m_p{v.m_p}
+	{
+		if(m_p)
+			new(m_v) type{std::move(v.value())};
+	}
+
+	ExitValue& operator=(ExitValue&& v) = delete;
+
+	~ExitValue()
+	{
+		if(!m_p)
+			value().~type();
+	}
+
+	T const& get() const
+	{
+		return m_p ? *m_p : value();
+	}
+
+	operator type const &() const
+	{
+		return get();
+	}
+
+	type& move(type& dst) &&
+	{
+		if(m_p)
+			dst = *m_p;
+		else
+			dst = std::move(value());
+
+		return dst;
+	}
+
+#	define EXITVALUE_COMPARE_OP(op)                                         \
+		friend bool operator op(ExitValue<type> const& v, type const& x) \
+		{                                                                \
+			return v.get() op x;                                     \
+		}                                                                \
+		friend bool operator op(type const& x, ExitValue<type> const& v) \
+		{                                                                \
+			return v.get() op x;                                     \
+		}
+
+	EXITVALUE_COMPARE_OP(==)
+	EXITVALUE_COMPARE_OP(!=)
+	EXITVALUE_COMPARE_OP(>)
+	EXITVALUE_COMPARE_OP(<)
+	EXITVALUE_COMPARE_OP(>=)
+	EXITVALUE_COMPARE_OP(<=)
+
+#	undef EXITVALUE_COMPARE_OP
+
+protected:
+	type& value()
+	{
+		return *reinterpret_cast<type*>(&m_v[0]);
+	}
+
+	type const& value() const
+	{
+		return *reinterpret_cast<type const*>(&m_v[0]);
+	}
+
+private:
+	alignas(type) char m_v[sizeof(type)]; // only valid when m_p == nullptr
+	type const* m_p;
+};
+
+
 template <typename Out>
 class PipeExit {
 	STORED_CLASS_DEFAULT_COPY_MOVE(PipeExit)
 public:
 	using type_out = Out;
+	using type_out_wrapper = ExitValue<Out>;
 
 protected:
 	constexpr PipeExit() = default;
@@ -585,16 +698,16 @@ protected:
 public:
 	virtual ~PipeExit() = default;
 
-	virtual type_out extract() = 0;
+	virtual type_out_wrapper extract() = 0;
 
 	friend auto& operator>>(PipeExit& p, std::decay_t<type_out>& x)
 	{
-		return x = p.extract();
+		return p.extract().move(x);
 	}
 
 	friend auto& operator<<(std::decay_t<type_out>& x, PipeExit& p)
 	{
-		return x = p.extract();
+		return p.extract().move(x);
 	}
 
 	virtual void connect(PipeEntry<Out>& p)
@@ -641,6 +754,7 @@ class Pipe : public PipeEntry<In>, public PipeExit<Out> {
 public:
 	using typename PipeEntry<In>::type_in;
 	using typename PipeExit<Out>::type_out;
+	using typename PipeExit<Out>::type_out_wrapper;
 
 protected:
 	constexpr Pipe() = default;
@@ -648,19 +762,19 @@ protected:
 public:
 	virtual ~Pipe() override = default;
 
-	virtual type_out inject(type_in const& x) = 0;
+	virtual type_out_wrapper inject(type_in const& x) = 0;
 
-	type_out operator()(type_in const& x)
+	type_out_wrapper operator()(type_in const& x)
 	{
 		return inject(x);
 	}
 
-	friend type_out operator>>(type_in const& x, Pipe& p)
+	friend type_out_wrapper operator>>(type_in const& x, Pipe& p)
 	{
 		return p.inject(x);
 	}
 
-	friend type_out operator<<(Pipe& p, type_in const& x)
+	friend type_out_wrapper operator<<(Pipe& p, type_in const& x)
 	{
 		return p.inject(x);
 	}
@@ -683,6 +797,7 @@ public:
 	using segments_type = S;
 	using type_in = std::decay_t<typename segment_traits<segments_type>::type_in>;
 	using type_out = std::decay_t<typename segment_traits<segments_type>::type_out>;
+	using type_out_wrapper = ExitValue<type_out>;
 	using Pipe_type = Pipe<type_in, type_out>;
 
 protected:
@@ -699,15 +814,14 @@ protected:
 public:
 	virtual ~SpecificCappedPipe() override = default;
 
-	virtual type_out inject(type_in const& x) override
+	virtual type_out_wrapper inject(type_in const& x) override
 	{
-		type_out y = segments_type::inject(x);
-		return y;
+		return type_out_wrapper{segments_type::inject(x)};
 	}
 
-	virtual type_out extract() override
+	virtual type_out_wrapper extract() override
 	{
-		return segments_type::extract();
+		return type_out_wrapper{segments_type::extract()};
 	}
 
 	using Pipe_type::operator();
@@ -733,6 +847,7 @@ public:
 	using segments_type = S;
 	using type_in = typename base::type_in;
 	using type_out = typename base::type_out;
+	using type_out_wrapper = typename base::type_out_wrapper;
 	using Pipe_type = typename base::Pipe_type;
 
 protected:
@@ -749,9 +864,9 @@ protected:
 public:
 	virtual ~SpecificOpenPipe() override = default;
 
-	virtual type_out inject(type_in const& x) override
+	virtual type_out_wrapper inject(type_in const& x) override
 	{
-		type_out y = base::inject(x);
+		type_out_wrapper y = base::inject(x);
 		forward(y);
 		return y;
 	}
@@ -805,7 +920,7 @@ constexpr auto operator>>(Segments<S_...>&& s, Exit&& e)
 template <typename T>
 class Identity {
 public:
-	T inject(T x)
+	T const& inject(T const& x)
 	{
 		return x;
 	}
@@ -855,17 +970,17 @@ public:
 template <typename In, typename Out>
 class Cast<In, Out, false> {
 public:
-	Out inject(In x)
+	Out inject(In const& x)
 	{
 		return exit_cast(x);
 	}
 
-	Out exit_cast(In x) const
+	Out exit_cast(In const& x) const
 	{
 		return static_cast<Out>(x);
 	}
 
-	In entry_cast(Out x) const
+	In entry_cast(Out const& x) const
 	{
 		return static_cast<In>(x);
 	}
@@ -909,7 +1024,7 @@ public:
 
 	constexpr Buffer() = default;
 
-	type_out inject(type_in x)
+	type_out inject(type_in const& x)
 	{
 		m_x = x;
 		return extract();
@@ -918,11 +1033,6 @@ public:
 	type_out extract()
 	{
 		return m_x;
-	}
-
-	type exit_cast(type_in x) const
-	{
-		return x;
 	}
 
 private:
@@ -940,7 +1050,7 @@ public:
 		: m_p{p0, p...}
 	{}
 
-	T inject(T x)
+	T const& inject(T const& x)
 	{
 		for(auto& p : m_p)
 			p.get().inject(x);
@@ -967,7 +1077,7 @@ template <typename T>
 class Log {
 public:
 	using type = T;
-	using logger_type = void(std::string const&, type);
+	using logger_type = void(std::string const&, type const&);
 
 	template <
 		typename F,
@@ -982,7 +1092,7 @@ public:
 		, m_logger{&Log::template print<type>}
 	{}
 
-	type inject(type x)
+	type const& inject(type const& x)
 	{
 		if(m_logger)
 			m_logger(m_name, x);
@@ -992,20 +1102,20 @@ public:
 
 protected:
 	template <typename T_, std::enable_if_t<std::is_constructible<double, T_>::value, int> = 0>
-	static void print(std::string const& name, T_ x)
+	static void print(std::string const& name, T_ const& x)
 	{
 		printf("%s = %g\n", name.c_str(), static_cast<double>(x));
 	}
 
 	template <typename T_, std::enable_if_t<!std::is_constructible<double, T_>::value, int> = 0>
-	static void print(std::string const& name, T_ x)
+	static void print(std::string const& name, T_ const& x)
 	{
 		printf("%s injected\n", name.c_str());
 	}
 
 private:
 	std::string m_name;
-	std::function<void(std::string const&, type)> m_logger;
+	std::function<void(std::string const&, type const&)> m_logger;
 };
 
 template <typename T, bool invert = false, typename Gate = bool>
@@ -1015,7 +1125,7 @@ public:
 		: m_gate{&gate}
 	{}
 
-	T inject(T x)
+	T inject(T const& x)
 	{
 		if(invert)
 			return m_gate->extract() ? T{} : x;
@@ -1276,7 +1386,7 @@ public:
 		: m_v{v}
 	{}
 
-	T inject(T x)
+	T const& inject(T const& x)
 	{
 		if(m_v.valid())
 			m_v.template set<T>(x);
@@ -1300,7 +1410,7 @@ public:
 		: m_o{o}
 	{}
 
-	T inject(T x)
+	T const& inject(T const& x)
 	{
 		m_o.get().set(x);
 		return x;
@@ -1371,7 +1481,7 @@ public:
 		return extract();
 	}
 
-	T extract()
+	decltype(auto) extract()
 	{
 		return m_p.get().extract();
 	}

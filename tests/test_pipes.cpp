@@ -427,4 +427,61 @@ TEST(Pipes, Cache)
 	EXPECT_EQ(cache.extract(), 10);
 }
 
+TEST(Pipes, Struct)
+{
+	using namespace stored::pipes;
+
+	static int copies = 0;
+	static int moves = 0;
+
+	struct Test {
+		int i = 0;
+
+		Test(int i_ = 0)
+			: i{i_}
+		{}
+
+		Test(Test&& t) noexcept
+		{
+			*this = std::move(t);
+		}
+
+		Test(Test const& t) noexcept
+		{
+			*this = t;
+		}
+
+		Test& operator=(Test&& t) noexcept
+		{
+			i = t.i;
+			moves++;
+			return *this;
+		}
+
+		Test& operator=(Test const& t) noexcept
+		{
+			i = t.i;
+			copies++;
+			return *this;
+		}
+
+		~Test() = default;
+	};
+
+	auto p = Entry<Test>{} >> Call{[](Test const& t) { printf("%d\n", t.i); }} >> Buffer<Test>{Test{0}}
+		 >> Exit{};
+
+	EXPECT_EQ(p.extract().get().i, 0);
+	printf("copies: %d, moves: %d\n", copies, moves);
+
+	Test{1} >> p;
+	EXPECT_EQ(p.extract().get().i, 1);
+	printf("copies: %d, moves: %d\n", copies, moves);
+
+	Test t{2};
+	t >> p;
+	EXPECT_EQ(p.extract().get().i, 2);
+	printf("copies: %d, moves: %d\n", copies, moves);
+}
+
 } // namespace
