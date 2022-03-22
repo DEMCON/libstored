@@ -62,6 +62,12 @@ namespace impl {
 // traits
 //
 
+template <class U, class T>
+struct is_convertible
+	: std::integral_constant<
+		  bool, (std::is_constructible<T, U>::value || std::is_convertible<U, T>::value)> {
+};
+
 #	define STORED_PIPE_TRAITS_HAS_F(type, name)                                              \
 	protected:                                                                                \
 		template <                                                                        \
@@ -280,6 +286,9 @@ private:
 				     int> = 0>
 	auto entry_cast_(type_out x) const
 	{
+		static_assert(
+			impl::is_convertible<type_out, std::decay_t<type_in>>::value,
+			"Provide entry_cast() or support static_cast<type_in>(type_out)");
 		return static_cast<std::decay_t<type_in>>(x);
 	}
 
@@ -306,6 +315,9 @@ private:
 				     int> = 0>
 	auto exit_cast_(type_in x) const
 	{
+		static_assert(
+			impl::is_convertible<type_in, std::decay_t<type_out>>::value,
+			"Provide exit_cast() or support static_cast<type_out>(type_in)");
 		return static_cast<std::decay_t<type_out>>(x);
 	}
 };
@@ -986,11 +998,8 @@ public:
 	}
 };
 
-template <typename T>
-class Cast<T, T, false> : public Identity<T> {};
-
-template <typename T>
-class Cast<T, T, true> : public Identity<T> {};
+template <typename T, bool is_number>
+class Cast<T, T, is_number> : public Identity<T> {};
 
 } // namespace impl
 
@@ -1118,6 +1127,12 @@ private:
 	std::function<void(std::string const&, type const&)> m_logger;
 };
 
+/*!
+ * \brief Pass either the value or a default-constructed value through the
+ *	pipe, depending on a gate pipe.
+ *
+ * The gate pipe value is extracted upon every inject.
+ */
 template <typename T, bool invert = false, typename Gate = bool>
 class Transistor {
 public:
@@ -1137,6 +1152,22 @@ private:
 	PipeExit<Gate>* m_gate;
 };
 
+/*!
+ * \brief Invoke a function for every inject.
+ *
+ * The function prototype can be:
+ *
+ * - void(T)
+ * - void(T const&)
+ * - void(T&)
+ * - T(T)
+ *
+ * The first two cases allow a function to observe the injected value.  The
+ * last two cases allow modifying it; the modified/returned value is passed
+ * downstream.
+ *
+ * T and F are auto-deducted in C++17.
+ */
 template <typename T, typename F = void(T)>
 class Call {
 public:
@@ -1233,6 +1264,14 @@ Call(F_ &&)
 		typename impl::call_f_type<decltype(std::function{std::declval<F_>()})>::type>;
 #	endif // >= C++17
 
+/*!
+ * \brief Extract a store object's value upon every extract/inject.
+ *
+ * The value passed through the pipe entry is ignored.
+ *
+ * V can be a stored::Variant, and any reference to a fixed-type store object.
+ * Usually, use C++17 auto-deduction to determine both T and V.
+ */
 template <typename T, typename V>
 class Get {};
 
@@ -1374,6 +1413,10 @@ Get(V &&)
 	       typename impl::object_type<std::decay_t<V>>::type>;
 #	endif // C++17
 
+/*!
+ * \brief Write a value that is injected in the pipe to a store object.
+ * \see Get
+ */
 template <typename T, typename V>
 class Set {};
 
@@ -1432,6 +1475,12 @@ Set(V &&)
 	       typename impl::object_type<std::decay_t<V>>::type>;
 #	endif // C++17
 
+/*!
+ * \brief Multiplex pipes, given the injected index value.
+ *
+ * Pipes are saved as references. Given the injected value, the corresponding
+ * pipe is extracted when required.
+ */
 template <typename T, size_t N>
 class Mux {
 public:
