@@ -16,6 +16,7 @@
 #include <libstored/config.h>
 #include <libstored/debugger.h>
 #include <libstored/fifo.h>
+#include <libstored/pipes.h>
 #include <libstored/poller.h>
 #include <libstored/protocol.h>
 #include <libstored/synchronizer.h>
