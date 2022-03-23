@@ -538,4 +538,23 @@ TEST(Pipes, Changes)
 	EXPECT_EQ(changes, 1);
 }
 
+TEST(Pipes, Constrained)
+{
+	using namespace stored::pipes;
+
+	auto p = Entry<double>{} >> Constrained{Bounded{-1.0, 4.5}} >> Buffer<double>{} >> Cap{};
+
+	1 >> p;
+	EXPECT_EQ(p.extract().get(), 1.0);
+
+	-2 >> p;
+	EXPECT_EQ(p.extract().get(), -1.0);
+
+	4.6 >> p;
+	EXPECT_EQ(p.extract().get(), 4.5);
+
+	3 >> p;
+	EXPECT_EQ(p.extract().get(), 3.0);
+}
+
 } // namespace
