@@ -101,46 +101,11 @@ void measurement_pipe17()
 }
 
 template <typename T>
-struct Bounded {
-	using type = T;
-
-	explicit Bounded(
-		type low_ = std::numeric_limits<type>::lowest(),
-		type high_ = std::numeric_limits<type>::max())
-		: low{low_}
-		, high{high_}
-	{}
-
-	type low = std::numeric_limits<type>::lowest();
-	type high = std::numeric_limits<type>::max();
-
-	type check(type x) const
+struct Even {
+	T operator()(T x) const
 	{
-		return std::min(high, std::max(low, x));
+		return std::round(x / 2) * 2;
 	}
-};
-
-template <typename T>
-class Constrained {
-public:
-	using type = T;
-
-	explicit Constrained(Bounded<type> bq)
-		: m_bq{std::move(bq)}
-	{}
-
-	type inject(type x)
-	{
-		return exit_cast(x);
-	}
-
-	type exit_cast(type x) const
-	{
-		return m_bq.check(x);
-	}
-
-private:
-	Bounded<type> m_bq;
 };
 
 void setpoint_pipe17()
@@ -149,7 +114,7 @@ void setpoint_pipe17()
 
 	stored::ExamplePipes store;
 
-	auto p = Entry<double>{} >> Constrained{Bounded{0.0, 10.0}} >> Cast<double, float>{}
+	auto p = Entry<double>{} >> Constrained{Even<double>{}} >> Cast<double, float>{}
 		 >> Set{store.setpoint} >> Exit{};
 
 	2.1 >> p;

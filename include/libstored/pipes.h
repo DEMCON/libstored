@@ -432,7 +432,6 @@ public:
 						Init>::type_out>()))>::value,
 			// Always return by value.
 			std::decay_t<typename segment_traits<Last>::type_out>,
-			// Check if either inject() or exit_cast() return references.
 			typename segment_traits<Last>::type_out>;
 
 protected:
@@ -494,7 +493,7 @@ private:
 	}
 
 	template <typename Last_, std::enable_if_t<!Last_::has_extract, int> = 0>
-	decltype(auto) extract_helper()
+	auto extract_helper()
 	{
 		return Last_::exit_cast(Init::extract());
 	}
@@ -1644,6 +1643,94 @@ private:
 	PipeEntry<type>* m_p = nullptr;
 	type m_prev = type{};
 };
+
+template <typename T>
+class Bounded {
+public:
+	using type = T;
+
+	explicit Bounded(
+		type low = std::numeric_limits<type>::lowest(),
+		type high = std::numeric_limits<type>::max())
+		: m_low{low}
+		, m_high{high}
+	{}
+
+	type operator()(type x) const
+	{
+		return std::max(m_low, std::min(m_high, x));
+	}
+
+private:
+	type m_low;
+	type m_high;
+};
+
+namespace impl {
+template <typename F>
+struct constraints_type {};
+
+template <typename C, typename T>
+struct constraints_type<T (C::*)(T)> {
+	using type = std::decay_t<T>;
+};
+
+template <typename C, typename T>
+struct constraints_type<T (C::*)(T) const> {
+	using type = std::decay_t<T>;
+};
+
+#	if STORED_cplusplus >= 201703L
+template <typename C, typename T>
+struct constraints_type<T (C::*)(T) noexcept> {
+	using type = std::decay_t<T>;
+};
+
+template <typename C, typename T>
+struct constraints_type<T (C::*)(T) const noexcept> {
+	using type = std::decay_t<T>;
+};
+#	endif // C++17
+} // namespace impl
+
+template <typename Constraints>
+class Constrained {
+public:
+	using type = typename impl::constraints_type<decltype(&Constraints::operator())>::type;
+
+	template <
+		typename Constraints_,
+		std::enable_if_t<std::is_constructible<Constraints, Constraints_&&>::value, int> =
+			0>
+	explicit Constrained(Constraints_&& constraints)
+		: m_constraints{std::forward<Constraints_>(constraints)}
+	{}
+
+	template <
+		typename Constraints_ = Constraints,
+		std::enable_if_t<std::is_default_constructible<Constraints_>::value, int> = 0>
+	Constrained()
+		: m_constraints{}
+	{}
+
+	type inject(type x)
+	{
+		return exit_cast(std::move(x));
+	}
+
+	type exit_cast(type x) const
+	{
+		return m_constraints(std::move(x));
+	}
+
+private:
+	Constraints m_constraints;
+};
+
+#	if STORED_cplusplus >= 201703L
+template <typename Constraints_>
+Constrained(Constraints_ &&) -> Constrained<std::decay_t<Constraints_>>;
+#	endif // C++17
 
 } // namespace pipes
 } // namespace stored
