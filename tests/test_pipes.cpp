@@ -468,8 +468,8 @@ TEST(Pipes, Struct)
 		~Test() = default;
 	};
 
-	auto p = Entry<Test>{} >> Call{[](Test const& t) { printf("%d\n", t.i); }} >> Buffer<Test>{Test{0}}
-		 >> Exit{};
+	auto p = Entry<Test>{} >> Call{[](Test const& t) { printf("%d\n", t.i); }}
+		 >> Buffer<Test>{Test{0}} >> Exit{};
 
 	EXPECT_EQ(p.extract().get().i, 0);
 	printf("copies: %d, moves: %d\n", copies, moves);
@@ -482,6 +482,60 @@ TEST(Pipes, Struct)
 	t >> p;
 	EXPECT_EQ(p.extract().get().i, 2);
 	printf("copies: %d, moves: %d\n", copies, moves);
+}
+
+TEST(Pipes, similar_to)
+{
+	using namespace stored::pipes;
+
+	EXPECT_TRUE((similar_to<int, 1>{}(0, 0)));
+	EXPECT_TRUE((similar_to<int, 1>{}(10, 10)));
+	EXPECT_TRUE((similar_to<int, 1>{}(10, 11)));
+	EXPECT_FALSE((similar_to<int, 1>{}(10, 12)));
+	EXPECT_TRUE((similar_to<int, 1>{}(11, 10)));
+	EXPECT_TRUE((similar_to<int, 1>{}(-10, -11)));
+
+	EXPECT_TRUE((similar_to<double, 2>{}(-10, -10.09)));
+	EXPECT_FALSE((similar_to<double, 2>{}(-10, -10.11)));
+	EXPECT_FALSE((similar_to<double, 2>{}(-10, std::numeric_limits<double>::quiet_NaN())));
+	EXPECT_TRUE((similar_to<double, 2>{}(
+		std::numeric_limits<double>::quiet_NaN(),
+		std::numeric_limits<double>::quiet_NaN())));
+	EXPECT_TRUE((similar_to<double, 2>{}(
+		std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity())));
+	EXPECT_FALSE((similar_to<double, 2>{}(1, std::numeric_limits<double>::infinity())));
+	EXPECT_FALSE((similar_to<double, 2>{}(std::numeric_limits<double>::infinity(), 1)));
+}
+
+TEST(Pipes, Changes)
+{
+	using namespace stored::pipes;
+
+	int changes = 0;
+	auto c0 = Entry<int>{} >> Call{[&](int){ changes++; }} >> Exit{};
+	auto p0 = Entry<int>{} >> Changes{c0} >> Exit{};
+
+	0 >> p0;
+	EXPECT_EQ(changes, 0);
+
+	1 >> p0;
+	EXPECT_EQ(changes, 1);
+
+	1 >> p0;
+	EXPECT_EQ(changes, 1);
+
+	changes = 0;
+	auto c1 = Entry<double>{} >> Call{[&](double){ changes++; }} >> Exit{};
+	auto p1 = Entry<double>{} >> Changes{c1, similar_to<double>{}} >> Exit{};
+
+	0 >> p1;
+	EXPECT_EQ(changes, 0);
+
+	1 >> p1;
+	EXPECT_EQ(changes, 1);
+
+	1.0001 >> p1;
+	EXPECT_EQ(changes, 1);
 }
 
 } // namespace

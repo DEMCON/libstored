@@ -78,16 +78,26 @@ void measurement_pipe17()
 
 	stored::ExamplePipes store;
 
+	auto view = Entry<double>{} >> Quantified{Quantity<double>{0, "km", 0.001}}
+		    >> Call{[](Quantity<double> const& q) {
+			      printf("changed %g %s\n", q.get(), q.unit.c_str());
+		      }}
+		    >> Buffer<Quantity<double>>{} >> Exit{};
 	auto p = Entry<bool>{} >> Get{store.sensor} >> Cast<float, double>{}
-		 >> Quantified{Quantity<double>{0, "km", 0.001}} >> Exit{};
+		 >> Changes{view, similar_to<double>{}} >> Exit{};
 
 	store.sensor = 1.2f;
-	auto v = p.extract().get();
-	printf("sensor = %g %s\n", v.get(), v.unit.c_str());
+	printf("sensor = %g\n", (double)p.extract());
+	auto v = view.extract().get();
+	printf("sensor view = %g %s\n", v.get(), v.unit.c_str());
 
 	store.sensor = 1.3f;
-	v = true >> p;
-	printf("sensor = %g %s\n", v.get(), v.unit.c_str());
+	true >> p;
+	store.sensor = 1.3001f;
+	true >> p;
+	v = view.extract();
+	printf("sensor = %g\n", (double)p.extract());
+	printf("sensor view = %g %s\n", v.get(), v.unit.c_str());
 }
 
 template <typename T>

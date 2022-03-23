@@ -26,6 +26,7 @@
 #	include <libstored/types.h>
 
 #	include <array>
+#	include <cmath>
 #	include <cstdio>
 #	include <functional>
 #	include <limits>
@@ -356,29 +357,6 @@ struct segments_type<S0> {
 	using last = S0;
 };
 
-template <typename PrevOut, typename Out>
-struct segments_type_out {};
-
-template <typename Out>
-struct segments_type_out<Out, Out> {
-	using type = Out;
-};
-
-template <typename Out>
-struct segments_type_out<Out, Out const&> {
-	using type = Out;
-};
-
-template <typename Out>
-struct segments_type_out<Out const&, Out> {
-	using type = Out;
-};
-
-template <typename Out>
-struct segments_type_out<Out const&, Out const&> {
-	using type = Out const&;
-};
-
 namespace impl {
 /*
  * Last wraps a single Segment to be used as a Segments base class.  Consider
@@ -443,10 +421,19 @@ public:
 	using Last = impl::Last<S0, S1, S...>;
 
 	using type_in = typename segment_traits<Init>::type_in;
-	using type_out = typename segments_type_out<
-		decltype(std::declval<Last>().exit_cast(
-			std::declval<typename segments_traits<Init>::type_out>())),
-		typename segment_traits<Last>::type_out>::type;
+	using type_out =
+		// Check if Init does not return a reference, but Last does.
+		// If so, Last may return a reference to a local variable (the
+		// output of Init).
+		std::conditional_t<
+			!std::is_reference<typename segments_traits<Init>::type_out>::value
+				|| !std::is_reference<decltype(std::declval<Last>().exit_cast(
+					std::declval<typename segments_traits<
+						Init>::type_out>()))>::value,
+			// Always return by value.
+			std::decay_t<typename segment_traits<Last>::type_out>,
+			// Check if either inject() or exit_cast() return references.
+			typename segment_traits<Last>::type_out>;
 
 protected:
 	template <typename... S_, typename SN_>
@@ -456,7 +443,7 @@ protected:
 	{}
 
 public:
-	decltype(auto) inject(type_in x)
+	type_out inject(type_in x)
 	{
 		return Last::inject(Init::inject(x));
 	}
@@ -1555,6 +1542,108 @@ private:
 template <typename T, typename... P>
 Mux(PipeExit<T>&, P&...) -> Mux<T, sizeof...(P) + 1>;
 #	endif // >= C++17
+
+namespace impl {
+template <unsigned int base, unsigned int exp>
+struct pow {
+	static constexpr unsigned int value = pow<base, exp - 1>::value * base;
+};
+
+template <unsigned int base>
+struct pow<base, 0> {
+	static constexpr unsigned int value = 1;
+};
+
+template <typename T, unsigned int order, bool is_floating_point = std::is_floating_point<T>::value>
+struct similar_to {
+	bool operator()(T const& a, T const& b) const
+	{
+		if(std::isnan(a) && std::isnan(b))
+			// No, the values are not the same, but it makes sense
+			// to consider them equivalent in the context of
+			// Changes.
+			return true;
+
+		if(std::isunordered(a, b))
+			return false;
+
+		constexpr T margin_scale = ((T)1 / static_cast<T>(impl::pow<10, order>::value));
+		T margin = std::max(std::fabs(a), std::fabs(b)) * margin_scale;
+
+		if(std::isinf(margin))
+			// One of them is infinity. If they are both infinity, return true.
+			return a == b;
+
+		T diff = std::fabs(a - b);
+		return diff <= margin;
+	}
+};
+
+template <typename T, unsigned int order>
+struct similar_to<T, order, false> {
+	bool operator()(T const& a, T const& b) const
+	{
+		T margin = std::max(std::abs(a), std::abs(b))
+			   / static_cast<T>(impl::pow<10, order>::value);
+		T diff = std::abs(a - b);
+		return diff <= margin;
+	}
+};
+} // namespace impl
+
+/*!
+ * \brief Like std::equal_to, as long as the difference is within 10^order.
+ */
+template <typename T, unsigned int order = 3>
+using similar_to = impl::similar_to<T, order>;
+
+/*!
+ * \brief Forward injected values, when they are different.
+ *
+ * By default the comparator uses == for comparison. Override with a custom
+ * type, such as stored::pipes::similar_to.
+ */
+template <typename T, typename Compare = std::equal_to<T>>
+class Changes {
+public:
+	using type = T;
+
+	template <typename T_>
+	Changes(PipeEntry<type>& p, T_&& init)
+		: m_p{&p}
+		, m_prev{std::forward<T_>(init)}
+	{}
+
+	explicit Changes(PipeEntry<type>& p)
+		: Changes{p, type{}}
+	{}
+
+#	if STORED_cplusplus >= 201703L
+	// These constructors only exist to allow template parameter deduction.
+	template <typename T_>
+	Changes(PipeEntry<type>& p, T_&& init, Compare /*comp*/)
+		: Changes{p, std::forward<T_>(init)}
+	{}
+
+	explicit Changes(PipeEntry<type>& p, Compare /*comp*/)
+		: Changes{p, type{}}
+	{}
+#	endif // C++17
+
+	type const& inject(type const& x)
+	{
+		if(!Compare{}(m_prev, x)) {
+			m_prev = x;
+			m_p->inject(x);
+		}
+
+		return x;
+	}
+
+private:
+	PipeEntry<type>* m_p = nullptr;
+	type m_prev = type{};
+};
 
 } // namespace pipes
 } // namespace stored
