@@ -25,6 +25,7 @@
 #	include <libstored/util.h>
 #	include <libstored/types.h>
 
+#	include <algorithm>
 #	include <array>
 #	include <cmath>
 #	include <cstdio>
@@ -1644,6 +1645,10 @@ private:
 	type m_prev = type{};
 };
 
+/*!
+ * \brief Constraints that bounds the value of the pipe between a min and max bound.
+ * \see #stored::pipes::Constrained
+ */
 template <typename T>
 class Bounded {
 public:
@@ -1693,6 +1698,15 @@ struct constraints_type<T (C::*)(T) const noexcept> {
 #	endif // C++17
 } // namespace impl
 
+/*!
+ * \brief Applies constraints to the value in the pipe.
+ *
+ * Injected data is passed to the operator() of the Constraints instance, and
+ * its result is passed futher on through the pipe.  The
+ * Constraints::operator() is assumed to be stateless.
+ *
+ * \see #stored::pipes::Bounded
+ */
 template <typename Constraints>
 class Constrained {
 public:
@@ -1731,6 +1745,234 @@ private:
 template <typename Constraints_>
 Constrained(Constraints_ &&) -> Constrained<std::decay_t<Constraints_>>;
 #	endif // C++17
+
+template <typename T, size_t N, typename CompareValue = std::equal_to<T>>
+class IndexMap {
+public:
+	static_assert(N > 0, "The map cannot be empty");
+
+	template <typename T0_, typename... T_, std::enable_if_t<sizeof...(T_) + 1 == N, int> = 0>
+	constexpr explicit IndexMap(T0_&& t0, T_&&... t)
+		: m_map{std::forward<T0_>(t0), std::forward<T_>(t)...}
+	{}
+
+#	if STORED_cplusplus >= 201703L
+	constexpr
+#	endif // C++17
+		T const&
+		find(size_t index) const
+	{
+		if(index >= m_map.size())
+			return m_map[0];
+
+		return m_map[index];
+	}
+
+#	if STORED_cplusplus >= 201703L
+	constexpr
+#	endif // C++17
+		size_t
+		rfind(T const& value) const
+	{
+		CompareValue comp{};
+
+		for(size_t i = 0; i < m_map.size(); i++)
+			if(comp(m_map[i], value))
+				return i;
+		return 0;
+	}
+
+private:
+	std::array<T, N> m_map;
+};
+
+template <
+	typename From, typename To, size_t N, typename CompareKey = std::less<From>,
+	typename CompareValue = std::equal_to<To>>
+class OrderedMap {
+public:
+	static_assert(N > 0, "The map cannot be empty");
+
+	using element_type = std::pair<From, To>;
+
+	template <typename T0_, typename... T_, std::enable_if_t<sizeof...(T_) + 1 == N, int> = 0>
+	constexpr explicit OrderedMap(T0_&& t0, T_&&... t)
+		: m_map{std::forward<T0_>(t0), std::forward<T_>(t)...}
+	{}
+
+	constexpr explicit OrderedMap(std::array<element_type, N> const& map)
+		: m_map{map}
+	{}
+
+	constexpr explicit OrderedMap(std::array<element_type, N>&& map)
+		: m_map{std::move(map)}
+	{}
+
+#	if STORED_cplusplus >= 202002L
+	constexpr
+#	endif // C++20
+		To const&
+		find(From const& key) const
+	{
+		auto comp = [](element_type const& a, From const& b) -> bool {
+			return CompareKey{}(a.first, b);
+		};
+
+		auto it = std::lower_bound(m_map.begin(), m_map.end(), key, comp);
+
+		if(it == m_map.end() || CompareKey{}(key, it->first))
+			return m_map[0].second;
+
+		return it->second;
+	}
+
+#	if STORED_cplusplus >= 201703L
+	constexpr
+#	endif // C++17
+		From const&
+		rfind(To const& value) const
+	{
+		CompareValue comp{};
+
+		for(auto const& v : m_map)
+			if(comp(v.second, value))
+				return v.first;
+
+		return m_map[0].first;
+	}
+
+private:
+	std::array<element_type, N> m_map;
+};
+
+template <
+	typename From, typename To, size_t N, typename CompareKey = std::equal_to<From>,
+	typename CompareValue = std::equal_to<To>>
+class RandomMap {
+public:
+	static_assert(N > 0, "The map cannot be empty");
+
+	using element_type = std::pair<From, To>;
+
+	template <typename T0_, typename... T_, std::enable_if_t<sizeof...(T_) + 1 == N, int> = 0>
+	constexpr explicit RandomMap(T0_&& t0, T_&&... t)
+		: m_map{std::forward<T0_>(t0), std::forward<T_>(t)...}
+	{}
+
+	constexpr explicit RandomMap(std::array<element_type, N> const& map)
+		: m_map{map}
+	{}
+
+	constexpr explicit RandomMap(std::array<element_type, N>&& map)
+		: m_map{std::move(map)}
+	{}
+
+#	if STORED_cplusplus >= 201703L
+	constexpr
+#	endif // C++17
+		To const&
+		find(From const& key) const
+	{
+		CompareKey comp{};
+
+		for(auto const& v : m_map)
+			if(comp(v.first, key))
+				return v.second;
+
+		return m_map[0].second;
+	}
+
+#	if STORED_cplusplus >= 201703L
+	constexpr
+#	endif // C++17
+		From const&
+		rfind(To const& value) const
+	{
+		CompareValue comp{};
+
+		for(auto const& v : m_map)
+			if(comp(v.second, value))
+				return v.first;
+
+		return m_map[0].first;
+	}
+
+private:
+	std::array<element_type, N> m_map;
+};
+
+/*!
+ * \brief An associative map.
+ *
+ * The inject value is translated using the constructor-provided map.  If the
+ * injected value is not found in the map, the first element of the map is
+ * used.
+ *
+ * inject()/exit_cast() is fast (O(1) for IndexMap, O(log(N)) for OrderedMap,
+ * O(N) for RandomMap).  entry_cast() is always O(N).
+ *
+ * Custom maps map be provided, but they have to provide lookup functions that
+ * always return a value:
+ *
+ * - <tt>From find(To)</tt>
+ * - <tt>To rfind(From)</tt>
+ */
+template <typename From, typename To, typename MapType>
+class Map {
+public:
+	using type_in = From;
+	using type_out = To;
+
+	explicit Map(MapType const& map)
+		: m_map{map}
+	{}
+
+	explicit Map(MapType&& map)
+		: m_map{std::move(map)}
+	{}
+
+	template <
+		typename E0_, typename... E_,
+		std::enable_if_t<
+			!std::is_same<MapType, std::decay_t<E0_>>::value
+				&& std::is_constructible<MapType, E0_&&, E_&&...>::value,
+			int> = 0>
+	explicit Map(E0_&& e0, E_&&... e)
+		: m_map{std::forward<E0_>(e0), std::forward<E_>(e)...}
+	{}
+
+	type_out const& inject(type_in const& key)
+	{
+		return exit_cast(key);
+	}
+
+	type_out const& exit_cast(type_in const& key) const
+	{
+		return m_map.find(key);
+	}
+
+	type_in const& entry_cast(type_out const& value) const
+	{
+		return m_map.rfind(value);
+	}
+
+private:
+	MapType m_map;
+};
+
+#	if STORED_cplusplus >= 201703L
+namespace impl {} // namespace impl
+#	endif	  // C++17
+
+/*
+class RateLimit {
+};
+*/
+
+/*
+class Validate {
+};
+*/
 
 } // namespace pipes
 } // namespace stored

@@ -512,7 +512,7 @@ TEST(Pipes, Changes)
 	using namespace stored::pipes;
 
 	int changes = 0;
-	auto c0 = Entry<int>{} >> Call{[&](int){ changes++; }} >> Exit{};
+	auto c0 = Entry<int>{} >> Call{[&](int) { changes++; }} >> Exit{};
 	auto p0 = Entry<int>{} >> Changes{c0} >> Exit{};
 
 	0 >> p0;
@@ -525,7 +525,7 @@ TEST(Pipes, Changes)
 	EXPECT_EQ(changes, 1);
 
 	changes = 0;
-	auto c1 = Entry<double>{} >> Call{[&](double){ changes++; }} >> Exit{};
+	auto c1 = Entry<double>{} >> Call{[&](double) { changes++; }} >> Exit{};
 	auto p1 = Entry<double>{} >> Changes{c1, similar_to<double>{}} >> Exit{};
 
 	0 >> p1;
@@ -555,6 +555,50 @@ TEST(Pipes, Constrained)
 
 	3 >> p;
 	EXPECT_EQ(p.extract().get(), 3.0);
+}
+
+TEST(Pipes, IndexMap)
+{
+	using namespace stored::pipes;
+
+	auto p = Entry<size_t>{}
+		 >> Map<size_t, int, IndexMap<int, 4>>{10, 20, 30, 40} >> Cap{};
+
+	int v = 0 >> p;
+	EXPECT_EQ(v, 10);
+
+	v = 2 >> p;
+	EXPECT_EQ(v, 30);
+
+	v = 5 >> p;
+	EXPECT_EQ(v, 10);
+}
+
+TEST(Pipes, OrderedMap)
+{
+	using namespace stored::pipes;
+
+
+	std::array<std::pair<size_t, int>, 4> map = {{{0, 10}, {1, 20}, {5, 30}, {100, 40}}};
+
+	auto p = Entry<size_t>{}
+		 >> Map<size_t, int, OrderedMap<size_t, int, 4>>{OrderedMap<size_t, int, 4>{map}}
+		 >> Cap{};
+
+	int v = 0 >> p;
+	EXPECT_EQ(v, 10);
+
+	v = 1 >> p;
+	EXPECT_EQ(v, 20);
+
+	v = 2 >> p;
+	EXPECT_EQ(v, 10);
+
+	v = 5 >> p;
+	EXPECT_EQ(v, 30);
+
+	v = 1000 >> p;
+	EXPECT_EQ(v, 10);
 }
 
 } // namespace
