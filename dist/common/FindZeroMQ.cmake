@@ -22,7 +22,7 @@ if(TARGET libzmq)
 	message(STATUS "Skipped looking for ZeroMQ; target already exists")
 endif()
 
-if(NOT TARGET libzmq AND NOT CMAKE_CROSSCOMPILING)
+if(NOT TARGET libzmq)
 	# Try pkg-config
 	find_package(PkgConfig)
 
