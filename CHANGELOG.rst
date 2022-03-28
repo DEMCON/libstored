@@ -13,6 +13,15 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 `Unreleased`_
 -------------
 
+...
+
+.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.2.0...HEAD
+
+
+
+`1.2.0`_ - 2022-03-28
+---------------------
+
 Added
 `````
 
@@ -26,7 +35,14 @@ Changed
 
 - Replaced ``UNUSED_PAR`` by a more portable ``UNUSED`` macro.
 
-.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.1.0...HEAD
+Fixed
+`````
+
+- Improved QtCreator integration, such as store code-completion
+- Fix support for disabling RTTI
+- Fix support for disabling exceptions
+
+.. _1.2.0: https://github.com/DEMCON/libstored/releases/tag/v1.2.0
 
 
 
