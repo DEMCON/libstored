@@ -731,7 +731,7 @@ public:
 
 		if(unlikely(Capacity > 0 && message.size() + partial > Capacity)) {
 			// Will never fit.
-#		ifdef __cpp_exceptions
+#		ifdef STORED_cpp_exceptions
 			throw std::bad_alloc();
 #		else
 			std::terminate();

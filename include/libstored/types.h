@@ -337,9 +337,11 @@ public:
 	/*!
 	 * \brief Move-assign.
 	 */
+	// cppcheck-suppress operatorEqVarError
 	Variable& operator=(Variable&& v) noexcept
 	{
 		this->operator=((Variable const&)v);
+		return *this;
 	}
 
 	/*!
@@ -527,6 +529,7 @@ public:
 	}
 
 	/*! \copydoc stored::Variable::operator=(Variable&&) */
+	// cppcheck-suppress operatorEqVarError
 	Variable& operator=(Variable&& v) noexcept
 	{
 		this->operator=((Variable const&)v);

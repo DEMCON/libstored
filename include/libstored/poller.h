@@ -199,19 +199,19 @@ public:
 
 	virtual ~TypedPollable() is_default
 
-#	ifdef __cpp_rtti
+#	ifdef STORED_cpp_rtti
 	typedef std::type_info const& Type;
 	static Type staticType() noexcept
 	{
 		return typeid(Pollable);
 	}
-#	else  // __cpp_rtti
+#	else  // STORED_cpp_rtti
 	typedef void const* Type;
 	static Type staticType() noexcept
 	{
 		return nullptr;
 	}
-#	endif // !__cpp_rtti
+#	endif // !STORED_cpp_rtti
 	virtual Type type() const noexcept = 0;
 };
 
@@ -223,7 +223,7 @@ public:
  * The type functions will be final. So, the class cannot be subclassed any
  * further with more specific (sub)types.
  */
-#	ifdef __cpp_rtti
+#	ifdef STORED_cpp_rtti
 #		define STORED_POLLABLE_TYPE(T)                                           \
 		public:                                                                   \
 			static ::stored::TypedPollable::Type staticType() noexcept        \
@@ -237,21 +237,22 @@ public:
                                                                                           \
 		private:                                                                  \
 			STORED_CLASS_NEW_DELETE(T)
-#	else // !__cpp_rtti
-#		define STORED_POLLABLE_TYPE(T)                                        \
-			static ::zth::TypedPollable::Type staticType() noexcept        \
-			{                                                              \
-				static char const t = 0;                               \
-				return (::zth::Pollable::Type)&t;                      \
-			}                                                              \
-			virtual ::zth::TypedPollable::Type type() const noexcept final \
-			{                                                              \
-				return staticType();                                   \
-			}                                                              \
-                                                                                       \
-		private:                                                               \
+#	else // !STORED_cpp_rtti
+#		define STORED_POLLABLE_TYPE(T)                                           \
+		public:                                                                   \
+			static ::stored::TypedPollable::Type staticType() noexcept        \
+			{                                                                 \
+				static char const t = 0;                                  \
+				return (::stored::TypedPollable::Type)&t;                 \
+			}                                                                 \
+			virtual ::stored::TypedPollable::Type type() const noexcept final \
+			{                                                                 \
+				return staticType();                                      \
+			}                                                                 \
+                                                                                          \
+		private:                                                                  \
 			STORED_CLASS_NEW_DELETE(T)
-#	endif // !__cpp_rtti
+#	endif // !STORED_cpp_rtti
 
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class PollableCallbackBase : public TypedPollable {
@@ -261,7 +262,7 @@ protected:
 		: TypedPollable(e, user)
 	{}
 
-	virtual ~PollableCallbackBase() override is_default;
+	virtual ~PollableCallbackBase() override is_default
 
 public:
 	virtual Events operator()() const noexcept = 0;
@@ -830,16 +831,19 @@ protected:
 	{
 		errno = res;
 
-#		ifdef __cpp_exceptions
 		switch(errno) {
 		case 0:
 			break;
+#		ifdef STORED_cpp_exceptions
 		case ENOMEM:
 			throw std::bad_alloc();
 		default:
 			throw std::runtime_error("");
-		}
+#		else
+		default:
+			std::terminate();
 #		endif
+		}
 	}
 
 public:
@@ -1024,6 +1028,7 @@ public:
 	}
 
 #		if STORED_cplusplus >= 201103L
+	// cppcheck-suppress noExplicitConstructor
 	CustomPoller(std::initializer_list<std::reference_wrapper<Pollable>> l)
 	{
 		this->throwing(this->add(l));
@@ -1042,6 +1047,7 @@ public:
 	virtual ~Poller() final;
 
 #		if STORED_cplusplus >= 201103L
+	// cppcheck-suppress noExplicitConstructor
 	Poller(std::initializer_list<std::reference_wrapper<Pollable>> l)
 	{
 		throwing(add(l));

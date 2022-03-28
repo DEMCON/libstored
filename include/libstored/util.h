@@ -817,7 +817,7 @@ template <
 	>
 Sub down_cast(Base* p) noexcept
 {
-#	ifdef __cpp_rtti
+#	ifdef STORED_cpp_rtti
 	stored_assert(dynamic_cast<Sub>(p) != nullptr);
 #	endif
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
@@ -835,7 +835,7 @@ template <
 	>
 Sub down_cast(Base& p) noexcept
 {
-#	ifdef __cpp_rtti
+#	ifdef STORED_cpp_rtti
 	stored_assert(((void)dynamic_cast<Sub>(p), true)); // This may throw.
 #	endif
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)

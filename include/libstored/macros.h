@@ -105,6 +105,10 @@ typedef SSIZE_T ssize_t;
 #		define __restrict__ __restrict
 #	endif
 #	define STORED_DEPRECATED(msg) __declspec(deprecated(msg))
+#	define STORED_cpp_exceptions 199711L
+#	ifdef _CPPRTTI
+#		define STORED_cpp_rtti 199711L
+#	endif
 #else
 #	error Unsupported compiler.
 #endif
@@ -224,9 +228,16 @@ typedef SSIZE_T ssize_t;
 
 #if defined(STORED_cplusplus)
 // All C++
-#	if !defined(__cpp_exceptions)
+#	if !defined(STORED_cpp_exceptions) && defined(__cpp_exceptions)
+#		define STORED_cpp_exceptions __cpp_exceptions
+#	endif
+#	if !defined(STORED_cpp_exceptions)
 #		define try if(true)
 #		define catch(...) if(false)
+#	endif
+
+#	if !defined(STORED_cpp_rtti) && defined(__cpp_rtti)
+#		define STORED_cpp_rtti __cpp_rtti
 #	endif
 
 #	if STORED_cplusplus < 201103L // < C++11

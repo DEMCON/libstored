@@ -38,5 +38,6 @@ config Debug nodev noexamples test
 config Release nodev noexamples test
 config Debug nodev san zth test
 config Release nodev zth test
+config Debug nodev test -- -DLIBSTORED_DISABLE_EXCEPTIONS=ON -DLIBSTORED_DISABLE_RTTI=ON
 
 popd > /dev/null

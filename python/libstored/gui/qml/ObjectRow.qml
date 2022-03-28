@@ -20,7 +20,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
 
-import libstored.Components as Libstored
+import Libstored.Components as Libstored
 
 Rectangle {
     required property var obj

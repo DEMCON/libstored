@@ -69,9 +69,8 @@ ProtocolLayer::~ProtocolLayer()
 
 /*!
  * \copydoc stored::ProtocolLayer::ProtocolLayer()
- *
- * When \p all is \c true, convert all control characters, instead of only
- * those that conflict with other protocols
+ * \param all when \c true, convert all control characters, instead of only
+ *	those that conflict with other protocols
  */
 AsciiEscapeLayer::AsciiEscapeLayer(bool all, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
@@ -1528,7 +1527,7 @@ void impl::Loopback1::reserve(size_t capacity)
 	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory, cppcoreguidelines-no-malloc)
 	void* p = realloc(m_buffer, capacity);
 	if(unlikely(!p)) {
-#ifdef __cpp_exceptions
+#ifdef STORED_cpp_exceptions
 		throw std::bad_alloc();
 #else
 		std::terminate();

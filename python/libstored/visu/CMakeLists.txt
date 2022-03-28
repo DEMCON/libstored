@@ -58,10 +58,10 @@ function(libstored_visu target rcc)
 		OUTPUT ${rcc}
 		DEPENDS
 			${LIBSTORED_SOURCE_DIR}/python/libstored/visu/visu.qrc
-			${LIBSTORED_SOURCE_DIR}/python/libstored/visu/Components/Input.qml
-			${LIBSTORED_SOURCE_DIR}/python/libstored/visu/Components/Measurement.qml
-			${LIBSTORED_SOURCE_DIR}/python/libstored/visu/Components/StoreObject.qml
-			${LIBSTORED_SOURCE_DIR}/python/libstored/visu/Components/qmldir
+			${LIBSTORED_SOURCE_DIR}/python/libstored/visu/qml/Libstored/Components/Input.qml
+			${LIBSTORED_SOURCE_DIR}/python/libstored/visu/qml/Libstored/Components/Measurement.qml
+			${LIBSTORED_SOURCE_DIR}/python/libstored/visu/qml/Libstored/Components/StoreObject.qml
+			${LIBSTORED_SOURCE_DIR}/python/libstored/visu/qml/Libstored/Components/qmldir
 			${ARGN}
 			${rcc}.qrc
 		COMMAND ${RCC_EXE} $<SHELL_PATH:${LIBSTORED_SOURCE_DIR}/python/libstored/visu/visu.qrc> $<SHELL_PATH:${rcc}.qrc> -o $<SHELL_PATH:${rcc}>
@@ -69,7 +69,11 @@ function(libstored_visu target rcc)
 		VERBATIM
 	)
 
-	add_custom_target(${target} DEPENDS ${rcc})
+	set_property(SOURCE ${rcc}.qrc ${LIBSTORED_SOURCE_DIR}/python/libstored/visu/visu.qrc
+		PROPERTY AUTORCC OFF)
+	add_custom_target(${target} DEPENDS ${rcc} SOURCES
+		${rcc}.qrc
+		${LIBSTORED_SOURCE_DIR}/python/libstored/visu/visu.qrc)
 endfunction()
 
 if(LIBSTORED_EXAMPLES)

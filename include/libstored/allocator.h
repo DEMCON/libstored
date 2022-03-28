@@ -129,7 +129,7 @@ template <typename F>
 struct Callable {
 	typedef F* type;
 };
-#	else  // STORED_cplusplus >= 201103L
+#	else // STORED_cplusplus >= 201103L
 namespace impl {
 
 // std::max() is not constexpr in C++11. So, implement it here (for what we need).
@@ -201,7 +201,11 @@ protected:
 
 		R operator()(typename CallableArgType<Args>::type... /*args*/) const final
 		{
+#		ifdef STORED_cpp_exceptions
 			throw std::bad_function_call();
+#		else
+			std::terminate();
+#		endif
 		}
 
 		// NOLINTNEXTLINE(hicpp-explicit-conversions)
@@ -347,7 +351,9 @@ protected:
 					m_w = w;
 				} catch(...) {
 					cleanup(w);
+#		ifdef STORED_cpp_exceptions
 					throw;
+#		endif
 				}
 			}
 			return *this;
@@ -442,7 +448,9 @@ public:
 				c.get().clone(m_buffer.data());
 			} catch(...) {
 				construct<Reset>();
+#		ifdef STORED_cpp_exceptions
 				throw;
+#		endif
 			}
 		}
 		return *this;
@@ -519,7 +527,9 @@ protected:
 		} catch(...) {
 			// Make sure we always have a valid instance in the buffer.
 			construct<Reset>();
+#		ifdef STORED_cpp_exceptions
 			throw;
+#		endif
 		}
 	}
 

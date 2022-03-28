@@ -21,7 +21,7 @@ import QtQuick.Layouts
 import QtQuick.Window
 import QtQuick.Controls as Controls
 
-import libstored.Components as Libstored
+import Libstored.Components as Libstored
 
 Window {
     id: root
