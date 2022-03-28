@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Protocol &mdash; libstored 1.1.1-alpha documentation</title>
+  <title>Protocol &mdash; libstored 1.2.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.1.1.dev0
+                1.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -251,13 +251,12 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dt class="sig sig-object cpp" id="_CPPv4N6stored16AsciiEscapeLayer16AsciiEscapeLayerEbP13ProtocolLayerP13ProtocolLayer">
 <span id="_CPPv3N6stored16AsciiEscapeLayer16AsciiEscapeLayerEbP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored16AsciiEscapeLayer16AsciiEscapeLayerEbP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::AsciiEscapeLayer::AsciiEscapeLayer__b.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_ascii_escape_layer_1ad98a4887d4b5c0d8559c0b02e4cad982"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AsciiEscapeLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">all</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16AsciiEscapeLayer16AsciiEscapeLayerEbP13ProtocolLayerP13ProtocolLayer" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Constructor. </p>
-<p>
-When <code class="docutils literal notranslate"><span class="pre">all</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>, convert all control characters, instead of only those that conflict with other protocols </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>up</strong> – the layer above, which receives our decoded frames </p></li>
-<li><p><strong>down</strong> – the layer below, which receives our encoded frames</p></li>
+<li><p><strong>down</strong> – the layer below, which receives our encoded frames </p></li>
+<li><p><strong>all</strong> – when <code class="docutils literal notranslate"><span class="pre">true</span></code>, convert all control characters, instead of only those that conflict with other protocols </p></li>
 </ul>
 </dd>
 </dl>
