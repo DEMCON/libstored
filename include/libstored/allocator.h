@@ -626,6 +626,16 @@ struct UnorderedMap {
 	using type = typename std::unordered_map<
 		Key, T, Hash, KeyEqual, typename Config::Allocator<std::pair<Key const, T>>::type>;
 };
+
+/*!
+ * \brief libstored-allocator-aware \c std::unordered_multimap.
+ */
+template <
+	typename Key, typename T, class Hash = std::hash<Key>, class KeyEqual = std::equal_to<Key>>
+struct UnorderedMultiMap {
+	using type = typename std::unordered_multimap<
+		Key, T, Hash, KeyEqual, typename Config::Allocator<std::pair<Key const, T>>::type>;
+};
 #	endif
 
 /*!
