@@ -650,7 +650,9 @@ TEST(Pipes, OrderedMap)
 
 
 
-	auto p1 = Entry<unsigned>{} >> Map<unsigned, float>({{0U, 10.F}, {1U, 20.F}, {5U, 30.F}, {100U, 40.F}}) >> Cap{};
+	auto p1 = Entry<unsigned>{}
+		  >> Map<unsigned, float>({{0U, 10.F}, {1U, 20.F}, {5U, 30.F}, {100U, 40.F}})
+		  >> Cap{};
 
 	float v1 = 0 >> p1;
 	EXPECT_EQ(v1, 10.F);
@@ -669,6 +671,30 @@ TEST(Pipes, OrderedMap)
 
 	EXPECT_EQ(p1.entry_cast(30.F), 5U);
 	EXPECT_EQ(p1.entry_cast(25.F), 0U);
+}
+
+TEST(Pipes, RandomMap)
+{
+	using namespace stored::pipes;
+
+	auto p0 = Entry<int>{}
+		  >> Mapped(make_random_map<int, int>({{1, 20}, {0, 10}, {100, 40}, {5, 30}}))
+		  >> Cap{};
+
+	int v0 = 0 >> p0;
+	EXPECT_EQ(v0, 10);
+
+	v0 = 1 >> p0;
+	EXPECT_EQ(v0, 20);
+
+	v0 = 2 >> p0;
+	EXPECT_EQ(v0, 20);
+
+	v0 = 5 >> p0;
+	EXPECT_EQ(v0, 30);
+
+	v0 = 1000 >> p0;
+	EXPECT_EQ(v0, 20);
 }
 
 } // namespace

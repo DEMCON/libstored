@@ -1746,6 +1746,14 @@ template <typename Constraints_>
 Constrained(Constraints_ &&) -> Constrained<std::decay_t<Constraints_>>;
 #	endif // C++17
 
+/*!
+ * \brief An index to T map.
+ *
+ * It addresses an array to find the corresponding value. All indices [0,N[
+ * should be present.
+ *
+ * find() complexity is O(1), rfind() is O(N).
+ */
 template <typename T, size_t N, typename CompareValue = std::equal_to<T>>
 class IndexMap {
 public:
@@ -1771,11 +1779,7 @@ public:
 		: m_map{std::move(map)}
 	{}
 
-#	if STORED_cplusplus >= 201703L
-	constexpr
-#	endif // C++17
-		value_type const&
-		find(size_t index) const
+	constexpr value_type const& find(size_t index) const
 	{
 		if(index >= m_map.size())
 			return m_map[0];
@@ -1783,11 +1787,7 @@ public:
 		return m_map[index];
 	}
 
-#	if STORED_cplusplus >= 201703L
-	constexpr
-#	endif // C++17
-		size_t
-		rfind(value_type const& value) const
+	constexpr size_t rfind(value_type const& value) const
 	{
 		CompareValue comp{};
 
@@ -1801,6 +1801,15 @@ private:
 	std::array<value_type, N> m_map;
 };
 
+/*!
+ * \brief An Key to Value map with ordered keys.
+ *
+ * Internally, all key-value pairs are saved in a array. To perform a binary
+ * search through this array, the keys must have a natural order (usually by
+ * implementing operator< ), and the values must be sorted for initialization.
+ *
+ * find() complexity is O(log(N)), rfind() is O(N).
+ */
 template <
 	typename Key, typename Value, size_t N, typename CompareKey = std::less<Key>,
 	typename CompareValue = std::equal_to<Value>>
@@ -1819,15 +1828,21 @@ public:
 			int> = 0>
 	constexpr explicit OrderedMap(T0_&& t0, T_&&... t)
 		: m_map{std::forward<T0_>(t0), std::forward<T_>(t)...}
-	{}
+	{
+		stored_assert(ordered());
+	}
 
 	constexpr explicit OrderedMap(std::array<element_type, N> const& map)
 		: m_map{map}
-	{}
+	{
+		stored_assert(ordered());
+	}
 
 	constexpr explicit OrderedMap(std::array<element_type, N>&& map)
 		: m_map{std::move(map)}
-	{}
+	{
+		stored_assert(ordered());
+	}
 
 #	if STORED_cplusplus >= 202002L
 	constexpr
@@ -1847,11 +1862,7 @@ public:
 		return it->second;
 	}
 
-#	if STORED_cplusplus >= 201703L
-	constexpr
-#	endif // C++17
-		key_type const&
-		rfind(value_type const& value) const
+	constexpr key_type const& rfind(value_type const& value) const
 	{
 		CompareValue comp{};
 
@@ -1862,10 +1873,31 @@ public:
 		return m_map[0].first;
 	}
 
+protected:
+	constexpr bool ordered() const
+	{
+		CompareKey comp{};
+
+		for(size_t i = 1; i < N; i++)
+			if(!comp(m_map[i - 1].first, m_map[i].first))
+				return false;
+
+		return true;
+	}
+
 private:
 	std::array<element_type, N> m_map;
 };
 
+/*!
+ * \brief A Key to value Map for arbitrary types.
+ *
+ * In contrast to the OrderedMap, the keys do not have to be ordered, or even
+ * have some natural order.  Keys are compared using == (or equivalent). This
+ * makes searching linear, but allows different types.
+ *
+ * find() and rfind() complexity is both O(N).
+ */
 template <
 	typename Key, typename Value, size_t N, typename CompareKey = std::equal_to<Key>,
 	typename CompareValue = std::equal_to<Value>>
@@ -1894,11 +1926,7 @@ public:
 		: m_map{std::move(map)}
 	{}
 
-#	if STORED_cplusplus >= 201703L
-	constexpr
-#	endif // C++17
-		value_type const&
-		find(key_type const& key) const
+	constexpr value_type const& find(key_type const& key) const
 	{
 		CompareKey comp{};
 
@@ -1909,11 +1937,7 @@ public:
 		return m_map[0].second;
 	}
 
-#	if STORED_cplusplus >= 201703L
-	constexpr
-#	endif // C++17
-		key_type const&
-		rfind(value_type const& value) const
+	constexpr key_type const& rfind(value_type const& value) const
 	{
 		CompareValue comp{};
 
@@ -1929,20 +1953,45 @@ private:
 };
 
 /*!
+ * \brief A helper function to create the appropriate RandomMap instance.
+ *
+ * The resulting map may be passed to #stored::pipes::Mapped.
+ */
+template <
+	typename Key, typename Value, size_t N, typename CompareKey = std::equal_to<Key>,
+	typename CompareValue = std::equal_to<Value>>
+#	if STORED_cplusplus >= 201703L
+constexpr
+#	endif
+	auto
+	make_random_map(
+		std::pair<Key, Value> const (&kv)[N], CompareKey compareKey = CompareKey{},
+		CompareValue compareValue = CompareValue{})
+{
+	UNUSED(compareKey)
+	UNUSED(compareValue)
+
+	std::array<std::pair<Key, Value>, N> m{};
+
+	for(size_t i = 0; i < N; i++)
+		m[i] = kv[i];
+
+	return RandomMap<Key, Value, N, CompareKey, CompareValue>{std::move(m)};
+}
+
+/*!
  * \brief An associative map.
  *
  * The inject value is translated using the constructor-provided map.  If the
  * injected value is not found in the map, the first element of the map is
  * used.
  *
- * inject()/exit_cast() is fast (O(1) for IndexMap, O(log(N)) for OrderedMap,
- * O(N) for RandomMap).  entry_cast() is always O(N).
+ * The \p MapType must have:
  *
- * Custom maps map be provided, but they have to provide lookup functions that
- * always return a value:
- *
- * - <tt>From find(To)</tt>
- * - <tt>To rfind(From)</tt>
+ * - a type \c key_type (equivalent to \p From) for C++17 template deduction
+ * - a type \c value_type (equivalent to \p To) for C++17 template deduction
+ * - <tt>From find(To)</tt> (where From/To may be const&)
+ * - <tt>To rfind(From)</tt> (where From/To may be const&)
  */
 template <typename From, typename To, typename MapType>
 class Mapped {
@@ -1993,6 +2042,12 @@ Mapped(MapType m)
 	-> Mapped<typename MapType::key_type, typename MapType::value_type, std::decay_t<MapType>>;
 #	endif // C++17
 
+/*!
+ * \brief An associative map.
+ *
+ * Actually, this is a helper function to create a #stored::pipes::Mapped with
+ * the appropriate #stored::pipes::IndexMap.
+ */
 template <typename T, size_t N, typename CompareValue = std::equal_to<T>>
 #	if STORED_cplusplus >= 201703L
 constexpr
@@ -2012,6 +2067,12 @@ constexpr
 		std::move(m)};
 }
 
+/*!
+ * \brief An associative map.
+ *
+ * Actually, this is a helper function to create a #stored::pipes::Mapped with
+ * the appropriate #stored::pipes::IndexMap.
+ */
 template <typename T0, typename T1, typename... T>
 constexpr auto Map(T0&& v0, T1&& v1, T&&... v)
 {
@@ -2020,6 +2081,12 @@ constexpr auto Map(T0&& v0, T1&& v1, T&&... v)
 		std::forward<T0>(v0), std::forward<T1>(v1), std::forward<T>(v)...};
 }
 
+/*!
+ * \brief An associative map.
+ *
+ * Actually, this is a helper function to create a #stored::pipes::Mapped with
+ * the appropriate #stored::pipes::OrderedMap.
+ */
 template <
 	typename Key, typename Value, size_t N, typename CompareKey = std::less<Key>,
 	typename CompareValue = std::equal_to<Value>>
