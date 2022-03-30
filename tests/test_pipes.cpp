@@ -558,47 +558,117 @@ TEST(Pipes, Constrained)
 }
 
 TEST(Pipes, IndexMap)
+
 {
 	using namespace stored::pipes;
 
-	auto p = Entry<size_t>{}
-		 >> Map<size_t, int, IndexMap<int, 4>>{10, 20, 30, 40} >> Cap{};
+	auto p0 = Entry<size_t>{} >> Mapped<int, int, IndexMap<int, 4>>{10, 20, 30, 40} >> Cap{};
 
-	int v = 0 >> p;
+	int v = 0 >> p0;
 	EXPECT_EQ(v, 10);
 
-	v = 2 >> p;
+	v = 2 >> p0;
 	EXPECT_EQ(v, 30);
 
-	v = 5 >> p;
+	v = 5 >> p0;
 	EXPECT_EQ(v, 10);
+
+
+
+	auto p1 = Entry<size_t>{} >> Map({10, 20, 30, 40}) >> Cap{};
+
+	v = 0 >> p1;
+	EXPECT_EQ(v, 10);
+
+	v = 2 >> p1;
+	EXPECT_EQ(v, 30);
+
+	v = 5 >> p1;
+	EXPECT_EQ(v, 10);
+
+
+
+	auto p2 = Entry<size_t>{} >> Map<long>({10L, 20L, 30L, 40L}) >> Cap{};
+
+	long v2 = 0 >> p2;
+	EXPECT_EQ(v2, 10L);
+
+	v2 = 2 >> p2;
+	EXPECT_EQ(v2, 30L);
+
+	v2 = 5 >> p2;
+	EXPECT_EQ(v, 10L);
+
+
+
+	auto p3 = Entry<size_t>{} >> Map(10L, 20L, 30L, 40L) >> Cap{};
+
+	v2 = 0 >> p3;
+	EXPECT_EQ(v2, 10L);
+
+	v2 = 2 >> p3;
+	EXPECT_EQ(v2, 30L);
+
+	v2 = 5 >> p3;
+	EXPECT_EQ(v, 10L);
+
+
+
+	struct comp {
+		bool operator()(long a, long b) const
+		{
+			return a == b + 1;
+		}
+	};
+
+	auto p4 = Entry<size_t>{} >> Map({10L, 20L, 30L, 40L}, comp{}) >> Cap{};
+
+	EXPECT_EQ(p4.entry_cast(29L), 2);
+	EXPECT_EQ(p4.entry_cast(25L), 0);
 }
 
 TEST(Pipes, OrderedMap)
 {
 	using namespace stored::pipes;
 
+	auto p0 = Entry<int>{} >> Map<int, int>({{0, 10}, {1, 20}, {5, 30}, {100, 40}}) >> Cap{};
 
-	std::array<std::pair<size_t, int>, 4> map = {{{0, 10}, {1, 20}, {5, 30}, {100, 40}}};
+	int v0 = 0 >> p0;
+	EXPECT_EQ(v0, 10);
 
-	auto p = Entry<size_t>{}
-		 >> Map<size_t, int, OrderedMap<size_t, int, 4>>{OrderedMap<size_t, int, 4>{map}}
-		 >> Cap{};
+	v0 = 1 >> p0;
+	EXPECT_EQ(v0, 20);
 
-	int v = 0 >> p;
-	EXPECT_EQ(v, 10);
+	v0 = 2 >> p0;
+	EXPECT_EQ(v0, 10);
 
-	v = 1 >> p;
-	EXPECT_EQ(v, 20);
+	v0 = 5 >> p0;
+	EXPECT_EQ(v0, 30);
 
-	v = 2 >> p;
-	EXPECT_EQ(v, 10);
+	v0 = 1000 >> p0;
+	EXPECT_EQ(v0, 10);
 
-	v = 5 >> p;
-	EXPECT_EQ(v, 30);
 
-	v = 1000 >> p;
-	EXPECT_EQ(v, 10);
+
+	auto p1 = Entry<unsigned>{} >> Map<unsigned, float>({{0U, 10.F}, {1U, 20.F}, {5U, 30.F}, {100U, 40.F}}) >> Cap{};
+
+	float v1 = 0 >> p1;
+	EXPECT_EQ(v1, 10.F);
+
+	v1 = 1U >> p1;
+	EXPECT_EQ(v1, 20.F);
+
+	v1 = 2U >> p1;
+	EXPECT_EQ(v1, 10.F);
+
+	v1 = 5U >> p1;
+	EXPECT_EQ(v1, 30.F);
+
+	v1 = 1000U >> p1;
+	EXPECT_EQ(v1, 10.F);
+
+	EXPECT_EQ(p1.entry_cast(30.F), 5U);
+	EXPECT_EQ(p1.entry_cast(25.F), 0U);
 }
 
 } // namespace
