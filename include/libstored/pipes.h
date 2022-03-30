@@ -1751,15 +1751,30 @@ class IndexMap {
 public:
 	static_assert(N > 0, "The map cannot be empty");
 
-	template <typename T0_, typename... T_, std::enable_if_t<sizeof...(T_) + 1 == N, int> = 0>
+	using key_type = size_t;
+	using value_type = T;
+
+	template <
+		typename T0_, typename... T_,
+		std::enable_if_t<
+			sizeof...(T_) + 1 == N && std::is_constructible<value_type, T0_>::value,
+			int> = 0>
 	constexpr explicit IndexMap(T0_&& t0, T_&&... t)
 		: m_map{std::forward<T0_>(t0), std::forward<T_>(t)...}
+	{}
+
+	constexpr explicit IndexMap(std::array<value_type, N> const& map)
+		: m_map{map}
+	{}
+
+	constexpr explicit IndexMap(std::array<value_type, N>&& map)
+		: m_map{std::move(map)}
 	{}
 
 #	if STORED_cplusplus >= 201703L
 	constexpr
 #	endif // C++17
-		T const&
+		value_type const&
 		find(size_t index) const
 	{
 		if(index >= m_map.size())
@@ -1772,7 +1787,7 @@ public:
 	constexpr
 #	endif // C++17
 		size_t
-		rfind(T const& value) const
+		rfind(value_type const& value) const
 	{
 		CompareValue comp{};
 
@@ -1783,19 +1798,25 @@ public:
 	}
 
 private:
-	std::array<T, N> m_map;
+	std::array<value_type, N> m_map;
 };
 
 template <
-	typename From, typename To, size_t N, typename CompareKey = std::less<From>,
-	typename CompareValue = std::equal_to<To>>
+	typename Key, typename Value, size_t N, typename CompareKey = std::less<Key>,
+	typename CompareValue = std::equal_to<Value>>
 class OrderedMap {
 public:
 	static_assert(N > 0, "The map cannot be empty");
 
-	using element_type = std::pair<From, To>;
+	using key_type = Key;
+	using value_type = Value;
+	using element_type = std::pair<key_type, value_type>;
 
-	template <typename T0_, typename... T_, std::enable_if_t<sizeof...(T_) + 1 == N, int> = 0>
+	template <
+		typename T0_, typename... T_,
+		std::enable_if_t<
+			sizeof...(T_) + 1 == N && std::is_constructible<element_type, T0_>::value,
+			int> = 0>
 	constexpr explicit OrderedMap(T0_&& t0, T_&&... t)
 		: m_map{std::forward<T0_>(t0), std::forward<T_>(t)...}
 	{}
@@ -1811,10 +1832,10 @@ public:
 #	if STORED_cplusplus >= 202002L
 	constexpr
 #	endif // C++20
-		To const&
-		find(From const& key) const
+		value_type const&
+		find(key_type const& key) const
 	{
-		auto comp = [](element_type const& a, From const& b) -> bool {
+		auto comp = [](element_type const& a, key_type const& b) -> bool {
 			return CompareKey{}(a.first, b);
 		};
 
@@ -1829,8 +1850,8 @@ public:
 #	if STORED_cplusplus >= 201703L
 	constexpr
 #	endif // C++17
-		From const&
-		rfind(To const& value) const
+		key_type const&
+		rfind(value_type const& value) const
 	{
 		CompareValue comp{};
 
@@ -1846,15 +1867,21 @@ private:
 };
 
 template <
-	typename From, typename To, size_t N, typename CompareKey = std::equal_to<From>,
-	typename CompareValue = std::equal_to<To>>
+	typename Key, typename Value, size_t N, typename CompareKey = std::equal_to<Key>,
+	typename CompareValue = std::equal_to<Value>>
 class RandomMap {
 public:
 	static_assert(N > 0, "The map cannot be empty");
 
-	using element_type = std::pair<From, To>;
+	using key_type = Key;
+	using value_type = Value;
+	using element_type = std::pair<Key, Value>;
 
-	template <typename T0_, typename... T_, std::enable_if_t<sizeof...(T_) + 1 == N, int> = 0>
+	template <
+		typename T0_, typename... T_,
+		std::enable_if_t<
+			sizeof...(T_) + 1 == N && std::is_constructible<element_type, T0_>::value,
+			int> = 0>
 	constexpr explicit RandomMap(T0_&& t0, T_&&... t)
 		: m_map{std::forward<T0_>(t0), std::forward<T_>(t)...}
 	{}
@@ -1870,8 +1897,8 @@ public:
 #	if STORED_cplusplus >= 201703L
 	constexpr
 #	endif // C++17
-		To const&
-		find(From const& key) const
+		value_type const&
+		find(key_type const& key) const
 	{
 		CompareKey comp{};
 
@@ -1885,8 +1912,8 @@ public:
 #	if STORED_cplusplus >= 201703L
 	constexpr
 #	endif // C++17
-		From const&
-		rfind(To const& value) const
+		key_type const&
+		rfind(value_type const& value) const
 	{
 		CompareValue comp{};
 
@@ -1918,16 +1945,16 @@ private:
  * - <tt>To rfind(From)</tt>
  */
 template <typename From, typename To, typename MapType>
-class Map {
+class Mapped {
 public:
 	using type_in = From;
 	using type_out = To;
 
-	explicit Map(MapType const& map)
+	constexpr explicit Mapped(MapType const& map)
 		: m_map{map}
 	{}
 
-	explicit Map(MapType&& map)
+	constexpr explicit Mapped(MapType&& map)
 		: m_map{std::move(map)}
 	{}
 
@@ -1937,21 +1964,21 @@ public:
 			!std::is_same<MapType, std::decay_t<E0_>>::value
 				&& std::is_constructible<MapType, E0_&&, E_&&...>::value,
 			int> = 0>
-	explicit Map(E0_&& e0, E_&&... e)
+	constexpr explicit Mapped(E0_&& e0, E_&&... e)
 		: m_map{std::forward<E0_>(e0), std::forward<E_>(e)...}
 	{}
 
-	type_out const& inject(type_in const& key)
+	decltype(auto) inject(type_in const& key)
 	{
 		return exit_cast(key);
 	}
 
-	type_out const& exit_cast(type_in const& key) const
+	decltype(auto) exit_cast(type_in const& key) const
 	{
 		return m_map.find(key);
 	}
 
-	type_in const& entry_cast(type_out const& value) const
+	decltype(auto) entry_cast(type_out const& value) const
 	{
 		return m_map.rfind(value);
 	}
@@ -1961,8 +1988,59 @@ private:
 };
 
 #	if STORED_cplusplus >= 201703L
-namespace impl {} // namespace impl
-#	endif	  // C++17
+template <typename MapType>
+Mapped(MapType m)
+	-> Mapped<typename MapType::key_type, typename MapType::value_type, std::decay_t<MapType>>;
+#	endif // C++17
+
+template <typename T, size_t N, typename CompareValue = std::equal_to<T>>
+#	if STORED_cplusplus >= 201703L
+constexpr
+#	endif
+	auto
+	Map(T const (&values)[N], CompareValue compareValue = CompareValue{})
+{
+	UNUSED(compareValue)
+
+	std::array<T, N> m{};
+
+	for(size_t i = 0; i < N; i++)
+		m[i] = values[i];
+
+	using MapType = IndexMap<T, N, CompareValue>;
+	return Mapped<typename MapType::key_type, typename MapType::value_type, MapType>{
+		std::move(m)};
+}
+
+template <typename T0, typename T1, typename... T>
+constexpr auto Map(T0&& v0, T1&& v1, T&&... v)
+{
+	using MapType = IndexMap<std::decay_t<T0>, sizeof...(T) + 2>;
+	return Mapped<typename MapType::key_type, typename MapType::value_type, MapType>{
+		std::forward<T0>(v0), std::forward<T1>(v1), std::forward<T>(v)...};
+}
+
+template <
+	typename Key, typename Value, size_t N, typename CompareKey = std::less<Key>,
+	typename CompareValue = std::equal_to<Value>>
+#	if STORED_cplusplus >= 201703L
+constexpr
+#	endif
+	auto
+	Map(std::pair<Key, Value> const (&kv)[N], CompareKey compareKey = CompareKey{},
+	    CompareValue compareValue = CompareValue{})
+{
+	UNUSED(compareKey)
+	UNUSED(compareValue)
+
+	std::array<std::pair<Key, Value>, N> m{};
+
+	for(size_t i = 0; i < N; i++)
+		m[i] = kv[i];
+
+	using MapType = OrderedMap<Key, Value, N, CompareKey, CompareValue>;
+	return Mapped<Key, Value, MapType>{std::move(m)};
+}
 
 /*
 class RateLimit {
