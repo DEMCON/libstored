@@ -19,6 +19,8 @@
 #include "libstored/pipes.h"
 #include "TestStore.h"
 
+#include <thread>
+
 #include "gtest/gtest.h"
 
 namespace {
@@ -331,6 +333,12 @@ TEST(Pipes, Get)
 		  >> Exit{};
 
 	EXPECT_EQ(p1.extract(), 42);
+
+	store.init_decimal = 41;
+	bool triggered = false;
+	p1.trigger(&triggered);
+	EXPECT_EQ(p1.extract(), 41);
+	EXPECT_TRUE(triggered);
 
 	// Auto-deduct StoreVariable
 	auto p2 = Entry<bool>{} >> Get{store.init_decimal} >> Exit{};
@@ -695,6 +703,62 @@ TEST(Pipes, RandomMap)
 
 	v0 = 1000 >> p0;
 	EXPECT_EQ(v0, 20);
+}
+
+TEST(Pipes, RateLimit)
+{
+	using namespace stored::pipes;
+	using namespace std::literals::chrono_literals;
+
+	auto out = Entry<int>{} >> Buffer<int>{} >> Cap{};
+	auto in = Entry<int>{} >> RateLimit{out, 50ms} >> Buffer<int>{} >> Cap{};
+
+	1 >> in;
+	EXPECT_EQ(in.extract(), 1);
+	EXPECT_EQ(out.extract(), 1);
+
+	2 >> in;
+	EXPECT_EQ(in.extract(), 2);
+	EXPECT_EQ(out.extract(), 1); // suppressed
+
+	std::this_thread::sleep_for(100ms);
+
+	3 >> in;
+	EXPECT_EQ(in.extract(), 3);
+	EXPECT_EQ(out.extract(), 3); // pass-through, but start timer
+
+	4 >> in;
+	EXPECT_EQ(in.extract(), 4);
+	EXPECT_EQ(out.extract(), 3);
+
+	5 >> in;
+	EXPECT_EQ(in.extract(), 5);
+	EXPECT_EQ(out.extract(), 3);
+
+	bool triggered = false;
+	in.trigger(&triggered);
+	EXPECT_EQ(out.extract(), 3); // no time to trigger yet
+	EXPECT_FALSE(triggered);
+
+	std::this_thread::sleep_for(100ms);
+
+	triggered = false;
+	in.trigger(&triggered);
+	EXPECT_EQ(out.extract(), 5); // should be there now
+	EXPECT_TRUE(triggered);
+
+	triggered = false;
+	in.trigger(&triggered);
+	EXPECT_EQ(out.extract(), 5);
+	EXPECT_FALSE(triggered); // nothing to trigger
+
+	5 >> in;
+	EXPECT_EQ(in.extract(), 5);
+	EXPECT_EQ(out.extract(), 5); // nothing changed, no timer
+
+	6 >> in;
+	EXPECT_EQ(in.extract(), 6);
+	EXPECT_EQ(out.extract(), 6);
 }
 
 } // namespace

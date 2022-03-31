@@ -27,6 +27,7 @@
 
 #	include <algorithm>
 #	include <array>
+#	include <chrono>
 #	include <cmath>
 #	include <cstdio>
 #	include <functional>
@@ -112,6 +113,12 @@ protected:
 	{
 		return false;
 	}
+
+	template <typename S_>
+	static constexpr bool has_trigger_() noexcept
+	{
+		return false;
+	}
 };
 
 } // namespace impl
@@ -152,6 +159,7 @@ public:
 	STORED_PIPE_TRAITS_HAS_F(S, extract)
 	STORED_PIPE_TRAITS_HAS_F(S, entry_cast)
 	STORED_PIPE_TRAITS_HAS_F(S, exit_cast)
+	STORED_PIPE_TRAITS_HAS_F(S, trigger)
 
 	using type_in = decltype(type_in_helper(&S::inject));
 	static_assert(
@@ -239,6 +247,11 @@ public:
 		return exit_cast_<S>(x);
 	}
 
+	decltype(auto) trigger(bool* triggered = nullptr)
+	{
+		return trigger_<S>(triggered);
+	}
+
 private:
 	template <typename S_, std::enable_if_t<traits::template has_inject_<S_>(), int> = 0>
 	decltype(auto) inject_(type_in x)
@@ -321,6 +334,21 @@ private:
 			impl::is_convertible<type_in, std::decay_t<type_out>>::value,
 			"Provide exit_cast() or support static_cast<type_out>(type_in)");
 		return static_cast<std::decay_t<type_out>>(x);
+	}
+
+	template <typename S_, std::enable_if_t<traits::template has_trigger_<S_>(), int> = 0>
+	decltype(auto) trigger_(bool* triggered)
+	{
+		return S_::trigger(triggered);
+	}
+
+	template <typename S_, std::enable_if_t<!traits::template has_trigger_<S_>(), int> = 0>
+	auto trigger_(bool* triggered)
+	{
+		if(triggered)
+			*triggered = false;
+
+		return type_out{};
 	}
 };
 
@@ -471,6 +499,13 @@ public:
 
 	static constexpr bool has_entry_cast = Init::has_entry_cast || Last::has_entry_cast;
 
+	decltype(auto) trigger(bool* triggered = nullptr)
+	{
+		return trigger_helper<Init, Last>(triggered);
+	}
+
+	static constexpr bool has_trigger = Init::has_trigger || Last::has_trigger;
+
 	template <
 		typename S_,
 		std::enable_if_t<
@@ -497,6 +532,35 @@ private:
 	auto extract_helper()
 	{
 		return Last_::exit_cast(Init::extract());
+	}
+
+	template <typename Init_, typename Last_, std::enable_if_t<Init_::has_trigger, int> = 0>
+	decltype(auto) trigger_helper(bool* triggered)
+	{
+		bool triggered_ = false;
+		decltype(auto) x = Init_::trigger(&triggered_);
+
+		if(triggered)
+			*triggered = triggered_;
+
+		return triggered_ ? Last_::inject(x) : Last_::exit_cast(x);
+	}
+
+	template <
+		typename Init_, typename Last_,
+		std::enable_if_t<!Init_::has_trigger && Last_::has_trigger, int> = 0>
+	decltype(auto) trigger_helper(bool* triggered)
+	{
+		return Last_::trigger(triggered);
+	}
+
+	template <
+		typename Init_, typename Last_,
+		std::enable_if_t<!Init_::has_trigger && !Last_::has_trigger, int> = 0>
+	auto trigger_helper(bool* triggered)
+	{
+		UNUSED(triggered)
+		return type_out{};
 	}
 };
 
@@ -570,6 +634,8 @@ public:
 	{
 		justInject(x);
 	}
+
+	virtual void trigger(bool* triggered = nullptr) = 0;
 
 	void operator()(type_in const& x)
 	{
@@ -745,6 +811,8 @@ public:
 
 		connect(p);
 	}
+
+	virtual void trigger(bool* triggered = nullptr) = 0;
 };
 
 template <typename In, typename Out>
@@ -828,6 +896,11 @@ public:
 
 	template <typename... S_>
 	friend constexpr auto operator>>(Segments<S_...>&& s, Cap&& e);
+
+	virtual void trigger(bool* triggered = nullptr) final
+	{
+		segments_type::trigger(triggered);
+	}
 };
 
 template <typename... S_>
@@ -1294,6 +1367,14 @@ public:
 		return T{};
 	}
 
+	T trigger(bool* triggered = nullptr)
+	{
+		if(triggered)
+			*triggered = true;
+
+		return extract();
+	}
+
 private:
 	Variant_type m_v;
 };
@@ -1326,6 +1407,14 @@ public:
 	{
 		UNUSED(x)
 		return T{};
+	}
+
+	T trigger(bool* triggered = nullptr)
+	{
+		if(triggered)
+			*triggered = true;
+
+		return extract();
 	}
 
 private:
@@ -2109,10 +2198,84 @@ constexpr
 	return Mapped<Key, Value, MapType>{std::move(m)};
 }
 
-/*
+/*!
+ * \brief Forward injected values, when they are different, with a minimum interval.
+ *
+ * By default the comparator uses == for comparison. Override with a custom
+ * type, such as stored::pipes::similar_to.
+ */
+template <
+	typename T, typename Compare = std::equal_to<T>,
+	typename Duration = std::chrono::milliseconds, typename Clock = std::chrono::steady_clock>
 class RateLimit {
+public:
+	using type = T;
+	using duration_type = Duration;
+	using clock_type = Clock;
+
+	template <typename T_>
+	RateLimit(PipeEntry<type>& p, duration_type interval, T_&& init)
+		: m_p{&p}
+		, m_interval{interval}
+		, m_value{std::forward<T_>(init)}
+	{}
+
+	explicit RateLimit(PipeEntry<type>& p, duration_type interval)
+		: RateLimit{p, interval, type{}}
+	{}
+
+#	if STORED_cplusplus >= 201703L
+	// These constructors only exist to allow template parameter deduction.
+	template <typename T_>
+	RateLimit(PipeEntry<type>& p, T_&& init, duration_type interval, Compare /*comp*/)
+		: RateLimit{p, interval, std::forward<T_>(init)}
+	{}
+
+	explicit RateLimit(PipeEntry<type>& p, duration_type interval, Compare /*comp*/)
+		: RateLimit{p, interval, type{}}
+	{}
+#	endif // C++17
+
+	type const& inject(type const& x)
+	{
+		if(!Compare{}(m_value, x)) {
+			m_value = x;
+
+			auto now = clock_type::now();
+
+			if(m_suppress < now) {
+				m_changed = false;
+				m_suppress = now + m_interval;
+				m_p->inject(x);
+			} else {
+				m_changed = true;
+			}
+		}
+
+		return x;
+	}
+
+	type const&
+	trigger(bool* triggered = nullptr, typename clock_type::time_point now = clock_type::now())
+	{
+		if(!m_changed || m_suppress >= now)
+			return m_value;
+
+		if(triggered)
+			*triggered = true;
+
+		m_changed = false;
+		m_p->inject(m_value);
+		return m_value;
+	}
+
+private:
+	PipeEntry<type>* m_p = nullptr;
+	duration_type m_interval{};
+	type m_value = type{};
+	bool m_changed = false;
+	typename clock_type::time_point m_suppress{};
 };
-*/
 
 /*
 class Validate {
