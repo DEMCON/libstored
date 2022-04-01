@@ -173,13 +173,13 @@ TEST(Pipes, Cast)
 	auto p = Entry<double>{} >> Cast<double, unsigned int>{} >> Buffer<unsigned int>{} >> Cap{};
 
 	2.4 >> p;
-	EXPECT_EQ(p.extract(), 2);
+	EXPECT_EQ(p.extract(), 2U);
 
 	5.8 >> p; // saturated_cast rounds instead of static_cast's truncate.
-	EXPECT_EQ(p.extract(), 6);
+	EXPECT_EQ(p.extract(), 6U);
 
 	-3.1 >> p;
-	EXPECT_EQ(p.extract(), 0);
+	EXPECT_EQ(p.extract(), 0U);
 }
 
 TEST(Pipes, Types)
@@ -347,7 +347,7 @@ TEST(Pipes, Get)
 
 	// Auto-deduct StoreFunction
 	auto p3 = Entry<bool>{} >> Get{store.f_read_only} >> Exit{};
-	EXPECT_EQ(p3.extract(), 0);
+	EXPECT_EQ(p3.extract(), 0U);
 }
 
 TEST(Pipes, Set)
@@ -392,22 +392,22 @@ TEST(Pipes, Mux)
 	auto p2 = Entry<short>{} >> Buffer<short>{(short)12} >> Exit{};
 	auto mux = Entry<size_t>{} >> Mux{p0, p1, p2} >> Exit{};
 
-	EXPECT_EQ(mux.extract(), 10);
+	EXPECT_EQ(mux.extract(), (short)10);
 
 	1 >> mux;
-	EXPECT_EQ(mux.extract(), 11);
+	EXPECT_EQ(mux.extract(), (short)11);
 
 	2 >> mux;
-	EXPECT_EQ(mux.extract(), 12);
+	EXPECT_EQ(mux.extract(), (short)12);
 
 	3 >> mux;
-	EXPECT_EQ(mux.extract(), 0);
+	EXPECT_EQ(mux.extract(), (short)0);
 
 	// The one-input mux is optimized by ignoring the index.
 	auto mux1 = Entry<size_t>{} >> Mux{p0} >> Exit{};
-	EXPECT_EQ(mux1.extract(), 10);
+	EXPECT_EQ(mux1.extract(), (short)10);
 	1 >> mux1;
-	EXPECT_EQ(mux1.extract(), 10);
+	EXPECT_EQ(mux1.extract(), (short)10);
 }
 
 TEST(Pipes, Cache)
