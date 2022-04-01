@@ -337,7 +337,8 @@ struct toType<T*> {
 
 template <Type::type T>
 struct fromType {
-	typedef typename impl::fromType<(Type::type)(T & ~Type::FlagFunction)>::type type;
+	typedef typename impl::fromType<(Type::type)(
+		(unsigned int)T&(unsigned int)~Type::FlagFunction)>::type type;
 };
 
 template <typename Container = void>
