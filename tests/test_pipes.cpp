@@ -705,6 +705,8 @@ TEST(Pipes, RandomMap)
 	EXPECT_EQ(v0, 20);
 }
 
+#ifndef STORED_COMPILER_MINGW
+// MinGW does not implement std::thread.
 TEST(Pipes, RateLimit)
 {
 	using namespace stored::pipes;
@@ -760,5 +762,6 @@ TEST(Pipes, RateLimit)
 	EXPECT_EQ(in.extract(), 6);
 	EXPECT_EQ(out.extract(), 6);
 }
+#endif // STORED_COMPILER_MINGW
 
 } // namespace
