@@ -19,6 +19,7 @@
 #include <libstored/pipes.h>
 #include <libstored/poller.h>
 #include <libstored/protocol.h>
+#include <libstored/signal.h>
 #include <libstored/synchronizer.h>
 #include <libstored/util.h>
 #include <libstored/version.h>
