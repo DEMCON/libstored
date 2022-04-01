@@ -48,6 +48,7 @@ jobs:
         uses: actions/checkout@v3
       - name: bootstrap
         run: |
+          sudo apt update
           dist/ubuntu/bootstrap.sh
           sudo apt install clang-tidy clang libegl1 cppcheck
       - name: build Debug
