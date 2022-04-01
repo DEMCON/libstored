@@ -1179,6 +1179,7 @@ protected:
 	template <typename T_, std::enable_if_t<!std::is_constructible<double, T_>::value, int> = 0>
 	static void print(std::string const& name, T_ const& x)
 	{
+		UNUSED(x)
 		printf("%s injected\n", name.c_str());
 	}
 
