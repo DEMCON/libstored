@@ -17,6 +17,9 @@ Added
 ``````
 
 - First-order high-pass filter.
+- Pipes, to process data using functional composition.
+- A Signal class (with Signalling store wrapper) to call functions when the
+  signal is triggered (or a store variable is changed).
 
 Fixed
 `````
