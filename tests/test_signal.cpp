@@ -29,6 +29,61 @@ public:
 
 namespace {
 
+TEST(Signal, NoKey)
+{
+	stored::Signal<> s;
+
+	int sig = 0;
+	s.connect([&]() { sig++; });
+	s();
+	EXPECT_EQ(sig, 1);
+
+	// Another connection, with a 'different' lambda.
+	s.connect([&]() { sig++; });
+	s();
+	EXPECT_EQ(sig, 3);
+
+	s.disconnect();
+	s();
+	EXPECT_EQ(sig, 3);
+}
+
+TEST(Signal, NoToken)
+{
+	stored::Signal<int> s;
+
+	int sig = 0;
+	s.connect(1, [&]() { sig++; });
+	s();
+	EXPECT_EQ(sig, 1);
+
+	s.connect(2, [&]() { sig++; });
+	s.connect(2, [&]() { sig++; });
+	s();
+	EXPECT_EQ(sig, 4);
+
+	s.disconnect(2);
+	s();
+	EXPECT_EQ(sig, 5);
+}
+
+TEST(Signal, Token)
+{
+	stored::Signal<int, int> s;
+
+	int sig = 0;
+	s.connect(
+		0, [&]() { sig++; }, 1);
+	s.connect(
+		0, [&]() { sig++; }, 2);
+	s();
+	EXPECT_EQ(sig, 2);
+
+	s.disconnect(0, 2);
+	s();
+	EXPECT_EQ(sig, 3);
+}
+
 TEST(Signal, Var)
 {
 	TestStore store;
