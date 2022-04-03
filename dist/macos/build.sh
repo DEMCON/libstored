@@ -13,7 +13,7 @@ function nproc {
 	sysctl -n hw.logicalcpu
 }
 
-if ! pkg-config libzmq > /dev/null; then
+if which brew > /dev/null && which pkg-config > /dev/null && ! pkg-config libzmq > /dev/null; then
 	# Brew does not seem to add libzmq.pc to the search path.
 	libzmq_version="`brew info --json=v1 zmq | jq ".[].installed[].version" -r`"
 	libzmq_path="/usr/local/Cellar/zeromq/${libzmq_version}/lib/pkgconfig"
@@ -22,9 +22,19 @@ if ! pkg-config libzmq > /dev/null; then
 	fi
 fi
 
+cmake_opts=
+
+ver=`sw_vers -productVersion`
+ver_major=`echo ${ver} | sed 's/\([0-9]\+\)\.\([0-9]\+\).*/\1/'`
+ver_minor=`echo ${ver} | sed 's/\([0-9]\+\)\.\([0-9]\+\).*/\2/'`
+if [[ ${ver_major} < 10 ]] || [[ ${ver_major} -eq 10 ]] && [[ ${ver_minor} < 14 ]]; then
+	# macos 10.14 is required for PySide6. Exclude all components that
+	# depend on PySide6.
+	cmake_opts="${cmake_opts} -DLIBSTORED_PYLIBSTORED=OFF"
+fi
+
 pushd "$( cd "$(dirname "${BASH_SOURCE[0]}")"; pwd -P )" > /dev/null
 
-cmake_opts=
 . ../common/build.sh
 
 popd > /dev/null

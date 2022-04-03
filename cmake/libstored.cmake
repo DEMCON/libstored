@@ -128,7 +128,8 @@ function(libstored_lib libprefix libpath)
 			target_compile_options(${LIBSTORED_LIB_TARGET} PUBLIC -fno-rtti)
 		endif()
 	endif()
-	if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+	if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER "8.0.1")
+		# The flag should be there from LLVM 8.0.0, but I don't see it...
 		target_compile_options(${LIBSTORED_LIB_TARGET} PRIVATE -Wno-defaulted-function-deleted)
 	endif()
 
