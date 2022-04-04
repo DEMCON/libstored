@@ -25,8 +25,8 @@ fi
 cmake_opts=
 
 ver=`sw_vers -productVersion`
-ver_major=`echo ${ver} | sed 's/\([0-9]\+\)\.\([0-9]\+\).*/\1/'`
-ver_minor=`echo ${ver} | sed 's/\([0-9]\+\)\.\([0-9]\+\).*/\2/'`
+ver_major=`echo ${ver} | sed -E 's/^([0-9]+)\.([0-9]+).*/\1/'`
+ver_minor=`echo ${ver} | sed -E 's/^([0-9]+)\.([0-9]+).*/\2/'`
 if [[ ${ver_major} < 10 ]] || [[ ${ver_major} -eq 10 ]] && [[ ${ver_minor} < 14 ]]; then
 	# macos 10.14 is required for PySide6. Exclude all components that
 	# depend on PySide6.
