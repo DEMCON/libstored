@@ -138,7 +138,7 @@ private:
 		}                                                                       \
                                                                                         \
 	public:                                                                         \
-		static constexpr bool has_##name## = has_##name##_<S>();
+		static constexpr bool has_##name = has_##name##_<S>();
 
 	template <typename In, typename Out, typename S_>
 	static In type_in_helper(Out (S_::*)(In));
@@ -715,7 +715,7 @@ public:
 		return m_p ? *m_p : value();
 	}
 
-	operator type const &() const
+	operator type const&() const
 	{
 		return get();
 	}
@@ -795,7 +795,7 @@ public:
 	{
 		UNUSED(p)
 		// Do not connect a capped pipe.
-		std::unexpected();
+		std::terminate();
 	}
 
 	template <typename Out_>
@@ -1336,7 +1336,7 @@ struct call_f_type<std::function<F>> {
 } // namespace impl
 
 template <typename F_>
-Call(F_ &&)
+Call(F_&&)
 	-> Call<typename impl::call_type_in<decltype(std::function{std::declval<F_>()})>::type,
 		typename impl::call_f_type<decltype(std::function{std::declval<F_>()})>::type>;
 #	endif // >= C++17
@@ -1501,7 +1501,7 @@ struct object_type<stored::impl::StoreVariantF<Store, Implementation, type_, F, 
 // supported by Get. StoreVariant* is supported, as long as it holds fixed-size
 // data (which is usually not what it is used for...)
 template <typename V>
-Get(V &&)
+Get(V&&)
 	-> Get<typename impl::object_data_type<std::decay_t<V>>::type,
 	       typename impl::object_type<std::decay_t<V>>::type>;
 #	endif // C++17
@@ -1563,7 +1563,7 @@ private:
 
 #	if STORED_cplusplus >= 201703L
 template <typename V>
-Set(V &&)
+Set(V&&)
 	-> Set<typename impl::object_data_type<std::decay_t<V>>::type,
 	       typename impl::object_type<std::decay_t<V>>::type>;
 #	endif // C++17
@@ -1714,7 +1714,7 @@ class Changes {
 public:
 	using type = T;
 
-	template <typename T_>
+	template <typename T_, std::enable_if_t<std::is_constructible<T, T_&&>::value, int> = 0>
 	Changes(PipeEntry<type>& p, T_&& init)
 		: m_p{&p}
 		, m_prev{std::forward<T_>(init)}
@@ -1849,7 +1849,7 @@ private:
 
 #	if STORED_cplusplus >= 201703L
 template <typename Constraints_>
-Constrained(Constraints_ &&) -> Constrained<std::decay_t<Constraints_>>;
+Constrained(Constraints_&&) -> Constrained<std::decay_t<Constraints_>>;
 #	endif // C++17
 
 /*!
@@ -1885,12 +1885,15 @@ public:
 		: m_map{std::move(map)}
 	{}
 
-	constexpr value_type const& find(size_t index) const
+	template <typename Key>
+	constexpr value_type const& find(Key&& index) const
 	{
-		if(index >= m_map.size())
+		size_t index_ = static_cast<size_t>(index);
+
+		if(index_ >= m_map.size())
 			return m_map[0];
 
-		return m_map[index];
+		return m_map[index_];
 	}
 
 	constexpr size_t rfind(value_type const& value) const

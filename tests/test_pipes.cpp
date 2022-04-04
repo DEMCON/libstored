@@ -347,7 +347,7 @@ TEST(Pipes, Get)
 
 	// Auto-deduct StoreFunction
 	auto p3 = Entry<bool>{} >> Get{store.f_read_only} >> Exit{};
-	EXPECT_EQ(p3.extract(), 0U);
+	EXPECT_EQ(p3.extract(), (unsigned short)0U);
 }
 
 TEST(Pipes, Set)
@@ -378,9 +378,9 @@ TEST(Pipes, Set)
 	EXPECT_EQ(store.init_decimal.get(), 3);
 
 	// Auto-deduct StoreFunction
-	auto p3 = Entry<int32_t>{} >> Set{store.f_read_only} >> Exit{};
+	auto p3 = Entry<int16_t>{} >> Set{store.f_read_only} >> Exit{};
 	4 >> p3;
-	EXPECT_EQ(p3.extract(), 0);
+	EXPECT_EQ(p3.extract(), (uint16_t)0);
 }
 
 TEST(Pipes, Mux)
