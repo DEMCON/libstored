@@ -10,6 +10,7 @@
 #include <QQmlContext>
 #include <QSocketNotifier>
 #include <QUrl>
+#include <QtGlobal>
 #include <iostream>
 #include <stored>
 
@@ -18,7 +19,7 @@ int main(int argc, char** argv)
 	std::cout << stored::banner() << std::endl;
 
 	// Initialize Qt.
-#if STORED_HAVE_QT < 6
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 	QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 	QGuiApplication app(argc, argv);
