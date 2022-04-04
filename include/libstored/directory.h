@@ -63,6 +63,10 @@ constexpr14 void skipOffset(uint8_t const*& p) noexcept
 #			pragma GCC diagnostic push
 #			pragma GCC diagnostic ignored "-Wattributes"
 #		endif
+#		if defined(STORED_COMPILER_CLANG)
+#			pragma clang diagnostic push
+#			pragma clang diagnostic ignored "-Wunknown-sanitizers"
+#		endif
 __attribute__((no_sanitize("pointer-overflow")))
 #	endif
 constexpr14 Variant<>
@@ -146,6 +150,9 @@ find(uint8_t const* directory, char const* name,
 }
 #	if defined(STORED_ENABLE_UBSAN) \
 		&& (defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG))
+#		if defined(STORED_COMPILER_CLANG)
+#			pragma clang diagnostic pop
+#		endif
 #		if GCC_VERSION < 80000L
 #			pragma GCC diagnostic pop
 #		endif

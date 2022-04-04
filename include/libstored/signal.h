@@ -156,7 +156,7 @@ protected:
 	template <typename F>
 	void connect_(key_type key, F&& f, token_type token)
 	{
-		m_connections.emplace(key, Connection{token, std::forward<F>(f)});
+		m_connections.emplace(key, Connection{token, Callable_type{std::forward<F>(f)}});
 	}
 
 private:

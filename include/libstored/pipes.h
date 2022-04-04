@@ -38,6 +38,12 @@
 
 #	include <cassert>
 
+#	if defined(STORED_COMPILER_CLANG) && (__clang_major__ < 9 || (__clang_major__ == 9 && __clang_minor__ < 1))
+// Somehow, the friend operator>> functions for Exit and Cap are not friends by
+// older clang.  Do some workaround in case you have such a clang.
+#		define CLANG_BUG_FRIEND_OPERATOR
+#	endif
+
 namespace stored {
 namespace pipes {
 
@@ -883,7 +889,10 @@ public:
 	using type_out_wrapper = ExitValue<type_out>;
 	using Pipe_type = Pipe<type_in, type_out>;
 
+#	ifndef CLANG_BUG_FRIEND_OPERATOR
 protected:
+#	endif
+
 	template <
 		typename S_,
 		std::enable_if_t<std::is_constructible<segments_type, S_>::value, int> = 0>
@@ -938,7 +947,10 @@ public:
 	using type_out_wrapper = typename base::type_out_wrapper;
 	using Pipe_type = typename base::Pipe_type;
 
+#	ifndef CLANG_BUG_FRIEND_OPERATOR
 protected:
+#	endif
+
 	template <
 		typename S_,
 		std::enable_if_t<std::is_constructible<segments_type, S_>::value, int> = 0>
@@ -2304,6 +2316,10 @@ class Validate {
 
 } // namespace pipes
 } // namespace stored
+
+#	if defined(CLANG_BUG_FRIEND_OPERATOR)
+#		undef CLANG_BUG_FRIEND_OPERATOR
+#	endif
 
 #endif // __cplusplus
 #endif // LIBSTORED_PIPES_H
