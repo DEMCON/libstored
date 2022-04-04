@@ -197,14 +197,14 @@ static void control()
 {
 	using f_type = std::pair<void (*)(), stored::Variable<uint8_t, ExampleControlStore>>;
 
-	static std::array<f_type, 6> fs = {
+	static std::array<f_type, 6> fs = {{
 		f_type{&pid, store.pid__evaluation_order},
 		f_type{&amp, store.amp__evaluation_order},
 		f_type{&sine, store.sine__evaluation_order},
 		f_type{&pulse, store.pulse__evaluation_order},
 		f_type{&lowpass, store.lowpass__evaluation_order},
 		f_type{&ramp, store.ramp__evaluation_order},
-	};
+	}};
 
 	std::stable_sort(fs.begin(), fs.end(), [](f_type const& a, f_type const& b) {
 		return a.second.get() < b.second.get();
