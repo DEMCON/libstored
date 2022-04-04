@@ -227,7 +227,7 @@ public:
 
 	constexpr PopIterator() noexcept = default;
 
-	explicit constexpr PopIterator(Fifo& fifo) noexcept
+	constexpr explicit PopIterator(Fifo& fifo) noexcept
 		: m_fifo(&fifo)
 		, m_count(fifo.available())
 	{}
@@ -249,7 +249,7 @@ public:
 	class ValueWrapper {
 	public:
 		typedef PopIterator::value_type value_type;
-		explicit constexpr ValueWrapper(value_type x) noexcept
+		constexpr explicit ValueWrapper(value_type x) noexcept
 			: m_x(x)
 		{}
 		constexpr value_type const& operator*() const noexcept

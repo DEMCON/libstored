@@ -144,7 +144,7 @@ struct Pollable {
 	/*!
 	 * \brief Ctor.
 	 */
-	explicit constexpr Pollable(Events const& e, void* user = nullptr) noexcept
+	constexpr explicit Pollable(Events const& e, void* user = nullptr) noexcept
 		: user_data(user)
 		, events(e)
 	{}

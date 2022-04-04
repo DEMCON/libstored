@@ -1032,7 +1032,7 @@ protected:
 	 * \brief Constructor for a valid variable.
 	 * \details This can only be called by #stored::Variant<void>::variable().
 	 */
-	explicit constexpr FreeVariable(size_t offset) noexcept
+	constexpr explicit FreeVariable(size_t offset) noexcept
 		: m_offset(static_cast<offset_type>(offset))
 	{
 #	if STORED_cplusplus < 201103L || STORED_cplusplus >= 201402L
@@ -1125,7 +1125,7 @@ protected:
 	 * \brief Constructor for a valid variable.
 	 * \details This can only be called by #stored::Variant<void>::variable().
 	 */
-	explicit constexpr FreeFunction(unsigned int f) noexcept
+	constexpr explicit FreeFunction(unsigned int f) noexcept
 		: m_f(static_cast<f_type>(f))
 	{
 #	if STORED_cplusplus < 201103L || STORED_cplusplus >= 201402L

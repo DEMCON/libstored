@@ -14,6 +14,10 @@ add_custom_command(
 	COMMENT "Generate logging wrapper for ExampleMeta"
 )
 
+add_custom_target(meta-generate
+	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/LoggingExampleMeta.h
+)
+
 target_include_directories(meta PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 install(TARGETS meta RUNTIME DESTINATION bin)

@@ -137,7 +137,7 @@ public:
 
 	void call() const
 	{
-		for(size_type b = 0; b < m_connections.bucket_count(); b++)
+		for(size_type b = 0; b < m_connections.bucket_count(); ++b)
 			for(auto it = m_connections.begin(b); it != m_connections.end(b); ++it)
 				it->second.second();
 	}
