@@ -71,23 +71,6 @@ struct is_convertible
 		  bool, (std::is_constructible<T, U>::value || std::is_convertible<U, T>::value)> {
 };
 
-#	define STORED_PIPE_TRAITS_HAS_F(type, name)                                              \
-	protected:                                                                                \
-		template <                                                                        \
-			typename type##_,                                                         \
-			std::enable_if_t<                                                         \
-				std::is_member_function_pointer<decltype(&type##_::name)>::value, \
-				int> = 0>                                                         \
-		static constexpr bool has_##name##_() noexcept                                    \
-		{                                                                                 \
-			return true;                                                              \
-		}                                                                                 \
-                                                                                                  \
-		using segment_traits_base::has_##name##_;                                         \
-                                                                                                  \
-	public:                                                                                   \
-		static constexpr bool has_##name = has_##name##_<type>();
-
 struct segment_traits_base {
 protected:
 	template <typename S_>
@@ -126,6 +109,37 @@ protected:
 template <typename S>
 struct segment_traits : public impl::segment_traits_base {
 private:
+	struct has_f_no {};
+	struct has_f_maybe : has_f_no {};
+
+	template <typename S_>
+	struct has_f {
+		using type = int;
+	};
+
+#	define STORED_PIPE_TRAITS_HAS_F(S, name)                                       \
+	protected:                                                                      \
+		template <typename S_, typename has_f<decltype(&S_::name)>::type = 0>   \
+		static constexpr bool has_##name##_(has_f_maybe /*yes*/) noexcept       \
+		{                                                                       \
+			return true;                                                    \
+		}                                                                       \
+                                                                                        \
+		template <typename S_>                                                  \
+		static constexpr bool has_##name##_(has_f_no /*no*/) noexcept           \
+		{                                                                       \
+			return impl::segment_traits_base::template has_##name##_<S_>(); \
+		}                                                                       \
+                                                                                        \
+		template <typename S_>                                                  \
+		static constexpr bool has_##name##_() noexcept                          \
+		{                                                                       \
+			return has_##name##_<S_>(has_f_maybe{});                        \
+		}                                                                       \
+                                                                                        \
+	public:                                                                         \
+		static constexpr bool has_##name## = has_##name##_<S>();
+
 	template <typename In, typename Out, typename S_>
 	static In type_in_helper(Out (S_::*)(In));
 
@@ -170,6 +184,8 @@ public:
 	static_assert(
 		std::is_default_constructible<std::decay_t<type_out>>::value,
 		"Segment's type out must be default-constructible");
+
+#	undef STORED_PIPE_TRAITS_HAS_F
 };
 
 template <>
