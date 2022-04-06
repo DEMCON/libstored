@@ -34,11 +34,13 @@
 #	include <limits>
 #	include <new>
 #	include <string>
+#	include <type_traits>
 #	include <utility>
 
 #	include <cassert>
 
-#	if defined(STORED_COMPILER_CLANG) && (__clang_major__ < 9 || (__clang_major__ == 9 && __clang_minor__ < 1))
+#	if defined(STORED_COMPILER_CLANG) \
+		&& (__clang_major__ < 9 || (__clang_major__ == 9 && __clang_minor__ < 1))
 // Somehow, the friend operator>> functions for Exit and Cap are not friends by
 // older clang.  Do some workaround in case you have such a clang.
 #		define CLANG_BUG_FRIEND_OPERATOR
@@ -70,6 +72,12 @@ namespace impl {
 //////////////////////////////////
 // traits
 //
+
+template <typename T>
+T declval() noexcept
+{
+	static_assert(false, "declval not allowed in an evaluated context");
+}
 
 template <class U, class T>
 struct is_convertible
@@ -174,7 +182,7 @@ private:
 
 public:
 	STORED_PIPE_TRAITS_HAS_F(S, inject)
-	static_assert(has_inject, "Needs inject() to be a segment");
+	static_assert(segment_traits::has_inject, "Needs inject() to be a segment");
 
 	STORED_PIPE_TRAITS_HAS_F(S, extract)
 	STORED_PIPE_TRAITS_HAS_F(S, entry_cast)
@@ -275,53 +283,56 @@ public:
 	}
 
 private:
-	template <typename S_, std::enable_if_t<traits::template has_inject_<S_>(), int> = 0>
-	decltype(auto) inject_(type_in x)
+	template <typename S_>
+	decltype(auto) inject_(decltype(
+		impl::declval<std::enable_if_t<traits::template has_inject_<S_>(), type_in>>()) x)
 	{
 		return S_::inject(x);
 	}
 
-	template <typename S_, std::enable_if_t<!traits::template has_inject_<S_>(), int> = 0>
-	decltype(auto) inject_(type_in x)
+	template <typename S_>
+	decltype(auto) inject_(decltype(
+		impl::declval<std::enable_if_t<!traits::template has_inject_<S_>(), type_in>>()) x)
 	{
 		UNUSED(x)
 		return extract_<S_>();
 	}
 
-	template <typename S_, std::enable_if_t<traits::template has_extract_<S_>(), int> = 0>
-	decltype(auto) extract_()
+	template <typename S_>
+	decltype(auto)
+	extract_(decltype(std::enable_if_t<traits::template has_extract_<S_>(), int>{}) = 0)
 	{
 		return S_::extract();
 	}
 
-	template <typename S_, std::enable_if_t<!traits::template has_extract_<S_>(), int> = 0>
-	auto extract_()
+	template <typename S_>
+	auto extract_(decltype(std::enable_if_t<!traits::template has_extract_<S_>(), int>{}) = 0)
 	{
 		return type_out{};
 	}
 
-	template <typename S_, std::enable_if_t<traits::template has_entry_cast_<S_>(), int> = 0>
-	decltype(auto) entry_cast_(type_out x) const
+	template <typename S_>
+	decltype(auto) entry_cast_(decltype(
+		impl::declval<std::enable_if_t<traits::template has_entry_cast_<S_>(), type_out>>())
+					   x) const
 	{
 		return S_::entry_cast(x);
 	}
 
-	template <
-		typename S_, std::enable_if_t<
-				     !traits::template has_entry_cast_<S_>()
-					     && std::is_same<type_in, type_out>::value,
-				     int> = 0>
-	type_in entry_cast_(type_out x) const
+	template <typename S_>
+	type_in entry_cast_(decltype(impl::declval<std::enable_if_t<
+					     !traits::template has_entry_cast_<S_>()
+						     && std::is_same<type_in, type_out>::value,
+					     type_out>>()) x) const
 	{
 		return x;
 	}
 
-	template <
-		typename S_, std::enable_if_t<
-				     !traits::template has_entry_cast_<S_>()
-					     && !std::is_same<type_in, type_out>::value,
-				     int> = 0>
-	auto entry_cast_(type_out x) const
+	template <typename S_>
+	auto entry_cast_(decltype(impl::declval<std::enable_if_t<
+					  !traits::template has_entry_cast_<S_>()
+						  && !std::is_same<type_in, type_out>::value,
+					  type_out>>()) x) const
 	{
 		static_assert(
 			impl::is_convertible<type_out, std::decay_t<type_in>>::value,
@@ -329,28 +340,28 @@ private:
 		return static_cast<std::decay_t<type_in>>(x);
 	}
 
-	template <typename S_, std::enable_if_t<traits::template has_exit_cast_<S_>(), int> = 0>
-	decltype(auto) exit_cast_(type_in x) const
+	template <typename S_>
+	decltype(auto) exit_cast_(decltype(
+		impl::declval<std::enable_if_t<traits::template has_exit_cast_<S_>(), type_in>>())
+					  x) const
 	{
 		return S_::exit_cast(x);
 	}
 
-	template <
-		typename S_, std::enable_if_t<
-				     !traits::template has_exit_cast_<S_>()
-					     && std::is_same<type_in, type_out>::value,
-				     int> = 0>
-	type_out exit_cast_(type_in x) const
+	template <typename S_>
+	type_out exit_cast_(decltype(impl::declval<std::enable_if_t<
+					     !traits::template has_exit_cast_<S_>()
+						     && std::is_same<type_in, type_out>::value,
+					     type_in>>()) x) const
 	{
 		return x;
 	}
 
-	template <
-		typename S_, std::enable_if_t<
-				     !traits::template has_exit_cast_<S_>()
-					     && !std::is_same<type_in, type_out>::value,
-				     int> = 0>
-	auto exit_cast_(type_in x) const
+	template <typename S_>
+	auto exit_cast_(decltype(impl::declval<std::enable_if_t<
+					 !traits::template has_exit_cast_<S_>()
+						 && !std::is_same<type_in, type_out>::value,
+					 type_in>>()) x) const
 	{
 		static_assert(
 			impl::is_convertible<type_in, std::decay_t<type_out>>::value,
@@ -358,14 +369,16 @@ private:
 		return static_cast<std::decay_t<type_out>>(x);
 	}
 
-	template <typename S_, std::enable_if_t<traits::template has_trigger_<S_>(), int> = 0>
-	decltype(auto) trigger_(bool* triggered)
+	template <typename S_>
+	decltype(auto)
+	trigger_(decltype(std::enable_if_t<traits::template has_trigger_<S_>(), bool*>{}) triggered)
 	{
 		return S_::trigger(triggered);
 	}
 
-	template <typename S_, std::enable_if_t<!traits::template has_trigger_<S_>(), int> = 0>
-	auto trigger_(bool* triggered)
+	template <typename S_>
+	auto trigger_(
+		decltype(std::enable_if_t<!traits::template has_trigger_<S_>(), bool*>{}) triggered)
 	{
 		if(triggered)
 			*triggered = false;
@@ -382,7 +395,7 @@ private:
 
 // Composition of segments (recursive).
 template <typename... S>
-class Segments {};
+class STORED_EMPTY_BASES Segments {};
 
 template <typename A, typename B>
 struct segments_type_join {};
@@ -453,8 +466,8 @@ struct Last : public Segment<typename segments_type<S...>::last> {
  * such that the interface is completed.
  */
 template <typename S0, typename S1, typename... S>
-class Segments<S0, S1, S...> : private segments_type<S0, S1, S...>::init,
-			       private impl::Last<S0, S1, S...> {
+class STORED_EMPTY_BASES Segments<S0, S1, S...> : private segments_type<S0, S1, S...>::init,
+						  private impl::Last<S0, S1, S...> {
 	static_assert(
 		std::is_convertible<
 			typename segment_traits<S0>::type_out,
@@ -587,7 +600,7 @@ private:
 };
 
 template <typename S0>
-class Segments<S0> : public Segment<S0> {
+class STORED_EMPTY_BASES Segments<S0> : public Segment<S0> {
 	STORED_CLASS_DEFAULT_COPY_MOVE(Segments)
 public:
 	using typename Segment<S0>::type_in;
@@ -606,13 +619,13 @@ protected:
 	friend class Segments;
 
 public:
-	template <
-		typename S_,
-		std::enable_if_t<
+	template <typename S_>
+	constexpr decltype(
+		impl::declval<std::enable_if_t<
 			std::is_convertible<type_out, typename segment_traits<S_>::type_in>::value
 				&& !std::is_lvalue_reference<S_>::value,
-			int> = 0>
-	constexpr auto operator>>(S_&& s) &&
+			Segments<S0, std::decay_t<S_>>>>())
+	operator>>(S_&& s) &&
 	{
 		return Segments<S0, std::decay_t<S_>>{std::move(*this), std::forward<S_>(s)};
 	}
@@ -628,12 +641,12 @@ public:
 template <typename T>
 class Entry {
 public:
-	template <
-		typename S_,
-		std::enable_if_t<
-			std::is_convertible<T, typename segment_traits<S_>::type_in>::value, int> =
-			0>
-	constexpr auto operator>>(S_&& s) &&
+	template <typename S_>
+	constexpr decltype(
+		impl::declval<std::enable_if_t<
+			std::is_convertible<T, typename segment_traits<S_>::type_in>::value,
+			Segments<std::decay_t<S_>>>>())
+	operator>>(S_&& s) &&
 	{
 		return Segments<std::decay_t<S_>>{std::forward<S_>(s)};
 	}
@@ -721,7 +734,7 @@ public:
 		return m_p ? *m_p : value();
 	}
 
-	operator type const&() const
+	operator type const &() const
 	{
 		return get();
 	}
@@ -877,10 +890,11 @@ private:
 
 // Concrete implementation of Pipe, given a segment/pipe.
 template <typename S>
-class SpecificCappedPipe : public Pipe<
-				   std::decay_t<typename segment_traits<S>::type_in>,
-				   std::decay_t<typename segment_traits<S>::type_out>>,
-			   public S {
+class STORED_EMPTY_BASES SpecificCappedPipe
+	: public Pipe<
+		  std::decay_t<typename segment_traits<S>::type_in>,
+		  std::decay_t<typename segment_traits<S>::type_out>>,
+	  public S {
 	STORED_CLASS_DEFAULT_COPY_MOVE(SpecificCappedPipe)
 public:
 	using segments_type = S;
@@ -936,7 +950,7 @@ constexpr auto operator>>(Segments<S_...>&& s, Cap&& e)
 }
 
 template <typename S>
-class SpecificOpenPipe : public SpecificCappedPipe<S> {
+class STORED_EMPTY_BASES SpecificOpenPipe : public SpecificCappedPipe<S> {
 	STORED_CLASS_DEFAULT_COPY_MOVE(SpecificOpenPipe)
 	using base = SpecificCappedPipe<S>;
 
@@ -1008,6 +1022,7 @@ constexpr auto operator>>(Segments<S_...>&& s, Exit&& e)
 	UNUSED(e)
 	return SpecificOpenPipe<Segments<S_...>>{std::move(s)};
 }
+
 
 
 //////////////////////////////////
@@ -1348,7 +1363,7 @@ struct call_f_type<std::function<F>> {
 } // namespace impl
 
 template <typename F_>
-Call(F_&&)
+Call(F_ &&)
 	-> Call<typename impl::call_type_in<decltype(std::function{std::declval<F_>()})>::type,
 		typename impl::call_f_type<decltype(std::function{std::declval<F_>()})>::type>;
 #	endif // >= C++17
@@ -1513,7 +1528,7 @@ struct object_type<stored::impl::StoreVariantF<Store, Implementation, type_, F, 
 // supported by Get. StoreVariant* is supported, as long as it holds fixed-size
 // data (which is usually not what it is used for...)
 template <typename V>
-Get(V&&)
+Get(V &&)
 	-> Get<typename impl::object_data_type<std::decay_t<V>>::type,
 	       typename impl::object_type<std::decay_t<V>>::type>;
 #	endif // C++17
@@ -1575,7 +1590,7 @@ private:
 
 #	if STORED_cplusplus >= 201703L
 template <typename V>
-Set(V&&)
+Set(V &&)
 	-> Set<typename impl::object_data_type<std::decay_t<V>>::type,
 	       typename impl::object_type<std::decay_t<V>>::type>;
 #	endif // C++17
@@ -1861,7 +1876,7 @@ private:
 
 #	if STORED_cplusplus >= 201703L
 template <typename Constraints_>
-Constrained(Constraints_&&) -> Constrained<std::decay_t<Constraints_>>;
+Constrained(Constraints_ &&) -> Constrained<std::decay_t<Constraints_>>;
 #	endif // C++17
 
 /*!
