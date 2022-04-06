@@ -79,6 +79,17 @@
 #		undef STORED_cplusplus
 #		define STORED_cplusplus _MSVC_LANG
 #	endif
+#	if STORED_cplusplus >= 201402L && _MSC_VER < 1910
+#		error Unsupported Visual Studio version. Upgrade to 2017, or do not compile for C++14.
+// Because of this:
+// https://devblogs.microsoft.com/cppblog/expression-sfinae-improvements-in-vs-2015-update-3/
+//
+// However, even with VS 2017, using constexpr calls in an std::enable_if_t
+// template parameter still does not work similar to gcc. As a workaround,
+// these enable_if_ts are wrapped in a decltype and used as return type or
+// dummy parameter. Not very readable, but it works at least.
+#	endif
+
 #	define NOMINMAX
 #	define _USE_MATH_DEFINES
 #	pragma warning( \
@@ -89,8 +100,11 @@
 #			pragma warning(disable : 4464)
 #		endif
 #	endif
+#	if _MSC_FULL_VER >= 190023918
+#		pragma warning(disable : 4868)
+#	endif
 #	if _MSC_VER >= 1915
-#		pragma warning(disable : 5105)
+#		pragma warning(disable : 4866 5105)
 #	endif
 #	if _MSC_VER >= 1925
 #		pragma warning(disable : 5204)

@@ -91,6 +91,19 @@
 #	define EXPAND(x) x
 #endif
 
+#if defined(__cplusplus) && STORED_cplusplus >= 201103L
+#	if defined(STORED_COMPILER_MSVC) && _MSC_VER >= 1900 && _MSC_FULL_VER >= 190023918
+#		define STORED_EMPTY_BASES __declspec(empty_bases)
+#	elif defined(STORED_COMPILER_CLANG)
+#		if __has_declspec_attribute(empty_bases)
+#			define STORED_EMPTY_BASES __declspec(empty_bases)
+#		endif
+#	endif
+#endif
+#ifndef STORED_EMPTY_BASES
+#	define STORED_EMPTY_BASES
+#endif
+
 #ifdef __cplusplus
 #	include <cassert>
 #	include <cmath>
@@ -183,12 +196,12 @@
 /*!
  * \see CLASS_NO_WEAK_VTABLE
  */
-#		define CLASS_NO_WEAK_VTABLE_DEF(Class)                                     \
-			/*! \brief Dummy function to force the vtable of this class to this \
-			 * translation unit. Don't call. */                                 \
-			void Class::force_to_translation_unit()                             \
-			{                                                                   \
-				abort();                                                    \
+#		define CLASS_NO_WEAK_VTABLE_DEF(Class)                       \
+			/*! \brief Dummy function to force the vtable of this \
+			 * class to this translation unit. Don't call. */     \
+			void Class::force_to_translation_unit()               \
+			{                                                     \
+				abort();                                      \
 			}
 #	endif
 
@@ -556,8 +569,8 @@ struct saturated_cast_helper {
 		} else {
 #	ifdef STORED_COMPILER_MSVC
 #		pragma warning(push)
-#		pragma warning(disable : 4146) // This code path is not triggered in case of
-						// unsigned ints.
+#		pragma warning(disable : 4146) // This code path is not triggered
+						// in case of unsigned ints.
 #	endif
 
 #	pragma GCC diagnostic push

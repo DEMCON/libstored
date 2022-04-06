@@ -9,31 +9,17 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#ifdef __cplusplus
+#include <libstored/macros.h>
 
-#	include <libstored/macros.h>
+#if defined(__cplusplus) && STORED_cplusplus >= 201402L && defined(STORED_DRAFT_API)
 
-#	ifdef STORED_DRAFT_API
-#		if STORED_cplusplus >= 201402L
+#	include <libstored/config.h>
+#	include <libstored/types.h>
+#	include <libstored/util.h>
 
-#			if defined(_MSC_VER) && _MSC_VER < 1910
-#				error Unsupport Visual Studio version. Upgrade to 2017, or do not compile for C++14.
-// Because of this:
-// https://devblogs.microsoft.com/cppblog/expression-sfinae-improvements-in-vs-2015-update-3/
-//
-// However, even with VS 2017, using constexpr calls in an std::enable_if_t
-// template parameter still does not work similar to gcc. As a workaround,
-// these enable_if_ts are wrapped in a decltype and used as return type or
-// dummy parameter. Not very readable, but it works at least.
-#			endif
-
-#			include <libstored/config.h>
-#			include <libstored/types.h>
-#			include <libstored/util.h>
-
-#			include <cmath>
-#			include <type_traits>
-#			include <utility>
+#	include <cmath>
+#	include <type_traits>
+#	include <utility>
 
 namespace stored {
 
@@ -4211,7 +4197,5 @@ private:
 
 } // namespace stored
 
-#		endif // C++14
-#	endif	       // STORED_DRAFT_API
-#endif		       // __cplusplus
-#endif		       // LIBSTORED_COMPONENTS_H
+#endif // C++14
+#endif // LIBSTORED_COMPONENTS_H
