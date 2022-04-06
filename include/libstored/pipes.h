@@ -74,9 +74,12 @@ namespace impl {
 //
 
 template <typename T>
+constexpr bool always_false = false;
+
+template <typename T>
 T declval() noexcept
 {
-	static_assert(false, "declval not allowed in an evaluated context");
+	static_assert(always_false<T>, "declval not allowed in an evaluated context");
 }
 
 template <class U, class T>
