@@ -12,6 +12,7 @@ your application.
    cpp_components
    cpp_debugger
    cpp_directory
+   cpp_pipes
    cpp_poller
    cpp_protocol
    cpp_synchronizer
