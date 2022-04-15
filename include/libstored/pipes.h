@@ -53,9 +53,6 @@ namespace pipes {
 template <typename S>
 class Segment;
 
-class Exit {};
-class Cap {};
-
 template <typename In, typename Out>
 class Pipe;
 
@@ -64,6 +61,16 @@ class SpecificCappedPipe;
 
 template <typename S>
 class SpecificOpenPipe;
+
+/*!
+ * \brief Marker for the end of a pipe, which can be connected to another one.
+ */
+class Exit {};
+
+/*!
+ * \brief Marker for the end of a pipe, that cannot be connected to another one.
+ */
+class Cap {};
 
 
 
@@ -76,12 +83,18 @@ namespace impl {
 template <typename T>
 constexpr bool always_false = false;
 
+/*!
+ * \brief \c std::declval() without a \c std::remove_reference on the return type.
+ */
 template <typename T>
 T declval() noexcept
 {
 	static_assert(always_false<T>, "declval not allowed in an evaluated context");
 }
 
+/*!
+ * \brief Check if type U can be convertect T, either implicitly or explicitly.
+ */
 template <class U, class T>
 struct is_convertible
 	: std::integral_constant<
@@ -238,8 +251,10 @@ struct segments_traits<S0> : public segment_traits<S0> {};
 // Segment
 //
 
-// Converts a class into a full-blown Segment, adding default implementations
-// for all optional functions.
+/*!
+ * \brief Converts a class into a full-blown Segment, adding default
+ *	implementations for all optional functions.
+ */
 template <typename S>
 class Segment : protected S, public segment_traits<S> {
 	STORED_CLASS_DEFAULT_COPY_MOVE(Segment)
@@ -396,7 +411,9 @@ private:
 // Segments
 //
 
-// Composition of segments (recursive).
+/*!
+ * \brief Composition of segments (recursive).
+ */
 template <typename... S>
 class STORED_EMPTY_BASES Segments {};
 
@@ -640,22 +657,33 @@ public:
 // Pipe
 //
 
-// Start of a pipe. Finish with either Exit or Cap.
+/*!
+ * \brief Start of a pipe.
+ *
+ * Finish with either Exit or Cap.
+ */
 template <typename T>
 class Entry {
 public:
 	template <typename S_>
-	constexpr decltype(
-		impl::declval<std::enable_if_t<
-			std::is_convertible<T, typename segment_traits<S_>::type_in>::value,
-			Segments<std::decay_t<S_>>>>())
-	operator>>(S_&& s) &&
+	constexpr
+#	ifndef DOXYGEN
+		decltype(
+			impl::declval<std::enable_if_t<
+				std::is_convertible<T, typename segment_traits<S_>::type_in>::value,
+				Segments<std::decay_t<S_>>>>())
+#	else
+		Segments<std::decay_t<S_>>
+#	endif
+		operator>>(S_&& s) &&
 	{
 		return Segments<std::decay_t<S_>>{std::forward<S_>(s)};
 	}
 };
 
-// Virtual base class for any segment/pipe with specific in/out types.
+/*!
+ * \brief Virtual base class for any segment/pipe with specific in type.
+ */
 template <typename In>
 class PipeEntry {
 	STORED_CLASS_DEFAULT_COPY_MOVE(PipeEntry)
@@ -787,7 +815,9 @@ private:
 	type const* m_p;
 };
 
-
+/*!
+ * \brief Virtual base class for any segment/pipe with specific out type.
+ */
 template <typename Out>
 class PipeExit {
 	STORED_CLASS_DEFAULT_COPY_MOVE(PipeExit)
@@ -853,6 +883,9 @@ public:
 	virtual void trigger(bool* triggered = nullptr) = 0;
 };
 
+/*!
+ * \brief Virtual base class for any segment/pipe with specific in/out types.
+ */
 template <typename In, typename Out>
 class Pipe : public PipeEntry<In>, public PipeExit<Out> {
 	STORED_CLASS_DEFAULT_COPY_MOVE(Pipe)
@@ -891,7 +924,11 @@ private:
 	}
 };
 
-// Concrete implementation of Pipe, given a segment/pipe.
+/*!
+ * \brief Concrete implementation of Pipe, given a segment/pipe.
+ *
+ * Do not instantiate manually, use ... >> Exit{} or Cap{}.
+ */
 template <typename S>
 class STORED_EMPTY_BASES SpecificCappedPipe
 	: public Pipe<
@@ -952,6 +989,11 @@ constexpr auto operator>>(Segments<S_...>&& s, Cap&& e)
 	return SpecificCappedPipe<Segments<S_...>>{std::move(s)};
 }
 
+/*!
+ * \brief Concrete implementation of an open Pipe, given a segment/pipe.
+ *
+ * Do not instantiate manually, use ... >> Exit{}.
+ */
 template <typename S>
 class STORED_EMPTY_BASES SpecificOpenPipe : public SpecificCappedPipe<S> {
 	STORED_CLASS_DEFAULT_COPY_MOVE(SpecificOpenPipe)
@@ -1033,7 +1075,7 @@ constexpr auto operator>>(Segments<S_...>&& s, Exit&& e)
 //
 
 /*!
- * \brief Pipe segment without side effects.
+ * \brief %Pipe segment without side effects.
  */
 template <typename T>
 class Identity {
@@ -1121,7 +1163,8 @@ using Cast = impl::Cast<In, Out>;
 /*!
  * \brief Memory element for injected values.
  *
- * Extracted data is returned from this memory.
+ * The constructor accepts an optional argument as initial value stored in the
+ * buffer.  Extracted data is returned from this memory.
  */
 template <typename T>
 class Buffer {
@@ -1156,6 +1199,12 @@ private:
 
 /*!
  * \brief Forwards injected data into a fixed list of other pipes.
+ *
+ * Pass any positive number of references to \c PipeEntry<T> to the
+ * constructor.
+ *
+ * When using C++17, the template parameters are auto-deduced from the provided
+ * pipes.
  */
 template <typename T, size_t N>
 class Tee {
@@ -1185,8 +1234,8 @@ Tee(PipeEntry<T>&, P&...) -> Tee<T, sizeof...(P) + 1>;
 /*!
  * \brief Invokes a logger function for injected values.
  *
- * By default, the value is printed to stdout. If a custom logger function is
- * provided, it must accept a name (std::string const&) and value (T).
+ * By default, the value is printed to \c stdout. If a custom logger function
+ * is provided, it must accept a name (<tt>std::string const&</tt>) and value (\c T).
  */
 template <typename T>
 class Log {
@@ -1264,16 +1313,16 @@ private:
  *
  * The function prototype can be:
  *
- * - void(T)
- * - void(T const&)
- * - void(T&)
- * - T(T)
+ * - \c void(T)
+ * - \c void(T const&)
+ * - \c void(T&)
+ * - \c T(T)
  *
  * The first two cases allow a function to observe the injected value.  The
  * last two cases allow modifying it; the modified/returned value is passed
  * downstream.
  *
- * T and F are auto-deducted in C++17.
+ * \p T and \p F are auto-deducted in C++17.
  */
 template <typename T, typename F = void(T)>
 class Call {
@@ -1374,10 +1423,13 @@ Call(F_ &&)
 /*!
  * \brief Extract a store object's value upon every extract/inject.
  *
- * The value passed through the pipe entry is ignored.
+ * The value passed through the pipe entry is ignored.  Upon \c trigger(), the
+ * value from the object is passed through the pipe.
  *
  * V can be a stored::Variant, and any reference to a fixed-type store object.
- * Usually, use C++17 auto-deduction to determine both T and V.
+ * Pass it to the constructor.
+ *
+ * Usually, use C++17 auto-deduction to determine both \p T and \p V.
  */
 template <typename T, typename V>
 class Get {};
@@ -1538,6 +1590,9 @@ Get(V &&)
 
 /*!
  * \brief Write a value that is injected in the pipe to a store object.
+ *
+ * Pass the store object to the constructor.
+ *
  * \see Get
  */
 template <typename T, typename V>
@@ -1601,8 +1656,8 @@ Set(V &&)
 /*!
  * \brief Multiplex pipes, given the injected index value.
  *
- * Pipes are saved as references. Given the injected value, the corresponding
- * pipe is extracted when required.
+ * Pipes passed to the constructor are saved as references. Given the injected
+ * value, the corresponding pipe is extracted when required.
  */
 template <typename T, size_t N>
 class Mux {
@@ -1633,6 +1688,11 @@ public:
 	{
 		UNUSED(x)
 		return T{};
+	}
+
+	T trigger(bool* triggered = nullptr)
+	{
+		return m_i < N ? m_p[m_i].get().trigger(triggered) : T{};
 	}
 
 private:
@@ -1668,6 +1728,11 @@ public:
 	{
 		UNUSED(x)
 		return T{};
+	}
+
+	decltype(auto) trigger(bool* triggered = nullptr)
+	{
+		return m_p.get().trigger(triggered);
 	}
 
 private:
@@ -1728,7 +1793,7 @@ struct similar_to<T, order, false> {
 } // namespace impl
 
 /*!
- * \brief Like std::equal_to, as long as the difference is within 10^order.
+ * \brief Like \c std::equal_to, as long as the difference is within 10^order.
  */
 template <typename T, unsigned int order = 3>
 using similar_to = impl::similar_to<T, order>;
@@ -1837,8 +1902,8 @@ struct constraints_type<T (C::*)(T) const noexcept> {
 /*!
  * \brief Applies constraints to the value in the pipe.
  *
- * Injected data is passed to the operator() of the Constraints instance, and
- * its result is passed futher on through the pipe.  The
+ * Injected data is passed to the \c operator() of the \c Constraints instance,
+ * and its result is passed further on through the pipe.  The \c
  * Constraints::operator() is assumed to be stateless.
  *
  * \see #stored::pipes::Bounded
@@ -1945,7 +2010,8 @@ private:
  *
  * Internally, all key-value pairs are saved in a array. To perform a binary
  * search through this array, the keys must have a natural order (usually by
- * implementing operator< ), and the values must be sorted for initialization.
+ * implementing \c operator< ), and the values must be sorted for
+ * initialization.
  *
  * find() complexity is O(log(N)), rfind() is O(N).
  */
@@ -2129,8 +2195,8 @@ constexpr
  *
  * - a type \c key_type (equivalent to \p From) for C++17 template deduction
  * - a type \c value_type (equivalent to \p To) for C++17 template deduction
- * - <tt>From find(To)</tt> (where From/To may be const&)
- * - <tt>To rfind(From)</tt> (where From/To may be const&)
+ * - <tt>From find(To)</tt> (where \p From /\p To may be \c const& )
+ * - <tt>To rfind(From)</tt> (where \p From /\p To may be \c const& )
  */
 template <typename From, typename To, typename MapType>
 class Mapped {
@@ -2186,6 +2252,8 @@ Mapped(MapType m)
  *
  * Actually, this is a helper function to create a #stored::pipes::Mapped with
  * the appropriate #stored::pipes::IndexMap.
+ *
+ * Example: <tt>Map({1, 2, 3})</tt>
  */
 template <typename T, size_t N, typename CompareValue = std::equal_to<T>>
 #	if STORED_cplusplus >= 201703L
@@ -2211,6 +2279,8 @@ constexpr
  *
  * Actually, this is a helper function to create a #stored::pipes::Mapped with
  * the appropriate #stored::pipes::IndexMap.
+ *
+ * Example: <tt>Map(1, 2, 3)</tt>
  */
 template <typename T0, typename T1, typename... T>
 constexpr auto Map(T0&& v0, T1&& v1, T&&... v)
@@ -2225,6 +2295,8 @@ constexpr auto Map(T0&& v0, T1&& v1, T&&... v)
  *
  * Actually, this is a helper function to create a #stored::pipes::Mapped with
  * the appropriate #stored::pipes::OrderedMap.
+ *
+ * Example: <tt>Map({{1, 10}, {2, 20}, {3, 30}})</tt>
  */
 template <
 	typename Key, typename Value, size_t N, typename CompareKey = std::less<Key>,
@@ -2326,11 +2398,6 @@ private:
 	bool m_changed = false;
 	typename clock_type::time_point m_suppress{};
 };
-
-/*
-class Validate {
-};
-*/
 
 } // namespace pipes
 } // namespace stored
