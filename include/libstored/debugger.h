@@ -757,6 +757,7 @@ public:
 	SFINAE_IS_FUNCTION(F, ListCallback, void)
 	list(F&& f) const
 	{
+		// cppcheck-suppress constParameter
 		auto cb = [](char const* name, DebugVariant& variant, void* f_) {
 			(*static_cast<typename std::decay<F>::type*>(f_))(name, variant);
 		};

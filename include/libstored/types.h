@@ -290,6 +290,7 @@ public:
 	 * \param buffer the reference to this Variable's buffer inside container's buffer
 	 */
 	// cppcheck-suppress uninitMemberVar
+	// cppcheck-suppress constParameter
 	Variable(Container& container, type& buffer) noexcept
 		: m_buffer(&buffer)
 	{

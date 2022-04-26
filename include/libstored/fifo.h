@@ -486,7 +486,7 @@ protected:
 				// almost empty.
 				m_buffer.move(0, rp, (size_t)(wp - rp));
 				wp = (pointer)(wp - rp);
-				rp = 0;
+				// rp = 0;
 			}
 
 			// Make sure the buffer can contain the new item.
@@ -545,6 +545,7 @@ public:
 	{}
 
 	template <typename Traits, typename Allocator>
+	// cppcheck-suppress noExplicitConstructor
 	MessageView(std::basic_string<char, Traits, Allocator> const& str) noexcept
 		: m_message(str.data())
 		, m_length(str.size())
