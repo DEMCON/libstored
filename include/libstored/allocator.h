@@ -545,6 +545,57 @@ struct Callable {
 	static impl::Callable<R, Args...> callable_impl(R(Args...));
 	using type = decltype(callable_impl(std::declval<F>()));
 };
+
+/*!
+ * \brief A RAII-style wrapper to call a specific function (usually a lambda)
+ *        upon destruction.
+ */
+template <typename F>
+class Cleanup {
+public:
+	constexpr explicit Cleanup(F&& f)
+		: m_f{std::move(f)}
+		, m_valid{true}
+	{}
+
+	~Cleanup()
+	{
+		cleanup();
+	}
+
+	Cleanup(Cleanup const&) = delete;
+	void operator=(Cleanup const&) = delete;
+
+	Cleanup(Cleanup&& c) noexcept
+	{
+		*this = std::move(c);
+	}
+
+	Cleanup& operator=(Cleanup&& c) noexcept
+	{
+		cleanup();
+
+		if((m_valid = c.m_valid)) {
+			m_f = std::move(c.m_f);
+			c.m_valid = false;
+		}
+
+		return *this;
+	}
+
+	void cleanup()
+	{
+		if(m_valid) {
+			m_valid = false;
+			m_f();
+		}
+	}
+
+private:
+	F m_f;
+	bool m_valid = false;
+};
+
 #	endif // STORED_cplusplus >= 201103L
 
 /*!
