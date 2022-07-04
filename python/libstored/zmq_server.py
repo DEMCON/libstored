@@ -34,11 +34,11 @@ class ZmqServer(protocol.ProtocolLayer):
     default_port = 19026
     name = 'zmq'
 
-    def __init__(self, bind=None, listen='*', port=default_port):
+    def __init__(self, bind=None, listen='*', port=default_port, context=None):
         super().__init__()
         self.logger = logging.getLogger(__name__)
         self.sockets = set()
-        self.context = zmq.Context()
+        self.context = context or zmq.Context.instance()
         self.poller = zmq.Poller()
         self.streams = 0
         self.socket = self.context.socket(zmq.REP)

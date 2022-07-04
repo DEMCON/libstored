@@ -1082,11 +1082,11 @@ class ZmqClient(QObject):
     defaultPollIntervalChanged = Signal()
     closed = Signal()
 
-    def __init__(self, address='localhost', port=ZmqServer.default_port, csv=None, multi=False, parent=None, t=None, timeout=None):
+    def __init__(self, address='localhost', port=ZmqServer.default_port, csv=None, multi=False, parent=None, t=None, timeout=None, context=None):
         super().__init__(parent=parent)
         self.logger = logging.getLogger(__name__)
         self._multi = multi
-        self._context = zmq.Context()
+        self._context = context or zmq.Context.instance()
         self._socket = self._context.socket(zmq.REQ)
         if timeout is not None and timeout <= 0:
             timeout = None
