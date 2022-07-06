@@ -852,6 +852,12 @@ public:
 		return true;
 	}
 
+	void reset_back()
+	{
+		buffer_pointer wp = m_wp.load(std::memory_order_relaxed);
+		m_wp_partial = wp;
+	}
+
 	template <typename It>
 	size_t push_back(It start, It end)
 	{
