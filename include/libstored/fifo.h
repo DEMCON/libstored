@@ -905,6 +905,12 @@ private:
 	Fifo<Msg, Messages> m_msg;
 };
 
+#		ifdef STORED_COMPILER_GCC
+// We seem to trigger https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105469
+#			pragma GCC push_options
+#			pragma GCC optimize("no-devirtualize")
+#		endif
+
 /*!
  * \brief A ProtocolLayer that buffers downstream messages.
  *
@@ -957,7 +963,7 @@ public:
 	}
 
 	/*!
-	 * \brief Pass all available messages int he FIFO to #decode().
+	 * \brief Pass all available messages in the FIFO to #decode().
 	 */
 	virtual void recvAll()
 	{
@@ -1147,6 +1153,10 @@ private:
 	FifoLoopback1_type m_a2b;
 	FifoLoopback1_type m_b2a;
 };
+
+#		ifdef STORED_COMPILER_GCC
+#			pragma GCC pop_options
+#		endif
 
 } // namespace stored
 
