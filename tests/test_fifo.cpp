@@ -189,16 +189,16 @@ TEST(Fifo, BoundedMessageFifo)
 	stored::MessageFifo<16, 4> f;
 
 	EXPECT_TRUE(f.bounded());
-	EXPECT_EQ(f.space(), 16u);
+	EXPECT_EQ(f.space(), 15u);
 	EXPECT_FALSE(f.full());
-	EXPECT_EQ(f.push_back({{"abc", 3}, {"defg", 4}, {"ghijk", 5}, {"lmno", 4}}), 4u);
+	EXPECT_EQ(f.push_back({{"abc", 3}, {"defg", 4}, {"ghijk", 5}, {"lmn", 3}}), 4u);
 	EXPECT_EQ(f.space(), 0u);
 	// Does not fit
 	EXPECT_FALSE(f.push_back({"h", 1}));
 
 	EXPECT_EQ_MSG(f.front(), "abc");
 	f.pop_front();
-	EXPECT_EQ(f.space(), 3u);
+	EXPECT_EQ(f.space(), 2u);
 
 	// Too long message.
 	EXPECT_FALSE(f.push_back({"hijl", 4}));
@@ -225,7 +225,7 @@ TEST(Fifo, BoundedMessageFifo)
 
 	f.clear();
 	EXPECT_TRUE(f.empty());
-	EXPECT_EQ(f.push_back({{"0123", 4}, {"456789abcde", 11}}), 2u);
+	EXPECT_EQ(f.push_back({{"0123", 4}, {"456789abcd", 10}}), 2u);
 	EXPECT_EQ_MSG(f.front(), "0123");
 
 	// No room in buffer.
@@ -234,9 +234,9 @@ TEST(Fifo, BoundedMessageFifo)
 
 	f.pop_front();
 	// Put at start of buffer, leaving the last byte unused.
-	EXPECT_EQ(f.space(), 4u);
-	EXPECT_TRUE(f.push_back({"abcd", 4}));
-	EXPECT_EQ_MSG(f.front(), "456789abcde");
+	EXPECT_EQ(f.space(), 3u);
+	EXPECT_TRUE(f.push_back({"abc", 3}));
+	EXPECT_EQ_MSG(f.front(), "456789abcd");
 
 	// There is one unusable byte at the end, so this won't fit.
 	EXPECT_FALSE(f.push_back({"e", 1}));
@@ -261,12 +261,12 @@ TEST(Fifo, IterateMessageFifo)
 TEST(Fifo, ProducerConsumer)
 {
 	stored::MessageFifo<16, 4> f;
-	char const msg[17] = "abcdefghijklmnop";
+	char const msg[16] = "abcdefghijklmno";
 
 	long pcs = 0;
 	std::thread p([&]() {
 		for(int l = 0; l < 1000; l++) {
-			size_t len = (size_t)(rand() % 16) + 1;
+			size_t len = (size_t)(rand() % 15) + 1;
 			for(size_t i = 0; i < len; i++)
 				pcs += (long)(msg[i] - 'a');
 

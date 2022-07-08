@@ -468,7 +468,7 @@ public:
 			m_buffer[wp] = x;
 
 			if(bounded())
-				wp = (wp + 1U) % m_buffer.size();
+				wp = (pointer)((wp + 1U) % m_buffer.size());
 			else
 				wp++;
 		}
@@ -695,6 +695,11 @@ public:
 		return m_buffer.size();
 	}
 
+	constexpr size_t capacity() const noexcept
+	{
+		return Capacity > 0 ? size() - 1U : size();
+	}
+
 	bool full() const noexcept
 	{
 		return m_msg.full() || space() == 0;
@@ -710,14 +715,13 @@ public:
 		size_t rp = m_rp.load(std::memory_order_relaxed);
 		size_t wp = m_wp.load(std::memory_order_relaxed);
 		size_t partial = m_wp_partial - wp;
-		size_t capacity = size();
+		size_t sz = size();
 
-		if(wp + partial == rp)
-			return empty() ? capacity : 0;
-		else if(wp < rp)
-			return rp - wp - partial;
+		if(wp < rp)
+			return rp - wp - partial - 1U;
 		else
-			return std::max(capacity - wp, rp) - partial;
+			return rp == 0 ? sz - wp - partial - 1U
+				       : std::max(sz - wp, rp - 1U) - partial;
 	}
 
 	const_type front() const noexcept
@@ -776,7 +780,15 @@ protected:
 	}
 
 public:
+	// The name suggests that we can pop any item from the back, but that
+	// is not true.  It only drops the partial/appended data from the back.
+	// reset_back() is a better name.  We should deprecate this function.
 	void pop_back()
+	{
+		reset_back();
+	}
+
+	void reset_back()
 	{
 		m_wp_partial = m_wp.load(std::memory_order_relaxed);
 	}
@@ -806,9 +818,12 @@ public:
 #		endif
 		}
 
-		bool e = empty();
+		if(wp == rp && partial == 0) {
+			// Note: Because of race conditions in a threaded
+			// environment, it might be the case that empty() is
+			// not yet true, as pop_front() first updates rp and
+			// then pops the message.
 
-		if(e && !partial) {
 			// When empty, the other side ignores the wp/rp, so we
 			// can safely tinker with it.
 			wp = m_wp_partial = wp_partial = 0;
@@ -820,13 +835,14 @@ public:
 		if(Capacity == 0) {
 			// Make buffer larger.
 			m_buffer.resize((size_t)wp_partial + message.size());
-		} else if(e) {
-			// Empty, always fits.
-		} else if(wp > rp) {
+		} else if(wp >= rp) {
 			// [rp,wp_partial[ is in use.
-			if((size_t)wp_partial + message.size() <= m_buffer.size()) {
-				// Ok, fits in the buffer.
-			} else if((size_t)rp >= partial + message.size()) {
+			if((size_t)wp_partial + message.size() < m_buffer.size()) {
+				// Ok, fits in the remaining buffer.
+			} else if(
+				(size_t)wp_partial + message.size() <= m_buffer.size() && rp > 0) {
+				// Ok, fits in the remaining buffer.
+			} else if((size_t)rp > partial + message.size()) {
 				// The message fits at the start of the buffer.
 				m_buffer.move(0, wp, partial);
 				wp = 0;
@@ -838,7 +854,7 @@ public:
 			}
 		} else {
 			// [0,wp_partial[ and [rp,size()[ is in use.
-			if((size_t)(rp - wp_partial) >= message.size()) {
+			if((size_t)(rp - wp_partial) > message.size()) {
 				// Fits here.
 			} else {
 				// Does not fit.
@@ -850,12 +866,6 @@ public:
 		m_buffer.set(wp_partial, message.data(), message.size());
 		m_wp_partial = (buffer_pointer)(m_wp_partial + message.size());
 		return true;
-	}
-
-	void reset_back()
-	{
-		buffer_pointer wp = m_wp.load(std::memory_order_relaxed);
-		m_wp_partial = wp;
 	}
 
 	template <typename It>
