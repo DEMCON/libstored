@@ -196,6 +196,16 @@ struct DefaultConfig {
 	struct Allocator {
 		typedef std::allocator<T> type;
 	};
+
+	/*!
+	 * \brief Allow unaligned memory access.
+	 */
+	static bool const UnalignedAccess =
+#	if defined(__x86_64__) || defined(__i386__) || defined(_M_IX86) || defined(_M_X64)
+		true;
+#	else
+		false;
+#	endif
 };
 } // namespace stored
 #endif // __cplusplus

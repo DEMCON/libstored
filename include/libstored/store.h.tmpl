@@ -502,6 +502,8 @@ protected:
 				static_cast<{{o|ctype}}*>(buffer), len);
 {%       else %}
 			stored_assert(len == sizeof({{o|ctype}}));
+			stored_assert(Config::UnalignedAccess
+				|| !((uintptr_t)buffer & (std::min(sizeof(void*), sizeof({{o|ctype}})) - 1U))); // NOLINT
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			implementation().__{{o.cname}}(set,
 				*reinterpret_cast<{{o|ctype}}*>(buffer));

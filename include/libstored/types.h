@@ -856,7 +856,25 @@ public:
 	size_t callback(bool set, void* buffer, size_t len) const
 	{
 		stored_assert(valid());
-		return container().callback(set, buffer, len, id());
+
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+		if(!Config::UnalignedAccess
+		   && ((uintptr_t)buffer & (std::min(sizeof(void*), sizeof(type)) - 1U))) {
+			// Unaligned access, do the callback on a local buffer.
+			stored_assert(len >= sizeof(type));
+			type v;
+
+			if(set) {
+				container().callback(true, &v, sizeof(v), id());
+				memcpy(buffer, &v, sizeof(v));
+			} else {
+				memcpy(&v, buffer, sizeof(v));
+				container().callback(false, &v, sizeof(v), id());
+			}
+
+			return sizeof(v);
+		} else
+			return container().callback(set, buffer, len, id());
 	}
 
 	/*!
@@ -1195,7 +1213,7 @@ public:
 		}
 
 		if(Type::isFunction(type())) {
-			len = container().callback(false, dst, len, (unsigned int)m_f);
+			len = callback(false, dst, len);
 		} else {
 			entryRO(len);
 			if(unlikely(type() == Type::String)) {
@@ -1263,9 +1281,9 @@ public:
 		}
 
 		if(isFunction()) {
-			len = container().callback(
+			len = callback(
 				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-				true, const_cast<void*>(src), len, (unsigned int)m_f);
+				true, const_cast<void*>(src), len);
 		} else {
 			bool changed = true;
 			size_t changed_len = len;
@@ -1337,6 +1355,37 @@ public:
 	{
 		stored_assert((type() & ~Type::FlagFunction) == Type::String);
 		set(data, strlen(data));
+	}
+
+	/*!
+	 * \brief Invoke the function callback.
+	 * \details Only works if this variant is a function.
+	 */
+	size_t callback(bool set, void* buffer, size_t len) const
+	{
+		stored_assert(valid() && isFunction());
+		size_t size;
+
+		if(!Config::UnalignedAccess
+		   && Type::isFixed(type())
+		   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+		   && ((uintptr_t)buffer
+		       & (std::min(sizeof(void*), size = Type::size(type())) - 1U))) {
+			// Unaligned access, do the callback on a local buffer.
+			stored_assert(size <= sizeof(uint64_t) && len >= size);
+			uint64_t v;
+
+			if(set) {
+				container().callback(true, &v, size, (unsigned int)m_f);
+				memcpy(buffer, &v, size);
+			} else {
+				memcpy(&v, buffer, size);
+				container().callback(false, &v, size, (unsigned int)m_f);
+			}
+
+			return size;
+		} else
+			return container().callback(set, buffer, len, (unsigned int)m_f);
 	}
 
 #	ifdef STORED_HAVE_QT
