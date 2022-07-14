@@ -1144,6 +1144,10 @@ class ZmqClient(QObject):
         self._useEventLoop = True
 
     @property
+    def multi(self):
+        return self._multi
+
+    @property
     def useEventLoop(self):
         return self._useEventLoop
 
@@ -1624,6 +1628,15 @@ class ZmqClient(QObject):
             return []
         else:
             return list(map(lambda b: chr(b), rep))
+
+    def otherStreams(self):
+        s = self.streams()
+        if self._tracing is not None:
+            try:
+                s.remove(self._tracing.stream)
+            except ValueError:
+                pass
+        return s
 
     def stream(self, s, raw=False):
         return Stream(self, s, raw)

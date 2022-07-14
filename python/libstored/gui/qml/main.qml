@@ -92,6 +92,22 @@ Window {
             }
 
             Controls.Button {
+                id: streamsRefresh
+                font.pixelSize: root.fontSize
+                Layout.fillHeight: true
+                Layout.preferredWidth: root.fontSize * 7
+                background.antialiasing: true
+
+                text: "Streams"
+                visible: streams.supported
+                onClicked: { streams.refresh() }
+
+                ToolTip {
+                    text: "Refreshes the available lists of streams"
+                }
+            }
+
+            Controls.Button {
                 id: plotterPause
                 font.pixelSize: root.fontSize
                 Layout.fillHeight: true
@@ -193,19 +209,56 @@ Window {
             visible: count > 0
         }
 
-        Controls.TextField {
-            id: req
-            Layout.preferredHeight: root.fontSize * 2
-            font.pixelSize: root.fontSize
+        RowLayout {
             Layout.fillWidth: true
-            placeholderText: "enter command"
-            placeholderTextColor: "#808080"
-            background.antialiasing: true
-            topPadding: 0
-            bottomPadding: 0
+            Layout.preferredHeight: root.fontSize * 2
+            Layout.fillHeight: false
 
-            onAccepted: {
-                rep.text = client.req(text)
+            Controls.TextField {
+                id: req
+                Layout.fillHeight: true
+                font.pixelSize: root.fontSize
+                Layout.fillWidth: true
+                placeholderText: "enter command"
+                placeholderTextColor: "#808080"
+                background.antialiasing: true
+                topPadding: 0
+                bottomPadding: 0
+
+                onAccepted: {
+                    rep.text = client.req(text)
+                }
+            }
+
+            Repeater {
+                visible: streams.supported && streams.streams != ""
+                model: streams.streams.split('')
+
+                RowLayout {
+                    Layout.fillWidth: false
+
+                    CheckBox {
+                        Layout.fillHeight: true
+                        spacing: 3
+                        Layout.preferredWidth: root.fontSize * 1.25
+
+                        onCheckedChanged: {
+                            if(checked) {
+                                streams.enable(modelData, client.defaultPollInterval)
+                                var comp = Qt.createComponent("Stream.qml")
+                                var wnd = comp.createObject(root)
+                                wnd.stream = modelData
+                                wnd.show()
+                            } else {
+                                streams.disable(modelData)
+                            }
+                        }
+                    }
+
+                    Controls.Label {
+                        text: modelData
+                    }
+                }
             }
         }
 
