@@ -814,14 +814,18 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 		m_traceMacro = p[1];
 		m_traceStream = p[2];
 
+		// Make sure the trace stream exists.
+		if(!stream(m_traceStream, true))
+			// Cannot allocate.
+			goto error;
+
 		if(len > 3) {
 			void const* d = &p[3];
 			size_t dlen = std::min<size_t>(8, len - 3); // at most 32-bit
 			if(!decodeHex(Type::Uint, d, dlen))
 				goto error;
 
-			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-			m_traceDecimate = *reinterpret_cast<unsigned int const*>(d);
+			memcpy(&m_traceDecimate, d, sizeof(m_traceDecimate));
 		} else
 			m_traceDecimate = 1;
 		break;
