@@ -1633,7 +1633,7 @@ class ZmqClient(QObject):
         s = self.streams()
         if self._tracing is not None:
             try:
-                s.remove(self._tracing.stream)
+                s.remove(self._tracing.stream.name)
             except ValueError:
                 pass
         return s
