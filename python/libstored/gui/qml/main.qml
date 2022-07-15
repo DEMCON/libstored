@@ -91,40 +91,6 @@ Window {
                 }
             }
 
-            Controls.Button {
-                id: streamsRefresh
-                font.pixelSize: root.fontSize
-                Layout.fillHeight: true
-                Layout.preferredWidth: root.fontSize * 7
-                background.antialiasing: true
-
-                text: "Streams"
-                visible: streams.supported
-                onClicked: { streams.refresh() }
-
-                ToolTip {
-                    text: "Refreshes the available lists of streams"
-                }
-            }
-
-            Controls.Button {
-                id: plotterPause
-                font.pixelSize: root.fontSize
-                Layout.fillHeight: true
-                Layout.preferredWidth: root.fontSize * 5
-                background.antialiasing: true
-
-                text: "Plot"
-                checked: plotter.paused
-                visible: plotter.available
-                enabled: plotter.plotting
-                onClicked: { plotter.togglePause() }
-
-                ToolTip {
-                    text: "Toggles whether the plots are automatically updated"
-                }
-            }
-
             Controls.TextField {
                 id: defaultPollField
                 Layout.fillHeight: true
@@ -230,6 +196,40 @@ Window {
                 }
             }
 
+            Controls.Button {
+                id: plotterPause
+                font.pixelSize: root.fontSize
+                Layout.fillHeight: true
+                Layout.preferredWidth: root.fontSize * 5
+                background.antialiasing: true
+
+                text: "Plot"
+                checked: plotter.paused
+                visible: plotter.available
+                enabled: plotter.plotting
+                onClicked: { plotter.togglePause() }
+
+                ToolTip {
+                    text: "Toggles whether the plots are automatically updated"
+                }
+            }
+
+            Controls.Button {
+                id: streamsRefresh
+                font.pixelSize: root.fontSize
+                Layout.fillHeight: true
+                Layout.preferredWidth: root.fontSize * 7
+                background.antialiasing: true
+
+                text: "Streams"
+                visible: streams.supported
+                onClicked: { streams.refresh() }
+
+                ToolTip {
+                    text: "Refreshes the available lists of streams"
+                }
+            }
+
             Repeater {
                 visible: streams.supported && streams.streams != ""
                 model: streams.streams.split('')
@@ -244,11 +244,20 @@ Window {
 
                         onCheckedChanged: {
                             if(checked) {
-                                streams.enable(modelData, client.defaultPollInterval)
-                                var comp = Qt.createComponent("Stream.qml")
-                                var wnd = comp.createObject(root)
-                                wnd.stream = modelData
-                                wnd.show()
+                                var s = streams.enable(modelData, client.defaultPollInterval)
+                                var comp = Qt.createComponent("qrc:/Stream.qml")
+                                if(comp.status != Component.Ready) {
+                                    if(comp.status == Component.Error)
+                                        console.error(comp.errorString().trim())
+                                    else
+                                        console.error("Cannot load Stream window")
+                                } else {
+                                    var wnd = comp.createObject(root, { main: root, stream: s })
+                                    wnd.show()
+                                    wnd.closing.connect(function() {
+                                        checked = false
+                                    })
+                                }
                             } else {
                                 streams.disable(modelData)
                             }

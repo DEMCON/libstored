@@ -806,7 +806,7 @@ class Stream(object):
                 self._reset()
 
         if not self.raw:
-            x = x.decode()
+            x = x.decode(errors='backslashreplace')
         return x
 
     def flush(self):

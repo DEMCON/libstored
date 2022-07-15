@@ -21,25 +21,52 @@ import QtQuick.Layouts
 import QtQuick.Window
 import QtQuick.Controls as Controls
 
-ApplicationWindow {
-    id: wnd
-    readonly property real uiScale: parent.uiScale
-    readonly property real fontSize: parent.fontSize
+Window {
+    id: root
 
-    property string stream: '?'
+    required property var main
+    readonly property real uiScale: main.uiScale
+    readonly property real fontSize: main.fontSize
+
+    required property var stream
 
     visible: true
-    width: 800
-    height: 600
+    width: fontSize * 40
+    height: fontSize * 25
+    title: 'Stream ' + stream.name
 
-    Controls.TextArea {
-        id: data
-        readOnly: true
+    Controls.ScrollView {
         anchors.fill: parent
+        anchors.margins: 5
+        clip: true
+
+        Controls.TextArea {
+            id: data
+            readOnly: true
+            font.pixelSize: root.fontSize
+            font.family: "Courier"
+        }
+
+        background: Rectangle {
+            antialiasing: true
+            border.color: "#c0c0c0"
+        }
     }
 
-    onClosing: {
-        if(streams)
-            streams.disable(wnd.stream)
+    function append(x) {
+        x = x.replace('\x00', '')
+        data.text += x
+        data.cursorPosition = data.length - 1
+    }
+
+    Component.onCompleted: {
+        append(stream.data)
+    }
+
+    Connections {
+        target: stream
+        function onDataChanged(x) {
+            append(x)
+        }
     }
 }

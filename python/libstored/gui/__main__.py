@@ -305,11 +305,13 @@ class Stream(QObject):
 
     dataChanged = Signal(str)
 
-    def _append(self, s, data):
-        self._data += data
-
+    def _append(self, data):
         if data != '':
-            self.dataChanged.emit(s)
+            global logger
+            logger.debug('Add to stream %s: %s', self.name, data)
+
+            self._data += data
+            self.dataChanged.emit(data)
 
     def _data_get(self):
         return self._data
@@ -319,6 +321,11 @@ class Stream(QObject):
     @Slot()
     def clear(self):
         self._data = ''
+
+    def _name_get(self):
+        return self._stream.name
+
+    name = Property(str, _name_get, constant=True)
 
 
 class Streams(QObject):
@@ -359,7 +366,8 @@ class Streams(QObject):
 
     enabled = Property(str, _enabled, notify=enabledChanged)
 
-    @Slot(str)
+    @Slot(str, result=Stream)
+    @Slot(str, float, result=Stream)
     def enable(self, s, interval_s=None):
         if not self._supported:
             return None
