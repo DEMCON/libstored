@@ -72,6 +72,16 @@ public:
 		if(blocked())
 			return;
 
+#	ifdef STORED_HAVE_ZTH
+		// With Zth, the encode context may be different from
+		// Debugger's CmdTrace context.  As we pass a buffer pointer to
+		// encode within CmdTrace, this buffer should not be changed
+		// (realloc'ed) meanwhile. Set Config::AvoidDynamicMemory,
+		// increase Config::DebuggerStreamBufferOverflow, or do proper
+		// reserve() when this assert goes off.
+		stored_assert(m_buffer.size() + len <= m_buffer.capacity());
+#	endif
+
 		m_buffer.append(static_cast<char const*>(buffer), len);
 	}
 
@@ -97,6 +107,14 @@ public:
 	{
 		m_buffer.clear();
 		unblock();
+	}
+
+	void drop(size_t cnt) noexcept
+	{
+		if(cnt < m_buffer.size())
+			m_buffer.erase(0, cnt);
+		else
+			m_buffer.clear();
 	}
 
 	bool empty() const noexcept
@@ -171,6 +189,11 @@ public:
 	void clear() noexcept
 	{
 		m_string.clear();
+	}
+
+	void drop(size_t cnt) noexcept
+	{
+		m_string.drop(cnt);
 	}
 
 	bool empty() const noexcept

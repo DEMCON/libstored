@@ -755,12 +755,27 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 		if(!str)
 			goto error;
 
-		if(tracing() && s == m_traceStream)
+		if(!Config::CompressStreams && tracing() && s == m_traceStream)
 			response.setPurgeableResponse();
 
 		String::type const& strstr = str->buffer();
-		response.encode(strstr.data(), strstr.size(), false);
-		str->clear();
+
+		// Note that the buffer should not be realloc'ed during the
+		// encode(), which may happen if Zth would do a yield during
+		// the (low-level) encode(), or you would have some other
+		// strange loop in your program.
+		size_t size = strstr.size();
+		if(size) {
+			char const* data = strstr.data();
+			response.encode(data, size, false);
+			stored_assert(data == strstr.data());
+
+			// Note that the buffer may have grown meanwhile. Only drop the
+			// data that we just encoded.
+			str->drop(size);
+		}
+
+		str->unblock();
 
 		response.encode(suffix, suffixlen);
 		return;
