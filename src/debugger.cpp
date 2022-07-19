@@ -758,21 +758,40 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 		if(!Config::CompressStreams && tracing() && s == m_traceStream)
 			response.setPurgeableResponse();
 
-		String::type const& strstr = str->buffer();
+		if(Config::AvoidDynamicMemory) {
+			String::type const& strstr = str->buffer();
 
-		// Note that the buffer should not be realloc'ed during the
-		// encode(), which may happen if Zth would do a yield during
-		// the (low-level) encode(), or you would have some other
-		// strange loop in your program.
-		size_t size = strstr.size();
-		if(size) {
-			char const* data = strstr.data();
-			response.encode(data, size, false);
-			stored_assert(data == strstr.data());
+			// Note that the buffer should not be realloc'ed during
+			// the encode(), which may happen if Zth would do a
+			// yield during the (low-level) encode(), or you would
+			// have some other strange loop in your program.
+			size_t size = strstr.size();
+			if(size) {
+				char const* data = strstr.data();
+				response.encode(data, size, false);
+				stored_assert(data == strstr.data());
 
-			// Note that the buffer may have grown meanwhile. Only drop the
-			// data that we just encoded.
-			str->drop(size);
+				// Note that the buffer may have grown
+				// meanwhile. Only drop the data that we just
+				// encoded.
+				str->drop(size);
+			}
+		} else {
+			// In this case, the buffer may grow arbitrarily.
+			// Swap the buffers...
+			String::type strbuf;
+			str->swap(strbuf);
+			response.encode(strbuf.data(), strbuf.size(), false);
+
+			if(str->buffer().empty()) {
+				// Buffer is empty. Clear and swap again to
+				// avoid useless malloc/free of the internal
+				// buffers of the String.
+				strbuf.clear();
+				str->swap(strbuf);
+			}
+			// else: data was added meanwhile, leave it in that
+			// buffer and release the old one.
 		}
 
 		str->unblock();

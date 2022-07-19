@@ -79,7 +79,9 @@ public:
 		// (realloc'ed) meanwhile. Set Config::AvoidDynamicMemory,
 		// increase Config::DebuggerStreamBufferOverflow, or do proper
 		// reserve() when this assert goes off.
-		stored_assert(m_buffer.size() + len <= m_buffer.capacity());
+		stored_assert(
+			!Config::AvoidDynamicMemory
+			|| m_buffer.size() + len <= m_buffer.capacity());
 #	endif
 
 		m_buffer.append(static_cast<char const*>(buffer), len);
@@ -95,6 +97,11 @@ public:
 	String::type const& buffer() const noexcept
 	{
 		return m_buffer;
+	}
+
+	void swap(String::type& other) noexcept
+	{
+		m_buffer.swap(other);
 	}
 
 	bool flush() final
@@ -208,6 +215,11 @@ public:
 	String::type const& buffer() const noexcept
 	{
 		return m_string.buffer();
+	}
+
+	void swap(String::type& other) noexcept
+	{
+		m_string.swap(other);
 	}
 
 	void block() noexcept
