@@ -144,6 +144,24 @@ public:
 		return m_block;
 	}
 
+	size_t fits(size_t more) const noexcept
+	{
+		size_t const default_max = Config::DebuggerStreamBuffer;
+		size_t const real_max = default_max + Config::DebuggerStreamBufferOverflow;
+
+		// Allow some data to be processed, even if the input is too large.
+		more = std::min(more, real_max);
+
+		size_t size = buffer().size();
+
+		// Allow the data to get into the overflow area, but only if it was
+		// below the normal max.
+		if(size >= default_max)
+			return 0;
+
+		return std::min(more, real_max - size);
+	}
+
 private:
 	String::type m_buffer;
 	bool m_block;
@@ -235,6 +253,19 @@ public:
 	bool blocked() const noexcept
 	{
 		return m_string.blocked();
+	}
+
+	size_t fits(size_t more) const noexcept
+	{
+		// Use the overflow region only for unexpected compression output.
+		size_t const default_max = Config::DebuggerStreamBuffer;
+		more = std::min(more, default_max);
+		size_t size = buffer().size();
+
+		if(size >= default_max)
+			return 0;
+
+		return std::min(more, default_max - size);
 	}
 
 private:

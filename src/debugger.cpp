@@ -1172,12 +1172,11 @@ size_t Debugger::stream(char s, char const* data, size_t len)
 	if(!str)
 		return 0;
 
-	len = std::min(
-		len, std::max(str->buffer().capacity(), (size_t)Config::DebuggerStreamBuffer)
-			     - str->buffer().size());
+	len = str->fits(len);
+	if(len == 0)
+		return 0;
 
 	str->encode(data, len);
-
 	return len;
 }
 
@@ -1291,10 +1290,18 @@ void Debugger::trace()
 		// Out of streams.
 		return;
 
-	size_t oldSize = str->buffer().size();
-	if(oldSize >= Config::DebuggerStreamBuffer)
-		// No more space in buffer for another sample.
-		return;
+	if(Config::DebuggerStreamBufferOverflow) {
+		// Use the overflow size as an estimate of how large a sample
+		// can be.
+		if(str->fits(Config::DebuggerStreamBufferOverflow)
+		   != Config::DebuggerStreamBufferOverflow)
+			return;
+	} else {
+		// No overflow region. Just proceed when the buffer is not full
+		// yet.
+		if(str->buffer().size() >= Config::DebuggerStreamBuffer)
+			return;
+	}
 
 	// Note that runMacro() may overrun the defined maximum buffer size,
 	// but samples are never truncated.
