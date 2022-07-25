@@ -3697,7 +3697,7 @@ using RampObjects = FreeObjectsList<
  * constexpr auto ramp_o = stored::Ramp<stored::YourStore>::objects("/ramp/");
  *
  * // Instantiate the generator, tailored to the available fields in the store.
- * stored::rampWave<stored::YourStore, ramp_o.flags()> ramp{ramp_o, yourStore};
+ * stored::Ramp<stored::YourStore, ramp_o.flags()> ramp{ramp_o, yourStore};
  * \endcode
  *
  * The parameters can be changed while running (when \c reset is set to

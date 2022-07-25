@@ -158,7 +158,7 @@
 				Class(Class&&) = default; /* NOLINT */          \
 				/*! \brief Deleted assignment operator. */      \
 				void operator=(Class const&) = delete;          \
-				/*! \brief Deleted move assignment operator. */ \
+				/*! \brief Default move assignment operator. */ \
 				Class& operator=(Class&&) = default; /* NOLINT */
 #		else
 #			define STORED_CLASS_NOCOPY(Class)                 \
