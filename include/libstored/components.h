@@ -3939,7 +3939,7 @@ public:
 	 */
 	bool isHealthy() const noexcept
 	{
-		if(std::isnan(m_a))
+		if(std::isnan(m_adt))
 			// No ramping configured.
 			return true;
 
@@ -3947,15 +3947,15 @@ public:
 			// No limit set.
 			return true;
 
-		if(!(m_a > 0))
+		if(!(m_adt > 0))
 			// That's not good. Numbers are probably already to far apart.
 			return false;
 
-		// m_a is the smallest value that should be able to influence the position.
-		if(m_x + m_a == m_x)
+		// m_adt is the smallest value that should be able to influence the position.
+		if(m_x + m_adt == m_x)
 			return false;
 
-		if(m_start + m_a == m_start)
+		if(m_start + m_adt == m_start)
 			return false;
 
 		return true;
@@ -3965,11 +3965,10 @@ protected:
 	/*!
 	 * \brief Compute the output of the ramp.
 	 *
-	 * The implementation uses integers to determine the current
-	 * speed.  Acceleration is always +/- 1 (times m_a) per tick.
-	 * So, the actual speed is <tt>m_v_ * m_a</tt>, and the
-	 * position is an discrete offset <tt>m_x_ * m_a</tt> from \c
-	 * m_start.
+	 * The implementation uses integers to determine the current speed.
+	 * Acceleration is always +/- 1 (times m_adt) per tick.  So, the actual
+	 * speed is <tt>m_v_ * m_adt</tt>, and the position is an discrete
+	 * offset <tt>m_x_ * m_adt</tt> from \c m_start.
 	 *
 	 * By using this discrete approach, the distance to stop can be
 	 * determined easily.
@@ -3980,8 +3979,8 @@ protected:
 
 		if(likely(std::isnan(output))) {
 			decltype(auto) ro = resetObject();
-			if(unlikely((ro.valid() && ro.get()) || std::isnan(m_a))) {
-				type v = m_a > 0 ? (type)m_v_ * m_a : 0;
+			if(unlikely((ro.valid() && ro.get()) || std::isnan(m_adt))) {
+				type v = m_adt > 0 ? (type)m_v_ * m_adt : 0;
 
 				if(ro.valid())
 					ro = false;
@@ -4007,23 +4006,25 @@ protected:
 					a = sl / (type)v_steps;
 				}
 
-				m_a = a;
+				m_adt = a * dt;
 				m_v_ = a > 0 ? (type_)std::lround(v * dt / a) : 0;
-				m_v_max_ = a > 0 ? (type_)std::lround(sl * dt / a) : 0;
+				m_v_max_ =
+					a > 0 ? std::max<type_>(1, (type_)std::lround(sl * dt / a))
+					      : 0;
 				m_x_ = 0;
 				m_x_stop_ = m_v_ * std::abs(m_v_) / 2;
 				m_start = m_x;
 			}
 
-			if(unlikely(!(m_a > 0))) {
+			if(unlikely(!(m_adt > 0))) {
 				output = input;
 			} else if(unlikely(!enabled())) {
 				m_start = output = input;
-				m_v_ = (type_)std::lround((output - m_x) / m_a);
+				m_v_ = (type_)std::lround((output - m_x) / m_adt);
 			} else {
 				auto err = input - m_x;
 
-				if(std::fabs(err) < m_a && (m_v_ >= -1 && m_v_ <= 1)) {
+				if(std::fabs(err) < m_adt && (m_v_ >= -1 && m_v_ <= 1)) {
 					// Close enough. Stop.
 					m_x_ = m_x_stop_ = m_v_ = 0;
 					output = m_start = input;
@@ -4040,8 +4041,8 @@ protected:
 							x_stop_ -= ++v_;
 					}
 
-					if(m_v_ > 0 && err < (type)(x_stop_ + v_ + 1) * m_a) {
-						if(err < (type)(m_x_stop_ + m_v_) * m_a)
+					if(m_v_ > 0 && err < (type)(x_stop_ + v_ + 1) * m_adt) {
+						if(err < (type)(m_x_stop_ + m_v_) * m_adt)
 							// Break.
 							m_x_stop_ -= --m_v_;
 						// else hold speed.
@@ -4062,8 +4063,8 @@ protected:
 							x_stop_ -= --v_;
 					}
 
-					if(m_v_ < 0 && err > (type)(x_stop_ + v_ - 1) * m_a) {
-						if(err > (type)(m_x_stop_ + m_v_) * m_a)
+					if(m_v_ < 0 && err > (type)(x_stop_ + v_ - 1) * m_adt) {
+						if(err > (type)(m_x_stop_ + m_v_) * m_adt)
 							// Break.
 							m_x_stop_ -= ++m_v_;
 						// else hold speed.
@@ -4074,7 +4075,7 @@ protected:
 				}
 
 				m_x_ += m_v_;
-				output = m_start + (type)m_x_ * m_a;
+				output = m_start + (type)m_x_ * m_adt;
 			}
 
 			m_x = output;
@@ -4091,7 +4092,7 @@ protected:
 
 private:
 	Bound m_o;
-	type m_a{std::numeric_limits<type>::quiet_NaN()};
+	type m_adt{std::numeric_limits<type>::quiet_NaN()};
 	type_ m_v_{};
 	type_ m_v_max_{};
 	type_ m_x_{};
