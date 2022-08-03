@@ -3996,6 +3996,7 @@ protected:
 				if(std::isnan(a) || a < 0)
 					a = 0;
 
+				// Compute a as the acceleration per tick.
 				a = std::min(sl, a * dt);
 
 				if(a == std::numeric_limits<type>::infinity()) {
@@ -4007,10 +4008,9 @@ protected:
 				}
 
 				m_adt = a * dt;
-				m_v_ = a > 0 ? (type_)std::lround(v * dt / a) : 0;
+				m_v_ = a > 0 ? (type_)std::lround(v / a) : 0;
 				m_v_max_ =
-					a > 0 ? std::max<type_>(1, (type_)std::lround(sl * dt / a))
-					      : 0;
+					a > 0 ? std::max<type_>(1, (type_)std::lround(sl / a)) : 0;
 				m_x_ = 0;
 				m_x_stop_ = m_v_ * std::abs(m_v_) / 2;
 				m_start = m_x;
@@ -4021,6 +4021,8 @@ protected:
 			} else if(unlikely(!enabled())) {
 				m_start = output = input;
 				m_v_ = (type_)std::lround((output - m_x) / m_adt);
+				m_x_ = 0;
+				m_x_stop_ = m_v_ * std::abs(m_v_) / 2;
 			} else {
 				auto err = input - m_x;
 
