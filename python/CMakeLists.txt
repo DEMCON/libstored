@@ -46,6 +46,8 @@ if(LIBSTORED_EXAMPLES)
 		libstored/visu/example/example.qrc
 		libstored/visu/example/main.qml
 	)
+
+	libstored_visu(visu-example ${CMAKE_CURRENT_SOURCE_DIR}/visu_example.py example/main.qml)
 endif()
 
 execute_process(
@@ -55,7 +57,6 @@ execute_process(
 	OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-add_subdirectory(libstored/visu)
 add_subdirectory(libstored/gui)
 
 set(pylibstored_wheel_file "libstored-${pylibstored_version}-py3-none-any.whl" CACHE INTERNAL "")
