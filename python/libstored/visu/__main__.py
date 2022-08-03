@@ -89,9 +89,14 @@ if __name__ == '__main__':
     engine = QQmlApplicationEngine(parent=app)
     engine.rootContext().setContextProperty("client", client)
 
-    spec = importlib.util.spec_from_file_location("visu_rcc", args.rcc[0])
-    visu_rcc = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(visu_rcc)
+    if os.path.exists(args.rcc[0]):
+        # Try loading from file.
+        spec = importlib.util.spec_from_file_location("visu_rcc", args.rcc[0])
+        visu_rcc = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(visu_rcc)
+    else:
+        # Try loading as module.
+        importlib.import_module(args.rcc[0])
 
     engine.addImportPath("qrc:/");
     engine.load('qrc:/main.qml')
