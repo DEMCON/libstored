@@ -2080,7 +2080,8 @@ template <typename Container, typename T = float>
 using PIDObjects = FreeObjectsList<
 	FreeFunctions<float, Container, 'f'>,
 	FreeVariables<
-		T, Container, 'y', 's', 'p', 'i', 'd', 'k', 'I', 'L', 'H', 'l', 'h', '3', 'F', 'u'>,
+		T, Container, 'y', 's', 'p', 'i', 'd', 'k', 'I', 'L', 'H', 'l', 'h', 'E', '3', 'F',
+		'u'>,
 	FreeVariables<bool, Container, 'e', 'r'>>;
 
 /*!
@@ -2103,6 +2104,7 @@ using PIDObjects = FreeObjectsList<
  *     float=inf int high
  *     float=-inf low
  *     float=inf high
+ *     float=inf error max
  *     float=inf epsilon
  *     bool reset
  *     float=nan override
@@ -2194,8 +2196,8 @@ public:
 	{
 		return PIDObjects<Container, type>::template create<OnlyId...>(
 			prefix, "frequency", "y", "setpoint", "Kp", "Ti", "Td", "Kff", "int",
-			"int low", "int high", "low", "high", "epsilon", "override", "u", "enable",
-			"reset");
+			"int low", "int high", "low", "high", "error max", "epsilon", "override",
+			"u", "enable", "reset");
 	}
 
 	/*! \brief Return the \c frequency object. */
@@ -2435,6 +2437,25 @@ public:
 		return o.valid() ? o.get() : std::numeric_limits<type>::infinity();
 	}
 
+	/*! \brief Return the <tt>error max</tt> object. */
+	decltype(auto) errorMaxObject() const noexcept
+	{
+		return m_o.template get<'E'>();
+	}
+
+	/*! \brief Return the <tt>error max</tt> object. */
+	decltype(auto) errorMaxObject() noexcept
+	{
+		return m_o.template get<'E'>();
+	}
+
+	/*! \brief Return the <tt>error max</tt> value, or inf when not available. */
+	type errorMax() const noexcept
+	{
+		decltype(auto) o = errorMaxObject();
+		return o.valid() ? o.get() : std::numeric_limits<type>::infinity();
+	}
+
 	/*! \brief Return the \c epsilon object. */
 	decltype(auto) epsilonObject() const noexcept
 	{
@@ -2632,6 +2653,15 @@ protected:
 
 			type sp = setpoint();
 			type e = sp - y;
+
+			auto e_o = errorMaxObject();
+			if(e_o.valid()) {
+				auto em = e_o.get();
+				if(e < -em)
+					e = -em;
+				else if(e > em)
+					e = em;
+			}
 
 			if(unlikely(doReset)) {
 				float f = frequency();
