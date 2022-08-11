@@ -618,7 +618,7 @@ class Object(QObject):
         return res
 
     def _formats_get(self):
-        if self._type == self.Blob:
+        if self._type & ~self.FlagFunction == self.Blob:
             return ['bytes']
 
         f = ['default', 'bytes']
