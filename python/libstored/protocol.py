@@ -440,6 +440,7 @@ class DebugArqLayer(ProtocolLayer):
         else:
             for r in self._request:
                 super().encode(r)
+        self.activity()
 
     def nextSeq(self, seq):
         seq = (seq + 1) % 0x8000000
