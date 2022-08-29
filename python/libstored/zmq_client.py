@@ -42,7 +42,7 @@ class _Property(Property):
         super().__init__(*args, **kwargs)
 
 class SignalRateLimiter(QObject):
-    def __init__(self, src, dst, window_s=0.2, parent=None):
+    def __init__(self, client, src, dst, window_s=0.2, parent=None):
         super().__init__(parent=parent)
         self._timer = QTimer(parent=self)
         self._timer.timeout.connect(self._emit)
@@ -51,11 +51,14 @@ class SignalRateLimiter(QObject):
         self._dst = dst
         self._idle = True
         self._suppressed = False
+        self._client = client
         src.connect(self.receive)
 
     @Slot()
     def receive(self):
-        if self._idle:
+        if not self._client.useEventLoop:
+            self._dst.emit()
+        elif self._idle:
             self._idle = False
             self._dst.emit()
             self._timer.start()
@@ -102,8 +105,8 @@ class Object(QObject):
         self._format = None
         self._format_set(self.formats[0])
         self._autoCsv = False
-        self._valueChangedRateLimiter = SignalRateLimiter(self.valueChanged, self.valueStringChanged, parent=self)
-        self._tUpdatedChangedRateLimiter = SignalRateLimiter(self.tUpdated, self.tStringChanged, parent=self)
+        self._valueChangedRateLimiter = SignalRateLimiter(client, self.valueChanged, self.valueStringChanged, parent=self)
+        self._tUpdatedChangedRateLimiter = SignalRateLimiter(client, self.tUpdated, self.tStringChanged, parent=self)
         self._suppressSetSignals = False
         self._asyncReadPending = False
 
@@ -1120,13 +1123,15 @@ class ZmqClient(QObject):
         self._autoSaveState = False
         self._identification = None
         self._reqQueue = []
-        self._socketNotifier = QSocketNotifier(self._socket.fileno(), QSocketNotifier.Read, parent=self)
-        self._socketNotifier.setEnabled(False)
-        self._socketNotifier.activated.connect(self._reqAsyncCheckResponse)
+        self._socketNotifier = None
         self._useEventLoop = False
-        QTimer.singleShot(0, self._haveEventLoop)
+
         app = QCoreApplication.instance()
-        if not app is None:
+        if app is not None:
+            self._socketNotifier = QSocketNotifier(self._socket.fileno(), QSocketNotifier.Read, parent=self)
+            self._socketNotifier.setEnabled(False)
+            self._socketNotifier.activated.connect(self._reqAsyncCheckResponse)
+            QTimer.singleShot(0, self._haveEventLoop)
             app.aboutToQuit.connect(self._aboutToQuit)
 
         if 'f' in self.capabilities():
