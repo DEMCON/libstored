@@ -28,6 +28,11 @@ import ctypes
 libc = None
 
 # Helper to clean up the child when python crashes.
+def set_pdeathsig_(libc, sig):
+    if os.name == 'posix':
+        os.setsid()
+    libc.prctl(1, sig)
+
 def set_pdeathsig(sig = signal.SIGTERM):
     global libc
 
@@ -41,7 +46,7 @@ def set_pdeathsig(sig = signal.SIGTERM):
     if libc == False:
         return lambda: None
 
-    return lambda: libc.prctl(1, sig)
+    return lambda: set_pdeathsig_(libc, sig)
 
 class Stdio2Zmq(Stream2Zmq):
     """A stdin/stdout frame grabber to ZmqServer bridge."""
@@ -51,6 +56,7 @@ class Stdio2Zmq(Stream2Zmq):
         self.process = subprocess.Popen(
             args=args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             preexec_fn = set_pdeathsig() if os.name == 'posix' else None,
+            shell=not os.path.exists(args),
             **kwargs)
         self.stdout_socket = self.registerStream(self.process.stdout)
         self.stdin_socket = self.registerStream(sys.stdin)
@@ -86,6 +92,8 @@ class Stdio2Zmq(Stream2Zmq):
 
     def close(self):
         self.logger.debug('Closing; terminate process')
+        if os.name == 'posix':
+            os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
         self.process.terminate()
         super().close()
 
