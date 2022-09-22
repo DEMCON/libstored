@@ -1760,6 +1760,11 @@ public:
 	constexpr PinIn() noexcept = default;
 
 	/*!
+	 * \brief Dtor.
+	 */
+	virtual ~PinIn() = default;
+
+	/*!
 	 * \brief Initialize the pin, given a list of objects and a container.
 	 */
 	constexpr PinIn(PinInObjects<Container> const& o, Container& container)
@@ -1947,6 +1952,11 @@ public:
 	 * another instance later on.
 	 */
 	constexpr PinOut() noexcept = default;
+
+	/*!
+	 * \brief Dtor.
+	 */
+	virtual ~PinOut() = default;
 
 	/*!
 	 * \brief Initialize the pin, given a list of objects and a container.
