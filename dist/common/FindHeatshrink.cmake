@@ -18,7 +18,11 @@ include(ExternalProject)
 find_package(Git)
 
 if(HEATSHRINK_GIT_URL STREQUAL "")
-	set(HEATSHRINK_GIT_URL "https://github.com/atomicobject/heatshrink.git")
+	if(DEFINED ENV{LIBSTORED_GIT_CACHE})
+		set(HEATSHRINK_GIT_URL $ENV{LIBSTORED_GIT_CACHE}/heatshrink)
+	else()
+		set(HEATSHRINK_GIT_URL "https://github.com/atomicobject/heatshrink.git")
+	endif()
 endif()
 
 ExternalProject_Add(
