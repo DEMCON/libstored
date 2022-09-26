@@ -17,7 +17,7 @@
 include(ExternalProject)
 find_package(Git)
 
-if(HEATSHRINK_GIT_URL STREQUAL "")
+if("${HEATSHRINK_GIT_URL}" STREQUAL "")
 	if(DEFINED ENV{LIBSTORED_GIT_CACHE})
 		set(HEATSHRINK_GIT_URL $ENV{LIBSTORED_GIT_CACHE}/heatshrink)
 	else()
