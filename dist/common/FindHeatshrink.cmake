@@ -17,9 +17,13 @@
 include(ExternalProject)
 find_package(Git)
 
+if(HEATSHRINK_GIT_URL STREQUAL "")
+	set(HEATSHRINK_GIT_URL "https://github.com/atomicobject/heatshrink.git")
+endif()
+
 ExternalProject_Add(
 	heatshrink-extern
-	GIT_REPOSITORY https://github.com/atomicobject/heatshrink.git
+	GIT_REPOSITORY ${HEATSHRINK_GIT_URL}
 	GIT_TAG v0.4.1
 	CONFIGURE_COMMAND ""
 	BUILD_COMMAND ""
