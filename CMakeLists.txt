@@ -182,7 +182,9 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 		# ...except when running in Windows, which only supports C++14 or later.
 		(NOT WIN32 OR NOT CMAKE_CXX_STANDARD EQUAL 11) AND
 		# ...or Zth is used, which is not compatible with the MSVC headers, which are used by clang-tidy.
-		(NOT WIN32 OR NOT LIBSTORED_HAVE_ZTH)
+		(NOT WIN32 OR NOT LIBSTORED_HAVE_ZTH) AND
+		# ...and somehow mingw builds don't work properly on newer versions of clang-tidy.
+		(NOT MINGW)
 	)
 		# It seems that if clang is not installed, clang-tidy doesn't work properly.
 		find_program(CLANG_EXE NAMES "clang" DOC "Path to clang executable")
