@@ -77,7 +77,7 @@ jobs:
             zth: zth
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: bootstrap
         run: dist\win32\bootstrap.cmd
       - name: build Debug
