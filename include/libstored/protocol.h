@@ -302,7 +302,8 @@ public:
 		: TerminalLayer(up, down)
 	{
 		// cppcheck-suppress useInitializationList
-		m_nonDebugDecodeCallback = std::forward<F>(cb);
+		m_nonDebugDecodeCallback = // NOLINT(cppcoreguidelines-prefer-member-initializer)
+			std::forward<F>(cb);
 	}
 #	else
 	typedef void(NonDebugDecodeCallback)(void* buf, size_t len);

@@ -179,6 +179,7 @@ function(libstored_lib libprefix libpath)
 
 			string(CONCAT CLANG_TIDY_CHECKS "-checks="
 				"bugprone-*,"
+				"-bugprone-easily-swappable-parameters,"
 				"-bugprone-macro-parentheses,"
 
 				"clang-analyzer-*,"
@@ -217,6 +218,7 @@ function(libstored_lib libprefix libpath)
 				"-readability-convert-member-functions-to-static,"
 				"-readability-else-after-return,"
 				"-readability-function-cognitive-complexity,"
+				"-readability-identifier-length,"
 				"-readability-implicit-bool-conversion,"
 				"-readability-magic-numbers,"
 				"-readability-make-member-function-const,"

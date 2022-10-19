@@ -97,7 +97,7 @@ void CompressLayer::decode(void* buffer, size_t len)
 	while(heatshrink_decoder_finish(&decoder()) == HSDR_FINISH_MORE)
 		decoderPoll();
 
-	base::decode(&m_decodeBuffer[0], m_decodeBufferSize);
+	base::decode(m_decodeBuffer.data(), m_decodeBufferSize);
 	m_state &= (uint8_t) ~(uint8_t)FlagDecoding;
 }
 
