@@ -38,7 +38,7 @@ if(LIBSTORED_EXAMPLES)
 		libstored/visu/example/main.qml
 	)
 
-	libstored_visu(visu-example ${CMAKE_CURRENT_SOURCE_DIR}/visu_example.py example/main.qml)
+	libstored_visu(visu-example ${CMAKE_CURRENT_SOURCE_DIR}/libstored/visu/visu_example.py libstored/visu/example/main.qml)
 endif()
 
 execute_process(
