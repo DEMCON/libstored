@@ -120,7 +120,6 @@ jobs:
 
   test-documentation:
     if: github.ref != 'refs/heads/master'
-    needs: [build-ubuntu, build-ubuntu-prev, build-windows, build-mac, build-mingw]
     runs-on: ubuntu-latest
     steps:
       - name: checkout
