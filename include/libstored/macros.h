@@ -161,6 +161,7 @@ typedef SSIZE_T ssize_t;
 #	define STORED_OS_GENERIC 1
 #endif
 
+// NOLINTNEXTLINE(bugprone-reserved-identifier)
 #define __STDC_FORMAT_MACROS
 
 #if defined(__BYTE_ORDER__)

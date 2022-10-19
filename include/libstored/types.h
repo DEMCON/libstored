@@ -1117,9 +1117,9 @@ public:
 #	endif
 	{
 		stored_assert(!Type::isFunction(type));
-		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 		stored_assert(
 			!Type::isFixed(this->type())
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			|| (reinterpret_cast<uintptr_t>(buffer) & (Type::size(this->type()) - 1))
 				   == 0);
 	}
@@ -1248,7 +1248,7 @@ public:
 	Vector<char>::type get() const
 	{
 		Vector<char>::type buf(size());
-		get(&buf[0], buf.size());
+		get(buf.data(), buf.size());
 		return buf;
 	}
 
@@ -1335,7 +1335,7 @@ public:
 	 */
 	void set(Vector<char>::type const& data)
 	{
-		set(&data[0], data.size());
+		set(data.data(), data.size());
 	}
 
 	/*!
