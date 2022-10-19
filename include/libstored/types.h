@@ -848,8 +848,8 @@ public:
 	{
 		stored_assert(valid());
 
-		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 		if(!Config::UnalignedAccess
+		   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 		   && ((uintptr_t)buffer & (std::min(sizeof(void*), sizeof(type)) - 1U))) {
 			// Unaligned access, do the callback on a local buffer.
 			stored_assert(len >= sizeof(type));
@@ -1355,7 +1355,7 @@ public:
 	size_t callback(bool set, void* buffer, size_t len) const
 	{
 		stored_assert(valid() && isFunction());
-		size_t size;
+		size_t size = 0;
 
 		if(!Config::UnalignedAccess
 		   && Type::isFixed(type())
@@ -1364,7 +1364,7 @@ public:
 		       & (std::min(sizeof(void*), size = Type::size(type())) - 1U))) {
 			// Unaligned access, do the callback on a local buffer.
 			stored_assert(size <= sizeof(uint64_t) && len >= size);
-			uint64_t v;
+			uint64_t v = 0;
 
 			if(set) {
 				container().callback(true, &v, size, (unsigned int)m_f);
