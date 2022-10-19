@@ -1121,6 +1121,7 @@ public:
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 		stored_assert(
 			!Type::isFixed(this->type())
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			|| (reinterpret_cast<uintptr_t>(buffer) & (Type::size(this->type()) - 1))
 				   == 0);
 	}

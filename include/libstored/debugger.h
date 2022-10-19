@@ -492,6 +492,7 @@ public:
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 		stored_assert(
 			static_cast<DebugVariantBase*>(
+				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 				reinterpret_cast<DebugVariantTyped<Container>*>(m_buffer))
 			== &this->variant());
 	}
