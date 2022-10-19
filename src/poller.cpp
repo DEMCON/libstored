@@ -253,7 +253,7 @@ int WfmoPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 
 	// First try.
 	DWORD res = WaitForMultipleObjectsEx(
-		(DWORD)m_handles.size(), &m_handles[0], FALSE,
+		(DWORD)m_handles.size(), m_handles.data(), FALSE,
 		timeout_ms >= 0 ? (DWORD)timeout_ms : INFINITE, TRUE);
 
 	DWORD index = 0;
@@ -311,7 +311,7 @@ int WfmoPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 		if(m_handles.empty())
 			break;
 
-		res = WaitForMultipleObjects((DWORD)m_handles.size(), &m_handles[0], FALSE, 0);
+		res = WaitForMultipleObjects((DWORD)m_handles.size(), m_handles.data(), FALSE, 0);
 	}
 
 	stored_assert(m_handles.size() == m_indexMap.size());

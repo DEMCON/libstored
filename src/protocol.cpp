@@ -248,7 +248,7 @@ void TerminalLayer::decode(void* buffer, size_t len)
 			break;
 		case StateDebugEsc:
 			if(likely(c == EscEnd)) {
-				base::decode(&m_buffer[0], m_buffer.size());
+				base::decode(m_buffer.data(), m_buffer.size());
 				m_decodeState = StateNormal;
 				m_buffer.clear();
 				nonDebugOffset = i + 1;
@@ -388,7 +388,7 @@ void SegmentationLayer::decode(void* buffer, size_t len)
 
 		if(buffer_[len - 1] == EndMarker) {
 			// Got it.
-			base::decode(&m_decode[0], m_decode.size());
+			base::decode(m_decode.data(), m_decode.size());
 			m_decode.clear();
 		}
 	} else {
@@ -2371,7 +2371,7 @@ done:
 	// Issue a new write.
 	stored_assert(len < (size_t)std::numeric_limits<DWORD>::max());
 	m_bufferWrite.resize(len);
-	memcpy(&m_bufferWrite[0], buffer, len);
+	memcpy(m_bufferWrite.data(), buffer, len);
 	setLastError(0);
 	resetOverlappedWrite();
 	m_overlappedWrite.Offset = m_overlappedWrite.OffsetHigh = 0xffffffff;
@@ -2450,9 +2450,9 @@ again:
 	// Read everything there is to read.
 	// This should be finished quickly.
 	resetOverlappedRead();
-	if(ReadFile(m_fd_r, &m_bufferRead[0], (DWORD)readable, &bytesRead, &m_overlappedRead)) {
+	if(ReadFile(m_fd_r, m_bufferRead.data(), (DWORD)readable, &bytesRead, &m_overlappedRead)) {
 		// Finished immediately.
-		decode(&m_bufferRead[0], (size_t)bytesRead);
+		decode(m_bufferRead.data(), (size_t)bytesRead);
 		didDecode = true;
 		goto again;
 	} else {
@@ -2536,7 +2536,7 @@ again:
 	DWORD read = 0;
 	if(GetOverlappedResult(m_fd_r, &m_overlappedRead, &read, FALSE)) {
 		// Finished the previous read.
-		decode(&m_bufferRead[0], read);
+		decode(m_bufferRead.data(), read);
 		// Go issue the next read.
 		return startRead() == EAGAIN ? setLastError(0) : lastError();
 	} else {
@@ -3143,8 +3143,8 @@ again:
 	if((size_t)cnt > m_bufferRead.size())
 		cnt = (DWORD)m_bufferRead.size();
 
-	if(ReadFile(fd_r(), &m_bufferRead[0], cnt, &cnt, NULL)) {
-		decode(&m_bufferRead[0], (size_t)cnt);
+	if(ReadFile(fd_r(), m_bufferRead.data(), cnt, &cnt, NULL)) {
+		decode(m_bufferRead.data(), (size_t)cnt);
 		didDecode = true;
 		goto again;
 	}

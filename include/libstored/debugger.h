@@ -489,9 +489,9 @@ public:
 		new(m_buffer) DebugVariantTyped<Container>(variant);
 		// Check if the cast of variant() works properly.
 		// cppcheck-suppress assertWithSideEffect
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 		stored_assert(
 			static_cast<DebugVariantBase*>(
-				// NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 				reinterpret_cast<DebugVariantTyped<Container>*>(m_buffer))
 			== &this->variant());
 	}

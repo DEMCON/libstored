@@ -18,6 +18,7 @@
 #	include <algorithm>
 #	include <cstdlib>
 #	include <cstring>
+#	include <exception>
 #	include <limits>
 
 #	if STORED_cplusplus >= 201103L
@@ -1117,9 +1118,9 @@ public:
 #	endif
 	{
 		stored_assert(!Type::isFunction(type));
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 		stored_assert(
 			!Type::isFixed(this->type())
-			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			|| (reinterpret_cast<uintptr_t>(buffer) & (Type::size(this->type()) - 1))
 				   == 0);
 	}
