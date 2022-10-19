@@ -181,6 +181,7 @@ function(libstored_lib libprefix libpath)
 				"bugprone-*,"
 				"-bugprone-easily-swappable-parameters,"
 				"-bugprone-macro-parentheses,"
+				"-bugprone-reserved-identifier," # Should be fixed.
 
 				"clang-analyzer-*,"
 				"concurrency-*,"
