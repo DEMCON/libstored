@@ -15,7 +15,30 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 
 ...
 
-.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.2.0...HEAD
+.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.3.0...HEAD
+
+`1.3.0`_ - 2022-10-19
+---------------------
+
+Added
+``````
+
+- Maximum error for PID.
+- Stream visualization in the Embedded Debugger.
+
+Changed
+```````
+
+- Switch license to MPLv2.
+
+Fixed
+`````
+
+- Fix in computing ``stored::Ramp`` acceleration and speed.
+- Fix in compressed Debugger streams upon internal buffer overflow.
+- Handle unaligned memory access properly in store objects.
+
+.. _1.3.0: https://github.com/DEMCON/libstored/releases/tag/v1.3.0
 
 
 
