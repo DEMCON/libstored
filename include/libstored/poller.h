@@ -484,9 +484,10 @@ public:
 	typedef PollItem_ PollItem;
 	typedef typename Vector<PollItem>::type PollItemList;
 
+	virtual ~PollerBase() is_default
+
 protected:
 	PollerBase() noexcept is_default
-	virtual ~PollerBase() is_default
 
 	virtual void event(Pollable::Events revents, size_t index) noexcept = 0;
 

@@ -1955,7 +1955,7 @@ int FileLayer::recv(long timeout_us)
 		return setLastError(EBADF);
 
 again:
-	ssize_t cnt = read(fd_r(), &m_bufferRead[0], m_bufferRead.size());
+	ssize_t cnt = read(fd_r(), m_bufferRead.data(), m_bufferRead.size());
 
 	if(cnt == -1) {
 		switch(errno) {
@@ -1979,7 +1979,7 @@ again:
 		close();
 		return setLastError(EAGAIN);
 	} else {
-		decode(&m_bufferRead[0], (size_t)cnt);
+		decode(m_bufferRead.data(), (size_t)cnt);
 		return setLastError(0);
 	}
 }
@@ -2376,7 +2376,7 @@ done:
 	resetOverlappedWrite();
 	m_overlappedWrite.Offset = m_overlappedWrite.OffsetHigh = 0xffffffff;
 	if(WriteFileEx(
-		   fd_w(), &m_bufferWrite[0], (DWORD)len, &m_overlappedWrite,
+		   fd_w(), m_bufferWrite.data(), (DWORD)len, &m_overlappedWrite,
 		   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 		   (LPOVERLAPPED_COMPLETION_ROUTINE)(void*)&writeCompletionRoutine)) {
 		// Already finished.
@@ -3366,6 +3366,7 @@ int SerialLayer::resetAutoBaud()
 	setLastError(0);
 
 	int res = 0;
+	// NOLINTNEXTLINE(concurrency-mt-unsafe)
 	if(tcsendbreak(fd_r(), 0))
 		res = errno;
 
