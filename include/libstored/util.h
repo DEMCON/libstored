@@ -146,11 +146,11 @@
 				/*! \brief Deleted copy constructor. */         \
 				Class(Class const&) = delete;                   \
 				/*! \brief Default move constructor. */         \
-				Class(Class&&) = default; /* NOLINT */          \
+				Class(Class&&) noexcept = default; /* NOLINT */ \
 				/*! \brief Deleted assignment operator. */      \
 				void operator=(Class const&) = delete;          \
 				/*! \brief Default move assignment operator. */ \
-				Class& operator=(Class&&) = default; /* NOLINT */
+				Class& operator=(Class&&) noexcept = default; /* NOLINT */
 #		else
 #			define STORED_CLASS_NOCOPY(Class)                 \
 			private:                                           \

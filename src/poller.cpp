@@ -370,7 +370,7 @@ int ZmqPoller::init(Pollable const& p, zmq_pollitem_t& item) noexcept
 #	ifndef STORED_POLL_ZTH_ZMQ
 int ZmqPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 {
-	int res = ::zmq_poll(&items[0], (int)items.size(), (long)timeout_ms);
+	int res = ::zmq_poll(items.data(), (int)items.size(), (long)timeout_ms);
 
 	if(res < 0)
 		// Error.
@@ -435,7 +435,7 @@ int PollPoller::init(Pollable const& p, struct pollfd& item) noexcept
 #	ifndef STORED_POLL_ZTH_POLL
 int PollPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 {
-	int res = ::poll(&items[0], (nfds_t)items.size(), timeout_ms);
+	int res = ::poll(items.data(), (nfds_t)items.size(), timeout_ms);
 
 	if(res < 0)
 		// Error.

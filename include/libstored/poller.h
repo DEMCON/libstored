@@ -253,9 +253,8 @@ protected:
 		: TypedPollable(e, user)
 	{}
 
-	virtual ~PollableCallbackBase() override is_default
-
 public:
+	virtual ~PollableCallbackBase() override is_default
 	virtual Events operator()() const noexcept = 0;
 };
 
@@ -807,9 +806,6 @@ public:
 	typedef typename Vector<Pollable*>::type Result;
 #		endif
 
-protected:
-	InheritablePoller() is_default
-
 	/*!
 	 * \brief Dtor.
 	 */
@@ -817,6 +813,9 @@ protected:
 	{
 		stored_assert(empty());
 	}
+
+protected:
+	InheritablePoller() is_default
 
 	void throwing(int res)
 	{

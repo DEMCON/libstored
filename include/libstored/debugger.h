@@ -271,6 +271,7 @@ private:
 /*!
  * \brief Container-template-type-invariant base class of a wrapper for #stored::Variant.
  */
+// NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
 class DebugVariantBase {
 	CLASS_NO_WEAK_VTABLE
 public:
@@ -359,6 +360,7 @@ protected:
  * \see #stored::DebugVariant
  */
 template <typename Container = void>
+// NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
 class DebugVariantTyped : public DebugVariantBase {
 public:
 	/*!
@@ -449,6 +451,7 @@ private:
  * default-assignable, and can therefore be used as a value in a standard
  * container.
  */
+// NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
 class DebugVariant final : public DebugVariantBase {
 	CLASS_NO_WEAK_VTABLE
 public:
@@ -486,8 +489,9 @@ public:
 		new(m_buffer) DebugVariantTyped<Container>(variant);
 		// Check if the cast of variant() works properly.
 		// cppcheck-suppress assertWithSideEffect
-		stored_assert( // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+		stored_assert(
 			static_cast<DebugVariantBase*>(
+				// NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 				reinterpret_cast<DebugVariantTyped<Container>*>(m_buffer))
 			== &this->variant());
 	}
