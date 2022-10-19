@@ -25,7 +25,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url = 'https://github.com/DEMCON/libstored',
-    license = 'LGPL3+',
+    license = 'MPLv2.0',
     packages = packages,
     package_dir = {'libstored': 'libstored', 'ed2': 'libstored'},
     package_data = {'libstored': package_data, 'ed2': package_data},
@@ -43,7 +43,7 @@ setuptools.setup(
     python_requires='>=3.6',
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+        "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Debuggers",
         "Topic :: Software Development :: Embedded Systems",
