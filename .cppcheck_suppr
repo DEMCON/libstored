@@ -2,7 +2,6 @@ missingIncludeSystem:*
 cstyleCast:*
 constParameter:*
 knownConditionTrueFalse:*
-missingReturn:include/libstored/debugger.h
 unmatchedSuppression:*
 unmatchedSuppression:examples/1_hello/main.cpp
 unmatchedSuppression:examples/7_protocol/main.cpp
