@@ -1,18 +1,9 @@
 # libstored, distributed debuggable data stores.
 # Copyright (C) 2020-2022  Jochem Rutgers
 #
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 import zmq
 import time
@@ -42,7 +33,7 @@ class _Property(Property):
         super().__init__(*args, **kwargs)
 
 class SignalRateLimiter(QObject):
-    def __init__(self, src, dst, window_s=0.2, parent=None):
+    def __init__(self, client, src, dst, window_s=0.2, parent=None):
         super().__init__(parent=parent)
         self._timer = QTimer(parent=self)
         self._timer.timeout.connect(self._emit)
@@ -51,11 +42,14 @@ class SignalRateLimiter(QObject):
         self._dst = dst
         self._idle = True
         self._suppressed = False
+        self._client = client
         src.connect(self.receive)
 
     @Slot()
     def receive(self):
-        if self._idle:
+        if not self._client.useEventLoop:
+            self._dst.emit()
+        elif self._idle:
             self._idle = False
             self._dst.emit()
             self._timer.start()
@@ -102,8 +96,8 @@ class Object(QObject):
         self._format = None
         self._format_set(self.formats[0])
         self._autoCsv = False
-        self._valueChangedRateLimiter = SignalRateLimiter(self.valueChanged, self.valueStringChanged, parent=self)
-        self._tUpdatedChangedRateLimiter = SignalRateLimiter(self.tUpdated, self.tStringChanged, parent=self)
+        self._valueChangedRateLimiter = SignalRateLimiter(client, self.valueChanged, self.valueStringChanged, parent=self)
+        self._tUpdatedChangedRateLimiter = SignalRateLimiter(client, self.tUpdated, self.tStringChanged, parent=self)
         self._suppressSetSignals = False
         self._asyncReadPending = False
 
@@ -618,7 +612,7 @@ class Object(QObject):
         return res
 
     def _formats_get(self):
-        if self._type == self.Blob:
+        if self._type & ~self.FlagFunction == self.Blob:
             return ['bytes']
 
         f = ['default', 'bytes']
@@ -806,7 +800,7 @@ class Stream(object):
                 self._reset()
 
         if not self.raw:
-            x = x.decode()
+            x = x.decode(errors='backslashreplace')
         return x
 
     def flush(self):
@@ -1082,11 +1076,11 @@ class ZmqClient(QObject):
     defaultPollIntervalChanged = Signal()
     closed = Signal()
 
-    def __init__(self, address='localhost', port=ZmqServer.default_port, csv=None, multi=False, parent=None, t=None, timeout=None):
+    def __init__(self, address='localhost', port=ZmqServer.default_port, csv=None, multi=False, parent=None, t=None, timeout=None, context=None):
         super().__init__(parent=parent)
         self.logger = logging.getLogger(__name__)
         self._multi = multi
-        self._context = zmq.Context()
+        self._context = context or zmq.Context.instance()
         self._socket = self._context.socket(zmq.REQ)
         if timeout is not None and timeout <= 0:
             timeout = None
@@ -1120,13 +1114,15 @@ class ZmqClient(QObject):
         self._autoSaveState = False
         self._identification = None
         self._reqQueue = []
-        self._socketNotifier = QSocketNotifier(self._socket.fileno(), QSocketNotifier.Read, parent=self)
-        self._socketNotifier.setEnabled(False)
-        self._socketNotifier.activated.connect(self._reqAsyncCheckResponse)
+        self._socketNotifier = None
         self._useEventLoop = False
-        QTimer.singleShot(0, self._haveEventLoop)
+
         app = QCoreApplication.instance()
-        if not app is None:
+        if app is not None:
+            self._socketNotifier = QSocketNotifier(self._socket.fileno(), QSocketNotifier.Read, parent=self)
+            self._socketNotifier.setEnabled(False)
+            self._socketNotifier.activated.connect(self._reqAsyncCheckResponse)
+            QTimer.singleShot(0, self._haveEventLoop)
             app.aboutToQuit.connect(self._aboutToQuit)
 
         if 'f' in self.capabilities():
@@ -1142,6 +1138,10 @@ class ZmqClient(QObject):
     def _haveEventLoop(self):
         self.logger.debug('event loop running')
         self._useEventLoop = True
+
+    @property
+    def multi(self):
+        return self._multi
 
     @property
     def useEventLoop(self):
@@ -1624,6 +1624,15 @@ class ZmqClient(QObject):
             return []
         else:
             return list(map(lambda b: chr(b), rep))
+
+    def otherStreams(self):
+        s = self.streams()
+        if self._tracing is not None:
+            try:
+                s.remove(self._tracing.stream.name)
+            except ValueError:
+                pass
+        return s
 
     def stream(self, s, raw=False):
         return Stream(self, s, raw)

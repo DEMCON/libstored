@@ -1,5 +1,12 @@
 @echo off
 
+rem libstored, distributed debuggable data stores.
+rem Copyright (C) 2020-2022  Jochem Rutgers
+rem
+rem This Source Code Form is subject to the terms of the Mozilla Public
+rem License, v. 2.0. If a copy of the MPL was not distributed with this
+rem file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 net session > NUL 2> NUL
 if errorlevel 1 goto no_admin
 goto is_admin
@@ -23,7 +30,8 @@ goto error
 :have_choco
 
 set pkg=python3 tortoisegit git cmake ninja pkgconfiglite mingw doxygen.install plantuml
-choco install -y --no-progress %pkg%
+rem Ignore "restart required" (3010)
+choco install -y --no-progress --ignore-package-exit-codes=3010 %pkg%
 if errorlevel 1 goto error
 
 where /q libcairo-2.dll > NUL 2> NUL

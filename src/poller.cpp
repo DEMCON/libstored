@@ -2,18 +2,9 @@
  * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2022  Jochem Rutgers
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #include <libstored/poller.h>
@@ -262,7 +253,7 @@ int WfmoPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 
 	// First try.
 	DWORD res = WaitForMultipleObjectsEx(
-		(DWORD)m_handles.size(), &m_handles[0], FALSE,
+		(DWORD)m_handles.size(), m_handles.data(), FALSE,
 		timeout_ms >= 0 ? (DWORD)timeout_ms : INFINITE, TRUE);
 
 	DWORD index = 0;
@@ -320,7 +311,7 @@ int WfmoPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 		if(m_handles.empty())
 			break;
 
-		res = WaitForMultipleObjects((DWORD)m_handles.size(), &m_handles[0], FALSE, 0);
+		res = WaitForMultipleObjects((DWORD)m_handles.size(), m_handles.data(), FALSE, 0);
 	}
 
 	stored_assert(m_handles.size() == m_indexMap.size());
@@ -379,7 +370,7 @@ int ZmqPoller::init(Pollable const& p, zmq_pollitem_t& item) noexcept
 #	ifndef STORED_POLL_ZTH_ZMQ
 int ZmqPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 {
-	int res = ::zmq_poll(&items[0], (int)items.size(), (long)timeout_ms);
+	int res = ::zmq_poll(items.data(), (int)items.size(), (long)timeout_ms);
 
 	if(res < 0)
 		// Error.
@@ -444,7 +435,7 @@ int PollPoller::init(Pollable const& p, struct pollfd& item) noexcept
 #	ifndef STORED_POLL_ZTH_POLL
 int PollPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 {
-	int res = ::poll(&items[0], (nfds_t)items.size(), timeout_ms);
+	int res = ::poll(items.data(), (nfds_t)items.size(), timeout_ms);
 
 	if(res < 0)
 		// Error.

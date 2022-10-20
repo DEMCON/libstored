@@ -1,18 +1,9 @@
 # libstored, distributed debuggable data stores.
 # Copyright (C) 2020-2022  Jochem Rutgers
 #
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 import sys
 import subprocess
@@ -28,6 +19,11 @@ import ctypes
 libc = None
 
 # Helper to clean up the child when python crashes.
+def set_pdeathsig_(libc, sig):
+    if os.name == 'posix':
+        os.setsid()
+    libc.prctl(1, sig)
+
 def set_pdeathsig(sig = signal.SIGTERM):
     global libc
 
@@ -41,7 +37,7 @@ def set_pdeathsig(sig = signal.SIGTERM):
     if libc == False:
         return lambda: None
 
-    return lambda: libc.prctl(1, sig)
+    return lambda: set_pdeathsig_(libc, sig)
 
 class Stdio2Zmq(Stream2Zmq):
     """A stdin/stdout frame grabber to ZmqServer bridge."""
@@ -51,6 +47,7 @@ class Stdio2Zmq(Stream2Zmq):
         self.process = subprocess.Popen(
             args=args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             preexec_fn = set_pdeathsig() if os.name == 'posix' else None,
+            shell=not os.path.exists(args),
             **kwargs)
         self.stdout_socket = self.registerStream(self.process.stdout)
         self.stdin_socket = self.registerStream(sys.stdin)
@@ -86,6 +83,8 @@ class Stdio2Zmq(Stream2Zmq):
 
     def close(self):
         self.logger.debug('Closing; terminate process')
+        if os.name == 'posix':
+            os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
         self.process.terminate()
         super().close()
 

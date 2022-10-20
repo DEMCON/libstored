@@ -2,18 +2,9 @@
  * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2022  Jochem Rutgers
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #include <libstored/debugger.h>
@@ -755,12 +746,47 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 		if(!str)
 			goto error;
 
-		if(tracing() && s == m_traceStream)
+		if(!Config::CompressStreams && tracing() && s == m_traceStream)
 			response.setPurgeableResponse();
 
-		String::type const& strstr = str->buffer();
-		response.encode(strstr.data(), strstr.size(), false);
-		str->clear();
+		if(Config::AvoidDynamicMemory) {
+			String::type const& strstr = str->buffer();
+
+			// Note that the buffer should not be realloc'ed during
+			// the encode(), which may happen if Zth would do a
+			// yield during the (low-level) encode(), or you would
+			// have some other strange loop in your program.
+			size_t size = strstr.size();
+			if(size) {
+				char const* data = strstr.data();
+				response.encode(data, size, false);
+				// cppcheck-suppress knownConditionTrueFalse
+				stored_assert(data == strstr.data());
+
+				// Note that the buffer may have grown
+				// meanwhile. Only drop the data that we just
+				// encoded.
+				str->drop(size);
+			}
+		} else {
+			// In this case, the buffer may grow arbitrarily.
+			// Swap the buffers...
+			String::type strbuf;
+			str->swap(strbuf);
+			response.encode(strbuf.data(), strbuf.size(), false);
+
+			if(str->buffer().empty()) {
+				// Buffer is empty. Clear and swap again to
+				// avoid useless malloc/free of the internal
+				// buffers of the String.
+				strbuf.clear();
+				str->swap(strbuf);
+			}
+			// else: data was added meanwhile, leave it in that
+			// buffer and release the old one.
+		}
+
+		str->unblock();
 
 		response.encode(suffix, suffixlen);
 		return;
@@ -814,14 +840,18 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 		m_traceMacro = p[1];
 		m_traceStream = p[2];
 
+		// Make sure the trace stream exists.
+		if(!stream(m_traceStream, true))
+			// Cannot allocate.
+			goto error;
+
 		if(len > 3) {
 			void const* d = &p[3];
 			size_t dlen = std::min<size_t>(8, len - 3); // at most 32-bit
 			if(!decodeHex(Type::Uint, d, dlen))
 				goto error;
 
-			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-			m_traceDecimate = *reinterpret_cast<unsigned int const*>(d);
+			memcpy(&m_traceDecimate, d, sizeof(m_traceDecimate));
 		} else
 			m_traceDecimate = 1;
 		break;
@@ -1134,12 +1164,11 @@ size_t Debugger::stream(char s, char const* data, size_t len)
 	if(!str)
 		return 0;
 
-	len = std::min(
-		len, std::max(str->buffer().capacity(), (size_t)Config::DebuggerStreamBuffer)
-			     - str->buffer().size());
+	len = str->fits(len);
+	if(len == 0)
+		return 0;
 
 	str->encode(data, len);
-
 	return len;
 }
 
@@ -1253,10 +1282,18 @@ void Debugger::trace()
 		// Out of streams.
 		return;
 
-	size_t oldSize = str->buffer().size();
-	if(oldSize >= Config::DebuggerStreamBuffer)
-		// No more space in buffer for another sample.
-		return;
+	if(Config::DebuggerStreamBufferOverflow) {
+		// Use the overflow size as an estimate of how large a sample
+		// can be.
+		if(str->fits(Config::DebuggerStreamBufferOverflow)
+		   != Config::DebuggerStreamBufferOverflow)
+			return;
+	} else {
+		// No overflow region. Just proceed when the buffer is not full
+		// yet.
+		if(str->buffer().size() >= Config::DebuggerStreamBuffer)
+			return;
+	}
 
 	// Note that runMacro() may overrun the defined maximum buffer size,
 	// but samples are never truncated.

@@ -4,18 +4,9 @@
  * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2022  Jochem Rutgers
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #ifdef __cplusplus
@@ -379,13 +370,39 @@ public:
 		return m_buffer[rp];
 	}
 
-	void pop_front() noexcept
+	type const& peek(size_t offset) const noexcept
+	{
+		stored_assert(offset < available());
+		pointer rp = m_rp.load(
+			ThreadSafe ? std::memory_order_consume : std::memory_order_relaxed);
+		return m_buffer[(pointer)((rp + offset) % m_buffer.size())];
+	}
+
+	type& peek(size_t offset) noexcept
+	{
+		stored_assert(offset < available());
+		pointer rp = m_rp.load(
+			ThreadSafe ? std::memory_order_consume : std::memory_order_relaxed);
+		return m_buffer[(rp + offset) % m_buffer.size()];
+	}
+
+	type const& operator[](size_t offset) const noexcept
+	{
+		return peek(offset);
+	}
+
+	type& operator[](size_t offset) noexcept
+	{
+		return peek(offset);
+	}
+
+	void pop_front(size_t count = 1) noexcept
 	{
 		pointer wp = m_wp.load(std::memory_order_relaxed);
 		pointer rp = m_rp.load(std::memory_order_relaxed);
-		stored_assert(wp != rp);
+		stored_assert(count <= available());
 
-		rp++;
+		rp = (pointer)(rp + count);
 		if(wp < rp && rp >= m_buffer.size())
 			rp = (pointer)(rp - m_buffer.size());
 
@@ -434,8 +451,48 @@ public:
 
 	void push_back(std::initializer_list<type> init)
 	{
-		for(auto const& x : init)
-			push_back(x);
+		pointer wp;
+		pointer wp_next;
+		reserve_back(wp, wp_next, init.size());
+
+		for(auto const& x : init) {
+			m_buffer[wp] = x;
+
+			if(bounded())
+				wp = (pointer)((wp + 1U) % m_buffer.size());
+			else
+				wp++;
+		}
+
+		stored_assert(wp == wp_next);
+
+		m_wp.store(
+			wp_next,
+			ThreadSafe ? std::memory_order_release : std::memory_order_relaxed);
+	}
+
+	void push_back(type const* value, size_t len)
+	{
+		stored_assert(len == 0 || value);
+
+		pointer wp;
+		pointer wp_next;
+		reserve_back(wp, wp_next, len);
+
+		size_t size = m_buffer.size();
+
+		while(len--) {
+			m_buffer[wp++] = *value++;
+
+			if(bounded() && wp == size)
+				wp = 0;
+		}
+
+		stored_assert(wp == wp_next);
+
+		m_wp.store(
+			wp_next,
+			ThreadSafe ? std::memory_order_release : std::memory_order_relaxed);
 	}
 
 	typedef PopIterator<Fifo> iterator;
@@ -464,16 +521,16 @@ protected:
 	enum { UnboundedMoveThreshold = 64,
 	};
 
-	void reserve_back(pointer& wp, pointer& wp_next)
+	void reserve_back(pointer& wp, pointer& wp_next, size_t count = 1)
 	{
-		stored_assert(!full());
+		stored_assert(space() >= count);
 
 		wp = m_wp.load(std::memory_order_relaxed);
 		pointer rp = m_rp.load(std::memory_order_relaxed);
 
 		if(bounded()) {
 			// Bounded buffer. Do wrap-around.
-			wp_next = (pointer)(wp + 1u);
+			wp_next = (pointer)(wp + count);
 			if(wp_next >= m_buffer.size())
 				wp_next = (pointer)(wp_next - m_buffer.size());
 		} else {
@@ -486,12 +543,13 @@ protected:
 				// almost empty.
 				m_buffer.move(0, rp, (size_t)(wp - rp));
 				wp = (pointer)(wp - rp);
-				rp = 0;
+				m_wp.store(wp, std::memory_order_relaxed);
+				m_rp.store(0, std::memory_order_relaxed);
 			}
 
-			// Make sure the buffer can contain the new item.
-			m_buffer.resize((size_t)(wp + 1));
-			wp_next = (pointer)(wp + 1);
+			// Make sure the buffer can contain the new item(s).
+			m_buffer.resize((size_t)(wp + count));
+			wp_next = (pointer)(wp + count);
 		}
 	}
 
@@ -545,6 +603,7 @@ public:
 	{}
 
 	template <typename Traits, typename Allocator>
+	// cppcheck-suppress noExplicitConstructor
 	MessageView(std::basic_string<char, Traits, Allocator> const& str) noexcept
 		: m_message(str.data())
 		, m_length(str.size())
@@ -627,6 +686,11 @@ public:
 		return m_buffer.size();
 	}
 
+	constexpr size_t capacity() const noexcept
+	{
+		return Capacity > 0 ? size() - 1U : size();
+	}
+
 	bool full() const noexcept
 	{
 		return m_msg.full() || space() == 0;
@@ -642,14 +706,13 @@ public:
 		size_t rp = m_rp.load(std::memory_order_relaxed);
 		size_t wp = m_wp.load(std::memory_order_relaxed);
 		size_t partial = m_wp_partial - wp;
-		size_t capacity = size();
+		size_t sz = size();
 
-		if(wp + partial == rp)
-			return empty() ? capacity : 0;
-		else if(wp < rp)
-			return rp - wp - partial;
+		if(wp < rp)
+			return rp - wp - partial - 1U;
 		else
-			return std::max(capacity - wp, rp) - partial;
+			return rp == 0 ? sz - wp - partial - 1U
+				       : std::max(sz - wp, rp - 1U) - partial;
 	}
 
 	const_type front() const noexcept
@@ -708,7 +771,15 @@ protected:
 	}
 
 public:
+	// The name suggests that we can pop any item from the back, but that
+	// is not true.  It only drops the partial/appended data from the back.
+	// reset_back() is a better name.  We should deprecate this function.
 	void pop_back()
+	{
+		reset_back();
+	}
+
+	void reset_back()
 	{
 		m_wp_partial = m_wp.load(std::memory_order_relaxed);
 	}
@@ -738,9 +809,12 @@ public:
 #		endif
 		}
 
-		bool e = empty();
+		if(wp == rp && partial == 0) {
+			// Note: Because of race conditions in a threaded
+			// environment, it might be the case that empty() is
+			// not yet true, as pop_front() first updates rp and
+			// then pops the message.
 
-		if(e && !partial) {
 			// When empty, the other side ignores the wp/rp, so we
 			// can safely tinker with it.
 			wp = m_wp_partial = wp_partial = 0;
@@ -752,13 +826,14 @@ public:
 		if(Capacity == 0) {
 			// Make buffer larger.
 			m_buffer.resize((size_t)wp_partial + message.size());
-		} else if(e) {
-			// Empty, always fits.
-		} else if(wp > rp) {
+		} else if(wp >= rp) {
 			// [rp,wp_partial[ is in use.
-			if((size_t)wp_partial + message.size() <= m_buffer.size()) {
-				// Ok, fits in the buffer.
-			} else if((size_t)rp >= partial + message.size()) {
+			if((size_t)wp_partial + message.size() < m_buffer.size()) {
+				// Ok, fits in the remaining buffer.
+			} else if(
+				(size_t)wp_partial + message.size() <= m_buffer.size() && rp > 0) {
+				// Ok, fits in the remaining buffer.
+			} else if((size_t)rp > partial + message.size()) {
 				// The message fits at the start of the buffer.
 				m_buffer.move(0, wp, partial);
 				wp = 0;
@@ -770,7 +845,7 @@ public:
 			}
 		} else {
 			// [0,wp_partial[ and [rp,size()[ is in use.
-			if((size_t)(rp - wp_partial) >= message.size()) {
+			if((size_t)(rp - wp_partial) > message.size()) {
 				// Fits here.
 			} else {
 				// Does not fit.
@@ -837,6 +912,12 @@ private:
 	Fifo<Msg, Messages> m_msg;
 };
 
+#		ifdef STORED_COMPILER_GCC
+// We seem to trigger https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105469
+#			pragma GCC push_options
+#			pragma GCC optimize("no-devirtualize")
+#		endif
+
 /*!
  * \brief A ProtocolLayer that buffers downstream messages.
  *
@@ -889,7 +970,7 @@ public:
 	}
 
 	/*!
-	 * \brief Pass all available messages int he FIFO to #decode().
+	 * \brief Pass all available messages in the FIFO to #decode().
 	 */
 	virtual void recvAll()
 	{
@@ -1079,6 +1160,10 @@ private:
 	FifoLoopback1_type m_a2b;
 	FifoLoopback1_type m_b2a;
 };
+
+#		ifdef STORED_COMPILER_GCC
+#			pragma GCC pop_options
+#		endif
 
 } // namespace stored
 

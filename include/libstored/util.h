@@ -4,18 +4,9 @@
  * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2022  Jochem Rutgers
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #include <libstored/macros.h>
@@ -155,11 +146,11 @@
 				/*! \brief Deleted copy constructor. */         \
 				Class(Class const&) = delete;                   \
 				/*! \brief Default move constructor. */         \
-				Class(Class&&) = default; /* NOLINT */          \
+				Class(Class&&) noexcept = default; /* NOLINT */ \
 				/*! \brief Deleted assignment operator. */      \
 				void operator=(Class const&) = delete;          \
-				/*! \brief Deleted move assignment operator. */ \
-				Class& operator=(Class&&) = default; /* NOLINT */
+				/*! \brief Default move assignment operator. */ \
+				Class& operator=(Class&&) noexcept = default; /* NOLINT */
 #		else
 #			define STORED_CLASS_NOCOPY(Class)                 \
 			private:                                           \

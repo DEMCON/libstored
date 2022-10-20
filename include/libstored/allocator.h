@@ -4,18 +4,9 @@
  * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2022  Jochem Rutgers
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #include <libstored/config.h>
@@ -197,7 +188,7 @@ protected:
 	class Reset final : public Base {
 	public:
 		// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
-		~Reset() noexcept final = default;
+		virtual ~Reset() noexcept = default;
 
 		R operator()(typename CallableArgType<Args>::type... /*args*/) const final
 		{
@@ -224,7 +215,7 @@ protected:
 	// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
 	class Wrapper final : public Base {
 	public:
-		~Wrapper() noexcept final = default;
+		virtual ~Wrapper() noexcept = default;
 
 		template <
 			typename F_,
@@ -259,7 +250,7 @@ protected:
 	// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
 	class Wrapper<R(Args...), Dummy> final : public Base {
 	public:
-		~Wrapper() noexcept final = default;
+		virtual ~Wrapper() noexcept = default;
 
 		template <typename F_>
 		explicit Wrapper(R (*f)(Args...)) noexcept
@@ -284,8 +275,9 @@ protected:
 	// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
 	class Wrapper<T&, Dummy> final : public Base {
 	public:
-		~Wrapper() noexcept final = default;
+		virtual ~Wrapper() noexcept = default;
 
+		// cppcheck-suppress uninitMemberVar
 		explicit Wrapper(T& obj) noexcept
 			: m_obj{&obj}
 		{}
@@ -359,7 +351,7 @@ protected:
 			return *this;
 		}
 
-		~Forwarder() noexcept final
+		virtual ~Forwarder() noexcept
 		{
 			cleanup(m_w);
 		}
@@ -545,6 +537,57 @@ struct Callable {
 	static impl::Callable<R, Args...> callable_impl(R(Args...));
 	using type = decltype(callable_impl(std::declval<F>()));
 };
+
+/*!
+ * \brief A RAII-style wrapper to call a specific function (usually a lambda)
+ *        upon destruction.
+ */
+template <typename F>
+class Cleanup {
+public:
+	constexpr explicit Cleanup(F&& f)
+		: m_f{std::move(f)}
+		, m_valid{true}
+	{}
+
+	~Cleanup()
+	{
+		cleanup();
+	}
+
+	Cleanup(Cleanup const&) = delete;
+	void operator=(Cleanup const&) = delete;
+
+	Cleanup(Cleanup&& c) noexcept
+	{
+		*this = std::move(c);
+	}
+
+	Cleanup& operator=(Cleanup&& c) noexcept
+	{
+		cleanup();
+
+		if((m_valid = c.m_valid)) {
+			m_f = std::move(c.m_f);
+			c.m_valid = false;
+		}
+
+		return *this;
+	}
+
+	void cleanup()
+	{
+		if(m_valid) {
+			m_valid = false;
+			m_f();
+		}
+	}
+
+private:
+	F m_f;
+	bool m_valid = false;
+};
+
 #	endif // STORED_cplusplus >= 201103L
 
 /*!

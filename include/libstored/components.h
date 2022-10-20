@@ -4,18 +4,9 @@
  * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2022  Jochem Rutgers
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #ifdef __cplusplus
@@ -1760,6 +1751,11 @@ public:
 	constexpr PinIn() noexcept = default;
 
 	/*!
+	 * \brief Dtor.
+	 */
+	virtual ~PinIn() = default;
+
+	/*!
 	 * \brief Initialize the pin, given a list of objects and a container.
 	 */
 	constexpr PinIn(PinInObjects<Container> const& o, Container& container)
@@ -1949,6 +1945,11 @@ public:
 	constexpr PinOut() noexcept = default;
 
 	/*!
+	 * \brief Dtor.
+	 */
+	virtual ~PinOut() = default;
+
+	/*!
 	 * \brief Initialize the pin, given a list of objects and a container.
 	 */
 	constexpr PinOut(PinOutObjects<Container> const& o, Container& container)
@@ -2080,7 +2081,8 @@ template <typename Container, typename T = float>
 using PIDObjects = FreeObjectsList<
 	FreeFunctions<float, Container, 'f'>,
 	FreeVariables<
-		T, Container, 'y', 's', 'p', 'i', 'd', 'k', 'I', 'L', 'H', 'l', 'h', '3', 'F', 'u'>,
+		T, Container, 'y', 's', 'p', 'i', 'd', 'k', 'I', 'L', 'H', 'l', 'h', 'E', '3', 'F',
+		'u'>,
 	FreeVariables<bool, Container, 'e', 'r'>>;
 
 /*!
@@ -2103,6 +2105,7 @@ using PIDObjects = FreeObjectsList<
  *     float=inf int high
  *     float=-inf low
  *     float=inf high
+ *     float=inf error max
  *     float=inf epsilon
  *     bool reset
  *     float=nan override
@@ -2194,8 +2197,8 @@ public:
 	{
 		return PIDObjects<Container, type>::template create<OnlyId...>(
 			prefix, "frequency", "y", "setpoint", "Kp", "Ti", "Td", "Kff", "int",
-			"int low", "int high", "low", "high", "epsilon", "override", "u", "enable",
-			"reset");
+			"int low", "int high", "low", "high", "error max", "epsilon", "override",
+			"u", "enable", "reset");
 	}
 
 	/*! \brief Return the \c frequency object. */
@@ -2435,6 +2438,25 @@ public:
 		return o.valid() ? o.get() : std::numeric_limits<type>::infinity();
 	}
 
+	/*! \brief Return the <tt>error max</tt> object. */
+	decltype(auto) errorMaxObject() const noexcept
+	{
+		return m_o.template get<'E'>();
+	}
+
+	/*! \brief Return the <tt>error max</tt> object. */
+	decltype(auto) errorMaxObject() noexcept
+	{
+		return m_o.template get<'E'>();
+	}
+
+	/*! \brief Return the <tt>error max</tt> value, or inf when not available. */
+	type errorMax() const noexcept
+	{
+		decltype(auto) o = errorMaxObject();
+		return o.valid() ? o.get() : std::numeric_limits<type>::infinity();
+	}
+
 	/*! \brief Return the \c epsilon object. */
 	decltype(auto) epsilonObject() const noexcept
 	{
@@ -2632,6 +2654,15 @@ protected:
 
 			type sp = setpoint();
 			type e = sp - y;
+
+			auto e_o = errorMaxObject();
+			if(e_o.valid()) {
+				auto em = e_o.get();
+				if(e < -em)
+					e = -em;
+				else if(e > em)
+					e = em;
+			}
 
 			if(unlikely(doReset)) {
 				float f = frequency();
@@ -3697,7 +3728,7 @@ using RampObjects = FreeObjectsList<
  * constexpr auto ramp_o = stored::Ramp<stored::YourStore>::objects("/ramp/");
  *
  * // Instantiate the generator, tailored to the available fields in the store.
- * stored::rampWave<stored::YourStore, ramp_o.flags()> ramp{ramp_o, yourStore};
+ * stored::Ramp<stored::YourStore, ramp_o.flags()> ramp{ramp_o, yourStore};
  * \endcode
  *
  * The parameters can be changed while running (when \c reset is set to
@@ -3939,7 +3970,7 @@ public:
 	 */
 	bool isHealthy() const noexcept
 	{
-		if(std::isnan(m_a))
+		if(std::isnan(m_adt))
 			// No ramping configured.
 			return true;
 
@@ -3947,15 +3978,15 @@ public:
 			// No limit set.
 			return true;
 
-		if(!(m_a > 0))
+		if(!(m_adt > 0))
 			// That's not good. Numbers are probably already to far apart.
 			return false;
 
-		// m_a is the smallest value that should be able to influence the position.
-		if(m_x + m_a == m_x)
+		// m_adt is the smallest value that should be able to influence the position.
+		if(m_x + m_adt == m_x)
 			return false;
 
-		if(m_start + m_a == m_start)
+		if(m_start + m_adt == m_start)
 			return false;
 
 		return true;
@@ -3965,11 +3996,10 @@ protected:
 	/*!
 	 * \brief Compute the output of the ramp.
 	 *
-	 * The implementation uses integers to determine the current
-	 * speed.  Acceleration is always +/- 1 (times m_a) per tick.
-	 * So, the actual speed is <tt>m_v_ * m_a</tt>, and the
-	 * position is an discrete offset <tt>m_x_ * m_a</tt> from \c
-	 * m_start.
+	 * The implementation uses integers to determine the current speed.
+	 * Acceleration is always +/- 1 (times m_adt) per tick.  So, the actual
+	 * speed is <tt>m_v_ * m_adt</tt>, and the position is an discrete
+	 * offset <tt>m_x_ * m_adt</tt> from \c m_start.
 	 *
 	 * By using this discrete approach, the distance to stop can be
 	 * determined easily.
@@ -3980,8 +4010,8 @@ protected:
 
 		if(likely(std::isnan(output))) {
 			decltype(auto) ro = resetObject();
-			if(unlikely((ro.valid() && ro.get()) || std::isnan(m_a))) {
-				type v = m_a > 0 ? (type)m_v_ * m_a : 0;
+			if(unlikely((ro.valid() && ro.get()) || std::isnan(m_adt))) {
+				type v = m_adt > 0 ? (type)m_v_ * m_adt : 0;
 
 				if(ro.valid())
 					ro = false;
@@ -3997,6 +4027,7 @@ protected:
 				if(std::isnan(a) || a < 0)
 					a = 0;
 
+				// Compute a as the acceleration per tick.
 				a = std::min(sl, a * dt);
 
 				if(a == std::numeric_limits<type>::infinity()) {
@@ -4007,23 +4038,26 @@ protected:
 					a = sl / (type)v_steps;
 				}
 
-				m_a = a;
-				m_v_ = a > 0 ? (type_)std::lround(v * dt / a) : 0;
-				m_v_max_ = a > 0 ? (type_)std::lround(sl * dt / a) : 0;
+				m_adt = a * dt;
+				m_v_ = a > 0 ? (type_)std::lround(v / a) : 0;
+				m_v_max_ =
+					a > 0 ? std::max<type_>(1, (type_)std::lround(sl / a)) : 0;
 				m_x_ = 0;
 				m_x_stop_ = m_v_ * std::abs(m_v_) / 2;
 				m_start = m_x;
 			}
 
-			if(unlikely(!(m_a > 0))) {
+			if(unlikely(!(m_adt > 0))) {
 				output = input;
 			} else if(unlikely(!enabled())) {
 				m_start = output = input;
-				m_v_ = (type_)std::lround((output - m_x) / m_a);
+				m_v_ = (type_)std::lround((output - m_x) / m_adt);
+				m_x_ = 0;
+				m_x_stop_ = m_v_ * std::abs(m_v_) / 2;
 			} else {
 				auto err = input - m_x;
 
-				if(std::fabs(err) < m_a && (m_v_ >= -1 && m_v_ <= 1)) {
+				if(std::fabs(err) < m_adt && (m_v_ >= -1 && m_v_ <= 1)) {
 					// Close enough. Stop.
 					m_x_ = m_x_stop_ = m_v_ = 0;
 					output = m_start = input;
@@ -4040,8 +4074,8 @@ protected:
 							x_stop_ -= ++v_;
 					}
 
-					if(m_v_ > 0 && err < (type)(x_stop_ + v_ + 1) * m_a) {
-						if(err < (type)(m_x_stop_ + m_v_) * m_a)
+					if(m_v_ > 0 && err < (type)(x_stop_ + v_ + 1) * m_adt) {
+						if(err < (type)(m_x_stop_ + m_v_) * m_adt)
 							// Break.
 							m_x_stop_ -= --m_v_;
 						// else hold speed.
@@ -4062,8 +4096,8 @@ protected:
 							x_stop_ -= --v_;
 					}
 
-					if(m_v_ < 0 && err > (type)(x_stop_ + v_ - 1) * m_a) {
-						if(err > (type)(m_x_stop_ + m_v_) * m_a)
+					if(m_v_ < 0 && err > (type)(x_stop_ + v_ - 1) * m_adt) {
+						if(err > (type)(m_x_stop_ + m_v_) * m_adt)
 							// Break.
 							m_x_stop_ -= ++m_v_;
 						// else hold speed.
@@ -4074,7 +4108,7 @@ protected:
 				}
 
 				m_x_ += m_v_;
-				output = m_start + (type)m_x_ * m_a;
+				output = m_start + (type)m_x_ * m_adt;
 			}
 
 			m_x = output;
@@ -4091,7 +4125,7 @@ protected:
 
 private:
 	Bound m_o;
-	type m_a{std::numeric_limits<type>::quiet_NaN()};
+	type m_adt{std::numeric_limits<type>::quiet_NaN()};
 	type_ m_v_{};
 	type_ m_v_max_{};
 	type_ m_x_{};

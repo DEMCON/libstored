@@ -1,25 +1,24 @@
 # libstored, distributed debuggable data stores.
 # Copyright (C) 2020-2022  Jochem Rutgers
 #
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 include(ExternalProject)
 find_package(Git)
 
+if("${HEATSHRINK_GIT_URL}" STREQUAL "")
+	if(DEFINED ENV{LIBSTORED_GIT_CACHE})
+		set(HEATSHRINK_GIT_URL $ENV{LIBSTORED_GIT_CACHE}/heatshrink)
+	else()
+		set(HEATSHRINK_GIT_URL "https://github.com/atomicobject/heatshrink.git")
+	endif()
+endif()
+
 ExternalProject_Add(
 	heatshrink-extern
-	GIT_REPOSITORY https://github.com/atomicobject/heatshrink.git
+	GIT_REPOSITORY ${HEATSHRINK_GIT_URL}
 	GIT_TAG v0.4.1
 	CONFIGURE_COMMAND ""
 	BUILD_COMMAND ""

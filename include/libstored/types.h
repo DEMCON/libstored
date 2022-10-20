@@ -4,18 +4,9 @@
  * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2022  Jochem Rutgers
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #ifdef __cplusplus
@@ -27,6 +18,7 @@
 #	include <algorithm>
 #	include <cstdlib>
 #	include <cstring>
+#	include <exception>
 #	include <limits>
 
 #	if STORED_cplusplus >= 201103L
@@ -290,6 +282,7 @@ public:
 	 * \param buffer the reference to this Variable's buffer inside container's buffer
 	 */
 	// cppcheck-suppress uninitMemberVar
+	// cppcheck-suppress constParameter
 	Variable(Container& container, type& buffer) noexcept
 		: m_buffer(&buffer)
 	{
@@ -478,6 +471,7 @@ public:
 	typedef typename base::type type;
 
 	/*! \copydoc stored::Variable::Variable(Container&, type&) */
+	// cppcheck-suppress uninitMemberVar
 	constexpr Variable(Container& container, type& buffer) noexcept
 		: base(container, buffer)
 		, m_container(&container)
@@ -487,6 +481,7 @@ public:
 	{}
 
 	/*! \copydoc stored::Variable::Variable() */
+	// cppcheck-suppress uninitMemberVar
 	constexpr Variable() noexcept
 		: m_container()
 #	ifdef _DEBUG
@@ -855,7 +850,25 @@ public:
 	size_t callback(bool set, void* buffer, size_t len) const
 	{
 		stored_assert(valid());
-		return container().callback(set, buffer, len, id());
+
+		if(!Config::UnalignedAccess
+		   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+		   && ((uintptr_t)buffer & (std::min(sizeof(void*), sizeof(type)) - 1U))) {
+			// Unaligned access, do the callback on a local buffer.
+			stored_assert(len >= sizeof(type));
+			type v;
+
+			if(set) {
+				container().callback(true, &v, sizeof(v), id());
+				memcpy(buffer, &v, sizeof(v));
+			} else {
+				memcpy(&v, buffer, sizeof(v));
+				container().callback(false, &v, sizeof(v), id());
+			}
+
+			return sizeof(v);
+		} else
+			return container().callback(set, buffer, len, id());
 	}
 
 	/*!
@@ -1110,6 +1123,7 @@ public:
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 		stored_assert(
 			!Type::isFixed(this->type())
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 			|| (reinterpret_cast<uintptr_t>(buffer) & (Type::size(this->type()) - 1))
 				   == 0);
 	}
@@ -1194,7 +1208,7 @@ public:
 		}
 
 		if(Type::isFunction(type())) {
-			len = container().callback(false, dst, len, (unsigned int)m_f);
+			len = callback(false, dst, len);
 		} else {
 			entryRO(len);
 			if(unlikely(type() == Type::String)) {
@@ -1238,7 +1252,7 @@ public:
 	Vector<char>::type get() const
 	{
 		Vector<char>::type buf(size());
-		get(&buf[0], buf.size());
+		get(buf.data(), buf.size());
 		return buf;
 	}
 
@@ -1262,9 +1276,9 @@ public:
 		}
 
 		if(isFunction()) {
-			len = container().callback(
+			len = callback(
 				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-				true, const_cast<void*>(src), len, (unsigned int)m_f);
+				true, const_cast<void*>(src), len);
 		} else {
 			bool changed = true;
 			size_t changed_len = len;
@@ -1325,7 +1339,7 @@ public:
 	 */
 	void set(Vector<char>::type const& data)
 	{
-		set(&data[0], data.size());
+		set(data.data(), data.size());
 	}
 
 	/*!
@@ -1336,6 +1350,37 @@ public:
 	{
 		stored_assert((type() & ~Type::FlagFunction) == Type::String);
 		set(data, strlen(data));
+	}
+
+	/*!
+	 * \brief Invoke the function callback.
+	 * \details Only works if this variant is a function.
+	 */
+	size_t callback(bool set, void* buffer, size_t len) const
+	{
+		stored_assert(valid() && isFunction());
+		size_t size_ = 0;
+
+		if(!Config::UnalignedAccess
+		   && Type::isFixed(type())
+		   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+		   && ((uintptr_t)buffer
+		       & (std::min(sizeof(void*), size_ = Type::size(type())) - 1U))) {
+			// Unaligned access, do the callback on a local buffer.
+			stored_assert(size_ <= sizeof(uint64_t) && len >= size_);
+			uint64_t v = 0;
+
+			if(set) {
+				container().callback(true, &v, size_, (unsigned int)m_f);
+				memcpy(buffer, &v, size_);
+			} else {
+				memcpy(&v, buffer, size_);
+				container().callback(false, &v, size_, (unsigned int)m_f);
+			}
+
+			return size_;
+		} else
+			return container().callback(set, buffer, len, (unsigned int)m_f);
 	}
 
 #	ifdef STORED_HAVE_QT

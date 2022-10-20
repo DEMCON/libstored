@@ -4,18 +4,9 @@
  * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2022  Jochem Rutgers
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #ifdef __cplusplus
@@ -72,6 +63,18 @@ public:
 		if(blocked())
 			return;
 
+#	ifdef STORED_HAVE_ZTH
+		// With Zth, the encode context may be different from
+		// Debugger's CmdTrace context.  As we pass a buffer pointer to
+		// encode within CmdTrace, this buffer should not be changed
+		// (realloc'ed) meanwhile. Set Config::AvoidDynamicMemory,
+		// increase Config::DebuggerStreamBufferOverflow, or do proper
+		// reserve() when this assert goes off.
+		stored_assert(
+			!Config::AvoidDynamicMemory
+			|| m_buffer.size() + len <= m_buffer.capacity());
+#	endif
+
 		m_buffer.append(static_cast<char const*>(buffer), len);
 	}
 
@@ -87,6 +90,11 @@ public:
 		return m_buffer;
 	}
 
+	void swap(String::type& other) noexcept
+	{
+		m_buffer.swap(other);
+	}
+
 	bool flush() final
 	{
 		block();
@@ -97,6 +105,14 @@ public:
 	{
 		m_buffer.clear();
 		unblock();
+	}
+
+	void drop(size_t cnt) noexcept
+	{
+		if(cnt < m_buffer.size())
+			m_buffer.erase(0, cnt);
+		else
+			m_buffer.clear();
 	}
 
 	bool empty() const noexcept
@@ -117,6 +133,24 @@ public:
 	bool blocked() const noexcept
 	{
 		return m_block;
+	}
+
+	size_t fits(size_t more) const noexcept
+	{
+		size_t const default_max = Config::DebuggerStreamBuffer;
+		size_t const real_max = default_max + Config::DebuggerStreamBufferOverflow;
+
+		// Allow some data to be processed, even if the input is too large.
+		more = std::min(more, real_max);
+
+		size_t size = buffer().size();
+
+		// Allow the data to get into the overflow area, but only if it was
+		// below the normal max.
+		if(size >= default_max)
+			return 0;
+
+		return std::min(more, real_max - size);
 	}
 
 private:
@@ -173,6 +207,11 @@ public:
 		m_string.clear();
 	}
 
+	void drop(size_t cnt) noexcept
+	{
+		m_string.drop(cnt);
+	}
+
 	bool empty() const noexcept
 	{
 		return
@@ -185,6 +224,11 @@ public:
 	String::type const& buffer() const noexcept
 	{
 		return m_string.buffer();
+	}
+
+	void swap(String::type& other) noexcept
+	{
+		m_string.swap(other);
 	}
 
 	void block() noexcept
@@ -202,6 +246,19 @@ public:
 		return m_string.blocked();
 	}
 
+	size_t fits(size_t more) const noexcept
+	{
+		// Use the overflow region only for unexpected compression output.
+		size_t const default_max = Config::DebuggerStreamBuffer;
+		more = std::min(more, default_max);
+		size_t size = buffer().size();
+
+		if(size >= default_max)
+			return 0;
+
+		return std::min(more, default_max - size);
+	}
+
 private:
 	CompressLayer m_compress;
 	Stream<false> m_string;
@@ -214,6 +271,7 @@ private:
 /*!
  * \brief Container-template-type-invariant base class of a wrapper for #stored::Variant.
  */
+// NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
 class DebugVariantBase {
 	CLASS_NO_WEAK_VTABLE
 public:
@@ -302,6 +360,7 @@ protected:
  * \see #stored::DebugVariant
  */
 template <typename Container = void>
+// NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
 class DebugVariantTyped : public DebugVariantBase {
 public:
 	/*!
@@ -392,6 +451,7 @@ private:
  * default-assignable, and can therefore be used as a value in a standard
  * container.
  */
+// NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
 class DebugVariant final : public DebugVariantBase {
 	CLASS_NO_WEAK_VTABLE
 public:
@@ -429,8 +489,10 @@ public:
 		new(m_buffer) DebugVariantTyped<Container>(variant);
 		// Check if the cast of variant() works properly.
 		// cppcheck-suppress assertWithSideEffect
-		stored_assert( // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+		stored_assert(
 			static_cast<DebugVariantBase*>(
+				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 				reinterpret_cast<DebugVariantTyped<Container>*>(m_buffer))
 			== &this->variant());
 	}
@@ -757,6 +819,7 @@ public:
 	SFINAE_IS_FUNCTION(F, ListCallback, void)
 	list(F&& f) const
 	{
+		// cppcheck-suppress constParameter
 		auto cb = [](char const* name, DebugVariant& variant, void* f_) {
 			(*static_cast<typename std::decay<F>::type*>(f_))(name, variant);
 		};

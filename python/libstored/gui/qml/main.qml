@@ -2,18 +2,9 @@
  * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2022  Jochem Rutgers
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 import QtQuick
@@ -88,24 +79,6 @@ Window {
                     interval: 300
                     repeat: false
                     onTriggered: objects.setFilterRegularExpression("(?i)" + filter.text)
-                }
-            }
-
-            Controls.Button {
-                id: plotterPause
-                font.pixelSize: root.fontSize
-                Layout.fillHeight: true
-                Layout.preferredWidth: root.fontSize * 5
-                background.antialiasing: true
-
-                text: "Plot"
-                checked: plotter.paused
-                visible: plotter.available
-                enabled: plotter.plotting
-                onClicked: { plotter.togglePause() }
-
-                ToolTip {
-                    text: "Toggles whether the plots are automatically updated"
                 }
             }
 
@@ -193,19 +166,99 @@ Window {
             visible: count > 0
         }
 
-        Controls.TextField {
-            id: req
-            Layout.preferredHeight: root.fontSize * 2
-            font.pixelSize: root.fontSize
+        RowLayout {
             Layout.fillWidth: true
-            placeholderText: "enter command"
-            placeholderTextColor: "#808080"
-            background.antialiasing: true
-            topPadding: 0
-            bottomPadding: 0
+            Layout.preferredHeight: root.fontSize * 2
+            Layout.fillHeight: false
 
-            onAccepted: {
-                rep.text = client.req(text)
+            Controls.TextField {
+                id: req
+                Layout.fillHeight: true
+                font.pixelSize: root.fontSize
+                Layout.fillWidth: true
+                placeholderText: "enter command"
+                placeholderTextColor: "#808080"
+                background.antialiasing: true
+                topPadding: 0
+                bottomPadding: 0
+
+                onAccepted: {
+                    rep.text = client.req(text)
+                }
+            }
+
+            Controls.Button {
+                id: plotterPause
+                font.pixelSize: root.fontSize
+                Layout.fillHeight: true
+                Layout.preferredWidth: root.fontSize * 5
+                background.antialiasing: true
+
+                text: "Plot"
+                checked: plotter.paused
+                visible: plotter.available
+                enabled: plotter.plotting
+                onClicked: { plotter.togglePause() }
+
+                ToolTip {
+                    text: "Toggles whether the plots are automatically updated"
+                }
+            }
+
+            Controls.Button {
+                id: streamsRefresh
+                font.pixelSize: root.fontSize
+                Layout.fillHeight: true
+                Layout.preferredWidth: root.fontSize * 7
+                background.antialiasing: true
+
+                text: "Streams"
+                visible: streams.supported
+                onClicked: { streams.refresh() }
+
+                ToolTip {
+                    text: "Refreshes the available lists of streams"
+                }
+            }
+
+            Repeater {
+                visible: streams.supported && streams.streams != ""
+                model: streams.streams.split('')
+
+                RowLayout {
+                    Layout.fillWidth: false
+
+                    CheckBox {
+                        Layout.fillHeight: true
+                        spacing: 3
+                        Layout.preferredWidth: root.fontSize * 1.25
+
+                        onCheckedChanged: {
+                            if(checked) {
+                                var s = streams.enable(modelData, client.defaultPollInterval)
+                                var comp = Qt.createComponent("qrc:/Stream.qml")
+                                if(comp.status != Component.Ready) {
+                                    if(comp.status == Component.Error)
+                                        console.error(comp.errorString().trim())
+                                    else
+                                        console.error("Cannot load Stream window")
+                                } else {
+                                    var wnd = comp.createObject(root, { main: root, stream: s })
+                                    wnd.show()
+                                    wnd.closing.connect(function() {
+                                        checked = false
+                                    })
+                                }
+                            } else {
+                                streams.disable(modelData)
+                            }
+                        }
+                    }
+
+                    Controls.Label {
+                        text: modelData
+                    }
+                }
             }
         }
 

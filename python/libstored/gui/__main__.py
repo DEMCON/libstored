@@ -3,18 +3,9 @@
 # libstored, distributed debuggable data stores.
 # Copyright (C) 2020-2022  Jochem Rutgers
 #
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 import sys
 import argparse
@@ -271,6 +262,126 @@ class Plotter(QObject):
     plotting = Property(bool, _plotting_get, notify=plottingChanged)
 
 
+class Stream(QObject):
+    def __init__(self, stream, poll=None, parent=None):
+        super().__init__(parent=parent)
+        self._stream = stream
+        self._data = ''
+        self._timer = None
+        if poll is not None:
+            self.start(poll)
+
+    @Slot(float)
+    def start(self, interval_s):
+        if self._timer is None:
+            self._timer = QTimer(parent=self)
+            self._timer.setSingleShot(False)
+            self._timer.timeout.connect(self.poll)
+
+        self._timer.setInterval(interval_s * 1000)
+        self._timer.start()
+
+    @Slot()
+    def stop(self):
+        if self._timer is not None:
+            self._timer.stop()
+            self._timer = None
+
+    def __del__(self):
+        self.stop()
+
+    @Slot()
+    def poll(self):
+        self._stream.poll(callback=self._append)
+
+    dataChanged = Signal(str)
+
+    def _append(self, data):
+        if data != '':
+            global logger
+            logger.debug('Add to stream %s: %s', self.name, data)
+
+            self._data += data
+            self.dataChanged.emit(data)
+
+    def _data_get(self):
+        return self._data
+
+    data = Property(str, _data_get, notify=dataChanged)
+
+    @Slot()
+    def clear(self):
+        self._data = ''
+
+    def _name_get(self):
+        return self._stream.name
+
+    name = Property(str, _name_get, constant=True)
+
+
+class Streams(QObject):
+    def __init__(self, client, parent=None):
+        super().__init__(parent=parent)
+        self._client = client
+        self._streams = ''
+        self._data = {}
+        self.refresh()
+
+    def _streams_get(self):
+        return self._streams
+
+    streamsChanged = Signal()
+    streams = Property(str, _streams_get, notify=streamsChanged)
+
+    @Slot()
+    def refresh(self):
+        if self._supported():
+            streams = self._client.otherStreams()
+            streams = ''.join(streams)
+            if self._streams != streams:
+                self._streams = streams
+                self.streamsChanged.emit()
+        else:
+            # In multi-mode, streams cannot be accessed.
+            self._streams = ''
+
+    def _supported(self):
+        return not self._client.multi and 's' in self._client.capabilities()
+
+    supported = Property(bool, _supported, constant=True)
+
+    enabledChanged = Signal()
+
+    def _enabled(self):
+        return ''.join(self._data.keys())
+
+    enabled = Property(str, _enabled, notify=enabledChanged)
+
+    @Slot(str, result=Stream)
+    @Slot(str, float, result=Stream)
+    def enable(self, s, interval_s=None):
+        if not self._supported:
+            return None
+        if s not in self._streams:
+            return None
+
+        if s in self._data:
+            return self._data[s]
+
+        stream = Stream(self._client.stream(s), poll=interval_s, parent=self)
+        self._data[s] = stream
+        self.enabledChanged.emit()
+        return stream
+
+    @Slot(str)
+    def disable(self, s):
+        if s not in self._data:
+            return
+
+        self._data[s].stop()
+        del self._data[s]
+        self.enabledChanged.emit()
+
 
 class ObjectListModel(QAbstractListModel):
     NameRole = Qt.UserRole + 1000
@@ -425,6 +536,9 @@ if __name__ == '__main__':
         Plotter._available = False
     plotter = Plotter(parent=app)
     engine.rootContext().setContextProperty("plotter", plotter)
+
+    streams = Streams(client, parent=app)
+    engine.rootContext().setContextProperty("streams", streams)
 
     model = ObjectListModel(client.list(), parent=app)
     filteredObjects = NatSort(parent=app)

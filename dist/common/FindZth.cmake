@@ -1,18 +1,9 @@
 # libstored, distributed debuggable data stores.
 # Copyright (C) 2020-2022  Jochem Rutgers
 #
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 include(ExternalProject)
 include(CheckIncludeFileCXX)
@@ -23,6 +14,9 @@ if(TARGET libzth)
 	message(STATUS "Skipped looking for Zth; target already exists")
 else()
 	find_package(Zth CONFIG)
+	if(Zth_FOUND)
+		message(STATUS "Found Zth")
+	endif()
 endif()
 
 if(NOT Zth_FOUND AND Zth_FIND_REQUIRED)
@@ -33,6 +27,11 @@ if(NOT Zth_FOUND AND Zth_FIND_REQUIRED)
 	else()
 		set(Zth_FOUND 1)
 
+		# CMAKE_MODULE_PATH and CMAKE_PREFIX_PATH may be ;-separated
+		# list. Passing ; via ExternalProject_Add is a bit awkward...
+		string(REPLACE ";" "\\\\\\\\\\\\\\\\;" CMAKE_MODULE_PATH_ "${CMAKE_MODULE_PATH}")
+		string(REPLACE ";" "\\\\\\\\\\\\\\\\;" CMAKE_PREFIX_PATH_ "${CMAKE_PREFIX_PATH}")
+
 		set(libzth_flags
 			-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 			-DCMAKE_GENERATOR=${CMAKE_GENERATOR}
@@ -41,7 +40,6 @@ if(NOT Zth_FOUND AND Zth_FIND_REQUIRED)
 			-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
 			-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
 			-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-			-DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 			-DZTH_BUILD_EXAMPLES=OFF
 			-DZTH_TESTS=OFF
 			-DZTH_DOCUMENTATION=OFF
@@ -71,13 +69,13 @@ if(NOT Zth_FOUND AND Zth_FIND_REQUIRED)
 		set(_libzth_loc ${CMAKE_INSTALL_PREFIX}/lib/libzth.a)
 
 		set(libzth_repo "https://github.com/jhrutgers/zth.git")
-		set(libzth_tag "v1.0.0")
+		set(libzth_tag "v1.1.0")
 
 		ExternalProject_Add(
 			libzth-extern
 			GIT_REPOSITORY ${libzth_repo}
 			GIT_TAG ${libzth_tag}
-			CMAKE_ARGS ${libzth_flags}
+			CMAKE_ARGS ${libzth_flags} "-DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH_}" "-DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH_}"
 			INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
 			BUILD_BYPRODUCTS ${_libzth_loc}
 			UPDATE_DISCONNECTED 1

@@ -3,18 +3,9 @@
 # libstored, distributed debuggable data stores.
 # Copyright (C) 2020-2022  Jochem Rutgers
 #
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 import sys
 import argparse
@@ -89,9 +80,14 @@ if __name__ == '__main__':
     engine = QQmlApplicationEngine(parent=app)
     engine.rootContext().setContextProperty("client", client)
 
-    spec = importlib.util.spec_from_file_location("visu_rcc", args.rcc[0])
-    visu_rcc = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(visu_rcc)
+    if os.path.exists(args.rcc[0]):
+        # Try loading from file.
+        spec = importlib.util.spec_from_file_location("visu_rcc", args.rcc[0])
+        visu_rcc = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(visu_rcc)
+    else:
+        # Try loading as module.
+        importlib.import_module(args.rcc[0])
 
     engine.addImportPath("qrc:/");
     engine.load('qrc:/main.qml')

@@ -2,18 +2,9 @@
  * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2022  Jochem Rutgers
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #include <libstored/poller.h>
@@ -257,7 +248,7 @@ void TerminalLayer::decode(void* buffer, size_t len)
 			break;
 		case StateDebugEsc:
 			if(likely(c == EscEnd)) {
-				base::decode(&m_buffer[0], m_buffer.size());
+				base::decode(m_buffer.data(), m_buffer.size());
 				m_decodeState = StateNormal;
 				m_buffer.clear();
 				nonDebugOffset = i + 1;
@@ -397,7 +388,7 @@ void SegmentationLayer::decode(void* buffer, size_t len)
 
 		if(buffer_[len - 1] == EndMarker) {
 			// Got it.
-			base::decode(&m_decode[0], m_decode.size());
+			base::decode(m_decode.data(), m_decode.size());
 			m_decode.clear();
 		}
 	} else {
@@ -1964,7 +1955,7 @@ int FileLayer::recv(long timeout_us)
 		return setLastError(EBADF);
 
 again:
-	ssize_t cnt = read(fd_r(), &m_bufferRead[0], m_bufferRead.size());
+	ssize_t cnt = read(fd_r(), m_bufferRead.data(), m_bufferRead.size());
 
 	if(cnt == -1) {
 		switch(errno) {
@@ -1988,7 +1979,7 @@ again:
 		close();
 		return setLastError(EAGAIN);
 	} else {
-		decode(&m_bufferRead[0], (size_t)cnt);
+		decode(m_bufferRead.data(), (size_t)cnt);
 		return setLastError(0);
 	}
 }
@@ -2380,12 +2371,12 @@ done:
 	// Issue a new write.
 	stored_assert(len < (size_t)std::numeric_limits<DWORD>::max());
 	m_bufferWrite.resize(len);
-	memcpy(&m_bufferWrite[0], buffer, len);
+	memcpy(m_bufferWrite.data(), buffer, len);
 	setLastError(0);
 	resetOverlappedWrite();
 	m_overlappedWrite.Offset = m_overlappedWrite.OffsetHigh = 0xffffffff;
 	if(WriteFileEx(
-		   fd_w(), &m_bufferWrite[0], (DWORD)len, &m_overlappedWrite,
+		   fd_w(), m_bufferWrite.data(), (DWORD)len, &m_overlappedWrite,
 		   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 		   (LPOVERLAPPED_COMPLETION_ROUTINE)(void*)&writeCompletionRoutine)) {
 		// Already finished.
@@ -2459,9 +2450,9 @@ again:
 	// Read everything there is to read.
 	// This should be finished quickly.
 	resetOverlappedRead();
-	if(ReadFile(m_fd_r, &m_bufferRead[0], (DWORD)readable, &bytesRead, &m_overlappedRead)) {
+	if(ReadFile(m_fd_r, m_bufferRead.data(), (DWORD)readable, &bytesRead, &m_overlappedRead)) {
 		// Finished immediately.
-		decode(&m_bufferRead[0], (size_t)bytesRead);
+		decode(m_bufferRead.data(), (size_t)bytesRead);
 		didDecode = true;
 		goto again;
 	} else {
@@ -2545,7 +2536,7 @@ again:
 	DWORD read = 0;
 	if(GetOverlappedResult(m_fd_r, &m_overlappedRead, &read, FALSE)) {
 		// Finished the previous read.
-		decode(&m_bufferRead[0], read);
+		decode(m_bufferRead.data(), read);
 		// Go issue the next read.
 		return startRead() == EAGAIN ? setLastError(0) : lastError();
 	} else {
@@ -3152,8 +3143,8 @@ again:
 	if((size_t)cnt > m_bufferRead.size())
 		cnt = (DWORD)m_bufferRead.size();
 
-	if(ReadFile(fd_r(), &m_bufferRead[0], cnt, &cnt, NULL)) {
-		decode(&m_bufferRead[0], (size_t)cnt);
+	if(ReadFile(fd_r(), m_bufferRead.data(), cnt, &cnt, NULL)) {
+		decode(m_bufferRead.data(), (size_t)cnt);
 		didDecode = true;
 		goto again;
 	}
@@ -3375,6 +3366,7 @@ int SerialLayer::resetAutoBaud()
 	setLastError(0);
 
 	int res = 0;
+	// NOLINTNEXTLINE(concurrency-mt-unsafe)
 	if(tcsendbreak(fd_r(), 0))
 		res = errno;
 

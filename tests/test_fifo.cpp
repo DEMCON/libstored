@@ -2,18 +2,9 @@
  * libstored, distributed debuggable data stores.
  * Copyright (C) 2020-2022  Jochem Rutgers
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #include "libstored/fifo.h"
@@ -189,16 +180,16 @@ TEST(Fifo, BoundedMessageFifo)
 	stored::MessageFifo<16, 4> f;
 
 	EXPECT_TRUE(f.bounded());
-	EXPECT_EQ(f.space(), 16u);
+	EXPECT_EQ(f.space(), 15u);
 	EXPECT_FALSE(f.full());
-	EXPECT_EQ(f.push_back({{"abc", 3}, {"defg", 4}, {"ghijk", 5}, {"lmno", 4}}), 4u);
+	EXPECT_EQ(f.push_back({{"abc", 3}, {"defg", 4}, {"ghijk", 5}, {"lmn", 3}}), 4u);
 	EXPECT_EQ(f.space(), 0u);
 	// Does not fit
 	EXPECT_FALSE(f.push_back({"h", 1}));
 
 	EXPECT_EQ_MSG(f.front(), "abc");
 	f.pop_front();
-	EXPECT_EQ(f.space(), 3u);
+	EXPECT_EQ(f.space(), 2u);
 
 	// Too long message.
 	EXPECT_FALSE(f.push_back({"hijl", 4}));
@@ -225,7 +216,7 @@ TEST(Fifo, BoundedMessageFifo)
 
 	f.clear();
 	EXPECT_TRUE(f.empty());
-	EXPECT_EQ(f.push_back({{"0123", 4}, {"456789abcde", 11}}), 2u);
+	EXPECT_EQ(f.push_back({{"0123", 4}, {"456789abcd", 10}}), 2u);
 	EXPECT_EQ_MSG(f.front(), "0123");
 
 	// No room in buffer.
@@ -234,9 +225,9 @@ TEST(Fifo, BoundedMessageFifo)
 
 	f.pop_front();
 	// Put at start of buffer, leaving the last byte unused.
-	EXPECT_EQ(f.space(), 4u);
-	EXPECT_TRUE(f.push_back({"abcd", 4}));
-	EXPECT_EQ_MSG(f.front(), "456789abcde");
+	EXPECT_EQ(f.space(), 3u);
+	EXPECT_TRUE(f.push_back({"abc", 3}));
+	EXPECT_EQ_MSG(f.front(), "456789abcd");
 
 	// There is one unusable byte at the end, so this won't fit.
 	EXPECT_FALSE(f.push_back({"e", 1}));
@@ -261,12 +252,12 @@ TEST(Fifo, IterateMessageFifo)
 TEST(Fifo, ProducerConsumer)
 {
 	stored::MessageFifo<16, 4> f;
-	char const msg[17] = "abcdefghijklmnop";
+	char const msg[16] = "abcdefghijklmno";
 
 	long pcs = 0;
 	std::thread p([&]() {
 		for(int l = 0; l < 1000; l++) {
-			size_t len = (size_t)(rand() % 16) + 1;
+			size_t len = (size_t)(rand() % 15) + 1;
 			for(size_t i = 0; i < len; i++)
 				pcs += (long)(msg[i] - 'a');
 
