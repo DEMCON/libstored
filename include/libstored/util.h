@@ -140,6 +140,7 @@
  *
  * \param Class the class this macro is embedded in
  */
+// NOLINTBEGIN
 #		if STORED_cplusplus >= 201103L
 #			define STORED_CLASS_NOCOPY(Class)                      \
 			public:                                                 \
@@ -160,6 +161,7 @@
 				void operator=(Class const&);
 #		endif
 #	endif
+// NOLINTEND
 
 #	ifndef CLASS_NO_WEAK_VTABLE
 /*!
