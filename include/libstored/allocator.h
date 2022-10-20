@@ -277,6 +277,7 @@ protected:
 	public:
 		virtual ~Wrapper() noexcept = default;
 
+		// cppcheck-suppress uninitMemberVar
 		explicit Wrapper(T& obj) noexcept
 			: m_obj{&obj}
 		{}

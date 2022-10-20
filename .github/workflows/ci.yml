@@ -33,7 +33,7 @@ jobs:
         run: |
           sudo apt update
           dist/ubuntu/bootstrap.sh
-          sudo apt install clang-tidy clang libegl1
+          sudo apt install clang-tidy clang libegl1 cppcheck
       - name: build Debug
         run: dist/ubuntu/build.sh Debug dev ${{matrix.cxx}} ${{matrix.zmq}} ${{matrix.zth}} test
       - name: build Release
@@ -49,7 +49,7 @@ jobs:
       - name: bootstrap
         run: |
           dist/ubuntu/bootstrap.sh
-          sudo apt install clang-tidy clang libegl1
+          sudo apt install clang-tidy clang libegl1 cppcheck
       - name: build Debug
         run: dist/ubuntu/build.sh Debug dev test
       - name: build Release

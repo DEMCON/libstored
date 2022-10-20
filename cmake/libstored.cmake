@@ -184,6 +184,9 @@ function(libstored_lib libprefix libpath)
 				"-bugprone-reserved-identifier," # Should be fixed.
 
 				"clang-analyzer-*,"
+
+				"-clang-diagnostic-defaulted-function-deleted,"
+
 				"concurrency-*,"
 
 				"cppcoreguidelines-*,"

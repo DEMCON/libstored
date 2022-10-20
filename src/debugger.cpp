@@ -760,6 +760,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 			if(size) {
 				char const* data = strstr.data();
 				response.encode(data, size, false);
+				// cppcheck-suppress knownConditionTrueFalse
 				stored_assert(data == strstr.data());
 
 				// Note that the buffer may have grown

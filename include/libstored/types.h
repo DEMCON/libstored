@@ -471,6 +471,7 @@ public:
 	typedef typename base::type type;
 
 	/*! \copydoc stored::Variable::Variable(Container&, type&) */
+	// cppcheck-suppress uninitMemberVar
 	constexpr Variable(Container& container, type& buffer) noexcept
 		: base(container, buffer)
 		, m_container(&container)
@@ -480,6 +481,7 @@ public:
 	{}
 
 	/*! \copydoc stored::Variable::Variable() */
+	// cppcheck-suppress uninitMemberVar
 	constexpr Variable() noexcept
 		: m_container()
 #	ifdef _DEBUG
@@ -1357,26 +1359,26 @@ public:
 	size_t callback(bool set, void* buffer, size_t len) const
 	{
 		stored_assert(valid() && isFunction());
-		size_t size = 0;
+		size_t size_ = 0;
 
 		if(!Config::UnalignedAccess
 		   && Type::isFixed(type())
 		   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 		   && ((uintptr_t)buffer
-		       & (std::min(sizeof(void*), size = Type::size(type())) - 1U))) {
+		       & (std::min(sizeof(void*), size_ = Type::size(type())) - 1U))) {
 			// Unaligned access, do the callback on a local buffer.
-			stored_assert(size <= sizeof(uint64_t) && len >= size);
+			stored_assert(size_ <= sizeof(uint64_t) && len >= size_);
 			uint64_t v = 0;
 
 			if(set) {
-				container().callback(true, &v, size, (unsigned int)m_f);
-				memcpy(buffer, &v, size);
+				container().callback(true, &v, size_, (unsigned int)m_f);
+				memcpy(buffer, &v, size_);
 			} else {
-				memcpy(&v, buffer, size);
-				container().callback(false, &v, size, (unsigned int)m_f);
+				memcpy(&v, buffer, size_);
+				container().callback(false, &v, size_, (unsigned int)m_f);
 			}
 
-			return size;
+			return size_;
 		} else
 			return container().callback(set, buffer, len, (unsigned int)m_f);
 	}
