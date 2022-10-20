@@ -872,6 +872,7 @@ public:
 	}
 
 	virtual void trigger(bool* triggered = nullptr) = 0;
+	virtual void trigger(bool* triggered, std::decay_t<type_out>& out) = 0;
 };
 
 /*!
@@ -970,6 +971,11 @@ public:
 	virtual void trigger(bool* triggered = nullptr) final
 	{
 		segments_type::trigger(triggered);
+	}
+
+	virtual void trigger(bool* triggered, std::decay_t<type_out>& out) final
+	{
+		out = segments_type::trigger(triggered);
 	}
 };
 
@@ -1683,7 +1689,12 @@ public:
 
 	T trigger(bool* triggered = nullptr)
 	{
-		return m_i < N ? m_p[m_i].get().trigger(triggered) : T{};
+		T x{};
+
+		if(m_i < N)
+			m_p[m_i].get().trigger(triggered, x);
+
+		return x;
 	}
 
 private:
@@ -1723,7 +1734,9 @@ public:
 
 	decltype(auto) trigger(bool* triggered = nullptr)
 	{
-		return m_p.get().trigger(triggered);
+		T x{};
+		m_p.get().trigger(triggered, x);
+		return x;
 	}
 
 private:
