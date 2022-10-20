@@ -975,7 +975,19 @@ public:
 
 	virtual void trigger(bool* triggered, std::decay_t<type_out>& out) final
 	{
+#	ifdef STORED_COMPILER_GCC
+		// In release builds with gcc, the following errors are
+		// triggered, complaining about the initializtion of 'x'
+		// (probably from Segments::trigger_helper()).  This might be a
+		// GCC bug.
+#		pragma GCC diagnostic push
+#		pragma GCC diagnostic ignored "-Wuninitialized"
+#		pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#	endif
 		out = segments_type::trigger(triggered);
+#	ifdef STORED_COMPILER_GCC
+#		pragma GCC diagnostic pop
+#	endif
 	}
 };
 
