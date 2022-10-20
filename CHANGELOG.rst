@@ -17,7 +17,7 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.3.0...HEAD
 
-`1.3.0`_ - 2022-10-19
+`1.3.0`_ - 2022-10-20
 ---------------------
 
 Added
