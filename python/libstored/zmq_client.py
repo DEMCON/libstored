@@ -254,7 +254,7 @@ class Object(QObject):
     @Slot()
     def asyncRead(self):
         event = QEvent(self.AsyncReadEvent)
-        QCoreApplication.postEvent(self, event, Qt.LowEventPriority - 1)
+        QCoreApplication.postEvent(self, event, -2)
 
     def _asyncRead(self):
         if self._asyncReadPending:

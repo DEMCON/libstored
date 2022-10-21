@@ -15,7 +15,24 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 
 ...
 
-.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.3.0...HEAD
+.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.3.1...HEAD
+
+
+
+`1.3.1`_ - 2022-10-21
+---------------------
+
+Fixed
+`````
+
+- PySide6 6.4.0 support in changed ``enum`` handling. However, the same issue
+  exists in matplotlib (issue `#24155`_).  To get plotting working again,
+  matplotlib>=3.6.2 or PySide6<6.4.0 is required.
+
+.. _#24155: https://github.com/matplotlib/matplotlib/issues/24155
+.. _1.3.1: https://github.com/DEMCON/libstored/releases/tag/v1.3.1
+
+
 
 `1.3.0`_ - 2022-10-20
 ---------------------
