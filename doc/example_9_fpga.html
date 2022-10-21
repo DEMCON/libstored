@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>9_fpga &mdash; libstored 1.2.0 documentation</title>
+  <title>9_fpga &mdash; libstored 1.3.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,7 +14,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -30,7 +32,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.2.0
+                1.3.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -106,11 +108,11 @@
            <div itemprop="articleBody">
              
   <section id="fpga">
-<h1>9_fpga<a class="headerlink" href="#fpga" title="Permalink to this headline"></a></h1>
+<h1>9_fpga<a class="headerlink" href="#fpga" title="Permalink to this heading"></a></h1>
 <section id="store-definition">
-<h2>Store definition<a class="headerlink" href="#store-definition" title="Permalink to this headline"></a></h2>
+<h2>Store definition<a class="headerlink" href="#store-definition" title="Permalink to this heading"></a></h2>
 <section id="examplefpga">
-<h3>ExampleFpga<a class="headerlink" href="#examplefpga" title="Permalink to this headline"></a></h3>
+<h3>ExampleFpga<a class="headerlink" href="#examplefpga" title="Permalink to this heading"></a></h3>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Any store definition is compatible with the FPGA, but there are a few
 // details to mention.
 
@@ -139,7 +141,7 @@ blob:3 blob
 </div>
 </section>
 <section id="examplefpga2">
-<h3>ExampleFpga2<a class="headerlink" href="#examplefpga2" title="Permalink to this headline"></a></h3>
+<h3>ExampleFpga2<a class="headerlink" href="#examplefpga2" title="Permalink to this heading"></a></h3>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// I assume that the FPGA has only one Synchronizer interface,
 // which is likely to be a UART, or otherwise byte-oriented stream.
 // If there are multiple stores in the FPGA, like one store per module in the FPGA,
@@ -152,7 +154,7 @@ int8 other store&#39;s int8
 </section>
 </section>
 <section id="application">
-<h2>Application<a class="headerlink" href="#application" title="Permalink to this headline"></a></h2>
+<h2>Application<a class="headerlink" href="#application" title="Permalink to this heading"></a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
 <span class="cm"> * \file</span>
 <span class="cm"> * \brief Example to show how to use libstored in VHDL.</span>
@@ -237,8 +239,8 @@ int8 other store&#39;s int8
 <span class="w">		</span><span class="c1">// 1 s timeout, to force keep alive once in a while.</span>
 <span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">(</span><span class="mi">1000000</span><span class="p">).</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">			</span><span class="k">switch</span><span class="p">(</span><span class="n">errno</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">			</span><span class="k">case</span><span class="w"> </span><span class="nl">EAGAIN</span><span class="p">:</span><span class="w"></span>
-<span class="w">			</span><span class="k">case</span><span class="w"> </span><span class="nl">EINTR</span><span class="p">:</span><span class="w"></span>
+<span class="w">			</span><span class="k">case</span><span class="w"> </span><span class="no">EAGAIN</span><span class="p">:</span><span class="w"></span>
+<span class="w">			</span><span class="k">case</span><span class="w"> </span><span class="no">EINTR</span><span class="p">:</span><span class="w"></span>
 <span class="w">				</span><span class="k">break</span><span class="p">;</span><span class="w"></span>
 <span class="w">			</span><span class="k">default</span><span class="o">:</span><span class="w"></span>
 <span class="w">				</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;poll failed&quot;</span><span class="p">);</span><span class="w"></span>
@@ -258,22 +260,13 @@ int8 other store&#39;s int8
 </div>
 </section>
 <section id="id1">
-<h2>FPGA<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
+<h2>FPGA<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-- libstored, distributed debuggable data stores.
 -- Copyright (C) 2020-2022  Jochem Rutgers
 --
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU Lesser General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
---
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU Lesser General Public License for more details.
---
--- You should have received a copy of the GNU Lesser General Public License
--- along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+-- This Source Code Form is subject to the terms of the Mozilla Public
+-- License, v. 2.0. If a copy of the MPL was not distributed with this
+-- file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -477,10 +470,10 @@ end rtl;
 </div>
 </section>
 <section id="store-reference">
-<h2>Store reference<a class="headerlink" href="#store-reference" title="Permalink to this headline"></a></h2>
+<h2>Store reference<a class="headerlink" href="#store-reference" title="Permalink to this heading"></a></h2>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4I00EN6stored18ExampleFpgaObjectsE">
-<span id="_CPPv3I00EN6stored18ExampleFpgaObjectsE"></span><span id="_CPPv2I00EN6stored18ExampleFpgaObjectsE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Base_</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Implementation_</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_fpga_objects"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFpgaObjects</span></span></span><a class="headerlink" href="#_CPPv4I00EN6stored18ExampleFpgaObjectsE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3I00EN6stored18ExampleFpgaObjectsE"></span><span id="_CPPv2I00EN6stored18ExampleFpgaObjectsE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Base_</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Implementation_</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_fpga_objects"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFpgaObjects</span></span></span><a class="headerlink" href="#_CPPv4I00EN6stored18ExampleFpgaObjectsE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>All <a class="reference internal" href="#classstored_1_1_example_fpga_base"><span class="std std-ref">ExampleFpgaBase</span></a>’s objects. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -556,7 +549,7 @@ end rtl;
 
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored15ExampleFpgaBaseE">
-<span id="_CPPv3I0EN6stored15ExampleFpgaBaseE"></span><span id="_CPPv2I0EN6stored15ExampleFpgaBaseE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Implementation_</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_fpga_base"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFpgaBase</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I00EN6stored18ExampleFpgaObjectsE" title="stored::ExampleFpgaObjects"><span class="n"><span class="pre">ExampleFpgaObjects</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase"><span class="n"><span class="pre">ExampleFpgaBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3I0EN6stored15ExampleFpgaBaseE"></span><span id="_CPPv2I0EN6stored15ExampleFpgaBaseE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Implementation_</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_fpga_base"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFpgaBase</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I00EN6stored18ExampleFpgaObjectsE" title="stored::ExampleFpgaObjects"><span class="n"><span class="pre">ExampleFpgaObjects</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase"><span class="n"><span class="pre">ExampleFpgaBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Base class with default interface of all <a class="reference internal" href="#classstored_1_1_example_fpga"><span class="std std-ref">ExampleFpga</span></a> implementations. </p>
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_fpga"><span class="std std-ref">stored::ExampleFpga</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
@@ -874,7 +867,7 @@ public:
 
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored11ExampleFpgaE">
-<span id="_CPPv3N6stored11ExampleFpgaE"></span><span id="_CPPv2N6stored11ExampleFpgaE"></span><span id="stored::ExampleFpga"></span><span class="target" id="classstored_1_1_example_fpga"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFpga</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase"><span class="n"><span class="pre">ExampleFpgaBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored11ExampleFpgaE" title="stored::ExampleFpga"><span class="n"><span class="pre">ExampleFpga</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored11ExampleFpgaE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored11ExampleFpgaE"></span><span id="_CPPv2N6stored11ExampleFpgaE"></span><span id="stored::ExampleFpga"></span><span class="target" id="classstored_1_1_example_fpga"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFpga</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored15ExampleFpgaBaseE" title="stored::ExampleFpgaBase"><span class="n"><span class="pre">ExampleFpgaBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored11ExampleFpgaE" title="stored::ExampleFpga"><span class="n"><span class="pre">ExampleFpga</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored11ExampleFpgaE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default <a class="reference internal" href="#classstored_1_1_example_fpga_base"><span class="std std-ref">ExampleFpgaBase</span></a> implementation. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -889,7 +882,7 @@ public:
 
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4I00EN6stored19ExampleFpga2ObjectsE">
-<span id="_CPPv3I00EN6stored19ExampleFpga2ObjectsE"></span><span id="_CPPv2I00EN6stored19ExampleFpga2ObjectsE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Base_</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Implementation_</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_fpga2_objects"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFpga2Objects</span></span></span><a class="headerlink" href="#_CPPv4I00EN6stored19ExampleFpga2ObjectsE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3I00EN6stored19ExampleFpga2ObjectsE"></span><span id="_CPPv2I00EN6stored19ExampleFpga2ObjectsE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Base_</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Implementation_</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_fpga2_objects"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFpga2Objects</span></span></span><a class="headerlink" href="#_CPPv4I00EN6stored19ExampleFpga2ObjectsE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>All <a class="reference internal" href="#classstored_1_1_example_fpga2_base"><span class="std std-ref">ExampleFpga2Base</span></a>’s objects. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -917,7 +910,7 @@ public:
 
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored16ExampleFpga2BaseE">
-<span id="_CPPv3I0EN6stored16ExampleFpga2BaseE"></span><span id="_CPPv2I0EN6stored16ExampleFpga2BaseE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Implementation_</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_fpga2_base"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFpga2Base</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleFpga2ObjectsE" title="stored::ExampleFpga2Objects"><span class="n"><span class="pre">ExampleFpga2Objects</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base"><span class="n"><span class="pre">ExampleFpga2Base</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3I0EN6stored16ExampleFpga2BaseE"></span><span id="_CPPv2I0EN6stored16ExampleFpga2BaseE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Implementation_</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_fpga2_base"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFpga2Base</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleFpga2ObjectsE" title="stored::ExampleFpga2Objects"><span class="n"><span class="pre">ExampleFpga2Objects</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base"><span class="n"><span class="pre">ExampleFpga2Base</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Base class with default interface of all <a class="reference internal" href="#classstored_1_1_example_fpga2"><span class="std std-ref">ExampleFpga2</span></a> implementations. </p>
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_fpga2"><span class="std std-ref">stored::ExampleFpga2</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
@@ -1181,7 +1174,7 @@ public:
 
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleFpga2E">
-<span id="_CPPv3N6stored12ExampleFpga2E"></span><span id="_CPPv2N6stored12ExampleFpga2E"></span><span id="stored::ExampleFpga2"></span><span class="target" id="classstored_1_1_example_fpga2"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFpga2</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base"><span class="n"><span class="pre">ExampleFpga2Base</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored12ExampleFpga2E" title="stored::ExampleFpga2"><span class="n"><span class="pre">ExampleFpga2</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleFpga2E" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored12ExampleFpga2E"></span><span id="_CPPv2N6stored12ExampleFpga2E"></span><span id="stored::ExampleFpga2"></span><span class="target" id="classstored_1_1_example_fpga2"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExampleFpga2</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleFpga2BaseE" title="stored::ExampleFpga2Base"><span class="n"><span class="pre">ExampleFpga2Base</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored12ExampleFpga2E" title="stored::ExampleFpga2"><span class="n"><span class="pre">ExampleFpga2</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleFpga2E" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default <a class="reference internal" href="#classstored_1_1_example_fpga2_base"><span class="std std-ref">ExampleFpga2Base</span></a> implementation. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>

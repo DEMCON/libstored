@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Base classes &mdash; libstored 1.2.0 documentation</title>
+  <title>Base classes &mdash; libstored 1.3.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,7 +14,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -30,7 +32,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.2.0
+                1.3.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -50,9 +52,29 @@
 <li class="toctree-l1"><a class="reference internal" href="fpga.html">VHDL</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="py.html">Python</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Base classes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#zmqclient">ZmqClient</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#protocol-layers">Protocol layers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#protocol-stack">Protocol stack</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zmqclient">ZmqClient</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.ZmqClient"><code class="docutils literal notranslate"><span class="pre">ZmqClient</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#protocol-layers">Protocol layers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.AsciiEscapeLayer"><code class="docutils literal notranslate"><span class="pre">AsciiEscapeLayer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.TerminalLayer"><code class="docutils literal notranslate"><span class="pre">TerminalLayer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.PubTerminalLayer"><code class="docutils literal notranslate"><span class="pre">PubTerminalLayer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.SegmentationLayer"><code class="docutils literal notranslate"><span class="pre">SegmentationLayer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.DebugArqLayer"><code class="docutils literal notranslate"><span class="pre">DebugArqLayer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.Crc8Layer"><code class="docutils literal notranslate"><span class="pre">Crc8Layer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.Crc16Layer"><code class="docutils literal notranslate"><span class="pre">Crc16Layer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.LoopbackLayer"><code class="docutils literal notranslate"><span class="pre">LoopbackLayer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.RawLayer"><code class="docutils literal notranslate"><span class="pre">RawLayer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#protocol-stack">Protocol stack</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.ProtocolStack"><code class="docutils literal notranslate"><span class="pre">ProtocolStack</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.registerLayerType"><code class="docutils literal notranslate"><span class="pre">registerLayerType()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.buildStack"><code class="docutils literal notranslate"><span class="pre">buildStack()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="py_gui.html">GUI</a></li>
@@ -90,12 +112,12 @@
            <div itemprop="articleBody">
              
   <section id="base-classes">
-<h1>Base classes<a class="headerlink" href="#base-classes" title="Permalink to this headline"></a></h1>
+<h1>Base classes<a class="headerlink" href="#base-classes" title="Permalink to this heading"></a></h1>
 <section id="zmqclient">
-<h2>ZmqClient<a class="headerlink" href="#zmqclient" title="Permalink to this headline"></a></h2>
+<h2>ZmqClient<a class="headerlink" href="#zmqclient" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="libstored.ZmqClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.</span></span><span class="sig-name descname"><span class="pre">ZmqClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">19026</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.ZmqClient" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.</span></span><span class="sig-name descname"><span class="pre">ZmqClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">19026</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.ZmqClient" title="Permalink to this definition"></a></dt>
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="libstored.ZmqClient.acquireAlias">
 <span class="sig-name descname"><span class="pre">acquireAlias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temporary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permanentRef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.ZmqClient.acquireAlias" title="Permalink to this definition"></a></dt>
@@ -176,6 +198,11 @@
 <span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libstored.ZmqClient.list" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="libstored.ZmqClient.multi">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">multi</span></span><a class="headerlink" href="#libstored.ZmqClient.multi" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="libstored.ZmqClient.obj">
 <span class="sig-name descname"><span class="pre">obj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.ZmqClient.obj" title="Permalink to this definition"></a></dt>
@@ -184,6 +211,11 @@
 <dl class="py property">
 <dt class="sig sig-object py" id="libstored.ZmqClient.objects">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">objects</span></span><a class="headerlink" href="#libstored.ZmqClient.objects" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libstored.ZmqClient.otherStreams">
+<span class="sig-name descname"><span class="pre">otherStreams</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libstored.ZmqClient.otherStreams" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -243,7 +275,7 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="libstored.ZmqClient.staticMetaObject">
-<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;PySide6.QtCore.QMetaObject</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#libstored.ZmqClient.staticMetaObject" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;ZmqClient&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Properties:</span>&#160;&#160; <span class="pre">#1</span> <span class="pre">&quot;defaultPollInterval&quot;,</span> <span class="pre">double</span> <span class="pre">[writeable]</span> <span class="pre">[designable],</span> <span class="pre">notify=defaultPollIntervalChanged</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#5</span> <span class="pre">type=Signal,</span> <span class="pre">signature=defaultPollIntervalChanged()</span>&#160;&#160; <span class="pre">#6</span> <span class="pre">type=Signal,</span> <span class="pre">signature=closed()</span>&#160;&#160; <span class="pre">#7</span> <span class="pre">type=Slot,</span> <span class="pre">signature=req(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#8</span> <span class="pre">type=Slot,</span> <span class="pre">signature=_reqAsyncCheckResponse()</span>&#160;&#160; <span class="pre">#9</span> <span class="pre">type=Slot,</span> <span class="pre">signature=_aboutToQuit()</span>&#160;&#160; <span class="pre">#10</span> <span class="pre">type=Slot,</span> <span class="pre">signature=capabilities()</span>&#160;&#160; <span class="pre">#11</span> <span class="pre">type=Slot,</span> <span class="pre">signature=echo()</span>&#160;&#160; <span class="pre">#12</span> <span class="pre">type=Slot,</span> <span class="pre">signature=obj(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#13</span> <span class="pre">type=Slot,</span> <span class="pre">signature=identification()</span>&#160;&#160; <span class="pre">#14</span> <span class="pre">type=Slot,</span> <span class="pre">signature=version()</span>&#160;&#160; <span class="pre">#15</span> <span class="pre">type=Slot,</span> <span class="pre">signature=traceDecimate(int),</span> <span class="pre">parameters=int</span>&#160;&#160; <span class="pre">#16</span> <span class="pre">type=Slot,</span> <span class="pre">signature=saveState(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#17</span> <span class="pre">type=Slot,</span> <span class="pre">signature=saveState()</span>&#160;&#160; <span class="pre">#18</span> <span class="pre">type=Slot,</span> <span class="pre">signature=restoreState(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#19</span> <span class="pre">type=Slot,</span> <span class="pre">signature=restoreState()</span> <span class="pre">)</span></em><a class="headerlink" href="#libstored.ZmqClient.staticMetaObject" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -302,7 +334,7 @@ and process data that is expected via the trace stream.</p>
 
 </section>
 <section id="protocol-layers">
-<h2>Protocol layers<a class="headerlink" href="#protocol-layers" title="Permalink to this headline"></a></h2>
+<h2>Protocol layers<a class="headerlink" href="#protocol-layers" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="libstored.protocol.ProtocolLayer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">ProtocolLayer</span></span><a class="headerlink" href="#libstored.protocol.ProtocolLayer" title="Permalink to this definition"></a></dt>
@@ -411,7 +443,7 @@ and process data that is expected via the trace stream.</p>
 
 </section>
 <section id="protocol-stack">
-<h2>Protocol stack<a class="headerlink" href="#protocol-stack" title="Permalink to this headline"></a></h2>
+<h2>Protocol stack<a class="headerlink" href="#protocol-stack" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="libstored.protocol.ProtocolStack">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">ProtocolStack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.ProtocolStack" title="Permalink to this definition"></a></dt>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>6_hooks &mdash; libstored 1.2.0 documentation</title>
+  <title>6_hooks &mdash; libstored 1.3.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,7 +14,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -30,7 +32,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.2.0
+                1.3.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -101,9 +103,9 @@
            <div itemprop="articleBody">
              
   <section id="hooks">
-<h1>6_hooks<a class="headerlink" href="#hooks" title="Permalink to this headline"></a></h1>
+<h1>6_hooks<a class="headerlink" href="#hooks" title="Permalink to this heading"></a></h1>
 <section id="store-definition">
-<h2>Store definition<a class="headerlink" href="#store-definition" title="Permalink to this headline"></a></h2>
+<h2>Store definition<a class="headerlink" href="#store-definition" title="Permalink to this heading"></a></h2>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// This example assumes that you want to synchronize the store via other means
 // than the Debugger interface. To do so, the application must track changes in
 // data, and schedule these changes for synchronization.
@@ -143,7 +145,7 @@ int32=3 variable 2
 </div>
 </section>
 <section id="application">
-<h2>Application<a class="headerlink" href="#application" title="Permalink to this headline"></a></h2>
+<h2>Application<a class="headerlink" href="#application" title="Permalink to this heading"></a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
 <span class="cm"> * \file</span>
 <span class="cm"> * \brief Example to show the get/set synchronization hooks.</span>
@@ -217,10 +219,10 @@ int32=3 variable 2
 </div>
 </section>
 <section id="store-reference">
-<h2>Store reference<a class="headerlink" href="#store-reference" title="Permalink to this headline"></a></h2>
+<h2>Store reference<a class="headerlink" href="#store-reference" title="Permalink to this heading"></a></h2>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4I00EN6stored19ExampleHooksObjectsE">
-<span id="_CPPv3I00EN6stored19ExampleHooksObjectsE"></span><span id="_CPPv2I00EN6stored19ExampleHooksObjectsE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Base_</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Implementation_</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_hooks_objects"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleHooksObjects</span></span></span><a class="headerlink" href="#_CPPv4I00EN6stored19ExampleHooksObjectsE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3I00EN6stored19ExampleHooksObjectsE"></span><span id="_CPPv2I00EN6stored19ExampleHooksObjectsE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Base_</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Implementation_</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_hooks_objects"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExampleHooksObjects</span></span></span><a class="headerlink" href="#_CPPv4I00EN6stored19ExampleHooksObjectsE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>All <a class="reference internal" href="#classstored_1_1_example_hooks_base"><span class="std std-ref">ExampleHooksBase</span></a>’s objects. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -260,7 +262,7 @@ int32=3 variable 2
 
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored16ExampleHooksBaseE">
-<span id="_CPPv3I0EN6stored16ExampleHooksBaseE"></span><span id="_CPPv2I0EN6stored16ExampleHooksBaseE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Implementation_</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_hooks_base"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleHooksBase</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleHooksObjectsE" title="stored::ExampleHooksObjects"><span class="n"><span class="pre">ExampleHooksObjects</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleHooksBaseE" title="stored::ExampleHooksBase"><span class="n"><span class="pre">ExampleHooksBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleHooksBaseE" title="stored::ExampleHooksBase::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleHooksBaseE" title="stored::ExampleHooksBase::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleHooksBaseE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3I0EN6stored16ExampleHooksBaseE"></span><span id="_CPPv2I0EN6stored16ExampleHooksBaseE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Implementation_</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_example_hooks_base"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExampleHooksBase</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I00EN6stored19ExampleHooksObjectsE" title="stored::ExampleHooksObjects"><span class="n"><span class="pre">ExampleHooksObjects</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleHooksBaseE" title="stored::ExampleHooksBase"><span class="n"><span class="pre">ExampleHooksBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleHooksBaseE" title="stored::ExampleHooksBase::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleHooksBaseE" title="stored::ExampleHooksBase::Implementation_"><span class="n"><span class="pre">Implementation_</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0EN6stored16ExampleHooksBaseE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Base class with default interface of all <a class="reference internal" href="#classstored_1_1_example_hooks"><span class="std std-ref">ExampleHooks</span></a> implementations. </p>
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_hooks"><span class="std std-ref">stored::ExampleHooks</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
@@ -542,7 +544,7 @@ public:
 
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12ExampleHooksE">
-<span id="_CPPv3N6stored12ExampleHooksE"></span><span id="_CPPv2N6stored12ExampleHooksE"></span><span id="stored::ExampleHooks"></span><span class="target" id="classstored_1_1_example_hooks"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ExampleHooks</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleHooksBaseE" title="stored::ExampleHooksBase"><span class="n"><span class="pre">ExampleHooksBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored12ExampleHooksE" title="stored::ExampleHooks"><span class="n"><span class="pre">ExampleHooks</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleHooksE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored12ExampleHooksE"></span><span id="_CPPv2N6stored12ExampleHooksE"></span><span id="stored::ExampleHooks"></span><span class="target" id="classstored_1_1_example_hooks"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExampleHooks</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored16ExampleHooksBaseE" title="stored::ExampleHooksBase"><span class="n"><span class="pre">ExampleHooksBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored12ExampleHooksE" title="stored::ExampleHooks"><span class="n"><span class="pre">ExampleHooks</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored12ExampleHooksE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default <a class="reference internal" href="#classstored_1_1_example_hooks_base"><span class="std std-ref">ExampleHooksBase</span></a> implementation. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>

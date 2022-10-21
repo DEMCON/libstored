@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Synchronizer &mdash; libstored 1.2.0 documentation</title>
+  <title>Synchronizer &mdash; libstored 1.3.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,7 +14,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -30,7 +32,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.2.0
+                1.3.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -102,7 +104,7 @@
            <div itemprop="articleBody">
              
   <section id="synchronizer">
-<h1>Synchronizer<a class="headerlink" href="#synchronizer" title="Permalink to this headline"></a></h1>
+<h1>Synchronizer<a class="headerlink" href="#synchronizer" title="Permalink to this heading"></a></h1>
 <p>Distributed store synchronizer.</p>
 <p>In a distributed system, every process has its own instance of a store.
 Synchronization between these instances is implemented by the
@@ -140,12 +142,12 @@ source code of the store (the .st file). So, only stores with the exact same
 definition, and therefore layout, can be synchronized.</p></li>
 </ul>
 <section id="protocol">
-<h2>Protocol<a class="headerlink" href="#protocol" title="Permalink to this headline"></a></h2>
+<h2>Protocol<a class="headerlink" href="#protocol" title="Permalink to this heading"></a></h2>
 <p>The protocol for synchronization consists of four messages. These are sent
 when appropriate, not in a request-response paradigm. There is no acknowledge.
 Invalid messages are just ignored.</p>
 <section id="hello">
-<h3>Hello<a class="headerlink" href="#hello" title="Permalink to this headline"></a></h3>
+<h3>Hello<a class="headerlink" href="#hello" title="Permalink to this heading"></a></h3>
 <p>“I would like to have the full state and future changes
 of the given store (by hash). All updates, send to me
 using this reference.”</p>
@@ -155,7 +157,7 @@ null-terminator. The id is arbitrary chosen by the Synchronizer, and is 16-bit
 in the store’s endianness (<code class="docutils literal notranslate"><span class="pre">h</span></code> indicates little endian, <code class="docutils literal notranslate"><span class="pre">H</span></code> is big).</p>
 </section>
 <section id="welcome">
-<h3>Welcome<a class="headerlink" href="#welcome" title="Permalink to this headline"></a></h3>
+<h3>Welcome<a class="headerlink" href="#welcome" title="Permalink to this heading"></a></h3>
 <p>This is a response to a Hello.</p>
 <p>“You are welcome. Here is the full buffer state, upon your request, of the
 store with given reference. Any updates to the store at your side,
@@ -165,7 +167,7 @@ provide them to me with my reference.”</p>
 The welcome id is chosen by this Synchronizer, in the same manner.</p>
 </section>
 <section id="update">
-<h3>Update<a class="headerlink" href="#update" title="Permalink to this headline"></a></h3>
+<h3>Update<a class="headerlink" href="#update" title="Permalink to this heading"></a></h3>
 <p>“Your store, with given reference, has changed.
 The changes are attached.”</p>
 <p>(<code class="docutils literal notranslate"><span class="pre">u</span></code> | <code class="docutils literal notranslate"><span class="pre">U</span></code>) &lt;id&gt; &lt;updates&gt;</p>
@@ -173,7 +175,7 @@ The changes are attached.”</p>
 length have the most significant bytes stripped, which would always be 0.  All
 values are in the store’s endianness (<code class="docutils literal notranslate"><span class="pre">u</span></code> is little, <code class="docutils literal notranslate"><span class="pre">U</span></code> is big endian).</p>
 <section id="proposal">
-<h4>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline"></a></h4>
+<h4>Proposal<a class="headerlink" href="#proposal" title="Permalink to this heading"></a></h4>
 <p>The updates are a sequence defined as follows:
 &lt;5 MSb key offset, 3 LSb length&gt; &lt;additional key bytes&gt; &lt;additional length bytes&gt; &lt;data&gt;.</p>
 <p>The key offset + 1 is the offset from the previous entry in the updates
@@ -206,7 +208,7 @@ endian).</p>
 </section>
 </section>
 <section id="bye">
-<h3>Bye<a class="headerlink" href="#bye" title="Permalink to this headline"></a></h3>
+<h3>Bye<a class="headerlink" href="#bye" title="Permalink to this heading"></a></h3>
 <p>“I do not need any more updates of the given store (by hash, by id or all).”</p>
 <div class="line-block">
 <div class="line">(<code class="docutils literal notranslate"><span class="pre">b</span></code> | <code class="docutils literal notranslate"><span class="pre">B</span></code>) &lt;hash&gt;</div>
@@ -221,10 +223,10 @@ versions are defined for symmetry.</p>
 </section>
 </section>
 <section id="stored-storejournal">
-<h2>stored::StoreJournal<a class="headerlink" href="#stored-storejournal" title="Permalink to this headline"></a></h2>
+<h2>stored::StoreJournal<a class="headerlink" href="#stored-storejournal" title="Permalink to this heading"></a></h2>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12StoreJournalE">
-<span id="_CPPv3N6stored12StoreJournalE"></span><span id="_CPPv2N6stored12StoreJournalE"></span><span id="stored::StoreJournal"></span><span class="target" id="classstored_1_1_store_journal"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">StoreJournal</span></span></span><a class="headerlink" href="#_CPPv4N6stored12StoreJournalE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored12StoreJournalE"></span><span id="_CPPv2N6stored12StoreJournalE"></span><span id="stored::StoreJournal"></span><span class="target" id="classstored_1_1_store_journal"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StoreJournal</span></span></span><a class="headerlink" href="#_CPPv4N6stored12StoreJournalE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>A record of all changes within a store. </p>
 <p>Every variable in the store registers updates in the journal. The journal keeps an administration based on the key of the variable. Every change has a sequence number, which is kind of a time stamp. This sequence number can be used to check which objects has changed since some point in time.</p>
 <p>The current sequence number (‘now’) is bumped upon an encode or decode, when there have been changes in between.</p>
@@ -480,10 +482,10 @@ versions are defined for symmetry.</p>
 
 </section>
 <section id="stored-syncconnection">
-<h2>stored::SyncConnection<a class="headerlink" href="#stored-syncconnection" title="Permalink to this headline"></a></h2>
+<h2>stored::SyncConnection<a class="headerlink" href="#stored-syncconnection" title="Permalink to this heading"></a></h2>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14SyncConnectionE">
-<span id="_CPPv3N6stored14SyncConnectionE"></span><span id="_CPPv2N6stored14SyncConnectionE"></span><span id="stored::SyncConnection"></span><span class="target" id="classstored_1_1_sync_connection"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">SyncConnection</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><a class="headerlink" href="#_CPPv4N6stored14SyncConnectionE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored14SyncConnectionE"></span><span id="_CPPv2N6stored14SyncConnectionE"></span><span id="stored::SyncConnection"></span><span class="target" id="classstored_1_1_sync_connection"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SyncConnection</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><a class="headerlink" href="#_CPPv4N6stored14SyncConnectionE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>A one-to-one connection to synchronize one or more stores. </p>
 <p>A <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">SyncConnection</span></a> is related to one <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a>, and a protocol stack to one other party. Using this connection, multiple stores can be synchronized.</p>
 <p>The protocol is straight-forward: assume <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a> A wants to synchronize a store with <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a> B via a <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">SyncConnection</span></a>:</p>
@@ -607,10 +609,10 @@ versions are defined for symmetry.</p>
 
 </section>
 <section id="stored-synchronizable">
-<h2>stored::Synchronizable<a class="headerlink" href="#stored-synchronizable" title="Permalink to this headline"></a></h2>
+<h2>stored::Synchronizable<a class="headerlink" href="#stored-synchronizable" title="Permalink to this heading"></a></h2>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored14SynchronizableE">
-<span id="_CPPv3I0EN6stored14SynchronizableE"></span><span id="_CPPv2I0EN6stored14SynchronizableE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Base</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_synchronizable"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Synchronizable</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable::Base"><span class="n"><span class="pre">Base</span></span></a><a class="headerlink" href="#_CPPv4I0EN6stored14SynchronizableE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3I0EN6stored14SynchronizableE"></span><span id="_CPPv2I0EN6stored14SynchronizableE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Base</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_synchronizable"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Synchronizable</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored14SynchronizableE" title="stored::Synchronizable::Base"><span class="n"><span class="pre">Base</span></span></a><a class="headerlink" href="#_CPPv4I0EN6stored14SynchronizableE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>An extension of a store to be used by the <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a>. </p>
 <p>Assume you have <code class="docutils literal notranslate"><span class="pre">MyStoreBase</span></code> (which takes a template parameter <code class="docutils literal notranslate"><span class="pre">Implementation</span></code>), and the actual store implementation <code class="docutils literal notranslate"><span class="pre">ActualStore</span></code>. If it does not have to be synchronizable, you would inherit <code class="docutils literal notranslate"><span class="pre">ActualStore</span></code> from <code class="docutils literal notranslate"><span class="pre">MyStoreBase&lt;ActualStore&gt;</span></code>.</p>
 <p>If it should be synchronizable, use <a class="reference internal" href="#classstored_1_1_synchronizable_1a83faa28fa20314195ebf74d740bf5524"><span class="std std-ref">Synchronizable</span></a> like this:</p>
@@ -700,10 +702,10 @@ public:
 
 </section>
 <section id="stored-synchronizer">
-<h2>stored::Synchronizer<a class="headerlink" href="#stored-synchronizer" title="Permalink to this headline"></a></h2>
+<h2>stored::Synchronizer<a class="headerlink" href="#stored-synchronizer" title="Permalink to this heading"></a></h2>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12SynchronizerE">
-<span id="_CPPv3N6stored12SynchronizerE"></span><span id="_CPPv2N6stored12SynchronizerE"></span><span id="stored::Synchronizer"></span><span class="target" id="classstored_1_1_synchronizer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Synchronizer</span></span></span><a class="headerlink" href="#_CPPv4N6stored12SynchronizerE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored12SynchronizerE"></span><span id="_CPPv2N6stored12SynchronizerE"></span><span id="stored::Synchronizer"></span><span class="target" id="classstored_1_1_synchronizer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Synchronizer</span></span></span><a class="headerlink" href="#_CPPv4N6stored12SynchronizerE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>The service that manages synchronization of stores over SyncConnections. </p>
 <p>A <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a> holds a set of stores, and a set of SyncConnections. A store can be synchronized over multiple connections simultaneously. </p>
 <div class="breathe-sectiondef docutils container">

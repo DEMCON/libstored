@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Poller &mdash; libstored 1.2.0 documentation</title>
+  <title>Poller &mdash; libstored 1.3.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,7 +14,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -30,7 +32,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.2.0
+                1.3.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -104,7 +106,7 @@
            <div itemprop="articleBody">
              
   <section id="poller">
-<h1>Poller<a class="headerlink" href="#poller" title="Permalink to this headline"></a></h1>
+<h1>Poller<a class="headerlink" href="#poller" title="Permalink to this heading"></a></h1>
 <p>Basically, these classes provide <code class="docutils literal notranslate"><span class="pre">poll()</span></code> in a platform-independent way.  To
 use the poller, create one or more Pollables, and register them to the
 <a class="reference internal" href="#_CPPv4N6stored6PollerE" title="stored::Poller"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Poller</span></code></a>, and call its <code class="docutils literal notranslate"><span class="pre">poll()</span></code> member function. It
@@ -127,12 +129,12 @@ InheritablePoller &lt;|-- Poller
 
 Pollable &lt;.. Poller"/></p>
 <section id="pollables">
-<h2>Pollables<a class="headerlink" href="#pollables" title="Permalink to this headline"></a></h2>
+<h2>Pollables<a class="headerlink" href="#pollables" title="Permalink to this heading"></a></h2>
 <section id="stored-pollable">
-<h3>stored::Pollable<a class="headerlink" href="#stored-pollable" title="Permalink to this headline"></a></h3>
+<h3>stored::Pollable<a class="headerlink" href="#stored-pollable" title="Permalink to this heading"></a></h3>
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored8PollableE">
-<span id="_CPPv3N6stored8PollableE"></span><span id="_CPPv2N6stored8PollableE"></span><span id="stored::Pollable"></span><span class="target" id="structstored_1_1_pollable"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Pollable</span></span></span><a class="headerlink" href="#_CPPv4N6stored8PollableE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored8PollableE"></span><span id="_CPPv2N6stored8PollableE"></span><span id="stored::Pollable"></span><span class="target" id="structstored_1_1_pollable"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Pollable</span></span></span><a class="headerlink" href="#_CPPv4N6stored8PollableE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>A pollable thing. </p>
 <p>Subclassed by stored::TypedPollable</p>
 <div class="breathe-sectiondef docutils container">
@@ -252,10 +254,10 @@ Pollable &lt;.. Poller"/></p>
 
 </section>
 <section id="stored-pollablecallback">
-<h3>stored::PollableCallback<a class="headerlink" href="#stored-pollablecallback" title="Permalink to this headline"></a></h3>
+<h3>stored::PollableCallback<a class="headerlink" href="#stored-pollablecallback" title="Permalink to this heading"></a></h3>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored16PollableCallbackE">
-<span id="_CPPv3I0EN6stored16PollableCallbackE"></span><span id="_CPPv2I0EN6stored16PollableCallbackE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored8PollableE" title="stored::Pollable"><span class="n"><span class="pre">Pollable</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6stored8Pollable6EventsE" title="stored::Pollable::Events"><span class="n"><span class="pre">Events</span></span></a><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4N6stored8PollableE" title="stored::Pollable"><span class="n"><span class="pre">Pollable</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_pollable_callback"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">PollableCallback</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">PollableCallbackBase</span></span><a class="headerlink" href="#_CPPv4I0EN6stored16PollableCallbackE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3I0EN6stored16PollableCallbackE"></span><span id="_CPPv2I0EN6stored16PollableCallbackE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored8PollableE" title="stored::Pollable"><span class="n"><span class="pre">Pollable</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6stored8Pollable6EventsE" title="stored::Pollable::Events"><span class="n"><span class="pre">Events</span></span></a><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4N6stored8PollableE" title="stored::Pollable"><span class="n"><span class="pre">Pollable</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_pollable_callback"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PollableCallback</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">PollableCallbackBase</span></span><a class="headerlink" href="#_CPPv4I0EN6stored16PollableCallbackE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Use a callback function while polling. </p>
 <p>The function type <code class="docutils literal notranslate"><span class="pre">F</span></code> must be compatible with <code class="docutils literal notranslate"><a class="reference internal" href="#structstored_1_1_pollable_1a4dc41dc9743e5761035c7561f994c603"><span class="std std-ref"><span class="pre">Pollable::Events</span></span></a><span class="pre">&amp;</span> <span class="pre">(</span><a class="reference internal" href="#structstored_1_1_pollable"><span class="std std-ref"><span class="pre">Pollable</span></span></a> <span class="pre">const&amp;)</span></code>. </p>
 <div class="breathe-sectiondef docutils container">
@@ -311,10 +313,10 @@ Pollable &lt;.. Poller"/></p>
 
 </section>
 <section id="stored-pollablefd">
-<h3>stored::PollableFd<a class="headerlink" href="#stored-pollablefd" title="Permalink to this headline"></a></h3>
+<h3>stored::PollableFd<a class="headerlink" href="#stored-pollablefd" title="Permalink to this heading"></a></h3>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored10PollableFdE">
-<span id="_CPPv3N6stored10PollableFdE"></span><span id="_CPPv2N6stored10PollableFdE"></span><span id="stored::PollableFd"></span><span class="target" id="classstored_1_1_pollable_fd"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">PollableFd</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TypedPollable</span></span><a class="headerlink" href="#_CPPv4N6stored10PollableFdE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored10PollableFdE"></span><span id="_CPPv2N6stored10PollableFdE"></span><span id="stored::PollableFd"></span><span class="target" id="classstored_1_1_pollable_fd"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PollableFd</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TypedPollable</span></span><a class="headerlink" href="#_CPPv4N6stored10PollableFdE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Poll a file descriptor. </p>
 <p>Do not use in Windows, as its file descriptors are not pollable. </p>
 <div class="breathe-sectiondef docutils container">
@@ -347,10 +349,10 @@ Pollable &lt;.. Poller"/></p>
 
 </section>
 <section id="stored-pollablefilelayer">
-<h3>stored::PollableFileLayer<a class="headerlink" href="#stored-pollablefilelayer" title="Permalink to this headline"></a></h3>
+<h3>stored::PollableFileLayer<a class="headerlink" href="#stored-pollablefilelayer" title="Permalink to this heading"></a></h3>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored17PollableFileLayerE">
-<span id="_CPPv3N6stored17PollableFileLayerE"></span><span id="_CPPv2N6stored17PollableFileLayerE"></span><span id="stored::PollableFileLayer"></span><span class="target" id="classstored_1_1_pollable_file_layer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">PollableFileLayer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TypedPollable</span></span><a class="headerlink" href="#_CPPv4N6stored17PollableFileLayerE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored17PollableFileLayerE"></span><span id="_CPPv2N6stored17PollableFileLayerE"></span><span id="stored::PollableFileLayer"></span><span class="target" id="classstored_1_1_pollable_file_layer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PollableFileLayer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TypedPollable</span></span><a class="headerlink" href="#_CPPv4N6stored17PollableFileLayerE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Poll a <a class="reference internal" href="cpp_protocol.html#classstored_1_1_polled_file_layer"><span class="std std-ref">stored::PolledFileLayer</span></a>. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -382,10 +384,10 @@ Pollable &lt;.. Poller"/></p>
 
 </section>
 <section id="stored-pollablehandle">
-<h3>stored::PollableHandle<a class="headerlink" href="#stored-pollablehandle" title="Permalink to this headline"></a></h3>
+<h3>stored::PollableHandle<a class="headerlink" href="#stored-pollablehandle" title="Permalink to this heading"></a></h3>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14PollableHandleE">
-<span id="_CPPv3N6stored14PollableHandleE"></span><span id="_CPPv2N6stored14PollableHandleE"></span><span id="stored::PollableHandle"></span><span class="target" id="classstored_1_1_pollable_handle"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">PollableHandle</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TypedPollable</span></span><a class="headerlink" href="#_CPPv4N6stored14PollableHandleE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored14PollableHandleE"></span><span id="_CPPv2N6stored14PollableHandleE"></span><span id="stored::PollableHandle"></span><span class="target" id="classstored_1_1_pollable_handle"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PollableHandle</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TypedPollable</span></span><a class="headerlink" href="#_CPPv4N6stored14PollableHandleE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Poll a Windows HANDLE. </p>
 <p>Not all types of HANDLES are supported. Refer to <code class="docutils literal notranslate"><span class="pre">WaitForSingleObject()</span></code>. </p>
 <div class="breathe-sectiondef docutils container">
@@ -413,10 +415,10 @@ Pollable &lt;.. Poller"/></p>
 
 </section>
 <section id="stored-pollablesocket">
-<h3>stored::PollableSocket<a class="headerlink" href="#stored-pollablesocket" title="Permalink to this headline"></a></h3>
+<h3>stored::PollableSocket<a class="headerlink" href="#stored-pollablesocket" title="Permalink to this heading"></a></h3>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14PollableSocketE">
-<span id="_CPPv3N6stored14PollableSocketE"></span><span id="_CPPv2N6stored14PollableSocketE"></span><span id="stored::PollableSocket"></span><span class="target" id="classstored_1_1_pollable_socket"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">PollableSocket</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TypedPollable</span></span><a class="headerlink" href="#_CPPv4N6stored14PollableSocketE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored14PollableSocketE"></span><span id="_CPPv2N6stored14PollableSocketE"></span><span id="stored::PollableSocket"></span><span class="target" id="classstored_1_1_pollable_socket"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PollableSocket</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TypedPollable</span></span><a class="headerlink" href="#_CPPv4N6stored14PollableSocketE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Poll a Windows SOCKET. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -448,10 +450,10 @@ Pollable &lt;.. Poller"/></p>
 
 </section>
 <section id="stored-pollablezmqlayer">
-<h3>stored::PollableZmqLayer<a class="headerlink" href="#stored-pollablezmqlayer" title="Permalink to this headline"></a></h3>
+<h3>stored::PollableZmqLayer<a class="headerlink" href="#stored-pollablezmqlayer" title="Permalink to this heading"></a></h3>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored16PollableZmqLayerE">
-<span id="_CPPv3N6stored16PollableZmqLayerE"></span><span id="_CPPv2N6stored16PollableZmqLayerE"></span><span id="stored::PollableZmqLayer"></span><span class="target" id="classstored_1_1_pollable_zmq_layer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">PollableZmqLayer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TypedPollable</span></span><a class="headerlink" href="#_CPPv4N6stored16PollableZmqLayerE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored16PollableZmqLayerE"></span><span id="_CPPv2N6stored16PollableZmqLayerE"></span><span id="stored::PollableZmqLayer"></span><span class="target" id="classstored_1_1_pollable_zmq_layer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PollableZmqLayer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TypedPollable</span></span><a class="headerlink" href="#_CPPv4N6stored16PollableZmqLayerE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Poll a stored::ZmqLayer. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -483,10 +485,10 @@ Pollable &lt;.. Poller"/></p>
 
 </section>
 <section id="stored-pollablezmqsocket">
-<h3>stored::PollableZmqSocket<a class="headerlink" href="#stored-pollablezmqsocket" title="Permalink to this headline"></a></h3>
+<h3>stored::PollableZmqSocket<a class="headerlink" href="#stored-pollablezmqsocket" title="Permalink to this heading"></a></h3>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored17PollableZmqSocketE">
-<span id="_CPPv3N6stored17PollableZmqSocketE"></span><span id="_CPPv2N6stored17PollableZmqSocketE"></span><span id="stored::PollableZmqSocket"></span><span class="target" id="classstored_1_1_pollable_zmq_socket"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">PollableZmqSocket</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TypedPollable</span></span><a class="headerlink" href="#_CPPv4N6stored17PollableZmqSocketE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored17PollableZmqSocketE"></span><span id="_CPPv2N6stored17PollableZmqSocketE"></span><span id="stored::PollableZmqSocket"></span><span class="target" id="classstored_1_1_pollable_zmq_socket"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PollableZmqSocket</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TypedPollable</span></span><a class="headerlink" href="#_CPPv4N6stored17PollableZmqSocketE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Poll a ZeroMQ socket. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -519,10 +521,10 @@ Pollable &lt;.. Poller"/></p>
 </section>
 </section>
 <section id="stored-inheritablepoller">
-<h2>stored::InheritablePoller<a class="headerlink" href="#stored-inheritablepoller" title="Permalink to this headline"></a></h2>
+<h2>stored::InheritablePoller<a class="headerlink" href="#stored-inheritablepoller" title="Permalink to this heading"></a></h2>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored17InheritablePollerE">
-<span id="_CPPv3I0EN6stored17InheritablePollerE"></span><span id="_CPPv2I0EN6stored17InheritablePollerE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PollerImpl</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored17InheritablePollerE" title="stored::InheritablePoller::PollerImpl"><span class="n"><span class="pre">PollerImpl</span></span></a><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_inheritable_poller"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">InheritablePoller</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ZmqPoller</span></span><a class="headerlink" href="#_CPPv4I0EN6stored17InheritablePollerE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3I0EN6stored17InheritablePollerE"></span><span id="_CPPv2I0EN6stored17InheritablePollerE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PollerImpl</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6stored17InheritablePollerE" title="stored::InheritablePoller::PollerImpl"><span class="n"><span class="pre">PollerImpl</span></span></a><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_inheritable_poller"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InheritablePoller</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ZmqPoller</span></span><a class="headerlink" href="#_CPPv4I0EN6stored17InheritablePollerE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Subclassed by stored::CustomPoller&lt; PollerImpl &gt;</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -534,6 +536,12 @@ Pollable &lt;.. Poller"/></p>
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored17InheritablePollerD0Ev">
+<span id="_CPPv3N6stored17InheritablePollerD0Ev"></span><span id="_CPPv2N6stored17InheritablePollerD0Ev"></span><span id="stored::InheritablePoller::~InheritablePoller"></span><span class="target" id="classstored_1_1_inheritable_poller_1aa710cfeb42067280359586ad70ef5a21"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~InheritablePoller</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored17InheritablePollerD0Ev" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Dtor. </p>
+</dd></dl>
+
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored17InheritablePoller3addER8Pollable">
 <span id="_CPPv3N6stored17InheritablePoller3addER8Pollable"></span><span id="_CPPv2N6stored17InheritablePoller3addER8Pollable"></span><span id="stored::InheritablePoller::add__PollableR"></span><span class="target" id="classstored_1_1_inheritable_poller_1a5afdeff1fb600f18465fbbcf00bd912d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored8PollableE" title="stored::Pollable"><span class="n"><span class="pre">Pollable</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored17InheritablePoller3addER8Pollable" title="Permalink to this definition"></a><br /></dt>
@@ -594,10 +602,10 @@ Pollable &lt;.. Poller"/></p>
 
 </section>
 <section id="stored-poller">
-<h2>stored::Poller<a class="headerlink" href="#stored-poller" title="Permalink to this headline"></a></h2>
+<h2>stored::Poller<a class="headerlink" href="#stored-poller" title="Permalink to this heading"></a></h2>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored6PollerE">
-<span id="_CPPv3N6stored6PollerE"></span><span id="_CPPv2N6stored6PollerE"></span><span id="stored::Poller"></span><span class="target" id="classstored_1_1_poller"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Poller</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored17InheritablePollerE" title="stored::InheritablePoller"><span class="n"><span class="pre">InheritablePoller</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored6PollerE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored6PollerE"></span><span id="_CPPv2N6stored6PollerE"></span><span id="stored::Poller"></span><span class="target" id="classstored_1_1_poller"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Poller</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN6stored17InheritablePollerE" title="stored::InheritablePoller"><span class="n"><span class="pre">InheritablePoller</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored6PollerE" title="Permalink to this definition"></a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">

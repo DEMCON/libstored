@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; libstored 1.2.0 documentation</title>
+  <title>Index &mdash; libstored 1.3.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -13,7 +13,9 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -27,7 +29,7 @@
             <a href="index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.2.0
+                1.3.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -319,6 +321,10 @@
 </li>
       </ul></li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="doc/py_py.html#libstored.ZmqClient.multi">multi (libstored.ZmqClient property)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="N">N</h2>
@@ -349,6 +355,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="doc/py_py.html#libstored.ZmqClient.objects">objects (libstored.ZmqClient property)</a>
+</li>
+      <li><a href="doc/py_py.html#libstored.ZmqClient.otherStreams">otherStreams() (libstored.ZmqClient method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -893,6 +901,8 @@
       <li><a href="doc/cpp_config.html#_CPPv4N6stored13DefaultConfig9FullNamesE">stored::DefaultConfig::FullNames (C++ member)</a>
 </li>
       <li><a href="doc/cpp_config.html#_CPPv4N6stored13DefaultConfig19StoreInLittleEndianE">stored::DefaultConfig::StoreInLittleEndian (C++ member)</a>
+</li>
+      <li><a href="doc/cpp_config.html#_CPPv4N6stored13DefaultConfig15UnalignedAccessE">stored::DefaultConfig::UnalignedAccess (C++ member)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored15DoublePipeLayerE">stored::DoublePipeLayer (C++ class)</a>
 </li>
@@ -2308,8 +2318,6 @@
 </li>
       <li><a href="doc/example_6_hooks.html#_CPPv4NK6stored16ExampleHooksBase14shortDirectoryEv">stored::ExampleHooksBase::shortDirectory (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="doc/example_6_hooks.html#_CPPv4N6stored16ExampleHooksBase13some_functionE">stored::ExampleHooksBase::some_function (C++ member)</a>
 </li>
       <li><a href="doc/example_6_hooks.html#_CPPv4I0EN6stored16ExampleHooksBase8variableE8VariableI1T14ImplementationEPKc6size_t">stored::ExampleHooksBase::variable (C++ function)</a>
@@ -2320,6 +2328,8 @@
 </li>
       <li><a href="doc/example_6_hooks.html#_CPPv4I00EN6stored19ExampleHooksObjectsE">stored::ExampleHooksObjects (C++ class)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="doc/example_6_hooks.html#_CPPv4N6stored19ExampleHooksObjects4BaseE">stored::ExampleHooksObjects::Base (C++ type)</a>
 </li>
       <li><a href="doc/example_6_hooks.html#_CPPv4N6stored19ExampleHooksObjects14ImplementationE">stored::ExampleHooksObjects::Implementation (C++ type)</a>
@@ -2814,11 +2824,15 @@
 </li>
       <li><a href="doc/cpp_util.html#_CPPv4N6stored4Fifo8iteratorE">stored::Fifo::iterator (C++ type)</a>
 </li>
+      <li><a href="doc/cpp_util.html#_CPPv4N6stored4FifoixE6size_t">stored::Fifo::operator[] (C++ function)</a>, <a href="doc/cpp_util.html#_CPPv4NK6stored4FifoixE6size_t">[1]</a>
+</li>
+      <li><a href="doc/cpp_util.html#_CPPv4N6stored4Fifo4peekE6size_t">stored::Fifo::peek (C++ function)</a>, <a href="doc/cpp_util.html#_CPPv4NK6stored4Fifo4peekE6size_t">[1]</a>
+</li>
       <li><a href="doc/cpp_util.html#_CPPv4N6stored4Fifo7pointerE">stored::Fifo::pointer (C++ type)</a>
 </li>
-      <li><a href="doc/cpp_util.html#_CPPv4N6stored4Fifo9pop_frontEv">stored::Fifo::pop_front (C++ function)</a>
+      <li><a href="doc/cpp_util.html#_CPPv4N6stored4Fifo9pop_frontE6size_t">stored::Fifo::pop_front (C++ function)</a>
 </li>
-      <li><a href="doc/cpp_util.html#_CPPv4I0EN6stored4Fifo9push_backEv2It2It">stored::Fifo::push_back (C++ function)</a>, <a href="doc/cpp_util.html#_CPPv4N6stored4Fifo9push_backENSt16initializer_listI4typeEE">[1]</a>, <a href="doc/cpp_util.html#_CPPv4N6stored4Fifo9push_backERK1T">[2]</a>
+      <li><a href="doc/cpp_util.html#_CPPv4I0EN6stored4Fifo9push_backEv2It2It">stored::Fifo::push_back (C++ function)</a>, <a href="doc/cpp_util.html#_CPPv4N6stored4Fifo9push_backENSt16initializer_listI4typeEE">[1]</a>, <a href="doc/cpp_util.html#_CPPv4N6stored4Fifo9push_backEPK4type6size_t">[2]</a>, <a href="doc/cpp_util.html#_CPPv4N6stored4Fifo9push_backERK1T">[3]</a>
 </li>
       <li><a href="doc/cpp_util.html#_CPPv4NK6stored4Fifo4sizeEv">stored::Fifo::size (C++ function)</a>
 </li>
@@ -2968,6 +2982,8 @@
 </li>
       <li><a href="doc/cpp_poller.html#_CPPv4N6stored17InheritablePoller6ResultE">stored::InheritablePoller::Result (C++ type)</a>
 </li>
+      <li><a href="doc/cpp_poller.html#_CPPv4N6stored17InheritablePollerD0Ev">stored::InheritablePoller::~InheritablePoller (C++ function)</a>
+</li>
       <li><a href="doc/cpp_directory.html#_CPPv4N6stored4listEPvPvPK7uint8_tP15ListCallbackArgPvPKc">stored::list (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored8LoopbackE">stored::Loopback (C++ class)</a>
@@ -3036,6 +3052,8 @@
 </li>
       <li><a href="doc/cpp_util.html#_CPPv4NK6stored11MessageFifo7boundedEv">stored::MessageFifo::bounded (C++ function)</a>
 </li>
+      <li><a href="doc/cpp_util.html#_CPPv4NK6stored11MessageFifo8capacityEv">stored::MessageFifo::capacity (C++ function)</a>
+</li>
       <li><a href="doc/cpp_util.html#_CPPv4N6stored11MessageFifo5clearEv">stored::MessageFifo::clear (C++ function)</a>
 </li>
       <li><a href="doc/cpp_util.html#_CPPv4N6stored11MessageFifo10const_typeE">stored::MessageFifo::const_type (C++ type)</a>
@@ -3055,6 +3073,8 @@
       <li><a href="doc/cpp_util.html#_CPPv4N6stored11MessageFifo9pop_frontEv">stored::MessageFifo::pop_front (C++ function)</a>
 </li>
       <li><a href="doc/cpp_util.html#_CPPv4I0EN6stored11MessageFifo9push_backE6size_t2It2It">stored::MessageFifo::push_back (C++ function)</a>, <a href="doc/cpp_util.html#_CPPv4N6stored11MessageFifo9push_backENSt16initializer_listI10const_typeEE">[1]</a>, <a href="doc/cpp_util.html#_CPPv4N6stored11MessageFifo9push_backEPKc6size_t">[2]</a>, <a href="doc/cpp_util.html#_CPPv4N6stored11MessageFifo9push_backERK10const_type">[3]</a>, <a href="doc/cpp_util.html#_CPPv4N6stored11MessageFifo9push_backEv">[4]</a>
+</li>
+      <li><a href="doc/cpp_util.html#_CPPv4N6stored11MessageFifo10reset_backEv">stored::MessageFifo::reset_back (C++ function)</a>
 </li>
       <li><a href="doc/cpp_util.html#_CPPv4NK6stored11MessageFifo4sizeEv">stored::MessageFifo::size (C++ function)</a>
 </li>
@@ -3101,6 +3121,10 @@
       <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID7epsilonEv">stored::PID::epsilon (C++ function)</a>
 </li>
       <li><a href="doc/cpp_components.html#_CPPv4N6stored3PID13epsilonObjectEv">stored::PID::epsilonObject (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored3PID13epsilonObjectEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID8errorMaxEv">stored::PID::errorMax (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored3PID14errorMaxObjectEv">stored::PID::errorMaxObject (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4NK6stored3PID14errorMaxObjectEv">[1]</a>
 </li>
       <li><a href="doc/cpp_components.html#_CPPv4NK6stored3PID9frequencyEv">stored::PID::frequency (C++ function)</a>
 </li>
@@ -3198,6 +3222,8 @@
 </li>
       <li><a href="doc/cpp_components.html#_CPPv4NK6stored5PinIn9pinObjectEv">stored::PinIn::pinObject (C++ function)</a>
 </li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored5PinInD0Ev">stored::PinIn::~PinIn (C++ function)</a>
+</li>
       <li><a href="doc/cpp_components.html#_CPPv4I0_yEN6stored6PinOutE">stored::PinOut (C++ class)</a>
 </li>
       <li><a href="doc/cpp_components.html#_CPPv4N6stored6PinOut5BoundE">stored::PinOut::Bound (C++ type)</a>
@@ -3217,6 +3243,8 @@
       <li><a href="doc/cpp_components.html#_CPPv4N6stored6PinOut9pinObjectEv">stored::PinOut::pinObject (C++ function)</a>
 </li>
       <li><a href="doc/cpp_components.html#_CPPv4N6stored6PinOut6PinOutERK13PinOutObjectsI9ContainerER9Container">stored::PinOut::PinOut (C++ function)</a>, <a href="doc/cpp_components.html#_CPPv4N6stored6PinOut6PinOutEv">[1]</a>
+</li>
+      <li><a href="doc/cpp_components.html#_CPPv4N6stored6PinOutD0Ev">stored::PinOut::~PinOut (C++ function)</a>
 </li>
       <li><a href="doc/cpp_poller.html#_CPPv4I0EN6stored8pollableE16PollableCallbackINSt5decayI1FE4typeEERR1FRKN8Pollable6EventsEPv">stored::pollable (C++ function)</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableE6SOCKETRKN8Pollable6EventsEPv">[1]</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableEN16PollableCallbackIE6f_typeERKN8Pollable6EventsEPv">[2]</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableEPvRKN8Pollable6EventsEPv">[3]</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableER15PolledFileLayerRKN8Pollable6EventsEPv">[4]</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableER8ZmqLayerRKN8Pollable6EventsEPv">[5]</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableEiRKN8Pollable6EventsEPv">[6]</a>
 </li>
@@ -3897,6 +3925,8 @@
       <li><a href="doc/cpp_types.html#_CPPv4I0EN6stored7VariantE">stored::Variant (C++ class)</a>
 </li>
       <li><a href="doc/cpp_types.html#_CPPv4NK6stored7Variant6bufferEv">stored::Variant::buffer (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_types.html#_CPPv4NK6stored7Variant8callbackEbPv6size_t">stored::Variant::callback (C++ function)</a>
 </li>
       <li><a href="doc/cpp_types.html#_CPPv4NK6stored7Variant9containerEv">stored::Variant::container (C++ function)</a>
 </li>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Debugger &mdash; libstored 1.2.0 documentation</title>
+  <title>Debugger &mdash; libstored 1.3.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,7 +14,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -30,7 +32,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.2.0
+                1.3.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -111,10 +113,10 @@
            <div itemprop="articleBody">
              
   <section id="debugger">
-<h1>Debugger<a class="headerlink" href="#debugger" title="Permalink to this headline"></a></h1>
+<h1>Debugger<a class="headerlink" href="#debugger" title="Permalink to this heading"></a></h1>
 <p>Embedded Debugger message handling.</p>
 <section id="protocol">
-<h2>Protocol<a class="headerlink" href="#protocol" title="Permalink to this headline"></a></h2>
+<h2>Protocol<a class="headerlink" href="#protocol" title="Permalink to this heading"></a></h2>
 <p>The default set of commands that is processed by <a class="reference internal" href="#_CPPv4N6stored8DebuggerE" title="stored::Debugger"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Debugger</span></code></a>
 is listed below.  A subclass of <a class="reference internal" href="#_CPPv4N6stored8DebuggerE" title="stored::Debugger"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Debugger</span></code></a> may extend the
 set of capabilities, for application-specific purposes.</p>
@@ -127,7 +129,7 @@ responses are usually plain ASCII (or UTF-8 for strings), to simplify
 processing it over a terminal or by humans. However, it does not have to be the
 case.</p>
 <section id="capabilities">
-<h3>Capabilities<a class="headerlink" href="#capabilities" title="Permalink to this headline"></a></h3>
+<h3>Capabilities<a class="headerlink" href="#capabilities" title="Permalink to this heading"></a></h3>
 <p>Request: <code class="docutils literal notranslate"><span class="pre">?</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>?
 </pre></div>
@@ -139,7 +141,7 @@ case.</p>
 <p>This command is mandatory for every debugging target.</p>
 </section>
 <section id="echo">
-<h3>Echo<a class="headerlink" href="#echo" title="Permalink to this headline"></a></h3>
+<h3>Echo<a class="headerlink" href="#echo" title="Permalink to this heading"></a></h3>
 <p>Request: <code class="docutils literal notranslate"><span class="pre">e</span></code> &lt;any data&gt;</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>eHello World
 </pre></div>
@@ -150,7 +152,7 @@ case.</p>
 </div>
 </section>
 <section id="read">
-<h3>Read<a class="headerlink" href="#read" title="Permalink to this headline"></a></h3>
+<h3>Read<a class="headerlink" href="#read" title="Permalink to this heading"></a></h3>
 <p>Request: <code class="docutils literal notranslate"><span class="pre">r</span></code> &lt;name of object&gt;</p>
 <p>(Every scope within) the name of the object may be abbreviated, as long as it
 is unambiguous.  In case there is a alias created for the object (see Alias
@@ -167,7 +169,7 @@ are encoded.</p>
 </div>
 </section>
 <section id="write">
-<h3>Write<a class="headerlink" href="#write" title="Permalink to this headline"></a></h3>
+<h3>Write<a class="headerlink" href="#write" title="Permalink to this heading"></a></h3>
 <p>Request: <code class="docutils literal notranslate"><span class="pre">w</span></code> &lt;value in ASCII hex&gt; &lt;name of object&gt;</p>
 <p>See Read for details about the hex value and object name.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>w10/b/a
@@ -179,7 +181,7 @@ are encoded.</p>
 </div>
 </section>
 <section id="list">
-<h3>List<a class="headerlink" href="#list" title="Permalink to this headline"></a></h3>
+<h3>List<a class="headerlink" href="#list" title="Permalink to this heading"></a></h3>
 <p>Requests a full list of all objects of all registered stores to the current
 Embedded Debugger.</p>
 <p>Request: <code class="docutils literal notranslate"><span class="pre">l</span></code></p>
@@ -196,7 +198,7 @@ characters.  The number of characters of the length of the object depends on
 the value; leading zeros may be removed.</p>
 </section>
 <section id="alias">
-<h3>Alias<a class="headerlink" href="#alias" title="Permalink to this headline"></a></h3>
+<h3>Alias<a class="headerlink" href="#alias" title="Permalink to this heading"></a></h3>
 <p>Assigns a character to a object path.  An alias can be everywhere where an
 object path is expected.  Creating aliases skips parsing the object path
 repeatedly, so makes debugging more efficient.  If no object is specified, the
@@ -213,7 +215,7 @@ the response will be <code class="docutils literal notranslate"><span class="pre
 </div>
 </section>
 <section id="macro">
-<h3>Macro<a class="headerlink" href="#macro" title="Permalink to this headline"></a></h3>
+<h3>Macro<a class="headerlink" href="#macro" title="Permalink to this heading"></a></h3>
 <p>Saves a sequence of commands and assigns a name to it.  The macro name can be
 any char in the range 0x20 (<code class="docutils literal notranslate"><span class="pre">␣</span></code>) - 0x7e (<code class="docutils literal notranslate"><span class="pre">~</span></code>).  In case of a name clash
 with an existing non-macro command, the command is executed; the macro cannot
@@ -240,7 +242,7 @@ separators. The Echo command can be used to inject separators in the output.</p>
 </div>
 </section>
 <section id="identification">
-<h3>Identification<a class="headerlink" href="#identification" title="Permalink to this headline"></a></h3>
+<h3>Identification<a class="headerlink" href="#identification" title="Permalink to this heading"></a></h3>
 <p>Returns a fixed string that identifies the application.</p>
 <p>Request: <code class="docutils literal notranslate"><span class="pre">i</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>i
@@ -252,7 +254,7 @@ separators. The Echo command can be used to inject separators in the output.</p>
 </div>
 </section>
 <section id="version">
-<h3>Version<a class="headerlink" href="#version" title="Permalink to this headline"></a></h3>
+<h3>Version<a class="headerlink" href="#version" title="Permalink to this heading"></a></h3>
 <p>Returns a list of versions.</p>
 <p>Request: <code class="docutils literal notranslate"><span class="pre">v</span></code></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>v
@@ -264,7 +266,7 @@ separators. The Echo command can be used to inject separators in the output.</p>
 </div>
 </section>
 <section id="read-memory">
-<h3>Read memory<a class="headerlink" href="#read-memory" title="Permalink to this headline"></a></h3>
+<h3>Read memory<a class="headerlink" href="#read-memory" title="Permalink to this heading"></a></h3>
 <p>Read a memory via a pointer instead of the store.  Returns the number of
 requested bytes. If no length is specified, a word is returned.</p>
 <p>Request: <code class="docutils literal notranslate"><span class="pre">R</span></code> &lt;pointer in hex&gt; ( <code class="docutils literal notranslate"><span class="pre">␣</span></code> &lt;length&gt; ) ?</p>
@@ -279,7 +281,7 @@ requested bytes. If no length is specified, a word is returned.</p>
 lowest address first.</p>
 </section>
 <section id="write-memory">
-<h3>Write memory<a class="headerlink" href="#write-memory" title="Permalink to this headline"></a></h3>
+<h3>Write memory<a class="headerlink" href="#write-memory" title="Permalink to this heading"></a></h3>
 <p>Write a memory via a pointer instead of the store.</p>
 <p>Request: <code class="docutils literal notranslate"><span class="pre">W</span></code> &lt;pointer in hex&gt; <code class="docutils literal notranslate"><span class="pre">␣</span></code> &lt;bytes in hex&gt;</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>W1ffefff7cc 0123
@@ -291,7 +293,7 @@ lowest address first.</p>
 </div>
 </section>
 <section id="streams">
-<h3>Streams<a class="headerlink" href="#streams" title="Permalink to this headline"></a></h3>
+<h3>Streams<a class="headerlink" href="#streams" title="Permalink to this heading"></a></h3>
 <p>Read all available data from a stream. Streams are application-defined
 sequences of bytes, like stdout and stderr. They may contain binary data.
 There are an arbitrary number of streams, with an arbitrary single-char name,
@@ -334,7 +336,7 @@ for every stream returned by <code class="docutils literal notranslate"><span cl
 <p>Afterwards, pass all data received from <code class="docutils literal notranslate"><span class="pre">s</span></code> through the heatshrink decoder.</p>
 </section>
 <section id="flush">
-<h3>Flush<a class="headerlink" href="#flush" title="Permalink to this headline"></a></h3>
+<h3>Flush<a class="headerlink" href="#flush" title="Permalink to this heading"></a></h3>
 <p>Flush out and reset a stream (see also Streams). When this capability does not
 exist, streams are not compressed. If it does exist, all streams are compressed.
 Use this function to initialize the stream if the (de)compressing state is unknown,
@@ -348,7 +350,7 @@ is not lost, but new data could be dropped if this takes too long. If you want
 an atomic flush-retrieve, use a macro.</p>
 </section>
 <section id="tracing">
-<h3>Tracing<a class="headerlink" href="#tracing" title="Permalink to this headline"></a></h3>
+<h3>Tracing<a class="headerlink" href="#tracing" title="Permalink to this heading"></a></h3>
 <p>Executes a macro every time the application invokes <a class="reference internal" href="#_CPPv4N6stored8Debugger5traceEv" title="stored::Debugger::trace"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">stored::Debugger::trace()</span></code></a>.
 A stream is filled with the macro output.</p>
 <p>Request: <code class="docutils literal notranslate"><span class="pre">t</span></code> ( &lt;macro&gt; &lt;stream&gt; ( &lt;decimate in hex&gt; ) ? ) ?</p>
@@ -413,10 +415,10 @@ than the actual tracing speed.</p>
 </section>
 </section>
 <section id="stored-debugger">
-<h2>stored::Debugger<a class="headerlink" href="#stored-debugger" title="Permalink to this headline"></a></h2>
+<h2>stored::Debugger<a class="headerlink" href="#stored-debugger" title="Permalink to this heading"></a></h2>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored8DebuggerE">
-<span id="_CPPv3N6stored8DebuggerE"></span><span id="_CPPv2N6stored8DebuggerE"></span><span id="stored::Debugger"></span><span class="target" id="classstored_1_1_debugger"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Debugger</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><a class="headerlink" href="#_CPPv4N6stored8DebuggerE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored8DebuggerE"></span><span id="_CPPv2N6stored8DebuggerE"></span><span id="stored::Debugger"></span><span class="target" id="classstored_1_1_debugger"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Debugger</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><a class="headerlink" href="#_CPPv4N6stored8DebuggerE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>The application-layer implementation of the Embedded Debugger protocol. </p>
 <p>To use the <a class="reference internal" href="#classstored_1_1_debugger"><span class="std std-ref">Debugger</span></a> in your application:</p>
 <p><ul class="simple">
@@ -838,10 +840,10 @@ than the actual tracing speed.</p>
 
 </section>
 <section id="stored-debugstorebase">
-<h2>stored::DebugStoreBase<a class="headerlink" href="#stored-debugstorebase" title="Permalink to this headline"></a></h2>
+<h2>stored::DebugStoreBase<a class="headerlink" href="#stored-debugstorebase" title="Permalink to this heading"></a></h2>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14DebugStoreBaseE">
-<span id="_CPPv3N6stored14DebugStoreBaseE"></span><span id="_CPPv2N6stored14DebugStoreBaseE"></span><span id="stored::DebugStoreBase"></span><span class="target" id="classstored_1_1_debug_store_base"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">DebugStoreBase</span></span></span><a class="headerlink" href="#_CPPv4N6stored14DebugStoreBaseE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored14DebugStoreBaseE"></span><span id="_CPPv2N6stored14DebugStoreBaseE"></span><span id="stored::DebugStoreBase"></span><span class="target" id="classstored_1_1_debug_store_base"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DebugStoreBase</span></span></span><a class="headerlink" href="#_CPPv4N6stored14DebugStoreBaseE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Wrapper for a store, that hides the store’s template parameters. </p>
 <p>This is a type-independent base class of stored::DebugStore. For <a class="reference internal" href="#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>, this is the interface to access a specific store.</p>
 <p><div class="admonition seealso">
@@ -921,10 +923,10 @@ than the actual tracing speed.</p>
 
 </section>
 <section id="stored-debugvariant">
-<h2>stored::DebugVariant<a class="headerlink" href="#stored-debugvariant" title="Permalink to this headline"></a></h2>
+<h2>stored::DebugVariant<a class="headerlink" href="#stored-debugvariant" title="Permalink to this heading"></a></h2>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12DebugVariantE">
-<span id="_CPPv3N6stored12DebugVariantE"></span><span id="_CPPv2N6stored12DebugVariantE"></span><span id="stored::DebugVariant"></span><span class="target" id="classstored_1_1_debug_variant"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">DebugVariant</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">DebugVariantBase</span></span><a class="headerlink" href="#_CPPv4N6stored12DebugVariantE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored12DebugVariantE"></span><span id="_CPPv2N6stored12DebugVariantE"></span><span id="stored::DebugVariant"></span><span class="target" id="classstored_1_1_debug_variant"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DebugVariant</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">DebugVariantBase</span></span><a class="headerlink" href="#_CPPv4N6stored12DebugVariantE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>A wrapper for any type of object in a store. </p>
 <p>This is a template-type-independent container for a stored::DebugVariantTyped.</p>
 <p>Even though the <code class="docutils literal notranslate"><span class="pre">DebugVariantTyped</span></code> uses virtual functions, inheritance, and templates, the allocation is done within this object. This object is small, efficient, default-copyable and default-assignable, and can therefore be used as a value in a standard container. </p>
