@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VHDL &mdash; libstored 1.3.0 documentation</title>
+  <title>VHDL &mdash; libstored 1.3.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -32,7 +32,7 @@
             <a href="../index.html" class="icon icon-home"> libstored
           </a>
               <div class="version">
-                1.3.0
+                1.3.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -280,7 +280,7 @@ this:</p>
 </pre></div>
 </div>
 <p>The output timing is exemplified below.</p>
-<img alt="../_images/wavedrom-7da85dbb-300d-4e7b-9f62-b3f0a6894802.svg" src="../_images/wavedrom-7da85dbb-300d-4e7b-9f62-b3f0a6894802.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
+<img alt="../_images/wavedrom-81ab9735-f42e-4430-bd1f-ee1529d34810.svg" src="../_images/wavedrom-81ab9735-f42e-4430-bd1f-ee1529d34810.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
 When the value is written, via <code class="docutils literal notranslate"><span class="pre">var_in</span></code>, the AXI interface, or via the
 Synchronizer, <code class="docutils literal notranslate"><span class="pre">value</span></code> is updated and <code class="docutils literal notranslate"><span class="pre">updated</span></code> is flagged for one
 clock cycle.  The flag is set at every write, not only when the data
@@ -316,7 +316,7 @@ this:</p>
 </pre></div>
 </div>
 <p>When <code class="docutils literal notranslate"><span class="pre">we</span></code> is high, the <code class="docutils literal notranslate"><span class="pre">value</span></code> is written to the store.</p>
-<img alt="../_images/wavedrom-32698f76-861b-4c5d-978f-7f12ebf5fb27.svg" src="../_images/wavedrom-32698f76-861b-4c5d-978f-7f12ebf5fb27.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
+<img alt="../_images/wavedrom-15a0b1f7-694f-4688-836b-5908b04f0ce2.svg" src="../_images/wavedrom-15a0b1f7-694f-4688-836b-5908b04f0ce2.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
 the case that a microcontroller and the FPGA synchronize a store.  If a
 variable should be read-only for the microcontroller, <code class="docutils literal notranslate"><span class="pre">we</span></code> can be tied
 high by the FPGA, such that the FPGA updates the variable constantly.  In
@@ -434,7 +434,7 @@ layer in the stack.</p>
 </dd>
 </dl>
 <p>Passing messages follows this scheme, which is resembles the AXI4-Stream Protocol:</p>
-<img alt="../_images/wavedrom-f045c56a-07dc-465f-a52f-39d3cbf0444a.svg" src="../_images/wavedrom-f045c56a-07dc-465f-a52f-39d3cbf0444a.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
+<img alt="../_images/wavedrom-68abcf6d-797c-4a9d-accf-36b1e91c41d1.svg" src="../_images/wavedrom-68abcf6d-797c-4a9d-accf-36b1e91c41d1.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
 clock edge.  In the example above, this happens at edge 2, 3, 6, 9, and 10.
 There is no order or dependency in <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code>; both can be
 high while other is not, indicating ‘there is data’, or ‘the data can be
@@ -760,7 +760,7 @@ Only available in simulation.</p>
 </pre></div>
 </div>
 <p>Example that drops a tail of length 1:</p>
-<img alt="../_images/wavedrom-4a21113d-d5a3-4ae8-a026-5d30a5ef5044.svg" src="../_images/wavedrom-4a21113d-d5a3-4ae8-a026-5d30a5ef5044.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
+<img alt="../_images/wavedrom-87b2f2b2-e6c6-45de-a57a-d38c954d3d2c.svg" src="../_images/wavedrom-87b2f2b2-e6c6-45de-a57a-d38c954d3d2c.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
 unspecified.</p>
 <dl class="simple">
 <dt>FIFO_DEPTH<span class="classifier">natural := 0</span></dt><dd><p>Minimum FIFO depth. Set to 0 to allow pass-through.</p>
@@ -842,8 +842,8 @@ This is effectively a FIFO of size 1.</p>
 </pre></div>
 </div>
 <p>Example to drop and commit pushed data:</p>
-<img alt="../_images/wavedrom-e923c0b3-d0b4-43ae-81ea-7b12e5913d0a.svg" src="../_images/wavedrom-e923c0b3-d0b4-43ae-81ea-7b12e5913d0a.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
-<img alt="../_images/wavedrom-6a937937-7ac9-48a0-9880-b5082156a425.svg" src="../_images/wavedrom-6a937937-7ac9-48a0-9880-b5082156a425.svg" /><dl class="simple">
+<img alt="../_images/wavedrom-23943e46-149a-436e-ae1e-41c9eda0e432.svg" src="../_images/wavedrom-23943e46-149a-436e-ae1e-41c9eda0e432.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
+<img alt="../_images/wavedrom-9e45a056-f658-4505-b0c8-1d1bb2c13241.svg" src="../_images/wavedrom-9e45a056-f658-4505-b0c8-1d1bb2c13241.svg" /><dl class="simple">
 <dt>WIDTH<span class="classifier">positive</span></dt><dd><p>Data width.</p>
 </dd>
 <dt>DEPTH<span class="classifier">natural := 1</span></dt><dd><p>Minimum FIFO depth.</p>
