@@ -3386,12 +3386,12 @@ private:
 //////////////////////////////////////////////////////////
 
 template <typename Container, typename T = float>
-using LowPassObjects = FreeObjectsList<
+using FirstOrderFilterObjects = FreeObjectsList<
 	FreeFunctions<float, Container, 's'>, FreeVariables<T, Container, 'I', 'c', 'F', 'O'>,
 	FreeVariables<bool, Container, 'e', 'r'>>;
 
 /*!
- * \brief First-order low-pass filter, based on store variables.
+ * \brief First-order low- or high-pass filter, based on store variables.
  *
  * To use this class, add a scope to your store, like:
  *
@@ -3404,7 +3404,7 @@ using LowPassObjects = FreeObjectsList<
  *     bool reset
  *     float=nan override
  *     float output
- * } lowpass
+ * } filter
  * \endcode
  *
  * Only <tt>sample frequency</tt> and <tt>cutoff frequency</tt> are
@@ -3416,21 +3416,23 @@ using LowPassObjects = FreeObjectsList<
  *
  * \code
  * // Construct a compile-time object, which resolves all fields in your store.
- * constexpr auto lowpass_o = stored::LowPass<stored::YourStore>::objects("/lowpass/");
+ * constexpr auto filter_o = stored::LowPass<stored::YourStore>::objects("/filter/");
  *
  * // Instantiate the filter, tailored to the available fields in the store.
- * stored::LowPass<stored::YourStore, lowpass_o.flags()> lowpass{lowpass_o, yourStore};
+ * stored::LowPass<stored::YourStore, filter_o.flags()> filter{filter_o, yourStore};
+ *
+ * // ...or use HighPass instead of LowPass.
  * \endcode
  *
  * The cutoff frequency can be changed while running (by setting \c
  * reset to \c true).  It will applied smoothly; the output will
  * gradually take the new cutoff frequency into account.
  */
-template <typename Container, unsigned long long flags = 0, typename T = float>
-class LowPass {
+template <typename Container, bool LowPass, unsigned long long flags = 0, typename T = float>
+class FirstOrderFilter {
 public:
 	using type = T;
-	using Bound = typename LowPassObjects<Container, type>::template Bound<flags>;
+	using Bound = typename FirstOrderFilterObjects<Container, type>::template Bound<flags>;
 
 	/*!
 	 * \brief Default ctor.
@@ -3438,12 +3440,13 @@ public:
 	 * Use this when initialization is postponed. You can assign
 	 * another instance later on.
 	 */
-	constexpr LowPass() noexcept = default;
+	constexpr FirstOrderFilter() noexcept = default;
 
 	/*!
 	 * \brief Initialize the filter, given a list of objects and a container.
 	 */
-	constexpr LowPass(LowPassObjects<Container, type> const& o, Container& container)
+	constexpr FirstOrderFilter(
+		FirstOrderFilterObjects<Container, type> const& o, Container& container)
 		: m_o{Bound::create(o, container)}
 	{
 		static_assert(
@@ -3458,7 +3461,7 @@ public:
 	template <char... OnlyId, size_t N>
 	static constexpr auto objects(char const (&prefix)[N]) noexcept
 	{
-		return LowPassObjects<Container, type>::template create<OnlyId...>(
+		return FirstOrderFilterObjects<Container, type>::template create<OnlyId...>(
 			prefix, "sample frequency", "input", "cutoff frequency", "override",
 			"output", "enable", "reset");
 	}
@@ -3492,6 +3495,12 @@ public:
 	{
 		decltype(auto) o = inputObject();
 		return o.valid() ? o.get() : type();
+	}
+
+	/*! \brief Return the last input to the filter. */
+	type lastInput() const noexcept
+	{
+		return m_prev_input;
 	}
 
 	/*! \brief Return the <tt>cutoff frequency</tt> object. */
@@ -3548,6 +3557,12 @@ public:
 	{
 		decltype(auto) o = outputObject();
 		return o.valid() ? o.get() : type();
+	}
+
+	/*! \brief Return the last output of the filter. */
+	type lastOutput() const noexcept
+	{
+		return m_prev_output;
 	}
 
 	/*! \brief Return the \c enable object. */
@@ -3630,6 +3645,22 @@ public:
 		return run(input());
 	}
 
+	/*!
+	 * \brief Recompute alpha after changed filter parameters.
+	 */
+	void recomputeCoefficients()
+	{
+		type cutoff = cutoffFrequency();
+		type rc = cutoff > 0 ? (type)1 / ((type)2 * pi<type> * cutoff) : 0;
+		auto sf = sampleFrequency();
+		type dt = sf > 0 ? (type)(1.0f / sampleFrequency()) : 0;
+
+		if(LowPass)
+			m_alpha = dt > 0 ? dt / (rc + dt) : 1;
+		else
+			m_alpha = rc > 0 ? rc / (rc + dt) : 1;
+	}
+
 protected:
 	/*!
 	 * \brief Compute filter output.
@@ -3640,7 +3671,7 @@ protected:
 
 		if(likely(std::isnan(output))) {
 			if(!enabled()) {
-				m_prev = output = input;
+				m_prev_output = output = input;
 			} else {
 				bool doReset = false;
 
@@ -3652,24 +3683,29 @@ protected:
 
 				if(unlikely(std::isnan(m_alpha))) {
 					doReset = true;
-					m_prev = input;
+					m_prev_output = input;
 				}
 
-				if(unlikely(doReset)) {
-					type cutoff = cutoffFrequency();
-					type rc = cutoff > 0
-							  ? (type)1 / ((type)2 * pi<type> * cutoff)
-							  : 0;
-					auto sf = sampleFrequency();
-					type dt = sf > 0 ? (type)(1.0f / sampleFrequency()) : 0;
-					m_alpha = dt > 0 ? dt / (rc + dt) : 1;
+				if(unlikely(doReset))
+					recomputeCoefficients();
+
+				if(LowPass) {
+					output = m_alpha * input
+						 + ((type)1 - m_alpha) * m_prev_output;
+				} else {
+					output = m_alpha * m_prev_output
+						 + m_alpha * (input - m_prev_input);
 				}
 
-				m_prev = output = m_alpha * input + ((type)1 - m_alpha) * m_prev;
+				m_prev_output = output;
 			}
 		} else {
-			m_prev = input;
+			// Save current value, such that we resume smoothly
+			// when the override is reset.
+			m_prev_output = input;
 		}
+
+		m_prev_input = input;
 
 		decltype(auto) oo = outputObject();
 		if(oo.valid())
@@ -3681,8 +3717,15 @@ protected:
 private:
 	Bound m_o;
 	type m_alpha{std::numeric_limits<type>::quiet_NaN()};
-	type m_prev{};
+	type m_prev_output{};
+	type m_prev_input{};
 };
+
+template <typename Container, unsigned long long flags = 0, typename T = float>
+using LowPass = FirstOrderFilter<Container, true, flags, T>;
+
+template <typename Container, unsigned long long flags = 0, typename T = float>
+using HighPass = FirstOrderFilter<Container, false, flags, T>;
 
 
 
