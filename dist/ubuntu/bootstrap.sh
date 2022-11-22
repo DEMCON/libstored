@@ -27,7 +27,7 @@ sudo apt install -y \
 echo -e "\nSuggested packages to install manually:\n"
 echo -e "  sudo apt install -y ninja-build spin gdb-multiarch cppcheck \\"
 echo -e "                      clang clang-tidy clang-format libzmq3-dev \\"
-echo -e "                      qtbase5-dev qtdeclarative5-dev\n"
+echo -e "                      qt6-base-dev qt6-declarative-dev\n"
 
 if [[ `lsb_release -r -s | sed 's/\..*//'` -lt 20 ]]; then
 	echo -e "\nQt6 (and therefore PySide6) requires Ubuntu 20.04 or later."
