@@ -2126,7 +2126,7 @@ using PIDObjects = FreeObjectsList<
  * - \c Ti: I time constant
  * - \c Td: D time constant
  * - \c Kff: feed-forward coefficient
- * - \c int: current integral value (cannot be changed via the store)
+ * - \c int: current integral value
  * - <tt>int low</tt>: lower bound for \c int
  * - <tt>int high</tt>: upper bound for \c int
  * - \c low: lower bound for computed \c u
