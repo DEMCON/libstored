@@ -3690,8 +3690,12 @@ protected:
 					m_prev_output = input;
 				}
 
-				if(unlikely(doReset))
+				if(unlikely(doReset)) {
 					recomputeCoefficients();
+
+					if(std::isnan(m_prev_output))
+						m_prev_output = input;
+				}
 
 				if(LowPass) {
 					output = m_alpha * input
