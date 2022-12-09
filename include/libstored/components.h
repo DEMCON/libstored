@@ -2676,6 +2676,10 @@ protected:
 						m_Ki = Kp() * dt / Ti();
 					m_Kd = -Kp() * Td() / dt;
 				}
+
+				decltype(auto) io = intObject();
+				if(io.valid())
+					m_int = io;
 			}
 
 			u = Kp() * e + m_int + Kff() * sp;
