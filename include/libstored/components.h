@@ -2679,7 +2679,7 @@ protected:
 
 				decltype(auto) io = intObject();
 				if(io.valid())
-					m_int = io;
+					m_int = io.get();
 			}
 
 			u = Kp() * e + m_int + Kff() * sp;
