@@ -2732,7 +2732,8 @@ constexpr T pi = T(3.141592653589793238462643383279502884L);
 
 template <typename Container, typename T = float>
 using SineObjects = FreeObjectsList<
-	FreeFunctions<float, Container, 's'>, FreeVariables<T, Container, 'A', 'f', 'p', 'F', 'O'>,
+	FreeFunctions<float, Container, 's'>,
+	FreeVariables<T, Container, 'A', 'f', 'p', 'o', 'F', 'O'>,
 	FreeVariables<bool, Container, 'e'>>;
 
 /*!
@@ -2746,6 +2747,7 @@ using SineObjects = FreeObjectsList<
  *     float=1 amplitude
  *     float=0.159 frequency (Hz)
  *     float=0 phase (rad)
+ *     float=0 offset
  *     bool=true enable
  *     float=nan override
  *     float output
@@ -2766,6 +2768,7 @@ using SineObjects = FreeObjectsList<
  * amplitude        | \c A
  * frequency        | \c f
  * phase            | \c p
+ * offset           | \c o
  * enable           | \c e
  * override         | \c F
  * output           | \c O
@@ -2814,8 +2817,8 @@ public:
 	static constexpr auto objects(char const (&prefix)[N]) noexcept
 	{
 		return SineObjects<Container, type>::template create<OnlyId...>(
-			prefix, "sample frequency", "amplitude", "frequency", "phase", "override",
-			"output", "enable");
+			prefix, "sample frequency", "amplitude", "frequency", "phase", "offset",
+			"override", "output", "enable");
 	}
 
 	/*! \brief Return the <tt>sample frequency</tt> object. */
@@ -2884,6 +2887,25 @@ public:
 	type phase() const noexcept
 	{
 		decltype(auto) o = phaseObject();
+		return o.valid() ? o.get() : (type)0;
+	}
+
+	/*! \brief Return the \c offset object. */
+	decltype(auto) offsetObject() const noexcept
+	{
+		return m_o.template get<'o'>();
+	}
+
+	/*! \brief Return the \c offset object. */
+	decltype(auto) offsetObject() noexcept
+	{
+		return m_o.template get<'o'>();
+	}
+
+	/*! \brief Return the \c offset value, or 0 when not available. */
+	type offset() const noexcept
+	{
+		decltype(auto) o = offsetObject();
 		return o.valid() ? o.get() : (type)0;
 	}
 
@@ -2982,6 +3004,8 @@ public:
 					 * std::sin((type)2 * pi<type> * f * m_t + phase());
 			else
 				output = 0;
+
+			output += offset();
 		}
 
 		if(likely(period > 0)) {
