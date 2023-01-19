@@ -35,14 +35,17 @@ choco install -y --no-progress python3 --version 3.10.8
 if errorlevel 1 goto error
 :skip_python
 
-set pkg=git cmake ninja pkgconfiglite mingw
+set pkg=git cmake ninja mingw plantuml
 rem Ignore "restart required" (3010)
 choco install -y --no-progress --ignore-package-exit-codes=3010 %pkg%
 if errorlevel 1 goto error
 
-set optpkg=doxygen.install plantuml
+rem SourceForge is a bit flaky. These packages often fail.
+rem Without doxygen, documentation is not available.
+rem Without pkgconfiglite, ZeroMQ is probably always built from source.
+set optpkg=doxygen.install pkgconfiglite
 choco install -y --no-progress --ignore-package-exit-codes=3010 %optpkg%
-if errorlevel 1 echo Failed to install optional packages. Ignored.
+if errorlevel 1 echo Failed to install less essential packages. Ignored, but you may retry.
 
 where /q libcairo-2.dll > NUL 2> NUL
 if errorlevel 1 goto no_cairo
