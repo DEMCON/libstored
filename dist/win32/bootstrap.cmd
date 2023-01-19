@@ -35,10 +35,14 @@ choco install -y --no-progress python3 --version 3.10.8
 if errorlevel 1 goto error
 :skip_python
 
-set pkg=git cmake ninja pkgconfiglite mingw doxygen.install plantuml
+set pkg=git cmake ninja pkgconfiglite mingw
 rem Ignore "restart required" (3010)
 choco install -y --no-progress --ignore-package-exit-codes=3010 %pkg%
 if errorlevel 1 goto error
+
+set optpkg=doxygen.install plantuml
+choco install -y --no-progress --ignore-package-exit-codes=3010 %optpkg%
+if errorlevel 1 echo Failed to install optional packages. Ignored.
 
 where /q libcairo-2.dll > NUL 2> NUL
 if errorlevel 1 goto no_cairo
