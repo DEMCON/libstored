@@ -29,17 +29,11 @@ echo Chocolatey not installed. Install from here: https://chocolatey.org/docs/in
 goto error
 :have_choco
 
+if "%CI%" == "" goto skip_python
 rem heatshrink2 is not released (yet) for 3.11 and later on pypi. Use 3.10 for now. Should be fixed.
-choco install -y --no-progress pyenv-win
+choco install -y --no-progress python3 --version 3.10.8
 if errorlevel 1 goto error
-
-call refreshenv
-
-pyenv install 3.10.8
-if errorlevel 1 goto error
-
-pyenv global 3.10.8
-if errorlevel 1 goto error
+:skip_python
 
 set pkg=git cmake ninja pkgconfiglite mingw doxygen.install plantuml
 rem Ignore "restart required" (3010)
