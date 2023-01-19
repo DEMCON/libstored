@@ -29,7 +29,11 @@ echo Chocolatey not installed. Install from here: https://chocolatey.org/docs/in
 goto error
 :have_choco
 
-set pkg=python3 tortoisegit git cmake ninja pkgconfiglite mingw doxygen.install plantuml
+rem heatshrink2 is not released (yet) for 3.11 and later on pypi. Use 3.10 for now. Should be fixed.
+choco install -y --no-progress python3 --version 3.10.8
+if errorlevel 1 goto error
+
+set pkg=python3 git cmake ninja pkgconfiglite mingw doxygen.install plantuml
 rem Ignore "restart required" (3010)
 choco install -y --no-progress --ignore-package-exit-codes=3010 %pkg%
 if errorlevel 1 goto error
