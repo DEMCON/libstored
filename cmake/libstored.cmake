@@ -160,6 +160,10 @@ function(libstored_lib libprefix libpath)
 			target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC Qt::Core)
 		endif()
 
+		if(COMMAND qt_disable_unicode_defines)
+			qt_disable_unicode_defines(${LIBSTORED_LIB_TARGET})
+		endif()
+
 		set_target_properties(${LIBSTORED_LIB_TARGET} PROPERTIES AUTOMOC ON)
 	endif()
 
