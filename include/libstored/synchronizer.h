@@ -90,7 +90,28 @@ public:
 		SeqCleanThreshold = SeqLowerMargin * 2u,
 	};
 
-	StoreJournal(char const* hash, void* buffer, size_t size);
+	class StoreCallback {
+		STORED_CLASS_NOCOPY(StoreCallback)
+	public:
+		StoreCallback() is_default
+		virtual ~StoreCallback();
+
+		virtual void hookEntryRO() noexcept = 0;
+		virtual void hookExitRO() noexcept = 0;
+
+		virtual void hookEntryRO(Type::type type, void* buffer, size_t len) noexcept = 0;
+		virtual void
+		hookExitRO(Type::type type, void* buffer, size_t len, bool changed) noexcept = 0;
+
+		virtual void hookEntryX() noexcept = 0;
+		virtual void hookExitX() noexcept = 0;
+
+		virtual void hookEntryX(Type::type type, void* buffer, size_t len) noexcept = 0;
+		virtual void
+		hookExitX(Type::type type, void* buffer, size_t len, bool changed) noexcept = 0;
+	};
+
+	StoreJournal(char const* hash, void* buffer, size_t size, StoreCallback& callback);
 	~StoreJournal() is_default
 
 	static uint8_t keySize(size_t bufferSize);
@@ -205,6 +226,7 @@ private:
 	Seq m_seq;
 	Seq m_seqLower;
 	bool m_partialSeq;
+	StoreCallback& m_callback;
 
 
 	// sorted based on key
@@ -254,7 +276,99 @@ private:
 template <typename Base>
 class Synchronizable : public Base {
 	STORE_WRAPPER_CLASS(Synchronizable, Base)
+
 public:
+	class TypedStoreCallback final : public StoreJournal::StoreCallback {
+		STORED_CLASS_NOCOPY(TypedStoreCallback)
+	public:
+		TypedStoreCallback(Synchronizable& store)
+			: m_store(store)
+		{}
+
+		~TypedStoreCallback() override is_default
+
+	private:
+		static void hookEntryRO(
+			void* container, char const* name, Type::type type, void* buffer,
+			size_t len, void* arg)
+		{
+			UNUSED(container)
+			static_cast<Synchronizer*>(arg)->hookEntryRO(type, buffer, len);
+		}
+
+		static void hookExitRO(
+			void* container, char const* name, Type::type type, void* buffer,
+			size_t len, void* arg)
+		{
+			UNUSED(container)
+			static_cast<Synchronizer*>(arg)->hookExitRO(type, buffer, len);
+		}
+
+		static void hookEntryX(
+			void* container, char const* name, Type::type type, void* buffer,
+			size_t len, void* arg)
+		{
+			UNUSED(container)
+			static_cast<Synchronizer*>(arg)->hookEntryX(type, buffer, len);
+		}
+
+		static void hookExitX(
+			void* container, char const* name, Type::type type, void* buffer,
+			size_t len, void* arg)
+		{
+			UNUSED(container)
+			static_cast<Synchronizer*>(arg)->hookExitX(type, buffer, len);
+		}
+
+	public:
+		void hookEntryRO() noexcept override
+		{
+			m_store.list(&hookEntryRO, (void*)&m_store);
+		}
+
+		void hookExitRO() noexcept override
+		{
+			m_store.list(&hookExitRO, (void*)&m_store);
+		}
+
+		void hookEntryRO(Type::type type, void* buffer, size_t len) noexcept override
+		{
+			m_store.hookEntryRO(type, buffer, len);
+		}
+
+		void hookExitRO(
+			Type::type type, void* buffer, size_t len, bool changed) noexcept override
+		{
+			m_store.hookExitRO(type, buffer, len);
+		}
+
+		void hookEntryX() noexcept override
+		{
+			m_store.list(&hookEntryX, (void*)&m_store);
+		}
+
+		void hookExitX() noexcept override
+		{
+			m_store.list(&hookExitX, (void*)&m_store);
+		}
+
+		void hookEntryX(Type::type type, void* buffer, size_t len) noexcept override
+		{
+			m_store.hookEntryX(type, buffer, len);
+		}
+
+		void
+		hookExitX(Type::type type, void* buffer, size_t len, bool changed) noexcept override
+		{
+			m_store.hookExitX(type, buffer, len);
+		}
+
+	private:
+		Synchronizable& m_store;
+	};
+
+	friend class TypedStoreCallback;
+
 	typedef typename base::Objects Objects;
 
 #	if STORED_cplusplus >= 201103L
@@ -265,7 +379,8 @@ public:
 	Synchronizable()
 		: base()
 #	endif
-		, m_journal(base::hash(), base::buffer(), sizeof(base::data().buffer))
+		, m_callback(*this)
+		, m_journal(base::hash(), base::buffer(), sizeof(base::data().buffer), m_callback)
 	{
 		// Useless without hooks.
 		// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert)
@@ -352,6 +467,7 @@ protected:
 	}
 
 private:
+	TypedStoreCallback m_callback;
 	StoreJournal m_journal;
 };
 
