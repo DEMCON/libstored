@@ -24,7 +24,8 @@ namespace stored {
  * \param buffer the buffer of the store
  * \param size the size of \p buffer
  */
-StoreJournal::StoreJournal(char const* hash, void* buffer, size_t size)
+StoreJournal::StoreJournal(
+	char const* hash, void* buffer, size_t size, StoreJournal::StoreCallback& callback)
 	: m_hash(hash)
 	, m_buffer(buffer)
 	, m_bufferSize(size)
@@ -32,6 +33,7 @@ StoreJournal::StoreJournal(char const* hash, void* buffer, size_t size)
 	, m_seq(1)
 	, m_seqLower()
 	, m_partialSeq()
+	, m_callback(callback)
 {
 	// Size is 32 bit, where size_t might be 64. But I guess that the
 	// store is never >4G in size...
@@ -368,7 +370,14 @@ char const* StoreJournal::decodeHash(void*& buffer, size_t& len)
  */
 StoreJournal::Seq StoreJournal::encodeBuffer(ProtocolLayer& p, bool last)
 {
+	if(Config::SynchronizerStrictHooks)
+		m_callback.hookEntryRO();
+
 	p.encode(buffer(), bufferSize(), last);
+
+	if(Config::SynchronizerStrictHooks)
+		m_callback.hookExitRO();
+
 	return bumpSeq();
 }
 
@@ -381,7 +390,14 @@ StoreJournal::Seq StoreJournal::decodeBuffer(void*& buffer, size_t& len)
 	if(len < bufferSize())
 		return 0;
 
+	if(Config::SynchronizerStrictHooks)
+		m_callback.hookEntryX();
+
 	memcpy(this->buffer(), buffer, bufferSize());
+
+	if(Config::SynchronizerStrictHooks)
+		m_callback.hookExitX();
+
 	len -= bufferSize();
 	m_partialSeq = true;
 	Seq seq = this->seq();
@@ -431,7 +447,16 @@ void StoreJournal::encodeUpdate(ProtocolLayer& p, StoreJournal::ObjectInfo& o)
 {
 	encodeKey(p, o.key);
 	encodeKey(p, o.len);
-	p.encode(keyToBuffer(o.key), o.len, false);
+
+	void* buffer = keyToBuffer(o.key);
+
+	if(Config::SynchronizerStrictHooks)
+		m_callback.hookEntryRO(Type::Invalid, buffer, o.len);
+
+	p.encode(buffer, o.len, false);
+
+	if(Config::SynchronizerStrictHooks)
+		m_callback.hookExitRO(Type::Invalid, buffer, o.len);
 }
 
 /*!
@@ -441,6 +466,10 @@ StoreJournal::Seq StoreJournal::decodeUpdates(void*& buffer, size_t& len, bool r
 {
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 	bool ok = true;
+
+	// TODO
+	//	if(Config::SynchronizerStrictHooks)
+	//		m_callback.hookEntryX(Type::Invalid, buffer, o.len);
 
 	while(len) {
 		Key key = decodeKey(buffer_, len, ok);
@@ -456,6 +485,10 @@ StoreJournal::Seq StoreJournal::decodeUpdates(void*& buffer, size_t& len, bool r
 		len -= size;
 		changed(key, size, recordAll);
 	}
+
+	// TODO
+	//	if(Config::SynchronizerStrictHooks)
+	//		m_callback.hookExitX(Type::Invalid, buffer, o.len);
 
 	return bumpSeq();
 }
