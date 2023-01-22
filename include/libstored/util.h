@@ -649,7 +649,7 @@ struct identity {
  *
  * \code
  * class MyStore : public stored::store<MyStore, stored::MyStoreBase>::type {
- *	STORED_STORE(MyStore, stored::MyStoreBase)
+ *	STORE_CLASS(MyStore, stored::MyStoreBase)
  * public:
  *	...
  * };
@@ -659,7 +659,7 @@ struct identity {
  *
  * \code
  * class MyStore : public stored::store_t<MyStore, stored::Synchronizable, stored::MyStoreBase> {
- *	STORED_STORE(MyStore, stored::Synchronizable, stored::MyStoreBase)
+ *	STORE_CLASSE(MyStore, stored::Synchronizable, stored::MyStoreBase)
  * public:
  *	...
  * };

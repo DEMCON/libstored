@@ -18,26 +18,206 @@ namespace stored {
 // StoreJournal
 //
 
+namespace impl {
+
+/*!
+ * \brief StoreJournal::Key operations.
+ *
+ * Encoding/decoding the key depends on the store size, as it determines the
+ * key size.  As the store size is constant, determine the required codec
+ * functions only once in the ctor, use them afterwards during normal
+ * operation.
+ */
+class KeyCodec {
+public:
+	typedef StoreJournal::Key type;
+
+	virtual size_t size() const noexcept = 0;
+	virtual void encode(uint8_t (&buf)[4], size_t& len, type key) const noexcept = 0;
+	virtual type decode(uint8_t*& buffer, size_t& len, bool& ok) const noexcept = 0;
+	virtual void push_back2(void* list, size_t& len, type a, type b) const noexcept = 0;
+	virtual type pop_front(void*& list, size_t& len) const noexcept = 0;
+
+protected:
+	template <typename T>
+	static void encode_(uint8_t (&buf)[4], size_t& len, type key) noexcept
+	{
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+		*reinterpret_cast<T*>(buf) = endian_h2s((T)key);
+		len = sizeof(T);
+	}
+
+	template <typename T>
+	static type decode_(uint8_t*& buffer, size_t& len, bool& ok) noexcept
+	{
+		if(unlikely(len < sizeof(T))) {
+			ok = false;
+			return 0;
+		}
+
+		type key = (type)endian_s2h<T>(buffer);
+		len -= sizeof(T);
+		buffer += sizeof(T);
+		return key;
+	}
+
+	template <typename T>
+	static void push_back2_(void* list, size_t& len, type a, type b) noexcept
+	{
+		T* list_ = (T*)list;
+		list_[len++] = (T)a;
+		list_[len++] = (T)b;
+	}
+
+	template <typename T>
+	static type pop_front_(void*& list, size_t& len) noexcept
+	{
+		stored_assert(len > 0);
+		T* list_ = (T*)list;
+		type key = *list_;
+		list_++;
+		len--;
+		list = (void*)list_;
+		return key;
+	}
+};
+
+class KeyCodec1 final : public KeyCodec {
+public:
+	size_t size() const noexcept override
+	{
+		return 1U;
+	}
+
+	void encode(uint8_t (&buf)[4], size_t& len, type key) const noexcept override
+	{
+		buf[0] = (uint8_t)key;
+		len = 1U;
+	}
+
+	type decode(uint8_t*& buffer, size_t& len, bool& ok) const noexcept override
+	{
+		if(unlikely(len == 0)) {
+			ok = false;
+			return 0;
+		}
+
+		type key = (type)*buffer;
+		len--;
+		buffer++;
+		return key;
+	}
+
+	void push_back2(void* list, size_t& len, type a, type b) const noexcept override
+	{
+		push_back2_<uint8_t>(list, len, a, b);
+	}
+
+	type pop_front(void*& list, size_t& len) const noexcept override
+	{
+		return pop_front_<uint8_t>(list, len);
+	}
+};
+
+class KeyCodec2 final : public KeyCodec {
+public:
+	size_t size() const noexcept override
+	{
+		return 2U;
+	}
+
+	void encode(uint8_t (&buf)[4], size_t& len, type key) const noexcept override
+	{
+		encode_<uint16_t>(buf, len, key);
+	}
+
+	type decode(uint8_t*& buffer, size_t& len, bool& ok) const noexcept override
+	{
+		return decode_<uint16_t>(buffer, len, ok);
+	}
+
+	void push_back2(void* list, size_t& len, type a, type b) const noexcept override
+	{
+		push_back2_<uint16_t>(list, len, a, b);
+	}
+
+	type pop_front(void*& list, size_t& len) const noexcept override
+	{
+		return pop_front_<uint16_t>(list, len);
+	}
+};
+
+class KeyCodec4 final : public KeyCodec {
+public:
+	size_t size() const noexcept override
+	{
+		return 4U;
+	}
+
+	void encode(uint8_t (&buf)[4], size_t& len, type key) const noexcept override
+	{
+		encode_<uint32_t>(buf, len, key);
+	}
+
+	type decode(uint8_t*& buffer, size_t& len, bool& ok) const noexcept override
+	{
+		return decode_<uint32_t>(buffer, len, ok);
+	}
+
+	void push_back2(void* list, size_t& len, type a, type b) const noexcept override
+	{
+		push_back2_<uint32_t>(list, len, a, b);
+	}
+
+	type pop_front(void*& list, size_t& len) const noexcept override
+	{
+		return pop_front_<uint32_t>(list, len);
+	}
+};
+
+static KeyCodec1 const keyCodec1;
+static KeyCodec2 const keyCodec2;
+static KeyCodec4 const keyCodec4;
+
+} // namespace impl
+
 /*!
  * \brief Ctor.
  * \param hash the hash of the store
  * \param buffer the buffer of the store
  * \param size the size of \p buffer
+ * \param callback the #Synchronizable::TypedStoreCallback instance
  */
 StoreJournal::StoreJournal(
-	char const* hash, void* buffer, size_t size, StoreJournal::StoreCallback& callback)
+	char const* hash, void* buffer, size_t size, StoreJournal::StoreCallback* callback)
 	: m_hash(hash)
 	, m_buffer(buffer)
 	, m_bufferSize(size)
-	, m_keySize(keySize(m_bufferSize))
+	, m_keyCodec()
 	, m_seq(1)
 	, m_seqLower()
 	, m_partialSeq()
-	, m_callback(callback)
+	, m_callback(callback && callback->doHooks() ? callback : nullptr)
 {
 	// Size is 32 bit, where size_t might be 64. But I guess that the
 	// store is never >4G in size...
 	stored_assert(size < std::numeric_limits<Size>::max());
+
+	switch(keySize(size)) {
+	default:
+		stored_assert(false); // NOLINT(hicpp-static-assert,misc-static-assert)
+		STORED_FALLTHROUGH
+	case 0:
+	case 1:
+		m_keyCodec = &impl::keyCodec1;
+		break;
+	case 2:
+		m_keyCodec = &impl::keyCodec2;
+		break;
+	case 4:
+		m_keyCodec = &impl::keyCodec4;
+		break;
+	}
 }
 
 /*!
@@ -370,13 +550,13 @@ char const* StoreJournal::decodeHash(void*& buffer, size_t& len)
  */
 StoreJournal::Seq StoreJournal::encodeBuffer(ProtocolLayer& p, bool last)
 {
-	if(Config::SynchronizerStrictHooks)
-		m_callback.hookEntryRO();
+	if(m_callback)
+		m_callback->hookEntryRO();
 
 	p.encode(buffer(), bufferSize(), last);
 
-	if(Config::SynchronizerStrictHooks)
-		m_callback.hookExitRO();
+	if(m_callback)
+		m_callback->hookExitRO();
 
 	return bumpSeq();
 }
@@ -390,13 +570,12 @@ StoreJournal::Seq StoreJournal::decodeBuffer(void*& buffer, size_t& len)
 	if(len < bufferSize())
 		return 0;
 
-	if(Config::SynchronizerStrictHooks)
-		m_callback.hookEntryX();
-
+	// Don't use entryX/exitX, as we don't take exclusive ownership of the
+	// data, we only update our local copy.
 	memcpy(this->buffer(), buffer, bufferSize());
 
-	if(Config::SynchronizerStrictHooks)
-		m_callback.hookExitX();
+	if(m_callback)
+		m_callback->hookChanged();
 
 	len -= bufferSize();
 	m_partialSeq = true;
@@ -450,35 +629,57 @@ void StoreJournal::encodeUpdate(ProtocolLayer& p, StoreJournal::ObjectInfo& o)
 
 	void* buffer = keyToBuffer(o.key);
 
-	if(Config::SynchronizerStrictHooks)
-		m_callback.hookEntryRO(Type::Invalid, buffer, o.len);
+	if(m_callback)
+		m_callback->hookEntryRO(Type::Invalid, buffer, o.len);
 
 	p.encode(buffer, o.len, false);
 
-	if(Config::SynchronizerStrictHooks)
-		m_callback.hookExitRO(Type::Invalid, buffer, o.len);
+	if(m_callback)
+		m_callback->hookExitRO(Type::Invalid, buffer, o.len);
 }
 
 /*!
  * \brief Decode and apply updates from a #stored::Synchronizer message.
+ *
+ * \p scratch should be at least be \c len + 3 of size. It may overlap with \p
+ * buffer.
  */
-StoreJournal::Seq StoreJournal::decodeUpdates(void*& buffer, size_t& len, bool recordAll)
+StoreJournal::Seq
+StoreJournal::decodeUpdates(void*& buffer, size_t& len, bool recordAll, void* scratch)
 {
+	bool doHook = m_callback && m_callback->doHookChanged();
+
+	// We need to build a list of key/size pairs to call the changed hook
+	// on after decoding.  We can do this in the scratch pad memory, which
+	// is the received message buffer.  This buffer always contains at
+	// least 3 bytes before buffer, so we can always align 32-bit Keys
+	// properly.  As per update, the message contains the key, size, and
+	// data, the scratch memory will never grow faster than the decoded
+	// buffer.
+
+	// Align to Key size. Even indexes are keys, odd indexes are sizes.
+	void* changes = (void*)(((uintptr_t)scratch + sizeof(Key) - 1U) & ~(sizeof(Key) - 1U));
+	stored_assert(
+		(uintptr_t)scratch > (uintptr_t)buffer || (uintptr_t)changes <= (uintptr_t)buffer);
+	size_t chcnt = 0;
+
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 	bool ok = true;
-
-	// TODO
-	//	if(Config::SynchronizerStrictHooks)
-	//		m_callback.hookEntryX(Type::Invalid, buffer, o.len);
 
 	while(len) {
 		Key key = decodeKey(buffer_, len, ok);
 		Size size = (Size)decodeKey(buffer_, len, ok);
 		void* obj = keyToBuffer(key, size, &ok);
-		if(!ok || len < size) {
+
+		if(unlikely(!ok || len < size)) {
+			// Decoding error. Stop processing this message.
 			buffer = buffer_;
-			return 0;
+			ok = false;
+			break;
 		}
+
+		if(doHook)
+			m_keyCodec->push_back2(changes, chcnt, key, (Key)size);
 
 		memcpy(obj, buffer_, size);
 		buffer_ += size;
@@ -486,11 +687,17 @@ StoreJournal::Seq StoreJournal::decodeUpdates(void*& buffer, size_t& len, bool r
 		changed(key, size, recordAll);
 	}
 
-	// TODO
-	//	if(Config::SynchronizerStrictHooks)
-	//		m_callback.hookExitX(Type::Invalid, buffer, o.len);
+	// Don't use entryX/exitX, as we don't take exclusive ownership of the
+	// data, we only update our local copy.
 
-	return bumpSeq();
+	if(doHook)
+		while(chcnt) {
+			Key key = m_keyCodec->pop_front(changes, chcnt);
+			Size size = (Size)m_keyCodec->pop_front(changes, chcnt);
+			m_callback->hookChanged(Type::Invalid, keyToBuffer(key), size);
+		}
+
+	return ok ? bumpSeq() : 0;
 }
 
 /*!
@@ -498,63 +705,18 @@ StoreJournal::Seq StoreJournal::decodeUpdates(void*& buffer, size_t& len, bool r
  */
 void StoreJournal::encodeKey(ProtocolLayer& p, StoreJournal::Key key)
 {
-	size_t keysize = keySize();
-
+	size_t keysize = 0;
 	uint8_t buf[4] = {};
-
-	switch(keysize) {
-	case 1:
-		buf[0] = (uint8_t)key;
-		break;
-	case 2:
-		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-		*reinterpret_cast<uint16_t*>(buf) = endian_h2s((uint16_t)key);
-		break;
-	case 4:
-		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-		*reinterpret_cast<uint32_t*>(buf) = endian_h2s(key);
-		break;
-	default:
-		stored_assert(false); // NOLINT(hicpp-static-assert,misc-static-assert)
-		return;
-	}
-
+	m_keyCodec->encode(buf, keysize, key);
 	p.encode(buf, keysize, false);
 }
 
 /*!
  * \brief Decode a key from a #stored::Synchronizer message.
  */
-// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 StoreJournal::Key StoreJournal::decodeKey(uint8_t*& buffer, size_t& len, bool& ok)
 {
-	size_t i = keySize();
-	if(i > len) {
-		ok = false;
-		return 0;
-	}
-
-	Key key = 0;
-
-	switch(i) {
-	case 1:
-		key = (Key)*buffer;
-		break;
-	case 2:
-		key = (Key)endian_s2h<uint16_t>(buffer);
-		break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-	case 4:
-		key = (Key)endian_s2h<uint32_t>(buffer);
-		break; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-	default:
-		stored_assert(false); // NOLINT(hicpp-static-assert,misc-static-assert)
-		ok = false;
-		return 0;
-	}
-
-	len -= i;
-	buffer += i;
-	return key;
+	return m_keyCodec->decode(buffer, len, ok);
 }
 
 /*!
@@ -576,7 +738,7 @@ size_t StoreJournal::bufferSize() const
  */
 size_t StoreJournal::keySize() const
 {
-	return m_keySize;
+	return m_keyCodec->size();
 }
 
 /*!
@@ -599,6 +761,8 @@ void StoreJournal::reserveHeap(size_t storeVariableCount)
 {
 	m_changes.reserve(storeVariableCount);
 }
+
+StoreJournal::StoreCallback::~StoreCallback() is_default
 
 
 
@@ -879,6 +1043,10 @@ char SyncConnection::decodeCmd(void*& buffer, size_t& len)
 
 void SyncConnection::decode(void* buffer, size_t len)
 {
+	// We can use the buffer as scratch pad memory, up to where the buffer
+	// was decoded.
+	void* scratch = buffer;
+
 	switch(decodeCmd(buffer, len)) {
 	case Hello: {
 		/*
@@ -962,7 +1130,7 @@ void SyncConnection::decode(void* buffer, size_t len)
 
 		StoreJournal::Seq seq = 0;
 		bool recordAll = synchronizer().isSynchronizing(j, *this);
-		if(!(seq = it->second->decodeUpdates(buffer, len, recordAll))) {
+		if(!(seq = it->second->decodeUpdates(buffer, len, recordAll, scratch))) {
 			bye(id);
 			break;
 		}
