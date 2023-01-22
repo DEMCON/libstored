@@ -257,6 +257,13 @@ typedef SSIZE_T ssize_t;
 #		ifndef constexpr14
 #			define constexpr14 inline
 #		endif
+#		ifndef thread_local
+#			ifdef STORED_COMPILER_GCC
+#				define thread_local __thread
+#			elif !defined(STORED_COMPILER_MSVC)
+#				define thread_local
+#			endif
+#		endif
 #	else // C++11 or higher
 #		ifndef is_default
 #			define is_default = default;
