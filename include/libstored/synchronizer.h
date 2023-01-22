@@ -22,6 +22,10 @@
 
 namespace stored {
 
+namespace impl {
+class KeyCodec;
+}
+
 /*!
  * \brief A record of all changes within a store.
  *
@@ -98,20 +102,20 @@ public:
 
 		virtual void hookEntryRO() noexcept = 0;
 		virtual void hookExitRO() noexcept = 0;
+		virtual void hookChanged() noexcept = 0;
 
 		virtual void hookEntryRO(Type::type type, void* buffer, size_t len) noexcept = 0;
-		virtual void
-		hookExitRO(Type::type type, void* buffer, size_t len, bool changed) noexcept = 0;
+		virtual void hookExitRO(Type::type type, void* buffer, size_t len) noexcept = 0;
+		virtual void hookChanged(Type::type, void* buffer, size_t len) noexcept = 0;
 
-		virtual void hookEntryX() noexcept = 0;
-		virtual void hookExitX() noexcept = 0;
-
-		virtual void hookEntryX(Type::type type, void* buffer, size_t len) noexcept = 0;
-		virtual void
-		hookExitX(Type::type type, void* buffer, size_t len, bool changed) noexcept = 0;
+		virtual bool doHookEntryRO() noexcept = 0;
+		virtual bool doHookExitRO() noexcept = 0;
+		virtual bool doHookChanged() noexcept = 0;
+		virtual bool doHooks() noexcept = 0;
 	};
 
-	StoreJournal(char const* hash, void* buffer, size_t size, StoreCallback& callback);
+	StoreJournal(
+		char const* hash, void* buffer, size_t size, StoreCallback* callback = nullptr);
 	~StoreJournal() is_default
 
 	static uint8_t keySize(size_t bufferSize);
@@ -161,7 +165,7 @@ public:
 
 	static char const* decodeHash(void*& buffer, size_t& len);
 	Seq decodeBuffer(void*& buffer, size_t& len);
-	Seq decodeUpdates(void*& buffer, size_t& len, bool recordAll = true);
+	Seq decodeUpdates(void*& buffer, size_t& len, bool recordAll, void* scratch);
 
 	void reserveHeap(size_t storeVariableCount);
 
@@ -222,11 +226,11 @@ private:
 	char const* m_hash;
 	void* m_buffer;
 	size_t m_bufferSize;
-	uint8_t m_keySize;
+	impl::KeyCodec const* m_keyCodec;
 	Seq m_seq;
 	Seq m_seqLower;
 	bool m_partialSeq;
-	StoreCallback& m_callback;
+	StoreCallback* m_callback;
 
 
 	// sorted based on key
@@ -281,86 +285,110 @@ public:
 	class TypedStoreCallback final : public StoreJournal::StoreCallback {
 		STORED_CLASS_NOCOPY(TypedStoreCallback)
 	public:
-		TypedStoreCallback(Synchronizable& store)
+		explicit TypedStoreCallback(Synchronizable& store)
 			: m_store(store)
 		{}
 
 		~TypedStoreCallback() override is_default
 
 	private:
-		static void hookEntryRO(
+		static void hookEntryROCb(
 			void* container, char const* name, Type::type type, void* buffer,
 			size_t len, void* arg)
 		{
 			UNUSED(container)
-			static_cast<Synchronizer*>(arg)->hookEntryRO(type, buffer, len);
+			UNUSED(name)
+			if(!Type::isFunction(type))
+				static_cast<Synchronizable*>(arg)->hookEntryRO(type, buffer, len);
 		}
 
-		static void hookExitRO(
+		static void hookExitROCb(
 			void* container, char const* name, Type::type type, void* buffer,
 			size_t len, void* arg)
 		{
 			UNUSED(container)
-			static_cast<Synchronizer*>(arg)->hookExitRO(type, buffer, len);
+			UNUSED(name)
+			if(!Type::isFunction(type))
+				static_cast<Synchronizable*>(arg)->hookExitRO(type, buffer, len);
 		}
 
-		static void hookEntryX(
+		static void hookChangedCb(
 			void* container, char const* name, Type::type type, void* buffer,
 			size_t len, void* arg)
 		{
 			UNUSED(container)
-			static_cast<Synchronizer*>(arg)->hookEntryX(type, buffer, len);
-		}
-
-		static void hookExitX(
-			void* container, char const* name, Type::type type, void* buffer,
-			size_t len, void* arg)
-		{
-			UNUSED(container)
-			static_cast<Synchronizer*>(arg)->hookExitX(type, buffer, len);
+			UNUSED(name)
+			if(!Type::isFunction(type))
+				static_cast<Synchronizable*>(arg)->hookChanged(type, buffer, len);
 		}
 
 	public:
 		void hookEntryRO() noexcept override
 		{
-			m_store.list(&hookEntryRO, (void*)&m_store);
+			if(!doHookEntryRO())
+				return;
+
+			m_store.list(&hookEntryROCb, (void*)&m_store, nullptr, nullptr);
 		}
 
 		void hookExitRO() noexcept override
 		{
-			m_store.list(&hookExitRO, (void*)&m_store);
+			if(!doHookExitRO())
+				return;
+
+			m_store.list(&hookExitROCb, (void*)&m_store, nullptr, nullptr);
 		}
 
 		void hookEntryRO(Type::type type, void* buffer, size_t len) noexcept override
 		{
+			if(!doHookEntryRO())
+				return;
+
 			m_store.hookEntryRO(type, buffer, len);
 		}
 
-		void hookExitRO(
-			Type::type type, void* buffer, size_t len, bool changed) noexcept override
+		void hookExitRO(Type::type type, void* buffer, size_t len) noexcept override
 		{
+			if(!doHookExitRO())
+				return;
+
 			m_store.hookExitRO(type, buffer, len);
 		}
 
-		void hookEntryX() noexcept override
+		void hookChanged() noexcept override
 		{
-			m_store.list(&hookEntryX, (void*)&m_store);
+			if(!doHookChanged())
+				return;
+
+			m_store.list(&hookChangedCb, (void*)&m_store, nullptr, nullptr);
 		}
 
-		void hookExitX() noexcept override
+		void hookChanged(Type::type type, void* buffer, size_t len) noexcept override
 		{
-			m_store.list(&hookExitX, (void*)&m_store);
+			if(!doHookChanged())
+				return;
+
+			m_store.hookChanged(type, buffer, len);
 		}
 
-		void hookEntryX(Type::type type, void* buffer, size_t len) noexcept override
+		bool doHookEntryRO() noexcept override
 		{
-			m_store.hookEntryX(type, buffer, len);
+			return !Synchronizable::__hookEntryRO__default();
 		}
 
-		void
-		hookExitX(Type::type type, void* buffer, size_t len, bool changed) noexcept override
+		bool doHookExitRO() noexcept override
 		{
-			m_store.hookExitX(type, buffer, len);
+			return !Synchronizable::__hookExitRO__default();
+		}
+
+		bool doHookChanged() noexcept override
+		{
+			return !Synchronizable::__hookChanged__default();
+		}
+
+		bool doHooks() noexcept override
+		{
+			return doHookEntryRO() || doHookExitRO() || doHookChanged();
 		}
 
 	private:
@@ -380,7 +408,7 @@ public:
 		: base()
 #	endif
 		, m_callback(*this)
-		, m_journal(base::hash(), base::buffer(), sizeof(base::data().buffer), m_callback)
+		, m_journal(base::hash(), base::buffer(), sizeof(base::data().buffer), &m_callback)
 	{
 		// Useless without hooks.
 		// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert)
@@ -400,7 +428,7 @@ public:
 	}
 
 	// NOLINTNEXTLINE(hicpp-explicit-conversions)
-	operator StoreJournal const &() const
+	operator StoreJournal const&() const
 	{
 		return journal();
 	}
