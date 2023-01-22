@@ -84,22 +84,6 @@ struct DefaultConfig {
 	static bool const EnableHooks = true;
 
 	/*!
-	 * \brief When \c true, make sure to call appropriate entry/exit RO/X
-	 *	hooks during synchronization.
-	 *
-	 * This may add significant overhead and is only relevant when the
-	 * hooks are actually used by the application.  For example, to use the
-	 * Qtified wrapper, signals are required upon every change by the
-	 * Synchronizer.
-	 */
-	static bool const SynchronizerStrictHooks =
-#	ifdef STORED_OS_BAREMETAL
-		false;
-#	else
-		true;
-#	endif
-
-	/*!
 	 * \brief When \c true, avoid dynamic memory reallocation where possible.
 	 *
 	 * The Allocator will still be used, but reallocation to dynamically

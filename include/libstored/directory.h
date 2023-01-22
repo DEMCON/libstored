@@ -154,10 +154,13 @@ find(uint8_t const* directory, char const* name,
 
 /*!
  * \brief Finds an object in a directory.
- * \param container the container that has the \p buffer and \p directory. Specify the actual
- * (lowest) subclass of the store. \param directory the binary directory description \param name the
- * name to find, can be abbreviated as long as it is unambiguous \param len the maximum length of \p
- * name to parse \return a variant, which is not valid when not found
+ * \param container the container that has the \p buffer and \p directory.
+ *	Specify the actual (lowest) subclass of the store.
+ * \param directory the binary directory description
+ * \param name the name to find, can be abbreviated as long as it is
+ *	unambiguous
+ * \param len the maximum length of \p name to parse
+ * \return a variant, which is not valid when not found
  */
 template <typename Container>
 constexpr14 Variant<Container>
@@ -179,6 +182,10 @@ typedef void(ListCallbackArg)(void*, char const*, Type::type, void*, size_t, voi
 void list(
 	void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f,
 	void* arg = nullptr, char const* prefix = nullptr);
+
+void list(
+	void* container, void* buffer, uint8_t const* directory, String::type* nameBuffer,
+	ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr);
 
 #	if STORED_cplusplus >= 201103L
 /*!
