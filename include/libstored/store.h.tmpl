@@ -573,10 +573,29 @@ public:
 		return (uintptr_t)buffer - (uintptr_t)this->buffer();
 	}
 
+	/*!
+	 * \brief Return the type of the variable, given its buffer.
+	 */
+	Type::type bufferToType(void const* buffer) noexcept
+	{
+		switch(bufferToKey(buffer)) {
+{% for o in store.objects|select('variable')|sort(attribute='offset') %}
+		case {{o.offset}}:
+			return {{o|stype}};
+{% endfor %}
+		default:
+			return Type::Invalid;
+		}
+	}
+
 protected:
 	/*!
 	 * \brief Hook when exclusive access to a given variable is to be
 	 *	acquired.
+	 *
+	 * \p type may be \c Type::Invalid, when the caller does not know the
+	 * actual type of the \p buffer.  This is an optimization trick. If the
+	 * type is required anyway, call #bufferToType().
 	 *
 	 * Must be followed by #hookExitX().
 	 */
@@ -592,6 +611,10 @@ protected:
 	/*!
 	 * \brief Hook when exclusive access to a given variable is released.
 	 *
+	 * \p type may be \c Type::Invalid, when the caller does not know the
+	 * actual type of the \p buffer.  This is an optimization trick. If the
+	 * type is required anyway, call #bufferToType().
+	 *
 	 * Must be preceded by #hookEntryX().
 	 */
 	void hookExitX(Type::type type, void* buffer, size_t len, bool changed) noexcept
@@ -603,6 +626,10 @@ protected:
 	 * \brief Hook when read-only access to a given variable is to be
 	 *	acquired.
 	 *
+	 * \p type may be \c Type::Invalid, when the caller does not know the
+	 * actual type of the \p buffer.  This is an optimization trick. If the
+	 * type is required anyway, call #bufferToType().
+	 *
 	 * Must be followed by #hookExitRO().
 	 */
 	void hookEntryRO(Type::type type, void* buffer, size_t len) noexcept
@@ -613,11 +640,27 @@ protected:
 	/*!
 	 * \brief Hook when read-only access to a given variable is released.
 	 *
+	 * \p type may be \c Type::Invalid, when the caller does not know the
+	 * actual type of the \p buffer.  This is an optimization trick. If the
+	 * type is required anyway, call #bufferToType().
+	 *
 	 * Must be preceded by #hookEntryRO().
 	 */
 	void hookExitRO(Type::type type, void* buffer, size_t len) noexcept
 	{
 		implementation().__hookExitRO(type, buffer, len);
+	}
+
+	/*!
+	 * \brief Hook when (the local copy of) a given variable is changed.
+	 *
+	 * \p type may be \c Type::Invalid, when the caller does not know the
+	 * actual type of the \p buffer.  This is an optimization trick. If the
+	 * type is required anyway, call #bufferToType().
+	 */
+	void hookChanged(Type::type type, void* buffer, size_t len) noexcept
+	{
+		implementation().__hookChanged(type, buffer, len);
 	}
 
 	/*!
@@ -633,20 +676,28 @@ protected:
 
 	/*!
 	 * \copydoc hookExitX()
-	 * \details Default implementation does nothing. Override in subclass.
+	 * \details Default implementation only calls #hookChanged(). Override in subclass.
 	 */
 	void __hookExitX(Type::type type, void* buffer, size_t len, bool changed) noexcept
 	{
+		if(changed)
+			hookChanged(type, buffer, len);
+	}
+
+	/*!
+	 * \copydoc hookChanged()
+	 * \details Default implementation only calls \c ...__changed(). Override in subclass.
+	 */
+	void __hookChanged(Type::type type, void* buffer, size_t len) noexcept
+	{
 		UNUSED(type)
 		UNUSED(len)
-		if(changed) {
-			switch(bufferToKey(buffer)) {
+		switch(bufferToKey(buffer)) {
 {% for o in store.objects|select('variable')|sort(attribute='offset') %}
-			case {{o.offset}}:
-				implementation().__{{o.cname}}__changed();
-				break;
+		case {{o.offset}}:
+			implementation().__{{o.cname}}__changed();
+			break;
 {% endfor %}
-			}
 		}
 	}
 
@@ -679,6 +730,55 @@ protected:
 	 */
 	void __{{o.cname}}__changed() noexcept {}
 {% endfor %}
+
+	/*!
+	 * \brief Check if the #hookEntryRO() callback is still the default
+	 *	(empty) implementation.
+	 */
+	static constexpr bool __hookEntryRO__default() noexcept
+	{
+		return &{{store.name}}Base::__hookEntryRO == &Implementation::__hookEntryRO;
+	}
+
+	/*!
+	 * \brief Check if the #hookExitRO() callback is still the default
+	 *	(empty) implementation.
+	 */
+	static constexpr bool __hookExitRO__default() noexcept
+	{
+		return &{{store.name}}Base::__hookExitRO == &Implementation::__hookExitRO;
+	}
+
+	/*!
+	 * \brief Check if the #hookEntryX() callback is still the default
+	 *	(empty) implementation.
+	 */
+	static constexpr bool __hookEntryX__default() noexcept
+	{
+		return &{{store.name}}Base::__hookEntryX == &Implementation::__hookEntryX;
+	}
+
+	/*!
+	 * \brief Check if the #hookExitX() callback is still the default
+	 *	implementation.
+	 */
+	static constexpr bool __hookExitX__default() noexcept
+	{
+		return &{{store.name}}Base::__hookExitX == &Implementation::__hookExitX;
+	}
+
+	/*!
+	 * \brief Check if the #hookChanged() callback and all objects
+	 *	\c ...__changed() hooks are still the default (empty) implementations.
+	 */
+	static constexpr bool __hookChanged__default() noexcept
+	{
+		return
+{% for o in store.objects|select('variable') %}
+			&{{store.name}}Base::__{{o.cname}}__changed == &Implementation::__{{o.cname}}__changed &&
+{% endfor %}
+			&{{store.name}}Base::__hookChanged == &Implementation::__hookChanged;
+	}
 
 public:
 {% for a in store.arrays %}
@@ -780,6 +880,16 @@ public:
 	void list(F f, void* arg, char const* prefix = nullptr) noexcept
 	{
 		stored::list(&implementation(), buffer(), longDirectory(), f, arg, prefix);
+	}
+
+	/*!
+	 * \brief Calls a callback for every object in the #longDirectory().
+	 * \see stored::list()
+	 */
+	template <typename F>
+	void list(F f, void* arg, char const* prefix, String::type* nameBuffer) noexcept
+	{
+		stored::list(&implementation(), buffer(), longDirectory(), nameBuffer, f, arg, prefix);
 	}
 
 #	if STORED_cplusplus >= 201103L
