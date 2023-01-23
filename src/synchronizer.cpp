@@ -579,9 +579,9 @@ StoreJournal::Seq StoreJournal::decodeBuffer(void*& buffer, size_t& len)
 
 	len -= bufferSize();
 	m_partialSeq = true;
-	Seq seq = this->seq();
+	Seq seq_ = this->seq();
 	for(Changes::iterator it = m_changes.begin(); it != m_changes.end(); ++it)
-		it->seq = it->highest = toShort(seq);
+		it->seq = it->highest = toShort(seq_);
 	return bumpSeq();
 }
 
@@ -627,15 +627,15 @@ void StoreJournal::encodeUpdate(ProtocolLayer& p, StoreJournal::ObjectInfo& o)
 	encodeKey(p, o.key);
 	encodeKey(p, o.len);
 
-	void* buffer = keyToBuffer(o.key);
+	void* buf = keyToBuffer(o.key);
 
 	if(m_callback)
-		m_callback->hookEntryRO(Type::Invalid, buffer, o.len);
+		m_callback->hookEntryRO(Type::Invalid, buf, o.len);
 
-	p.encode(buffer, o.len, false);
+	p.encode(buf, o.len, false);
 
 	if(m_callback)
-		m_callback->hookExitRO(Type::Invalid, buffer, o.len);
+		m_callback->hookExitRO(Type::Invalid, buf, o.len);
 }
 
 /*!

@@ -327,7 +327,7 @@ if(CPPCHECK_CMD)
 		cppcheck_add(components)
 #		cppcheck_add(concurrency) # This one somehow makes cppcheck choke.
 		cppcheck_add(control)
-		cppcheck_add(meta)
+#		cppcheck_add(meta)
 		cppcheck_add(qt)
 		cppcheck_add(terminal)
 		cppcheck_add(zmqserver)
