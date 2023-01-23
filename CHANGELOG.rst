@@ -13,7 +13,15 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 `Unreleased`_
 -------------
 
-...
+Added
+``````
+
+- First-order high-pass filter.
+
+Fixed
+`````
+
+- Properly calling hooks by the Synchronizer.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.3.1...HEAD
 
