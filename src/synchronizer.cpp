@@ -28,6 +28,7 @@ namespace impl {
  * functions only once in the ctor, use them afterwards during normal
  * operation.
  */
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class KeyCodec {
 public:
 	typedef StoreJournal::Key type;
@@ -83,6 +84,7 @@ protected:
 	}
 };
 
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class KeyCodec1 final : public KeyCodec {
 public:
 	~KeyCodec1() override is_default
@@ -122,6 +124,7 @@ public:
 	}
 };
 
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class KeyCodec2 final : public KeyCodec {
 public:
 	~KeyCodec2() override is_default
@@ -152,6 +155,7 @@ public:
 	}
 };
 
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class KeyCodec4 final : public KeyCodec {
 public:
 	~KeyCodec4() override is_default
