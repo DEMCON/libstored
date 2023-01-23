@@ -82,12 +82,15 @@
 #	define NOMINMAX
 #	define _USE_MATH_DEFINES
 #	pragma warning( \
-		disable : 4061 4068 4100 4127 4200 4201 4296 4324 4355 4459 4514 4571 4625 4626 4706 4710 4711 4774 4789 4820 5026 5027 5039 5045 5262 5264)
+		disable : 4061 4068 4100 4127 4200 4201 4296 4324 4355 4459 4514 4571 4625 4626 4706 4710 4711 4774 4789 4820 5026 5027 5039 5045)
 #	if _MSC_VER >= 1915
 #		pragma warning(disable : 5105)
 #	endif
 #	if _MSC_VER >= 1925
 #		pragma warning(disable : 5204)
+#	endif
+#	if _MSC_VER >= 1933
+#		pragma warning(disable : 5262 5264)
 #	endif
 #	include <BaseTsd.h>
 typedef SSIZE_T ssize_t;
