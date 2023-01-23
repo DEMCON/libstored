@@ -32,6 +32,7 @@ class KeyCodec {
 public:
 	typedef StoreJournal::Key type;
 
+	virtual ~KeyCodec() is_default
 	virtual size_t size() const noexcept = 0;
 	virtual void encode(uint8_t (&buf)[4], size_t& len, type key) const noexcept = 0;
 	virtual type decode(uint8_t*& buffer, size_t& len, bool& ok) const noexcept = 0;
@@ -84,6 +85,8 @@ protected:
 
 class KeyCodec1 final : public KeyCodec {
 public:
+	~KeyCodec1() override is_default
+
 	size_t size() const noexcept override
 	{
 		return 1U;
@@ -121,6 +124,8 @@ public:
 
 class KeyCodec2 final : public KeyCodec {
 public:
+	~KeyCodec2() override is_default
+
 	size_t size() const noexcept override
 	{
 		return 2U;
@@ -149,6 +154,8 @@ public:
 
 class KeyCodec4 final : public KeyCodec {
 public:
+	~KeyCodec4() override is_default
+
 	size_t size() const noexcept override
 	{
 		return 4U;
@@ -662,6 +669,7 @@ StoreJournal::decodeUpdates(void*& buffer, size_t& len, bool recordAll, void* sc
 	void* changes = (void*)(((uintptr_t)scratch + sizeof(Key) - 1U) & ~(sizeof(Key) - 1U));
 	// NOLINTNEXTLINE
 	stored_assert(
+		// NOLINTNEXTLINE
 		(uintptr_t)scratch > (uintptr_t)buffer || (uintptr_t)changes <= (uintptr_t)buffer);
 	size_t chcnt = 0;
 
