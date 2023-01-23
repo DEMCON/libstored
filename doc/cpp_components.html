@@ -104,7 +104,7 @@
 <li class="toctree-l2"><a class="reference internal" href="cpp_config.html">Config</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Components</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#stored-amplifier">stored::Amplifier</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#stored-lowpass">stored::LowPass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-firstorderfilter">stored::FirstOrderFilter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#stored-pid">stored::PID</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#stored-pinin">stored::PinIn</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#stored-pinout">stored::PinOut</a></li>
@@ -495,12 +495,243 @@ stored::Amplifier&lt;stored::YourStore, amp_o.flags()&gt; amp{amp_o, yourStore};
 </dd></dl>
 
 </section>
-<section id="stored-lowpass">
-<h2>stored::LowPass<a class="headerlink" href="#stored-lowpass" title="Permalink to this heading">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenclass: Cannot find class “stored::LowPass” in doxygen xml output for project “doxygen” from directory: doxygen/xml/</p>
+<section id="stored-firstorderfilter">
+<h2>stored::FirstOrderFilter<a class="headerlink" href="#stored-firstorderfilter" title="Permalink to this heading">¶</a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0_b_y0EN6stored16FirstOrderFilterE">
+<span id="_CPPv3I0_b_y0EN6stored16FirstOrderFilterE"></span><span id="_CPPv2I0_b_y0EN6stored16FirstOrderFilterE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Container</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LowPass</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flags</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_first_order_filter"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FirstOrderFilter</span></span></span><a class="headerlink" href="#_CPPv4I0_b_y0EN6stored16FirstOrderFilterE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>First-order low- or high-pass filter, based on store variables. </p>
+<p>To use this class, add a scope to your store, like:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+    (float) sample frequency (Hz)
+    float input
+    float cutoff frequency (Hz)
+    bool=true enable
+    bool reset
+    float=nan override
+    float output
+} filter
+</pre></div>
 </div>
+</p>
+<p>Only <code class="docutils literal notranslate"><span class="pre">sample</span> <span class="pre">frequency</span></code> and <code class="docutils literal notranslate"><span class="pre">cutoff</span> <span class="pre">frequency</span></code> are mandatory. All variables of type <code class="docutils literal notranslate"><span class="pre">float</span></code>, except for <code class="docutils literal notranslate"><span class="pre">sample</span> <span class="pre">frequency</span></code>, can be any other type, as long as it matches the template parameter <code class="docutils literal notranslate"><span class="pre">T</span></code>.</p>
+<p>Then, instantiate the controller like this:</p>
+<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
+constexpr auto filter_o = stored::LowPass&lt;stored::YourStore&gt;::objects(&quot;/filter/&quot;);
+
+// Instantiate the filter, tailored to the available fields in the store.
+stored::LowPass&lt;stored::YourStore, filter_o.flags()&gt; filter{filter_o, yourStore};
+
+// ...or use HighPass instead of LowPass.
+</pre></div>
+</div>
+</p>
+<p>The cutoff frequency can be changed while running (by setting <code class="docutils literal notranslate"><span class="pre">reset</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code>). It will applied smoothly; the output will gradually take the new cutoff frequency into account. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16FirstOrderFilter5BoundE">
+<span id="_CPPv3N6stored16FirstOrderFilter5BoundE"></span><span id="_CPPv2N6stored16FirstOrderFilter5BoundE"></span><span class="target" id="classstored_1_1_first_order_filter_1a67bce0f1db8609129f74c619d86bd9f0"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Bound</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="n"><span class="pre">FirstOrderFilterObjects</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_b_y0EN6stored16FirstOrderFilterE" title="stored::FirstOrderFilter::Container"><span class="n"><span class="pre">Container</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16FirstOrderFilter4typeE" title="stored::FirstOrderFilter::type"><span class="n"><span class="pre">type</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="k"><span class="pre">template</span></span><span class="w"> </span><span class="n"><span class="pre">Bound</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_b_y0EN6stored16FirstOrderFilterE" title="stored::FirstOrderFilter::flags"><span class="n"><span class="pre">flags</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored16FirstOrderFilter5BoundE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16FirstOrderFilter4typeE">
+<span id="_CPPv3N6stored16FirstOrderFilter4typeE"></span><span id="_CPPv2N6stored16FirstOrderFilter4typeE"></span><span class="target" id="classstored_1_1_first_order_filter_1a82b8becb031306dd0a42f33512b5a7d7"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_b_y0EN6stored16FirstOrderFilterE" title="stored::FirstOrderFilter::T"><span class="n"><span class="pre">T</span></span></a><a class="headerlink" href="#_CPPv4N6stored16FirstOrderFilter4typeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16FirstOrderFilter16FirstOrderFilterEv">
+<span id="_CPPv3N6stored16FirstOrderFilter16FirstOrderFilterEv"></span><span id="_CPPv2N6stored16FirstOrderFilter16FirstOrderFilterEv"></span><span id="stored::FirstOrderFilter::FirstOrderFilterCE"></span><span class="target" id="classstored_1_1_first_order_filter_1aa79a204898c325848073d7335a030408"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FirstOrderFilter</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored16FirstOrderFilter16FirstOrderFilterEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default ctor. </p>
+<p>Use this when initialization is postponed. You can assign another instance later on. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16FirstOrderFilter16FirstOrderFilterERK23FirstOrderFilterObjectsI9Container4typeER9Container">
+<span id="_CPPv3N6stored16FirstOrderFilter16FirstOrderFilterERK23FirstOrderFilterObjectsI9Container4typeER9Container"></span><span id="_CPPv2N6stored16FirstOrderFilter16FirstOrderFilterERK23FirstOrderFilterObjectsI9Container4typeER9Container"></span><span id="stored::FirstOrderFilter::FirstOrderFilter__FirstOrderFilterObjects:Container.type:CR.ContainerRCE"></span><span class="target" id="classstored_1_1_first_order_filter_1a0beb0647f033f4d1e409da9c75991912"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FirstOrderFilter</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">FirstOrderFilterObjects</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_b_y0EN6stored16FirstOrderFilterE" title="stored::FirstOrderFilter::Container"><span class="n"><span class="pre">Container</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16FirstOrderFilter4typeE" title="stored::FirstOrderFilter::type"><span class="n"><span class="pre">type</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">o</span></span>, <a class="reference internal" href="#_CPPv4I0_b_y0EN6stored16FirstOrderFilterE" title="stored::FirstOrderFilter::Container"><span class="n"><span class="pre">Container</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">container</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16FirstOrderFilter16FirstOrderFilterERK23FirstOrderFilterObjectsI9Container4typeER9Container" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Initialize the filter, given a list of objects and a container. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored16FirstOrderFilter15cutoffFrequencyEv">
+<span id="_CPPv3NK6stored16FirstOrderFilter15cutoffFrequencyEv"></span><span id="_CPPv2NK6stored16FirstOrderFilter15cutoffFrequencyEv"></span><span id="stored::FirstOrderFilter::cutoffFrequencyC"></span><span class="target" id="classstored_1_1_first_order_filter_1ab5bde7fe3b75682e49e48093d0282d4e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16FirstOrderFilter4typeE" title="stored::FirstOrderFilter::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cutoffFrequency</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16FirstOrderFilter15cutoffFrequencyEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">cutoff</span> <span class="pre">frequency</span></code> value. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored16FirstOrderFilter21cutoffFrequencyObjectEv">
+<span id="_CPPv3NK6stored16FirstOrderFilter21cutoffFrequencyObjectEv"></span><span id="_CPPv2NK6stored16FirstOrderFilter21cutoffFrequencyObjectEv"></span><span id="stored::FirstOrderFilter::cutoffFrequencyObjectC"></span><span class="target" id="classstored_1_1_first_order_filter_1aee8128f81a39c08e26007f95def6dc2d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cutoffFrequencyObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16FirstOrderFilter21cutoffFrequencyObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">cutoff</span> <span class="pre">frequency</span></code> object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16FirstOrderFilter21cutoffFrequencyObjectEv">
+<span id="_CPPv3N6stored16FirstOrderFilter21cutoffFrequencyObjectEv"></span><span id="_CPPv2N6stored16FirstOrderFilter21cutoffFrequencyObjectEv"></span><span id="stored::FirstOrderFilter::cutoffFrequencyObject"></span><span class="target" id="classstored_1_1_first_order_filter_1abaaae49525b0f6eea6113c283d5b2bb4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cutoffFrequencyObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored16FirstOrderFilter21cutoffFrequencyObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">cutoff</span> <span class="pre">frequency</span></code> object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16FirstOrderFilter7disableEv">
+<span id="_CPPv3N6stored16FirstOrderFilter7disableEv"></span><span id="_CPPv2N6stored16FirstOrderFilter7disableEv"></span><span id="stored::FirstOrderFilter::disable"></span><span class="target" id="classstored_1_1_first_order_filter_1a4fd3308b45e38068d2b0c02b752587de"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">disable</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored16FirstOrderFilter7disableEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Disable the pulse wave. </p>
+<p>Ignored when the <code class="docutils literal notranslate"><span class="pre">enable</span></code> object is not available. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16FirstOrderFilter6enableEb">
+<span id="_CPPv3N6stored16FirstOrderFilter6enableEb"></span><span id="_CPPv2N6stored16FirstOrderFilter6enableEb"></span><span id="stored::FirstOrderFilter::enable__b"></span><span class="target" id="classstored_1_1_first_order_filter_1a8c94c7b45e4715b108d7b9b2ca4cf4d8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">enable</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored16FirstOrderFilter6enableEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Enable (or disable) the pulse wave. </p>
+<p>Ignored when the <code class="docutils literal notranslate"><span class="pre">enable</span></code> object is not available. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored16FirstOrderFilter7enabledEv">
+<span id="_CPPv3NK6stored16FirstOrderFilter7enabledEv"></span><span id="_CPPv2NK6stored16FirstOrderFilter7enabledEv"></span><span id="stored::FirstOrderFilter::enabledC"></span><span class="target" id="classstored_1_1_first_order_filter_1a8b64db226d6be40333b81e9f988a7881"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">enabled</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16FirstOrderFilter7enabledEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">enable</span></code> value, or <code class="docutils literal notranslate"><span class="pre">true</span></code> when not available. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored16FirstOrderFilter12enableObjectEv">
+<span id="_CPPv3NK6stored16FirstOrderFilter12enableObjectEv"></span><span id="_CPPv2NK6stored16FirstOrderFilter12enableObjectEv"></span><span id="stored::FirstOrderFilter::enableObjectC"></span><span class="target" id="classstored_1_1_first_order_filter_1a4174ac118736f4a63d0cd5e82a0af84c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">enableObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16FirstOrderFilter12enableObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">enable</span></code> object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16FirstOrderFilter12enableObjectEv">
+<span id="_CPPv3N6stored16FirstOrderFilter12enableObjectEv"></span><span id="_CPPv2N6stored16FirstOrderFilter12enableObjectEv"></span><span id="stored::FirstOrderFilter::enableObject"></span><span class="target" id="classstored_1_1_first_order_filter_1ad472a4355e788cd069198e33a16367b5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">enableObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored16FirstOrderFilter12enableObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">enable</span></code> object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored16FirstOrderFilter5inputEv">
+<span id="_CPPv3NK6stored16FirstOrderFilter5inputEv"></span><span id="_CPPv2NK6stored16FirstOrderFilter5inputEv"></span><span id="stored::FirstOrderFilter::inputC"></span><span class="target" id="classstored_1_1_first_order_filter_1a36aedc0c40a8f7326d50e57e6272e299"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16FirstOrderFilter4typeE" title="stored::FirstOrderFilter::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">input</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16FirstOrderFilter5inputEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">input</span></code> value, or 0 when not available. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored16FirstOrderFilter11inputObjectEv">
+<span id="_CPPv3NK6stored16FirstOrderFilter11inputObjectEv"></span><span id="_CPPv2NK6stored16FirstOrderFilter11inputObjectEv"></span><span id="stored::FirstOrderFilter::inputObjectC"></span><span class="target" id="classstored_1_1_first_order_filter_1a8b301c270dfb98102ca62c3cc7537c75"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">inputObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16FirstOrderFilter11inputObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">input</span></code> object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16FirstOrderFilter11inputObjectEv">
+<span id="_CPPv3N6stored16FirstOrderFilter11inputObjectEv"></span><span id="_CPPv2N6stored16FirstOrderFilter11inputObjectEv"></span><span id="stored::FirstOrderFilter::inputObject"></span><span class="target" id="classstored_1_1_first_order_filter_1ae0ddafa7bd460df12c7a449662b6fb66"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">inputObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored16FirstOrderFilter11inputObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">input</span></code> object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored16FirstOrderFilter9lastInputEv">
+<span id="_CPPv3NK6stored16FirstOrderFilter9lastInputEv"></span><span id="_CPPv2NK6stored16FirstOrderFilter9lastInputEv"></span><span id="stored::FirstOrderFilter::lastInputC"></span><span class="target" id="classstored_1_1_first_order_filter_1a8c7c9870a1385938061ff18e06116528"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16FirstOrderFilter4typeE" title="stored::FirstOrderFilter::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lastInput</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16FirstOrderFilter9lastInputEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the last input to the filter. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored16FirstOrderFilter10lastOutputEv">
+<span id="_CPPv3NK6stored16FirstOrderFilter10lastOutputEv"></span><span id="_CPPv2NK6stored16FirstOrderFilter10lastOutputEv"></span><span id="stored::FirstOrderFilter::lastOutputC"></span><span class="target" id="classstored_1_1_first_order_filter_1af98d934123bd2108a6230e68405a1365"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16FirstOrderFilter4typeE" title="stored::FirstOrderFilter::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lastOutput</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16FirstOrderFilter10lastOutputEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the last output of the filter. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16FirstOrderFilterclEv">
+<span id="_CPPv3N6stored16FirstOrderFilterclEv"></span><span id="_CPPv2N6stored16FirstOrderFilterclEv"></span><span id="stored::FirstOrderFilter::call-operator"></span><span class="target" id="classstored_1_1_first_order_filter_1a01bb72d455d65098ec253a34adda5173"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16FirstOrderFilter4typeE" title="stored::FirstOrderFilter::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored16FirstOrderFilterclEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Compute filter output, given the input stored in the store. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16FirstOrderFilterclE4type">
+<span id="_CPPv3N6stored16FirstOrderFilterclE4type"></span><span id="_CPPv2N6stored16FirstOrderFilterclE4type"></span><span id="stored::FirstOrderFilter::call-operator__type"></span><span class="target" id="classstored_1_1_first_order_filter_1aa518d884d223c7cef3bc4a1e012795fd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16FirstOrderFilter4typeE" title="stored::FirstOrderFilter::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored16FirstOrderFilter4typeE" title="stored::FirstOrderFilter::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">input</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored16FirstOrderFilterclE4type" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Compute filter output, given an <code class="docutils literal notranslate"><span class="pre">input</span></code>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored16FirstOrderFilter6outputEv">
+<span id="_CPPv3NK6stored16FirstOrderFilter6outputEv"></span><span id="_CPPv2NK6stored16FirstOrderFilter6outputEv"></span><span id="stored::FirstOrderFilter::outputC"></span><span class="target" id="classstored_1_1_first_order_filter_1a7c91ebac5e43e435aa4f2ce3f4ad0036"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16FirstOrderFilter4typeE" title="stored::FirstOrderFilter::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">output</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16FirstOrderFilter6outputEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">output</span></code> value, or 0 when not available. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored16FirstOrderFilter12outputObjectEv">
+<span id="_CPPv3NK6stored16FirstOrderFilter12outputObjectEv"></span><span id="_CPPv2NK6stored16FirstOrderFilter12outputObjectEv"></span><span id="stored::FirstOrderFilter::outputObjectC"></span><span class="target" id="classstored_1_1_first_order_filter_1a588b81d43cbc0c31d6f66aef49fbcfec"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">outputObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16FirstOrderFilter12outputObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">output</span></code> object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16FirstOrderFilter12outputObjectEv">
+<span id="_CPPv3N6stored16FirstOrderFilter12outputObjectEv"></span><span id="_CPPv2N6stored16FirstOrderFilter12outputObjectEv"></span><span id="stored::FirstOrderFilter::outputObject"></span><span class="target" id="classstored_1_1_first_order_filter_1a3c131a4a6a17a17b5423d5cc161a9f63"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">outputObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored16FirstOrderFilter12outputObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">output</span></code> object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored16FirstOrderFilter9override_Ev">
+<span id="_CPPv3NK6stored16FirstOrderFilter9override_Ev"></span><span id="_CPPv2NK6stored16FirstOrderFilter9override_Ev"></span><span id="stored::FirstOrderFilter::override_C"></span><span class="target" id="classstored_1_1_first_order_filter_1ac82a268ba190219c5f5239add7446182"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16FirstOrderFilter4typeE" title="stored::FirstOrderFilter::type"><span class="n"><span class="pre">type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">override_</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16FirstOrderFilter9override_Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">override</span></code> value, or NaN when not available. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored16FirstOrderFilter14overrideObjectEv">
+<span id="_CPPv3NK6stored16FirstOrderFilter14overrideObjectEv"></span><span id="_CPPv2NK6stored16FirstOrderFilter14overrideObjectEv"></span><span id="stored::FirstOrderFilter::overrideObjectC"></span><span class="target" id="classstored_1_1_first_order_filter_1a313f53b848d46c2dbe5c3bec8b1bce6e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">overrideObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16FirstOrderFilter14overrideObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">override</span></code> object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16FirstOrderFilter14overrideObjectEv">
+<span id="_CPPv3N6stored16FirstOrderFilter14overrideObjectEv"></span><span id="_CPPv2N6stored16FirstOrderFilter14overrideObjectEv"></span><span id="stored::FirstOrderFilter::overrideObject"></span><span class="target" id="classstored_1_1_first_order_filter_1af281a8f5e1d7962bdec300512dfd1b36"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">overrideObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored16FirstOrderFilter14overrideObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">override</span></code> object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16FirstOrderFilter21recomputeCoefficientsEv">
+<span id="_CPPv3N6stored16FirstOrderFilter21recomputeCoefficientsEv"></span><span id="_CPPv2N6stored16FirstOrderFilter21recomputeCoefficientsEv"></span><span id="stored::FirstOrderFilter::recomputeCoefficients"></span><span class="target" id="classstored_1_1_first_order_filter_1a4a834829aede4980d54fbf540d694cc9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">recomputeCoefficients</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored16FirstOrderFilter21recomputeCoefficientsEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Recompute alpha after changed filter parameters. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored16FirstOrderFilter5resetEv">
+<span id="_CPPv3NK6stored16FirstOrderFilter5resetEv"></span><span id="_CPPv2NK6stored16FirstOrderFilter5resetEv"></span><span id="stored::FirstOrderFilter::resetC"></span><span class="target" id="classstored_1_1_first_order_filter_1aaf2484b11e74a81f45888473913a4775"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16FirstOrderFilter5resetEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">reset</span></code> value, or <code class="docutils literal notranslate"><span class="pre">false</span></code> when not available. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored16FirstOrderFilter11resetObjectEv">
+<span id="_CPPv3NK6stored16FirstOrderFilter11resetObjectEv"></span><span id="_CPPv2NK6stored16FirstOrderFilter11resetObjectEv"></span><span id="stored::FirstOrderFilter::resetObjectC"></span><span class="target" id="classstored_1_1_first_order_filter_1ab33935db89b01dac3ee09c5369cf1c4b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">resetObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16FirstOrderFilter11resetObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">reset</span></code> object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored16FirstOrderFilter11resetObjectEv">
+<span id="_CPPv3N6stored16FirstOrderFilter11resetObjectEv"></span><span id="_CPPv2N6stored16FirstOrderFilter11resetObjectEv"></span><span id="stored::FirstOrderFilter::resetObject"></span><span class="target" id="classstored_1_1_first_order_filter_1af1e7997af2db82474f3a24f8d64942fa"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">resetObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored16FirstOrderFilter11resetObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">reset</span></code> object. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored16FirstOrderFilter15sampleFrequencyEv">
+<span id="_CPPv3NK6stored16FirstOrderFilter15sampleFrequencyEv"></span><span id="_CPPv2NK6stored16FirstOrderFilter15sampleFrequencyEv"></span><span id="stored::FirstOrderFilter::sampleFrequencyC"></span><span class="target" id="classstored_1_1_first_order_filter_1af21d717297a40e1a555709361bd0dca4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sampleFrequency</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16FirstOrderFilter15sampleFrequencyEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the sample frequency. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored16FirstOrderFilter21sampleFrequencyObjectEv">
+<span id="_CPPv3NK6stored16FirstOrderFilter21sampleFrequencyObjectEv"></span><span id="_CPPv2NK6stored16FirstOrderFilter21sampleFrequencyObjectEv"></span><span id="stored::FirstOrderFilter::sampleFrequencyObjectC"></span><span class="target" id="classstored_1_1_first_order_filter_1a9b59a17c963043dd16dbeaa3e923fda1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sampleFrequencyObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored16FirstOrderFilter21sampleFrequencyObjectEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">sample</span> <span class="pre">frequency</span></code> object. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_Dpc_6size_tEN6stored16FirstOrderFilter7objectsEDaRA1N_Kc">
+<span id="_CPPv3I_Dpc_6size_tEN6stored16FirstOrderFilter7objectsERA1N_Kc"></span><span id="_CPPv2I_Dpc_6size_tEN6stored16FirstOrderFilter7objectsERAN_Kc"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnlyId</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_first_order_filter_1afe7c64164f22bb46b0b03b1c3b913fc7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">objects</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">prefix</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#_CPPv4I_Dpc_6size_tEN6stored16FirstOrderFilter7objectsEDaRA1N_Kc" title="stored::FirstOrderFilter::objects::N"><span class="n"><span class="pre">N</span></span></a><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I_Dpc_6size_tEN6stored16FirstOrderFilter7objectsEDaRA1N_Kc" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create the list of objects in the store, used to compute the <code class="docutils literal notranslate"><span class="pre">flags</span></code> parameter. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<p>There are <code class="docutils literal notranslate"><span class="pre">stored::LowPass</span></code> and <code class="docutils literal notranslate"><span class="pre">stored::HighPass</span></code> aliases for the corresponding <code class="docutils literal notranslate"><span class="pre">stored::FistOrderFilter</span></code> template parameters.</p>
 </section>
 <section id="stored-pid">
 <h2>stored::PID<a class="headerlink" href="#stored-pid" title="Permalink to this heading">¶</a></h2>
