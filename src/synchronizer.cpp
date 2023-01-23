@@ -186,7 +186,7 @@ static KeyCodec4 const keyCodec4;
  * \param hash the hash of the store
  * \param buffer the buffer of the store
  * \param size the size of \p buffer
- * \param callback the #Synchronizable::TypedStoreCallback instance
+ * \param callback the #stored::Synchronizable::TypedStoreCallback instance
  */
 StoreJournal::StoreJournal(
 	char const* hash, void* buffer, size_t size, StoreJournal::StoreCallback* callback)
@@ -658,7 +658,9 @@ StoreJournal::decodeUpdates(void*& buffer, size_t& len, bool recordAll, void* sc
 	// buffer.
 
 	// Align to Key size. Even indexes are keys, odd indexes are sizes.
+	// NOLINTNEXTLINE
 	void* changes = (void*)(((uintptr_t)scratch + sizeof(Key) - 1U) & ~(sizeof(Key) - 1U));
+	// NOLINTNEXTLINE
 	stored_assert(
 		(uintptr_t)scratch > (uintptr_t)buffer || (uintptr_t)changes <= (uintptr_t)buffer);
 	size_t chcnt = 0;

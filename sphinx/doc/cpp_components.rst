@@ -15,10 +15,12 @@ stored::Amplifier
 
 .. doxygenclass:: stored::Amplifier
 
-stored::LowPass
----------------
+stored::FirstOrderFilter
+------------------------
 
-.. doxygenclass:: stored::LowPass
+.. doxygenclass:: stored::FirstOrderFilter
+
+There are ``stored::LowPass`` and ``stored::HighPass`` aliases for the corresponding ``stored::FistOrderFilter`` template parameters.
 
 stored::PID
 -----------
