@@ -281,6 +281,14 @@ typedef SSIZE_T ssize_t;
 #	endif
 #endif
 
+#ifndef STORED_thread_local
+#	if defined(STORED_OS_BAREMETAL) || defined(STORED_OS_GENERIC)
+#		define STORED_thread_local
+#	else
+#		define STORED_thread_local thread_local
+#	endif
+#endif
+
 #if defined(STORED_cplusplus) && STORED_cplusplus >= 201402L
 #	undef STORED_DEPRECATED
 #	define STORED_DEPRECATED(msg) [[deprecated(msg)]]

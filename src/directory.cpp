@@ -95,7 +95,7 @@ void list(
 	void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f, void* arg,
 	char const* prefix)
 {
-	static thread_local String::type name;
+	static STORED_thread_local String::type name;
 	if(Config::AvoidDynamicMemory)
 		name.reserve(
 			(prefix ? strlen(prefix) * 2U : 0U)
