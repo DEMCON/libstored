@@ -217,7 +217,13 @@ class Directory(object):
             return [ord('/')] + self.generateDict(h['/'])
         elif len(names) == 1 and isinstance(names[0], int):
             # skip
-            return [names[0]] + self.generateDict(h[names[0]])
+            skip = names[0]
+            res = []
+            while skip > 0:
+                s = min(skip, 0x1f)
+                res += [s]
+                skip -= s
+            return res + self.generateDict(h[names[0]])
         else:
             # Choose pivot to compare to
             pivot = int(len(names) / 2)
