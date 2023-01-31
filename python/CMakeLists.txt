@@ -90,8 +90,8 @@ endif()
 # Backwards compatibility
 set(ed2_wheel_file ${pylibstored_wheel_file})
 set(ed2_wheel ${pylibstored_wheel_file})
-add_custom_target(ed2-dist DEPENDS pylistored-dist)
-add_custom_target(ed2-install DEPENDS pylistored-install)
+add_custom_target(ed2-dist DEPENDS pylibstored-dist)
+add_custom_target(ed2-install DEPENDS pylibstored-install)
 
 install(CODE "
 	execute_process(
