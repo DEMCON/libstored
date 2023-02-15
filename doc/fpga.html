@@ -1,99 +1,51 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>VHDL &mdash; libstored 1.4.0-alpha documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Python" href="py.html" />
     <link rel="prev" title="Utilities" href="cpp_util.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../index.html" class="icon icon-home"> libstored
           
-
-          
+          <a href="../index.html" class="icon icon-home">
+            libstored
           </a>
-
-          
-            
-            
               <div class="version">
                 1.4.0.dev0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Content</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
@@ -127,73 +79,32 @@
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">libstored</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-      <li>VHDL</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">VHDL</li>
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/doc/fpga.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section id="vhdl">
-<h1>VHDL<a class="headerlink" href="#vhdl" title="Permalink to this heading">¶</a></h1>
+<h1>VHDL<a class="headerlink" href="#vhdl" title="Permalink to this heading"></a></h1>
 <p>The generated VHDL entity for a store contains the following:</p>
 <ul class="simple">
 <li><p>All variables of the store (functions are not supported).</p></li>
@@ -207,7 +118,7 @@ write-only, read-write, or not available.</p></li>
 protocol stack.</p></li>
 </ul>
 <section id="store-entity">
-<h2>Store entity<a class="headerlink" href="#store-entity" title="Permalink to this heading">¶</a></h2>
+<h2>Store entity<a class="headerlink" href="#store-entity" title="Permalink to this heading"></a></h2>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">Store_hdl</span></span></dt>
@@ -346,7 +257,7 @@ variables that are at most 32-bit in size.</p>
 
 </section>
 <section id="store-package">
-<h2>Store package<a class="headerlink" href="#store-package" title="Permalink to this heading">¶</a></h2>
+<h2>Store package<a class="headerlink" href="#store-package" title="Permalink to this heading"></a></h2>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">Store_pkg</span></span></dt>
@@ -373,7 +284,7 @@ this:</p>
 </pre></div>
 </div>
 <p>The output timing is exemplified below.</p>
-<img alt="../_images/wavedrom-d62c4575-3ec2-4158-b9ae-bf0fa67b1184.svg" src="../_images/wavedrom-d62c4575-3ec2-4158-b9ae-bf0fa67b1184.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
+<img alt="../_images/wavedrom-64430988-dc96-4525-8683-2a8dc12459a3.svg" src="../_images/wavedrom-64430988-dc96-4525-8683-2a8dc12459a3.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
 When the value is written, via <code class="docutils literal notranslate"><span class="pre">var_in</span></code>, the AXI interface, or via the
 Synchronizer, <code class="docutils literal notranslate"><span class="pre">value</span></code> is updated and <code class="docutils literal notranslate"><span class="pre">updated</span></code> is flagged for one
 clock cycle.  The flag is set at every write, not only when the data
@@ -409,7 +320,7 @@ this:</p>
 </pre></div>
 </div>
 <p>When <code class="docutils literal notranslate"><span class="pre">we</span></code> is high, the <code class="docutils literal notranslate"><span class="pre">value</span></code> is written to the store.</p>
-<img alt="../_images/wavedrom-8b96167e-1036-43a4-885d-6cae81dd0751.svg" src="../_images/wavedrom-8b96167e-1036-43a4-885d-6cae81dd0751.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
+<img alt="../_images/wavedrom-20d80b9c-f362-4a2d-ba2c-958379f31444.svg" src="../_images/wavedrom-20d80b9c-f362-4a2d-ba2c-958379f31444.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
 the case that a microcontroller and the FPGA synchronize a store.  If a
 variable should be read-only for the microcontroller, <code class="docutils literal notranslate"><span class="pre">we</span></code> can be tied
 high by the FPGA, such that the FPGA updates the variable constantly.  In
@@ -447,7 +358,7 @@ is ignored (there is no backpressure in place).</p>
 
 </section>
 <section id="common-package">
-<h2>Common package<a class="headerlink" href="#common-package" title="Permalink to this heading">¶</a></h2>
+<h2>Common package<a class="headerlink" href="#common-package" title="Permalink to this heading"></a></h2>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">libstored_pkg</span></span></dt>
@@ -489,7 +400,7 @@ messages that reach the terminator, are accepted and dropped.</p>
 
 </section>
 <section id="protocol">
-<h2>Protocol<a class="headerlink" href="#protocol" title="Permalink to this heading">¶</a></h2>
+<h2>Protocol<a class="headerlink" href="#protocol" title="Permalink to this heading"></a></h2>
 <p>The protocol stack can be built by chaining these components using two <code class="docutils literal notranslate"><span class="pre">msg_t</span></code> signals.
 All layers have a similar interface:</p>
 <dl class="object">
@@ -527,7 +438,7 @@ layer in the stack.</p>
 </dd>
 </dl>
 <p>Passing messages follows this scheme, which is resembles the AXI4-Stream Protocol:</p>
-<img alt="../_images/wavedrom-5fb96d09-82f2-48a0-9c03-e36b267b9bb2.svg" src="../_images/wavedrom-5fb96d09-82f2-48a0-9c03-e36b267b9bb2.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
+<img alt="../_images/wavedrom-ccd7249a-760e-4c80-8acc-60e6083ce4b6.svg" src="../_images/wavedrom-ccd7249a-760e-4c80-8acc-60e6083ce4b6.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
 clock edge.  In the example above, this happens at edge 2, 3, 6, 9, and 10.
 There is no order or dependency in <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code>; both can be
 high while other is not, indicating ‘there is data’, or ‘the data can be
@@ -545,7 +456,7 @@ integration, <code class="docutils literal notranslate"><span class="pre">accept
 </dd></dl>
 
 <section id="asciiescapelayer">
-<h3>AsciiEscapeLayer<a class="headerlink" href="#asciiescapelayer" title="Permalink to this heading">¶</a></h3>
+<h3>AsciiEscapeLayer<a class="headerlink" href="#asciiescapelayer" title="Permalink to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">AsciiEscapeLayer</span></span></dt>
@@ -586,7 +497,7 @@ Set to 0 to allow pass-through.</p>
 
 </section>
 <section id="bufferlayer">
-<h3>BufferLayer<a class="headerlink" href="#bufferlayer" title="Permalink to this heading">¶</a></h3>
+<h3>BufferLayer<a class="headerlink" href="#bufferlayer" title="Permalink to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">BufferLayer</span></span></dt>
@@ -621,7 +532,7 @@ Set to 0 to allow pass-through.</p>
 
 </section>
 <section id="terminallayer">
-<h3>TerminalLayer<a class="headerlink" href="#terminallayer" title="Permalink to this heading">¶</a></h3>
+<h3>TerminalLayer<a class="headerlink" href="#terminallayer" title="Permalink to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">TerminalLayer</span></span></dt>
@@ -669,7 +580,7 @@ Set to 0 to allow pass-through.</p>
 
 </section>
 <section id="uartlayer">
-<h3>UARTLayer<a class="headerlink" href="#uartlayer" title="Permalink to this heading">¶</a></h3>
+<h3>UARTLayer<a class="headerlink" href="#uartlayer" title="Permalink to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">UARTLayer</span></span></dt>
@@ -709,7 +620,7 @@ Set to 0 to allow pass-through.</p>
 
 </section>
 <section id="filelayer">
-<h3>FileLayer<a class="headerlink" href="#filelayer" title="Permalink to this heading">¶</a></h3>
+<h3>FileLayer<a class="headerlink" href="#filelayer" title="Permalink to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">FileLayer</span></span></dt>
@@ -750,7 +661,7 @@ Some throttling can be implemented this way.</p>
 
 </section>
 <section id="teelayer">
-<h3>TeeLayer<a class="headerlink" href="#teelayer" title="Permalink to this heading">¶</a></h3>
+<h3>TeeLayer<a class="headerlink" href="#teelayer" title="Permalink to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">TeeLayer</span></span></dt>
@@ -788,7 +699,7 @@ Only used when not empty.</p>
 
 </section>
 <section id="xsimlayer">
-<h3>XsimLayer<a class="headerlink" href="#xsimlayer" title="Permalink to this heading">¶</a></h3>
+<h3>XsimLayer<a class="headerlink" href="#xsimlayer" title="Permalink to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">XsimLayer</span></span></dt>
@@ -822,9 +733,9 @@ Only available in simulation.</p>
 </section>
 </section>
 <section id="utilities">
-<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this heading">¶</a></h2>
+<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this heading"></a></h2>
 <section id="libstored-droptail">
-<h3>libstored_droptail<a class="headerlink" href="#libstored-droptail" title="Permalink to this heading">¶</a></h3>
+<h3>libstored_droptail<a class="headerlink" href="#libstored-droptail" title="Permalink to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">libstored_droptail</span></span></dt>
@@ -853,7 +764,7 @@ Only available in simulation.</p>
 </pre></div>
 </div>
 <p>Example that drops a tail of length 1:</p>
-<img alt="../_images/wavedrom-245fd535-d836-48f7-b429-57cc3a490318.svg" src="../_images/wavedrom-245fd535-d836-48f7-b429-57cc3a490318.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
+<img alt="../_images/wavedrom-acd7da1c-9520-435d-9ee4-39895b41cc90.svg" src="../_images/wavedrom-acd7da1c-9520-435d-9ee4-39895b41cc90.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
 unspecified.</p>
 <dl class="simple">
 <dt>FIFO_DEPTH<span class="classifier">natural := 0</span></dt><dd><p>Minimum FIFO depth. Set to 0 to allow pass-through.</p>
@@ -869,7 +780,7 @@ So, <code class="docutils literal notranslate"><span class="pre">last_out</span>
 
 </section>
 <section id="libstored-stream-buffer">
-<h3>libstored_stream_buffer<a class="headerlink" href="#libstored-stream-buffer" title="Permalink to this heading">¶</a></h3>
+<h3>libstored_stream_buffer<a class="headerlink" href="#libstored-stream-buffer" title="Permalink to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">libstored_stream_buffer</span></span></dt>
@@ -898,7 +809,7 @@ This is effectively a FIFO of size 1.</p>
 
 </section>
 <section id="libstored-fifo">
-<h3>libstored_fifo<a class="headerlink" href="#libstored-fifo" title="Permalink to this heading">¶</a></h3>
+<h3>libstored_fifo<a class="headerlink" href="#libstored-fifo" title="Permalink to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">libstored_fifo</span></span></dt>
@@ -935,8 +846,8 @@ This is effectively a FIFO of size 1.</p>
 </pre></div>
 </div>
 <p>Example to drop and commit pushed data:</p>
-<img alt="../_images/wavedrom-29ae2ce2-608d-4c31-a31c-b8a571e37725.svg" src="../_images/wavedrom-29ae2ce2-608d-4c31-a31c-b8a571e37725.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
-<img alt="../_images/wavedrom-31de6429-bdbf-4c81-85e5-a7a7d50cc3aa.svg" src="../_images/wavedrom-31de6429-bdbf-4c81-85e5-a7a7d50cc3aa.svg" /><dl class="simple">
+<img alt="../_images/wavedrom-730342d5-ad48-4ca6-a387-a67a99c6cdab.svg" src="../_images/wavedrom-730342d5-ad48-4ca6-a387-a67a99c6cdab.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
+<img alt="../_images/wavedrom-2cc00f5f-86f7-45b1-bcb6-72ce2b934b05.svg" src="../_images/wavedrom-2cc00f5f-86f7-45b1-bcb6-72ce2b934b05.svg" /><dl class="simple">
 <dt>WIDTH<span class="classifier">positive</span></dt><dd><p>Data width.</p>
 </dd>
 <dt>DEPTH<span class="classifier">natural := 1</span></dt><dd><p>Minimum FIFO depth.</p>
@@ -969,50 +880,33 @@ again.</p>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="py.html" class="btn btn-neutral float-right" title="Python" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="cpp_util.html" class="btn btn-neutral float-left" title="Utilities" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="py.html" class="btn btn-neutral float-right" title="Python" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020-2022, Jochem Rutgers.
-
-    </p>
+    <p>&#169; Copyright 2020-2022, Jochem Rutgers.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
