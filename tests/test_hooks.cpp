@@ -67,7 +67,7 @@ public:
 	HookedTestStore() = default;
 
 protected:
-	void __default_int32__changed()
+	void __default_int32__changed() noexcept
 	{
 		default_int32_cnt++;
 	}
@@ -103,7 +103,7 @@ public:
 	HookedSyncTestStore() = default;
 
 protected:
-	void __default_int32__changed()
+	void __default_int32__changed() noexcept
 	{
 		default_int32_cnt++;
 	}

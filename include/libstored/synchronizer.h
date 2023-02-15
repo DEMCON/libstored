@@ -428,7 +428,7 @@ public:
 	}
 
 	// NOLINTNEXTLINE(hicpp-explicit-conversions)
-	operator StoreJournal const&() const
+	operator StoreJournal const &() const
 	{
 		return journal();
 	}
@@ -473,7 +473,7 @@ public:
 #	undef MAX2
 
 protected:
-	void __hookExitX(Type::type type, void* buffer, size_t len, bool changed)
+	void __hookExitX(Type::type type, void* buffer, size_t len, bool changed) noexcept
 	{
 		if(changed) {
 			StoreJournal::Key key = (StoreJournal::Key)this->bufferToKey(buffer);
