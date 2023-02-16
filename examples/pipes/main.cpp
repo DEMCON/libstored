@@ -1,135 +1,146 @@
 /*!
  * \file
  * \brief Pipes example.
+ *
+ * Pipes require at least C++14, but C++17 gives you especially the template
+ * deduction guides, which simplifies the pipes.  This example requires C++17.
  */
 
 #include "ExamplePipes.h"
 
 #include <algorithm>
-#include <ratio>
 #include <stored>
 
-void simple_pipe()
-{
-	using namespace stored::pipes;
-
-	auto p = Entry<int>{} >> Buffer<int>{2} >> Exit{};
-
-	printf("extract p: %d\n", (int)p.extract());
-
-	3 >> p;
-	printf("extract p: %d\n", (int)p.extract());
-}
-
-template <typename T>
-struct Quantity {
-	using type = T;
-
-	explicit Quantity(type value_ = type{}, std::string unit_ = std::string{}, type ratio_ = 1)
-		: value{value_}
-		, unit{std::move(unit_)}
-		, ratio{ratio_}
-	{}
-
-	type value = type{};
-	std::string unit;
-	type ratio = 1;
-
-	type get() const
-	{
-		return value * ratio;
-	}
-
-	operator type() const
-	{
-		return get();
-	}
-};
-
-template <typename Quantity>
-class Quantified {
-public:
-	using type = typename Quantity::type;
-
-	explicit Quantified(Quantity quantity)
-		: m_quantity{std::move(quantity)}
-	{}
-
-	Quantity inject(type x)
-	{
-		return exit_cast(x);
-	}
-
-	Quantity exit_cast(type x) const
-	{
-		auto q = m_quantity;
-		q.value = x;
-		return q;
-	}
-
-private:
-	Quantity m_quantity;
-};
-
-#if STORED_cplusplus >= 201703L
-void measurement_pipe17()
+static void measurement()
 {
 	using namespace stored::pipes;
 
 	stored::ExamplePipes store;
 
-	auto view = Entry<double>{} >> Quantified{Quantity<double>{0, "km", 0.001}}
-		    >> Call{[](Quantity<double> const& q) {
-			      printf("changed %g %s\n", q.get(), q.unit.c_str());
-		      }}
-		    >> Buffer<Quantity<double>>{} >> Exit{};
-	auto p = Entry<bool>{} >> Get{store.sensor} >> Cast<float, double>{}
-		 >> Changes{view, similar_to<double>{}} >> Exit{};
+	// clang-format off
+	auto data_m =
+		Entry<double>{} >>
+		Buffer<double>{} >>
+		Exit{};
 
-	store.sensor = 1.2f;
-	printf("sensor = %g\n", (double)p.extract());
-	auto v = view.extract().get();
-	printf("sensor view = %g %s\n", v.get(), v.unit.c_str());
+	auto data_km =
+		Entry<double>{} >>
+		Convert{Scale<double, std::milli>{}} >>
+		Buffer<double>{} >>
+		Exit{};
 
-	store.sensor = 1.3f;
-	true >> p;
-	store.sensor = 1.3001f;
-	true >> p;
-	v = view.extract();
-	printf("sensor = %g\n", (double)p.extract());
-	printf("sensor view = %g %s\n", v.get(), v.unit.c_str());
+	auto data =
+		Entry<double>{} >>
+		Call{[](double x) {
+			printf("changed %g m\n", x);
+		}} >>
+		Tee{data_m, data_km} >>
+		Exit{};
+
+	auto getter =
+		// When something is injected...
+		Entry<bool>{} >>
+		// ...retrieve data from the store...
+		Get{store.sensor} >>
+		// ...cast it to double...
+		Cast<float, double>{} >>
+		// ...upon changes, forward the value to the 'data' pipe.
+		Changes{data, similar_to<double>{}} >>
+		Cap{};
+
+	enum class Unit { m, km };
+
+	auto view_unit =
+		Entry<Unit>{} >>
+		Mapped(make_random_map<Unit, char const*>({{Unit::m, "m"}, {Unit::km, "km"}})) >>
+		Buffer<char const*>{} >>
+		Exit{};
+
+	stored::Signal<void*, void*, double> sig;
+
+	auto view =
+		Entry<Unit>{} >>
+		Tee{view_unit} >>
+		// Map the Unit to an index, corresponding with the Mux below.
+		Mapped(make_random_map<Unit, size_t>({{Unit::m, 0}, {Unit::km, 1}})) >>
+		// Retrieve the data from the proper unit converted pipe.
+		Mux{data_m, data_km} >>
+		// Save for later retrieval.
+		Signal{sig} >>
+		Exit{};
+
+	// clang-format on
+
+	sig.connect([](double x) { printf("signalled %g\n", x); });
+
+	store.sensor = 1.F;
+	true >> getter;
+	true >> getter;
+
+	store.sensor = 10.F;
+	getter.trigger();
+	Unit::km >> view;
+	printf("sensor view = %g %s\n", view.extract().get(), view_unit.extract().get());
+	Unit::m >> view;
+	printf("sensor view = %g %s\n", view.extract().get(), view_unit.extract().get());
+
+	store.sensor = 11.F;
+	getter.trigger();
+	printf("sensor view = %g %s\n", view.extract().get(), view_unit.extract().get());
 }
 
-template <typename T>
-struct Even {
-	T operator()(T x) const
-	{
-		return std::round(x / 2) * 2;
-	}
-};
-
-void setpoint_pipe17()
+static void setpoint()
 {
 	using namespace stored::pipes;
 
 	stored::ExamplePipes store;
 
-	auto p = Entry<double>{} >> Constrained{Even<double>{}} >> Cast<double, float>{}
-		 >> Set{store.setpoint} >> Exit{};
+	// clang-format off
+	auto setter =
+		Entry<double>{} >>
+		Cast<double, float>{} >>
+		Set{store.setpoint} >>
+		Exit{};
 
-	2.1 >> p;
-	printf("setpoint = %g\n", (double)store.setpoint);
+	auto getter =
+		Entry<bool>{} >>
+		Get{store.setpoint} >>
+		Exit{};
 
-	11.3 >> p;
-	printf("setpoint = %g\n", (double)store.setpoint);
+	auto editor =
+		Entry<double>{} >>
+		Triggered<double>{} >>
+		Call{[](double x) {
+			printf("edited: %g\n", x);
+		}} >>
+		Exit{};
+
+	auto view =
+		Entry<float>{} >>
+		Cast<float, double>{} >>
+		Call{[](double x) {
+			printf("setpoint: %g\n", x);
+		}} >>
+		Changes{editor} >>
+		Buffer<double>{} >>
+		Exit{};
+
+	// clang-format on
+
+//	editor >> setter;
+	setter >> view;
+	getter >> view;
+
+	1 >> setter;
+	2 >> setter;
+	store.setpoint = 3;
+	getter.trigger();
+	4 >> editor;
+	editor.trigger();
 }
-#endif // C++17
 
 int main()
 {
-	simple_pipe();
-#if STORED_cplusplus >= 201703L
-	measurement_pipe17();
-	setpoint_pipe17();
-#endif // C++17
+	measurement();
+	setpoint();
 }
