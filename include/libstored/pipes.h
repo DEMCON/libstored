@@ -13,8 +13,9 @@
 
 #if defined(__cplusplus) && STORED_cplusplus >= 201402L && defined(STORED_DRAFT_API)
 
-#	include <libstored/util.h>
+#	include <libstored/signal.h>
 #	include <libstored/types.h>
+#	include <libstored/util.h>
 
 #	include <algorithm>
 #	include <array>
@@ -24,6 +25,7 @@
 #	include <functional>
 #	include <limits>
 #	include <new>
+#	include <ratio>
 #	include <string>
 #	include <type_traits>
 #	include <utility>
@@ -968,12 +970,12 @@ public:
 	template <typename... S_>
 	friend constexpr auto operator>>(Segments<S_...>&& s, Cap&& e);
 
-	virtual void trigger(bool* triggered = nullptr) final
+	virtual void trigger(bool* triggered = nullptr) override
 	{
 		segments_type::trigger(triggered);
 	}
 
-	virtual void trigger(bool* triggered, std::decay_t<type_out>& out) final
+	virtual void trigger(bool* triggered, std::decay_t<type_out>& out) override
 	{
 #	ifdef STORED_COMPILER_GCC
 		// In release builds with gcc, the following errors are
@@ -1057,6 +1059,23 @@ public:
 	virtual PipeEntry<type_out>* connection() const noexcept final
 	{
 		return m_forward;
+	}
+
+	virtual void trigger(bool* triggered = nullptr) final
+	{
+		std::decay_t<type_out> out;
+		trigger(triggered, out);
+	}
+
+	virtual void trigger(bool* triggered, std::decay_t<type_out>& out) final
+	{
+		bool triggered_ = false;
+		base::trigger(&triggered_, out);
+		if(triggered)
+			*triggered = triggered_;
+
+		if(triggered_)
+			forward(out);
 	}
 
 private:
@@ -1204,6 +1223,56 @@ public:
 
 private:
 	type m_x{};
+};
+
+template <typename T, typename Compare = std::equal_to<T>>
+class Triggered {
+public:
+	using type_in = T;
+	using type = std::decay_t<type_in>;
+	using type_out = type const&;
+
+	template <
+		typename type_,
+		std::enable_if_t<std::is_constructible<type, type_>::value, int> = 0>
+	constexpr explicit Triggered(type_&& x)
+		: m_x{std::forward<type_>(x)}
+		, m_prev{m_x}
+	{}
+
+	constexpr Triggered() = default;
+
+	type_out inject(type_in const& x)
+	{
+		if(!m_changed && !Compare{}(m_prev, m_x))
+			m_changed = true;
+
+		m_x = x;
+		return extract();
+	}
+
+	type_out extract()
+	{
+		return m_prev;
+	}
+
+	type_out trigger(bool* triggered = nullptr)
+	{
+		if(triggered)
+			*triggered = m_changed;
+
+		if(m_changed) {
+			m_changed = false;
+			m_prev = m_x;
+		}
+
+		return extract();
+	}
+
+private:
+	type m_x{};
+	type m_prev{};
+	bool m_changed{};
 };
 
 /*!
@@ -1964,6 +2033,86 @@ Constrained(Constraints_ &&) -> Constrained<std::decay_t<Constraints_>>;
 #	endif // C++17
 
 /*!
+ * \brief Converts a values by means of a scale factor.
+ * \tparam T the type of the data, which must be a floating point type
+ * \tparam ratio \c std::ratio or equivalent
+ * \see #stored::pipes::Convert
+ */
+template <typename T, typename ratio = std::ratio<1, 1>>
+struct Scale {
+	static_assert(std::is_floating_point_v<T>, "Scale only supports floating point types");
+
+	using type = T;
+
+	type exit_cast(type value) const noexcept
+	{
+		constexpr ratio r{};
+		constexpr type f = (type)r.num / (type)r.den;
+		return value * f;
+	}
+
+	type entry_cast(type value) const noexcept
+	{
+		constexpr ratio r{};
+		constexpr type f = (type)r.den / (type)r.num;
+		return value * f;
+	}
+};
+
+/*!
+ * \brief Converts a value in the pipe, given a converter class.
+ *
+ * Injected data is passed to the \c exit_cast() of the \c Converter instance,
+ * and its result is passed further on through the pipe.  For extract, the \c
+ * entry_cast() of the \c Converter instance is used.  Both methods of the
+ * Converter are assumed to be stateless.
+ *
+ * \see #stored::pipes::Scale
+ */
+template <typename Converter>
+class Convert {
+public:
+	using type = typename impl::constraints_type<decltype(&Converter::exit_cast)>::type;
+
+	template <
+		typename Converter_,
+		std::enable_if_t<std::is_constructible<Converter, Converter_&&>::value, int> = 0>
+	explicit Convert(Converter_&& converter)
+		: m_converter{std::forward<Converter_>(converter)}
+	{}
+
+	template <
+		typename Converter_ = Converter,
+		std::enable_if_t<std::is_default_constructible<Converter_>::value, int> = 0>
+	Convert()
+		: m_converter{}
+	{}
+
+	decltype(auto) inject(type const& x)
+	{
+		return exit_cast(x);
+	}
+
+	decltype(auto) exit_cast(type const& x) const
+	{
+		return m_converter.exit_cast(x);
+	}
+
+	decltype(auto) entry_cast(type const& x) const
+	{
+		return m_converter.entry_cast(x);
+	}
+
+private:
+	Converter m_converter;
+};
+
+#	if STORED_cplusplus >= 201703L
+template <typename Converter_>
+Convert(Converter_ &&) -> Convert<std::decay_t<Converter_>>;
+#	endif // C++17
+
+/*!
  * \brief An index to T map.
  *
  * It addresses an array to find the corresponding value. All indices [0,N[
@@ -2259,7 +2408,7 @@ private:
 
 #	if STORED_cplusplus >= 201703L
 template <typename MapType>
-Mapped(MapType m)
+Mapped(MapType)
 	-> Mapped<typename MapType::key_type, typename MapType::value_type, std::decay_t<MapType>>;
 #	endif // C++17
 
@@ -2414,6 +2563,42 @@ private:
 	bool m_changed = false;
 	typename clock_type::time_point m_suppress{};
 };
+
+template <typename T, typename Key = void*, typename Token = void*>
+class Signal {
+public:
+	using type = T;
+	using Signal_type = stored::Signal<Key, Token, type>;
+
+	explicit Signal(Signal_type& signal, Key key = Signal_type::NoKey)
+		: m_signal{&signal}
+		, m_key{key}
+	{}
+
+	type inject(type x)
+	{
+		stored_assert(m_signal);
+
+		if(m_key == Signal_type::NoKey)
+			m_signal->call(x);
+		else
+			m_signal->call(m_key, x);
+
+		return x;
+	}
+
+private:
+	Signal_type* m_signal{};
+	Key m_key{Signal_type::NoKey};
+};
+
+#	if STORED_cplusplus >= 201703L
+template <typename T, typename Key, typename Token>
+Signal(stored::Signal<Key, Token, T>&) -> Signal<T, Key, Token>;
+
+template <typename T, typename Key, typename Token>
+Signal(stored::Signal<Key, Token, T>&, Key) -> Signal<T, Key, Token>;
+#	endif // C++17
 
 } // namespace pipes
 } // namespace stored
