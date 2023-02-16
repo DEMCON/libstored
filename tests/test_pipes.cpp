@@ -556,6 +556,18 @@ TEST(Pipes, Constrained)
 	EXPECT_EQ(p.extract().get(), 3.0);
 }
 
+TEST(Pipes, Convert)
+{
+	using namespace stored::pipes;
+
+	auto p = Entry<double>{} >> Convert{Scale<double, std::milli>{}} >> Buffer<double>{} >> Cap{};
+
+	1 >> p;
+	EXPECT_EQ(p.extract().get(), 1e-3);
+
+	EXPECT_EQ(p.entry_cast(4e-3), 4.0);
+}
+
 TEST(Pipes, IndexMap)
 
 {

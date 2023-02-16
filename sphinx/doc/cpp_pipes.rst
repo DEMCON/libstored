@@ -56,6 +56,13 @@ stored::pipes::Constrained
 .. doxygenclass:: stored::pipes::Constrained
 .. doxygenclass:: stored::pipes::Bounded
 
+stored::pipes::Convert
+----------------------
+
+.. doxygenclass:: stored::pipes::Convert
+.. doxygenclass:: stored::pipes::Scale
+
+
 stored::pipes::Get
 ------------------
 
@@ -98,6 +105,11 @@ stored::pipes::Set
 ------------------
 
 .. doxygenclass:: stored::pipes::Set
+
+stored::pipes::Signal
+---------------------
+
+.. doxygenclass:: stored::pipes::Signal
 
 stored::pipes::Tee
 ------------------
