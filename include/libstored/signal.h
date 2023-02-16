@@ -38,10 +38,10 @@ constexpr T noKey() noexcept
 
 } // namespace impl
 
-template <typename Key = void*, typename Token = void*>
+template <typename Key = void*, typename Token = void*, typename... Args>
 class Signal {
 public:
-	using callback_type = void();
+	using callback_type = void(Args...);
 	using key_type = Key;
 	using token_type = Token;
 
@@ -110,7 +110,7 @@ public:
 				++it;
 	}
 
-	void call(Key key) const
+	void call(Key key, Args... args) const
 	{
 		stored_assert(key != NoKey);
 
@@ -118,24 +118,26 @@ public:
 		// functions with this key.
 		auto range = m_connections.equal_range(key);
 		for(auto it = range.first; it != range.second; ++it)
-			it->second.second();
+			it->second.second(args...);
 	}
 
-	void operator()(Key key) const
+	template <typename... Args_>
+	void operator()(Key key, Args_&&... args) const
 	{
-		call(key);
+		call(key, std::forward<Args_>(args)...);
 	}
 
-	void call() const
+	void call(Args... args) const
 	{
 		for(size_type b = 0; b < m_connections.bucket_count(); ++b)
 			for(auto it = m_connections.begin(b); it != m_connections.end(b); ++it)
-				it->second.second();
+				it->second.second(args...);
 	}
 
-	void operator()() const
+	template <typename... Args_>
+	void operator()(Args_&&... args) const
 	{
-		call();
+		call(std::forward<Args_>(args)...);
 	}
 
 	void reserve(size_type count)
@@ -157,7 +159,7 @@ private:
 /*!
  * \brief A wrapper that allows calling a function when a variable changes.
  *
- * It maintains a single std::unordered_multiset from a registered variable key
+ * It maintains a single std::unordered_multimap from a registered variable key
  * to a function.
  */
 template <typename Base>
