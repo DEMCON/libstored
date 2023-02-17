@@ -1,0 +1,51 @@
+
+Update the data from the store:
+changed 1 m
+
+Update the data from the store, but without changes:
+
+Update the data:
+changed 10 m
+
+Select km:
+signalled 0.01
+sensor view = 0.01 km
+
+Select m:
+signalled 10
+sensor view = 10 m
+
+Sensor update:
+changed 11 m
+signalled 11
+sensor view = 11 m
+
+
+Initializing:
+view setpoint = 0
+view setpoint = 0
+
+Write the store via the setter:
+setter setpoint = 1
+view setpoint = 1
+edited setpoint = 1
+store.setpoint = 1
+
+setter setpoint = 2
+view setpoint = 2
+edited setpoint = 2
+
+Edit the store and trigger the getter:
+view setpoint = 3
+edited setpoint = 3
+
+Enter data in the editor, but do not write it yet:
+edited setpoint = 4
+
+Now, the user accepts the input:
+setter setpoint = 4
+view setpoint = 4
+edited setpoint = 4
+edited setpoint = 4
+
+Again, but the data has not changed:
