@@ -12,6 +12,7 @@
 #include <libstored/macros.h>
 
 #if defined(__cplusplus) && STORED_cplusplus >= 201402L && defined(STORED_DRAFT_API)
+#	define STORED_HAVE_PIPES
 
 #	include <libstored/signal.h>
 #	include <libstored/types.h>
@@ -34,7 +35,7 @@
 
 #	if defined(STORED_COMPILER_CLANG) \
 		&& (__clang_major__ < 9 || (__clang_major__ == 9 && __clang_minor__ < 1))
-// Somehow, the friend operator>> functions for Exit and Cap are not friends by
+// Somehow, the friend operator>> functions for Exit, Cap, and Ref are not friends by
 // older clang.  Do some workaround in case you have such a clang.
 #		define CLANG_BUG_FRIEND_OPERATOR
 #	endif
@@ -64,6 +65,25 @@ class Exit {};
  * \brief Marker for the end of a pipe, that cannot be connected to another one.
  */
 class Cap {};
+
+class Group;
+extern Group gc;
+
+/*!
+ * \brief Marker for the end of a pipe, which is managed by the given group.
+ */
+class Ref {
+public:
+	Ref(Group& g)
+		: group{g}
+	{}
+
+	Ref()
+		: group{gc}
+	{}
+
+	Group& group;
+};
 
 
 
@@ -219,6 +239,12 @@ struct segment_traits<Exit> : impl::segment_traits_base {
 
 template <>
 struct segment_traits<Cap> : impl::segment_traits_base {
+	using type_in = void;
+	using type_out = void;
+};
+
+template <>
+struct segment_traits<Ref> : impl::segment_traits_base {
 	using type_in = void;
 	using type_out = void;
 };
@@ -653,7 +679,7 @@ public:
 /*!
  * \brief Start of a pipe.
  *
- * Finish with either Exit or Cap.
+ * Finish with either Exit, Cap, or Ref.
  */
 template <typename T>
 class Entry {
@@ -878,10 +904,45 @@ public:
 };
 
 /*!
+ * \brief Common base class of all pipes.
+ */
+class PipeBase {
+public:
+	virtual ~PipeBase() = default;
+	virtual void trigger(bool* triggered = nullptr) = 0;
+};
+
+/*!
+ * \brief A set of pipes.
+ */
+class Group {
+public:
+	using set_type = stored::Set<PipeBase*>::type;
+
+	void add(PipeBase& p);
+	void add(std::initializer_list<std::reference_wrapper<PipeBase>> il);
+	void remove(PipeBase& p);
+	void remove(std::initializer_list<std::reference_wrapper<PipeBase>> il);
+	void clear();
+
+	void trigger(bool* triggered = nullptr) const;
+	void destroy(PipeBase& p);
+	void destroy();
+
+	set_type const& pipes() const noexcept;
+	size_t size() const noexcept;
+	set_type::const_iterator begin() const noexcept;
+	set_type::const_iterator end() const noexcept;
+
+private:
+	set_type m_pipes;
+};
+
+/*!
  * \brief Virtual base class for any segment/pipe with specific in/out types.
  */
 template <typename In, typename Out>
-class Pipe : public PipeEntry<In>, public PipeExit<Out> {
+class Pipe : public PipeBase, public PipeEntry<In>, public PipeExit<Out> {
 	STORED_CLASS_DEFAULT_COPY_MOVE(Pipe)
 public:
 	using typename PipeEntry<In>::type_in;
@@ -921,7 +982,7 @@ private:
 /*!
  * \brief Concrete implementation of Pipe, given a segment/pipe.
  *
- * Do not instantiate manually, use ... >> Exit{} or Cap{}.
+ * Do not instantiate manually, use ... >> Cap{} or Ref{}.
  */
 template <typename S>
 class STORED_EMPTY_BASES SpecificCappedPipe
@@ -930,6 +991,7 @@ class STORED_EMPTY_BASES SpecificCappedPipe
 		  std::decay_t<typename segment_traits<S>::type_out>>,
 	  public S {
 	STORED_CLASS_DEFAULT_COPY_MOVE(SpecificCappedPipe)
+	STORED_CLASS_NEW_DELETE(SpecificCappedPipe)
 public:
 	using segments_type = S;
 	using type_in = std::decay_t<typename segment_traits<segments_type>::type_in>;
@@ -970,6 +1032,9 @@ public:
 	template <typename... S_>
 	friend constexpr auto operator>>(Segments<S_...>&& s, Cap&& e);
 
+	template <typename... S_>
+	friend constexpr auto& operator>>(Segments<S_...>&& s, Ref&& e);
+
 	virtual void trigger(bool* triggered = nullptr) override
 	{
 		segments_type::trigger(triggered);
@@ -1000,6 +1065,14 @@ constexpr auto operator>>(Segments<S_...>&& s, Cap&& e)
 	return SpecificCappedPipe<Segments<S_...>>{std::move(s)};
 }
 
+template <typename... S_>
+constexpr auto& operator>>(Segments<S_...>&& s, Ref&& e)
+{
+	auto* p = new SpecificCappedPipe<Segments<S_...>>{std::move(s)};
+	e.group.add(*p);
+	return *p;
+}
+
 /*!
  * \brief Concrete implementation of an open Pipe, given a segment/pipe.
  *
@@ -1008,6 +1081,7 @@ constexpr auto operator>>(Segments<S_...>&& s, Cap&& e)
 template <typename S>
 class STORED_EMPTY_BASES SpecificOpenPipe : public SpecificCappedPipe<S> {
 	STORED_CLASS_DEFAULT_COPY_MOVE(SpecificOpenPipe)
+	STORED_CLASS_NEW_DELETE(SpecificOpenPipe)
 	using base = SpecificCappedPipe<S>;
 
 public:
@@ -1124,6 +1198,12 @@ template <typename T>
 auto operator>>(Entry<T>&& entry, Cap&& cap)
 {
 	return std::move(entry) >> Identity<T>{} >> std::move(cap);
+}
+
+template <typename T>
+auto& operator>>(Entry<T>&& entry, Ref&& ref)
+{
+	return std::move(entry) >> Identity<T>{} >> std::move(ref);
 }
 
 namespace impl {

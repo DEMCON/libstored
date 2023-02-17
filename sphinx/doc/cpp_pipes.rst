@@ -8,6 +8,62 @@ A pipe consists of pipe segments, which are combined into a single pipe object.
 Pipe segments cannot be accessed or split in run-time, they are absorbed into some complex template-based recursive type, implementing the ``Pipe`` interface.
 Pipes, however, can be connected dynamically.
 
+Pipes always have the following form, for a given type ``T``:
+
+.. highlight:: cpp
+
+.. code-block::
+   :linenos:
+
+   auto pipe =
+      Entry<T>{} >>
+      // pipe segments...
+      Exit{};
+
+``pipe`` is a pipe instance, taking data of type ``T``, and producing it, such as ``1 >> pipe;``, or ``pipe.extract();``.
+It can be connected to other pipe instances dynamically.
+
+.. code-block::
+   :linenos:
+
+   auto pipe =
+      Entry<T>{} >>
+      // pipe segments...
+      Cap{};
+
+In this case, ``pipe`` is an instance, with a cap at the end; it does not allow dynamic binding to other pipes.
+
+.. code-block::
+   :linenos:
+
+   auto& pipe =
+      Entry<T>{} >>
+      // pipe segments...
+      Ref{};
+
+Now, ``pipe`` is a reference, like the capped pipe above.
+It is automatically destroyed at shutdown (by the ``stored::pipes::gc`` ``Group``).
+When a group reference is passed to ``Ref{...}``, the pipe is still allocated using the default allocator, but added to the provided group, instead of ``gc``.
+
+Pipe segments can be connected, such as:
+
+.. code-block::
+   :linenos:
+
+   auto& pipe =
+      Entry<int>{} >>
+      Tee{
+            Entry<int>{} >>
+            Log<int>{"tee 1"} >>
+            Ref{},
+
+            Entry<int>{} >>
+            Call{[](int x) { printf("tee 2 = %d\n", x); }} >>
+            Ref{}
+      } >>
+      Buffer<int>{} >>
+      Cap{};
+
 A pipe segment has to adhere to the following rules:
 
 - It must be a ``struct`` or ``class``.
@@ -63,6 +119,8 @@ The following functions are available for pipes, and can be available for pipe s
    abstract PipeEntry
    abstract PipeExit
    abstract Pipe
+   abstract PipeBase
+   PipeBase <|-- Pipe
    PipeEntry <|-- Pipe
    PipeExit <|-- Pipe
 
@@ -70,6 +128,13 @@ The following functions are available for pipes, and can be available for pipe s
    class Segments
    Pipe <|-- PipeInstance
    Segments <|-- PipeInstance : private
+
+..  <|    fix highlighting...
+
+stored::pipes::PipeBase
+-----------------------
+
+.. doxygenclass:: stored::pipes::PipeBase
 
 stored::pipes::Pipe
 -------------------
@@ -85,6 +150,13 @@ stored::pipes::PipeExit
 -----------------------
 
 .. doxygenclass:: stored::pipes::PipeExit
+
+stored::pipes::Group
+--------------------
+
+.. doxygenclass:: stored::pipes::Group
+
+There is one special group: ``stored::pipes::gc``, which destroys pipes created with default ``Ref``.
 
 stored::pipes::Buffer
 ---------------------
