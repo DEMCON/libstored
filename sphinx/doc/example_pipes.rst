@@ -12,6 +12,11 @@ Application
 .. literalinclude:: ../../examples/pipes/main.cpp
    :language: cpp
 
+Output
+------
+
+.. literalinclude:: ../../examples/pipes/output.txt
+
 Store reference
 ---------------
 

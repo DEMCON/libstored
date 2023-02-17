@@ -48,6 +48,16 @@ stored::Scratchpad
 
 .. doxygenclass:: stored::ScratchPad
 
+stored::Signal
+--------------
+
+.. doxygenclass:: stored::Signal
+
+stored::Signalling
+------------------
+
+.. doxygenclass:: stored::Signalling
+
 stored::string_literal
 ----------------------
 
