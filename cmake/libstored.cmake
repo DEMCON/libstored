@@ -107,7 +107,7 @@ function(libstored_lib libprefix libpath)
 
 	if(MSVC)
 		target_compile_options(${LIBSTORED_LIB_TARGET} PRIVATE /Wall)
-		if(NOT (MSVC_VERSION LESS 1700) AND LIBSTORED_LIB_QT)
+		if(NOT (MSVC_VERSION LESS 1800) AND LIBSTORED_LIB_QT)
 			target_compile_options(${LIBSTORED_LIB_TARGET} PRIVATE /wd4464)
 		endif()
 		if(LIBSTORED_DEV)
