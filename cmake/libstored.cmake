@@ -80,6 +80,7 @@ function(libstored_lib libprefix libpath)
 		${LIBSTORED_SOURCE_DIR}/src/compress.cpp
 		${LIBSTORED_SOURCE_DIR}/src/directory.cpp
 		${LIBSTORED_SOURCE_DIR}/src/debugger.cpp
+		${LIBSTORED_SOURCE_DIR}/src/pipes.cpp
 		${LIBSTORED_SOURCE_DIR}/src/poller.cpp
 		${LIBSTORED_SOURCE_DIR}/src/protocol.cpp
 		${LIBSTORED_SOURCE_DIR}/src/synchronizer.cpp

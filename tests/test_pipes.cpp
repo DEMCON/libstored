@@ -794,4 +794,33 @@ TEST(Pipes, RateLimit)
 }
 #endif // STORED_COMPILER_MINGW
 
+TEST(Pipes, Ref)
+{
+	using namespace stored::pipes;
+
+	auto& p1 = Entry<double>{} >> Ref{};
+	p1.inject(0);
+	EXPECT_EQ(gc.size(), 1);
+	gc.destroy();
+
+	Group g;
+	Entry<double>{} >> Ref{g};
+	EXPECT_EQ(gc.size(), 0);
+	EXPECT_EQ(g.size(), 1);
+	g.destroy();
+
+	int cnt = 0;
+	auto p3 = Entry<int>{}
+		  >> Tee{Entry<int>{} >> Log<int>{"p3 tee 1"} >> Call{[&](int) { cnt++; }} >> Ref{},
+			 Entry<int>{} >> Log<int>{"p3 tee 2"} >> Call{[&](int) { cnt++; }} >> Ref{}}
+		  >> Cap{};
+
+	1 >> p3;
+	EXPECT_EQ(cnt, 2);
+	2 >> p3;
+	EXPECT_EQ(cnt, 4);
+
+	EXPECT_EQ(gc.size(), 2);
+}
+
 } // namespace
