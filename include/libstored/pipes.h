@@ -2074,7 +2074,7 @@ Constrained(Constraints_ &&) -> Constrained<std::decay_t<Constraints_>>;
 template <typename T, typename ratio = std::ratio<1, 1>>
 class Scale {
 public:
-	static_assert(std::is_floating_point_v<T>, "Scale only supports floating point types");
+	static_assert(std::is_floating_point<T>::value, "Scale only supports floating point types");
 
 	using type = T;
 
