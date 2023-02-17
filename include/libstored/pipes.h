@@ -1225,56 +1225,6 @@ private:
 	type m_x{};
 };
 
-template <typename T, typename Compare = std::equal_to<T>>
-class Triggered {
-public:
-	using type_in = T;
-	using type = std::decay_t<type_in>;
-	using type_out = type const&;
-
-	template <
-		typename type_,
-		std::enable_if_t<std::is_constructible<type, type_>::value, int> = 0>
-	constexpr explicit Triggered(type_&& x)
-		: m_x{std::forward<type_>(x)}
-		, m_prev{m_x}
-	{}
-
-	constexpr Triggered() = default;
-
-	type_out inject(type_in const& x)
-	{
-		if(!m_changed && !Compare{}(m_prev, m_x))
-			m_changed = true;
-
-		m_x = x;
-		return extract();
-	}
-
-	type_out extract()
-	{
-		return m_prev;
-	}
-
-	type_out trigger(bool* triggered = nullptr)
-	{
-		if(triggered)
-			*triggered = m_changed;
-
-		if(m_changed) {
-			m_changed = false;
-			m_prev = m_x;
-		}
-
-		return extract();
-	}
-
-private:
-	type m_x{};
-	type m_prev{};
-	bool m_changed{};
-};
-
 /*!
  * \brief Forwards injected data into a fixed list of other pipes.
  *
@@ -1287,6 +1237,8 @@ private:
 template <typename T, size_t N>
 class Tee {
 public:
+	static_assert(N > 0, "Tee must have at least one other pipe");
+
 	template <typename... P, std::enable_if_t<sizeof...(P) + 1 == N, int> = 0>
 	constexpr explicit Tee(PipeEntry<T>& p0, P&... p)
 		: m_p{p0, p...}
@@ -1307,6 +1259,87 @@ private:
 #	if STORED_cplusplus >= 201703L
 template <typename T, typename... P>
 Tee(PipeEntry<T>&, P&...) -> Tee<T, sizeof...(P) + 1>;
+#	endif // >= C++17
+
+/*!
+ * \brief A buffer, which forwards the last injected data to other pipes when triggered.
+ *
+ * Think of it as a write-back cache, where the write-back action is triggered
+ * using \c trigger(). To determine if the data has changed, the \p Compare
+ * template parameter is used.
+ */
+template <typename T, typename Compare = std::equal_to<std::decay_t<T>>, size_t N = 1>
+class Triggered : private Buffer<T>, private Tee<T, N> {
+	using buffer = Buffer<T>;
+	using tee = Tee<T, N>;
+
+public:
+	using type_in = typename buffer::type_in;
+	using type = typename buffer::type;
+	using type_out = typename buffer::type_out;
+
+	template <typename... P, std::enable_if_t<sizeof...(P) + 1 == N, int> = 0>
+	constexpr explicit Triggered(PipeEntry<T>& p0, P&... p)
+		: tee{p0, p...}
+	{}
+
+	template <
+		typename type_,
+		std::enable_if_t<std::is_constructible<type, type_>::value, int> = 0>
+	constexpr explicit Triggered(type_&& x)
+		: buffer{std::forward<type_>(x)}
+	{}
+
+	template <
+		typename type_,
+		std::enable_if_t<std::is_constructible<type, type_>::value, int> = 0, typename... P,
+		std::enable_if_t<sizeof...(P) + 1 == N, int> = 0>
+	constexpr explicit Triggered(type_&& x, PipeEntry<T>& p0, P&... p)
+		: buffer{std::forward<type_>(x)}
+		, tee{p0, p...}
+	{}
+
+	type_out inject(type_in const& x)
+	{
+		if(!m_changed && !Compare{}(buffer::extract(), x))
+			m_changed = true;
+
+		return buffer::inject(x);
+	}
+
+	type_out extract()
+	{
+		return buffer::extract();
+	}
+
+	type_out trigger(bool* triggered = nullptr)
+	{
+		if(triggered)
+			*triggered = m_changed;
+
+		type_out x = buffer::extract();
+
+		if(m_changed) {
+			m_changed = false;
+			tee::inject(x);
+		}
+
+		return extract();
+	}
+
+private:
+	bool m_changed{};
+};
+
+#	if STORED_cplusplus >= 201703L
+template <typename T, typename... P>
+Triggered(PipeEntry<T>&, P&...) -> Triggered<T, std::equal_to<std::decay_t<T>>, sizeof...(P) + 1>;
+
+template <
+	typename T_, typename T, typename... P,
+	std::enable_if_t<std::is_constructible<T, T_>::value, int> = 0>
+Triggered(T_&&, PipeEntry<T>&, P&...)
+	-> Triggered<T, std::equal_to<std::decay_t<T>>, sizeof...(P) + 1>;
 #	endif // >= C++17
 
 /*!
@@ -2039,7 +2072,8 @@ Constrained(Constraints_ &&) -> Constrained<std::decay_t<Constraints_>>;
  * \see #stored::pipes::Convert
  */
 template <typename T, typename ratio = std::ratio<1, 1>>
-struct Scale {
+class Scale {
+public:
 	static_assert(std::is_floating_point_v<T>, "Scale only supports floating point types");
 
 	using type = T;
@@ -2577,13 +2611,25 @@ public:
 
 	type inject(type x)
 	{
+		signal(x);
+		return x;
+	}
+
+	void signal(type x) const
+	{
 		stored_assert(m_signal);
 
 		if(m_key == Signal_type::NoKey)
 			m_signal->call(x);
 		else
 			m_signal->call(m_key, x);
+	}
 
+	type exit_cast(type x) const
+	{
+		// We don't really cast, but make sure that we also signal upon
+		// extract(), as the data may be different.
+		signal(x);
 		return x;
 	}
 
