@@ -157,6 +157,32 @@ TEST(Pipes, Tee)
 	EXPECT_EQ(c.extract(), 2);
 }
 
+TEST(Pipes, Triggered)
+{
+	using namespace stored::pipes;
+
+	auto a = Entry<int>{} >> Buffer<int>{} >> Cap{};
+	auto b = Entry<int>{} >> Triggered{a} >> Cap{};
+
+	1 >> b;
+	EXPECT_EQ(a.extract(), 0);
+	b.trigger();
+	EXPECT_EQ(a.extract(), 1);
+
+	auto c = Entry<int>{} >> Triggered{3, a, b} >> Cap{};
+
+	EXPECT_EQ(c.extract(), 3);
+	EXPECT_EQ(b.extract(), 1);
+
+	4 >> c;
+	EXPECT_EQ(c.extract(), 4);
+	EXPECT_EQ(b.extract(), 1);
+
+	c.trigger();
+	EXPECT_EQ(b.extract(), 4);
+	EXPECT_EQ(a.extract(), 4);
+}
+
 TEST(Pipes, Cast)
 {
 	using namespace stored::pipes;
@@ -560,7 +586,8 @@ TEST(Pipes, Convert)
 {
 	using namespace stored::pipes;
 
-	auto p = Entry<double>{} >> Convert{Scale<double, std::milli>{}} >> Buffer<double>{} >> Cap{};
+	auto p = Entry<double>{} >> Convert{Scale<double, std::milli>{}} >> Buffer<double>{}
+		 >> Cap{};
 
 	1 >> p;
 	EXPECT_EQ(p.extract().get(), 1e-3);
