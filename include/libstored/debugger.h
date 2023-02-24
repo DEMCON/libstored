@@ -52,13 +52,13 @@ public:
 
 	void decode(void* buffer, size_t len) final
 	{
-		UNUSED(buffer)
-		UNUSED(len)
+		STORED_UNUSED(buffer)
+		STORED_UNUSED(len)
 	}
 
 	void encode(void const* buffer, size_t len, bool last = true) final
 	{
-		UNUSED(last)
+		STORED_UNUSED(last)
 
 		if(blocked())
 			return;
@@ -175,13 +175,13 @@ public:
 
 	void decode(void* buffer, size_t len) final
 	{
-		UNUSED(buffer)
-		UNUSED(len)
+		STORED_UNUSED(buffer)
+		STORED_UNUSED(len)
 	}
 
 	void encode(void const* buffer, size_t len, bool last = true) final
 	{
-		UNUSED(last)
+		STORED_UNUSED(last)
 
 		if(blocked())
 			return;

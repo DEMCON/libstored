@@ -63,8 +63,8 @@ zth_fiber(receiver)
 
 int main_fiber(int argc, char** argv)
 {
-	UNUSED(argc)
-	UNUSED(argv)
+	STORED_UNUSED(argc)
+	STORED_UNUSED(argv)
 
 	puts(zth::banner());
 	puts(stored::banner());

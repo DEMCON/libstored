@@ -72,7 +72,7 @@ public:
 
 	void setPurgeableResponse(bool purgeable = true) final
 	{
-		UNUSED(purgeable)
+		STORED_UNUSED(purgeable)
 	}
 
 	bool idle() const;

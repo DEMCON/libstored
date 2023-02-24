@@ -956,7 +956,7 @@ public:
 	 */
 	virtual int recv(long timeout_us = 0) override
 	{
-		UNUSED(timeout_us)
+		STORED_UNUSED(timeout_us)
 		stored_assert(timeout_us == 0);
 
 		if(m_fifo.empty())

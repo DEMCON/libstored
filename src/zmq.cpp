@@ -111,7 +111,7 @@ ZmqLayer::fd_type ZmqLayer::fd() const
 
 int ZmqLayer::block(fd_type fd, bool forReading, long timeout_us, bool suspend)
 {
-	UNUSED(fd)
+	STORED_UNUSED(fd)
 	// Just use our socket.
 	return block(forReading, timeout_us, suspend);
 }
@@ -121,7 +121,7 @@ int ZmqLayer::block(fd_type fd, bool forReading, long timeout_us, bool suspend)
  */
 int ZmqLayer::block(bool forReading, long timeout_us, bool suspend)
 {
-	UNUSED(suspend)
+	STORED_UNUSED(suspend)
 
 	setLastError(0);
 

@@ -479,10 +479,10 @@ protected:
 	 */
 	size_t callback(bool set, void* buffer, size_t len, unsigned int f)
 	{
-		UNUSED(set)
-		UNUSED(buffer)
-		UNUSED(len)
-		UNUSED(f)
+		STORED_UNUSED(set)
+		STORED_UNUSED(buffer)
+		STORED_UNUSED(len)
+		STORED_UNUSED(f)
 {% if store.objects|hasfunction %}
 		switch(f) {
 {%   for o in store.objects %}
@@ -520,9 +520,9 @@ public:
 	/*! \brief Callback for {{o}} */
 	size_t __{{o.cname}}(bool set, {{o|ctype}}* value, size_t len)
 	{
-		UNUSED(set)
-		UNUSED(value)
-		UNUSED(len)
+		STORED_UNUSED(set)
+		STORED_UNUSED(value)
+		STORED_UNUSED(len)
 		return 0;
 	}
 {%       else %}
@@ -669,9 +669,9 @@ protected:
 	 */
 	void __hookEntryX(Type::type type, void* buffer, size_t len) noexcept
 	{
-		UNUSED(type)
-		UNUSED(buffer)
-		UNUSED(len)
+		STORED_UNUSED(type)
+		STORED_UNUSED(buffer)
+		STORED_UNUSED(len)
 	}
 
 	/*!
@@ -690,8 +690,8 @@ protected:
 	 */
 	void __hookChanged(Type::type type, void* buffer, size_t len) noexcept
 	{
-		UNUSED(type)
-		UNUSED(len)
+		STORED_UNUSED(type)
+		STORED_UNUSED(len)
 		switch(bufferToKey(buffer)) {
 {% for o in store.objects|select('variable')|sort(attribute='offset') %}
 		case {{o.offset}}:
@@ -707,9 +707,9 @@ protected:
 	 */
 	void __hookEntryRO(Type::type type, void* buffer, size_t len) noexcept
 	{
-		UNUSED(type)
-		UNUSED(buffer)
-		UNUSED(len)
+		STORED_UNUSED(type)
+		STORED_UNUSED(buffer)
+		STORED_UNUSED(len)
 	}
 
 	/*!
@@ -718,9 +718,9 @@ protected:
 	 */
 	void __hookExitRO(Type::type type, void* buffer, size_t len) noexcept
 	{
-		UNUSED(type)
-		UNUSED(buffer)
-		UNUSED(len)
+		STORED_UNUSED(type)
+		STORED_UNUSED(buffer)
+		STORED_UNUSED(len)
 	}
 {% for o in store.objects|select('variable') %}
 

@@ -76,12 +76,25 @@
 #define STORED_STRINGIFY_(x) #x
 #define STORED_STRINGIFY(x)  STORED_STRINGIFY_(x)
 
+#ifndef STORED_UNUSED
+/*!
+ * \def STORED_UNUSED
+ * \brief Mark a variable or parameter as unused.
+ *
+ * Use this macro in your function body.
+ */
+#	define STORED_UNUSED(x) (void)x;
+#endif
+
 #ifndef UNUSED
 /*!
  * \def UNUSED
- * \brief Mark one or more variables or parameters as unused.
+ * \brief Mark a variable or parameter as unused.
+ *
+ * Use this macro in your function body.
+ * \see STORED_UNUSED
  */
-#	define UNUSED(x) (void)x;
+#	define UNUSED(x) STORED_UNUSED(x)
 #endif
 
 #ifndef EXPAND

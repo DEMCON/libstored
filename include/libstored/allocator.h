@@ -75,13 +75,13 @@ static inline void deallocate(T* p, size_t n = 1) noexcept
 	public:                                                                     \
 		void* operator new(std::size_t n)                                   \
 		{                                                                   \
-			UNUSED(n)                                                   \
+			STORED_UNUSED(n)                                            \
 			stored_assert(n == sizeof(T));                              \
 			return ::stored::allocate<T>();                             \
 		}                                                                   \
 		void* operator new(std::size_t n, void* ptr) /* NOLINT */           \
 		{                                                                   \
-			UNUSED(n)                                                   \
+			STORED_UNUSED(n)                                            \
 			stored_assert(n == sizeof(T));                              \
 			return ptr;                                                 \
 		}                                                                   \

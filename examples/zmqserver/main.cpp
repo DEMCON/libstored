@@ -81,9 +81,9 @@ protected:
 
 	void __hookSet(stored::Type::type type, void* buffer, size_t len)
 	{
-		UNUSED(type)
-		UNUSED(buffer)
-		UNUSED(len)
+		STORED_UNUSED(type)
+		STORED_UNUSED(buffer)
+		STORED_UNUSED(len)
 		m_writes++;
 	}
 
