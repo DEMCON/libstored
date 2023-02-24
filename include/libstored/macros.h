@@ -298,6 +298,13 @@ typedef SSIZE_T ssize_t;
 #				define constexpr14 inline
 #			endif
 #		endif
+#		ifndef inline17
+#			if STORED_cplusplus >= 201703L
+#				define inline17 inline
+#			else
+#				define inline17
+#			endif
+#		endif
 #	endif
 #endif
 

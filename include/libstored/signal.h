@@ -180,6 +180,8 @@ protected:
 	}
 
 public:
+	~Signalling() = default;
+
 	template <
 		typename Store, typename Implementation, typename T, size_t offset, size_t size_,
 		typename F, SFINAE_IS_FUNCTION(F, callback_type, int) = 0,
