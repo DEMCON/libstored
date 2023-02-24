@@ -188,13 +188,13 @@
 #	endif
 
 #	if STORED_cplusplus >= 201103L && !defined(STORED_CLASS_DEFAULT_COPY_MOVE)
-#		define STORED_CLASS_DEFAULT_COPY_MOVE(type)    \
-		public:                                         \
-			type(type const&) = default;            \
-			type(type&&) = default;                 \
-			type& operator=(type const&) = default; \
-			type& operator=(type&&) = default;      \
-                                                                \
+#		define STORED_CLASS_DEFAULT_COPY_MOVE(type)        \
+		public:                                             \
+			type(type const&) = default;                \
+			type(type&&) noexcept = default;            \
+			type& operator=(type const&) = default;     \
+			type& operator=(type&&) noexcept = default; \
+                                                                    \
 		private:
 #	endif
 

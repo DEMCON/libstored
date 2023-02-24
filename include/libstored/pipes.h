@@ -74,7 +74,7 @@ extern Group gc;
  */
 class Ref {
 public:
-	Ref(Group& g)
+	explicit Ref(Group& g)
 		: group{g}
 	{}
 
@@ -94,7 +94,7 @@ namespace impl {
 //
 
 template <typename T>
-constexpr bool always_false = false;
+inline17 constexpr bool always_false = false; // NOLINT(misc-definitions-in-headers)
 
 /*!
  * \brief \c std::declval() without a \c std::remove_reference on the return type.
@@ -283,7 +283,7 @@ public:
 	using typename traits::type_out;
 
 	template <typename S_>
-	constexpr explicit Segment(S_&& s)
+	constexpr explicit Segment(S_&& s) // NOLINT(bugprone-forwarding-reference-overload)
 		: S{std::forward<S_>(s)}
 	{}
 
@@ -337,13 +337,14 @@ private:
 
 	template <typename S_>
 	decltype(auto)
-	extract_(decltype(std::enable_if_t<traits::template has_extract_<S_>(), int>{}) = 0)
+	extract_(decltype(std::enable_if_t<traits::template has_extract_<S_>(), int>{}) /**/ = 0)
 	{
 		return S_::extract();
 	}
 
 	template <typename S_>
-	auto extract_(decltype(std::enable_if_t<!traits::template has_extract_<S_>(), int>{}) = 0)
+	auto
+	extract_(decltype(std::enable_if_t<!traits::template has_extract_<S_>(), int>{}) /**/ = 0)
 	{
 		return type_out{};
 	}
@@ -483,11 +484,15 @@ namespace impl {
  */
 template <typename... S>
 struct Last : public Segment<typename segments_type<S...>::last> {
+	STORED_CLASS_DEFAULT_COPY_MOVE(Last)
+public:
 	using base = Segment<typename segments_type<S...>::last>;
 	template <typename S_>
-	constexpr explicit Last(S_&& s)
+	constexpr explicit Last(S_&& s) // NOLINT(bugprone-forwarding-reference-overload)
 		: base{std::forward<S_>(s)}
 	{}
+
+	~Last() = default;
 };
 } // namespace impl
 
@@ -631,6 +636,7 @@ private:
 	template <
 		typename Init_, typename Last_,
 		std::enable_if_t<!Init_::has_trigger && !Last_::has_trigger, int> = 0>
+	// NOLINTNEXTLINE(readability-non-const-parameter)
 	auto trigger_helper(bool* triggered)
 	{
 		STORED_UNUSED(triggered)
@@ -647,6 +653,7 @@ public:
 
 protected:
 	template <typename S0_>
+	// NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
 	constexpr explicit Segments(S0_&& segment)
 		: Segment<S0>{std::forward<S0_>(segment)}
 	{}
@@ -658,6 +665,8 @@ protected:
 	friend class Segments;
 
 public:
+	~Segments() = default;
+
 	template <typename S_>
 	constexpr decltype(
 		impl::declval<std::enable_if_t<
@@ -747,10 +756,12 @@ public:
 	using type = T;
 
 protected:
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 	explicit ExitValue(type const& v)
 		: m_p{&v}
 	{}
 
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 	explicit ExitValue(type&& v)
 		: m_p{}
 	{
@@ -764,6 +775,7 @@ public:
 	ExitValue(ExitValue const&) = delete;
 	void operator=(ExitValue const&) = delete;
 
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 	ExitValue(ExitValue&& v) noexcept
 		: m_p{v.m_p}
 	{
@@ -784,6 +796,7 @@ public:
 		return m_p ? *m_p : value();
 	}
 
+	// NOLINTNEXTLINE(hicpp-explicit-conversions)
 	operator type const &() const
 	{
 		return get();
@@ -821,11 +834,13 @@ public:
 protected:
 	type& value()
 	{
+		// NOLINTNEXTLINE
 		return *reinterpret_cast<type*>(&m_v[0]);
 	}
 
 	type const& value() const
 	{
+		// NOLINTNEXTLINE
 		return *reinterpret_cast<type const*>(&m_v[0]);
 	}
 
@@ -907,6 +922,12 @@ public:
  * \brief Common base class of all pipes.
  */
 class PipeBase {
+protected:
+	PipeBase(PipeBase const&) = default;
+	PipeBase(PipeBase&&) noexcept = default;
+	PipeBase& operator=(PipeBase const&) = default;
+	PipeBase& operator=(PipeBase&&) noexcept = default;
+
 public:
 	virtual ~PipeBase() = default;
 	virtual void trigger(bool* triggered = nullptr) = 0;
@@ -1006,6 +1027,7 @@ protected:
 	template <
 		typename S_,
 		std::enable_if_t<std::is_constructible<segments_type, S_>::value, int> = 0>
+	// NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
 	explicit SpecificCappedPipe(S_&& s)
 		: segments_type{std::forward<S_>(s)}
 	{}
@@ -1068,6 +1090,7 @@ constexpr auto operator>>(Segments<S_...>&& s, Cap&& e)
 template <typename... S_>
 constexpr auto& operator>>(Segments<S_...>&& s, Ref&& e)
 {
+	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 	auto* p = new SpecificCappedPipe<Segments<S_...>>{std::move(s)};
 	e.group.add(*p);
 	return *p;
@@ -1098,6 +1121,7 @@ protected:
 	template <
 		typename S_,
 		std::enable_if_t<std::is_constructible<segments_type, S_>::value, int> = 0>
+	// NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
 	explicit SpecificOpenPipe(S_&& s)
 		: base{std::forward<S_>(s)}
 	{}
@@ -1191,18 +1215,21 @@ public:
 template <typename T>
 auto operator>>(Entry<T>&& entry, Exit&& exit)
 {
+	// NOLINTNEXTLINE(hicpp-move-const-arg,performance-move-const-arg)
 	return std::move(entry) >> Identity<T>{} >> std::move(exit);
 }
 
 template <typename T>
 auto operator>>(Entry<T>&& entry, Cap&& cap)
 {
+	// NOLINTNEXTLINE(hicpp-move-const-arg,performance-move-const-arg)
 	return std::move(entry) >> Identity<T>{} >> std::move(cap);
 }
 
 template <typename T>
 auto& operator>>(Entry<T>&& entry, Ref&& ref)
 {
+	// NOLINTNEXTLINE(hicpp-move-const-arg,performance-move-const-arg)
 	return std::move(entry) >> Identity<T>{} >> std::move(ref);
 }
 
@@ -1284,6 +1311,7 @@ public:
 	template <
 		typename type_,
 		std::enable_if_t<std::is_constructible<type, type_>::value, int> = 0>
+	// NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
 	constexpr explicit Buffer(type_&& x)
 		: m_x{std::forward<type_>(x)}
 	{}
@@ -1366,6 +1394,7 @@ public:
 	template <
 		typename type_,
 		std::enable_if_t<std::is_constructible<type, type_>::value, int> = 0>
+	// NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
 	constexpr explicit Triggered(type_&& x)
 		: buffer{std::forward<type_>(x)}
 	{}
@@ -1524,6 +1553,7 @@ public:
 		typename F_,
 		std::enable_if_t<
 			std::is_constructible<std::function<function_type>, F_>::value, int> = 0>
+	// NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
 	explicit Call(F_&& f)
 		: m_f{std::forward<F_>(f)}
 	{}
@@ -1547,6 +1577,7 @@ public:
 		typename F_,
 		std::enable_if_t<
 			std::is_constructible<std::function<function_type>, F_>::value, int> = 0>
+	// NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
 	explicit Call(F_&& f)
 		: m_f{std::forward<F_>(f)}
 	{}
@@ -1570,6 +1601,7 @@ public:
 		typename F_,
 		std::enable_if_t<
 			std::is_constructible<std::function<function_type>, F_>::value, int> = 0>
+	// NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
 	explicit Call(F_&& f)
 		: m_f{std::forward<F_>(f)}
 	{}
@@ -2115,6 +2147,7 @@ public:
 		typename Constraints_,
 		std::enable_if_t<std::is_constructible<Constraints, Constraints_&&>::value, int> =
 			0>
+	// NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
 	explicit Constrained(Constraints_&& constraints)
 		: m_constraints{std::forward<Constraints_>(constraints)}
 	{}
@@ -2191,6 +2224,7 @@ public:
 	template <
 		typename Converter_,
 		std::enable_if_t<std::is_constructible<Converter, Converter_&&>::value, int> = 0>
+	// NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
 	explicit Convert(Converter_&& converter)
 		: m_converter{std::forward<Converter_>(converter)}
 	{}

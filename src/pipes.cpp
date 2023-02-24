@@ -19,7 +19,8 @@ namespace pipes {
 
 Group gc;
 
-struct GC_ {
+// NOLINTNEXTLINE
+struct GC_ final {
 	~GC_()
 	{
 		gc.destroy();
@@ -37,7 +38,7 @@ void Group::add(PipeBase& p)
 
 void Group::add(std::initializer_list<std::reference_wrapper<PipeBase>> il)
 {
-	for(auto& p : il)
+	for(auto const& p : il)
 		m_pipes.insert(&p.get());
 }
 
@@ -48,7 +49,7 @@ void Group::remove(PipeBase& p)
 
 void Group::remove(std::initializer_list<std::reference_wrapper<PipeBase>> il)
 {
-	for(auto& p : il)
+	for(auto const& p : il)
 		m_pipes.erase(&p.get());
 }
 
@@ -78,12 +79,14 @@ void Group::destroy(PipeBase& p)
 
 	// As both real instances of PipeBase have the delete operator
 	// overloaded, this will call stored::deallocate() properly.
+	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 	delete &p;
 }
 
 void Group::destroy()
 {
 	for(auto* p : m_pipes)
+		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		delete p;
 
 	m_pipes.clear();
