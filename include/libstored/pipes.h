@@ -923,6 +923,7 @@ public:
  */
 class PipeBase {
 protected:
+	PipeBase() = default;
 	PipeBase(PipeBase const&) = default;
 	PipeBase(PipeBase&&) noexcept = default;
 	PipeBase& operator=(PipeBase const&) = default;
