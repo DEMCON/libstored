@@ -1625,7 +1625,7 @@ PolledFileLayer::~PolledFileLayer() is_default
 int PolledFileLayer::block(
 	PolledFileLayer::fd_type fd, bool forReading, long timeout_us, bool suspend)
 {
-	UNUSED(suspend)
+	STORED_UNUSED(suspend)
 
 	setLastError(0);
 
@@ -2336,7 +2336,7 @@ void FileLayer::writeCompletionRoutine(
 	// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 	DWORD dwErrorCode, DWORD dwNumberOfBytesTransfered, LPOVERLAPPED lpOverlapped)
 {
-	UNUSED(dwNumberOfBytesTransfered)
+	STORED_UNUSED(dwNumberOfBytesTransfered)
 
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 	FileLayer* that = *(FileLayer**)((uintptr_t)lpOverlapped + sizeof(*lpOverlapped));
@@ -3076,10 +3076,10 @@ bool StdioLayer::isPipeOut() const
 
 int StdioLayer::block(fd_type fd, bool forReading, long timeout_us, bool suspend)
 {
-	UNUSED(fd)
-	UNUSED(forReading)
-	UNUSED(timeout_us)
-	UNUSED(suspend)
+	STORED_UNUSED(fd)
+	STORED_UNUSED(forReading)
+	STORED_UNUSED(timeout_us)
+	STORED_UNUSED(suspend)
 	stored_assert(false);
 	return setLastError(EINVAL);
 }

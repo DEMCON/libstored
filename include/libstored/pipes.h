@@ -331,7 +331,7 @@ private:
 	decltype(auto) inject_(decltype(
 		impl::declval<std::enable_if_t<!traits::template has_inject_<S_>(), type_in>>()) x)
 	{
-		UNUSED(x)
+		STORED_UNUSED(x)
 		return extract_<S_>();
 	}
 
@@ -633,7 +633,7 @@ private:
 		std::enable_if_t<!Init_::has_trigger && !Last_::has_trigger, int> = 0>
 	auto trigger_helper(bool* triggered)
 	{
-		UNUSED(triggered)
+		STORED_UNUSED(triggered)
 		return type_out{};
 	}
 };
@@ -864,7 +864,7 @@ public:
 
 	virtual void connect(PipeEntry<Out>& p)
 	{
-		UNUSED(p)
+		STORED_UNUSED(p)
 		// Do not connect a capped pipe.
 		std::terminate();
 	}
@@ -1061,7 +1061,7 @@ public:
 template <typename... S_>
 constexpr auto operator>>(Segments<S_...>&& s, Cap&& e)
 {
-	UNUSED(e)
+	STORED_UNUSED(e)
 	return SpecificCappedPipe<Segments<S_...>>{std::move(s)};
 }
 
@@ -1166,7 +1166,7 @@ private:
 template <typename... S_>
 constexpr auto operator>>(Segments<S_...>&& s, Exit&& e)
 {
-	UNUSED(e)
+	STORED_UNUSED(e)
 	return SpecificOpenPipe<Segments<S_...>>{std::move(s)};
 }
 
@@ -1465,7 +1465,7 @@ protected:
 	template <typename T_, std::enable_if_t<!std::is_constructible<double, T_>::value, int> = 0>
 	static void print(std::string const& name, T_ const& x)
 	{
-		UNUSED(x)
+		STORED_UNUSED(x)
 		printf("%s injected\n", name.c_str());
 	}
 
@@ -1636,7 +1636,7 @@ public:
 
 	T inject(bool x)
 	{
-		UNUSED(x)
+		STORED_UNUSED(x)
 		return extract();
 	}
 
@@ -1647,13 +1647,13 @@ public:
 
 	bool entry_cast(T x) const
 	{
-		UNUSED(x)
+		STORED_UNUSED(x)
 		return false;
 	}
 
 	T exit_cast(bool x) const
 	{
-		UNUSED(x)
+		STORED_UNUSED(x)
 		return T{};
 	}
 
@@ -1678,7 +1678,7 @@ public:
 
 	T inject(bool x)
 	{
-		UNUSED(x)
+		STORED_UNUSED(x)
 		return extract();
 	}
 
@@ -1689,13 +1689,13 @@ public:
 
 	bool entry_cast(T x) const
 	{
-		UNUSED(x)
+		STORED_UNUSED(x)
 		return false;
 	}
 
 	T exit_cast(bool x) const
 	{
-		UNUSED(x)
+		STORED_UNUSED(x)
 		return T{};
 	}
 
@@ -1871,13 +1871,13 @@ public:
 
 	size_t entry_cast(T x) const
 	{
-		UNUSED(x)
+		STORED_UNUSED(x)
 		return 0;
 	}
 
 	T exit_cast(size_t x) const
 	{
-		UNUSED(x)
+		STORED_UNUSED(x)
 		return T{};
 	}
 
@@ -1905,7 +1905,7 @@ public:
 
 	T inject(size_t i)
 	{
-		UNUSED(i)
+		STORED_UNUSED(i)
 		return extract();
 	}
 
@@ -1916,13 +1916,13 @@ public:
 
 	size_t entry_cast(T x) const
 	{
-		UNUSED(x)
+		STORED_UNUSED(x)
 		return 0;
 	}
 
 	T exit_cast(size_t x) const
 	{
-		UNUSED(x)
+		STORED_UNUSED(x)
 		return T{};
 	}
 
@@ -2452,8 +2452,8 @@ constexpr
 		std::pair<Key, Value> const (&kv)[N], CompareKey compareKey = CompareKey{},
 		CompareValue compareValue = CompareValue{})
 {
-	UNUSED(compareKey)
-	UNUSED(compareValue)
+	STORED_UNUSED(compareKey)
+	STORED_UNUSED(compareValue)
 
 	std::array<std::pair<Key, Value>, N> m{};
 
@@ -2541,7 +2541,7 @@ constexpr
 	auto
 	Map(T const (&values)[N], CompareValue compareValue = CompareValue{})
 {
-	UNUSED(compareValue)
+	STORED_UNUSED(compareValue)
 
 	std::array<T, N> m{};
 
@@ -2587,8 +2587,8 @@ constexpr
 	Map(std::pair<Key, Value> const (&kv)[N], CompareKey compareKey = CompareKey{},
 	    CompareValue compareValue = CompareValue{})
 {
-	UNUSED(compareKey)
-	UNUSED(compareValue)
+	STORED_UNUSED(compareKey)
+	STORED_UNUSED(compareValue)
 
 	std::array<std::pair<Key, Value>, N> m{};
 

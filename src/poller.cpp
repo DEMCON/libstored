@@ -63,7 +63,7 @@ static int socket_to_SOCKET(void* zmq, SOCKET& win)
 
 static int SOCKET_to_HANDLE(SOCKET s, HANDLE& h)
 {
-	UNUSED(s)
+	STORED_UNUSED(s)
 	stored_assert(s != INVALID_SOCKET); // NOLINT(hicpp-signed-bitwise)
 
 	if(!h) {

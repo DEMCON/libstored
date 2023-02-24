@@ -495,8 +495,8 @@ protected:
 	virtual int init(Pollable const& p, PollItem& item) noexcept = 0;
 	virtual void deinit(Pollable const& p, PollItem& item) noexcept
 	{
-		UNUSED(p)
-		UNUSED(item)
+		STORED_UNUSED(p)
+		STORED_UNUSED(item)
 	}
 	virtual int doPoll(int timeout_ms, PollItemList& items) noexcept = 0;
 };
@@ -1063,7 +1063,7 @@ public:
 	STORED_DEPRECATED("Use the new Pollables instead")
 	Result const& poll(long timeout_us, bool suspend = false)
 	{
-		UNUSED(suspend)
+		STORED_UNUSED(suspend)
 		return base::poll((int)(timeout_us / 1000L));
 	}
 

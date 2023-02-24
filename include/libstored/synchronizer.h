@@ -296,8 +296,8 @@ public:
 			void* container, char const* name, Type::type type, void* buffer,
 			size_t len, void* arg)
 		{
-			UNUSED(container)
-			UNUSED(name)
+			STORED_UNUSED(container)
+			STORED_UNUSED(name)
 			if(!Type::isFunction(type))
 				static_cast<Synchronizable*>(arg)->hookEntryRO(type, buffer, len);
 		}
@@ -306,8 +306,8 @@ public:
 			void* container, char const* name, Type::type type, void* buffer,
 			size_t len, void* arg)
 		{
-			UNUSED(container)
-			UNUSED(name)
+			STORED_UNUSED(container)
+			STORED_UNUSED(name)
 			if(!Type::isFunction(type))
 				static_cast<Synchronizable*>(arg)->hookExitRO(type, buffer, len);
 		}
@@ -316,8 +316,8 @@ public:
 			void* container, char const* name, Type::type type, void* buffer,
 			size_t len, void* arg)
 		{
-			UNUSED(container)
-			UNUSED(name)
+			STORED_UNUSED(container)
+			STORED_UNUSED(name)
 			if(!Type::isFunction(type))
 				static_cast<Synchronizable*>(arg)->hookChanged(type, buffer, len);
 		}

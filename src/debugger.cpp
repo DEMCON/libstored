@@ -891,7 +891,7 @@ public:
 
 	void encode(void const* buffer, size_t len, bool last = true) final
 	{
-		UNUSED(last)
+		STORED_UNUSED(last)
 		base::encode(buffer, len, false);
 	}
 
@@ -899,7 +899,7 @@ public:
 
 	void setPurgeableResponse(bool purgeable = true) final
 	{
-		UNUSED(purgeable)
+		STORED_UNUSED(purgeable)
 	}
 };
 

@@ -369,7 +369,7 @@ public:
 	Variable(Container& container, type& buffer) noexcept
 		: m_buffer(&buffer)
 	{
-		UNUSED(container)
+		STORED_UNUSED(container)
 		stored_assert(((uintptr_t)m_buffer & (sizeof(type) - 1U)) == 0U);
 	}
 
@@ -1982,8 +1982,8 @@ public:
 	/*! \brief Don't use. */
 	size_t get(void* dst, size_t len = 0) const noexcept
 	{
-		UNUSED(dst)
-		UNUSED(len)
+		STORED_UNUSED(dst)
+		STORED_UNUSED(len)
 		stored_assert(valid());
 		return 0;
 	}
@@ -1999,8 +1999,8 @@ public:
 	/*! \brief Don't use. */
 	size_t set(void const* src, size_t len = 0) noexcept
 	{
-		UNUSED(src)
-		UNUSED(len)
+		STORED_UNUSED(src)
+		STORED_UNUSED(len)
 		stored_assert(valid());
 		return 0;
 	}
@@ -2009,30 +2009,30 @@ public:
 	template <typename T>
 	void set(T value) noexcept
 	{
-		UNUSED(value)
+		STORED_UNUSED(value)
 		stored_assert(valid());
 	}
 
 	/*! \brief Don't use. */
 	void entryX(size_t len = 0) const noexcept
 	{
-		UNUSED(len)
+		STORED_UNUSED(len)
 	}
 	/*! \brief Don't use. */
 	void exitX(bool changed, size_t len = 0) const noexcept
 	{
-		UNUSED(changed)
-		UNUSED(len)
+		STORED_UNUSED(changed)
+		STORED_UNUSED(len)
 	}
 	/*! \brief Don't use. */
 	void entryRO(size_t len = 0) const noexcept
 	{
-		UNUSED(len)
+		STORED_UNUSED(len)
 	}
 	/*! \brief Don't use. */
 	void exitRO(size_t len = 0) const noexcept
 	{
-		UNUSED(len)
+		STORED_UNUSED(len)
 	}
 	/*! \copybrief Variant::type() */
 	constexpr Type::type type() const noexcept
@@ -2293,7 +2293,7 @@ public:
 
 	size_t get(void* dst, size_t len) const
 	{
-		UNUSED(len)
+		STORED_UNUSED(len)
 		stored_assert(len == sizeof(type));
 		stored_assert(dst);
 		call(false, *static_cast<type*>(dst));
@@ -2312,7 +2312,7 @@ public:
 
 	size_t set(void* src, size_t len)
 	{
-		UNUSED(len)
+		STORED_UNUSED(len)
 		stored_assert(len == sizeof(type));
 		stored_assert(src);
 		call(true, *static_cast<type*>(src));

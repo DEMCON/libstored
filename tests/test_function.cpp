@@ -64,16 +64,16 @@ public:
 	}
 	size_t __array_f_blob_0(bool set, void* value, size_t len)
 	{
-		UNUSED(set)
-		UNUSED(value)
-		UNUSED(len)
+		STORED_UNUSED(set)
+		STORED_UNUSED(value)
+		STORED_UNUSED(len)
 		return 0;
 	}
 	size_t __array_f_blob_1(bool set, void* value, size_t len)
 	{
-		UNUSED(set)
-		UNUSED(value)
-		UNUSED(len)
+		STORED_UNUSED(set)
+		STORED_UNUSED(value)
+		STORED_UNUSED(len)
 		return 0;
 	}
 
