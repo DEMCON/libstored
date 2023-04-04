@@ -1620,7 +1620,7 @@ class ZmqClient(QObject):
         return rep == b'!'
 
     def streams(self):
-        if not 's' in self.capabilities()
+        if not 's' in self.capabilities():
             return []
 
         rep = self.req(b's')
