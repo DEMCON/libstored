@@ -29,8 +29,8 @@ Window {
 
         return s.devicePixelRatio
     }
-    visible: true
-    width: 800
+    visible: false
+    width: 799
     height: 600
 
     readonly property color toolTipBase: "#ffffe0"
@@ -50,6 +50,15 @@ Window {
         }
 
         root.title = text
+        root.visible = true
+
+        // Somehow, the scaling of the contents of the window is wrong,
+        // depending on DPI settings of the monitor.  Redrawing (or
+        // moving/resizing the window) seems to work. Fake this by forcing a
+        // redraw after first initialization.
+        Qt.callLater(function() {
+            root.width = root.width + 1
+        })
     }
 
     property real fontSize: 9 * uiScale
