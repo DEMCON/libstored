@@ -7,11 +7,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-import sys
 import argparse
-import os
-import natsort
+import gc
 import logging
+import natsort
+import os
+import signal
+import sys
 import time
 
 from PySide6.QtGui import QGuiApplication, QIcon
@@ -476,6 +478,10 @@ def lognplot_send(lognplot, o):
         except:
             pass
 
+def signal_handler(sig, stk, app):
+    app.exit(1)
+    signal.signal(sig, signal.SIG_DFL)
+
 
 
 if __name__ == '__main__':
@@ -566,6 +572,10 @@ if __name__ == '__main__':
             if o.isFixed():
                 o.valueUpdated.connect(lambda o=o: lognplot_send(lognplot, o))
 
+    engine.quit.connect(engine.deleteLater)
+    engine.destroyed.connect(app.quit)
+    app.aboutToQuit.connect(engine.deleteLater)
+
     engine.addImportPath("qrc:/");
     engine.load('qrc:/main.qml')
     if not engine.rootObjects():
@@ -576,9 +586,13 @@ if __name__ == '__main__':
         # do overwrite it afterwards.
         client.restoreState()
 
+    signal.signal(signal.SIGINT, lambda sig, stk: signal_handler(sig, stk, app))
     res = app.exec()
+
+    logger.info('Exiting...')
 
     client.saveState()
     client.close()
-    sys.exit(res)
+    gc.collect()
 
+    sys.exit(res)
