@@ -1296,7 +1296,8 @@ class ZmqClient(QObject):
         self.logger.debug('aboutToQuit')
         self._useEventLoop = False
         try:
-            self._reqAsyncFlush(10)
+            self.logger.debug('flushing before quit...')
+            self._reqAsyncFlush(3)
         except:
             pass
 
