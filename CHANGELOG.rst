@@ -16,6 +16,22 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 Added
 ``````
 
+...
+
+Fixed
+`````
+
+...
+
+.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.4.0...HEAD
+
+
+`1.4.0`_ - 2023-04-05
+---------------------
+
+Added
+``````
+
 - First-order high-pass filter.
 - Pipes, to process data using functional composition.
 - A Signal class (with Signalling store wrapper) to call functions when the
@@ -25,8 +41,9 @@ Fixed
 `````
 
 - Properly calling hooks by the Synchronizer.
+- Minor issues with pylibstored.
 
-.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.3.1...HEAD
+.. _1.4.0: https://github.com/DEMCON/libstored/releases/tag/v1.4.0
 
 
 
