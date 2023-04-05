@@ -17,6 +17,7 @@
 namespace stored {
 namespace pipes {
 
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 Group gc;
 
 // NOLINTNEXTLINE
@@ -27,6 +28,7 @@ struct GC_ final {
 	}
 };
 
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 static GC_ gc_;
 
 
