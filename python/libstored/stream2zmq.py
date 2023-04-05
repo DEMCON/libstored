@@ -106,6 +106,7 @@ class Stream2Zmq(protocol.ProtocolLayer):
         super().__init__()
         self.logger = logging.getLogger(__name__)
         self._stack_def = f'zmq={listen}:{port},' + stack
+        self._stack = None
         self._timeout_s = timeout_s
         self._zmq = None
         self._printStdout = printStdout

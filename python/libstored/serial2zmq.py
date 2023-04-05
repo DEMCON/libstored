@@ -5,11 +5,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-import sys
-import serial
-import zmq
+import errno
 import logging
+import serial
+import sys
 import time
+import zmq
 
 from .stream2zmq import Stream2Zmq
 
@@ -18,17 +19,32 @@ class Serial2Zmq(Stream2Zmq):
 
     def __init__(self, stack='ascii,term', zmqlisten='*', zmqport=Stream2Zmq.default_port, drop_s=1, printStdout=True, **kwargs):
         super().__init__(stack, listen=zmqlisten, port=zmqport, printStdout=printStdout)
+        self.logger = logging.getLogger(__name__)
+        self.logger.debug('Opening serial port %s', kwargs['port'])
         self.serial = None
-        self.serial = serial.Serial(**kwargs)
+        self.serial = self._serialOpen(**kwargs)
         self.serial_socket = self.registerStream(self.serial)
         self.stdin_socket = self.registerStream(sys.stdin)
         self.rep_queue = []
-        self.logger = logging.getLogger(__name__)
 
         self._drop = None
         self._bufferStdin = b''
         if not drop_s is None:
             self._drop = time.time() + drop_s
+
+    def _serialOpen(self, timeout_s=60, **kwargs):
+        for i in range(0, timeout_s):
+            try:
+                return serial.Serial(**kwargs)
+            except serial.SerialException as e:
+                # For unclear reasons, Windows sometimes reports the port as
+                # being in use.  That issue seems to clear automatically after
+                # a while.
+                if 'PermissionError' not in str(e):
+                    raise
+
+                self.logger.warning(e)
+                time.sleep(1)
 
     def poll(self, timeout_s = None):
         dropping = not self._drop is None
@@ -69,9 +85,9 @@ class Serial2Zmq(Stream2Zmq):
         if self.serial is not None:
             self.serial.close()
             self.serial = None
+            self.logger.debug('Closed serial port')
 
     def drop(self, data):
         # First drop_s seconds of data is dropped to get rid of
         # garbage while reset/boot/connecting the UART.
         self.logger.debug('dropped %s', data)
-
