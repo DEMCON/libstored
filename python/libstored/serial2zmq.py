@@ -33,6 +33,7 @@ class Serial2Zmq(Stream2Zmq):
             self._drop = time.time() + drop_s
 
     def _serialOpen(self, timeout_s=60, **kwargs):
+        last_e = TimeoutError()
         for i in range(0, timeout_s):
             try:
                 return serial.Serial(**kwargs)
@@ -43,8 +44,10 @@ class Serial2Zmq(Stream2Zmq):
                 if 'PermissionError' not in str(e):
                     raise
 
+                last_e = e
                 self.logger.warning(e)
                 time.sleep(1)
+        raise last_e
 
     def poll(self, timeout_s = None):
         dropping = not self._drop is None
