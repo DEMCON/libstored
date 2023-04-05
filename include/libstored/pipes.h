@@ -67,6 +67,7 @@ class Exit {};
 class Cap {};
 
 class Group;
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 extern Group gc;
 
 /*!
