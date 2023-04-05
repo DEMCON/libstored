@@ -1,7 +1,7 @@
 @echo off
 
 rem libstored, distributed debuggable data stores.
-rem Copyright (C) 2020-2022  Jochem Rutgers
+rem Copyright (C) 2020-2023  Jochem Rutgers
 rem
 rem This Source Code Form is subject to the terms of the Mozilla Public
 rem License, v. 2.0. If a copy of the MPL was not distributed with this
