@@ -126,7 +126,6 @@ jobs:
           dist/mingw/build.sh Release
 
   test-documentation:
-    if: github.ref != 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -162,7 +161,7 @@ jobs:
 
   # Dummy job that depends on all other build-* jobs.
   build-all-check:
-    needs: [build-ubuntu, build-ubuntu-prev, build-windows, build-mac, build-mingw, test-documentation, documentation]
+    needs: [build-ubuntu, build-ubuntu-prev, build-windows, build-mac, build-mingw, test-documentation]
     runs-on: ubuntu-latest
     if: success()
     outputs:
@@ -173,7 +172,7 @@ jobs:
 
   # Dummy job to check if build-all-check was successful.
   build-all:
-    needs: [build-ubuntu, build-ubuntu-prev, build-windows, build-mac, build-mingw, test-documentation, documentation, build-all-check]
+    needs: [build-ubuntu, build-ubuntu-prev, build-windows, build-mac, build-mingw, test-documentation, build-all-check]
     runs-on: ubuntu-latest
     if: always()
     steps:
