@@ -139,33 +139,6 @@ jobs:
       - name: build
         run: dist/ubuntu/build.sh -DLIBSTORED_DOCUMENTATION=ON -DLIBSTORED_PYLIBSTORED=ON -DLIBSTORED_HAVE_ZTH=ON
 
-  # Dummy job that depends on all other build-* jobs.
-  build-all-check:
-    needs: [build-ubuntu, build-ubuntu-prev, build-windows, build-mac, build-mingw, test-documentation]
-    runs-on: ubuntu-latest
-    if: success()
-    outputs:
-      success: ${{ steps.setoutput.outputs.success }}
-    steps:
-      - id: setoutput
-        run: echo "success=true" >> $GITHUB_OUTPUT
-
-  # Dummy job to check if build-all-check was successful.
-  build-all:
-    needs: [build-ubuntu, build-ubuntu-prev, build-windows, build-mac, build-mingw, test-documentation, build-all-check]
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - run: |
-          passed="${{ needs.build-all-check.outputs.success }}"
-          if [[ $passed == "true" ]]; then
-            echo "Build passed"
-            exit 0
-          else
-            echo "Build failed"
-            exit 1
-          fi
-
   # If everything is OK, publish documentation
   documentation:
     if: github.ref == 'refs/heads/master'
@@ -186,3 +159,30 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./sphinx/_build/html
+
+  # Dummy job that depends on all other build-* jobs.
+  build-all-check:
+    needs: [build-ubuntu, build-ubuntu-prev, build-windows, build-mac, build-mingw, test-documentation, documentation]
+    runs-on: ubuntu-latest
+    if: success()
+    outputs:
+      success: ${{ steps.setoutput.outputs.success }}
+    steps:
+      - id: setoutput
+        run: echo "success=true" >> $GITHUB_OUTPUT
+
+  # Dummy job to check if build-all-check was successful.
+  build-all:
+    needs: [build-ubuntu, build-ubuntu-prev, build-windows, build-mac, build-mingw, test-documentation, documentation, build-all-check]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - run: |
+          passed="${{ needs.build-all-check.outputs.success }}"
+          if [[ $passed == "true" ]]; then
+            echo "Build passed"
+            exit 0
+          else
+            echo "Build failed"
+            exit 1
+          fi
