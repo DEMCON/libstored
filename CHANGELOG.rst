@@ -26,7 +26,7 @@ Fixed
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.4.0...HEAD
 
 
-`1.4.0`_ - 2023-04-05
+`1.4.0`_ - 2023-04-06
 ---------------------
 
 Added
