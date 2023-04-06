@@ -4,17 +4,16 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Debugger &mdash; libstored 1.4.0-alpha documentation</title>
+  <title>Debugger &mdash; libstored 1.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -36,7 +35,7 @@
             libstored
           </a>
               <div class="version">
-                1.4.0.dev0
+                1.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -79,6 +78,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_directory.html">Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html">Pipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_poller.html">Poller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html">Protocol</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_synchronizer.html">Synchronizer</a></li>
@@ -442,7 +442,7 @@ than the actual tracing speed.</p>
 <p>It receives the name of the object, and the corresponding <a class="reference internal" href="#classstored_1_1_debug_variant"><span class="std std-ref">stored::DebugVariant</span></a> of the object.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_debugger_1a55c61c7d9c075cb84fe56e701d86bcd2"><span class="std std-ref">list&lt;F&gt;(F&amp;&amp;) const</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_debugger_1a55c61c7d9c075cb84fe56e701d86bcd2"><span class="std std-ref">list&lt;F&gt;(F&amp;&amp;) const</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -454,7 +454,7 @@ than the actual tracing speed.</p>
 <p>It receives the name of the object, the corresponding <a class="reference internal" href="#classstored_1_1_debug_variant"><span class="std std-ref">stored::DebugVariant</span></a> of the object, and the <code class="docutils literal notranslate"><span class="pre">arg</span></code> value, as passed to <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_debugger_1a52c30ab3e1c2bb160c96c65725e6b248"><span class="std std-ref"><span class="pre">list()</span></span></a></code>.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_debug_store_base_1afe84fc6c67d903c78ea515da4b9a813a"><span class="std std-ref">stored::DebugStoreBase::list(ListCallbackArg*, void*, char const*) const</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_debug_store_base_1afe84fc6c67d903c78ea515da4b9a813a"><span class="std std-ref">stored::DebugStoreBase::list(ListCallbackArg*, void*, char const*) const</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -474,11 +474,11 @@ than the actual tracing speed.</p>
 <dd><p>Constructor. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_debugger_1a58172b25824dcf4d0347b6f101f333e8"><span class="std std-ref">setIdentification()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_debugger_1a58172b25824dcf4d0347b6f101f333e8"><span class="std std-ref">setIdentification()</span></a></p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_debugger_1af6b6842d2ff19f0d9813fe379bf0d07a"><span class="std std-ref">setVersions()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_debugger_1af6b6842d2ff19f0d9813fe379bf0d07a"><span class="std std-ref">setVersions()</span></a></p>
 </div>
 </p>
 <dl class="field-list simple">
@@ -506,7 +506,7 @@ than the actual tracing speed.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>caps</strong> – the list of capabilities </p></li>
-<li><p><strong>len</strong> – the size of the buffer of <code class="docutils literal notranslate"><span class="pre">list</span></code> </p></li>
+<li><p><strong>len</strong> – the size of the buffer of <code class="docutils literal notranslate"><span class="pre">list</span></code></p></li>
 <li><p><strong>reserve</strong> – when allocating memory for <code class="docutils literal notranslate"><span class="pre">list</span></code>, add this number of bytes </p></li>
 </ul>
 </dd>
@@ -543,7 +543,7 @@ than the actual tracing speed.</p>
 <dd><p>Returns the identification. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_debugger_1a58172b25824dcf4d0347b6f101f333e8"><span class="std std-ref">setIdentification()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_debugger_1a58172b25824dcf4d0347b6f101f333e8"><span class="std std-ref">setIdentification()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -554,7 +554,7 @@ than the actual tracing speed.</p>
 <dd><p>Iterates over the directory and invoke a callback for every object. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>f</strong> – the callback to invoke, which can be any type, but must look like <a class="reference internal" href="#classstored_1_1_debugger_1a1d40099f79daa811598bc8add4cb1f57"><span class="std std-ref">ListCallback</span></a> </p>
+<dd class="field-odd"><p><strong>f</strong> – the callback to invoke, which can be any type, but must look like <a class="reference internal" href="#classstored_1_1_debugger_1a1d40099f79daa811598bc8add4cb1f57"><span class="std std-ref">ListCallback</span></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -567,7 +567,7 @@ than the actual tracing speed.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>f</strong> – the callback to invoke </p></li>
-<li><p><strong>arg</strong> – an arbitrary argument to be passed to <code class="docutils literal notranslate"><span class="pre">f</span></code> </p></li>
+<li><p><strong>arg</strong> – an arbitrary argument to be passed to <code class="docutils literal notranslate"><span class="pre">f</span></code></p></li>
 </ul>
 </dd>
 </dl>
@@ -588,7 +588,7 @@ than the actual tracing speed.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>frame</strong> – the frame to decode </p></li>
-<li><p><strong>len</strong> – the length of <code class="docutils literal notranslate"><span class="pre">frame</span></code> </p></li>
+<li><p><strong>len</strong> – the length of <code class="docutils literal notranslate"><span class="pre">frame</span></code></p></li>
 <li><p><strong>response</strong> – the layer to push responses into </p></li>
 </ul>
 </dd>
@@ -602,7 +602,7 @@ than the actual tracing speed.</p>
 <p>The supplied string is not copied; just the pointer is saved, so the string must remain valid while the <a class="reference internal" href="#classstored_1_1_debugger"><span class="std std-ref">Debugger</span></a> has its pointer. So, it is fine to supply a string literal.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_debugger_1a31663206e779bf86e74180fcc956a67a"><span class="std std-ref">identification()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_debugger_1a31663206e779bf86e74180fcc956a67a"><span class="std std-ref">identification()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -614,7 +614,7 @@ than the actual tracing speed.</p>
 <p>The supplied string is not copied; just the pointer is saved, so the string must remain valid while the <a class="reference internal" href="#classstored_1_1_debugger"><span class="std std-ref">Debugger</span></a> has its pointer. So, it is fine to supply a string literal.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_debugger_1ab6203b1226153a94c9ba87ae88931d6a"><span class="std std-ref">version()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_debugger_1ab6203b1226153a94c9ba87ae88931d6a"><span class="std std-ref">version()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -659,7 +659,7 @@ than the actual tracing speed.</p>
 <dd><p>Adds a zero-terminated string to the given stream. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_debugger_1ae5984c100fffd78efdb1364d077bfbb8"><span class="std std-ref">stream(char, char const*, size_t)</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_debugger_1ae5984c100fffd78efdb1364d077bfbb8"><span class="std std-ref">stream(char, char const*, size_t)</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -674,7 +674,7 @@ than the actual tracing speed.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>s</strong> – the stream to append to, which is created if it does not exist yet </p></li>
 <li><p><strong>data</strong> – the data to be appended (which may include 0) </p></li>
-<li><p><strong>len</strong> – the length of <code class="docutils literal notranslate"><span class="pre">data</span></code> </p></li>
+<li><p><strong>len</strong> – the length of <code class="docutils literal notranslate"><span class="pre">data</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -691,7 +691,7 @@ than the actual tracing speed.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>buffer</strong> – an spm() allocated buffer with stream names </p></li>
-<li><p><strong>len</strong> – the length of the resulting <code class="docutils literal notranslate"><span class="pre">buffer</span></code> </p></li>
+<li><p><strong>len</strong> – the length of the resulting <code class="docutils literal notranslate"><span class="pre">buffer</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -721,7 +721,7 @@ than the actual tracing speed.</p>
 <p>Note that if after unmapping there is only one mapped store left, the prefixes are automatically dropped from all names.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_debugger_1ae9f2965b44b4549ee4d05a48477c7655"><span class="std std-ref">map()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_debugger_1ae9f2965b44b4549ee4d05a48477c7655"><span class="std std-ref">map()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -732,7 +732,7 @@ than the actual tracing speed.</p>
 <dd><p>Push the version string into the given response. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_debugger_1af6b6842d2ff19f0d9813fe379bf0d07a"><span class="std std-ref">setVersions()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_debugger_1af6b6842d2ff19f0d9813fe379bf0d07a"><span class="std std-ref">setVersions()</span></a></p>
 </div>
 </p>
 <dl class="field-list simple">
@@ -852,7 +852,7 @@ than the actual tracing speed.</p>
 <p>This is a type-independent base class of stored::DebugStore. For <a class="reference internal" href="#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>, this is the interface to access a specific store.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>stored::DebugStore </p>
+<p>stored::DebugStore</p>
 </div>
 </p>
 <p>Subclassed by stored::DebugStore&lt; Store &gt;</p>
@@ -865,7 +865,7 @@ than the actual tracing speed.</p>
 <p>It receives the name of the object, the corresponding <a class="reference internal" href="#classstored_1_1_debug_variant"><span class="std std-ref">stored::DebugVariant</span></a> of the object, and the <code class="docutils literal notranslate"><span class="pre">arg</span></code> value, as passed to <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_debug_store_base_1afe84fc6c67d903c78ea515da4b9a813a"><span class="std std-ref"><span class="pre">list()</span></span></a></code>.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_debug_store_base_1afe84fc6c67d903c78ea515da4b9a813a"><span class="std std-ref">stored::DebugStoreBase::list(ListCallbackArg*, void*, char const*) const</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_debug_store_base_1afe84fc6c67d903c78ea515da4b9a813a"><span class="std std-ref">stored::DebugStoreBase::list(ListCallbackArg*, void*, char const*) const</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -904,8 +904,8 @@ than the actual tracing speed.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>f</strong> – the callback to invoke </p></li>
-<li><p><strong>arg</strong> – an arbitrary argument to be passed to <code class="docutils literal notranslate"><span class="pre">f</span></code> </p></li>
-<li><p><strong>prefix</strong> – a prefix applied to the name passed to <code class="docutils literal notranslate"><span class="pre">f</span></code> </p></li>
+<li><p><strong>arg</strong> – an arbitrary argument to be passed to <code class="docutils literal notranslate"><span class="pre">f</span></code></p></li>
+<li><p><strong>prefix</strong> – a prefix applied to the name passed to <code class="docutils literal notranslate"><span class="pre">f</span></code></p></li>
 </ul>
 </dd>
 </dl>
@@ -917,7 +917,7 @@ than the actual tracing speed.</p>
 <dd><p>Returns the name of this store. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the name, which cannot be <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> </p>
+<dd class="field-odd"><p>the name, which cannot be <code class="docutils literal notranslate"><span class="pre">nullptr</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -968,7 +968,7 @@ than the actual tracing speed.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the number of bytes written into <code class="docutils literal notranslate"><span class="pre">dst</span></code> </p>
+<dd class="field-even"><p>the number of bytes written into <code class="docutils literal notranslate"><span class="pre">dst</span></code></p>
 </dd>
 </dl>
 </dd></dl>

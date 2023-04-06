@@ -4,23 +4,22 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>control &mdash; libstored 1.4.0-alpha documentation</title>
+  <title>control &mdash; libstored 1.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="meta" href="example_meta.html" />
+    <link rel="next" title="fibered" href="example_fibered.html" />
     <link rel="prev" title="concurrency" href="example_concurrency.html" /> 
 </head>
 
@@ -36,7 +35,7 @@
             libstored
           </a>
               <div class="version">
-                1.4.0.dev0
+                1.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -73,8 +72,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#store-reference">Store reference</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="example_meta.html">meta</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_fibered.html">fibered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_meta.html">meta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_pipes.html">pipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_zmqserver.html">zmqserver</a></li>
 </ul>
@@ -436,14 +436,14 @@
 <span class="p">{</span>
 <span class="w">	</span><span class="k">using</span><span class="w"> </span><span class="n">f_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">)(),</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Variable</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="p">,</span><span class="w"> </span><span class="n">ExampleControlStore</span><span class="o">&gt;&gt;</span><span class="p">;</span>
 
-<span class="w">	</span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">f_type</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">	</span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">f_type</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{{</span>
 <span class="w">		</span><span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">pid__evaluation_order</span><span class="p">},</span>
 <span class="w">		</span><span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">amp__evaluation_order</span><span class="p">},</span>
 <span class="w">		</span><span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">sine</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">sine__evaluation_order</span><span class="p">},</span>
 <span class="w">		</span><span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">pulse</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">pulse__evaluation_order</span><span class="p">},</span>
 <span class="w">		</span><span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">lowpass</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">lowpass__evaluation_order</span><span class="p">},</span>
 <span class="w">		</span><span class="n">f_type</span><span class="p">{</span><span class="o">&amp;</span><span class="n">ramp</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">ramp__evaluation_order</span><span class="p">},</span>
-<span class="w">	</span><span class="p">};</span>
+<span class="w">	</span><span class="p">}};</span>
 
 <span class="w">	</span><span class="n">std</span><span class="o">::</span><span class="n">stable_sort</span><span class="p">(</span><span class="n">fs</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">fs</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="p">[](</span><span class="n">f_type</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">f_type</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">get</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
@@ -1046,7 +1046,7 @@
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_control"><span class="std std-ref">stored::ExampleControl</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleControl : public stored::store&lt;ExampleControl, ExampleControlBase&gt;::type {
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleControl : public stored::store&lt;ExampleControl, ExampleControlBase&gt;::type {
     STORE_CLASS(ExampleControl, ExampleControlBase)
 public:
     // Your class implementation, such as:
@@ -1055,15 +1055,14 @@ public:
 };
 </pre></div>
 </div>
-</p>
 <p>Some compilers or tools may get confused by the inheritance using <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> or <code class="docutils literal notranslate"><span class="pre">stored::store_t</span></code>. Alternatively, use <code class="docutils literal notranslate"><span class="pre">STORE_T(...)</span></code> instead, providing the template parameters of <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> as macro arguments.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_example_control"><span class="std std-ref">stored::ExampleControl</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_example_control"><span class="std std-ref">stored::ExampleControl</span></a></p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>stored::ExampleControlData </p>
+<p>stored::ExampleControlData</p>
 </div>
 </p>
 <p>Subclassed by stored::QtifiedExampleControl&lt; ExampleControlBase&lt; QExampleControl &gt; &gt;</p>
@@ -1111,7 +1110,7 @@ public:
 <dd><p>Type of a key. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_example_control_base_1a0acf4e8f6e751525756ae7fdd25318c7"><span class="std std-ref">bufferToKey()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_example_control_base_1a0acf4e8f6e751525756ae7fdd25318c7"><span class="std std-ref">bufferToKey()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -1235,7 +1234,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_control_base_1a8c658d136e381cf06288a62094cafd02"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -1246,7 +1245,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_control_base_1a8c658d136e381cf06288a62094cafd02"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -1257,7 +1256,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_control_base_1a8c658d136e381cf06288a62094cafd02"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -1884,7 +1883,7 @@ public:
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="example_concurrency.html" class="btn btn-neutral float-left" title="concurrency" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="example_meta.html" class="btn btn-neutral float-right" title="meta" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="example_fibered.html" class="btn btn-neutral float-right" title="fibered" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

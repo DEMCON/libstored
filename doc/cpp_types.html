@@ -4,17 +4,16 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Types &mdash; libstored 1.4.0-alpha documentation</title>
+  <title>Types &mdash; libstored 1.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -36,7 +35,7 @@
             libstored
           </a>
               <div class="version">
-                1.4.0.dev0
+                1.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -57,6 +56,7 @@
 <li class="toctree-l2"><a class="reference internal" href="cpp_components.html">Components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html">Debugger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_directory.html">Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html">Pipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_poller.html">Poller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html">Protocol</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_synchronizer.html">Synchronizer</a></li>
@@ -178,11 +178,11 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dst</strong> – the buffer to write to </p></li>
-<li><p><strong>len</strong> – the length of <code class="docutils literal notranslate"><span class="pre">dst</span></code>, normally equal to <a class="reference internal" href="#classstored_1_1_function_1ab1f112f0d9b13eb56499284007003f23"><span class="std std-ref">size()</span></a> </p></li>
+<li><p><strong>len</strong> – the length of <code class="docutils literal notranslate"><span class="pre">dst</span></code>, normally equal to <a class="reference internal" href="#classstored_1_1_function_1ab1f112f0d9b13eb56499284007003f23"><span class="std std-ref">size()</span></a></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the number of bytes written to <code class="docutils literal notranslate"><span class="pre">dst</span></code> </p>
+<dd class="field-even"><p>the number of bytes written to <code class="docutils literal notranslate"><span class="pre">dst</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -246,11 +246,11 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>src</strong> – the buffer to read from </p></li>
-<li><p><strong>len</strong> – the length of <code class="docutils literal notranslate"><span class="pre">src</span></code>, normally equal to <a class="reference internal" href="#classstored_1_1_function_1ab1f112f0d9b13eb56499284007003f23"><span class="std std-ref">size()</span></a> </p></li>
+<li><p><strong>len</strong> – the length of <code class="docutils literal notranslate"><span class="pre">src</span></code>, normally equal to <a class="reference internal" href="#classstored_1_1_function_1ab1f112f0d9b13eb56499284007003f23"><span class="std std-ref">size()</span></a></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the number of bytes read from <code class="docutils literal notranslate"><span class="pre">src</span></code> </p>
+<dd class="field-even"><p>the number of bytes read from <code class="docutils literal notranslate"><span class="pre">src</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -511,7 +511,7 @@
 <dd><p>Calls the <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4_1a6602a2dc020b9f32d2daf10030124ea5"><span class="std std-ref"><span class="pre">entryRO()</span></span></a></code> hook of the container. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>your store’s <code class="docutils literal notranslate"><span class="pre">hookEntryRO()</span></code> </p>
+<p>your store’s <code class="docutils literal notranslate"><span class="pre">hookEntryRO()</span></code></p>
 </div>
 </p>
 </dd></dl>
@@ -522,7 +522,7 @@
 <dd><p>Calls the <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4_1a5220e699aa928711f2269cea15ee9caa"><span class="std std-ref"><span class="pre">entryX()</span></span></a></code> hook of the container. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>your store’s <code class="docutils literal notranslate"><span class="pre">hookEntryX()</span></code> </p>
+<p>your store’s <code class="docutils literal notranslate"><span class="pre">hookEntryX()</span></code></p>
 </div>
 </p>
 </dd></dl>
@@ -533,7 +533,7 @@
 <dd><p>Calls the <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4_1a5eb64c21db7a812f45046194ef417ad1"><span class="std std-ref"><span class="pre">exitRO()</span></span></a></code> hook of the container. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>your store’s <code class="docutils literal notranslate"><span class="pre">hookExitRO()</span></code> </p>
+<p>your store’s <code class="docutils literal notranslate"><span class="pre">hookExitRO()</span></code></p>
 </div>
 </p>
 </dd></dl>
@@ -544,7 +544,7 @@
 <dd><p>Calls the <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_variable_3_01_t_00_01_container_00_01true_01_4_1af266df33475502ef26a4b5699ea1f86b"><span class="std std-ref"><span class="pre">exitX()</span></span></a></code> hook of the container. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>your store’s <code class="docutils literal notranslate"><span class="pre">hookExitX()</span></code> </p>
+<p>your store’s <code class="docutils literal notranslate"><span class="pre">hookExitX()</span></code></p>
 </div>
 </p>
 </dd></dl>
@@ -758,7 +758,7 @@
 <dd><p>Gets the value. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_variant_1a9b160b7a25f5b42905cb62d21a00d6b3"><span class="std std-ref">get(void*, size_t) const</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_variant_1a9b160b7a25f5b42905cb62d21a00d6b3"><span class="std std-ref">get(void*, size_t) const</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -778,7 +778,7 @@
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the number of bytes written into <code class="docutils literal notranslate"><span class="pre">dst</span></code> </p>
+<dd class="field-even"><p>the number of bytes written into <code class="docutils literal notranslate"><span class="pre">dst</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -803,7 +803,7 @@
 <dd><p>Returns the key of this variable. </p>
 <p>Only call this function when it <a class="reference internal" href="#classstored_1_1_variant_1afccde2862bf07dd14538d9d38d503047"><span class="std std-ref">isVariable()</span></a>. <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>your store’s <code class="docutils literal notranslate"><span class="pre">bufferToKey()</span></code> </p>
+<p>your store’s <code class="docutils literal notranslate"><span class="pre">bufferToKey()</span></code></p>
 </div>
 </p>
 </dd></dl>
@@ -858,7 +858,7 @@
 <dd><p>Sets the value. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_variant_1ae2b23190df0feb33c9bed5d599790443"><span class="std std-ref">set(void const*, size_t)</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_variant_1ae2b23190df0feb33c9bed5d599790443"><span class="std std-ref">set(void const*, size_t)</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -878,7 +878,7 @@
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the number of bytes read from <code class="docutils literal notranslate"><span class="pre">src</span></code> </p>
+<dd class="field-even"><p>the number of bytes read from <code class="docutils literal notranslate"><span class="pre">src</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -952,7 +952,7 @@
 <p>It is not usable, until it is applied to a store. All member functions, except for <a class="reference internal" href="#classstored_1_1_variant_3_01void_01_4_1a526d8dc807f667127219708bec7113a6"><span class="std std-ref">apply()</span></a> are there to match the <a class="reference internal" href="#classstored_1_1_variant"><span class="std std-ref">Variant</span></a>’s interface, but are non-functional, as there is no container.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_variant_3_01void_01_4_1a526d8dc807f667127219708bec7113a6"><span class="std std-ref">apply()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_variant_3_01void_01_4_1a526d8dc807f667127219708bec7113a6"><span class="std std-ref">apply()</span></a></p>
 </div>
 </p>
 <div class="breathe-sectiondef docutils container">

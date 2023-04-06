@@ -4,17 +4,16 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>zmqserver &mdash; libstored 1.4.0-alpha documentation</title>
+  <title>zmqserver &mdash; libstored 1.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -35,7 +34,7 @@
             libstored
           </a>
               <div class="version">
-                1.4.0.dev0
+                1.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -67,8 +66,9 @@
 <li class="toctree-l2"><a class="reference internal" href="example_components.html">components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_concurrency.html">concurrency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_control.html">control</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_meta.html">meta</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_fibered.html">fibered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_meta.html">meta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_pipes.html">pipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">zmqserver</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#store-definition">Store definition</a></li>
@@ -228,9 +228,9 @@ string:15 a string
 
 <span class="w">	</span><span class="kt">void</span><span class="w"> </span><span class="n">__hookSet</span><span class="p">(</span><span class="n">stored</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">type</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">)</span>
 <span class="w">	</span><span class="p">{</span>
-<span class="w">		</span><span class="n">UNUSED</span><span class="p">(</span><span class="n">type</span><span class="p">)</span>
-<span class="w">		</span><span class="n">UNUSED</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span>
-<span class="w">		</span><span class="n">UNUSED</span><span class="p">(</span><span class="n">len</span><span class="p">)</span>
+<span class="w">		</span><span class="n">STORED_UNUSED</span><span class="p">(</span><span class="n">type</span><span class="p">)</span>
+<span class="w">		</span><span class="n">STORED_UNUSED</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span>
+<span class="w">		</span><span class="n">STORED_UNUSED</span><span class="p">(</span><span class="n">len</span><span class="p">)</span>
 <span class="w">		</span><span class="n">m_writes</span><span class="o">++</span><span class="p">;</span>
 <span class="w">	</span><span class="p">}</span>
 
@@ -462,7 +462,7 @@ string:15 a string
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_zmq_server_store"><span class="std std-ref">stored::ZmqServerStore</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ZmqServerStore : public stored::store&lt;ZmqServerStore, ZmqServerStoreBase&gt;::type {
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ZmqServerStore : public stored::store&lt;ZmqServerStore, ZmqServerStoreBase&gt;::type {
     STORE_CLASS(ZmqServerStore, ZmqServerStoreBase)
 public:
     // Your class implementation, such as:
@@ -471,45 +471,44 @@ public:
 };
 </pre></div>
 </div>
-</p>
 <p>Some compilers or tools may get confused by the inheritance using <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> or <code class="docutils literal notranslate"><span class="pre">stored::store_t</span></code>. Alternatively, use <code class="docutils literal notranslate"><span class="pre">STORE_T(...)</span></code> instead, providing the template parameters of <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> as macro arguments.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_zmq_server_store"><span class="std std-ref">stored::ZmqServerStore</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_zmq_server_store"><span class="std std-ref">stored::ZmqServerStore</span></a></p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>stored::ZmqServerStoreData </p>
+<p>stored::ZmqServerStoreData</p>
 </div>
 </p>
 <p>Subclassed by stored::QtifiedZmqServerStore&lt; ZmqServerStoreBase&lt; QZmqServerStore &gt; &gt;</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_56E">
-<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_56E"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a2a3055dfc5fe98a7de7b625dee6df9a5"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_56E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_57E">
+<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_57E"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a2351c719e07da45d95fd0b24f39b5a18"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_57E" title="Permalink to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_5611ObjectCountE">
-<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_5611ObjectCountE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a2a3055dfc5fe98a7de7b625dee6df9a5ab49110696541bcf3f1adfc1b7835390e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_5611ObjectCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_5711ObjectCountE">
+<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_5711ObjectCountE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a2351c719e07da45d95fd0b24f39b5a18ab49110696541bcf3f1adfc1b7835390e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_5711ObjectCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of objects in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_5613VariableCountE">
-<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_5613VariableCountE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a2a3055dfc5fe98a7de7b625dee6df9a5a32d81b9c8efef34f9e05b257ea273661"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_5613VariableCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_5713VariableCountE">
+<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_5713VariableCountE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a2351c719e07da45d95fd0b24f39b5a18a32d81b9c8efef34f9e05b257ea273661"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_5713VariableCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of variables in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_5613FunctionCountE">
-<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_5613FunctionCountE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a2a3055dfc5fe98a7de7b625dee6df9a5a5d97eec6df2600f53f4eefffa0ec92dc"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_5613FunctionCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_5713FunctionCountE">
+<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_5713FunctionCountE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a2351c719e07da45d95fd0b24f39b5a18a5d97eec6df2600f53f4eefffa0ec92dc"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_5713FunctionCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of functions in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_5610BufferSizeE">
-<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_5610BufferSizeE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a2a3055dfc5fe98a7de7b625dee6df9a5a293d1203a1fbc9ff54f9f2e82bdfd875"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_5610BufferSizeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored18ZmqServerStoreBaseUt2_5710BufferSizeE">
+<span id="_CPPv3N6stored18ZmqServerStoreBaseUt2_5710BufferSizeE"></span><span class="target" id="classstored_1_1_zmq_server_store_base_1a2351c719e07da45d95fd0b24f39b5a18a293d1203a1fbc9ff54f9f2e82bdfd875"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored18ZmqServerStoreBaseUt2_5710BufferSizeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Buffer size. </p>
 </dd></dl>
 
@@ -527,7 +526,7 @@ public:
 <dd><p>Type of a key. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_zmq_server_store_base_1aa8b838310333e993ab54443d8c6a14cf"><span class="std std-ref">bufferToKey()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_zmq_server_store_base_1aa8b838310333e993ab54443d8c6a14cf"><span class="std std-ref">bufferToKey()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -651,7 +650,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_zmq_server_store_base_1adb8d3dfbf2f2459615e88c871e3689a2"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -662,7 +661,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_zmq_server_store_base_1adb8d3dfbf2f2459615e88c871e3689a2"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -673,7 +672,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_zmq_server_store_base_1adb8d3dfbf2f2459615e88c871e3689a2"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>

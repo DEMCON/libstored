@@ -4,17 +4,16 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>concurrency &mdash; libstored 1.4.0-alpha documentation</title>
+  <title>concurrency &mdash; libstored 1.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -36,7 +35,7 @@
             libstored
           </a>
               <div class="version">
-                1.4.0.dev0
+                1.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -78,8 +77,9 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="example_control.html">control</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_meta.html">meta</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_fibered.html">fibered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_meta.html">meta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_pipes.html">pipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_zmqserver.html">zmqserver</a></li>
 </ul>
@@ -415,7 +415,7 @@ actual = 3
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_concurrency_main"><span class="std std-ref">stored::ExampleConcurrencyMain</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleConcurrencyMain : public stored::store&lt;ExampleConcurrencyMain, ExampleConcurrencyMainBase&gt;::type {
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleConcurrencyMain : public stored::store&lt;ExampleConcurrencyMain, ExampleConcurrencyMainBase&gt;::type {
     STORE_CLASS(ExampleConcurrencyMain, ExampleConcurrencyMainBase)
 public:
     // Your class implementation, such as:
@@ -424,15 +424,14 @@ public:
 };
 </pre></div>
 </div>
-</p>
 <p>Some compilers or tools may get confused by the inheritance using <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> or <code class="docutils literal notranslate"><span class="pre">stored::store_t</span></code>. Alternatively, use <code class="docutils literal notranslate"><span class="pre">STORE_T(...)</span></code> instead, providing the template parameters of <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> as macro arguments.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_example_concurrency_main"><span class="std std-ref">stored::ExampleConcurrencyMain</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_example_concurrency_main"><span class="std std-ref">stored::ExampleConcurrencyMain</span></a></p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>stored::ExampleConcurrencyMainData </p>
+<p>stored::ExampleConcurrencyMainData</p>
 </div>
 </p>
 <p>Subclassed by stored::QtifiedExampleConcurrencyMain&lt; ExampleConcurrencyMainBase&lt; QExampleConcurrencyMain &gt; &gt;</p>
@@ -480,7 +479,7 @@ public:
 <dd><p>Type of a key. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_example_concurrency_main_base_1a2d61cd2539ea43b4192a251adfd42a48"><span class="std std-ref">bufferToKey()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_example_concurrency_main_base_1a2d61cd2539ea43b4192a251adfd42a48"><span class="std std-ref">bufferToKey()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -562,7 +561,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_concurrency_main_base_1af6ae4a73d7b6594d108967b43517a222"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -573,7 +572,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_concurrency_main_base_1af6ae4a73d7b6594d108967b43517a222"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -584,7 +583,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_concurrency_main_base_1af6ae4a73d7b6594d108967b43517a222"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -759,7 +758,7 @@ public:
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_concurrency_control"><span class="std std-ref">stored::ExampleConcurrencyControl</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleConcurrencyControl : public stored::store&lt;ExampleConcurrencyControl, ExampleConcurrencyControlBase&gt;::type {
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleConcurrencyControl : public stored::store&lt;ExampleConcurrencyControl, ExampleConcurrencyControlBase&gt;::type {
     STORE_CLASS(ExampleConcurrencyControl, ExampleConcurrencyControlBase)
 public:
     // Your class implementation, such as:
@@ -768,15 +767,14 @@ public:
 };
 </pre></div>
 </div>
-</p>
 <p>Some compilers or tools may get confused by the inheritance using <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> or <code class="docutils literal notranslate"><span class="pre">stored::store_t</span></code>. Alternatively, use <code class="docutils literal notranslate"><span class="pre">STORE_T(...)</span></code> instead, providing the template parameters of <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> as macro arguments.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_example_concurrency_control"><span class="std std-ref">stored::ExampleConcurrencyControl</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_example_concurrency_control"><span class="std std-ref">stored::ExampleConcurrencyControl</span></a></p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>stored::ExampleConcurrencyControlData </p>
+<p>stored::ExampleConcurrencyControlData</p>
 </div>
 </p>
 <p>Subclassed by stored::QtifiedExampleConcurrencyControl&lt; ExampleConcurrencyControlBase&lt; QExampleConcurrencyControl &gt; &gt;</p>
@@ -824,7 +822,7 @@ public:
 <dd><p>Type of a key. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_example_concurrency_control_base_1a3a45267be1c1fb629428ae3ce1d4dcd9"><span class="std std-ref">bufferToKey()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_example_concurrency_control_base_1a3a45267be1c1fb629428ae3ce1d4dcd9"><span class="std std-ref">bufferToKey()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -906,7 +904,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_concurrency_control_base_1aaf3234d1bdfff4bdbb5b604101b02100"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -917,7 +915,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_concurrency_control_base_1aaf3234d1bdfff4bdbb5b604101b02100"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -928,7 +926,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_concurrency_control_base_1aaf3234d1bdfff4bdbb5b604101b02100"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>

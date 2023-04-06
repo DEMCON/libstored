@@ -4,17 +4,16 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Synchronizer &mdash; libstored 1.4.0-alpha documentation</title>
+  <title>Synchronizer &mdash; libstored 1.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -36,7 +35,7 @@
             libstored
           </a>
               <div class="version">
-                1.4.0.dev0
+                1.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -57,6 +56,7 @@
 <li class="toctree-l2"><a class="reference internal" href="cpp_components.html">Components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html">Debugger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_directory.html">Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html">Pipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_poller.html">Poller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html">Protocol</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Synchronizer</a><ul>
@@ -239,7 +239,7 @@ versions are defined for symmetry.</p>
 <p>A store has only one journal, via <a class="reference internal" href="#classstored_1_1_synchronizable"><span class="std std-ref">stored::Synchronizable</span></a>. Multiple instances of <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">stored::SyncConnection</span></a> use the same journal.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_synchronizable"><span class="std std-ref">stored::Synchronizable</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_synchronizable"><span class="std std-ref">stored::Synchronizable</span></a></p>
 </div>
 </p>
 <div class="breathe-sectiondef docutils container">
@@ -313,7 +313,7 @@ versions are defined for symmetry.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>hash</strong> – the hash of the store </p></li>
 <li><p><strong>buffer</strong> – the buffer of the store </p></li>
-<li><p><strong>size</strong> – the size of <code class="docutils literal notranslate"><span class="pre">buffer</span></code> </p></li>
+<li><p><strong>size</strong> – the size of <code class="docutils literal notranslate"><span class="pre">buffer</span></code></p></li>
 <li><p><strong>callback</strong> – the <a class="reference internal" href="#classstored_1_1_synchronizable_1_1_typed_store_callback"><span class="std std-ref">stored::Synchronizable::TypedStoreCallback</span></a> instance </p></li>
 </ul>
 </dd>
@@ -575,7 +575,7 @@ versions are defined for symmetry.</p>
 </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a></p>
 </div>
 </p>
 <div class="breathe-sectiondef docutils container">
@@ -601,7 +601,7 @@ versions are defined for symmetry.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>synchronizer</strong> – the <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a> that manages this connection </p></li>
-<li><p><strong>connection</strong> – the protocol stack that is to wrap this <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">SyncConnection</span></a> </p></li>
+<li><p><strong>connection</strong> – the protocol stack that is to wrap this <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">SyncConnection</span></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -691,7 +691,7 @@ versions are defined for symmetry.</p>
 <dd><p>An extension of a store to be used by the <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a>. </p>
 <p>Assume you have <code class="docutils literal notranslate"><span class="pre">MyStoreBase</span></code> (which takes a template parameter <code class="docutils literal notranslate"><span class="pre">Implementation</span></code>), and the actual store implementation <code class="docutils literal notranslate"><span class="pre">ActualStore</span></code>. If it does not have to be synchronizable, you would inherit <code class="docutils literal notranslate"><span class="pre">ActualStore</span></code> from <code class="docutils literal notranslate"><span class="pre">MyStoreBase&lt;ActualStore&gt;</span></code>.</p>
 <p>If it should be synchronizable, use <a class="reference internal" href="#classstored_1_1_synchronizable_1a83faa28fa20314195ebf74d740bf5524"><span class="std std-ref">Synchronizable</span></a> like this:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ActualStore : public stored::Synchronizable&lt;stored::MyStoreBase&lt;ActualStore&gt; &gt; {
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ActualStore : public stored::Synchronizable&lt;stored::MyStoreBase&lt;ActualStore&gt; &gt; {
     STORED_CLASS_NOCOPY(ActualStore)
 public:
     typedef stored::Synchronizable&lt;stored::MyStoreBase&lt;ActualStore&gt; &gt; base;
@@ -702,16 +702,14 @@ public:
 };
 </pre></div>
 </div>
-</p>
 <p>Or with a few macros:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ActualStore: public STORE_SYNC_BASE_CLASS(MyStoreBase, ActualStore) {
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ActualStore: public STORE_SYNC_BASE_CLASS(MyStoreBase, ActualStore) {
     STORE_SYNC_CLASS_BODY(MyStoreBase, ActualStore)
 public:
     ActualStore() is_default
 };
 </pre></div>
 </div>
-</p>
 <p>Now, <code class="docutils literal notranslate"><span class="pre">ActualStore</span></code> inherits from <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_synchronizable"><span class="std std-ref"><span class="pre">Synchronizable</span></span></a></code>, which inherits from <code class="docutils literal notranslate"><span class="pre">MyStoreBase</span></code>. However, <code class="docutils literal notranslate"><span class="pre">ActualStore</span></code> is still used as the final implementation. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>

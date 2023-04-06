@@ -4,17 +4,16 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Components &mdash; libstored 1.4.0-alpha documentation</title>
+  <title>Components &mdash; libstored 1.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -36,7 +35,7 @@
             libstored
           </a>
               <div class="version">
-                1.4.0.dev0
+                1.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -67,6 +66,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html">Debugger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_directory.html">Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html">Pipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_poller.html">Poller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html">Protocol</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_synchronizer.html">Synchronizer</a></li>
@@ -120,7 +120,7 @@ all store lookups in the directory are done at compile-time. You need C++14 (or 
 <dd><p>An offset/gain amplifier, based on store variables. </p>
 <p>This class comes in very handy when converting ADC inputs to some SI-value. It includes an override field to force inputs to some test value.</p>
 <p>To use this class, add a scope to your store, like:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
     float input
     bool=true enable
     float=1 gain
@@ -132,7 +132,6 @@ all store lookups in the directory are done at compile-time. You need C++14 (or 
 } amp
 </pre></div>
 </div>
-</p>
 <p>All fields are optional. All variables of type <code class="docutils literal notranslate"><span class="pre">float</span></code> can be any other type, as long as it matches the template parameter <code class="docutils literal notranslate"><span class="pre">T</span></code>.</p>
 <p>When not all fields are in the store, names may become ambiguous. For example, if override and output are not there, the store’s directory may resolve <code class="docutils literal notranslate"><span class="pre">o</span></code> to any of the three fields. In this case, you have to specify which fields are to be processed. For this, use the following ids:</p>
 <p><table class="docutils align-default">
@@ -170,29 +169,26 @@ all store lookups in the directory are done at compile-time. You need C++14 (or 
 </table>
 </p>
 <p>The amplifier basically does:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if(override is nan)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if(override is nan)
     output = min(high, max(low, input * gain + offset))
 else
     output = override
 </pre></div>
 </div>
-</p>
 <p>Then, instantiate the amplifier like this:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
 constexpr auto amp_o = stored::Amplifier&lt;stored::YourStore&gt;::objects(&quot;/amp/&quot;);
 
 // Instantiate an Amplifier, tailored to the available fields in the store.
 stored::Amplifier&lt;stored::YourStore, amp_o.flags()&gt; amp{amp_o, yourStore};
 </pre></div>
 </div>
-</p>
 <p>Or, for example when you know there are only the offset and gain fields in the store, and ambiguity must be resolved:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves only two fields in your store.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves only two fields in your store.
 constexpr auto amp_o = stored::Amplifier&lt;stored::YourStore&gt;::objects&lt;&#39;o&#39;,&#39;g&#39;&gt;(&quot;/amp/&quot;);
 stored::Amplifier&lt;stored::YourStore, amp_o.flags()&gt; amp{amp_o, yourStore};
 </pre></div>
 </div>
-</p>
 <p>Calling <code class="docutils literal notranslate"><span class="pre">amp()</span></code> now uses the <code class="docutils literal notranslate"><span class="pre">input</span></code> and produces the value in <code class="docutils literal notranslate"><span class="pre">output</span></code>. Alternatively, or when the <code class="docutils literal notranslate"><span class="pre">input</span></code> field is absent in the store, call <code class="docutils literal notranslate"><span class="pre">amp(x)</span></code>, where <code class="docutils literal notranslate"><span class="pre">x</span></code> is the input. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -412,7 +408,7 @@ stored::Amplifier&lt;stored::YourStore, amp_o.flags()&gt; amp{amp_o, yourStore};
 <span id="_CPPv3I0_b_y0EN6stored16FirstOrderFilterE"></span><span id="_CPPv2I0_b_y0EN6stored16FirstOrderFilterE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Container</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LowPass</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flags</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_first_order_filter"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FirstOrderFilter</span></span></span><a class="headerlink" href="#_CPPv4I0_b_y0EN6stored16FirstOrderFilterE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>First-order low- or high-pass filter, based on store variables. </p>
 <p>To use this class, add a scope to your store, like:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
     (float) sample frequency (Hz)
     float input
     float cutoff frequency (Hz)
@@ -423,10 +419,9 @@ stored::Amplifier&lt;stored::YourStore, amp_o.flags()&gt; amp{amp_o, yourStore};
 } filter
 </pre></div>
 </div>
-</p>
 <p>Only <code class="docutils literal notranslate"><span class="pre">sample</span> <span class="pre">frequency</span></code> and <code class="docutils literal notranslate"><span class="pre">cutoff</span> <span class="pre">frequency</span></code> are mandatory. All variables of type <code class="docutils literal notranslate"><span class="pre">float</span></code>, except for <code class="docutils literal notranslate"><span class="pre">sample</span> <span class="pre">frequency</span></code>, can be any other type, as long as it matches the template parameter <code class="docutils literal notranslate"><span class="pre">T</span></code>.</p>
 <p>Then, instantiate the controller like this:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
 constexpr auto filter_o = stored::LowPass&lt;stored::YourStore&gt;::objects(&quot;/filter/&quot;);
 
 // Instantiate the filter, tailored to the available fields in the store.
@@ -435,7 +430,6 @@ stored::LowPass&lt;stored::YourStore, filter_o.flags()&gt; filter{filter_o, your
 // ...or use HighPass instead of LowPass.
 </pre></div>
 </div>
-</p>
 <p>The cutoff frequency can be changed while running (by setting <code class="docutils literal notranslate"><span class="pre">reset</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code>). It will applied smoothly; the output will gradually take the new cutoff frequency into account. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -650,7 +644,7 @@ stored::LowPass&lt;stored::YourStore, filter_o.flags()&gt; filter{filter_o, your
 <span id="_CPPv3I0_y0EN6stored3PIDE"></span><span id="_CPPv2I0_y0EN6stored3PIDE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Container</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flags</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_p_i_d"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PID</span></span></span><a class="headerlink" href="#_CPPv4I0_y0EN6stored3PIDE" title="Permalink to this definition"></a><br /></dt>
 <dd><p><a class="reference internal" href="#classstored_1_1_p_i_d"><span class="std std-ref">PID</span></a> controller, based on store variables. </p>
 <p>To use this class, add a scope to your store, like:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
     (float) frequency (Hz)
     float y
     float setpoint
@@ -672,7 +666,6 @@ stored::LowPass&lt;stored::YourStore, filter_o.flags()&gt; filter{filter_o, your
 } pid
 </pre></div>
 </div>
-</p>
 <p>Only <code class="docutils literal notranslate"><span class="pre">frequency</span></code>, <code class="docutils literal notranslate"><span class="pre">setpoint</span></code>, and <code class="docutils literal notranslate"><span class="pre">Kp</span></code> are mandatory. All variables of type <code class="docutils literal notranslate"><span class="pre">float</span></code>, except for <code class="docutils literal notranslate"><span class="pre">frequency</span></code>, can be any other type, as long as it matches the template parameter <code class="docutils literal notranslate"><span class="pre">T</span></code>.</p>
 <p>It has the following objects:<ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">frequency:</span></code> the control frequency; the application must invoke the <a class="reference internal" href="#classstored_1_1_p_i_d"><span class="std std-ref">PID</span></a> controller at this frequency</p></li>
@@ -683,10 +676,10 @@ stored::LowPass&lt;stored::YourStore, filter_o.flags()&gt; filter{filter_o, your
 <li><p><code class="docutils literal notranslate"><span class="pre">Td:</span></code> D time constant</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Kff:</span></code> feed-forward coefficient</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">int:</span></code> current integral value</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">low</span></code>: lower bound for <code class="docutils literal notranslate"><span class="pre">int</span></code> </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">high</span></code>: upper bound for <code class="docutils literal notranslate"><span class="pre">int</span></code> </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">low:</span></code> lower bound for computed <code class="docutils literal notranslate"><span class="pre">u</span></code> </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">high:</span></code> upper bound for computed <code class="docutils literal notranslate"><span class="pre">u</span></code> </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">low</span></code>: lower bound for <code class="docutils literal notranslate"><span class="pre">int</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">high</span></code>: upper bound for <code class="docutils literal notranslate"><span class="pre">int</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">low:</span></code> lower bound for computed <code class="docutils literal notranslate"><span class="pre">u</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">high:</span></code> upper bound for computed <code class="docutils literal notranslate"><span class="pre">u</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">epsilon:</span></code> minimum value of the error ( | <code class="docutils literal notranslate"><span class="pre">setpoint</span></code> - <code class="docutils literal notranslate"><span class="pre">y</span></code> | ), which must result in a change of the output <code class="docutils literal notranslate"><span class="pre">u</span></code>. Otherwise, numerical stability is compromised. See <a class="reference internal" href="#classstored_1_1_p_i_d_1a3b76b3bd1de9a90cf65be71615957e4d"><span class="std std-ref">isHealthy()</span></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">reset:</span></code> when set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, recompute and apply changed control parameters</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">override:</span></code> when not NaN, force <code class="docutils literal notranslate"><span class="pre">u</span></code> to this value, without <code class="docutils literal notranslate"><span class="pre">low</span></code> and <code class="docutils literal notranslate"><span class="pre">high</span></code> applied</p></li>
@@ -694,14 +687,13 @@ stored::LowPass&lt;stored::YourStore, filter_o.flags()&gt; filter{filter_o, your
 </ul>
 </p>
 <p>Then, instantiate the controller like this:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
 constexpr auto pid_o = stored::PID&lt;stored::YourStore&gt;::objects(&quot;/pid/&quot;);
 
 // Instantiate a PID, tailored to the available fields in the store.
 stored::PID&lt;stored::YourStore, pid_o.flags()&gt; pid{pid_o, yourStore};
 </pre></div>
 </div>
-</p>
 <p>The <a class="reference internal" href="#classstored_1_1_p_i_d"><span class="std std-ref">PID</span></a> controller has the following properties:</p>
 <p><ul class="simple">
 <li><p>The parameters specify a serial <a class="reference internal" href="#classstored_1_1_p_i_d"><span class="std std-ref">PID</span></a>.</p></li>
@@ -1126,7 +1118,7 @@ stored::PID&lt;stored::YourStore, pid_o.flags()&gt; pid{pid_o, yourStore};
 <dd><p>An GPIO input pin, based on store variables. </p>
 <p>This class comes in very handy when a GPIO input should be observed and overridden while debugging. It gives some interface between the hardware pin and the input that the application sees.</p>
 <p>To use this class, add a scope to your store, like:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
     (bool) pin
     int8=-1 override
     bool input
@@ -1134,10 +1126,9 @@ stored::PID&lt;stored::YourStore, pid_o.flags()&gt; pid{pid_o, yourStore};
 } pin
 </pre></div>
 </div>
-</p>
 <p>All fields are optional. You can implement the store’s <code class="docutils literal notranslate"><span class="pre">pin</span></code> function, override the virtual <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_pin_in_1a9217ebb0c27b5592d380f72fb38414c2"><span class="std std-ref"><span class="pre">pin()</span></span></a></code> function of the <a class="reference internal" href="#classstored_1_1_pin_in"><span class="std std-ref">PinIn</span></a> class, or pass the hardware pin value as an argument to the PinIn::operator().</p>
 <p>The pin basically does:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>switch(override) {
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>switch(override) {
 case -1: input = pin; break;
 case  0: input = false; break;
 case  1: input = true; break;
@@ -1145,16 +1136,14 @@ case  2: input = !pin; break;
 }
 </pre></div>
 </div>
-</p>
 <p>Then, instantiate the pin like this:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
 constexpr auto pin_o = stored::PinIn&lt;stored::YourStore&gt;::objects(&quot;/pin/&quot;);
 
 // Instantiate an PinIn, tailored to the available fields in the store.
 stored::PinIn&lt;stored::YourStore, pin_o.flags()&gt; pin{pin_o, yourStore};
 </pre></div>
 </div>
-</p>
 <p>When <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_pin_in_1a9217ebb0c27b5592d380f72fb38414c2"><span class="std std-ref"><span class="pre">pin()</span></span></a></code> is called, it will invoke the <code class="docutils literal notranslate"><span class="pre">pin</span></code> function to get the actual hardware pin status. Then, it will set the <code class="docutils literal notranslate"><span class="pre">input</span></code> variable.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">get</span></code> function is not used/provided by this <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_pin_in"><span class="std std-ref"><span class="pre">PinIn</span></span></a></code>. Implement this store function such that it calls and returns <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_pin_in_1a9217ebb0c27b5592d380f72fb38414c2"><span class="std std-ref"><span class="pre">pin()</span></span></a></code>. When applications read the <code class="docutils literal notranslate"><span class="pre">get</span></code> function, they will always get the appropriate/actual pin value. </p>
 <div class="breathe-sectiondef docutils container">
@@ -1268,7 +1257,7 @@ stored::PinIn&lt;stored::YourStore, pin_o.flags()&gt; pin{pin_o, yourStore};
 <dd><p>An GPIO output pin, based on store variables. </p>
 <p>This class comes in very handy when a GPIO output should be observed and overridden while debugging. It gives some interface between the hardware pin and the output that the application wants.</p>
 <p>To use this class, add a scope to your store, like:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
     (bool) set
     bool output
     (int8) override
@@ -1276,10 +1265,9 @@ stored::PinIn&lt;stored::YourStore, pin_o.flags()&gt; pin{pin_o, yourStore};
 } pin
 </pre></div>
 </div>
-</p>
 <p>All fields are optional, except <code class="docutils literal notranslate"><span class="pre">output</span></code>. You can implement the store’s <code class="docutils literal notranslate"><span class="pre">pin</span></code> function, override the virtual <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_pin_out_1a4ca9a656489d67604bea213df687a986"><span class="std std-ref"><span class="pre">pin()</span></span></a></code> function of the <a class="reference internal" href="#classstored_1_1_pin_out"><span class="std std-ref">PinOut</span></a> class, or forward the return value of PinOut::operator() to the hardware pin.</p>
 <p>The pin basically does:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>switch(override) {
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>switch(override) {
 case -1: pin = output; break;
 case  0: pin = false; break;
 case  1: pin = true; break;
@@ -1287,16 +1275,14 @@ case  2: pin = !output; break;
 }
 </pre></div>
 </div>
-</p>
 <p>Then, instantiate the pin like this:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
 constexpr auto pin_o = stored::PinOut&lt;stored::YourStore&gt;::objects(&quot;/pin/&quot;);
 
 // Instantiate an PinOut, tailored to the available fields in the store.
 stored::PinOut&lt;stored::YourStore, pin_o.flags()&gt; pin{pin_o, yourStore};
 </pre></div>
 </div>
-</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">set</span></code> function is not used/provided by this <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_pin_out"><span class="std std-ref"><span class="pre">PinOut</span></span></a></code>. Implement this store function such that it calls <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_pin_out_1a4ca9a656489d67604bea213df687a986"><span class="std std-ref"><span class="pre">pin()</span></span></a></code> with the provided value. When applications write the <code class="docutils literal notranslate"><span class="pre">set</span></code> function, they will immediately control the hardware pin.</p>
 <p>Similar holds for the <code class="docutils literal notranslate"><span class="pre">override</span></code> function; implement it to call the <a class="reference internal" href="#classstored_1_1_pin_out_1a05fc7cd86cc419a60257fa7a4aca8ce4"><span class="std std-ref">override_()</span></a> of <a class="reference internal" href="#classstored_1_1_pin_out"><span class="std std-ref">PinOut</span></a>. This way, if one sets the override value, the hardware pin is updated accordingly. </p>
 <div class="breathe-sectiondef docutils container">
@@ -1403,7 +1389,7 @@ stored::PinOut&lt;stored::YourStore, pin_o.flags()&gt; pin{pin_o, yourStore};
 <span id="_CPPv3I0_y0EN6stored9PulseWaveE"></span><span id="_CPPv2I0_y0EN6stored9PulseWaveE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Container</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flags</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_pulse_wave"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PulseWave</span></span></span><a class="headerlink" href="#_CPPv4I0_y0EN6stored9PulseWaveE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Pulse wave generator, based on store variables. </p>
 <p>To use this class, add a scope to your store, like:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
     (float) sample frequency (Hz)
     float=1 amplitude
     float=1 frequency (Hz)
@@ -1415,7 +1401,6 @@ stored::PinOut&lt;stored::YourStore, pin_o.flags()&gt; pin{pin_o, yourStore};
 } pulse
 </pre></div>
 </div>
-</p>
 <p>Only <code class="docutils literal notranslate"><span class="pre">sample</span> <span class="pre">frequency</span></code> is mandatory. All variables of type <code class="docutils literal notranslate"><span class="pre">float</span></code>, except for <code class="docutils literal notranslate"><span class="pre">sample</span> <span class="pre">frequency</span></code>, can be any other type, as long as it matches the template parameter <code class="docutils literal notranslate"><span class="pre">T</span></code>.</p>
 <p>When either <code class="docutils literal notranslate"><span class="pre">override</span></code> or <code class="docutils literal notranslate"><span class="pre">output</span></code> is omitted, names may become ambiguous. In that case, provide the ids of the fields that are in the store, as template parameters to <a class="reference internal" href="#classstored_1_1_pulse_wave_1a636d77acdcc983b4175f4faadab2008c"><span class="std std-ref">objects()</span></a>:</p>
 <p><table class="docutils align-default">
@@ -1453,14 +1438,13 @@ stored::PinOut&lt;stored::YourStore, pin_o.flags()&gt; pin{pin_o, yourStore};
 </table>
 </p>
 <p>Then, instantiate the controller like this:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
 constexpr auto pulse_o = stored::PulseWave&lt;stored::YourStore&gt;::objects(&quot;/pulse/&quot;);
 
 // Instantiate the generator, tailored to the available fields in the store.
 stored::PulseWave&lt;stored::YourStore, pulse_o.flags()&gt; pulse{pulse_o, yourStore};
 </pre></div>
 </div>
- </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
@@ -1676,7 +1660,7 @@ stored::PulseWave&lt;stored::YourStore, pulse_o.flags()&gt; pulse{pulse_o, yourS
 <dd><p>Ramping setpoints, based on store variables. </p>
 <p>This is a quadratic path planner, that creates a smooth path from the current output towards the provided input. The speed and acceleration can be limited.</p>
 <p>To use this class, add a scope to your store, like:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
     (float) sample frequency (Hz)
     float input
     float=inf speed limit
@@ -1688,17 +1672,15 @@ stored::PulseWave&lt;stored::YourStore, pulse_o.flags()&gt; pulse{pulse_o, yourS
 } ramp
 </pre></div>
 </div>
-</p>
 <p>Only <code class="docutils literal notranslate"><span class="pre">sample</span> <span class="pre">frequency</span></code> is mandatory. All variables of type <code class="docutils literal notranslate"><span class="pre">float</span></code>, except for <code class="docutils literal notranslate"><span class="pre">sample</span> <span class="pre">frequency</span></code>, can be any other type, as long as it matches the template parameter <code class="docutils literal notranslate"><span class="pre">T</span></code>.</p>
 <p>Then, instantiate the controller like this:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
 constexpr auto ramp_o = stored::Ramp&lt;stored::YourStore&gt;::objects(&quot;/ramp/&quot;);
 
 // Instantiate the generator, tailored to the available fields in the store.
 stored::Ramp&lt;stored::YourStore, ramp_o.flags()&gt; ramp{ramp_o, yourStore};
 </pre></div>
 </div>
-</p>
 <p>The parameters can be changed while running (when <code class="docutils literal notranslate"><span class="pre">reset</span></code> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>). The change will be applied smoothly to the path. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -1925,7 +1907,7 @@ stored::Ramp&lt;stored::YourStore, ramp_o.flags()&gt; ramp{ramp_o, yourStore};
 <span id="_CPPv3I0_y0EN6stored4SineE"></span><span id="_CPPv2I0_y0EN6stored4SineE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Container</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flags</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_sine"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Sine</span></span></span><a class="headerlink" href="#_CPPv4I0_y0EN6stored4SineE" title="Permalink to this definition"></a><br /></dt>
 <dd><p><a class="reference internal" href="#classstored_1_1_sine"><span class="std std-ref">Sine</span></a> wave generator, based on store variables. </p>
 <p>To use this class, add a scope to your store, like:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
     (float) sample frequency (Hz)
     float=1 amplitude
     float=0.159 frequency (Hz)
@@ -1937,7 +1919,6 @@ stored::Ramp&lt;stored::YourStore, ramp_o.flags()&gt; ramp{ramp_o, yourStore};
 } sine
 </pre></div>
 </div>
-</p>
 <p>Only <code class="docutils literal notranslate"><span class="pre">sample</span> <span class="pre">frequency</span></code> is mandatory. All variables of type <code class="docutils literal notranslate"><span class="pre">float</span></code>, except for <code class="docutils literal notranslate"><span class="pre">sample</span> <span class="pre">frequency</span></code>, can be any other type, as long as it matches the template parameter <code class="docutils literal notranslate"><span class="pre">T</span></code>.</p>
 <p>When either <code class="docutils literal notranslate"><span class="pre">override</span></code> or <code class="docutils literal notranslate"><span class="pre">output</span></code> is omitted, names may become ambiguous. In that case, provide the ids of the fields that are in the store, as template parameters to <a class="reference internal" href="#classstored_1_1_sine_1af1ee7e2cfd524563b62373545de875b7"><span class="std std-ref">objects()</span></a>:</p>
 <p><table class="docutils align-default">
@@ -1975,14 +1956,13 @@ stored::Ramp&lt;stored::YourStore, ramp_o.flags()&gt; ramp{ramp_o, yourStore};
 </table>
 </p>
 <p>Then, instantiate the sine wave generator like this:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Construct a compile-time object, which resolves all fields in your store.
 constexpr auto sine_o = stored::Sine&lt;stored::YourStore&gt;::objects(&quot;/sine/&quot;);
 
 // Instantiate the generator, tailored to the available fields in the store.
 stored::Sine&lt;stored::YourStore, sine_o.flags()&gt; sine{sine_o, yourStore};
 </pre></div>
 </div>
-</p>
 <p>When the parameters of the sine wave are changed while running, they are applied immediately, without a smooth transition. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>

@@ -4,17 +4,16 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Protocol &mdash; libstored 1.4.0-alpha documentation</title>
+  <title>Protocol &mdash; libstored 1.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -36,7 +35,7 @@
             libstored
           </a>
               <div class="version">
-                1.4.0.dev0
+                1.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -57,6 +56,7 @@
 <li class="toctree-l2"><a class="reference internal" href="cpp_components.html">Components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html">Debugger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_directory.html">Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html">Pipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_poller.html">Poller</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Protocol</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#stored-asciiescapelayer">stored::AsciiEscapeLayer</a></li>
@@ -371,12 +371,11 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <span id="_CPPv3I00EN6stored13CallbackLayerE"></span><span id="_CPPv2I00EN6stored13CallbackLayerE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Up</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Down</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_callback_layer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CallbackLayer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><a class="headerlink" href="#_CPPv4I00EN6stored13CallbackLayerE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Callback class that invokes a callback for every messages through the stack. </p>
 <p>Use as follows:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>auto cb = stored::make_callback(
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>auto cb = stored::make_callback(
               [&amp;](void*, size_t){ ... },
               [&amp;](void const&amp;, size_t, bool){ ... });
 </pre></div>
 </div>
-</p>
 <p>The first argument (a lambda in the example above), gets the parameters as passed to <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_callback_layer_1aa71d573905babc6ac489554eca47a5b2"><span class="std std-ref"><span class="pre">decode()</span></span></a></code>. The second argument get the parameters as passed to <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_protocol_layer_1a66c24cec6a17c44fac68213d358a5aa8"><span class="std std-ref"><span class="pre">encode()</span></span></a></code>. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -837,7 +836,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <p>The given <code class="docutils literal notranslate"><span class="pre">port</span></code> used for a REQ/REP socket over TCP. This is the listening side, where a client like the <code class="docutils literal notranslate"><span class="pre">libstored.gui</span></code> can connect to.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a> </p>
+<p><a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -922,7 +921,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dd><p>Try to receive and decode data. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>0 on success, otherwise an <code class="docutils literal notranslate"><span class="pre">errno</span></code> </p>
+<dd class="field-odd"><p>0 on success, otherwise an <code class="docutils literal notranslate"><span class="pre">errno</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1062,7 +1061,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <p>When the FIFO is full and new messages are dropped, the <a class="reference internal" href="#classstored_1_1_fifo_loopback1_1ab6ab82116881de5dc3eb6c9260ab1d6c"><span class="std std-ref">overflow()</span></a> is invoked. As long as it returns <code class="docutils literal notranslate"><span class="pre">true</span></code>, the FIFO push is retried.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_fifo_loopback1_1ac47f03a2f805e53dadcd2b19c4ecde98"><span class="std std-ref">setOverflowHandler()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_fifo_loopback1_1ac47f03a2f805e53dadcd2b19c4ecde98"><span class="std std-ref">setOverflowHandler()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -1091,7 +1090,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <p>If no callback is set, <a class="reference internal" href="#classstored_1_1_polled_layer_1a5f93b36636abab8f4cacb5f1b4fbcd82"><span class="std std-ref">lastError()</span></a> is set to <code class="docutils literal notranslate"><span class="pre">ENOMEM</span></code>, and <code class="docutils literal notranslate"><span class="pre">false</span></code> is returned. This flag is only reset by <a class="reference internal" href="#classstored_1_1_fifo_loopback1_1abab48eaa4ab02b0fab6489aca3000ddc"><span class="std std-ref">reset()</span></a>.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_fifo_loopback1_1ac47f03a2f805e53dadcd2b19c4ecde98"><span class="std std-ref">setOverflowHandler()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_fifo_loopback1_1ac47f03a2f805e53dadcd2b19c4ecde98"><span class="std std-ref">setOverflowHandler()</span></a></p>
 </div>
 </p>
 <dl class="field-list simple">
@@ -1452,7 +1451,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <p>If <code class="docutils literal notranslate"><span class="pre">f</span></code> is <code class="docutils literal notranslate"><span class="pre">nullptr</span></code>, printing is suppressed. The name is used as prefix of the printed messages.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_print_layer_1aea312a1d43697789e614a761927288f9"><span class="std std-ref">setFile()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_print_layer_1aea312a1d43697789e614a761927288f9"><span class="std std-ref">setFile()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -1712,7 +1711,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dd><p>Try to receive and decode data. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>0 on success, otherwise an <code class="docutils literal notranslate"><span class="pre">errno</span></code> </p>
+<dd class="field-odd"><p>0 on success, otherwise an <code class="docutils literal notranslate"><span class="pre">errno</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1744,7 +1743,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <p>The given <code class="docutils literal notranslate"><span class="pre">endpoint</span></code> is used for a PAIR socket. If <code class="docutils literal notranslate"><span class="pre">listen</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>, it binds to the endpoint, otherwise it connects to it.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a> </p>
+<p><a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -1915,7 +1914,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dd><p>Try to receive and decode data. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>0 on success, otherwise an <code class="docutils literal notranslate"><span class="pre">errno</span></code> </p>
+<dd class="field-odd"><p>0 on success, otherwise an <code class="docutils literal notranslate"><span class="pre">errno</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2057,7 +2056,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <p>To use the function, first call <a class="reference internal" href="#classstored_1_1_arq_layer_1ad385593c1549539ec000943046860404"><span class="std std-ref">resetDidTransmit()</span></a>, then execute the code you want to check, and then check <a class="reference internal" href="#classstored_1_1_arq_layer_1a72a34dd87ec3fcee83db2a44f7e8a8e5"><span class="std std-ref">didTransmit()</span></a>.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_arq_layer_1ad385593c1549539ec000943046860404"><span class="std std-ref">resetDidTransmit()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_arq_layer_1ad385593c1549539ec000943046860404"><span class="std std-ref">resetDidTransmit()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -2112,7 +2111,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dd><p>Reset the flag for <a class="reference internal" href="#classstored_1_1_arq_layer_1a72a34dd87ec3fcee83db2a44f7e8a8e5"><span class="std std-ref">didTransmit()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_arq_layer_1a72a34dd87ec3fcee83db2a44f7e8a8e5"><span class="std std-ref">didTransmit()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_arq_layer_1a72a34dd87ec3fcee83db2a44f7e8a8e5"><span class="std std-ref">didTransmit()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -2255,7 +2254,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dd><p>Try to receive and decode data. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>0 on success, otherwise an <code class="docutils literal notranslate"><span class="pre">errno</span></code> </p>
+<dd class="field-odd"><p>0 on success, otherwise an <code class="docutils literal notranslate"><span class="pre">errno</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2363,7 +2362,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dd><p>Change the layer that receives our encoded frames. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>down</strong> – the layer, which can be <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> </p>
+<dd class="field-odd"><p><strong>down</strong> – the layer, which can be <code class="docutils literal notranslate"><span class="pre">nullptr</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2382,7 +2381,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dd><p>Change the layer that receives our decoded frames. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>up</strong> – the layer, which can be <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> </p>
+<dd class="field-odd"><p><strong>up</strong> – the layer, which can be <code class="docutils literal notranslate"><span class="pre">nullptr</span></code></p>
 </dd>
 </dl>
 </dd></dl>

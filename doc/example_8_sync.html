@@ -4,17 +4,16 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>8_sync &mdash; libstored 1.4.0-alpha documentation</title>
+  <title>8_sync &mdash; libstored 1.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -36,7 +35,7 @@
             libstored
           </a>
               <div class="version">
-                1.4.0.dev0
+                1.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -77,8 +76,9 @@
 <li class="toctree-l2"><a class="reference internal" href="example_components.html">components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_concurrency.html">concurrency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_control.html">control</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_meta.html">meta</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_fibered.html">fibered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_meta.html">meta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_pipes.html">pipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_zmqserver.html">zmqserver</a></li>
 </ul>
@@ -401,7 +401,7 @@ bool b
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleSync1Objects17sync_ExampleSync2E">
 <span id="_CPPv3N6stored19ExampleSync1Objects17sync_ExampleSync2E"></span><span id="_CPPv2N6stored19ExampleSync1Objects17sync_ExampleSync2E"></span><span id="stored::ExampleSync1Objects::sync_ExampleSync2__impl::StoreFunction:Base.Implementation.ExampleSync1FunctionMap.1u:"></span><span class="target" id="classstored_1_1_example_sync1_objects_1aadc7566e9534b1ab604fae521f2b65a8"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreFunction</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored19ExampleSync1Objects4BaseE" title="stored::ExampleSync1Objects::Base"><span class="n"><span class="pre">Base</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored19ExampleSync1Objects14ImplementationE" title="stored::ExampleSync1Objects::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">ExampleSync1FunctionMap</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1u</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sync_ExampleSync2</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleSync1Objects17sync_ExampleSync2E" title="Permalink to this definition"></a><br /></dt>
-<dd><p>sync <a class="reference internal" href="#classstored_1_1_example_sync2"><span class="std std-ref">ExampleSync2</span></a> </p>
+<dd><p>sync <a class="reference internal" href="#classstored_1_1_example_sync2"><span class="std std-ref">ExampleSync2</span></a></p>
 </dd></dl>
 
 </div>
@@ -414,7 +414,7 @@ bool b
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_sync1"><span class="std std-ref">stored::ExampleSync1</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleSync1 : public stored::store&lt;ExampleSync1, ExampleSync1Base&gt;::type {
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleSync1 : public stored::store&lt;ExampleSync1, ExampleSync1Base&gt;::type {
     STORE_CLASS(ExampleSync1, ExampleSync1Base)
 public:
     // Your class implementation, such as:
@@ -423,15 +423,14 @@ public:
 };
 </pre></div>
 </div>
-</p>
 <p>Some compilers or tools may get confused by the inheritance using <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> or <code class="docutils literal notranslate"><span class="pre">stored::store_t</span></code>. Alternatively, use <code class="docutils literal notranslate"><span class="pre">STORE_T(...)</span></code> instead, providing the template parameters of <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> as macro arguments.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_example_sync1"><span class="std std-ref">stored::ExampleSync1</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_example_sync1"><span class="std std-ref">stored::ExampleSync1</span></a></p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>stored::ExampleSync1Data </p>
+<p>stored::ExampleSync1Data</p>
 </div>
 </p>
 <p>Subclassed by stored::QtifiedExampleSync1&lt; ExampleSync1Base&lt; QExampleSync1 &gt; &gt;</p>
@@ -479,7 +478,7 @@ public:
 <dd><p>Type of a key. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_example_sync1_base_1a28115b3d64382db631bf158fa926f2f3"><span class="std std-ref">bufferToKey()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_example_sync1_base_1a28115b3d64382db631bf158fa926f2f3"><span class="std std-ref">bufferToKey()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -567,7 +566,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_sync1_base_1a310a10eb9c40ae8e351866233e3962df"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -578,7 +577,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_sync1_base_1a310a10eb9c40ae8e351866233e3962df"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -589,7 +588,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_sync1_base_1a310a10eb9c40ae8e351866233e3962df"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -645,7 +644,7 @@ public:
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored16ExampleSync1Base17sync_ExampleSync2E">
 <span id="_CPPv3N6stored16ExampleSync1Base17sync_ExampleSync2E"></span><span id="_CPPv2N6stored16ExampleSync1Base17sync_ExampleSync2E"></span><span id="stored::ExampleSync1Base::sync_ExampleSync2__impl::StoreFunction:Base.Implementation.ExampleSync1FunctionMap.1u:"></span><span class="target" id="classstored_1_1_example_sync1_base_1aadc7566e9534b1ab604fae521f2b65a8"></span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">StoreFunction</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Base</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored16ExampleSync1Base14ImplementationE" title="stored::ExampleSync1Base::Implementation"><span class="n"><span class="pre">Implementation</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">ExampleSync1FunctionMap</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1u</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sync_ExampleSync2</span></span></span><a class="headerlink" href="#_CPPv4N6stored16ExampleSync1Base17sync_ExampleSync2E" title="Permalink to this definition"></a><br /></dt>
-<dd><p>sync <a class="reference internal" href="#classstored_1_1_example_sync2"><span class="std std-ref">ExampleSync2</span></a> </p>
+<dd><p>sync <a class="reference internal" href="#classstored_1_1_example_sync2"><span class="std std-ref">ExampleSync2</span></a></p>
 </dd></dl>
 
 </div>
@@ -764,7 +763,7 @@ public:
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_sync2"><span class="std std-ref">stored::ExampleSync2</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleSync2 : public stored::store&lt;ExampleSync2, ExampleSync2Base&gt;::type {
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleSync2 : public stored::store&lt;ExampleSync2, ExampleSync2Base&gt;::type {
     STORE_CLASS(ExampleSync2, ExampleSync2Base)
 public:
     // Your class implementation, such as:
@@ -773,15 +772,14 @@ public:
 };
 </pre></div>
 </div>
-</p>
 <p>Some compilers or tools may get confused by the inheritance using <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> or <code class="docutils literal notranslate"><span class="pre">stored::store_t</span></code>. Alternatively, use <code class="docutils literal notranslate"><span class="pre">STORE_T(...)</span></code> instead, providing the template parameters of <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> as macro arguments.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_example_sync2"><span class="std std-ref">stored::ExampleSync2</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_example_sync2"><span class="std std-ref">stored::ExampleSync2</span></a></p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>stored::ExampleSync2Data </p>
+<p>stored::ExampleSync2Data</p>
 </div>
 </p>
 <p>Subclassed by stored::QtifiedExampleSync2&lt; ExampleSync2Base&lt; QExampleSync2 &gt; &gt;</p>
@@ -829,7 +827,7 @@ public:
 <dd><p>Type of a key. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_example_sync2_base_1a77ff42de24a3643448b63688155be195"><span class="std std-ref">bufferToKey()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_example_sync2_base_1a77ff42de24a3643448b63688155be195"><span class="std std-ref">bufferToKey()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -911,7 +909,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_sync2_base_1ac97ee1bec74cd0dbd8b4e5214d90bb46"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -922,7 +920,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_sync2_base_1ac97ee1bec74cd0dbd8b4e5214d90bb46"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -933,7 +931,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_sync2_base_1ac97ee1bec74cd0dbd8b4e5214d90bb46"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>

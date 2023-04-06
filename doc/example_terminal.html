@@ -4,24 +4,23 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>terminal &mdash; libstored 1.4.0-alpha documentation</title>
+  <title>terminal &mdash; libstored 1.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="zmqserver" href="example_zmqserver.html" />
-    <link rel="prev" title="fibered" href="example_fibered.html" /> 
+    <link rel="prev" title="pipes" href="example_pipes.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -36,7 +35,7 @@
             libstored
           </a>
               <div class="version">
-                1.4.0.dev0
+                1.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -68,8 +67,9 @@
 <li class="toctree-l2"><a class="reference internal" href="example_components.html">components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_concurrency.html">concurrency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_control.html">control</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_meta.html">meta</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_fibered.html">fibered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_meta.html">meta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_pipes.html">pipes</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">terminal</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#store-definition">Store definition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#application">Application</a></li>
@@ -265,7 +265,7 @@ int32 oh gosh
 <p>Although there are no virtual functions in the base class, subclasses can override them. The (lowest) subclass must pass the <code class="docutils literal notranslate"><span class="pre">Implementation_</span></code> template paramater to its base, such that all calls from the base class can be directed to the proper overridden implementation.</p>
 <p>The base class cannot be instantiated. If a default implementation is required, which does not have side effects to functions, instantiate <a class="reference internal" href="#classstored_1_1_example_terminal"><span class="std std-ref">stored::ExampleTerminal</span></a>. This class contains all data of all variables, so it can be large. So, be aware when instantiating it on the stack. Heap is fine. Static allocations is fine too, as the constructor and destructor are trivial.</p>
 <p>To inherit the base class, you can use the following template:</p>
-<p><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleTerminal : public stored::store&lt;ExampleTerminal, ExampleTerminalBase&gt;::type {
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>class ExampleTerminal : public stored::store&lt;ExampleTerminal, ExampleTerminalBase&gt;::type {
     STORE_CLASS(ExampleTerminal, ExampleTerminalBase)
 public:
     // Your class implementation, such as:
@@ -274,45 +274,44 @@ public:
 };
 </pre></div>
 </div>
-</p>
 <p>Some compilers or tools may get confused by the inheritance using <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> or <code class="docutils literal notranslate"><span class="pre">stored::store_t</span></code>. Alternatively, use <code class="docutils literal notranslate"><span class="pre">STORE_T(...)</span></code> instead, providing the template parameters of <code class="docutils literal notranslate"><span class="pre">stored::store</span></code> as macro arguments.</p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_example_terminal"><span class="std std-ref">stored::ExampleTerminal</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_example_terminal"><span class="std std-ref">stored::ExampleTerminal</span></a></p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>stored::ExampleTerminalData </p>
+<p>stored::ExampleTerminalData</p>
 </div>
 </p>
 <p>Subclassed by stored::QtifiedExampleTerminal&lt; ExampleTerminalBase&lt; QExampleTerminal &gt; &gt;</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_55E">
-<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_55E"></span><span class="target" id="classstored_1_1_example_terminal_base_1a1a2f06b4ac2a97c77e0a38e394e941d9"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_55E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_56E">
+<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_56E"></span><span class="target" id="classstored_1_1_example_terminal_base_1a237ea1cb206e5d61ad2dfcecb7b492bf"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">[anonymous]</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_56E" title="Permalink to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_5511ObjectCountE">
-<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_5511ObjectCountE"></span><span class="target" id="classstored_1_1_example_terminal_base_1a1a2f06b4ac2a97c77e0a38e394e941d9a83a159bb19340eb0eb1dd3c2fe31581b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_5511ObjectCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_5611ObjectCountE">
+<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_5611ObjectCountE"></span><span class="target" id="classstored_1_1_example_terminal_base_1a237ea1cb206e5d61ad2dfcecb7b492bfa83a159bb19340eb0eb1dd3c2fe31581b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ObjectCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_5611ObjectCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of objects in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_5513VariableCountE">
-<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_5513VariableCountE"></span><span class="target" id="classstored_1_1_example_terminal_base_1a1a2f06b4ac2a97c77e0a38e394e941d9af4f7e9ae4a24de02d53c248c236177a2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_5513VariableCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_5613VariableCountE">
+<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_5613VariableCountE"></span><span class="target" id="classstored_1_1_example_terminal_base_1a237ea1cb206e5d61ad2dfcecb7b492bfaf4f7e9ae4a24de02d53c248c236177a2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariableCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_5613VariableCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of variables in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_5513FunctionCountE">
-<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_5513FunctionCountE"></span><span class="target" id="classstored_1_1_example_terminal_base_1a1a2f06b4ac2a97c77e0a38e394e941d9a50e8f2f260e387ca51dbdeba4732bddb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_5513FunctionCountE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_5613FunctionCountE">
+<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_5613FunctionCountE"></span><span class="target" id="classstored_1_1_example_terminal_base_1a237ea1cb206e5d61ad2dfcecb7b492bfa50e8f2f260e387ca51dbdeba4732bddb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FunctionCount</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_5613FunctionCountE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Number of functions in the store. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_5510BufferSizeE">
-<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_5510BufferSizeE"></span><span class="target" id="classstored_1_1_example_terminal_base_1a1a2f06b4ac2a97c77e0a38e394e941d9a386f0ae12df9785872e3811af5c6dab2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_5510BufferSizeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleTerminalBaseUt2_5610BufferSizeE">
+<span id="_CPPv3N6stored19ExampleTerminalBaseUt2_5610BufferSizeE"></span><span class="target" id="classstored_1_1_example_terminal_base_1a237ea1cb206e5d61ad2dfcecb7b492bfa386f0ae12df9785872e3811af5c6dab2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored19ExampleTerminalBaseUt2_5610BufferSizeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Buffer size. </p>
 </dd></dl>
 
@@ -330,7 +329,7 @@ public:
 <dd><p>Type of a key. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#classstored_1_1_example_terminal_base_1a0f2fac440989384ab04848163f6f2093"><span class="std std-ref">bufferToKey()</span></a> </p>
+<p><a class="reference internal" href="#classstored_1_1_example_terminal_base_1a0f2fac440989384ab04848163f6f2093"><span class="std std-ref">bufferToKey()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -412,7 +411,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_terminal_base_1ab3057d965a5c4778d9a8e740295dac63"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -423,7 +422,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_terminal_base_1ab3057d965a5c4778d9a8e740295dac63"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -434,7 +433,7 @@ public:
 <dd><p>Calls a callback for every object in the <a class="reference internal" href="#classstored_1_1_example_terminal_base_1ab3057d965a5c4778d9a8e740295dac63"><span class="std std-ref">longDirectory()</span></a>. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a> </p>
+<p><a class="reference internal" href="cpp_directory.html#namespacestored_1a12a9855cf4121da642f3d961192c1758"><span class="std std-ref">stored::list()</span></a></p>
 </div>
 </p>
 </dd></dl>
@@ -574,7 +573,7 @@ public:
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="example_fibered.html" class="btn btn-neutral float-left" title="fibered" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="example_pipes.html" class="btn btn-neutral float-left" title="pipes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="example_zmqserver.html" class="btn btn-neutral float-right" title="zmqserver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
