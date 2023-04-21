@@ -16,6 +16,9 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 Added
 ``````
 
+- Python `libstored.log` command line logging tool to easily generate a CSV
+  file with samples.
+
 ...
 
 Fixed

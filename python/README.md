@@ -25,6 +25,9 @@ argument to get some more help:
   `libstored.gui` or `libstored.cli` to.
 - `libstored.wrapper.serial`: like `libstored.wrapper.stdio`, but using
   `pyserial` instead of stdin/stdout.
+- `libstored.log`: command line tool that connects to a debug target and logs
+  samples to CSV.  It is equivalent to passing `-f` to `libstored.gui`, but
+  this tool allows easier automation of a specific set of samples.
 
 ## Interesting classes
 
