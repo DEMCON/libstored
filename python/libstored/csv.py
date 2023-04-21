@@ -14,7 +14,7 @@ import os
 
 from PySide6.QtCore import QObject, Signal, Slot, Property
 
-def generateFilename(filename=None, base=None, addTimestamp=False, ext='.csv', now=None):
+def generateFilename(filename=None, base=None, addTimestamp=False, ext='.csv', now=None, unique=False):
     if filename is None and base is None:
         raise ValueError('Specify filename and/or base')
 
@@ -46,9 +46,11 @@ def generateFilename(filename=None, base=None, addTimestamp=False, ext='.csv', n
 
     names = []
 
+    # Split given filename(s) into base/ext.
     for f in filename:
         names.append(os.path.splitext(f))
 
+    # Append the combination of bases/exts to names.
     for e in ext:
         for b in base:
             names.append((b, e))
@@ -56,12 +58,46 @@ def generateFilename(filename=None, base=None, addTimestamp=False, ext='.csv', n
     if now is None:
         now = time.localtime()
 
+    # Append timestamps to the generated bases.
     if addTimestamp:
         for i in range(0, len(names)):
-            names[i] = (names[i][0] + '_%Y%m%d-%H%M%S%z', names[i][1])
+            names[i] = (names[i][0] + '_%Y%m%dT%H%M%S%z', names[i][1])
 
+    # Time-format collected bases.
     for i in range(0, len(names)):
-        names[i] = time.strftime(names[i][0] + names[i][1], now)
+        names[i] = (time.strftime(names[i][0], now), time.strftime(names[i][1], now))
+
+    # Check exising files.
+    if unique:
+        for i in range(0, len(names)):
+            suffix_nr = 1
+            suffix = ''
+            n = names[i][0] + names[i][1]
+            while True:
+                # Check if the file already exists.
+                exists = os.path.lexists(n)
+
+                # Check if we would create this file.
+                if not exists:
+                    for j in range(0, i):
+                        if os.path.realpath(n) == os.path.realpath(names[j][0] + names[j][1]):
+                            # The name equals another to-be-created file.
+                            exists = True
+                            break
+
+                if not exists:
+                    # Got it
+                    names[i] = (names[i][0] + suffix, names[i][1])
+                    break
+
+                # Pick another suffix and retry.
+                suffix_nr += 1
+                suffix = f'_{suffix_nr}'
+                n = names[i][0] + suffix + names[i][1]
+
+    # Combine bases/exts.
+    for i in range(0, len(names)):
+        names[i] = names[i][0] + names[i][1]
 
     if returnList:
         return names
