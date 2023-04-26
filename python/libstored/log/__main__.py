@@ -60,7 +60,7 @@ if __name__ == '__main__':
             'but it is less efficient.', action='store_true')
     parser.add_argument('-i', dest='interval', type=float, default=1, help='Poll interval (s)')
     parser.add_argument('-d', dest='duration', type=float, default=None, help='Poll duration (s)')
-    parser.add_argument('objects', metavar='obj', type=str, nargs='+', help='Object to poll')
+    parser.add_argument('objects', metavar='obj', type=str, nargs='*', help='Object to poll')
     parser.add_argument('-o', dest='objectfile', type=str, action='append', help='File with list of objects to poll')
 
     args = parser.parse_args(app.arguments()[1:])
@@ -77,10 +77,13 @@ if __name__ == '__main__':
 
     client = ZmqClient(args.server, args.port, multi=args.multi, csv=csv)
 
+    objs = 0
+
     for o in args.objects:
         obj = client[o]
         logger.info('Poll %s', obj.name)
         obj.poll(args.interval)
+        objs += 1
 
     if args.objectfile is not None:
         for of in args.objectfile:
@@ -89,6 +92,11 @@ if __name__ == '__main__':
                     obj = client[o.strip()]
                     logger.info('Poll %s', obj.name)
                     obj.poll(args.interval)
+                    objs += 1
+
+    if objs == 0:
+        logger.error('No objects specified')
+        sys.exit(1)
 
     signal.signal(signal.SIGINT, lambda sig, stk: signal_handler(sig, stk, app))
 
