@@ -14,6 +14,8 @@ list(APPEND pylibstored_src
 	libstored/cli/__main__.py
 	libstored/gui/__init__.py
 	libstored/gui/__main__.py
+	libstored/log/__init__.py
+	libstored/log/__main__.py
 	${CMAKE_CURRENT_SOURCE_DIR}/libstored/gui/gui_qrc.py
 	libstored/csv.py
 	libstored/protocol.py
