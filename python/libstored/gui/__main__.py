@@ -199,7 +199,13 @@ class Plotter(QObject):
 
         data = self._data[o]
         QObject.disconnect(data.connection)
-        self._ax.lines.remove(data.line)
+        try:
+            self._ax.lines.remove(data.line)
+        except AttributeError:
+            # This is a newer MPL, apparently.
+            data.line.remove()
+            pass
+
         del self._data[o]
 
         if len(self._data) > 0:
