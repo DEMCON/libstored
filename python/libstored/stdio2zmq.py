@@ -47,7 +47,7 @@ class Stdio2Zmq(Stream2Zmq):
         self.process = subprocess.Popen(
             args=args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             preexec_fn = set_pdeathsig() if os.name == 'posix' else None,
-            shell=not os.path.exists(args),
+            shell=not os.path.exists(args[0] if isinstance(args, list) else args),
             **kwargs)
         self.stdout_socket = self.registerStream(self.process.stdout)
         self.stdin_socket = self.registerStream(sys.stdin)
