@@ -15,7 +15,7 @@ if errorlevel 1 goto silent_error
 
 echo.
 
-set cmake_opts=
+set cmake_opts=-DLIBSTORED_DIST_DIR=%here%
 set support_test=1
 set do_test=
 set msvc=1
