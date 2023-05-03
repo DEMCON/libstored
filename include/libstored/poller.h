@@ -275,6 +275,7 @@ public:
 	typedef Events(f_type)(Pollable const&);
 #	endif
 
+	// cppcheck-suppress noExplicitConstructor
 	PollableCallback(F f_, Events const& e, void* user = nullptr)
 		: PollableCallbackBase(e, user)
 		, f(f_)
