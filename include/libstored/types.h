@@ -49,7 +49,9 @@ struct Type {
 		FlagFunction = 0x40u,
 
 		// int
+		// cppcheck-suppress badBitmaskCheck
 		Int8 = FlagFixed | FlagInt | FlagSigned | 0u,
+		// cppcheck-suppress badBitmaskCheck
 		Uint8 = FlagFixed | FlagInt | 0u,
 		Int16 = FlagFixed | FlagInt | FlagSigned | 1u,
 		Uint16 = FlagFixed | FlagInt | 1u,
@@ -63,6 +65,7 @@ struct Type {
 		// things with fixed length
 		Float = FlagFixed | FlagSigned | 3u,
 		Double = FlagFixed | FlagSigned | 7u,
+		// cppcheck-suppress badBitmaskCheck
 		Bool = FlagFixed | 0u,
 		Pointer32 = FlagFixed | 3u,
 		Pointer64 = FlagFixed | 7u,

@@ -290,7 +290,7 @@ StoreJournal::Seq StoreJournal::bumpSeq(bool force)
 		m_seqLower = m_seq - ShortSeqWindow + (Seq)2u * SeqLowerMargin;
 
 		for(size_t i = 0; i < m_changes.size(); i++) {
-			ObjectInfo& o = m_changes[i];
+			ObjectInfo const& o = m_changes[i];
 			Seq o_seq = toLong(o.seq);
 			if(m_seq - o_seq > safeRange) {
 				update(o.key, o.len, m_seqLower, 0, m_changes.size());
@@ -883,19 +883,19 @@ SyncConnection::Id SyncConnection::nextId()
  */
 void SyncConnection::drop(StoreJournal& store)
 {
-	bool bye = false;
+	bool sendBye = false;
 
 	for(IdInMap::iterator it = m_idIn.begin(); it != m_idIn.end(); ++it)
 		if(it->second == &store) {
 			m_idIn.erase(it);
-			bye = true;
+			sendBye = true;
 			break;
 		}
 
 	if(m_store.erase(&store))
-		bye = true;
+		sendBye = true;
 
-	if(!bye)
+	if(!sendBye)
 		return;
 
 	encodeCmd(Bye);
@@ -1173,7 +1173,7 @@ void SyncConnection::decode(void* buffer, size_t len)
 			if(it == m_idIn.end())
 				break;
 
-			StoreInfo& si = m_store[it->second];
+			StoreInfo const& si = m_store[it->second];
 			if(si.source && si.idOut)
 				// Hey, we need it!
 				helloAgain(*(it->second));
@@ -1189,7 +1189,7 @@ void SyncConnection::decode(void* buffer, size_t len)
 			if(it == m_store.end())
 				break;
 
-			StoreInfo& si = it->second;
+			StoreInfo const& si = it->second;
 			if(si.source && si.idOut)
 				// Hey, we need it!
 				helloAgain(*j);
