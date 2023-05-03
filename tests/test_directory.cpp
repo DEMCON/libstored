@@ -135,7 +135,14 @@ TEST(Directory, List)
 
 TEST(Directory, Constexpr)
 {
+#ifdef STORED_COMPILER_GCC
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Waddress"
+#endif
 	static_assert(stored::TestStoreData::shortDirectory() != nullptr, "");
+#ifdef STORED_COMPILER_GCC
+#	pragma GCC diagnostic pop
+#endif
 
 	constexpr auto v =
 		stored::impl::find(stored::TestStoreData::shortDirectory(), "/default int8");
