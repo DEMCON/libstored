@@ -83,13 +83,16 @@ class ZmqServer(protocol.ProtocolLayer):
                 self.logger.warn(f'Stream type "{type(stream)}" will be read byte-by-byte')
                 r = lambda: stream.read(1)
 
-            data = r()
-            while len(data) > 0:
-                socket.send(data)
+            try:
                 data = r()
-
-            # Send EOF
-            socket.send(bytearray())
+                while len(data) > 0:
+                    socket.send(data)
+                    data = r()
+            except UnicodeDecodeError:
+                pass
+            finally:
+                # Send EOF
+                socket.send(bytearray())
         except:
             if not self.closing:
                 raise
