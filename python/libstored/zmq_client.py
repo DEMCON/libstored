@@ -304,12 +304,12 @@ class Object(QObject):
         try:
             if self.isFixed():
                 binint = int(rep.decode(), 16)
-                if sys.version_info.major <= 3 and sys.version_info.minor < 9:
-                    # If binint >= 2^63 for Uint64, we run into problems in libshiboken.
-                    # See https://bugreports.qt.io/browse/PYSIDE-648
-                    # Force to Int64 in that case.
-                    if binint >= 1 << 63:
-                        binint -= 1 << 64
+                # If binint >= 2^63 for Uint64, we run into problems in libshiboken.
+                # See https://bugreports.qt.io/browse/PYSIDE-648
+                # Force to Int64 in that case.
+#                if binint >= 1 << 63:
+#                    binint -= 1 << 64
+
                 if self.isInt() and not self.isSigned():
                     return binint
                 elif dtype == self.Int8:
@@ -529,6 +529,19 @@ class Object(QObject):
     def _value_get(self):
         return self._value
 
+    def _value_getSafe(self):
+        value = self._value_get()
+
+        if value is not None:
+            if self._type & self.FlagInt:
+                # If value >= 2^63 for Uint64, we run into problems in
+                # libshiboken.  See https://bugreports.qt.io/browse/PYSIDE-648
+                # Force to Int64 in that case.
+                if value >= 1 << 63:
+                    value = (value % (1 << 64)) - (1 << 64)
+
+        return value
+
     # Writes the value to the server.
     def _value_set(self, v):
         try:
@@ -542,6 +555,7 @@ class Object(QObject):
             return False
 
     value = _Property('QVariant', _value_get, _value_set, notify=valueChanged)
+    valueSafe = _Property('QVariant', _value_getSafe, _value_set, notify=valueChanged)
 
     def _valueString_get(self):
         v = self._value
