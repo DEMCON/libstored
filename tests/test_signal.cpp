@@ -12,8 +12,12 @@
 
 #include "gtest/gtest.h"
 
-class TestStore : public STORE_T(TestStore, stored::Signalling, stored::TestStoreBase) {
-	STORE_CLASS(TestStore, stored::Signalling, stored::TestStoreBase)
+class TestStore : public STORE_T(
+			  TestStore, stored::TestStoreDefaultFunctions, stored::Signalling,
+			  stored::TestStoreBase) {
+	STORE_CLASS(
+		TestStore, stored::TestStoreDefaultFunctions, stored::Signalling,
+		stored::TestStoreBase)
 public:
 	TestStore() = default;
 };

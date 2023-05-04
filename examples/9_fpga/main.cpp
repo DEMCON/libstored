@@ -10,14 +10,19 @@
 #include "ExampleFpga2.h"
 #include <stored>
 
-class ExampleFpga : public STORE_SYNC_BASE_CLASS(ExampleFpgaBase, ExampleFpga) {
-	STORE_SYNC_CLASS_BODY(ExampleFpgaBase, ExampleFpga)
+class ExampleFpga : public STORE_T(
+			    ExampleFpga, stored::ExampleFpgaDefaultFunctions,
+			    stored::Synchronizable, stored::ExampleFpgaBase) {
+	STORE_CLASS(
+		ExampleFpga, stored::ExampleFpgaDefaultFunctions, stored::Synchronizable,
+		stored::ExampleFpgaBase)
 public:
 	ExampleFpga() is_default
 };
 
-class ExampleFpga2 : public STORE_SYNC_BASE_CLASS(ExampleFpga2Base, ExampleFpga2) {
-	STORE_SYNC_CLASS_BODY(ExampleFpga2Base, ExampleFpga2)
+class ExampleFpga2
+	: public STORE_T(ExampleFpga2, stored::Synchronizable, stored::ExampleFpga2Base) {
+	STORE_CLASS(ExampleFpga2, stored::Synchronizable, stored::ExampleFpga2Base)
 public:
 	ExampleFpga2() is_default
 };
