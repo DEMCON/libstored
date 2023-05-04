@@ -9,8 +9,8 @@
 
 #include <cstdio>
 
-class SyncedExampleHooks : public STORE_BASE_CLASS(ExampleHooksBase, SyncedExampleHooks) {
-	STORE_CLASS_BODY(ExampleHooksBase, SyncedExampleHooks)
+class SyncedExampleHooks : public STORE_T(SyncedExampleHooks, stored::ExampleHooksBase) {
+	STORE_CLASS(SyncedExampleHooks, stored::ExampleHooksBase)
 public:
 	SyncedExampleHooks() {}
 

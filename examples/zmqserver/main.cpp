@@ -12,8 +12,8 @@
 #	include <chrono>
 #endif
 
-class ZmqServerStore : public STORE_BASE_CLASS(ZmqServerStoreBase, ZmqServerStore) {
-	STORE_CLASS_BODY(ZmqServerStoreBase, ZmqServerStore)
+class ZmqServerStore : public STORE_T(ZmqServerStore, stored::ZmqServerStoreBase) {
+	STORE_CLASS(ZmqServerStore, stored::ZmqServerStoreBase)
 public:
 	ZmqServerStore()
 		: m_messages()
@@ -68,10 +68,10 @@ protected:
 	{
 		if(!set) {
 #if __cplusplus >= 201103L
-			value = (uint64_t)(
-				std::chrono::duration_cast<std::chrono::microseconds>(
-					std::chrono::system_clock::now().time_since_epoch())
-					.count());
+			value = (uint64_t)(std::chrono::duration_cast<std::chrono::microseconds>(
+						   std::chrono::system_clock::now()
+							   .time_since_epoch())
+						   .count());
 #else
 			// There is no portable implementation here...
 			value = (uint64_t)time(NULL) * 1000000ULL;

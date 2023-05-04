@@ -24,8 +24,8 @@
 #include <iostream>
 #include <utility>
 
-class ExampleControlStore : public STORE_BASE_CLASS(ExampleControlBase, ExampleControlStore) {
-	STORE_CLASS_BODY(ExampleControlBase, ExampleControlStore)
+class ExampleControlStore : public STORE_T(ExampleControlStore, stored::ExampleControlBase) {
+	STORE_CLASS(ExampleControlStore, stored::ExampleControlBase)
 public:
 	ExampleControlStore() = default;
 
