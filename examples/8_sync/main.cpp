@@ -25,16 +25,18 @@
 
 static stored::Synchronizer synchronizer;
 
-class ExampleSync2 : public STORE_SYNC_BASE_CLASS(ExampleSync2Base, ExampleSync2) {
-	STORE_SYNC_CLASS_BODY(ExampleSync2Base, ExampleSync2)
+class ExampleSync2
+	: public STORE_T(ExampleSync2, stored::Synchronizable, stored::ExampleSync2Base) {
+	STORE_CLASS(ExampleSync2, stored::Synchronizable, stored::ExampleSync2Base)
 public:
 	ExampleSync2() is_default
 };
 
 static ExampleSync2 store2;
 
-class ExampleSync1 : public STORE_SYNC_BASE_CLASS(ExampleSync1Base, ExampleSync1) {
-	STORE_SYNC_CLASS_BODY(ExampleSync1Base, ExampleSync1)
+class ExampleSync1
+	: public STORE_T(ExampleSync1, stored::Synchronizable, stored::ExampleSync1Base) {
+	STORE_CLASS(ExampleSync1, stored::Synchronizable, stored::ExampleSync1Base)
 public:
 	ExampleSync1() is_default
 

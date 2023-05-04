@@ -57,8 +57,10 @@
 #include <thread>
 
 // Make the Control store synchronizable.
-class ControlStore : public STORE_SYNC_BASE_CLASS(ExampleConcurrencyControlBase, ControlStore) {
-	STORE_SYNC_CLASS_BODY(ExampleConcurrencyControlBase, ControlStore)
+class ControlStore
+	: public STORE_T(
+		  ControlStore, stored::Synchronizable, stored::ExampleConcurrencyControlBase) {
+	STORE_CLASS(ControlStore, stored::Synchronizable, stored::ExampleConcurrencyControlBase)
 public:
 	ControlStore() = default;
 };

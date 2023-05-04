@@ -24,8 +24,8 @@
 #include <iostream>
 
 class ExampleComponentsStore
-	: public STORE_BASE_CLASS(ExampleComponentsBase, ExampleComponentsStore) {
-	STORE_CLASS_BODY(ExampleComponentsBase, ExampleComponentsStore)
+	: public STORE_T(ExampleComponentsStore, stored::ExampleComponentsBase) {
+	STORE_CLASS(ExampleComponentsStore, stored::ExampleComponentsBase)
 public:
 	ExampleComponentsStore() = default;
 

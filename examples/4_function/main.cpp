@@ -16,8 +16,8 @@
 #endif
 
 // Create a subclass of stored::ExampleFunctionBase to define the side effects of the functions.
-class MyExample : public STORE_BASE_CLASS(ExampleFunctionBase, MyExample) {
-	STORE_CLASS_BODY(ExampleFunctionBase, MyExample)
+class MyExample : public STORE_T(MyExample, stored::ExampleFunctionBase) {
+	STORE_CLASS(MyExample, stored::ExampleFunctionBase)
 public:
 	MyExample()
 		: m_echo()
