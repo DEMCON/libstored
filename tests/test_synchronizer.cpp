@@ -15,8 +15,15 @@
 
 #include <chrono>
 
-class SyncTestStore : public stored::Synchronizable<stored::TestStoreBase<SyncTestStore>> {
-	friend class stored::TestStoreBase<SyncTestStore>;
+class SyncTestStore : public STORE_T(
+			      SyncTestStore, stored::TestStoreDefaultFunctions,
+			      stored::Synchronizable, stored::TestStoreBase) {
+	STORE_CLASS(
+		SyncTestStore, stored::TestStoreDefaultFunctions, stored::Synchronizable,
+		stored::TestStoreBase)
+
+public:
+	SyncTestStore() = default;
 };
 
 namespace {

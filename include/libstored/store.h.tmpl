@@ -519,19 +519,29 @@ public:
 {%       if o is blob %}
 	/*! \brief Callback for {{o}} */
 	size_t __{{o.cname}}(bool set, {{o|ctype}}* value, size_t len)
+#	ifdef STORED_DEFAULT_FUNCTION_CALLBACK
 	{
 		STORED_UNUSED(set)
 		STORED_UNUSED(value)
 		STORED_UNUSED(len)
 		return 0;
 	}
+#	else
+	;
+#	endif
 {%       else %}
 	/*! \brief Callback for {{o}} */
 	void __{{o.cname}}(bool set, {{o|ctype}}& value)
+#	ifdef STORED_DEFAULT_FUNCTION_CALLBACK
 	{
-		if(!set) value = ({{o|ctype}})0;
+		if(!set)
+			value = ({{o|ctype}})0;
 	}
+#	else
+	;
+#	endif
 {%       endif %}
+
 {%     endif %}
 {%   endfor %}
 {% endif %}
@@ -937,11 +947,44 @@ private:
 };
 
 /*!
+ * \brief A wrapper that provides default function implementations.
+ */
+template <typename Base>
+class {{store.name}}DefaultFunctions : public Base {
+	STORE_WRAPPER_CLASS({{store.name}}DefaultFunctions, Base)
+public:
+	{{store.name}}DefaultFunctions() is_default
+
+#	ifndef STORED_DEFAULT_FUNCTION_CALLBACK
+{% for o in store.objects %}
+{%   if o is function %}
+
+{%     if o is blob %}
+	size_t __{{o.cname}}(bool set, {{o|ctype}}* value, size_t len)
+	{
+		STORED_UNUSED(set)
+		STORED_UNUSED(value)
+		STORED_UNUSED(len)
+		return 0;
+	}
+{%     else %}
+	void __{{o.cname}}(bool set, {{o|ctype}}& value)
+	{
+		if(!set)
+			value = ({{o|ctype}})0;
+	}
+{%     endif %}
+{%   endif %}
+{% endfor %}
+#	endif // STORED_DEFAULT_FUNCTION_CALLBACK
+};
+
+/*!
  * \brief Default {{store.name}}Base implementation.
  */
-class {{store.name}} : public {{store.name}}Base<{{store.name}}> {
+class {{store.name}} : public STORE_T({{store.name}}, {{store.name}}DefaultFunctions, {{store.name}}Base) {
 	// cppcheck-suppress internalAstError
-	STORE_CLASS({{store.name}}, {{store.name}}Base)
+	STORE_CLASS({{store.name}}, {{store.name}}DefaultFunctions, {{store.name}}Base)
 public:
 	/*! \copydoc stored::{{store.name}}Base::{{store.name}}Base() */
 	{{store.name}}() is_default
@@ -1055,7 +1098,7 @@ protected:
  * \brief Default Qtified{{store.name}} implementation of {{store.name}}.
  */
 class Q{{store.name}}
-	: public Qtified{{store.name}}<{{store.name}}Base<Q{{store.name}}>> {
+	: public STORE_T(Q{{store.name}}, {{store.name}}DefaultFunctions, Qtified{{store.name}}, {{store.name}}Base) {
 
 	STORE_CLASS(Q{{store.name}}, Qtified{{store.name}}, {{store.name}}Base)
 public:
