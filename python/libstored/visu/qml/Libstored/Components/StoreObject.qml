@@ -30,7 +30,7 @@ Item {
 
     onObjChanged: {
         if(obj) {
-            value = obj.value
+            value = obj.valueSafe
 
             if(!obj.polling) {
                 if(pollInterval > 0)
@@ -59,7 +59,7 @@ Item {
 
     onValueStringChanged: {
         if(obj)
-            value = obj.value
+            value = obj.valueSafe
 
         comp.refreshed = true
         updatedTimer.restart()
