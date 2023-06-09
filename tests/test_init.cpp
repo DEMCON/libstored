@@ -43,6 +43,7 @@ TEST(Init, Bool)
 TEST(Init, Float)
 {
 	stored::TestStore store;
+	EXPECT_FLOAT_EQ(store.init_float_0.get(), 0.0f);
 	EXPECT_FLOAT_EQ(store.init_float_1.get(), 1.0f);
 	EXPECT_FLOAT_EQ(store.init_float_3_14.get(), 3.14f);
 	EXPECT_FLOAT_EQ(store.init_float_4000.get(), -4000.0f);
@@ -57,6 +58,9 @@ TEST(Init, String)
 	char buf[16] = {};
 	store.init_string.get(buf, sizeof(buf) - 1);
 	EXPECT_TRUE(strcmp(buf, "a b\"c") == 0);
+
+	store.init_string_empty.get(buf, sizeof(buf) - 1);
+	EXPECT_TRUE(strcmp(buf, "") == 0);
 }
 
 } // namespace
