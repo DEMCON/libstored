@@ -684,8 +684,10 @@ public:
 			changed = *reinterpret_cast<uint32_t const*>(v_)
 				  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 				  != *reinterpret_cast<uint32_t const*>(b_);
-		} else
+		} else {
+			// NOLINTNEXTLINE(bugprone-suspicious-memory-comparison)
 			changed = memcmp(&v, &this->buffer(), sizeof(v)) != 0;
+		}
 
 		if(changed)
 			base::set(v);

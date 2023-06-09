@@ -953,7 +953,14 @@ template <typename Base>
 class {{store.name}}DefaultFunctions : public Base {
 	STORE_WRAPPER_CLASS({{store.name}}DefaultFunctions, Base)
 public:
+#	if STORED_cplusplus >= 201103L
+	template <typename... Args>
+	explicit {{store.name}}DefaultFunctions(Args&&... args)
+		: base(std::forward<Args>(args)...)
+	{}
+#	else
 	{{store.name}}DefaultFunctions() is_default
+#	endif
 
 #	ifndef STORED_DEFAULT_FUNCTION_CALLBACK
 {% for o in store.objects %}
@@ -1098,9 +1105,9 @@ protected:
  * \brief Default Qtified{{store.name}} implementation of {{store.name}}.
  */
 class Q{{store.name}}
-	: public STORE_T(Q{{store.name}}, {{store.name}}DefaultFunctions, Qtified{{store.name}}, {{store.name}}Base) {
+	: public STORE_T(Q{{store.name}}, Qtified{{store.name}}, {{store.name}}DefaultFunctions, {{store.name}}Base) {
 
-	STORE_CLASS(Q{{store.name}}, Qtified{{store.name}}, {{store.name}}Base)
+	STORE_CLASS(Q{{store.name}}, Qtified{{store.name}}, {{store.name}}DefaultFunctions, {{store.name}}Base)
 public:
 	/*! \copydoc stored::Qtified{{store.name}}::Qtified{{store.name}}() */
 	explicit Q{{store.name}}(QObject* parent = nullptr);
