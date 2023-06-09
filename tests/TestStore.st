@@ -22,6 +22,7 @@ bool=true	init true
 bool=False	init false
 bool=0		init bool 0
 bool=10		init bool 10
+float=0		init float 0
 float=1		init float 1
 float=3.14	init float 3.14
 float=-4.0e3	init float -4000
@@ -29,6 +30,7 @@ float=nan	init float nan
 float=inf	init float inf
 float=-Infinity	init float neg inf
 string:8="a b\"c"	init string
+string:8=""	init string empty
 
 (double)	f read/write
 (uint16)	f read-only

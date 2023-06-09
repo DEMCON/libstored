@@ -600,7 +600,7 @@ class Variable(Object):
         if type.fixed != None:
             self.type = type.fixed.type
             self.size = csize(type.fixed.type)
-            self.init = None if type.init == None else type.init.value
+            self.init = None if type.init is None or type.init.value == 0 else type.init.value
             self.len = type.fixed.len if isinstance(type.fixed.len, int) and type.fixed.len > 1 else 1
         else:
             self.type = type.blob.type
@@ -608,8 +608,12 @@ class Variable(Object):
             self.init = None
             if self.type == 'string' and type.init is not None:
                 self.init = bytes(str(type.init), "utf-8").decode("unicode_escape")
-                if self.size < len(self.init.encode()):
+                l = len(self.init.encode())
+                if self.size < l:
                     sys.exit(f'String initializer is too long')
+                if l == 0:
+                    # Empty string, handle as default-initialized.
+                    self.init = None
             self.len = type.blob.len
         self.axi = None
 
