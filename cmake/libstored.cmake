@@ -191,6 +191,7 @@ function(libstored_lib libprefix libpath)
 				"-bugprone-easily-swappable-parameters,"
 				"-bugprone-macro-parentheses,"
 				"-bugprone-reserved-identifier," # Should be fixed.
+				"-bugprone-suspicious-include," # For Qt's moc
 
 				"clang-analyzer-*,"
 
@@ -251,6 +252,10 @@ function(libstored_lib libprefix libpath)
 				"--warnings-as-errors=*"
 				"--extra-arg=-Wno-unknown-warning-option"
 			)
+
+			if(CMAKE_CXX_STANDARD)
+				set(DO_CLANG_TIDY "${DO_CLANG_TIDY}" "--extra-arg=-std=c++${CMAKE_CXX_STANDARD}")
+			endif()
 
 			set_target_properties(${LIBSTORED_LIB_TARGET}
 				PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}" )
