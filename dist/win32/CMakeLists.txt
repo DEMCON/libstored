@@ -13,10 +13,12 @@ if(MINGW)
 			OUTPUT_STRIP_TRAILING_WHITESPACE
 		)
 
-		install(FILES
-			${dll_path}
-			DESTINATION bin
-		)
+		if(NOT "${dll_path}" STREQUAL "${name}")
+			install(FILES
+				${dll_path}
+				DESTINATION bin
+			)
+		endif()
 	endfunction()
 
 	install_dll(libgcc_s_seh-1.dll)
