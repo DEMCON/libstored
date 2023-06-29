@@ -623,7 +623,16 @@ private:
 		if(triggered)
 			*triggered = triggered_;
 
-		return triggered_ ? Last_::inject(x) : Last_::exit_cast(x);
+		// If x is a reference type, we can safely return a reference
+		// type.  However, if it is not a reference, we should not let
+		// inject()/exit_cast() return a reference, as it would point
+		// to x, which goes out of scope.
+		using x_type = decltype(x);
+		using return_type = std::conditional_t<
+			std::is_reference<x_type>::value, x_type, std::decay_t<x_type>>;
+
+		return static_cast<return_type>(
+			triggered_ ? Last_::inject(x) : Last_::exit_cast(x));
 	}
 
 	template <
@@ -1066,19 +1075,7 @@ public:
 
 	virtual void trigger(bool* triggered, std::decay_t<type_out>& out) override
 	{
-#	ifdef STORED_COMPILER_GCC
-		// In release builds with gcc, the following errors are
-		// triggered, complaining about the initializtion of 'x'
-		// (probably from Segments::trigger_helper()).  This might be a
-		// GCC bug.
-#		pragma GCC diagnostic push
-#		pragma GCC diagnostic ignored "-Wuninitialized"
-#		pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#	endif
 		out = segments_type::trigger(triggered);
-#	ifdef STORED_COMPILER_GCC
-#		pragma GCC diagnostic pop
-#	endif
 	}
 };
 
@@ -1640,7 +1637,7 @@ struct call_f_type<std::function<F>> {
 } // namespace impl
 
 template <typename F_>
-Call(F_ &&)
+Call(F_&&)
 	-> Call<typename impl::call_type_in<decltype(std::function{std::declval<F_>()})>::type,
 		typename impl::call_f_type<decltype(std::function{std::declval<F_>()})>::type>;
 #	endif // >= C++17
@@ -1808,7 +1805,7 @@ struct object_type<stored::impl::StoreVariantF<Store, Implementation, type_, F, 
 // supported by Get. StoreVariant* is supported, as long as it holds fixed-size
 // data (which is usually not what it is used for...)
 template <typename V>
-Get(V &&)
+Get(V&&)
 	-> Get<typename impl::object_data_type<std::decay_t<V>>::type,
 	       typename impl::object_type<std::decay_t<V>>::type>;
 #	endif // C++17
@@ -1873,7 +1870,7 @@ private:
 
 #	if STORED_cplusplus >= 201703L
 template <typename V>
-Set(V &&)
+Set(V&&)
 	-> Set<typename impl::object_data_type<std::decay_t<V>>::type,
 	       typename impl::object_type<std::decay_t<V>>::type>;
 #	endif // C++17
@@ -2177,7 +2174,7 @@ private:
 
 #	if STORED_cplusplus >= 201703L
 template <typename Constraints_>
-Constrained(Constraints_ &&) -> Constrained<std::decay_t<Constraints_>>;
+Constrained(Constraints_&&) -> Constrained<std::decay_t<Constraints_>>;
 #	endif // C++17
 
 /*!
@@ -2259,7 +2256,7 @@ private:
 
 #	if STORED_cplusplus >= 201703L
 template <typename Converter_>
-Convert(Converter_ &&) -> Convert<std::decay_t<Converter_>>;
+Convert(Converter_&&) -> Convert<std::decay_t<Converter_>>;
 #	endif // C++17
 
 /*!
