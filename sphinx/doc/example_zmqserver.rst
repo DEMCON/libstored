@@ -24,5 +24,5 @@ Store reference
 
 .. doxygenclass:: stored::ZmqServerStoreBase
 
-.. doxygenclass:: stored::ZmqServerStore
+.. doxygenclass:: ZmqServerStore
 

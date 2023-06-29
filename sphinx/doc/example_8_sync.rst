@@ -27,11 +27,11 @@ Store reference
 
 .. doxygenclass:: stored::ExampleSync1Base
 
-.. doxygenclass:: stored::ExampleSync1
+.. doxygenclass:: ExampleSync1
 
 .. doxygenclass:: stored::ExampleSync2Objects
 
 .. doxygenclass:: stored::ExampleSync2Base
 
-.. doxygenclass:: stored::ExampleSync2
+.. doxygenclass:: ExampleSync2
 

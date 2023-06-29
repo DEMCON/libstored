@@ -19,5 +19,5 @@ Store reference
 
 .. doxygenclass:: stored::ExampleHooksBase
 
-.. doxygenclass:: stored::ExampleHooks
+.. doxygenclass:: SyncedExampleHooks
 

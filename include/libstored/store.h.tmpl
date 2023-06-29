@@ -989,7 +989,9 @@ public:
 /*!
  * \brief Default {{store.name}}Base implementation.
  */
-class {{store.name}} : public STORE_T({{store.name}}, {{store.name}}DefaultFunctions, {{store.name}}Base) {
+// You should be using stored::store_t or STORE_T instead, but Doxygen does not
+// understand these.
+class {{store.name}} : public STORE_T_2({{store.name}}, {{store.name}}DefaultFunctions, {{store.name}}Base) {
 	// cppcheck-suppress internalAstError
 	STORE_CLASS({{store.name}}, {{store.name}}DefaultFunctions, {{store.name}}Base)
 public:
@@ -1105,7 +1107,7 @@ protected:
  * \brief Default Qtified{{store.name}} implementation of {{store.name}}.
  */
 class Q{{store.name}}
-	: public STORE_T(Q{{store.name}}, Qtified{{store.name}}, {{store.name}}DefaultFunctions, {{store.name}}Base) {
+	: public STORE_T_3(Q{{store.name}}, Qtified{{store.name}}, {{store.name}}DefaultFunctions, {{store.name}}Base) {
 
 	STORE_CLASS(Q{{store.name}}, Qtified{{store.name}}, {{store.name}}DefaultFunctions, {{store.name}}Base)
 public:

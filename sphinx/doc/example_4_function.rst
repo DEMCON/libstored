@@ -24,5 +24,5 @@ Store reference
 
 .. doxygenclass:: stored::ExampleFunctionBase
 
-.. doxygenclass:: stored::ExampleFunction
+.. doxygenclass:: MyExample
 

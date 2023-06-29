@@ -794,7 +794,8 @@ WARN_LOGFILE           =
 INPUT                  = ../include \
                          ../include/stored \
                          ../src \
-						 ../examples
+			 ../examples \
+			 ../dist/ubuntu/build/examples/meta \
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -923,7 +924,19 @@ INPUT_FILTER           =
 # need to set EXTENSION_MAPPING for the extension otherwise the files are not
 # properly processed by doxygen.
 
-FILTER_PATTERNS        =
+# Doxygen cannot parse vararg macros properly (STORE_T specifically). Process
+# the examples, such that examples stay as they should, but doxygen still like
+# them.
+FILTER_PATTERNS        = \
+			*/examples/4_function/main.cpp="python3 example_filter.py 1" \
+			*/examples/6_hooks/main.cpp="python3 example_filter.py 1" \
+			*/examples/8_sync/main.cpp="python3 example_filter.py 2" \
+			*/examples/9_fpga/main.cpp="python3 example_filter.py 3" \
+			*/examples/components/main.cpp="python3 example_filter.py 1" \
+			*/examples/concurrency/main.cpp="python3 example_filter.py 2" \
+			*/examples/control/main.cpp="python3 example_filter.py 1" \
+			*/examples/meta/main.cpp="python3 example_filter.py 2" \
+			*/examples/zmqserver/main.cpp="python3 example_filter.py 1" \
 
 # If the FILTER_SOURCE_FILES tag is set to YES, the input filter (if set using
 # INPUT_FILTER) will also be used to filter the input files that are used for
@@ -2075,17 +2088,15 @@ PREDEFINED             = DOXYGEN \
 			 STORED_CLASS_NEW_DELETE(...)= \
 			 STORE_WRAPPER_CLASS(...)= \
 			 Q_PROPERTY(...)= \
-			 "STORE_T_1(a,b,...)=b<a>" \
-			 "STORE_T_2(a,b,...)=b<STORE_T_1(a,__VA_ARGS__)>" \
-			 "STORE_T_3(a,b,...)=b<STORE_T_2(a,__VA_ARGS__)>" \
-			 "STORE_T_4(a,b,...)=b<STORE_T_3(a,__VA_ARGS__)>" \
-			 "STORE_T_5(a,b,...)=b<STORE_T_4(a,__VA_ARGS__)>" \
-			 "STORE_T_6(a,b,...)=b<STORE_T_5(a,__VA_ARGS__)>" \
-			 "STORE_T_7(a,b,...)=b<STORE_T_6(a,__VA_ARGS__)>" \
-			 "STORE_T_8(a,b,...)=b<STORE_T_7(a,__VA_ARGS__)>" \
-			 "STORE_T_9(a,b,...)=b<STORE_T_8(a,__VA_ARGS__)>" \
-			"STORED_GET_MACRO_ARGN(_0,_1,_2,_3,_4,_5,_6,_7,_8,_9,m,...)=m" \
-			"STORE_T(Impl,...)=STORED_GET_MACRO_ARGN(Impl,__VA_ARGS__,STORE_T_9,STORE_T_8,STORE_T_7,STORE_T_6,STORE_T_5,STORE_T_4,STORE_T_3,STORE_T_2,STORE_T_1)(Impl,__VA_ARGS__)" \
+			 "STORE_T_1(a,b)=b<a>" \
+			 "STORE_T_2(a,b,c)=b<c<a>>" \
+			 "STORE_T_3(a,b,c,d)=b<c<d<a>>>" \
+			 "STORE_T_4(a,b,c,d,e)=b<c<d<e<a>>>>" \
+			 "STORE_T_5(a,b,c,d,e,f)=b<c<d<e<f<a>>>>>" \
+			 "STORE_T_6(a,b,c,d,e,f,g)=b<c<d<e<f<g<a>>>>>>" \
+			 "STORE_T_7(a,b,c,d,e,f,g,h)=b<c<d<e<f<g<h<a>>>>>>>" \
+			 "STORE_T_8(a,b,c,d,e,f,g,h,i)=b<c<d<e<f<g<h<i<a>>>>>>>>" \
+			 "STORE_T_9(a,b,c,d,e,f,g,h,i,f)=b<c<d<e<f<g<h<i<j<a>>>>>>>>>" \
 
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
@@ -2106,6 +2117,15 @@ EXPAND_AS_DEFINED      = \
 			STORE_WRAPPER_CLASS \
 			STORED_CLASS_NOCOPY \
 			STORED_CLASS_NEW_DELETE \
+			STORE_T_1 \
+			STORE_T_2 \
+			STORE_T_3 \
+			STORE_T_4 \
+			STORE_T_5 \
+			STORE_T_6 \
+			STORE_T_7 \
+			STORE_T_8 \
+			STORE_T_9 \
 			constexpr14 \
 
 
