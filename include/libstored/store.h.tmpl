@@ -962,13 +962,13 @@ template <typename Base>
 class {{store.name}}DefaultFunctions : public Base {
 	STORE_WRAPPER_CLASS({{store.name}}DefaultFunctions, Base)
 public:
+	{{store.name}}DefaultFunctions() is_default
+
 #	if STORED_cplusplus >= 201103L
 	template <typename... Args>
 	explicit {{store.name}}DefaultFunctions(Args&&... args)
 		: base(std::forward<Args>(args)...)
 	{}
-#	else
-	{{store.name}}DefaultFunctions() is_default
 #	endif
 
 #	ifndef STORED_DEFAULT_FUNCTION_CALLBACK
