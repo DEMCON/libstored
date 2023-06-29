@@ -157,7 +157,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./sphinx/_build/html
+          publish_dir: ./dist/ubuntu/build/sphinx/_build/html
 
   # Dummy job that depends on all other build-* jobs.
   build-all-check:

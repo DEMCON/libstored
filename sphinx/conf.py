@@ -67,7 +67,7 @@ release = libstored.libstored_version
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -114,8 +114,12 @@ html_sidebars = {
     ]
 }
 
+doxygen_build = os.getenv('DOXYGEN_BUILD')
+if doxygen_build is None:
+    doxygen_build = 'doxygen'
+
 breathe_projects = {
-    "doxygen":"doxygen/xml/",
+    "doxygen":doxygen_build + "/xml/",
 }
 
 breathe_default_project = 'doxygen'
