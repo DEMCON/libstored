@@ -24,5 +24,5 @@ Store reference
 
 .. doxygenclass:: stored::ExampleMetaBase
 
-.. doxygenclass:: stored::ExampleMeta
+.. doxygenclass:: ExampleMeta
 

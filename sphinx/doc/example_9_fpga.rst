@@ -32,11 +32,11 @@ Store reference
 
 .. doxygenclass:: stored::ExampleFpgaBase
 
-.. doxygenclass:: stored::ExampleFpga
+.. doxygenclass:: ExampleFpga
 
 .. doxygenclass:: stored::ExampleFpga2Objects
 
 .. doxygenclass:: stored::ExampleFpga2Base
 
-.. doxygenclass:: stored::ExampleFpga2
+.. doxygenclass:: ExampleFpga2
 

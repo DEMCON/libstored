@@ -19,5 +19,5 @@ Store reference
 
 .. doxygenclass:: stored::ExampleComponentsBase
 
-.. doxygenclass:: stored::ExampleComponents
+.. doxygenclass:: ExampleComponentsStore
 

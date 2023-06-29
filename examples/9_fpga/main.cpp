@@ -20,9 +20,12 @@ public:
 	ExampleFpga() is_default
 };
 
-class ExampleFpga2
-	: public STORE_T(ExampleFpga2, stored::Synchronizable, stored::ExampleFpga2Base) {
-	STORE_CLASS(ExampleFpga2, stored::Synchronizable, stored::ExampleFpga2Base)
+class ExampleFpga2 : public STORE_T(
+			     ExampleFpga2, stored::ExampleFpga2DefaultFunctions,
+			     stored::Synchronizable, stored::ExampleFpga2Base) {
+	STORE_CLASS(
+		ExampleFpga2, stored::ExampleFpga2DefaultFunctions, stored::Synchronizable,
+		stored::ExampleFpga2Base)
 public:
 	ExampleFpga2() is_default
 };

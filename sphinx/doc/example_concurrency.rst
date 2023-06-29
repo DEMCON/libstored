@@ -43,5 +43,5 @@ When started like: ``concurrency 3``
 
    .. doxygenclass:: stored::ExampleConcurrencyControlBase
 
-   .. doxygenclass:: stored::ExampleConcurrencyControl
+   .. doxygenclass:: ControlStore
 
