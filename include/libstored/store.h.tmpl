@@ -741,6 +741,11 @@ protected:
 	void __{{o.cname}}__changed() noexcept {}
 {% endfor %}
 
+#	ifdef STORED_COMPILER_GCC
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Waddress"
+#	endif
+
 	/*!
 	 * \brief Check if the #hookEntryRO() callback is still the default
 	 *	(empty) implementation.
@@ -789,6 +794,10 @@ protected:
 {% endfor %}
 			&{{store.name}}Base::__hookChanged == &Implementation::__hookChanged;
 	}
+
+#	ifdef STORED_COMPILER_GCC
+#	pragma GCC diagnostic pop
+#	endif
 
 public:
 {% for a in store.arrays %}
