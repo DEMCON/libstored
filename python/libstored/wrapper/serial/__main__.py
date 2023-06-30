@@ -15,7 +15,7 @@ import serial
 from ...zmq_server import ZmqServer
 from ...serial2zmq import Serial2Zmq
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description='serial wrapper to ZMQ server',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-l', dest='zmqlisten', type=str, default='*', help='ZMQ listen address')
@@ -43,4 +43,5 @@ if __name__ == '__main__':
 
     bridge.close()
 
-
+if __name__ == '__main__':
+    main()
