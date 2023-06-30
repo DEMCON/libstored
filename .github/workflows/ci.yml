@@ -101,6 +101,8 @@ jobs:
           python-version: '3.10'
       - name: bootstrap
         run: dist/macos/bootstrap.sh
+      - name: venv
+        run: VENV_SKIP_PIP=1 dist/common/venv.sh check
       - name: build Debug
         run: dist/macos/build.sh Debug dev test
       - name: build Release
