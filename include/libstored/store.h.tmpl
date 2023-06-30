@@ -289,7 +289,13 @@ class {{store.name}}Base
 	STORED_CLASS_NOCOPY({{store.name}}Base)
 protected:
 	/*! \brief Default constructor. */
-	{{store.name}}Base() is_default
+	{{store.name}}Base()
+#	ifndef NDEBUG
+		: m_inHook(false)
+	{}
+#	else
+	is_default
+#	endif
 
 public:
 	typedef {{store.name}}Objects<{{store.name}}Base, Implementation_> Objects;
@@ -682,6 +688,8 @@ protected:
 		STORED_UNUSED(type)
 		STORED_UNUSED(buffer)
 		STORED_UNUSED(len)
+
+		__hookEntryCheck();
 	}
 
 	/*!
@@ -690,6 +698,8 @@ protected:
 	 */
 	void __hookExitX(Type::type type, void* buffer, size_t len, bool changed) noexcept
 	{
+		__hookExitCheck();
+
 		if(changed)
 			hookChanged(type, buffer, len);
 	}
@@ -720,6 +730,8 @@ protected:
 		STORED_UNUSED(type)
 		STORED_UNUSED(buffer)
 		STORED_UNUSED(len)
+
+		__hookEntryCheck();
 	}
 
 	/*!
@@ -731,7 +743,38 @@ protected:
 		STORED_UNUSED(type)
 		STORED_UNUSED(buffer)
 		STORED_UNUSED(len)
+
+		__hookExitCheck();
 	}
+
+private:
+#	ifndef NDEBUG
+	bool m_inHook;
+
+	void __hookEntryCheck() noexcept
+	{
+		if(Config::EnableAssert && Config::EnableHooks) {
+			// You should not enter RO/X twice. It could happen if
+			// you access a store variable within a entry/exit RO/X
+			// scope.
+			stored_assert(!m_inHook);
+			m_inHook = true;
+		}
+	}
+
+	void __hookExitCheck() noexcept
+	{
+		if(Config::EnableAssert && Config::EnableHooks) {
+			stored_assert(m_inHook);
+			m_inHook = false;
+		}
+	}
+#	else // NDEBUG
+	void __hookEntryCheck() noexcept {}
+	void __hookExitCheck() noexcept {}
+#	endif // NDEBUG
+
+protected:
 {% for o in store.objects|select('variable') %}
 
 	/*!
