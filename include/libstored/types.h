@@ -1628,7 +1628,7 @@ public:
 	void entryRO(size_t len) const noexcept
 	{
 		if(Config::EnableHooks) {
-			container().hookExitRO(type(), m_buffer, len);
+			container().hookEntryRO(type(), m_buffer, len);
 #	ifdef _DEBUG
 			stored_assert(m_entry == EntryNone);
 			m_entry = EntryRO;

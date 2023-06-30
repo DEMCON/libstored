@@ -21,6 +21,14 @@ Added
 
 ...
 
+Changed
+```````
+
+- Get a compile error when a store class does provide the implementation of all
+  functions, and provide a store wrapper to add default function
+  implementations.
+- Check against recursive entry/exit RO/X locks per store.
+
 Fixed
 `````
 
