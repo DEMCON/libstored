@@ -22,14 +22,20 @@ python3 "${dir}/common/check_venv.py" || in_venv=1
 
 function venv_install {
 	if [[ ! -e ${venv_dir} ]]; then
+		pkg=wheel
+
+		if [[ ${VENV_SKIP_PIP:-0} != 1 ]]; then
+			pkg="${pkg} pip"
+		fi
+
 		if [[ ${in_venv} == 1 ]]; then
 			echo "Preparing current venv with `which python3`..."
-			python3 -m pip install --upgrade wheel pip || gotErr
+			python3 -m pip install --upgrade ${pkg} || gotErr
 			mkdir -p "${venv_dir}" || gotErr
 		else
 			echo Installing venv in "${venv_dir}"...
 			python3 -m venv "${venv_dir}" || gotErr
-			"${venv_dir}/bin/python3" -m pip install --upgrade wheel pip || gotErr
+			"${venv_dir}/bin/python3" -m pip install --upgrade ${pkg} || gotErr
 		fi
 	fi
 }
