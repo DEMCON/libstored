@@ -14,7 +14,7 @@ import logging
 from ..zmq_client import ZmqClient
 from ..zmq_server import ZmqServer
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description='ZMQ command line client')
     parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
     parser.add_argument('-p', dest='port', type=int, default=ZmqServer.default_port, help='port')
@@ -43,3 +43,5 @@ if __name__ == '__main__':
 
     client.close()
 
+if __name__ == '__main__':
+    main()

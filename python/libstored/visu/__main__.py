@@ -35,7 +35,9 @@ def msgHandler(msgType, context, msg):
     else:
         logger.critical(msg)
 
-if __name__ == '__main__':
+def main():
+    global logger
+
     logger = logging.getLogger('visu')
     qInstallMessageHandler(msgHandler)
 
@@ -98,3 +100,5 @@ if __name__ == '__main__':
     client.close()
     sys.exit(res)
 
+if __name__ == '__main__':
+    main()

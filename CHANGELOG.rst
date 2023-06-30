@@ -19,8 +19,6 @@ Added
 - Python `libstored.log` command line logging tool to easily generate a CSV
   file with samples.
 
-...
-
 Changed
 ```````
 
@@ -28,11 +26,7 @@ Changed
   functions, and provide a store wrapper to add default function
   implementations.
 - Check against recursive entry/exit RO/X locks per store.
-
-Fixed
-`````
-
-...
+- Replaced deprecated ``setup.py`` and removed deprecated ``ed2`` package.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.4.0...HEAD
 

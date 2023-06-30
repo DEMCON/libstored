@@ -490,7 +490,9 @@ def signal_handler(sig, stk, app):
 
 
 
-if __name__ == '__main__':
+def main():
+    global logger
+
     logger = logging.getLogger('gui')
     qInstallMessageHandler(msgHandler)
 
@@ -602,3 +604,6 @@ if __name__ == '__main__':
     gc.collect()
 
     sys.exit(res)
+
+if __name__ == '__main__':
+    main()

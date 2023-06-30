@@ -36,7 +36,9 @@ def signal_handler(sig, stk, app):
     app.exit(1)
     signal.signal(sig, signal.SIG_DFL)
 
-if __name__ == '__main__':
+def main():
+    global logger
+
     logger = logging.getLogger('log')
     qInstallMessageHandler(msgHandler)
 
@@ -111,3 +113,6 @@ if __name__ == '__main__':
     client.close()
 
     sys.exit(res)
+
+if __name__ == '__main__':
+    main()

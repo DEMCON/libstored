@@ -14,7 +14,7 @@ import re
 from ...zmq_server import ZmqServer
 from ...stdio2zmq import Stdio2Zmq
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description='stdin/stdout wrapper to ZMQ server',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-l', dest='listen', type=str, default='*', help='listen address')
@@ -40,3 +40,5 @@ if __name__ == '__main__':
 
     bridge.close()
 
+if __name__ == '__main__':
+    main()

@@ -1,8 +1,9 @@
 -r requirements-minimal.txt
 
 # Packages for (py)libstored
-setuptools >= 38.6.0
+setuptools >= 51.0.0
 wheel >= 0.31.0
+build
 pyzmq
 PySide6
 pyserial

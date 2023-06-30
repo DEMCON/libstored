@@ -42,3 +42,8 @@ configure_file(
 	${PROJECT_SOURCE_DIR}/python/libstored/version.py
 	@ONLY ESCAPE_QUOTES)
 
+configure_file(
+	${PROJECT_SOURCE_DIR}/python/version.txt.in
+	${PROJECT_SOURCE_DIR}/python/version.txt
+	@ONLY ESCAPE_QUOTES)
+
