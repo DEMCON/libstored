@@ -623,16 +623,18 @@ private:
 		if(triggered)
 			*triggered = triggered_;
 
+		decltype(auto) ret = triggered_ ? Last_::inject(x) : Last_::exit_cast(x);
+
 		// If x is a reference type, we can safely return a reference
 		// type.  However, if it is not a reference, we should not let
-		// inject()/exit_cast() return a reference, as it would point
+		// inject()/exit_cast() return a reference, as it could point
 		// to x, which goes out of scope.
 		using x_type = decltype(x);
+		using ret_type = decltype(ret);
 		using return_type = std::conditional_t<
-			std::is_reference<x_type>::value, x_type, std::decay_t<x_type>>;
+			std::is_reference<x_type>::value, ret_type, std::decay_t<ret_type>>;
 
-		return static_cast<return_type>(
-			triggered_ ? Last_::inject(x) : Last_::exit_cast(x));
+		return static_cast<return_type>(ret);
 	}
 
 	template <
