@@ -1,11 +1,17 @@
 if(TARGET Qt5::Core)
 	find_package(Qt5 COMPONENTS Gui Quick)
 	set(QtNs Qt5)
-	set(Qt_FOUND ${Qt5_FOUND})
+
+	if(CMAKE_CXX_STANDARD GREATER_EQUAL 11 AND CMAKE_CXX_STANDARD LESS 98)
+		set(Qt_FOUND ${Qt5_FOUND})
+	endif()
 else()
 	find_package(Qt6 COMPONENTS Gui Quick)
 	set(QtNs Qt)
-	set(Qt_FOUND ${Qt6_FOUND})
+
+	if(CMAKE_CXX_STANDARD GREATER_EQUAL 17 AND CMAKE_CXX_STANDARD LESS 98)
+		set(Qt_FOUND ${Qt6_FOUND})
+	endif()
 endif()
 
 if(Qt_FOUND)
