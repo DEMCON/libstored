@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C++ &mdash; libstored 1.5.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Config" href="cpp_config.html" />
+    <link rel="prev" title="Workflow" href="workflow.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            libstored
+          </a>
+              <div class="version">
+                1.5.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Content</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">CHANGELOG</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">C++</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cpp_config.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html">Debugger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_directory.html">Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html">Pipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_poller.html">Poller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html">Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_synchronizer.html">Synchronizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fpga.html">VHDL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libstored</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">C++</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/doc/cpp.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="c">
+<h1>C++<a class="headerlink" href="#c" title="Permalink to this heading"></a></h1>
+<p>This is the C++ API used by the generated store classes, and to be used in the
+application to instantiate the <a class="reference internal" href="cpp_debugger.html#_CPPv4N6stored8DebuggerE" title="stored::Debugger"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Debugger</span></code></a>,
+<a class="reference internal" href="cpp_synchronizer.html#_CPPv4N6stored12SynchronizerE" title="stored::Synchronizer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Synchronizer</span></code></a> and the relevant
+<a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::ProtocolLayer</span></code></a> subclasses to build a protocol stack for
+your application.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cpp_config.html">Config</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cpp_config.html#stored-defaultconfig">stored::DefaultConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_config.html#stored-config">stored::Config</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_components.html">Components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cpp_components.html#stored-amplifier">stored::Amplifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_components.html#stored-firstorderfilter">stored::FirstOrderFilter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_components.html#stored-pid">stored::PID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_components.html#stored-pinin">stored::PinIn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_components.html#stored-pinout">stored::PinOut</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_components.html#stored-pulsewave">stored::PulseWave</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_components.html#stored-ramp">stored::Ramp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_components.html#stored-sine">stored::Sine</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_debugger.html">Debugger</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html#protocol">Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cpp_debugger.html#capabilities">Capabilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_debugger.html#echo">Echo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_debugger.html#read">Read</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_debugger.html#write">Write</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_debugger.html#list">List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_debugger.html#alias">Alias</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_debugger.html#macro">Macro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_debugger.html#identification">Identification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_debugger.html#version">Version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_debugger.html#read-memory">Read memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_debugger.html#write-memory">Write memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_debugger.html#streams">Streams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_debugger.html#flush">Flush</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_debugger.html#tracing">Tracing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html#stored-debugger">stored::Debugger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html#stored-debugstorebase">stored::DebugStoreBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_debugger.html#stored-debugvariant">stored::DebugVariant</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_directory.html">Directory</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cpp_directory.html#stored-find">stored::find()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_directory.html#stored-list">stored::list()</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_pipes.html">Pipes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-pipebase">stored::pipes::PipeBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-pipe">stored::pipes::Pipe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-pipeentry">stored::pipes::PipeEntry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-pipeexit">stored::pipes::PipeExit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-group">stored::pipes::Group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-buffer">stored::pipes::Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-call">stored::pipes::Call</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-cast">stored::pipes::Cast</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-changes">stored::pipes::Changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-constrained">stored::pipes::Constrained</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-convert">stored::pipes::Convert</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-get">stored::pipes::Get</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-identity">stored::pipes::Identity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-log">stored::pipes::Log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-map">stored::pipes::Map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-mux">stored::pipes::Mux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-ratelimit">stored::pipes::RateLimit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-set">stored::pipes::Set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-signal">stored::pipes::Signal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-tee">stored::pipes::Tee</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-transistor">stored::pipes::Transistor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html#stored-pipes-triggered">stored::pipes::Triggered</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_poller.html">Poller</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cpp_poller.html#pollables">Pollables</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollable">stored::Pollable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollablecallback">stored::PollableCallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollablefd">stored::PollableFd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollablefilelayer">stored::PollableFileLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollablehandle">stored::PollableHandle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollablesocket">stored::PollableSocket</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollablezmqlayer">stored::PollableZmqLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollablezmqsocket">stored::PollableZmqSocket</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_poller.html#stored-inheritablepoller">stored::InheritablePoller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_poller.html#stored-poller">stored::Poller</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_protocol.html">Protocol</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-asciiescapelayer">stored::AsciiEscapeLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-bufferlayer">stored::BufferLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-callbacklayer">stored::CallbackLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-compresslayer">stored::CompressLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-crc16layer">stored::Crc16Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-crc8layer">stored::Crc8Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-debugarqlayer">stored::DebugArqLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-debugzmqlayer">stored::DebugZmqLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-doublepipelayer">stored::DoublePipeLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-fifoloopback">stored::FifoLoopback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-fifoloopback1">stored::FifoLoopback1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-filelayer">stored::FileLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-idlechecklayer">stored::IdleCheckLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-loopback">stored::Loopback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-namedpipelayer">stored::NamedPipeLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-printlayer">stored::PrintLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-segmentationlayer">stored::SegmentationLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-seriallayer">stored::SerialLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-stdiolayer">stored::StdioLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-synczmqlayer">stored::SyncZmqLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-terminallayer">stored::TerminalLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-xsimlayer">stored::XsimLayer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#abstract-classes">Abstract classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cpp_protocol.html#stored-arqlayer">stored::ArqLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_protocol.html#stored-polledfilelayer">stored::PolledFileLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_protocol.html#stored-polledlayer">stored::PolledLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_protocol.html#stored-protocollayer">stored::ProtocolLayer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_synchronizer.html">Synchronizer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cpp_synchronizer.html#protocol">Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cpp_synchronizer.html#hello">Hello</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_synchronizer.html#welcome">Welcome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_synchronizer.html#update">Update</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_synchronizer.html#proposal">Proposal</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_synchronizer.html#bye">Bye</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_synchronizer.html#stored-storejournal">stored::StoreJournal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_synchronizer.html#stored-syncconnection">stored::SyncConnection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_synchronizer.html#stored-synchronizable">stored::Synchronizable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_synchronizer.html#stored-synchronizer">stored::Synchronizer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_types.html">Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cpp_types.html#stored-function">stored::Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_types.html#stored-totype">stored::toType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_types.html#stored-variable">stored::Variable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_types.html#stored-variable-with-hooks">stored::Variable with hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_types.html#stored-variant">stored::Variant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_types.html#stored-variant-void">stored::Variant&lt;void&gt;</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_util.html">Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#likely">likely</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#saturated-cast">saturated_cast</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-assert">stored_assert</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-banner">stored::banner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-fifo">stored::Fifo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-memcmp-swap">stored::memcmp_swap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-messagefifo">stored::MessageFifo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-scratchpad">stored::Scratchpad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-signal">stored::Signal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-signalling">stored::Signalling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-string-literal">stored::string_literal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-strncmp">stored::strncmp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-strncpy">stored::strncpy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_util.html#stored-swap-endian">stored::swap_endian</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="workflow.html" class="btn btn-neutral float-left" title="Workflow" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cpp_config.html" class="btn btn-neutral float-right" title="Config" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2022, Jochem Rutgers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

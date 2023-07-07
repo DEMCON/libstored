@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fibered &mdash; libstored 1.5.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="meta" href="example_meta.html" />
+    <link rel="prev" title="control" href="example_control.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            libstored
+          </a>
+              <div class="version">
+                1.5.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Content</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">CHANGELOG</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cpp.html">C++</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fpga.html">VHDL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="example_1_hello.html">1_hello</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_2_basic.html">2_basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_3_scope.html">3_scope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_4_function.html">4_function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_5_debug.html">5_debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_6_hooks.html">6_hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_7_protocol.html">7_protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_8_sync.html">8_sync</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_9_fpga.html">9_fpga</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_components.html">components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_concurrency.html">concurrency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_control.html">control</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">fibered</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#store-definition">Store definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#application">Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#output">Output</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="example_meta.html">meta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_pipes.html">pipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_terminal.html">terminal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_zmqserver.html">zmqserver</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libstored</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="examples.html">Examples</a></li>
+      <li class="breadcrumb-item active">fibered</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/doc/example_fibered.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="fibered">
+<h1>fibered<a class="headerlink" href="#fibered" title="Permalink to this heading"></a></h1>
+<section id="store-definition">
+<h2>Store definition<a class="headerlink" href="#store-definition" title="Permalink to this heading"></a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int32=1 i
+</pre></div>
+</div>
+</section>
+<section id="application">
+<h2>Application<a class="headerlink" href="#application" title="Permalink to this heading"></a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
+<span class="cm"> * \file</span>
+<span class="cm"> * \brief Zth integration example.</span>
+<span class="cm"> */</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ExampleFibered.h&quot;</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdio&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stored&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;zth&gt;</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">sender</span><span class="p">(</span><span class="n">stored</span><span class="o">::</span><span class="n">ExampleFibered</span><span class="o">&amp;</span><span class="w"> </span><span class="n">store</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Started sender</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+<span class="w">	</span><span class="c1">// Create something to communicate with the receiver fiber.  In this</span>
+<span class="w">	</span><span class="c1">// case, use a SyncZmqLayer, but any Win32 SOCKET, file descriptor,</span>
+<span class="w">	</span><span class="c1">// ZeroMQ socket, etc. will do.</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">SyncZmqLayer</span><span class="w"> </span><span class="n">layer</span><span class="p">(</span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;inproc://fibered&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+
+<span class="w">	</span><span class="c1">// Sleep for a while, to make the receiver block on poll().</span>
+<span class="w">	</span><span class="n">zth</span><span class="o">::</span><span class="n">nap</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+<span class="w">	</span><span class="c1">// Send something.</span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Sending...</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">	</span><span class="n">zth</span><span class="o">::</span><span class="n">cow_string</span><span class="w"> </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zth</span><span class="o">::</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;From sender fiber: %d&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">i</span><span class="p">.</span><span class="n">as</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">());</span>
+<span class="w">	</span><span class="n">layer</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="n">msg</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span><span class="w"> </span><span class="n">msg</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+<span class="p">}</span>
+<span class="n">zth_fiber</span><span class="p">(</span><span class="n">sender</span><span class="p">)</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">receiver</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Started receiver</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">PrintLayer</span><span class="w"> </span><span class="n">print</span><span class="p">;</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">SyncZmqLayer</span><span class="w"> </span><span class="n">layer</span><span class="p">(</span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;inproc://fibered&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+<span class="w">	</span><span class="n">layer</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">print</span><span class="p">);</span>
+
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Poller</span><span class="w"> </span><span class="n">poller</span><span class="p">;</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">PollableZmqLayer</span><span class="w"> </span><span class="nf">pollable</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span><span class="w"> </span><span class="n">stored</span><span class="o">::</span><span class="n">Pollable</span><span class="o">::</span><span class="n">PollIn</span><span class="p">);</span>
+
+<span class="w">	</span><span class="k">if</span><span class="p">((</span><span class="n">errno</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">poller</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">pollable</span><span class="p">)))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">		</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot add pollable&quot;</span><span class="p">);</span>
+<span class="w">		</span><span class="k">return</span><span class="p">;</span>
+<span class="w">	</span><span class="p">}</span>
+
+<span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;poll...</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+<span class="w">	</span><span class="c1">// Without Zth, poll() will block the current thread. With Zth, it will</span>
+<span class="w">	</span><span class="c1">// only block the current fiber. All pollables are forwarded to a</span>
+<span class="w">	</span><span class="c1">// single fiber that does the actual poll.</span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">().</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">		</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot poll&quot;</span><span class="p">);</span>
+<span class="w">		</span><span class="k">return</span><span class="p">;</span>
+<span class="w">	</span><span class="p">}</span>
+
+<span class="w">	</span><span class="k">if</span><span class="p">((</span><span class="n">errno</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">layer</span><span class="p">.</span><span class="n">recv</span><span class="p">()))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">		</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot recv&quot;</span><span class="p">);</span>
+<span class="w">		</span><span class="k">return</span><span class="p">;</span>
+<span class="w">	</span><span class="p">}</span>
+<span class="p">}</span>
+<span class="n">zth_fiber</span><span class="p">(</span><span class="n">receiver</span><span class="p">)</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="n">main_fiber</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">	</span><span class="n">STORED_UNUSED</span><span class="p">(</span><span class="n">argc</span><span class="p">)</span>
+<span class="w">	</span><span class="n">STORED_UNUSED</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+
+<span class="w">	</span><span class="n">puts</span><span class="p">(</span><span class="n">zth</span><span class="o">::</span><span class="n">banner</span><span class="p">());</span>
+<span class="w">	</span><span class="n">puts</span><span class="p">(</span><span class="n">stored</span><span class="o">::</span><span class="n">banner</span><span class="p">());</span>
+
+<span class="w">	</span><span class="c1">// By default, Zth only supports (ZeroMQ) sockets, but libstored has</span>
+<span class="w">	</span><span class="c1">// extended this with files, ProtocolLayers, and more. To handle these,</span>
+<span class="w">	</span><span class="c1">// we have to register libstored&#39;s poller as the poller server.</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">PollerServer</span><span class="w"> </span><span class="n">pollerServer</span><span class="p">;</span>
+<span class="w">	</span><span class="n">zth</span><span class="o">::</span><span class="n">currentWorker</span><span class="p">().</span><span class="n">waiter</span><span class="p">().</span><span class="n">setPoller</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pollerServer</span><span class="p">);</span>
+
+<span class="w">	</span><span class="c1">// Now, do something that poll()s.</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">ExampleFibered</span><span class="w"> </span><span class="n">s</span><span class="p">;</span>
+
+<span class="w">	</span><span class="n">async</span><span class="w"> </span><span class="nf">sender</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+<span class="w">	</span><span class="n">receiver_future</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">async</span><span class="w"> </span><span class="n">receiver</span><span class="p">();</span>
+<span class="w">	</span><span class="n">f</span><span class="o">-&gt;</span><span class="n">wait</span><span class="p">();</span>
+
+<span class="w">	</span><span class="c1">// Reset to default poller, before we destruct pollerServer.</span>
+<span class="w">	</span><span class="n">zth</span><span class="o">::</span><span class="n">currentWorker</span><span class="p">().</span><span class="n">waiter</span><span class="p">().</span><span class="n">setPoller</span><span class="p">();</span>
+
+<span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this heading"></a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Zth 1.0.0 g++-9.3.0 C++14 linux x86_64 threads ucontext
+libstored 1.1.0-alpha C++14 gcc linux le zth zmq poll=zth-zmq draft
+Started receiver
+poll...
+Started sender
+Sending...
+ &lt; From sender fiber: 1
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="example_control.html" class="btn btn-neutral float-left" title="control" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="example_meta.html" class="btn btn-neutral float-right" title="meta" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2022, Jochem Rutgers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

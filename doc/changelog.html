@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CHANGELOG &mdash; libstored 1.5.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Workflow" href="workflow.html" />
+    <link rel="prev" title="libstored" href="intro.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            libstored
+          </a>
+              <div class="version">
+                1.5.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Content</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">libstored</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CHANGELOG</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#unreleased">Unreleased</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#added">Added</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">1.5.0 - 2023-07-07</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#changed">Changed</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">1.4.0 - 2023-04-06</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fixed">Fixed</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id8">1.3.1 - 2022-10-21</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Fixed</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id12">1.3.0 - 2022-10-20</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id13">Added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id14">Changed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">Fixed</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id17">1.2.0 - 2022-03-28</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id18">Added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id19">Changed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id20">Fixed</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id22">1.1.0 - 2022-01-07</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id23">Added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id24">Changed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#removed">Removed</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id26">1.0.0 - 2021-08-25</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id27">Added</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cpp.html">C++</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fpga.html">VHDL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py.html">Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libstored</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">CHANGELOG</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/doc/changelog.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="changelog">
+<h1>CHANGELOG<a class="headerlink" href="#changelog" title="Permalink to this heading"></a></h1>
+<p>All notable changes to this project will be documented in this file.</p>
+<p>The format is based on <a class="reference external" href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>, and this project adheres to <a class="reference external" href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<section id="unreleased">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/compare/v1.5.0...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Permalink to this heading"></a></h2>
+<section id="added">
+<h3>Added<a class="headerlink" href="#added" title="Permalink to this heading"></a></h3>
+<p>…</p>
+</section>
+</section>
+<section id="id2">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.5.0">1.5.0</a> - 2023-07-07<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<section id="id3">
+<h3>Added<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python <cite>libstored.log</cite> command line logging tool to easily generate a CSV
+file with samples.</p></li>
+</ul>
+</section>
+<section id="changed">
+<h3>Changed<a class="headerlink" href="#changed" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Get a compile error when a store class does provide the implementation of all
+functions, and provide a store wrapper to add default function
+implementations.</p></li>
+<li><p>Check against recursive entry/exit RO/X locks per store.</p></li>
+<li><p>Replaced deprecated <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> and removed deprecated <code class="docutils literal notranslate"><span class="pre">ed2</span></code> package.</p></li>
+<li><p>Improved support to <code class="docutils literal notranslate"><span class="pre">include(libstored)</span></code> in your CMake project.</p></li>
+</ul>
+</section>
+</section>
+<section id="id5">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.4.0">1.4.0</a> - 2023-04-06<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
+<section id="id6">
+<h3>Added<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>First-order high-pass filter.</p></li>
+<li><p>Pipes, to process data using functional composition.</p></li>
+<li><p>A Signal class (with Signalling store wrapper) to call functions when the
+signal is triggered (or a store variable is changed).</p></li>
+</ul>
+</section>
+<section id="fixed">
+<h3>Fixed<a class="headerlink" href="#fixed" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Properly calling hooks by the Synchronizer.</p></li>
+<li><p>Minor issues with pylibstored.</p></li>
+</ul>
+</section>
+</section>
+<section id="id8">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.3.1">1.3.1</a> - 2022-10-21<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
+<section id="id9">
+<h3>Fixed<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>PySide6 6.4.0 support in changed <code class="docutils literal notranslate"><span class="pre">enum</span></code> handling. However, the same issue
+exists in matplotlib (issue <a class="reference external" href="https://github.com/matplotlib/matplotlib/issues/24155">#24155</a>).  To get plotting working again,
+matplotlib&gt;=3.6.2 or PySide6&lt;6.4.0 is required.</p></li>
+</ul>
+</section>
+</section>
+<section id="id12">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.3.0">1.3.0</a> - 2022-10-20<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h2>
+<section id="id13">
+<h3>Added<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Maximum error for PID.</p></li>
+<li><p>Stream visualization in the Embedded Debugger.</p></li>
+</ul>
+</section>
+<section id="id14">
+<h3>Changed<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Switch license to MPLv2.</p></li>
+</ul>
+</section>
+<section id="id15">
+<h3>Fixed<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fix in computing <code class="docutils literal notranslate"><span class="pre">stored::Ramp</span></code> acceleration and speed.</p></li>
+<li><p>Fix in compressed Debugger streams upon internal buffer overflow.</p></li>
+<li><p>Handle unaligned memory access properly in store objects.</p></li>
+</ul>
+</section>
+</section>
+<section id="id17">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.2.0">1.2.0</a> - 2022-03-28<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h2>
+<section id="id18">
+<h3>Added<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Add QObject/QML wrapper for stores to access a store directly in QML.</p></li>
+<li><p>Generate store variable changed callbacks.</p></li>
+<li><p>Allow string variables to be initialized.</p></li>
+<li><p>Generate store meta data in <code class="docutils literal notranslate"><span class="pre">doc/&lt;store&gt;Meta.py</span></code></p></li>
+</ul>
+</section>
+<section id="id19">
+<h3>Changed<a class="headerlink" href="#id19" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Replaced <code class="docutils literal notranslate"><span class="pre">UNUSED_PAR</span></code> by a more portable <code class="docutils literal notranslate"><span class="pre">UNUSED</span></code> macro.</p></li>
+</ul>
+</section>
+<section id="id20">
+<h3>Fixed<a class="headerlink" href="#id20" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Improved QtCreator integration, such as store code-completion</p></li>
+<li><p>Fix support for disabling RTTI</p></li>
+<li><p>Fix support for disabling exceptions</p></li>
+</ul>
+</section>
+</section>
+<section id="id22">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.1.0">1.1.0</a> - 2022-01-07<a class="headerlink" href="#id22" title="Permalink to this heading"></a></h2>
+<section id="id23">
+<h3>Added<a class="headerlink" href="#id23" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Add support for ninja, and default to it in build scripts.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> for plotting signals by <code class="docutils literal notranslate"><span class="pre">libstored.gui</span></code>.</p></li>
+</ul>
+</section>
+<section id="id24">
+<h3>Changed<a class="headerlink" href="#id24" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Migrate pylibstored from PySide2 to PySide6.</p></li>
+<li><p>Restructure <code class="docutils literal notranslate"><span class="pre">scripts</span></code> directory into <code class="docutils literal notranslate"><span class="pre">dist</span></code>.</p></li>
+<li><p>Replace poller API.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">libstored_lib</span></code> and <code class="docutils literal notranslate"><span class="pre">libstored_generate</span></code> now take keyword-based
+parameters, but old (positional) interface is still supported.</p></li>
+<li><p>Improve <a class="reference external" href="https://github.com/jhrutgers/zth">Zth</a> integration for fiber-aware polling.</p></li>
+</ul>
+</section>
+<section id="removed">
+<h3>Removed<a class="headerlink" href="#removed" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Drop Ubuntu 18.04 support. PySide6 requires Ubuntu 20.04 or later.</p></li>
+</ul>
+</section>
+</section>
+<section id="id26">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.0.0">1.0.0</a> - 2021-08-25<a class="headerlink" href="#id26" title="Permalink to this heading"></a></h2>
+<p>Initial version.</p>
+<section id="id27">
+<h3>Added<a class="headerlink" href="#id27" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Store generator for C++ and VHDL</p></li>
+<li><p>C++ library to access the store in your application</p></li>
+<li><p>VHDL entities to setup synchronization between VHDL and a C++ store</p></li>
+<li><p>python library with the Embedded Debugger protocol to connect to an
+application</p></li>
+<li><p>A presentation</p></li>
+<li><p>Examples</p></li>
+<li><p>(Unit) tests</p></li>
+<li><p>Some documentation</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="intro.html" class="btn btn-neutral float-left" title="libstored" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="workflow.html" class="btn btn-neutral float-right" title="Workflow" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2022, Jochem Rutgers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
