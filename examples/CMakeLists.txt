@@ -35,6 +35,7 @@ add_subdirectory(7_protocol)
 add_subdirectory(8_sync)
 add_subdirectory(9_fpga)
 add_subdirectory(installed)
+add_subdirectory(integrate)
 add_subdirectory(terminal)
 add_subdirectory(meta)
 
