@@ -22,7 +22,8 @@ add_custom_command(
 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/.timestamp_doxy
 	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/example_filter.py
-	DEPENDS ${EXAMPLES_SRC}
+	DEPENDS ${DOXY_SRC}
+	DEPENDS all-libstored-generate
 	COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 	COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/.timestamp_doxy
 	COMMENT "Parse sources with doxygen"
@@ -32,9 +33,6 @@ add_custom_command(
 add_custom_target(doc-doxygen
 	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/.timestamp_doxy
 )
-
-list(APPEND LIBSTORED_GENERATE_DEPS doc)
-set(LIBSTORED_GENERATE_DEPS "${LIBSTORED_GENERATE_DEPS}" PARENT_SCOPE)
 
 # For README.rst, link the examples directory for screenshots
 if(WIN32)
