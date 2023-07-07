@@ -199,6 +199,19 @@ endif()
 
 option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ${LIBSTORED_CLANG_TIDY_DEFAULT})
 
+set(LIBSTORED_GCC_ANALYZER_DEFAULT OFF)
+
+if(	# Need gcc for this...
+	CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND
+	# ...starting from version 10, but let's start from 12, as it gets
+	# better then, although there is officially no support for C++ yet.
+	CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "12")
+
+	set(LIBSTORED_GCC_ANALYZER_DEFAULT ${LIBSTORED_DEV_OPTION})
+endif()
+
+option(LIBSTORED_GCC_ANALYZER "Run GCC's analyzer" ${LIBSTORED_GCC_ANALYZER_DEFAULT})
+
 add_subdirectory(version)
 
 if(CMAKE_HOST_WIN32)

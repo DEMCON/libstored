@@ -73,7 +73,15 @@ public:
 
 	value_type* allocate(size_t n)
 	{
+#		ifdef STORED_COMPILER_GCC
+#			pragma GCC diagnostic push
+#			pragma GCC diagnostic ignored "-Wanalyzer-malloc-leak"
+#		endif
 		value_type* p = (value_type*)malloc(sizeof(value_type) * n);
+#		ifdef STORED_COMPILER_GCC
+#			pragma GCC diagnostic pop
+#		endif
+
 		if(!p) {
 #		ifdef STORED_cpp_exceptions
 			throw std::bad_alloc();

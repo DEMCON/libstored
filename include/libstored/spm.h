@@ -397,9 +397,10 @@ private:
 	 */
 	void setBufferSize(size_t size) noexcept
 	{
-		stored_assert(m_buffer);
+		char* buf = m_buffer;
+		stored_assert(buf);
 		stored_assert(size > 0);
-		*(size_t*)(chunk(m_buffer)) = size;
+		*(size_t*)(chunk(buf)) = size;
 	}
 
 	/*!
