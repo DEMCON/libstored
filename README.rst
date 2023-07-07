@@ -437,29 +437,46 @@ generate stuff for you.  This is how to integrate it in your project:
 1. Add libstored to your source repository, for example as a submodule.
 2. Run ``dist/<platform>/bootstrap`` in the libstored directory once to install
    all dependencies.
-3. Include libstored in your cmake project. For example:
+3. Include libstored in your cmake project.
+   * By using ``add_directory()`` to completely build libstored:
 
-   .. code:: cmake
+     .. code:: cmake
 
-      set(LIBSTORED_EXAMPLES OFF CACHE BOOL "Disable libstored examples" FORCE)
-      set(LIBSTORED_TESTS OFF CACHE BOOL "Disable libstored tests" FORCE)
-      set(LIBSTORED_DOCUMENTATION OFF CACHE BOOL "Disable libstored documentation" FORCE)
-      add_subdirectory(libstored)
+        set(LIBSTORED_EXAMPLES OFF CACHE BOOL "Disable libstored examples" FORCE)
+        set(LIBSTORED_TESTS OFF CACHE BOOL "Disable libstored tests" FORCE)
+        set(LIBSTORED_DOCUMENTATION OFF CACHE BOOL "Disable libstored documentation" FORCE)
+        add_subdirectory(libstored)
 
-   ZeroMQ support is by default enabled, when the target platform supports it.
-   To disable it, add the following line before ``add_subdirector()`` above:
+     ZeroMQ support is by default enabled, when the target platform supports it.
+     To disable it, add the following line before ``add_subdirectory()`` above:
 
-   .. code:: cmake
+     .. code:: cmake
 
-      set(LIBSTORED_HAVE_LIBZMQ OFF CACHE BOOL "Disable ZeroMQ" FORCE)
+        set(LIBSTORED_HAVE_LIBZMQ OFF CACHE BOOL "Disable ZeroMQ" FORCE)
 
-   Zth_ support is by default disabled. When enabled, it will build Zth from
-   source when not found on your system. Using gcc is required for Zth. To
-   enable it, add:
+     Zth_ support is by default disabled. When enabled, it will build Zth from
+     source when not found on your system. Using gcc is required for Zth. To
+     enable it, add:
 
-   .. code:: cmake
+     .. code:: cmake
 
-      set(LIBSTORED_HAVE_ZTH ON CACHE BOOL "Enable Zth" FORCE)
+        set(LIBSTORED_HAVE_ZTH ON CACHE BOOL "Enable Zth" FORCE)
+
+
+   * Alternatively, use ``include()`` to only include what is required to build
+     stores.  This method does not build the python client, documentation,
+     tests, and examples, as the add_directory() would do.
+
+     .. code:: cmake
+
+        list(APPEND CMAKE_MODULE_PATH extern/libstored/cmake)
+        include(libstored)
+
+     Before including ``libstored``, you can specify similar options as for
+     ``add_subdirectory()``, but the defaults are different. By default, it
+     does not enable ASan, clang-tidy, and ZMQ, etc., where
+     ``add_subdirectory()`` would try to do an auto-detect.  See also
+     ``examples/integrate``.
 
 4. Optional: install ``dist/common/st.vim`` in ``$HOME/.vim/syntax`` to have
    proper syntax highlighting in vim.

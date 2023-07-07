@@ -42,8 +42,6 @@ elseif(UNIX)
 	list(APPEND CMAKE_INSTALL_RPATH "\$ORIGIN/../lib")
 endif()
 
-option(LIBSTORED_INSTALL_STORE_LIBS "Install generated static libstored libraries" ON)
-
 option(LIBSTORED_DEV "Enable by default development related build options" OFF)
 if(LIBSTORED_DEV)
 	set(LIBSTORED_DEV_OPTION ON)
@@ -203,10 +201,6 @@ option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ${LIBSTORED_CLANG_TIDY_DEFAULT})
 
 add_subdirectory(version)
 
-if(LIBSTORED_DOCUMENTATION AND LIBSTORED_PYLIBSTORED)
-	add_subdirectory(sphinx)
-endif()
-
 if(CMAKE_HOST_WIN32)
 	find_program(PYTHON_EXECUTABLE python)
 else()
@@ -218,6 +212,10 @@ if(NOT PYTHON_EXECUTABLE)
 	message(FATAL_ERROR "Cannot find python")
 else()
 	message(STATUS "Using python ${PYTHON_EXECUTABLE}")
+endif()
+
+if(LIBSTORED_DOCUMENTATION AND LIBSTORED_PYLIBSTORED)
+	add_subdirectory(sphinx)
 endif()
 
 set(LIBSTORED_SOURCE_DIR ${PROJECT_SOURCE_DIR} CACHE STRING "Path to the libstored sources" FORCE)

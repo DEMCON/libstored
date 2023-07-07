@@ -23,6 +23,24 @@ if(NOT PYTHON_EXECUTABLE)
 	endif()
 endif()
 
+option(LIBSTORED_INSTALL_STORE_LIBS "Install generated static libstored libraries" ON)
+option(LIBSTORED_DRAFT_API "Enable draft API" ON)
+option(LIBSTORED_DISABLE_EXCEPTIONS "Disable exception support" OFF)
+option(LIBSTORED_DISABLE_RTTI "Disable run-time type information support" OFF)
+
+# These options are related to development of libstored itself. By default, turn off.
+option(LIBSTORED_DEV "Development related build options" OFF)
+option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" OFF)
+option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" OFF)
+option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" OFF)
+option(LIBSTORED_CLANG_TIDY "Run clang-tidy" OFF)
+
+# By default, only depend on other libraries when requested.
+option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" OFF)
+option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" OFF)
+option(LIBSTORED_HAVE_ZTH "Use Zth" OFF)
+option(LIBSTORED_HAVE_QT "Use Qt" OFF)
+
 # A dummy target that depends on all ...-generated targets.  May be handy in
 # case of generating documentation, for example, where all generated header
 # files are required.
@@ -54,8 +72,10 @@ function(libstored_lib libprefix libpath)
 	endif()
 
 	set(LIBSTORED_LIB_TARGET_SRC "")
+	set(LIBSTORED_LIB_TARGET_HEADERS "")
 	foreach(m IN ITEMS ${LIBSTORED_LIB_STORES})
 		list(APPEND LIBSTORED_LIB_TARGET_SRC "${LIBSTORED_LIB_DESTINATION}/include/${m}.h")
+		list(APPEND LIBSTORED_LIB_TARGET_HEADERS "${LIBSTORED_LIB_DESTINATION}/include/${m}.h")
 		list(APPEND LIBSTORED_LIB_TARGET_SRC "${LIBSTORED_LIB_DESTINATION}/src/${m}.cpp")
 	endforeach()
 
@@ -301,6 +321,10 @@ function(libstored_lib libprefix libpath)
 			PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 		)
 
+		install(FILES ${LIBSTORED_LIB_TARGET_HEADERS}
+			DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+		)
+
 		install(DIRECTORY ${LIBSTORED_LIB_DESTINATION}/doc/ DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored)
 		install(EXPORT ${LIBSTORED_LIB_TARGET}Store DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake)
 	endif()
@@ -428,9 +452,9 @@ function(libstored_generate target) # add all other models as varargs
 		endif()
 	endif()
 
-	if(LIBSTORED_DOCUMENTATION AND TARGET doc)
-		add_dependencies(doc ${LIBSTORED_GENERATE_TARGET}-libstored-generate)
-	endif()
+	foreach(d IN LISTS LIBSTORED_GENERATE_DEPS)
+		add_dependencies(${d} ${LIBSTORED_GENERATE_TARGET}-libstored-generate)
+	endforeach()
 
 	libstored_copy_dlls(${LIBSTORED_GENERATE_TARGET})
 endfunction()
