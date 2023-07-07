@@ -438,6 +438,7 @@ generate stuff for you.  This is how to integrate it in your project:
 2. Run ``dist/<platform>/bootstrap`` in the libstored directory once to install
    all dependencies.
 3. Include libstored in your cmake project.
+
    * By using ``add_directory()`` to completely build libstored:
 
      .. code:: cmake
@@ -461,7 +462,6 @@ generate stuff for you.  This is how to integrate it in your project:
      .. code:: cmake
 
         set(LIBSTORED_HAVE_ZTH ON CACHE BOOL "Enable Zth" FORCE)
-
 
    * Alternatively, use ``include()`` to only include what is required to build
      stores.  This method does not build the python client, documentation,
