@@ -33,6 +33,9 @@ add_custom_target(doc-doxygen
 	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/.timestamp_doxy
 )
 
+list(APPEND LIBSTORED_GENERATE_DEPS doc)
+set(LIBSTORED_GENERATE_DEPS "${LIBSTORED_GENERATE_DEPS}" PARENT_SCOPE)
+
 # For README.rst, link the examples directory for screenshots
 if(WIN32)
 	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_SOURCE_DIR}/doc/examples/zmqserver")
@@ -70,6 +73,6 @@ add_custom_command(
 	COMMENT "Generating API documentation (see ${CMAKE_CURRENT_BINARY_DIR}/_build/html/index.html)"
 )
 
-add_custom_target(doc
+add_custom_target(doc ALL
 	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/.timestamp_html
 )
