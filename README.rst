@@ -465,7 +465,7 @@ generate stuff for you.  This is how to integrate it in your project:
 
    * Alternatively, use ``include()`` to only include what is required to build
      stores.  This method does not build the python client, documentation,
-     tests, and examples, as the add_directory() would do.
+     tests, and examples, as the ``add_subdirectory()`` would do.
 
      .. code:: cmake
 
