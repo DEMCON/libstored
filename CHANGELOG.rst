@@ -15,6 +15,17 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 
 Added
 ``````
+...
+
+.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.5.0...HEAD
+
+
+
+`1.5.0`_ - 2023-07-07
+---------------------
+
+Added
+`````
 
 - Python `libstored.log` command line logging tool to easily generate a CSV
   file with samples.
@@ -27,15 +38,17 @@ Changed
   implementations.
 - Check against recursive entry/exit RO/X locks per store.
 - Replaced deprecated ``setup.py`` and removed deprecated ``ed2`` package.
+- Improved support to ``include(libstored)`` in your CMake project.
 
-.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.4.0...HEAD
+.. _1.5.0: https://github.com/DEMCON/libstored/releases/tag/v1.5.0
+
 
 
 `1.4.0`_ - 2023-04-06
 ---------------------
 
 Added
-``````
+`````
 
 - First-order high-pass filter.
 - Pipes, to process data using functional composition.
@@ -71,7 +84,7 @@ Fixed
 ---------------------
 
 Added
-``````
+`````
 
 - Maximum error for PID.
 - Stream visualization in the Embedded Debugger.
