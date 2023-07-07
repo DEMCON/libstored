@@ -34,6 +34,7 @@ option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" OFF)
 option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" OFF)
 option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" OFF)
 option(LIBSTORED_CLANG_TIDY "Run clang-tidy" OFF)
+option(LIBSTORED_GCC_ANALYZER "Run GCC's analyzer" OFF)
 
 # By default, only depend on other libraries when requested.
 option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" OFF)
@@ -201,6 +202,8 @@ function(libstored_lib libprefix libpath)
 		target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC heatshrink)
 	endif()
 
+	set(DO_CLANG_TIDY "")
+
 	if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 		find_program(CLANG_TIDY_EXE NAMES "clang-tidy" DOC "Path to clang-tidy executable")
 		if(CLANG_TIDY_EXE AND LIBSTORED_CLANG_TIDY)
@@ -283,6 +286,10 @@ function(libstored_lib libprefix libpath)
 			set_target_properties(${LIBSTORED_LIB_TARGET}
 				PROPERTIES CXX_CLANG_TIDY "")
 		endif()
+	endif()
+
+	if(LIBSTORED_GCC_ANALYZER AND "${DO_CLANG_TIDY}" STREQUAL "")
+		target_compile_options(${LIBSTORED_LIB_TARGET} PRIVATE -fanalyzer)
 	endif()
 
 	if(LIBSTORED_ENABLE_ASAN)
