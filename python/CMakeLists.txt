@@ -45,6 +45,7 @@ endif()
 add_subdirectory(libstored/gui)
 
 file(GLOB pylibstored_wheel CONFIGURE_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/libstored*.whl)
+file(GLOB pylibstored_tar CONFIGURE_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/libstored*.tar.gz)
 
 set(_wheel_deps
 	${pylibstored_src}
@@ -66,6 +67,7 @@ endif()
 
 add_custom_command(
 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/.timestamp
+#	BYPRODUCTS ${pylibstored_wheel} ${pylibstored_tar}
 	DEPENDS ${_wheel_deps}
 	COMMAND ${CMAKE_COMMAND} -E ${cmake_rm} -f ${CMAKE_CURRENT_BINARY_DIR}/*.whl
 	COMMAND ${PYTHON_EXECUTABLE} -m build -o ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}
@@ -96,6 +98,9 @@ endif()
 
 install(CODE "
 	execute_process(
+		COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/libstored
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pylibstored_wheel} ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/libstored
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pylibstored_tar} ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/libstored
 		COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target pylibstored-install
 		RESULT_VARIABLE _res
 	)
@@ -103,4 +108,3 @@ install(CODE "
 		message(FATAL_ERROR \"pylibstored-install failed\")
 	endif()
 ")
-
