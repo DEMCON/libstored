@@ -216,7 +216,8 @@ StoreJournal::StoreJournal(
 
 	switch(keySize(size)) {
 	default:
-		stored_assert(false); // NOLINT(hicpp-static-assert,misc-static-assert)
+		// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert,cert-dcl03-c)
+		stored_assert(false);
 		STORED_FALLTHROUGH
 	case 0:
 	case 1:
@@ -239,7 +240,7 @@ uint8_t StoreJournal::keySize(size_t bufferSize)
 	uint8_t s = 0;
 	while(bufferSize) {
 		s++;
-		bufferSize >>= 8u;
+		bufferSize >>= 8U;
 	}
 	return s;
 }
@@ -287,7 +288,7 @@ StoreJournal::Seq StoreJournal::bumpSeq(bool force)
 
 	if(unlikely(m_seq - m_seqLower > safeRange)) {
 		Seq seqLower = m_seq;
-		m_seqLower = m_seq - ShortSeqWindow + (Seq)2u * SeqLowerMargin;
+		m_seqLower = m_seq - ShortSeqWindow + (Seq)2U * SeqLowerMargin;
 
 		for(size_t i = 0; i < m_changes.size(); i++) {
 			ObjectInfo const& o = m_changes[i];
@@ -864,7 +865,7 @@ void SyncConnection::source(StoreJournal& store)
  */
 SyncConnection::Id SyncConnection::nextId()
 {
-	stored_assert(m_idIn.size() < std::numeric_limits<Id>::max() / 2u);
+	stored_assert(m_idIn.size() < std::numeric_limits<Id>::max() / 2U);
 
 	while(true) {
 		Id id = m_idInNext++;

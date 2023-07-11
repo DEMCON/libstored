@@ -434,9 +434,9 @@ public:
 	typedef ProtocolLayer base;
 
 	static uint8_t const NopFlag =
-		0x40u; //!< \brief Flag to indicate that the payload should be ignored.
-	static uint8_t const AckFlag = 0x80u; //!< \brief Ack flag.
-	static uint8_t const SeqMask = 0x3fu; //!< \brief Mask for sequence number.
+		0x40U; //!< \brief Flag to indicate that the payload should be ignored.
+	static uint8_t const AckFlag = 0x80U; //!< \brief Ack flag.
+	static uint8_t const SeqMask = 0x3fU; //!< \brief Mask for sequence number.
 
 	enum {
 		/*! \brief Number of successive retransmits before the event is emitted. */

@@ -26,8 +26,8 @@ template <typename T>
 constexpr14 T decodeInt(uint8_t const*& p) noexcept
 {
 	T v = 0;
-	while(*p & 0x80u) {
-		v = (v | (T)(*p & 0x7fu)) << 7u;
+	while(*p & 0x80U) {
+		v = (v | (T)(*p & 0x7fU)) << 7U;
 		p++;
 	}
 	return v | (T)*p++;
@@ -40,7 +40,7 @@ constexpr14 T decodeInt(uint8_t const*& p) noexcept
  */
 constexpr14 void skipOffset(uint8_t const*& p) noexcept
 {
-	while(*p++ & 0x80u)
+	while(*p++ & 0x80U)
 		;
 }
 
@@ -84,9 +84,9 @@ find(uint8_t const* directory, char const* name,
 		if(*p == 0) {
 			// end
 			break;
-		} else if(*p >= 0x80u) {
+		} else if(*p >= 0x80U) {
 			// var
-			Type::type type = (Type::type)(*p++ ^ 0x80u);
+			Type::type type = (Type::type)(*p++ ^ 0x80U);
 			size_t datalen =
 				!Type::isFixed(type) ? decodeInt<size_t>(p) : Type::size(type);
 			size_t offset = decodeInt<size_t>(p);

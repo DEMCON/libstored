@@ -216,6 +216,10 @@ function(libstored_lib libprefix libpath)
 				"-bugprone-reserved-identifier," # Should be fixed.
 				"-bugprone-suspicious-include," # For Qt's moc
 
+				"cert-*,"
+				"-cert-dcl37-c,"
+				"-cert-dcl51-cpp,"
+
 				"clang-analyzer-*,"
 
 				"-clang-diagnostic-defaulted-function-deleted,"
@@ -240,7 +244,6 @@ function(libstored_lib libprefix libpath)
 				"-hicpp-member-init,"
 				"-hicpp-no-array-decay,"
 				"-hicpp-no-malloc,"
-				"-hicpp-uppercase-literal-suffix,"
 				"-hicpp-use-auto,"
 				"-hicpp-use-override,"
 				"-hicpp-vararg,"
@@ -260,7 +263,6 @@ function(libstored_lib libprefix libpath)
 				"-readability-magic-numbers,"
 				"-readability-make-member-function-const,"
 				"-readability-redundant-access-specifiers,"
-				"-readability-uppercase-literal-suffix,"
 
 				"performance-*,"
 				"-performance-no-int-to-ptr," # Especially on WIN32 HANDLEs.

@@ -87,11 +87,11 @@ public:
 
 	enum {
 		/*! \brief Maximum offset of seq() that is a valid short seq. */
-		ShortSeqWindow = 1u << (sizeof(ShortSeq) * 8u),
+		ShortSeqWindow = 1U << (sizeof(ShortSeq) * 8U),
 		/*! \brief Oldest margin where the short seq of changes should be moved. */
-		SeqLowerMargin = ShortSeqWindow / 4u,
+		SeqLowerMargin = ShortSeqWindow / 4U,
 		/*! \brief Threshold for #clean(). */
-		SeqCleanThreshold = SeqLowerMargin * 2u,
+		SeqCleanThreshold = SeqLowerMargin * 2U,
 	};
 
 	class StoreCallback {
@@ -411,7 +411,7 @@ public:
 		, m_journal(base::hash(), base::buffer(), sizeof(base::data().buffer), &m_callback)
 	{
 		// Useless without hooks.
-		// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert)
+		// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert,cert-dcl03-c)
 		stored_assert(Config::EnableHooks);
 	}
 

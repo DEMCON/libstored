@@ -647,7 +647,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 		while(datalen > 0) {
 			ScratchPad<>::Snapshot chunk_snapshot = spm().snapshot();
 
-			size_t chunk = std::min<size_t>(64u, datalen);
+			size_t chunk = std::min<size_t>(64U, datalen);
 			void* r = addr;
 			size_t rlen = chunk;
 			encodeHex(Type::Blob, r, rlen);
@@ -694,7 +694,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 		len--;
 		p++;
 
-		if(len & 1u)
+		if(len & 1U)
 			// Odd number of nibbles.
 			goto error;
 
@@ -702,7 +702,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 		while(len > 0) {
 			ScratchPad<>::Snapshot chunk_snapshot = spm().snapshot();
 
-			size_t chunk = std::min<size_t>(64u, len);
+			size_t chunk = std::min<size_t>(64U, len);
 			void const* w = p;
 			size_t wlen = chunk;
 			if(!decodeHex(Type::Blob, w, wlen))
@@ -948,7 +948,7 @@ bool Debugger::runMacro(char m, ProtocolLayer& response)
  */
 static char encodeNibble(uint8_t n)
 {
-	n &= 0xfu;
+	n &= 0xfU;
 	return (char)((n < 10 ? '0' : 'a' - 10) + n);
 }
 
@@ -993,10 +993,10 @@ void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortes
 		// big endian
 		for(size_t i = 0; i < len; i++, src++) {
 #ifdef STORED_LITTLE_ENDIAN
-			hex[(len - i) * 2 - 2] = encodeNibble((uint8_t)(*src >> 4u));
+			hex[(len - i) * 2 - 2] = encodeNibble((uint8_t)(*src >> 4U));
 			hex[(len - i) * 2 - 1] = encodeNibble(*src);
 #else
-			hex[i * 2] = encodeNibble(*src >> 4u);
+			hex[i * 2] = encodeNibble(*src >> 4U);
 			hex[i * 2 + 1] = encodeNibble(*src);
 #endif
 		}
@@ -1009,7 +1009,7 @@ void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortes
 	} else {
 		// just a byte sequence in hex
 		for(size_t i = 0; i < len; i++, src++) {
-			hex[i * 2] = encodeNibble((uint8_t)(*src >> 4u));
+			hex[i * 2] = encodeNibble((uint8_t)(*src >> 4U));
 			hex[i * 2 + 1] = encodeNibble(*src);
 		}
 
@@ -1064,8 +1064,8 @@ bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len)
 
 		for(size_t i = 0; i < len; i++) {
 			uint8_t b = decodeNibble(src[len - i - 1], ok);
-			if(i & 1u)
-				b = (uint8_t)(b << 4u);
+			if(i & 1U)
+				b = (uint8_t)(b << 4U);
 
 #ifdef STORED_LITTLE_ENDIAN
 			bin[i / 2] |= b;
@@ -1074,7 +1074,7 @@ bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len)
 #endif
 		}
 	} else {
-		if(len & 1u)
+		if(len & 1U)
 			// Bytes must come in pair of nibbles.
 			return false;
 
@@ -1083,7 +1083,7 @@ bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len)
 
 		for(size_t i = 0; i + 1 < len; i += 2) {
 			bin[i / 2] = (uint8_t)(
-				(uint8_t)(decodeNibble(src[i], ok) << 4u)
+				(uint8_t)(decodeNibble(src[i], ok) << 4U)
 				| decodeNibble(src[i + 1], ok));
 		}
 	}

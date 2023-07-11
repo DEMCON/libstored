@@ -41,42 +41,42 @@ namespace stored {
  */
 struct Type {
 	enum type {
-		MaskSize = 0x07u,
-		MaskFlags = 0x78u,
-		FlagSigned = 0x08u,
-		FlagInt = 0x10u,
-		FlagFixed = 0x20u,
-		FlagFunction = 0x40u,
+		MaskSize = 0x07U,
+		MaskFlags = 0x78U,
+		FlagSigned = 0x08U,
+		FlagInt = 0x10U,
+		FlagFixed = 0x20U,
+		FlagFunction = 0x40U,
 
 		// int
 		// cppcheck-suppress badBitmaskCheck
-		Int8 = FlagFixed | FlagInt | FlagSigned | 0u,
+		Int8 = FlagFixed | FlagInt | FlagSigned | 0U,
 		// cppcheck-suppress badBitmaskCheck
-		Uint8 = FlagFixed | FlagInt | 0u,
-		Int16 = FlagFixed | FlagInt | FlagSigned | 1u,
-		Uint16 = FlagFixed | FlagInt | 1u,
-		Int32 = FlagFixed | FlagInt | FlagSigned | 3u,
-		Uint32 = FlagFixed | FlagInt | 3u,
-		Int64 = FlagFixed | FlagInt | FlagSigned | 7u,
-		Uint64 = FlagFixed | FlagInt | 7u,
+		Uint8 = FlagFixed | FlagInt | 0U,
+		Int16 = FlagFixed | FlagInt | FlagSigned | 1U,
+		Uint16 = FlagFixed | FlagInt | 1U,
+		Int32 = FlagFixed | FlagInt | FlagSigned | 3U,
+		Uint32 = FlagFixed | FlagInt | 3U,
+		Int64 = FlagFixed | FlagInt | FlagSigned | 7U,
+		Uint64 = FlagFixed | FlagInt | 7U,
 		Int = FlagFixed | FlagInt | (sizeof(int) - 1),
 		Uint = FlagFixed | (sizeof(int) - 1),
 
 		// things with fixed length
-		Float = FlagFixed | FlagSigned | 3u,
-		Double = FlagFixed | FlagSigned | 7u,
+		Float = FlagFixed | FlagSigned | 3U,
+		Double = FlagFixed | FlagSigned | 7U,
 		// cppcheck-suppress badBitmaskCheck
-		Bool = FlagFixed | 0u,
-		Pointer32 = FlagFixed | 3u,
-		Pointer64 = FlagFixed | 7u,
+		Bool = FlagFixed | 0U,
+		Pointer32 = FlagFixed | 3U,
+		Pointer64 = FlagFixed | 7U,
 		Pointer = (sizeof(void*) <= 4 ? Pointer32 : Pointer64),
 
 		// (special) things with undefined length
-		Void = 0u,
-		Blob = 1u,
-		String = 2u,
+		Void = 0U,
+		Blob = 1U,
+		String = 2U,
 
-		Invalid = 0xffu
+		Invalid = 0xffU
 	};
 
 	/*! \brief Checks if the given type is a function. */
@@ -122,7 +122,7 @@ struct Type {
 	/*! \brief Returns the size of the (function argument) type, or 0 when it is not fixed. */
 	static constexpr size_t size(type t) noexcept
 	{
-		return !isFixed(t) ? 0u : (size_t)(t & MaskSize) + 1u;
+		return !isFixed(t) ? 0U : (size_t)(t & MaskSize) + 1U;
 	}
 
 	/*! \brief Checks if endianness of given type is swapped in the store's buffer. */
@@ -398,7 +398,8 @@ public:
 	 */
 	Variable&
 	// cppcheck-suppress operatorEqVarError
-	operator=(Variable const& v) noexcept // NOLINT(bugprone-unhandled-self-assignment)
+	operator=( // NOLINT(bugprone-unhandled-self-assignment,cert-oop54-cpp)
+		Variable const& v) noexcept
 	{
 		m_buffer = v.m_buffer;
 		return *this;
@@ -588,8 +589,8 @@ public:
 
 	/*! \copydoc stored::Variable::operator=(Variable const&) */
 	// cppcheck-suppress operatorEqVarError
-	Variable&
-	operator=(Variable const& v) noexcept // NOLINT(bugprone-unhandled-self-assignment)
+	Variable& operator=( // NOLINT(bugprone-unhandled-self-assignment,cert-oop54-cpp)
+		Variable const& v) noexcept
 	{
 #	ifdef _DEBUG
 		stored_assert(m_entry == EntryNone);
@@ -685,7 +686,7 @@ public:
 				  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 				  != *reinterpret_cast<uint32_t const*>(b_);
 		} else {
-			// NOLINTNEXTLINE(bugprone-suspicious-memory-comparison)
+			// NOLINTNEXTLINE(bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c)
 			changed = memcmp(&v, &this->buffer(), sizeof(v)) != 0;
 		}
 

@@ -444,7 +444,7 @@ static inline T endian_s2h(P const* p) noexcept
  */
 template <uintmax_t N>
 struct value_bytes {
-	enum { value = value_bytes<(N >> 8u)>::value + 1u };
+	enum { value = value_bytes<(N >> 8U)>::value + 1U };
 };
 template <>
 struct value_bytes<0> {

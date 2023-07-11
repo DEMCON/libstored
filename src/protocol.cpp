@@ -135,7 +135,7 @@ char AsciiEscapeLayer::needEscape(char c) const
 				return 0;
 			}
 		}
-		return (char)((uint8_t)c | 0x40u);
+		return (char)((uint8_t)c | 0x40U);
 	} else if(c == AsciiEscapeLayer::Esc) {
 		return c;
 	} else {
@@ -168,11 +168,11 @@ void AsciiEscapeLayer::encode(void const* buffer, size_t len, bool last)
 size_t AsciiEscapeLayer::mtu() const
 {
 	size_t mtu = base::mtu();
-	if(mtu == 0u)
-		return 0u;
-	if(mtu == 1u)
-		return 1u;
-	return mtu / 2u;
+	if(mtu == 0U)
+		return 0U;
+	if(mtu == 1U)
+		return 1U;
+	return mtu / 2U;
 }
 
 
@@ -231,7 +231,7 @@ void TerminalLayer::decode(void* buffer, size_t len)
 			break;
 		case StateNormalEsc:
 			if(likely(c == EscStart)) {
-				if(i - nonDebugOffset > 1u)
+				if(i - nonDebugOffset > 1U)
 					nonDebugDecode(
 						static_cast<char*>(buffer) + nonDebugOffset,
 						i - nonDebugOffset - 1); // Also skip the ESC
@@ -656,9 +656,9 @@ void ArqLayer::event(ArqLayer::Event e)
  */
 uint8_t ArqLayer::nextSeq(uint8_t seq)
 {
-	seq = (uint8_t)((seq + 1u) & SeqMask);
+	seq = (uint8_t)((seq + 1U) & SeqMask);
 	// cppcheck-suppress knownConditionTrueFalse
-	return seq ? seq : 1u;
+	return seq ? seq : 1U;
 }
 
 size_t ArqLayer::mtu() const
@@ -666,9 +666,9 @@ size_t ArqLayer::mtu() const
 	size_t mtu = base::mtu();
 	if(mtu == 0)
 		return 0;
-	if(mtu <= 2u)
-		return 1u;
-	return mtu - 2u;
+	if(mtu <= 2U)
+		return 1U;
+	return mtu - 2U;
 }
 
 /*!
@@ -706,7 +706,7 @@ void ArqLayer::resetDidTransmit()
  */
 size_t ArqLayer::retransmits() const
 {
-	return m_retransmits ? m_retransmits - 1u : 0u;
+	return m_retransmits ? m_retransmits - 1U : 0U;
 }
 
 /*!
@@ -907,7 +907,7 @@ void DebugArqLayer::decode(void* buffer, size_t len)
 				m_decodeState = DecodeStateRetransmit;
 				break;
 			default:
-				// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert)
+				// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert,cert-dcl03-c)
 				stored_assert(false);
 			}
 		} // else: unexpected seq; ignore.
@@ -1042,7 +1042,8 @@ void DebugArqLayer::setPurgeableResponse(bool purgeable)
 			m_encodeState = EncodeStateUnbufferedIdle;
 			break;
 		default:
-			stored_assert(false); // NOLINT(hicpp-static-assert,misc-static-assert)
+			// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert,cert-dcl03-c)
+			stored_assert(false);
 		}
 
 		m_encodeBuffer.clear();
@@ -1059,7 +1060,8 @@ void DebugArqLayer::setPurgeableResponse(bool purgeable)
 			m_encodeState = EncodeStateIdle;
 			break;
 		default:
-			stored_assert(false); // NOLINT(hicpp-static-assert,misc-static-assert)
+			// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert,cert-dcl03-c)
+			stored_assert(false);
 		}
 	}
 }
@@ -1069,9 +1071,9 @@ size_t DebugArqLayer::mtu() const
 	size_t mtu = base::mtu();
 	if(mtu == 0)
 		return 0;
-	if(mtu <= 4u)
-		return 1u;
-	return mtu - 4u;
+	if(mtu <= 4U)
+		return 1U;
+	return mtu - 4U;
 }
 
 /*!
@@ -1079,9 +1081,9 @@ size_t DebugArqLayer::mtu() const
  */
 uint32_t DebugArqLayer::nextSeq(uint32_t seq)
 {
-	seq = (uint32_t)((seq + 1u) % 0x8000000);
+	seq = (uint32_t)((seq + 1U) % 0x8000000);
 	// cppcheck-suppress knownConditionTrueFalse
-	return seq ? seq : 1u;
+	return seq ? seq : 1U;
 }
 
 /*!
@@ -1094,8 +1096,8 @@ uint32_t DebugArqLayer::decodeSeq(uint8_t*& buffer, size_t& len)
 
 	while(true) {
 		if(!len--)
-			return ~0u;
-		seq = (seq << 7u) | (*buffer & (flag - 1u));
+			return ~0U;
+		seq = (seq << 7U) | (*buffer & (flag - 1U));
 		if(!(*buffer++ & flag))
 			return seq;
 		flag = 0x80;
@@ -1109,23 +1111,23 @@ uint32_t DebugArqLayer::decodeSeq(uint8_t*& buffer, size_t& len)
 size_t DebugArqLayer::encodeSeq(uint32_t seq, void* buffer)
 {
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
-	if(seq < 0x40u) {
-		buffer_[0] = (uint8_t)(seq & 0x3fu);
+	if(seq < 0x40U) {
+		buffer_[0] = (uint8_t)(seq & 0x3fU);
 		return 1;
 	} else if(seq < 0x2000) {
-		buffer_[0] = (uint8_t)(0x40u | ((seq >> 7u) & 0x3fu));
-		buffer_[1] = (uint8_t)(seq & 0x7fu);
+		buffer_[0] = (uint8_t)(0x40U | ((seq >> 7U) & 0x3fU));
+		buffer_[1] = (uint8_t)(seq & 0x7fU);
 		return 2;
 	} else if(seq < 0x100000) {
-		buffer_[0] = (uint8_t)(0x40u | ((seq >> 14u) & 0x3fu));
-		buffer_[1] = (uint8_t)(0x80u | ((seq >> 7u) & 0x7fu));
-		buffer_[2] = (uint8_t)(seq & 0x7fu);
+		buffer_[0] = (uint8_t)(0x40U | ((seq >> 14U) & 0x3fU));
+		buffer_[1] = (uint8_t)(0x80U | ((seq >> 7U) & 0x7fU));
+		buffer_[2] = (uint8_t)(seq & 0x7fU);
 		return 3;
 	} else if(seq < 0x8000000) {
-		buffer_[0] = (uint8_t)(0x40u | ((seq >> 21u) & 0x3fu));
-		buffer_[1] = (uint8_t)(0x80u | ((seq >> 14u) & 0x7fu));
-		buffer_[2] = (uint8_t)(0x80u | ((seq >> 7u) & 0x7fu));
-		buffer_[3] = (uint8_t)(seq & 0x7fu);
+		buffer_[0] = (uint8_t)(0x40U | ((seq >> 21U) & 0x3fU));
+		buffer_[1] = (uint8_t)(0x80U | ((seq >> 14U) & 0x7fU));
+		buffer_[2] = (uint8_t)(0x80U | ((seq >> 7U) & 0x7fU));
+		buffer_[3] = (uint8_t)(seq & 0x7fU);
 		return 4;
 	} else {
 		return encodeSeq(seq % 0x8000000, buffer);
@@ -1213,11 +1215,11 @@ uint8_t Crc8Layer::compute(uint8_t input, uint8_t crc)
 size_t Crc8Layer::mtu() const
 {
 	size_t mtu = base::mtu();
-	if(mtu == 0 || mtu > 256u)
-		return 256u;
-	if(mtu <= 2u)
-		return 1u;
-	return mtu - 1u;
+	if(mtu == 0 || mtu > 256U)
+		return 256U;
+	if(mtu <= 2U)
+		return 1U;
+	return mtu - 1U;
 }
 
 
@@ -1278,7 +1280,7 @@ void Crc16Layer::decode(void* buffer, size_t len)
 	for(size_t i = 0; i < len - 2; i++)
 		crc = compute(buffer_[i], crc);
 
-	if(crc != ((uint16_t)((uint16_t)(buffer_[len - 2] << 8u) | buffer_[len - 1])))
+	if(crc != ((uint16_t)((uint16_t)(buffer_[len - 2] << 8U) | buffer_[len - 1])))
 		// Invalid.
 		return;
 
@@ -1294,7 +1296,7 @@ void Crc16Layer::encode(void const* buffer, size_t len, bool last)
 	base::encode(buffer, len, false);
 
 	if(last) {
-		uint8_t crc[2] = {(uint8_t)(m_crc >> 8u), (uint8_t)m_crc};
+		uint8_t crc[2] = {(uint8_t)(m_crc >> 8U), (uint8_t)m_crc};
 		base::encode(crc, sizeof(crc), true);
 		m_crc = init;
 	}
@@ -1303,17 +1305,17 @@ void Crc16Layer::encode(void const* buffer, size_t len, bool last)
 uint16_t Crc16Layer::compute(uint8_t input, uint16_t crc)
 {
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
-	return (uint16_t)(crc16_table[input ^ (uint8_t)(crc >> 8u)] ^ (uint16_t)(crc << 8u));
+	return (uint16_t)(crc16_table[input ^ (uint8_t)(crc >> 8U)] ^ (uint16_t)(crc << 8U));
 }
 
 size_t Crc16Layer::mtu() const
 {
 	size_t mtu = base::mtu();
-	if(mtu == 0 || mtu > 256u)
-		return 256u;
-	if(mtu <= 3u)
-		return 1u;
-	return mtu - 2u;
+	if(mtu == 0 || mtu > 256U)
+		return 256U;
+	if(mtu <= 3U)
+		return 1U;
+	return mtu - 2U;
 }
 
 
@@ -1407,7 +1409,7 @@ void PrintLayer::decode(void* buffer, size_t len)
 
 		String::type s = string_literal(buffer, len, prefix.c_str());
 		s += "\n";
-		fputs(s.c_str(), m_f);
+		(void)fputs(s.c_str(), m_f);
 	}
 
 	base::decode(buffer, len);
@@ -1427,7 +1429,7 @@ void PrintLayer::encode(void const* buffer, size_t len, bool last)
 
 		String::type s = string_literal(buffer, len, prefix.c_str());
 		s += "\n";
-		fputs(s.c_str(), m_f);
+		(void)fputs(s.c_str(), m_f);
 	}
 
 	base::encode(buffer, len, last);
@@ -1879,7 +1881,7 @@ done:
 
 	if(m_fd_w == STDOUT_FILENO)
 		// Do not reorder stdout's FILE buffer and our write()s. Flush first.
-		fflush(stdout);
+		(void)fflush(stdout);
 
 	while(buflen > 0) {
 		ssize_t written = write(m_fd_w, buf, buflen);
@@ -2485,14 +2487,14 @@ size_t FileLayer::available()
 		if(res == INVALID_SET_FILE_POINTER)
 			return 0;
 
-		uint64_t pos = (uint64_t)res | ((uint64_t)posHigh << 32u);
+		uint64_t pos = (uint64_t)res | ((uint64_t)posHigh << 32U);
 
 		DWORD sizeHigh = 0;
 		res = GetFileSize(m_fd_r, &sizeHigh);
 		if(res == INVALID_FILE_SIZE)
 			return 0;
 
-		uint64_t size = (uint64_t)res | ((uint64_t)sizeHigh << 32u);
+		uint64_t size = (uint64_t)res | ((uint64_t)sizeHigh << 32U);
 
 		stored_assert(size >= pos);
 
