@@ -122,7 +122,8 @@ void CompressLayer::decoderPoll()
 		case HSDR_POLL_MORE:
 			break;
 		default:
-			stored_assert(false); // NOLINT(hicpp-static-assert,misc-static-assert)
+			// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert,cert-dcl03-c)
+			stored_assert(false);
 		}
 	}
 }
@@ -187,7 +188,8 @@ void CompressLayer::encoderPoll()
 		case HSER_POLL_MORE:
 			break;
 		default:
-			stored_assert(false); // NOLINT(hicpp-static-assert,misc-static-assert)
+			// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert,cert-dcl03-c)
+			stored_assert(false);
 		}
 	}
 }

@@ -35,7 +35,7 @@ list(void* container, void* buffer, uint8_t const* directory, ListCallbackArg* f
 			break;
 		} else if(*p >= 0x80) {
 			// var
-			Type::type type = (Type::type)(*p++ ^ 0x80u);
+			Type::type type = (Type::type)(*p++ ^ 0x80U);
 			size_t len = !Type::isFixed(type) ? decodeInt<size_t>(p) : Type::size(type);
 			size_t offset = decodeInt<size_t>(p);
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast,performance-no-int-to-ptr)
