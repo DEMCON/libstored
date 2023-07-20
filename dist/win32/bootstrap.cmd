@@ -30,8 +30,7 @@ goto error
 :have_choco
 
 if not "%CI%"=="" goto skip_python
-rem heatshrink2 is not released (yet) for 3.11 and later on pypi. Use 3.10 for now. Should be fixed.
-choco install -y --no-progress python3 --version 3.10.8
+choco install -y --no-progress python3
 if errorlevel 1 goto error
 :skip_python
 
