@@ -203,9 +203,9 @@ set(LIBSTORED_GCC_ANALYZER_DEFAULT OFF)
 
 if(	# Need gcc for this...
 	CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND
-	# ...starting from version 10, but let's start from 12, as it gets
+	# ...starting from version 10, but let's start from 13, as it gets
 	# better then, although there is officially no support for C++ yet.
-	CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "12")
+	CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "13")
 
 	set(LIBSTORED_GCC_ANALYZER_DEFAULT ${LIBSTORED_DEV_OPTION})
 endif()
