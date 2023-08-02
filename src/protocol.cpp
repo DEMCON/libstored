@@ -566,7 +566,7 @@ bool ArqLayer::waitingForAck() const
 
 void ArqLayer::encode(void const* buffer, size_t len, bool last)
 {
-	if(m_maxEncodeBuffer > 0 && m_maxEncodeBuffer < m_encodeQueueSize + len)
+	if(m_maxEncodeBuffer > 0 && m_maxEncodeBuffer < m_encodeQueueSize + len + 1U /* seq */)
 		event(EventEncodeBufferOverflow);
 
 	switch(m_encodeState) {
@@ -757,7 +757,7 @@ void ArqLayer::pushEncodeQueue(void const* buffer, size_t len)
 	s.push_back((char)m_sendSeq);
 	s.append(static_cast<char const*>(buffer), len);
 	m_sendSeq = nextSeq(m_sendSeq);
-	m_encodeQueueSize += len;
+	m_encodeQueueSize += len + 1U;
 }
 
 /*!
