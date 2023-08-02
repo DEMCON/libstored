@@ -73,12 +73,12 @@ public:
 
 	value_type* allocate(size_t n)
 	{
-#		ifdef STORED_COMPILER_GCC
+#		if defined(STORED_COMPILER_GCC) && GCC_VERSION >= 100000L
 #			pragma GCC diagnostic push
 #			pragma GCC diagnostic ignored "-Wanalyzer-malloc-leak"
 #		endif
 		value_type* p = (value_type*)malloc(sizeof(value_type) * n);
-#		ifdef STORED_COMPILER_GCC
+#		if defined(STORED_COMPILER_GCC) && GCC_VERSION >= 100000L
 #			pragma GCC diagnostic pop
 #		endif
 
