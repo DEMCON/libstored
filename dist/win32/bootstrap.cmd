@@ -27,16 +27,34 @@ goto have_choco
 :still_no_choco
 echo Chocolatey not installed. Install from here: https://chocolatey.org/docs/installation
 goto error
-:have_choco
 
+rem call :choco_install pkg [binary]
+:choco_install
+setlocal
+if "%2"=="" goto do_choco_install
+where /q "%2" > NUL 2>NUL
+if errorlevel 1 goto do_choco_install
+goto :eof
+:do_choco_install
+rem Ignore "restart required" (3010)
+choco install -y --no-progress --ignore-package-exit-codes=3010 %1
+endlocal
+goto :eof
+
+:have_choco
 if not "%CI%"=="" goto skip_python
-choco install -y --no-progress python3
+call :choco_install python3
 if errorlevel 1 goto error
 :skip_python
-
-set pkg=git cmake ninja mingw plantuml
-rem Ignore "restart required" (3010)
-choco install -y --no-progress --ignore-package-exit-codes=3010 %pkg%
+call :choco_install git git
+if errorlevel 1 goto error
+call :choco_install cmake cmake
+if errorlevel 1 goto error
+call :choco_install ninja ninja
+if errorlevel 1 goto error
+call :choco_install mingw g++
+if errorlevel 1 goto error
+call :choco_install plantuml plantuml
 if errorlevel 1 goto error
 
 rem SourceForge is a bit flaky. These packages often fail.
