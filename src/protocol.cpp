@@ -23,6 +23,15 @@
 #	include <termios.h>
 #endif
 
+#ifdef STORED_HAVE_ZTH
+#	include <zth>
+#	define delay_ms(ms) zth::mnap(ms)
+#elif defined(STORED_OS_WINDOWS)
+#	define delay_ms(ms) Sleep(ms)
+#else
+#	define delay_ms(ms) usleep((ms)*1000L)
+#endif
+
 #if defined(STORED_OS_WINDOWS)
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #	define write(fd, buffer, count) _write(fd, buffer, (unsigned int)(count))
@@ -3276,7 +3285,7 @@ int SerialLayer::resetAutoBaud()
 
 	// Kind of arbitrary sleep. And Windows does not really guarantee how much
 	// we will sleep actually. Could be improved.
-	Sleep(125);
+	delay_ms(125);
 
 	if(!ClearCommBreak(h))
 		res = EIO;
@@ -3284,7 +3293,7 @@ int SerialLayer::resetAutoBaud()
 	// Some sleep is required here. It seems that when sending data immediately
 	// after ClearCommBreak(), it gets lost somehow (at least in the setup I
 	// tested).
-	Sleep(125);
+	delay_ms(125);
 
 	encode("\x11", 1);
 
@@ -3295,6 +3304,134 @@ int SerialLayer::resetAutoBaud()
 }
 
 #elif defined(STORED_OS_POSIX)
+static speed_t baud_to_speed_t(unsigned long baud)
+{
+	switch(baud) {
+#	ifdef B50
+	case 50UL:
+		return B50;
+#	endif
+#	ifdef B75
+	case 75UL:
+		return B75;
+#	endif
+#	ifdef B110
+	case 110UL:
+		return B110;
+#	endif
+#	ifdef B134
+	case 134UL:
+		return B134;
+#	endif
+#	ifdef B150
+	case 150UL:
+		return B150;
+#	endif
+#	ifdef B200
+	case 200UL:
+		return B200;
+#	endif
+#	ifdef B300
+	case 300UL:
+		return B300;
+#	endif
+#	ifdef B600
+	case 600UL:
+		return B600;
+#	endif
+#	ifdef B1200
+	case 1200UL:
+		return B1200;
+#	endif
+#	ifdef B1800
+	case 1800UL:
+		return B1800;
+#	endif
+#	ifdef B2400
+	case 2400UL:
+		return B2400;
+#	endif
+#	ifdef B4800
+	case 4800UL:
+		return B4800;
+#	endif
+#	ifdef B9600
+	case 9600UL:
+		return B9600;
+#	endif
+#	ifdef B19200
+	case 19200UL:
+		return B19200;
+#	endif
+#	ifdef B38400
+	case 38400UL:
+		return B38400;
+#	endif
+#	ifdef B57600
+	case 57600UL:
+		return B57600;
+#	endif
+#	ifdef B115200
+	case 115200UL:
+		return B115200;
+#	endif
+#	ifdef B230400
+	case 230400UL:
+		return B230400;
+#	endif
+#	ifdef B460800
+	case 460800UL:
+		return B460800;
+#	endif
+#	ifdef B500000
+	case 500000UL:
+		return B500000;
+#	endif
+#	ifdef B576000
+	case 576000UL:
+		return B576000;
+#	endif
+#	ifdef B921600
+	case 921600UL:
+		return B921600;
+#	endif
+#	ifdef B1000000
+	case 1000000UL:
+		return B1000000;
+#	endif
+#	ifdef B1152000
+	case 1152000UL:
+		return B1152000;
+#	endif
+#	ifdef B1500000
+	case 1500000UL:
+		return B1500000;
+#	endif
+#	ifdef B2000000
+	case 2000000UL:
+		return B2000000;
+#	endif
+#	ifdef B2500000
+	case 2500000UL:
+		return B2500000;
+#	endif
+#	ifdef B3000000
+	case 3000000UL:
+		return B3000000;
+#	endif
+#	ifdef B3500000
+	case 3500000UL:
+		return B3500000;
+#	endif
+#	ifdef B4000000
+	case 4000000UL:
+		return B4000000;
+#	endif
+	default:
+		return B0;
+	}
+}
+
 SerialLayer::SerialLayer(
 	char const* name, unsigned long baud, bool rtscts, bool xonxoff, ProtocolLayer* up,
 	ProtocolLayer* down)
@@ -3346,7 +3483,13 @@ SerialLayer::SerialLayer(
 	config.c_cc[VMIN] = 0;
 	config.c_cc[VTIME] = 0;
 
-	if(cfsetispeed(&config, (speed_t)baud) < 0 || cfsetospeed(&config, (speed_t)baud) < 0) {
+	speed_t speed = baud_to_speed_t(baud);
+	if(speed == B0) {
+		setLastError(EINVAL);
+		return;
+	}
+
+	if(cfsetispeed(&config, speed) < 0 || cfsetospeed(&config, speed) < 0) {
 		setLastError(errno);
 		return;
 	}
@@ -3367,10 +3510,18 @@ int SerialLayer::resetAutoBaud()
 
 	setLastError(0);
 
+	int fd = fd_r();
+	tcdrain(fd);
+
 	int res = 0;
 	// NOLINTNEXTLINE(concurrency-mt-unsafe)
-	if(tcsendbreak(fd_r(), 0))
+	if(tcsendbreak(fd, 0))
 		res = errno;
+
+	tcdrain(fd);
+
+	// We should wait for the break, but it is unclear how long it could take.
+	delay_ms(500);
 
 	encode("\x11", 1);
 
