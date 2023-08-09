@@ -295,8 +295,8 @@ function(libstored_lib libprefix libpath)
 	endif()
 
 	if(LIBSTORED_ENABLE_ASAN)
-		target_compile_options(${LIBSTORED_LIB_TARGET} PRIVATE -fsanitize=address -fno-omit-frame-pointer)
-		target_compile_definitions(${LIBSTORED_LIB_TARGET} PRIVATE -DSTORED_ENABLE_ASAN=1)
+		target_compile_options(${LIBSTORED_LIB_TARGET} PUBLIC -fsanitize=address -fno-omit-frame-pointer)
+		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_ENABLE_ASAN=1)
 		if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
 			target_link_options(${LIBSTORED_LIB_TARGET} INTERFACE -fsanitize=address)
 		else()
@@ -305,8 +305,8 @@ function(libstored_lib libprefix libpath)
 	endif()
 
 	if(LIBSTORED_ENABLE_LSAN)
-		target_compile_options(${LIBSTORED_LIB_TARGET} PRIVATE -fsanitize=leak -fno-omit-frame-pointer)
-		target_compile_definitions(${LIBSTORED_LIB_TARGET} PRIVATE -DSTORED_ENABLE_LSAN=1)
+		target_compile_options(${LIBSTORED_LIB_TARGET} PUBLIC -fsanitize=leak -fno-omit-frame-pointer)
+		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_ENABLE_LSAN=1)
 		if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
 			target_link_options(${LIBSTORED_LIB_TARGET} INTERFACE -fsanitize=leak)
 		else()
@@ -315,8 +315,28 @@ function(libstored_lib libprefix libpath)
 	endif()
 
 	if(LIBSTORED_ENABLE_UBSAN)
-		target_compile_options(${LIBSTORED_LIB_TARGET} PRIVATE -fsanitize=undefined -fno-omit-frame-pointer)
-		target_compile_definitions(${LIBSTORED_LIB_TARGET} PRIVATE -DSTORED_ENABLE_UBSAN=1)
+		target_compile_options(${LIBSTORED_LIB_TARGET} PUBLIC -fsanitize=undefined -fno-omit-frame-pointer)
+
+		if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+			target_compile_options(${LIBSTORED_LIB_TARGET} PUBLIC
+				# The combination of -fno-sanitize-recover and
+				# ubsan gives some issues with vptr. This might
+				# be related:
+				# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94325.
+				# Disable it for now.
+				-fno-sanitize=vptr
+
+				# The following checks seem to crash the
+				# compiler (at least with GCC 11), espeically
+				# on the components example (heavily using
+				# libstored/components.h).
+				-fno-sanitize=null
+				-fno-sanitize=nonnull-attribute
+				-fno-sanitize=returns-nonnull-attribute
+			)
+		endif()
+
+		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_ENABLE_UBSAN=1)
 		if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
 			target_link_options(${LIBSTORED_LIB_TARGET} INTERFACE -fsanitize=undefined)
 		else()

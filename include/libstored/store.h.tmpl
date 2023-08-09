@@ -292,7 +292,9 @@ protected:
 	{{store.name}}Base()
 #	ifndef NDEBUG
 		: m_inHook(false)
-	{}
+	{
+		STORED_MAKE_MEM_NOACCESS(&m_data, sizeof(m_data));
+	}
 #	else
 	is_default
 #	endif
@@ -690,6 +692,7 @@ protected:
 		STORED_UNUSED(len)
 
 		__hookEntryCheck();
+		STORED_MAKE_MEM_DEFINED(buffer, len);
 	}
 
 	/*!
@@ -698,6 +701,7 @@ protected:
 	 */
 	void __hookExitX(Type::type type, void* buffer, size_t len, bool changed) noexcept
 	{
+		STORED_MAKE_MEM_NOACCESS(buffer, len);
 		__hookExitCheck();
 
 		if(changed)
@@ -732,6 +736,7 @@ protected:
 		STORED_UNUSED(len)
 
 		__hookEntryCheck();
+		STORED_MAKE_MEM_DEFINED(buffer, len);
 	}
 
 	/*!
@@ -744,6 +749,7 @@ protected:
 		STORED_UNUSED(buffer)
 		STORED_UNUSED(len)
 
+		STORED_MAKE_MEM_NOACCESS(buffer, len);
 		__hookExitCheck();
 	}
 
