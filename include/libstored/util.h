@@ -27,6 +27,14 @@
 #	include <stdlib.h>
 #endif
 
+#ifdef STORED_HAVE_VALGRIND
+#	include <valgrind/memcheck.h>
+#endif
+
+#ifdef STORED_ENABLE_ASAN
+#	include <sanitizer/asan_interface.h>
+#endif
+
 /*!
  * \def likely(expr)
  * \brief Marks the given expression to likely be evaluated to true.
@@ -116,6 +124,73 @@
 #ifndef STORED_EMPTY_BASES
 #	define STORED_EMPTY_BASES
 #endif
+
+#ifdef STORED_HAVE_VALGRIND
+#	define STORED_MAKE_MEM_NOACCESS_VALGRIND(buffer, size) \
+		(void)VALGRIND_MAKE_MEM_NOACCESS(buffer, size)
+#	define STORED_MAKE_MEM_UNDEFINED_VALGRIND(buffer, size) \
+		(void)VALGRIND_MAKE_MEM_UNDEFINED(buffer, size)
+#	define STORED_MAKE_MEM_DEFINED_VALGRIND(buffer, size) \
+		(void)VALGRIND_MAKE_MEM_DEFINED(buffer, size)
+#else // !STORED_HAVE_VALGRIND
+#	define STORED_MAKE_MEM_NOACCESS_VALGRIND(buffer, size)	 (void)0
+#	define STORED_MAKE_MEM_UNDEFINED_VALGRIND(buffer, size) (void)0
+#	define STORED_MAKE_MEM_DEFINED_VALGRIND(buffer, size)	 (void)0
+#	ifndef RUNNING_ON_VALGRIND
+#		define RUNNING_ON_VALGRIND 0
+#	endif
+#endif // STORED_HAVE_VALGRIND
+
+#ifdef STORED_ENABLE_ASAN
+#	define STORED_MAKE_MEM_NOACCESS_ASAN(buffer, size) ASAN_POISON_MEMORY_REGION(buffer, size)
+#	define STORED_MAKE_MEM_UNDEFINED_ASAN(buffer, size) \
+		ASAN_UNPOISON_MEMORY_REGION(buffer, size)
+#	define STORED_MAKE_MEM_DEFINED_ASAN(buffer, size) ASAN_UNPOISON_MEMORY_REGION(buffer, size)
+#else // !STORED_ENABLE_ASAN
+#	define STORED_MAKE_MEM_NOACCESS_ASAN(buffer, size)  (void)0
+#	define STORED_MAKE_MEM_UNDEFINED_ASAN(buffer, size) (void)0
+#	define STORED_MAKE_MEM_DEFINED_ASAN(buffer, size)   (void)0
+#endif // STORED_ENABLE_ASAN
+
+#if !defined(NDEBUG) \
+	&& ((defined(STORED_HAVE_VALGRIND) && !defined(NVALGRIND)) || defined(STORED_ENABLE_ASAN))
+#	define STORED_MAKE_MEM_NOACCESS(buffer, size)             \
+		do {                                               \
+			void* b_ = (void*)(buffer);                \
+			size_t s_ = (size_t)(size);                \
+			STORED_MAKE_MEM_NOACCESS_VALGRIND(b_, s_); \
+			STORED_MAKE_MEM_NOACCESS_ASAN(b_, s_);     \
+		} while(0)
+
+#	define STORED_MAKE_MEM_UNDEFINED(buffer, size)                 \
+		do {                                                    \
+			void* b_ = (void*)(buffer);                     \
+			size_t s_ = (size_t)(size);                     \
+			STORED_MAKE_MEM_UNDEFINED_VALGRIND(b_, s_);     \
+			STORED_MAKE_MEM_UNDEFINED_ASAN(b_, s_);         \
+			if(Config::Debug && !RUNNING_ON_VALGRIND && b_) \
+				memset(b_, 0xef, s_);                   \
+		} while(0)
+#	define STORED_MAKE_MEM_DEFINED(buffer, size)             \
+		do {                                              \
+			void* b_ = (void*)(buffer);               \
+			size_t s_ = (size_t)(size);               \
+			STORED_MAKE_MEM_DEFINED_VALGRIND(b_, s_); \
+			STORED_MAKE_MEM_DEFINED_ASAN(b_, s_);     \
+		} while(0)
+#else
+#	define STORED_MAKE_MEM_NOACCESS(buffer, size) \
+		do {                                   \
+		} while(0)
+#	define STORED_MAKE_MEM_UNDEFINED(buffer, size) \
+		do {                                    \
+		} while(0)
+#	define STORED_MAKE_MEM_DEFINED(buffer, size) \
+		do {                                  \
+		} while(0)
+#endif
+
+
 
 #ifdef __cplusplus
 #	include <cassert>

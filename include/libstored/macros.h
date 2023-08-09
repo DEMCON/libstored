@@ -211,6 +211,20 @@ typedef SSIZE_T ssize_t;
 #	define NVALGRIND
 #endif
 
+#ifdef STORED_ENABLE_ASAN
+#	ifdef STORED_COMPILER_CLANG
+#		if !__has_feature(address_sanitizer)
+#			undef STORED_ENABLE_ASAN
+#		endif
+#	elif defined(STORED_COMPILER_GCC)
+#		ifndef __SANITIZE_ADDRESS__
+#			undef STORED_ENABLE_ASAN
+#		endif
+#	else
+#		undef STORED_ENABLE_ASAN
+#	endif
+#endif
+
 #ifdef STORED_HAVE_QT
 #	if STORED_HAVE_QT == 6
 #		define STORED_HAVE_QT6

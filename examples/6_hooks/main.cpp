@@ -22,6 +22,8 @@ public:
 
 	void __hookEntryX(stored::Type::type type, void* buffer, size_t len) noexcept
 	{
+		base::__hookEntryX(type, buffer, len);
+
 		printf("entry_x(%u, %p, %zu) key=%" PRIxPTR "\n", (unsigned)type, buffer, len,
 		       bufferToKey(buffer));
 	}
@@ -30,10 +32,14 @@ public:
 	{
 		printf("exit_x(%u, %p, %zu, %schanged) key=%" PRIxPTR "\n", (unsigned)type, buffer,
 		       len, changed ? "" : "un", bufferToKey(buffer));
+
+		base::__hookExitX(type, buffer, len, changed);
 	}
 
 	void __hookEntryRO(stored::Type::type type, void* buffer, size_t len) noexcept
 	{
+		base::__hookEntryRO(type, buffer, len);
+
 		printf("entry_ro(%u, %p, %zu) key=%" PRIxPTR "\n", (unsigned)type, buffer, len,
 		       bufferToKey(buffer));
 	}
@@ -42,6 +48,16 @@ public:
 	{
 		printf("exit_ro(%u, %p, %zu) key=%" PRIxPTR "\n", (unsigned)type, buffer, len,
 		       bufferToKey(buffer));
+
+		base::__hookExitRO(type, buffer, len);
+	}
+
+	void __hookChanged(stored::Type::type type, void* buffer, size_t len) noexcept
+	{
+		printf("changed(%u, %p, %zu) key=%" PRIxPTR "\n", (unsigned)type, buffer, len,
+		       bufferToKey(buffer));
+
+		base::__hookChanged(type, buffer, len);
 	}
 };
 

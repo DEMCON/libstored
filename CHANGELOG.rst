@@ -13,9 +13,15 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 `Unreleased`_
 -------------
 
-Added
-``````
-...
+Changed
+```````
+
+- ASan checks on the correct usage of entry/exit RO/X of stores.
+
+Fixed
+`````
+
+- Fix encode queue size computation of stored::ArqLayer.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.5.0...HEAD
 

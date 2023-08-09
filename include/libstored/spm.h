@@ -16,10 +16,6 @@
 
 #	include <new>
 
-#	ifdef STORED_HAVE_VALGRIND
-#		include <valgrind/memcheck.h>
-#	endif
-
 namespace stored {
 
 /*!
@@ -99,11 +95,8 @@ public:
 			reserve(m_max);
 		}
 
-#	ifdef STORED_HAVE_VALGRIND
 		if(m_buffer)
-			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,hicpp-no-assembler)
-			(void)VALGRIND_MAKE_MEM_NOACCESS(m_buffer, bufferSize());
-#	endif
+			STORED_MAKE_MEM_NOACCESS(m_buffer, bufferSize());
 	}
 
 	/*!
@@ -299,10 +292,7 @@ private:
 		stored_assert(size_ < bufferSize());
 		m_size = (size_type)size_;
 
-#	ifdef STORED_HAVE_VALGRIND
-		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,hicpp-no-assembler)
-		(void)VALGRIND_MAKE_MEM_NOACCESS(&m_buffer[m_size], bufferSize() - m_size);
-#	endif
+		STORED_MAKE_MEM_NOACCESS(&m_buffer[m_size], bufferSize() - m_size);
 	}
 
 	/*!
@@ -320,10 +310,7 @@ private:
 		setBufferSize(size);
 		m_size = 0;
 
-#	ifdef STORED_HAVE_VALGRIND
-		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,hicpp-no-assembler)
-		(void)VALGRIND_MAKE_MEM_NOACCESS(m_buffer, size);
-#	endif
+		STORED_MAKE_MEM_NOACCESS(m_buffer, size);
 	}
 
 	/*!
@@ -370,10 +357,7 @@ private:
 		m_buffer = buffer(allocate<char>(size + chunkHeader));
 		setBufferSize(size);
 
-#	ifdef STORED_HAVE_VALGRIND
-		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,hicpp-no-assembler)
-		(void)VALGRIND_MAKE_MEM_NOACCESS(&m_buffer[m_size], size - m_size);
-#	endif
+		STORED_MAKE_MEM_NOACCESS(&m_buffer[m_size], size - m_size);
 	}
 
 	/*!
@@ -549,14 +533,8 @@ public:
 		if(unlikely(m_total > m_max))
 			m_max = m_total;
 
-#	ifdef STORED_HAVE_VALGRIND
-		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,hicpp-no-assembler)
-		(void)VALGRIND_MAKE_MEM_UNDEFINED(p, alloc_size);
-#	else
-		if(Config::Debug)
-			// NOLINTNEXTLINE(clang-analyzer-core.NonNullParamChecker)
-			memset(p, 0xef, alloc_size);
-#	endif
+		STORED_MAKE_MEM_UNDEFINED(p, alloc_size);
+
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 		return reinterpret_cast<T*>(p);
 	}
