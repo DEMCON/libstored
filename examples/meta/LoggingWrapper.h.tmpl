@@ -47,8 +47,10 @@ protected:
 {%  if o.type == 'blob' %}
 		puts("'" {{o.name|cstr}} "' changed");
 {%  elif o.type == 'string' %}
+		char buf[{{o.size + 1}}] = {};
+		base::{{o.cname}}.get(buf, sizeof(buf) - 1);
 		fputs("'" {{o.name|cstr}} "'", stdout);
-		printf(" changed to \"%s\"\n", (char const*)base::{{o.cname}}.buffer());
+		printf(" changed to \"%s\"\n", buf);
 {%  else %}
 		fputs("'" {{o.name|cstr}} "'", stdout);
 		printf(" changed to %g\n", (double)base::{{o.cname}}.get());

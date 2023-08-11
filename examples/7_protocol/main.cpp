@@ -16,9 +16,9 @@
 #ifdef STORED_COMPILER_MSVC
 #	include <io.h>
 #	define read(fd, buffer, len) _read(fd, buffer, (unsigned int)(len))
-#	define STDERR_FILENO	_fileno(stderr)
-#	define STDOUT_FILENO	_fileno(stdout)
-#	define STDIN_FILENO	_fileno(stdin)
+#	define STDERR_FILENO	      _fileno(stderr)
+#	define STDOUT_FILENO	      _fileno(stdout)
+#	define STDIN_FILENO	      _fileno(stdin)
 #else
 #	include <unistd.h>
 #endif
@@ -143,7 +143,7 @@ public:
 #endif
 			if(p < ber()) {
 				// Inject an error.
-				b = b ^ (char)(1 << (rand() % 8));
+				b = (char)(b ^ (char)(1 << (rand() % 8)));
 				store.injected_errors = store.injected_errors + 1;
 			}
 		}
