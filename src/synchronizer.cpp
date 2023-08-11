@@ -565,10 +565,16 @@ StoreJournal::Seq StoreJournal::encodeBuffer(ProtocolLayer& p, bool last)
 	if(m_callback)
 		m_callback->hookEntryRO();
 
+	// There may be some gaps between the variables, which need to be unpoised too...
+	STORED_MAKE_MEM_DEFINED(buffer(), bufferSize());
+
 	p.encode(buffer(), bufferSize(), last);
 
 	if(m_callback)
 		m_callback->hookExitRO();
+
+	// Also poison the gaps.
+	STORED_MAKE_MEM_NOACCESS(buffer(), bufferSize());
 
 	return bumpSeq();
 }
@@ -584,7 +590,9 @@ StoreJournal::Seq StoreJournal::decodeBuffer(void*& buffer, size_t& len)
 
 	// Don't use entryX/exitX, as we don't take exclusive ownership of the
 	// data, we only update our local copy.
+	STORED_MAKE_MEM_DEFINED(this->buffer(), bufferSize());
 	memcpy(this->buffer(), buffer, bufferSize());
+	STORED_MAKE_MEM_NOACCESS(this->buffer(), bufferSize());
 
 	if(m_callback)
 		m_callback->hookChanged();
@@ -644,10 +652,13 @@ void StoreJournal::encodeUpdate(ProtocolLayer& p, StoreJournal::ObjectInfo& o)
 	if(m_callback)
 		m_callback->hookEntryRO(Type::Invalid, buf, o.len);
 
+	STORED_MAKE_MEM_DEFINED(buf, o.len);
 	p.encode(buf, o.len, false);
 
 	if(m_callback)
 		m_callback->hookExitRO(Type::Invalid, buf, o.len);
+
+	STORED_MAKE_MEM_NOACCESS(buf, o.len);
 }
 
 /*!
@@ -696,7 +707,10 @@ StoreJournal::decodeUpdates(void*& buffer, size_t& len, bool recordAll, void* sc
 		if(doHook)
 			m_keyCodec->push_back2(changes, chcnt, key, (Key)size);
 
+		STORED_MAKE_MEM_DEFINED(obj, size);
 		memcpy(obj, buffer_, size);
+		STORED_MAKE_MEM_NOACCESS(obj, size);
+
 		buffer_ += size;
 		len -= size;
 		changed(key, size, recordAll);

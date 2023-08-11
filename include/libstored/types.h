@@ -1370,25 +1370,27 @@ public:
 				true, const_cast<void*>(src), len);
 		} else {
 			bool changed = true;
-			size_t changed_len = len;
-
-			entryX(len);
-
 			if(unlikely(type() == Type::String)) {
+				// The byte after the buffer of the string is reserved for the \0.
+				size_t changed_len = len + 1U;
+				entryX(changed_len);
+
 				// src may not be null-terminated.
 				char const* src_ = static_cast<char const*>(src);
-				// The byte after the buffer of the string is reserved for the \0.
 				char* buffer_ = static_cast<char*>(m_buffer);
 
 				if(Config::EnableHooks)
-					changed = strncmp(src_, len, buffer_, len + 1) != 0;
+					changed = strncmp(src_, len, buffer_, len + 1U) != 0;
 
 				if(changed) {
 					len = strncpy(buffer_, src_, len);
 					buffer_[len] = '\0';
-					changed_len = len + 1;
 				}
+
+				exitX(changed, changed_len);
 			} else {
+				entryX(len);
+
 				if(Config::EnableHooks) {
 					if(Type::isStoreSwapped(type()))
 						changed = memcmp_swap(src, m_buffer, len) != 0;
@@ -1402,10 +1404,11 @@ public:
 					else
 						memcpy(m_buffer, src, len);
 				}
-			}
 
-			exitX(changed, changed_len);
+				exitX(changed, len);
+			}
 		}
+
 		return len;
 	}
 
