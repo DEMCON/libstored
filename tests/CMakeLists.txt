@@ -48,7 +48,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_
 	add_compile_options(-Wno-defaulted-function-deleted)
 endif()
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	add_compile_options(-Wno-array-bounds)
 endif()
 
