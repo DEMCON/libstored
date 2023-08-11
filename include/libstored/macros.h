@@ -175,6 +175,13 @@ typedef SSIZE_T ssize_t;
 #elif defined(__linux__)
 #	define STORED_OS_LINUX 1
 #	define STORED_OS_POSIX 1
+#	if defined(_DEBUG) && !defined(_FORTIFY_SOURCE)
+#		if defined(STORED_COMPILER_GCC) && GCC_VERSION >= 120000
+#			define _FORTIFY_SOURCE 3
+#		else
+#			define _FORTIFY_SOURCE 2
+#		endif
+#	endif
 #elif defined(STORED_COMPILER_ARMCC)
 #	define STORED_OS_BAREMETAL 1
 #elif defined(__APPLE__)

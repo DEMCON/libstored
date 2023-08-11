@@ -164,7 +164,10 @@ TEST(Types, String)
 	EXPECT_EQ(store.default_string.get(buffer2, s), s);
 	EXPECT_EQ(memcmp(buffer1, buffer2, s), 0);
 	EXPECT_EQ(strlen(buffer2), s);
-	EXPECT_EQ(strlen(static_cast<char*>(store.default_string.buffer())), s);
+	auto v = store.default_string.variant();
+	v.entryRO(s + 1);
+	EXPECT_EQ(strlen(static_cast<char*>(v.buffer())), s);
+	v.exitRO(s + 1);
 
 	ASSERT_TRUE(s >= 4);
 	memcpy(buffer1, "a\0b\0", 4);

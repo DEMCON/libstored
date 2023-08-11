@@ -40,10 +40,10 @@ public:
 	void __rand(bool set, int32_t& value)
 	{
 		if(!set) {
-			int32_t a = 48271;
-			int32_t m = 2147483647;
-			static int32_t seed = 42;
-			value = seed = (a * seed) % m;
+			uint32_t a = 48271;
+			uint32_t m = 2147483647;
+			static uint32_t seed = 42;
+			value = (int32_t)(seed = (a * seed) % m);
 		}
 	}
 

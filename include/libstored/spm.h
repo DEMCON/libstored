@@ -69,10 +69,10 @@ public:
 	 */
 	~ScratchPad() noexcept
 	{
-		deallocate<char>((char*)chunk(), bufferSize() + chunkHeader);
+		chunkDeallocate(chunk(), bufferSize());
 
 		for(List<char*>::type::iterator it = m_old.begin(); it != m_old.end(); ++it)
-			deallocate<char>((char*)chunk(*it), bufferSize(*it) + chunkHeader);
+			chunkDeallocate(chunk(*it), bufferSize(*it));
 	}
 
 	/*!
@@ -89,7 +89,7 @@ public:
 		if(unlikely(!m_old.empty())) {
 			// Coalesce chunks.
 			for(List<char*>::type::iterator it = m_old.begin(); it != m_old.end(); ++it)
-				deallocate<char>((char*)chunk(*it), bufferSize(*it) + chunkHeader);
+				chunkDeallocate(chunk(*it), bufferSize(*it));
 
 			m_old.clear();
 			reserve(m_max);
@@ -321,7 +321,7 @@ private:
 		stored_assert(m_buffer || m_old.empty());
 
 		if(m_buffer) {
-			deallocate<char>((char*)chunk(), bufferSize() + chunkHeader);
+			chunkDeallocate(chunk(), bufferSize());
 			m_buffer = nullptr;
 		}
 
@@ -353,11 +353,23 @@ private:
 
 		// Standard allocators don't have realloc. So, deallocate first,
 		// and then allocate a new one.
-		deallocate<char>((char*)chunk(), bufferSize() + chunkHeader);
+		chunkDeallocate(chunk(), bufferSize());
 		m_buffer = buffer(allocate<char>(size + chunkHeader));
 		setBufferSize(size);
 
 		STORED_MAKE_MEM_NOACCESS(&m_buffer[m_size], size - m_size);
+	}
+
+	/*!
+	 * \brief Deallocate a previously allocated chunk.
+	 */
+	void chunkDeallocate(void* chunk, size_t len)
+	{
+		if(!chunk)
+			return;
+
+		STORED_MAKE_MEM_UNDEFINED(chunk, len + chunkHeader);
+		deallocate<char>(static_cast<char*>(chunk), len + chunkHeader);
 	}
 
 	/*!

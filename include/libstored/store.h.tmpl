@@ -290,13 +290,21 @@ class {{store.name}}Base
 protected:
 	/*! \brief Default constructor. */
 	{{store.name}}Base()
-#	ifndef NDEBUG
-		: m_inHook(false)
+#	ifdef NDEBUG
+	is_default
+#	else
+		: m_locked(false)
 	{
 		STORED_MAKE_MEM_NOACCESS(&m_data, sizeof(m_data));
 	}
-#	else
-	is_default
+
+public:
+	~{{store.name}}Base()
+	{
+		STORED_MAKE_MEM_UNDEFINED(&m_data, sizeof(m_data));
+	}
+
+protected:
 #	endif
 
 public:
@@ -755,7 +763,7 @@ protected:
 
 private:
 #	ifndef NDEBUG
-	bool m_inHook;
+	bool m_locked;
 
 	void __hookEntryCheck() noexcept
 	{
@@ -763,16 +771,16 @@ private:
 			// You should not enter RO/X twice. It could happen if
 			// you access a store variable within a entry/exit RO/X
 			// scope.
-			stored_assert(!m_inHook);
-			m_inHook = true;
+			stored_assert(!m_locked);
+			m_locked = true;
 		}
 	}
 
 	void __hookExitCheck() noexcept
 	{
 		if(Config::EnableAssert && Config::EnableHooks) {
-			stored_assert(m_inHook);
-			m_inHook = false;
+			stored_assert(m_locked);
+			m_locked = false;
 		}
 	}
 #	else // NDEBUG
