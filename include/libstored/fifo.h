@@ -518,7 +518,8 @@ public:
 	}
 
 protected:
-	enum { UnboundedMoveThreshold = 64,
+	enum {
+		UnboundedMoveThreshold = 64,
 	};
 
 	void reserve_back(pointer& wp, pointer& wp_next, size_t count = 1)
@@ -1110,6 +1111,14 @@ public:
 		a.setDown(&this->a());
 		this->b().setUp(&b);
 		b.setDown(&this->b());
+	}
+
+	~FifoLoopback()
+	{
+		m_a.setDown(nullptr);
+		m_b.setDown(nullptr);
+		m_a2b.setUp(nullptr);
+		m_b2a.setUp(nullptr);
 	}
 
 	/*!
