@@ -220,3 +220,13 @@ if(VIVADO_CMD)
 	)
 endif()
 
+
+
+# Disable sanitizers for the targets below, as it is probably going to be executed by callgrind.
+set(LIBSTORED_ENABLE_ASAN OFF)
+set(LIBSTORED_ENABLE_UBSAN OFF)
+set(LIBSTORED_ENABLE_LSAN OFF)
+add_custom_target(teststore-perf)
+libstored_generate(TARGET teststore-perf STORES TestStore.st DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/perf)
+add_executable(perf_synchronizer perf_synchronizer.cpp)
+target_link_libraries(perf_synchronizer teststore-perf-libstored)
