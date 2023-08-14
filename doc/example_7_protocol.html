@@ -140,9 +140,9 @@ uint32 injected errors
 <span class="cp">#ifdef STORED_COMPILER_MSVC</span>
 <span class="cp">#</span><span class="w">	</span><span class="cp">include</span><span class="w"> </span><span class="cpf">&lt;io.h&gt;</span>
 <span class="cp">#	define read(fd, buffer, len) _read(fd, buffer, (unsigned int)(len))</span>
-<span class="cp">#	define STDERR_FILENO	_fileno(stderr)</span>
-<span class="cp">#	define STDOUT_FILENO	_fileno(stdout)</span>
-<span class="cp">#	define STDIN_FILENO	_fileno(stdin)</span>
+<span class="cp">#	define STDERR_FILENO	      _fileno(stderr)</span>
+<span class="cp">#	define STDOUT_FILENO	      _fileno(stdout)</span>
+<span class="cp">#	define STDIN_FILENO	      _fileno(stdin)</span>
 <span class="cp">#else</span>
 <span class="cp">#</span><span class="w">	</span><span class="cp">include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
 <span class="cp">#endif</span>
@@ -267,7 +267,7 @@ uint32 injected errors
 <span class="cp">#endif</span>
 <span class="w">			</span><span class="k">if</span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">ber</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="w">				</span><span class="c1">// Inject an error.</span>
-<span class="w">				</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">^</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="p">)(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">rand</span><span class="p">()</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">8</span><span class="p">));</span>
+<span class="w">				</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="p">)(</span><span class="n">b</span><span class="w"> </span><span class="o">^</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="p">)(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">rand</span><span class="p">()</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">8</span><span class="p">)));</span>
 <span class="w">				</span><span class="n">store</span><span class="p">.</span><span class="n">injected_errors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="n">injected_errors</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 <span class="w">			</span><span class="p">}</span>
 <span class="w">		</span><span class="p">}</span>
@@ -518,6 +518,11 @@ public:
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored19ExampleProtocolBaseD0Ev">
+<span id="_CPPv3N6stored19ExampleProtocolBaseD0Ev"></span><span id="_CPPv2N6stored19ExampleProtocolBaseD0Ev"></span><span id="stored::ExampleProtocolBase::~ExampleProtocolBase"></span><span class="target" id="classstored_1_1_example_protocol_base_1a26b21ba3ad669d896153a776c969ce42"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~ExampleProtocolBase</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored19ExampleProtocolBaseD0Ev" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored19ExampleProtocolBase11bufferToKeyEPKv">
 <span id="_CPPv3NK6stored19ExampleProtocolBase11bufferToKeyEPKv"></span><span id="_CPPv2NK6stored19ExampleProtocolBase11bufferToKeyEPKv"></span><span id="stored::ExampleProtocolBase::bufferToKey__voidCPC"></span><span class="target" id="classstored_1_1_example_protocol_base_1acb1a33d98726df7625ac3350dd6ee2d8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored19ExampleProtocolBase3KeyE" title="stored::ExampleProtocolBase::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bufferToKey</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored19ExampleProtocolBase11bufferToKeyEPKv" title="Permalink to this definition"></a><br /></dt>
