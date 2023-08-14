@@ -35,18 +35,18 @@ public:
 
 	virtual ~KeyCodec() is_default
 	virtual size_t size() const noexcept = 0;
-	virtual void encode(uint8_t (&buf)[4], size_t& len, type key) const noexcept = 0;
+	virtual void encode(uint8_t* buf, size_t& offset, type key) const noexcept = 0;
 	virtual type decode(uint8_t*& buffer, size_t& len, bool& ok) const noexcept = 0;
 	virtual void push_back2(void* list, size_t& len, type a, type b) const noexcept = 0;
 	virtual type pop_front(void*& list, size_t& len) const noexcept = 0;
 
 protected:
 	template <typename T>
-	static void encode_(uint8_t (&buf)[4], size_t& len, type key) noexcept
+	static void encode_(uint8_t* buf, size_t& offset, type key) noexcept
 	{
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
 		*reinterpret_cast<T*>(buf) = endian_h2s((T)key);
-		len = sizeof(T);
+		offset += sizeof(T);
 	}
 
 	template <typename T>
@@ -94,10 +94,10 @@ public:
 		return 1U;
 	}
 
-	void encode(uint8_t (&buf)[4], size_t& len, type key) const noexcept override
+	void encode(uint8_t* buf, size_t& offset, type key) const noexcept override
 	{
 		buf[0] = (uint8_t)key;
-		len = 1U;
+		offset += 1U;
 	}
 
 	type decode(uint8_t*& buffer, size_t& len, bool& ok) const noexcept override
@@ -134,9 +134,9 @@ public:
 		return 2U;
 	}
 
-	void encode(uint8_t (&buf)[4], size_t& len, type key) const noexcept override
+	void encode(uint8_t* buf, size_t& offset, type key) const noexcept override
 	{
-		encode_<uint16_t>(buf, len, key);
+		encode_<uint16_t>(buf, offset, key);
 	}
 
 	type decode(uint8_t*& buffer, size_t& len, bool& ok) const noexcept override
@@ -165,9 +165,9 @@ public:
 		return 4U;
 	}
 
-	void encode(uint8_t (&buf)[4], size_t& len, type key) const noexcept override
+	void encode(uint8_t* buf, size_t& offset, type key) const noexcept override
 	{
-		encode_<uint32_t>(buf, len, key);
+		encode_<uint32_t>(buf, offset, key);
 	}
 
 	type decode(uint8_t*& buffer, size_t& len, bool& ok) const noexcept override
@@ -644,21 +644,36 @@ void StoreJournal::encodeUpdates(
  */
 void StoreJournal::encodeUpdate(ProtocolLayer& p, StoreJournal::ObjectInfo& o)
 {
-	encodeKey(p, o.key);
-	encodeKey(p, o.len);
+	// p.encode() is quite expensive. Minimize the calls.
+	static size_t const MaxKeySize = 4U;
+	static size_t const MaxDataSize = 8U;
+	uint8_t encodeBuf[MaxKeySize * 2U + MaxDataSize];
 
 	void* buf = keyToBuffer(o.key);
+	StoreJournal::Size const o_len = o.len;
 
-	if(m_callback)
-		m_callback->hookEntryRO(Type::Invalid, buf, o.len);
+	if(unlikely(m_callback))
+		m_callback->hookEntryRO(Type::Invalid, buf, o_len);
 
-	STORED_MAKE_MEM_DEFINED(buf, o.len);
-	p.encode(buf, o.len, false);
+	size_t offset = 0;
+	m_keyCodec->encode(&encodeBuf[0], offset, o.key);
+	stored_assert(offset <= MaxKeySize);
+	m_keyCodec->encode(&encodeBuf[offset], offset, o_len);
 
-	if(m_callback)
-		m_callback->hookExitRO(Type::Invalid, buf, o.len);
+	STORED_MAKE_MEM_DEFINED(buf, o_len);
 
-	STORED_MAKE_MEM_NOACCESS(buf, o.len);
+	if(likely(o_len <= MaxDataSize)) {
+		memcpy(&encodeBuf[offset], buf, o_len);
+		p.encode(encodeBuf, offset + o_len);
+	} else {
+		p.encode(encodeBuf, offset, false);
+		p.encode(buf, o_len, false);
+	}
+
+	if(unlikely(m_callback))
+		m_callback->hookExitRO(Type::Invalid, buf, o_len);
+
+	STORED_MAKE_MEM_NOACCESS(buf, o_len);
 }
 
 /*!
