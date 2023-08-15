@@ -17,6 +17,7 @@ Changed
 ```````
 
 - ASan checks on the correct usage of entry/exit RO/X of stores.
+- Improved Synchronizer performance.
 
 Fixed
 `````
