@@ -161,7 +161,7 @@ public:
 	void encodeHash(ProtocolLayer& p, bool last = false) const;
 	static void encodeHash(ProtocolLayer& p, char const* hash, bool last = false);
 	Seq encodeBuffer(ProtocolLayer& p, bool last = false);
-	Seq encodeUpdates(ProtocolLayer& p, Seq sinceSeq, bool last = false);
+	Seq encodeUpdates(uint8_t*& buf, Seq sinceSeq);
 
 	static char const* decodeHash(void*& buffer, size_t& len);
 	Seq decodeBuffer(void*& buffer, size_t& len);
@@ -209,8 +209,8 @@ protected:
 	void regenerate();
 	Seq regenerate(size_t lower, size_t upper);
 
-	void encodeUpdates(ProtocolLayer& p, Seq sinceSeq, size_t lower, size_t upper);
-	void encodeUpdate(ProtocolLayer& p, ObjectInfo& o);
+	void encodeUpdates(uint8_t*& buf, Seq sinceSeq, size_t lower, size_t upper);
+	void encodeUpdate(uint8_t*& buf, ObjectInfo& o);
 
 	void encodeKey(ProtocolLayer& p, Key key);
 	Key decodeKey(uint8_t*& buffer, size_t& len, bool& ok);
@@ -558,7 +558,7 @@ public:
 
 	void source(StoreJournal& store);
 	void drop(StoreJournal& store);
-	StoreJournal::Seq process(StoreJournal& store);
+	StoreJournal::Seq process(StoreJournal& store, void* encodeBuffer);
 	void decode(void* buffer, size_t len) override final;
 
 	virtual void reset() override;
@@ -566,7 +566,9 @@ public:
 protected:
 	Id nextId();
 	void encodeCmd(char cmd, bool last = false);
+	void encodeCmd(char cmd, uint8_t*& buf);
 	void encodeId(Id id, bool last = false);
+	void encodeId(Id id, uint8_t*& buf);
 	static char decodeCmd(void*& buffer, size_t& len);
 	static Id decodeId(void*& buffer, size_t& len);
 
@@ -630,6 +632,9 @@ public:
 	void map(Synchronizable<Store>& store)
 	{
 		m_storeMap.insert(std::make_pair(store.hash(), &store.journal()));
+
+		if(Synchronizable<Store>::MaxMessageSize > m_encodeBuffer.size())
+			m_encodeBuffer.resize(Synchronizable<Store>::MaxMessageSize);
 	}
 
 	/*!
@@ -693,6 +698,14 @@ public:
 	bool isSynchronizing(StoreJournal& j) const;
 	bool isSynchronizing(StoreJournal& j, SyncConnection& notOverConnection) const;
 
+	/*!
+	 * \brief Return a buffer large enough to encode messages in.
+	 */
+	void* encodeBuffer()
+	{
+		return m_encodeBuffer.data();
+	}
+
 protected:
 	SyncConnection* toConnection(ProtocolLayer& connection) const;
 
@@ -712,6 +725,9 @@ private:
 
 	typedef Set<ProtocolLayer*>::type Connections;
 	Connections m_connections;
+
+	typedef Vector<uint8_t>::type EncodeBuffer;
+	EncodeBuffer m_encodeBuffer;
 };
 
 } // namespace stored

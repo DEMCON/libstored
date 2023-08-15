@@ -36,6 +36,7 @@ public:
 	virtual ~KeyCodec() is_default
 	virtual size_t size() const noexcept = 0;
 	virtual void encode(uint8_t* buf, size_t& offset, type key) const noexcept = 0;
+	virtual void encode2(uint8_t*& buf, type a, type b) const noexcept = 0;
 	virtual type decode(uint8_t*& buffer, size_t& len, bool& ok) const noexcept = 0;
 	virtual void push_back2(void* list, size_t& len, type a, type b) const noexcept = 0;
 	virtual type pop_front(void*& list, size_t& len) const noexcept = 0;
@@ -44,8 +45,8 @@ protected:
 	template <typename T>
 	static void encode_(uint8_t* buf, size_t& offset, type key) noexcept
 	{
-		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-		*reinterpret_cast<T*>(buf) = endian_h2s((T)key);
+		key = endian_h2s((T)key);
+		memcpy(buf, &key, sizeof(T));
 		offset += sizeof(T);
 	}
 
@@ -100,6 +101,13 @@ public:
 		offset += 1U;
 	}
 
+	void encode2(uint8_t*& buf, type a, type b) const noexcept override
+	{
+		buf[0] = (uint8_t)a;
+		buf[1] = (uint8_t)b;
+		buf += 2;
+	}
+
 	type decode(uint8_t*& buffer, size_t& len, bool& ok) const noexcept override
 	{
 		if(unlikely(len == 0)) {
@@ -139,6 +147,14 @@ public:
 		encode_<uint16_t>(buf, offset, key);
 	}
 
+	void encode2(uint8_t*& buf, type a, type b) const noexcept override
+	{
+		size_t offset = 0;
+		encode_<uint16_t>(buf, offset, a);
+		encode_<uint16_t>(buf + offset, offset, b);
+		buf += offset;
+	}
+
 	type decode(uint8_t*& buffer, size_t& len, bool& ok) const noexcept override
 	{
 		return decode_<uint16_t>(buffer, len, ok);
@@ -168,6 +184,14 @@ public:
 	void encode(uint8_t* buf, size_t& offset, type key) const noexcept override
 	{
 		encode_<uint32_t>(buf, offset, key);
+	}
+
+	void encode2(uint8_t*& buf, type a, type b) const noexcept override
+	{
+		size_t offset = 0;
+		encode_<uint32_t>(buf, offset, a);
+		encode_<uint32_t>(buf + offset, offset, b);
+		buf += offset;
 	}
 
 	type decode(uint8_t*& buffer, size_t& len, bool& ok) const noexcept override
@@ -610,12 +634,9 @@ StoreJournal::Seq StoreJournal::decodeBuffer(void*& buffer, size_t& len)
  * \return The sequence number of the most recent update, to be passed to the next invocation of \c
  *	encodeUpdates().
  */
-StoreJournal::Seq
-StoreJournal::encodeUpdates(ProtocolLayer& p, StoreJournal::Seq sinceSeq, bool last)
+StoreJournal::Seq StoreJournal::encodeUpdates(uint8_t*& buf, StoreJournal::Seq sinceSeq)
 {
-	encodeUpdates(p, sinceSeq, 0, m_changes.size());
-	if(last)
-		p.encode();
+	encodeUpdates(buf, sinceSeq, 0, m_changes.size());
 	return bumpSeq();
 }
 
@@ -623,7 +644,7 @@ StoreJournal::encodeUpdates(ProtocolLayer& p, StoreJournal::Seq sinceSeq, bool l
  * \brief Implementation of #encodeUpdates().
  */
 void StoreJournal::encodeUpdates(
-	ProtocolLayer& p, StoreJournal::Seq sinceSeq, size_t lower, size_t upper)
+	uint8_t*& buf, StoreJournal::Seq sinceSeq, size_t lower, size_t upper)
 {
 	if(lower >= upper)
 		return;
@@ -633,47 +654,34 @@ void StoreJournal::encodeUpdates(
 	if(toLong(o.highest) < sinceSeq)
 		return;
 
-	encodeUpdates(p, sinceSeq, lower, pivot);
+	encodeUpdates(buf, sinceSeq, lower, pivot);
 	if(toLong(o.seq) >= sinceSeq)
-		encodeUpdate(p, o);
-	encodeUpdates(p, sinceSeq, pivot + 1, upper);
+		encodeUpdate(buf, o);
+	encodeUpdates(buf, sinceSeq, pivot + 1, upper);
 }
 
 /*!
  * \brief Encode one change.
  */
-void StoreJournal::encodeUpdate(ProtocolLayer& p, StoreJournal::ObjectInfo& o)
+void StoreJournal::encodeUpdate(uint8_t*& buf, StoreJournal::ObjectInfo& o)
 {
-	// p.encode() is quite expensive. Minimize the calls.
-	static size_t const MaxKeySize = 4U;
-	static size_t const MaxDataSize = 8U;
-	uint8_t encodeBuf[MaxKeySize * 2U + MaxDataSize];
-
-	void* buf = keyToBuffer(o.key);
+	void* o_buf = keyToBuffer(o.key);
 	StoreJournal::Size const o_len = o.len;
 
 	if(unlikely(m_callback))
-		m_callback->hookEntryRO(Type::Invalid, buf, o_len);
+		m_callback->hookEntryRO(Type::Invalid, o_buf, o_len);
 
-	size_t offset = 0;
-	m_keyCodec->encode(&encodeBuf[0], offset, o.key);
-	stored_assert(offset <= MaxKeySize);
-	m_keyCodec->encode(&encodeBuf[offset], offset, o_len);
+	m_keyCodec->encode2(buf, o.key, o_len);
 
-	STORED_MAKE_MEM_DEFINED(buf, o_len);
+	STORED_MAKE_MEM_DEFINED(o_buf, o_len);
 
-	if(likely(o_len <= MaxDataSize)) {
-		memcpy(&encodeBuf[offset], buf, o_len);
-		p.encode(encodeBuf, offset + o_len);
-	} else {
-		p.encode(encodeBuf, offset, false);
-		p.encode(buf, o_len, false);
-	}
+	memcpy(buf, o_buf, o_len);
+	buf += o_len;
 
 	if(unlikely(m_callback))
-		m_callback->hookExitRO(Type::Invalid, buf, o_len);
+		m_callback->hookExitRO(Type::Invalid, o_buf, o_len);
 
-	STORED_MAKE_MEM_NOACCESS(buf, o_len);
+	STORED_MAKE_MEM_NOACCESS(o_buf, o_len);
 }
 
 /*!
@@ -857,6 +865,14 @@ Synchronizer& SyncConnection::synchronizer() const
 void SyncConnection::encodeCmd(char cmd, bool last)
 {
 	encode(&cmd, 1, last);
+}
+
+/*!
+ * \brief Encode a command byte into a buffer.
+ */
+void SyncConnection::encodeCmd(char cmd, uint8_t*& buf)
+{
+	*buf++ = (uint8_t)cmd;
 }
 
 /*!
@@ -1050,8 +1066,11 @@ againIn:
 
 /*!
  * \brief Send out all updates of the given store.
+ *
+ * The provided \p encodeBuffer must point to a scratch pad memory, large
+ * enough for the store's MaxMessageSize.
  */
-StoreJournal::Seq SyncConnection::process(StoreJournal& store)
+StoreJournal::Seq SyncConnection::process(StoreJournal& store, void* encodeBuffer)
 {
 	StoreMap::iterator s = m_store.find(&store);
 	if(s == m_store.end())
@@ -1061,11 +1080,13 @@ StoreJournal::Seq SyncConnection::process(StoreJournal& store)
 		// No recent changes.
 		return 0;
 
-	encodeCmd(Update);
-	encodeId(s->second.idOut, false);
+	uint8_t* encodeBuffer_ = static_cast<uint8_t*>(encodeBuffer);
+	encodeCmd(Update, encodeBuffer_);
+	encodeId(s->second.idOut, encodeBuffer_);
 	// Make sure to set the process seq before the last part of the encode is sent.
-	StoreJournal::Seq res = s->second.seq = store.encodeUpdates(*this, s->second.seq);
-	encode();
+	StoreJournal::Seq res = s->second.seq = store.encodeUpdates(encodeBuffer_, s->second.seq);
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+	encode(encodeBuffer, (size_t)((uintptr_t)encodeBuffer_ - (uintptr_t)encodeBuffer));
 
 	return res;
 }
@@ -1147,9 +1168,14 @@ void SyncConnection::decode(void* buffer, size_t len)
 		}
 
 		StoreInfo& si = m_store[j->second];
+		if(!si.source) {
+			// Wrong direction.
+			bye(id);
+			break;
+		}
+
 		si.seq = seq;
 		si.idOut = welcome_id;
-		stored_assert(si.source);
 		break;
 	}
 	case Update: {
@@ -1170,7 +1196,7 @@ void SyncConnection::decode(void* buffer, size_t len)
 
 		// Make sure that local changes are flushed out first.
 		StoreJournal& j = *it->second;
-		process(j);
+		process(j, synchronizer().encodeBuffer());
 
 		StoreJournal::Seq seq = 0;
 		bool recordAll = synchronizer().isSynchronizing(j, *this);
@@ -1240,6 +1266,16 @@ void SyncConnection::encodeId(SyncConnection::Id id, bool last)
 {
 	id = endian_h2s(id);
 	encode(&id, sizeof(Id), last);
+}
+
+/*!
+ * \brief Encode the given ID into a buffer
+ */
+void SyncConnection::encodeId(SyncConnection::Id id, uint8_t*& buf)
+{
+	id = endian_h2s(id);
+	memcpy(buf, &id, sizeof(Id));
+	buf += sizeof(Id);
 }
 
 /*!
@@ -1414,7 +1450,7 @@ void Synchronizer::process(StoreJournal& j)
 {
 	for(Connections::iterator it = m_connections.begin(); it != m_connections.end(); ++it)
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
-		static_cast<SyncConnection*>(*it)->process(j);
+		static_cast<SyncConnection*>(*it)->process(j, encodeBuffer());
 }
 
 /*!
@@ -1427,7 +1463,7 @@ void Synchronizer::process(ProtocolLayer& connection)
 		return;
 
 	for(StoreMap::iterator it = m_storeMap.begin(); it != m_storeMap.end(); ++it)
-		c->process(*it->second);
+		c->process(*it->second, encodeBuffer());
 }
 
 /*!
@@ -1437,7 +1473,7 @@ StoreJournal::Seq Synchronizer::process(ProtocolLayer& connection, StoreJournal&
 {
 	SyncConnection* c = toConnection(connection);
 	if(c)
-		return c->process(j);
+		return c->process(j, encodeBuffer());
 
 	return 0;
 }
