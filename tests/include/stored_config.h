@@ -130,6 +130,9 @@ struct Config : public DefaultConfig {
 	struct Allocator {
 		typedef TestAllocator<T> type;
 	};
+
+	static bool const DebuggerReadMem = true;
+	static bool const DebuggerWriteMem = true;
 };
 } // namespace stored
 #	endif // __cplusplus
