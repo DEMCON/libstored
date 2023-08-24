@@ -30,6 +30,7 @@ function show_help {
 	echo "  zmq   Enable ZeroMQ integration"
 	echo "  nozmq Disable ZeroMQ integration"
 	echo "  zth   Enable Zth integration"
+	echo "  fuzz  Enable fuzzing with AFL++"
 	exit 2
 }
 
@@ -103,6 +104,18 @@ while [[ ! -z ${1:-} ]]; do
 			CXX="${1#CXX=}";;
 		make)
 			use_ninja=0;;
+		fuzz)
+			if ! which afl-clang-fast++ > /dev/null; then
+				echo "Cannot find afl-clang-fast++. Install AFL++ first."
+				gotErr
+			fi
+
+			CC=afl-clang-fast
+			CXX=afl-clang-fast++
+			cmake_opts="${cmake_opts} -DCMAKE_CXX_STANDARD=17 -DCMAKE_C_STANDARD=11"
+			do_test=1
+			do_test_run=0
+			;;
 		--)
 			# Stop parsing
 			shift
