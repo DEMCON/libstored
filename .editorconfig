@@ -8,6 +8,9 @@ indent_size = 8
 indent_style = tab
 trim_trailing_whitespace = true
 
+[*.{h,c,cpp,h.tmpl,c.tmpl,cpp.tmpl}]
+max_line_length = 100
+
 [*.{py,qml}]
 indent_style = space
 indent_size = 4
@@ -32,3 +35,11 @@ charset = utf-8-bom
 [*.cmd]
 end_of_line = crlf
 
+[{extern/*/**,dist/*/build/**}]
+end_of_line = unset
+insert_final_newline = unset
+charset = unset
+indent_size = unset
+indent_style = unset
+trim_trailing_whitespace = unset
+max_line_length = unset
