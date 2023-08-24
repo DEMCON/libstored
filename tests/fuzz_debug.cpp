@@ -30,17 +30,65 @@
 __AFL_FUZZ_INIT();
 #endif
 
-static stored::TestStore store;
-
 static void help(char const* exe)
 {
-	printf("Usage: %s [-h|<input file>]\n", exe);
+	printf("Usage: %s [-h|-i|<input file>]\n", exe);
+
+	printf("\nwhere\n");
+	printf("   -h   Show this help and exit.\n");
+	printf("   -i   Generate input files in the current directory and exit.\n");
+	printf("   <input file>\n");
+	printf("        The input file to run (without using AFL++).\n");
+
+	printf("\nWithout parameters, the program expects to be controlled by AFL++ for "
+	       "fuzzing.\n");
+}
+
+static void generate(std::initializer_list<char const*> msgs)
+{
+	std::string buf;
+
+	for(auto const* msg : msgs) {
+		size_t len = std::min<size_t>(0xff, strlen(msg));
+		buf.push_back((char)len);
+		buf.append(msg, len);
+	}
+
+	static size_t count;
+	std::array<char, 64> filename{};
+	snprintf(filename.data(), filename.size(), "fuzz_debug_%03zu.bin", count++);
+
+	FILE* f = fopen(filename.data(), "wb");
+	if(!f) {
+		printf("Cannot open %s for writing; %s\n", filename.data(), strerror(errno));
+		exit(1);
+	}
+
+	auto written = fwrite(buf.data(), buf.size(), 1, f);
+	fclose(f);
+
+	if(written != 1) {
+		printf("Cannot write %s\n", filename.data());
+		exit(1);
+	}
+
+	printf("Generated %s\n", filename.data());
+}
+
+static void generate()
+{
+	generate({"?", "i", "v", "l"});
+	generate({"r/default int8", "a1/default int8", "r1", "w101", "r1"});
+	generate({"w0123456789abcdef/f read/write", "r/f read-", "r/init float 1"});
+	generate({"mA|e0|e1|e2", "A", "mA"});
+	generate({"mt|r/default uint32", "ttt", "st", "t"});
 }
 
 static void test(void const* buf, size_t len)
 {
 	static std::vector<uint8_t> msg;
 
+	stored::TestStore store;
 	stored::Debugger debugger;
 	debugger.map(store);
 
@@ -122,6 +170,9 @@ int main(int argc, char** argv)
 		if(strcmp(argv[1], "-h") == 0) {
 			help(argv[0]);
 			return 0;
+		} else if(strcmp(argv[1], "-i") == 0) {
+			generate();
+			return 0;
 		}
 
 		return test(argv[1]);
@@ -141,7 +192,7 @@ int main(int argc, char** argv)
 
 	unsigned char* buf = __AFL_FUZZ_TESTCASE_BUF;
 
-	while(__AFL_LOOP(1000)) {
+	while(__AFL_LOOP(1000000)) {
 		auto len = __AFL_FUZZ_TESTCASE_LEN;
 		test(buf, (size_t)len);
 	}

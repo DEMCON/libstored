@@ -234,3 +234,38 @@ target_link_libraries(perf_synchronizer teststore-perf-libstored)
 
 add_executable(fuzz_debug fuzz_debug.cpp)
 target_link_libraries(fuzz_debug teststore-perf-libstored)
+
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/fuzz_debug_input)
+
+add_custom_command(
+	TARGET fuzz_debug
+	POST_BUILD
+	COMMAND $<TARGET_FILE:fuzz_debug> -i
+	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/fuzz_debug_input
+	VERBATIM
+)
+
+find_program(AFL_FUZZ NAMES afl-fuzz)
+
+if(AFL_FUZZ)
+	file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/fuzz_debug.sh CONTENT
+"#!/bin/bash
+
+set -euo pipefail
+
+export AFL_NO_CRASH_README=1
+export AFL_SKIP_CPUFREQ=1
+
+\"${AFL_FUZZ}\" \\
+	-i \"${CMAKE_CURRENT_BINARY_DIR}/fuzz_debug_input\" \\
+	-o \"${CMAKE_CURRENT_BINARY_DIR}/fuzz_debug_output\" \"$@\" -- \\
+	\"$<TARGET_FILE:fuzz_debug>\"
+
+! ls \"${CMAKE_CURRENT_BINARY_DIR}/fuzz_debug_output/{crashes,hangs}/\"* > /dev/null 2>&1
+"
+	)
+
+	add_test(NAME fuzz_debug
+		COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/fuzz_debug.sh -V 30
+	)
+endif()
