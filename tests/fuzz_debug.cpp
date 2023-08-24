@@ -9,6 +9,7 @@
 
 #include "TestStore.h"
 
+#include <algorithm>
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
@@ -18,6 +19,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <vector>
 
 #ifdef __AFL_FUZZ_TESTCASE_LEN
 #	define HAVE_AFL
@@ -29,16 +31,33 @@ __AFL_FUZZ_INIT();
 #endif
 
 static stored::TestStore store;
-static stored::Debugger debugger;
 
 static void help(char const* exe)
 {
 	printf("Usage: %s [-h|<input file>]\n", exe);
 }
 
-static void test(void* buf, size_t len)
+static void test(void const* buf, size_t len)
 {
-	debugger.decode(buf, len);
+	static std::vector<uint8_t> msg;
+
+	stored::Debugger debugger;
+	debugger.map(store);
+
+	// buf contains messages, which are a byte with the length and then one message of that
+	// length.
+	uint8_t const* buf_ = static_cast<uint8_t const*>(buf);
+
+	while(len > 0) {
+		size_t l = std::min<size_t>(--len, *buf_++);
+
+		msg.resize(l);
+		memcpy(msg.data(), buf_, l);
+		debugger.decode(msg.data(), l);
+
+		buf_ += l;
+		len -= l;
+	}
 }
 
 static int test(char const* file)
@@ -74,7 +93,7 @@ static int test(char const* file)
 	test(buf, len);
 	res = 0;
 
-// unmap:
+	// unmap:
 	munmap(buf, len);
 close:
 	close(fd);
@@ -115,8 +134,6 @@ int main(int argc, char** argv)
 	printf("Compile this program with afl-clang-fast++ to do fuzzing.\n");
 	return 1;
 #else
-
-	debugger.map(store);
 
 	printf("Ready. Waiting for afl-fuzz for instructions...\n");
 
