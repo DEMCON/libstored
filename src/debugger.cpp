@@ -532,11 +532,18 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 		if(len == 2) {
 			// Erase macro
 			MacroMap::iterator it = macros().find(m);
-			if(it != macros().end()) {
-				stored_assert(it->second.size() <= m_macroSize);
-				m_macroSize -= it->second.size();
-				macros().erase(it);
-			}
+
+			if(it == macros().end())
+				// Does not exist.
+				break;
+
+			if(it->second.empty())
+				// Macro is currently in use.
+				goto error;
+
+			stored_assert(it->second.size() <= m_macroSize);
+			m_macroSize -= it->second.size();
+			macros().erase(it);
 			break;
 		}
 
@@ -558,6 +565,10 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 			// Update existing macro.
 			size_t newlen = len + m_macroSize - it->second.size();
 			if(newlen > Config::DebuggerMacro)
+				goto error;
+
+			if(it->second.empty())
+				// Macro is currently in use.
 				goto error;
 
 			it->second.clear();
@@ -915,31 +926,45 @@ bool Debugger::runMacro(char m, ProtocolLayer& response)
 		// Unknown macro.
 		return false;
 
-	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-	String::type const& definition = const_cast<String::type const&>(it->second);
+	String::type& definition = it->second;
 
-	// Expect the separator and at least one char to execute.
-	if(definition.size() < 2)
-		// Nothing to do.
+	switch(definition.size()) {
+	case 0:
+		// Macro is currently being executed. No recursive calls are allowed.
+		return false;
+	case 1:
+		// Expect the separator and at least one char to execute.  Nothing to do.
 		return true;
+	default:;
+		// Go execute.
+	}
 
-	char sep = definition[0];
+	// Mark macro as in use by removing the definition temporarily.
+	String::type definition_;
+	definition.swap(definition_);
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+	String::type const& def = const_cast<String::type const&>(definition_);
+
+	char sep = def[0];
 
 	FrameMerger merger(response);
 
 	size_t pos = 0;
 	do {
-		size_t nextpos = definition.find(sep, ++pos);
+		size_t nextpos = def.find(sep, ++pos);
 		size_t len = 0;
 		if(nextpos == String::type::npos)
-			len = definition.size() - pos;
+			len = def.size() - pos;
 		else
 			len = nextpos - pos;
-		process(&definition[pos], len, merger);
+		process(&def[pos], len, merger);
 		pos = nextpos;
 	} while(pos != String::type::npos);
 
 	response.encode();
+
+	// Restore recursion protection.
+	definition.swap(definition_);
 	return true;
 }
 

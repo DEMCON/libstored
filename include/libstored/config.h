@@ -127,10 +127,23 @@ struct DefaultConfig {
 	static bool const DebuggerIdentification = true;
 	/*! \brief When \c true, stored::Debugger implements the version capability. */
 	static int const DebuggerVersion = 2;
+
 	/*! \brief When \c true, stored::Debugger implements the read memory capability. */
-	static bool const DebuggerReadMem = true;
+	static bool const DebuggerReadMem =
+#	if defined(STORED_OS_BAREMETAL)
+		Debug;
+#	else
+		false;
+#	endif
+
 	/*! \brief When \c true, stored::Debugger implements the write memory capability. */
-	static bool const DebuggerWriteMem = true;
+	static bool const DebuggerWriteMem =
+#	if defined(STORED_OS_BAREMETAL)
+		Debug;
+#	else
+		false;
+#	endif
+
 	/*!
 	 * \brief When not 0, stored::Debugger implements the streams capability.
 	 *

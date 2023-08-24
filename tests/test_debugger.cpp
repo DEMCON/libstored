@@ -261,6 +261,24 @@ TEST(Debugger, Macro)
 	EXPECT_EQ(ll.encoded().at(5), "!");
 	DECODE(d, "1");
 	EXPECT_EQ(ll.encoded().at(6), "?");
+
+	// Recursive call is not allowed.
+	DECODE(d, "m1|e0|m|e0");
+	EXPECT_EQ(ll.encoded().at(7), "!");
+	DECODE(d, "1");
+	EXPECT_EQ(ll.encoded().at(8), "0?0");
+
+	// Remove by itself is not allowed.
+	DECODE(d, "m1|e0|m1|e0");
+	EXPECT_EQ(ll.encoded().at(9), "!");
+	DECODE(d, "1");
+	EXPECT_EQ(ll.encoded().at(10), "0?0");
+
+	// Redefine by itself is not allowed.
+	DECODE(d, "m1|e0|m1=?|e0");
+	EXPECT_EQ(ll.encoded().at(11), "!");
+	DECODE(d, "1");
+	EXPECT_EQ(ll.encoded().at(12), "0?0");
 }
 
 TEST(Debugger, ReadMem)
