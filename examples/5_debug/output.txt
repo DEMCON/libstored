@@ -4,7 +4,7 @@
 /ExampleDebugAnotherStore/j = 101
 i2 = 5
 >>   ?
-<<   ?rwelamivRWst
+<<   ?rwelamivst
 >>   i
 <<   5_debug
 >>   r/ExampleDebugAnotherStore/j
@@ -30,7 +30,6 @@ i2 = 5
 <<   f00f;f00f;65
 >>   m*
 <<   !
-mem = 0xfeca
 >>   s
 <<   ?
 >>   s
@@ -46,6 +45,6 @@ mem = 0xfeca
 >>   sB/
 <<   ?
 >>   ?
-<<   ?rwelamvRWstz
+<<   ?rwelamvstz
 >>   z
 <<   Zzzz

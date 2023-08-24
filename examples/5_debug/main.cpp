@@ -169,14 +169,20 @@ int main()
 	phy.silence(true);
 
 	int mem = 0xbeef;
-	char buffer[32] = {};
-	snprintf(buffer, sizeof(buffer), "R%" PRIxPTR " %zu", (uintptr_t)&mem, sizeof(mem));
-	phy.decode(buffer);
 
-	snprintf(buffer, sizeof(buffer), "W%" PRIxPTR " cafe", (uintptr_t)&mem);
-	phy.decode(buffer);
+	if(stored::Config::DebuggerReadMem) {
+		char buffer[32] = {};
+		snprintf(buffer, sizeof(buffer), "R%" PRIxPTR " %zu", (uintptr_t)&mem, sizeof(mem));
+		phy.decode(buffer);
+	}
 
-	printf("mem = 0x%x\n", mem);
+	if(stored::Config::DebuggerWriteMem) {
+		char buffer[32] = {};
+		snprintf(buffer, sizeof(buffer), "W%" PRIxPTR " cafe", (uintptr_t)&mem);
+		phy.decode(buffer);
+
+		printf("mem = 0x%x\n", mem);
+	}
 
 	phy.silence(false);
 
