@@ -229,7 +229,7 @@ set(LIBSTORED_ENABLE_LSAN OFF)
 add_custom_target(teststore-perf)
 libstored_generate(TARGET teststore-perf STORES TestStore.st DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/perf)
 target_include_directories(teststore-perf-libstored BEFORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-add_executable(perf_synchronizer perf_synchronizer.cpp)
+add_executable(perf_synchronizer perf_synchronizer.cpp test_base.cpp)
 target_link_libraries(perf_synchronizer teststore-perf-libstored)
 
 
