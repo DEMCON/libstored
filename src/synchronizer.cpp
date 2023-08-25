@@ -371,13 +371,11 @@ void StoreJournal::changed(StoreJournal::Key key, size_t len, bool insertIfNew)
 	m_partialSeq = true;
 
 	if(!update(key, len, seq(), 0, m_changes.size()) && insertIfNew) {
-		m_changes.
 #if STORED_cplusplus >= 201103L
-			emplace_back
+		m_changes.emplace_back(key, (Size)len, toShort(seq()));
 #else
-			push_back
+		m_changes.push_back(ObjectInfo(key, (Size)len, toShort(seq())));
 #endif
-			(ObjectInfo(key, (Size)len, toShort(seq())));
 		regenerate();
 	}
 }
@@ -1161,8 +1159,13 @@ void SyncConnection::decode(void* buffer, size_t len)
 
 		StoreJournal::Seq seq = 0;
 
-		if(!welcome_id || j == m_idIn.end()
-		   || !(seq = j->second->decodeBuffer(buffer, len))) {
+		if(!welcome_id || j == m_idIn.end()) {
+			bye(id);
+			break;
+		}
+
+		seq = j->second->decodeBuffer(buffer, len);
+		if(!seq) {
 			bye(id);
 			break;
 		}
@@ -1200,7 +1203,8 @@ void SyncConnection::decode(void* buffer, size_t len)
 
 		StoreJournal::Seq seq = 0;
 		bool recordAll = synchronizer().isSynchronizing(j, *this);
-		if(!(seq = it->second->decodeUpdates(buffer, len, recordAll, scratch))) {
+		seq = it->second->decodeUpdates(buffer, len, recordAll, scratch);
+		if(!seq) {
 			bye(id);
 			break;
 		}
@@ -1491,7 +1495,7 @@ bool Synchronizer::isSynchronizing(StoreJournal& j, SyncConnection& notOverConne
 {
 	for(Connections::iterator it = m_connections.begin(); it != m_connections.end(); ++it) {
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
-		SyncConnection* c = static_cast<SyncConnection*>(*it);
+		SyncConnection const* c = static_cast<SyncConnection const*>(*it);
 		if(c != &notOverConnection && c->isSynchronizing(j))
 			return true;
 	}

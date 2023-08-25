@@ -567,7 +567,8 @@ public:
 	{
 		cleanup();
 
-		if((m_valid = c.m_valid)) {
+		m_valid = c.m_valid;
+		if(m_valid) {
 			m_f = std::move(c.m_f);
 			c.m_valid = false;
 		}

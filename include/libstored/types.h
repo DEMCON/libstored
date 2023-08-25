@@ -1302,7 +1302,7 @@ public:
 			entryRO(len);
 			if(unlikely(type() == Type::String)) {
 				char* dst_ = static_cast<char*>(dst);
-				char* buffer_ = static_cast<char*>(m_buffer);
+				char const* buffer_ = static_cast<char const*>(m_buffer);
 				size_t len_ = strncpy(dst_, buffer_, len);
 				if(len > len_)
 					dst_[len_] = '\0';
@@ -1451,13 +1451,12 @@ public:
 	size_t callback(bool set, void* buffer, size_t len) const
 	{
 		stored_assert(valid() && isFunction());
-		size_t size_ = 0;
+		size_t size_ = Type::size(type());
 
 		if(!Config::UnalignedAccess
 		   && Type::isFixed(type())
 		   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
-		   && ((uintptr_t)buffer
-		       & (std::min(sizeof(void*), size_ = Type::size(type())) - 1U))) {
+		   && ((uintptr_t)buffer & (std::min(sizeof(void*), size_) - 1U))) {
 			// Unaligned access, do the callback on a local buffer.
 			stored_assert(size_ <= sizeof(uint64_t) && len >= size_);
 			uint64_t v = 0;

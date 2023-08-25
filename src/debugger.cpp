@@ -950,6 +950,7 @@ bool Debugger::runMacro(char m, ProtocolLayer& response)
 	FrameMerger merger(response);
 
 	size_t pos = 0;
+	// NOLINTNEXTLINE(cppcoreguidelines-avoid-do-while)
 	do {
 		size_t nextpos = def.find(sep, ++pos);
 		size_t len = 0;

@@ -255,9 +255,11 @@ function(libstored_lib libprefix libpath)
 				"-hicpp-vararg,"
 
 				"misc-*,"
+				"-misc-const-correctness,"
 				"-misc-no-recursion,"
 				"-misc-non-private-member-variables-in-classes,"
 				"-misc-macro-parentheses,"
+				"-misc-use-anonymous-namespace,"
 
 				"readability-*,"
 				"-readability-braces-around-statements,"

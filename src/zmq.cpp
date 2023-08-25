@@ -43,12 +43,12 @@ ZmqLayer::ZmqLayer(void* context, int type, ProtocolLayer* up, ProtocolLayer* do
 	: base(up, down)
 	, m_context(context ? context : zmq_ctx_new())
 	, m_contextCleanup(!context)
-	, m_socket()
 	, m_buffer()
 	, m_bufferCapacity()
 	, m_bufferSize()
+	, m_socket(zmq_socket(this->context(), type))
 {
-	if(!(m_socket = zmq_socket(this->context(), type)))
+	if(!m_socket)
 		setLastError(errno);
 }
 
@@ -132,7 +132,8 @@ int ZmqLayer::block(bool forReading, long timeout_us, bool suspend)
 	int err = 0;
 	int res = 0;
 	PollableZmqLayer pollable(*this, events);
-	if((res = poller.add(pollable))) {
+	res = poller.add(pollable);
+	if(res) {
 		err = res;
 		goto done;
 	}
@@ -141,9 +142,11 @@ int ZmqLayer::block(bool forReading, long timeout_us, bool suspend)
 		Poller::Result const& pres = poller.poll((int)(timeout_us / 1000L));
 
 		if(pres.empty()) {
-			if(!(err = errno))
+			err = errno;
+			if(!err) {
 				// Should not happen.
 				err = EINVAL;
+			}
 			break;
 		} else if((pres[0]->events
 			   & (Pollable::Events)(Pollable::PollErr | Pollable::PollHup))
@@ -157,7 +160,8 @@ int ZmqLayer::block(bool forReading, long timeout_us, bool suspend)
 		}
 	}
 
-	if((res = poller.remove(pollable)))
+	res = poller.remove(pollable);
+	if(res)
 		if(!err)
 			err = res;
 
@@ -187,7 +191,8 @@ int ZmqLayer::recv1(long timeout_us)
 			goto error_recv;
 		} else {
 			// Go block first, then retry.
-			if((res = block(true, timeout_us)))
+			res = block(true, timeout_us);
+			if(res)
 				goto error_recv;
 
 			if(zmq_msg_recv(&msg, m_socket, 0) == -1) {

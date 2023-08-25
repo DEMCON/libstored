@@ -57,7 +57,10 @@
  */
 #ifndef unlikely
 #	ifdef __GNUC__
-#		define unlikely(expr) __builtin_expect(!!(expr), 0)
+#		define unlikely(expr)                                                    \
+			__builtin_expect(                                                 \
+				!!(expr), /* NOLINT(readability-simplify-boolean-expr) */ \
+				0)
 #	else
 #		define unlikely(expr) (expr)
 #	endif
@@ -75,8 +78,8 @@
 #			define stored_yield() zth_yield()
 #		endif
 #	else
-#		define stored_yield() \
-			do {           \
+#		define stored_yield()                                      \
+			do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
 			} while(false)
 #	endif
 #endif
@@ -154,16 +157,16 @@
 
 #if !defined(NDEBUG) \
 	&& ((defined(STORED_HAVE_VALGRIND) && !defined(NVALGRIND)) || defined(STORED_ENABLE_ASAN))
-#	define STORED_MAKE_MEM_NOACCESS(buffer, size)             \
-		do {                                               \
-			void* b_ = (void*)(buffer);                \
-			size_t s_ = (size_t)(size);                \
-			STORED_MAKE_MEM_NOACCESS_VALGRIND(b_, s_); \
-			STORED_MAKE_MEM_NOACCESS_ASAN(b_, s_);     \
+#	define STORED_MAKE_MEM_NOACCESS(buffer, size)              \
+		do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
+			void* b_ = (void*)(buffer);                 \
+			size_t s_ = (size_t)(size);                 \
+			STORED_MAKE_MEM_NOACCESS_VALGRIND(b_, s_);  \
+			STORED_MAKE_MEM_NOACCESS_ASAN(b_, s_);      \
 		} while(0)
 
 #	define STORED_MAKE_MEM_UNDEFINED(buffer, size)                 \
-		do {                                                    \
+		do { /* NOLINT(cppcoreguidelines-avoid-do-while) */     \
 			void* b_ = (void*)(buffer);                     \
 			size_t s_ = (size_t)(size);                     \
 			STORED_MAKE_MEM_UNDEFINED_VALGRIND(b_, s_);     \
@@ -171,22 +174,22 @@
 			if(Config::Debug && !RUNNING_ON_VALGRIND && b_) \
 				memset(b_, 0xef, s_);                   \
 		} while(0)
-#	define STORED_MAKE_MEM_DEFINED(buffer, size)             \
-		do {                                              \
-			void* b_ = (void*)(buffer);               \
-			size_t s_ = (size_t)(size);               \
-			STORED_MAKE_MEM_DEFINED_VALGRIND(b_, s_); \
-			STORED_MAKE_MEM_DEFINED_ASAN(b_, s_);     \
+#	define STORED_MAKE_MEM_DEFINED(buffer, size)               \
+		do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
+			void* b_ = (void*)(buffer);                 \
+			size_t s_ = (size_t)(size);                 \
+			STORED_MAKE_MEM_DEFINED_VALGRIND(b_, s_);   \
+			STORED_MAKE_MEM_DEFINED_ASAN(b_, s_);       \
 		} while(0)
 #else
-#	define STORED_MAKE_MEM_NOACCESS(buffer, size) \
-		do {                                   \
+#	define STORED_MAKE_MEM_NOACCESS(buffer, size)              \
+		do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
 		} while(0)
-#	define STORED_MAKE_MEM_UNDEFINED(buffer, size) \
-		do {                                    \
+#	define STORED_MAKE_MEM_UNDEFINED(buffer, size)             \
+		do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
 		} while(0)
-#	define STORED_MAKE_MEM_DEFINED(buffer, size) \
-		do {                                  \
+#	define STORED_MAKE_MEM_DEFINED(buffer, size)               \
+		do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
 		} while(0)
 #endif
 
@@ -223,10 +226,10 @@
 
 #	if defined(STORED_cplusplus) && STORED_cplusplus < 201103L && !defined(static_assert) \
 		&& !defined(STORED_COMPILER_MSVC)
-#		define static_assert(expr, msg)                                       \
-			do {                                                           \
-				typedef __attribute__(                                 \
-					(unused)) int static_assert_[(expr) ? 1 : -1]; \
+#		define static_assert(expr, msg)                                      \
+			do { /* NOLINT(cppcoreguidelines-avoid-do-while) */           \
+				typedef __attribute__((                               \
+					unused)) int static_assert_[(expr) ? 1 : -1]; \
 			} while(0)
 #	endif
 
@@ -299,18 +302,18 @@ namespace stored {
  * \brief Like \c assert(), but only emits code when #stored::Config::EnableAssert.
  */
 #	ifdef STORED_HAVE_ZTH
-#		define stored_assert(expr)                          \
-			do {                                         \
-				if(::stored::Config::EnableAssert) { \
-					zth_assert(expr);            \
-				}                                    \
+#		define stored_assert(expr)                                 \
+			do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
+				if(::stored::Config::EnableAssert) {        \
+					zth_assert(expr);                   \
+				}                                           \
 			} while(false)
 #	else
-#		define stored_assert(expr)                          \
-			do {                                         \
-				if(::stored::Config::EnableAssert) { \
-					assert(expr);                \
-				}                                    \
+#		define stored_assert(expr)                                 \
+			do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
+				if(::stored::Config::EnableAssert) {        \
+					assert(expr);                       \
+				}                                           \
 			} while(false)
 #	endif
 
@@ -946,7 +949,13 @@ template <
 Sub down_cast(Base& p) noexcept
 {
 #	ifdef STORED_cpp_rtti
-	stored_assert(((void)dynamic_cast<Sub>(p), true)); // This may throw.
+	if(stored::Config::EnableAssert) {
+		try {
+			stored_assert(((void)dynamic_cast<Sub>(p), true)); // This may throw.
+		} catch(...) {
+			stored_assert(false); // NOLINT
+		}
+	}
 #	endif
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
 	return static_cast<Sub>(p);

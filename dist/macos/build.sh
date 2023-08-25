@@ -7,7 +7,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-set -e
+set -euo pipefail
 
 function nproc {
 	sysctl -n hw.logicalcpu
@@ -18,7 +18,7 @@ if which brew > /dev/null && which pkg-config > /dev/null && ! pkg-config libzmq
 	libzmq_version="`brew info --json=v1 zmq | jq ".[].installed[].version" -r`"
 	libzmq_path="/usr/local/Cellar/zeromq/${libzmq_version}/lib/pkgconfig"
 	if [[ -e ${libzmq_path}/libzmq.pc ]]; then
-		export PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${libzmq_path}"
+		export PKG_CONFIG_PATH="${PKG_CONFIG_PATH:+${PKG_CONFIG_PATH}:}${libzmq_path}"
 	fi
 fi
 
