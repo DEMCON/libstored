@@ -1321,7 +1321,7 @@ again:
  */
 void SyncConnection::helloAgain()
 {
-	for(StoreMap::iterator it = m_store.begin(); it != m_store.end();)
+	for(StoreMap::iterator it = m_store.begin(); it != m_store.end(); ++it)
 		if(it->second.source)
 			helloAgain(*it->first);
 }
