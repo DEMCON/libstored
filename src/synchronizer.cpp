@@ -966,7 +966,7 @@ void SyncConnection::bye()
  */
 void SyncConnection::bye(char const* hash)
 {
-	if(!hash)
+	if(!hash || strlen(hash) <= sizeof(SyncConnection::Id))
 		return;
 
 	erase(hash);
