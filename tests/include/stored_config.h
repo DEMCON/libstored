@@ -114,6 +114,13 @@ public:
 		free(p);
 	}
 
+#		if STORED_cplusplus < 201703L
+	template <typename U>
+	struct rebind {
+		typedef TestAllocator<U> other;
+	};
+#		endif
+
 	constexpr bool operator==(TestAllocator&) noexcept
 	{
 		return true;

@@ -40,15 +40,15 @@ void help(char const* exe)
 }
 
 void generate(
-	std::initializer_list<char const*> msgs, stored::ProtocolLayer& top,
+	std::initializer_list<std::string> msgs, stored::ProtocolLayer& top,
 	stored::ProtocolLayer& bottom)
 {
 	LoggingLayer l;
 	l.wrap(bottom);
 
-	for(auto const* msg : msgs) {
-		char len = (char)std::min<size_t>(0xff, strlen(msg));
-		top.encode(msg, (size_t)(uint8_t)len, true);
+	for(auto const& msg : msgs) {
+		char len = (char)std::min<size_t>(0xff, msg.size());
+		top.encode(msg.data(), (size_t)(uint8_t)len, true);
 		top.flush();
 		l.encoded().insert(
 			l.encoded().end() - 1, std::string{(char)l.encoded().back().size()});
@@ -76,7 +76,7 @@ void generate(
 	printf("Generated %s\n", filename.data());
 }
 
-void generate(std::initializer_list<char const*> msgs)
+void generate(std::initializer_list<std::string> msgs)
 {
 	stored::ProtocolLayer p;
 	generate(msgs, p, p);

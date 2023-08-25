@@ -56,7 +56,7 @@ public:
 			: m_buf{buf}
 			, m_len{len}
 		{
-			assert(m_len == 0 || !m_buf);
+			assert(m_len == 0 || m_buf);
 		}
 
 	public:
@@ -109,9 +109,9 @@ public:
 
 void help(char const* exe = nullptr);
 void generate(
-	std::initializer_list<char const*> msgs, stored::ProtocolLayer& top,
+	std::initializer_list<std::string> msgs, stored::ProtocolLayer& top,
 	stored::ProtocolLayer& bottom);
-void generate(std::initializer_list<char const*> msgs);
+void generate(std::initializer_list<std::string> msgs);
 void test(void const* buf, size_t len);
 int test(char const* file);
 

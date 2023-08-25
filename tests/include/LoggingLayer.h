@@ -99,14 +99,15 @@ private:
 	bool m_partial;
 };
 
-void printBuffer(void const* buffer, size_t len, char const* prefix = nullptr, FILE* f = stdout)
+inline void
+printBuffer(void const* buffer, size_t len, char const* prefix = nullptr, FILE* f = stdout)
 {
 	auto s = stored::string_literal(buffer, len, prefix);
 	s += "\n";
 	fputs(s.c_str(), f);
 }
 
-void printBuffer(std::string const& s, char const* prefix = nullptr, FILE* f = stdout)
+inline void printBuffer(std::string const& s, char const* prefix = nullptr, FILE* f = stdout)
 {
 	printBuffer(s.data(), s.size(), prefix, f);
 }

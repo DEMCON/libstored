@@ -228,13 +228,14 @@ set(LIBSTORED_ENABLE_UBSAN OFF)
 set(LIBSTORED_ENABLE_LSAN OFF)
 add_custom_target(teststore-perf)
 libstored_generate(TARGET teststore-perf STORES TestStore.st DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/perf)
+target_include_directories(teststore-perf-libstored BEFORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 add_executable(perf_synchronizer perf_synchronizer.cpp)
 target_link_libraries(perf_synchronizer teststore-perf-libstored)
 
 
 
 add_library(fuzz_common STATIC fuzz_common.cpp test_base.cpp)
-target_include_directories(fuzz_common PUBLIC include)
+target_include_directories(fuzz_common BEFORE PUBLIC include)
 target_link_libraries(fuzz_common PUBLIC teststore-perf-libstored)
 
 find_program(AFL_FUZZ NAMES afl-fuzz)
@@ -278,3 +279,4 @@ endfunction()
 
 libstored_fuzz(fuzz_debug fuzz_debug.cpp)
 libstored_fuzz(fuzz_protocol fuzz_protocol.cpp)
+libstored_fuzz(fuzz_synchronizer fuzz_synchronizer.cpp)
