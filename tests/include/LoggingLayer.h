@@ -62,6 +62,8 @@ public:
 		base::encode(buffer, len, last);
 	}
 
+	using base::encode;
+
 	std::deque<std::string>& encoded()
 	{
 		return m_encoded;
