@@ -232,23 +232,28 @@ add_executable(perf_synchronizer perf_synchronizer.cpp)
 target_link_libraries(perf_synchronizer teststore-perf-libstored)
 
 
-add_executable(fuzz_debug fuzz_debug.cpp)
-target_link_libraries(fuzz_debug teststore-perf-libstored)
 
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/fuzz_debug_input)
-
-add_custom_command(
-	TARGET fuzz_debug
-	POST_BUILD
-	COMMAND $<TARGET_FILE:fuzz_debug> -i
-	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/fuzz_debug_input
-	VERBATIM
-)
+add_library(fuzz_common STATIC fuzz_common.cpp test_base.cpp)
+target_include_directories(fuzz_common PUBLIC include)
+target_link_libraries(fuzz_common PUBLIC teststore-perf-libstored)
 
 find_program(AFL_FUZZ NAMES afl-fuzz)
 
-if(AFL_FUZZ)
-	file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/fuzz_debug.sh CONTENT
+function(libstored_fuzz APP)
+	add_executable(${APP} ${ARGN})
+	target_link_libraries(${APP} PRIVATE fuzz_common teststore-perf-libstored)
+	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${APP}_input)
+
+	add_custom_command(
+		TARGET ${APP}
+		POST_BUILD
+		COMMAND $<TARGET_FILE:${APP}> -i
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${APP}_input
+		VERBATIM
+	)
+
+	if(AFL_FUZZ)
+		file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${APP}.sh CONTENT
 "#!/bin/bash
 
 set -euo pipefail
@@ -257,15 +262,19 @@ export AFL_NO_CRASH_README=1
 export AFL_SKIP_CPUFREQ=1
 
 \"${AFL_FUZZ}\" \\
-	-i \"${CMAKE_CURRENT_BINARY_DIR}/fuzz_debug_input\" \\
-	-o \"${CMAKE_CURRENT_BINARY_DIR}/fuzz_debug_output\" \"$@\" -- \\
-	\"$<TARGET_FILE:fuzz_debug>\"
+	-i \"${CMAKE_CURRENT_BINARY_DIR}/${APP}_input\" \\
+	-o \"${CMAKE_CURRENT_BINARY_DIR}/${APP}_output\" \"$@\" -- \\
+	\"$<TARGET_FILE:${APP}>\"
 
-! ls \"${CMAKE_CURRENT_BINARY_DIR}/fuzz_debug_output/{crashes,hangs}/\"* > /dev/null 2>&1
+! ls \"${CMAKE_CURRENT_BINARY_DIR}/${APP}_output/{crashes,hangs}/\"* > /dev/null 2>&1
 "
-	)
+		)
 
-	add_test(NAME fuzz_debug
-		COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/fuzz_debug.sh -V 30
-	)
-endif()
+		add_test(NAME ${APP}
+			COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/${APP}.sh -V 30
+		)
+	endif()
+endfunction()
+
+libstored_fuzz(fuzz_debug fuzz_debug.cpp)
+libstored_fuzz(fuzz_protocol fuzz_protocol.cpp)
