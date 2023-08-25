@@ -899,7 +899,8 @@ public:
 		size_t count = 0;
 
 		for(auto const& p : l) {
-			if((res = add(p))) {
+			res = add(p);
+			if(res) {
 				// Rollback.
 				for(auto const* it = l.begin(); it != l.end() && count > 0;
 				    ++it, count--)
@@ -973,7 +974,8 @@ public:
 		stored_assert(m_pollables.size() == m_items.size());
 		m_result.clear();
 
-		if((errno = this->doPoll(timeout_ms, m_items)))
+		errno = this->doPoll(timeout_ms, m_items);
+		if(errno)
 			m_result.clear();
 
 		if(m_result.empty() && !errno)
@@ -986,6 +988,8 @@ protected:
 	virtual void event(Pollable::Events revents, size_t index) noexcept override
 	{
 		stored_assert(index < m_items.size());
+		// m_items should be large enough, as it was reserved() before.
+		stored_assert(m_items.size() < m_items.capacity());
 
 		Pollable* p = m_pollables[index];
 		p->revents = revents;
@@ -993,12 +997,17 @@ protected:
 		if(revents.none())
 			return;
 
+		try {
 #		ifdef STORED_POLL_OLD
-		OldResult r = {p->events.to_ulong(), revents.to_ulong(), p->user_data, p};
-		m_result.push_back(r);
+			OldResult r = {p->events.to_ulong(), revents.to_ulong(), p->user_data, p};
+			m_result.push_back(r);
 #		else
-		m_result.push_back(p);
+			m_result.push_back(p);
 #		endif
+		} catch(...) {
+			// Should not happen.
+			stored_assert(false); // NOLINT
+		}
 	}
 
 private:

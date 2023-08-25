@@ -61,14 +61,14 @@ private:
 	void* m_context;
 	/*! \brief Flag to indicate if we created #m_context or not. */
 	bool m_contextCleanup;
-	/*! \brief The REP socket. */
-	void* m_socket;
 	/*! \brief A buffer to save partial request before decode() can start. */
 	void* m_buffer;
 	/*! \brief Number of bytes in #m_buffer. */
 	size_t m_bufferCapacity;
 	/*! \brief Allocated size of #m_buffer. */
 	size_t m_bufferSize;
+	/*! \brief The REP socket. */
+	void* m_socket;
 };
 
 /*!

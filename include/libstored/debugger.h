@@ -347,6 +347,7 @@ protected:
 	// For operator==().
 	template <typename Container>
 	friend class DebugVariantTyped;
+	// NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
 	friend class DebugVariant;
 };
 
@@ -719,6 +720,7 @@ public:
 
 private:
 	/*! \brief The wrapped store. */
+	// NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
 	Store& m_store;
 };
 

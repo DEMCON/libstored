@@ -358,11 +358,15 @@ int ZmqPoller::init(Pollable const& p, zmq_pollitem_t& item) noexcept
 	else
 		return EINVAL;
 
-	item.events = 0;
-	if((tp.events.test(Pollable::PollInIndex)))
-		item.events |= ZMQ_POLLIN; // NOLINT(hicpp-signed-bitwise)
-	if((tp.events.test(Pollable::PollOutIndex)))
-		item.events |= ZMQ_POLLOUT; // NOLINT(hicpp-signed-bitwise)
+	try {
+		item.events = 0;
+		if((tp.events.test(Pollable::PollInIndex)))
+			item.events |= ZMQ_POLLIN; // NOLINT(hicpp-signed-bitwise)
+		if((tp.events.test(Pollable::PollOutIndex)))
+			item.events |= ZMQ_POLLOUT; // NOLINT(hicpp-signed-bitwise)
+	} catch(std::out_of_range const&) {
+		stored_assert(false); // NOLINT
+	}
 
 	return 0;
 }
@@ -383,12 +387,16 @@ int ZmqPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 		if(item.revents) {
 			res--;
 
-			if(item.revents & ZMQ_POLLIN) // NOLINT(hicpp-signed-bitwise)
-				revents.set(Pollable::PollInIndex);
-			if(item.revents & ZMQ_POLLOUT) // NOLINT(hicpp-signed-bitwise)
-				revents.set(Pollable::PollOutIndex);
-			if(item.revents & ZMQ_POLLERR) // NOLINT(hicpp-signed-bitwise)
-				revents.set(Pollable::PollErrIndex);
+			try {
+				if(item.revents & ZMQ_POLLIN) // NOLINT(hicpp-signed-bitwise)
+					revents.set(Pollable::PollInIndex);
+				if(item.revents & ZMQ_POLLOUT) // NOLINT(hicpp-signed-bitwise)
+					revents.set(Pollable::PollOutIndex);
+				if(item.revents & ZMQ_POLLERR) // NOLINT(hicpp-signed-bitwise)
+					revents.set(Pollable::PollErrIndex);
+			} catch(std::out_of_range const&) {
+				stored_assert(false); // NOLINT
+			}
 		}
 
 		event(revents, i);
@@ -419,15 +427,19 @@ int PollPoller::init(Pollable const& p, struct pollfd& item) noexcept
 	else
 		return EINVAL;
 
-	item.events = 0;
-	if((tp.events.test(Pollable::PollInIndex)))
-		item.events |= POLLIN; // NOLINT(hicpp-signed-bitwise)
-	if((tp.events.test(Pollable::PollOutIndex)))
-		item.events |= POLLOUT; // NOLINT(hicpp-signed-bitwise)
-	if((tp.events.test(Pollable::PollPriIndex)))
-		item.events |= POLLPRI; // NOLINT(hicpp-signed-bitwise)
-	if((tp.events.test(Pollable::PollHupIndex)))
-		item.events |= POLLHUP; // NOLINT(hicpp-signed-bitwise)
+	try {
+		item.events = 0;
+		if((tp.events.test(Pollable::PollInIndex)))
+			item.events |= POLLIN; // NOLINT(hicpp-signed-bitwise)
+		if((tp.events.test(Pollable::PollOutIndex)))
+			item.events |= POLLOUT; // NOLINT(hicpp-signed-bitwise)
+		if((tp.events.test(Pollable::PollPriIndex)))
+			item.events |= POLLPRI; // NOLINT(hicpp-signed-bitwise)
+		if((tp.events.test(Pollable::PollHupIndex)))
+			item.events |= POLLHUP; // NOLINT(hicpp-signed-bitwise)
+	} catch(std::out_of_range const&) {
+		stored_assert(false); // NOLINT
+	}
 
 	return 0;
 }
@@ -448,16 +460,20 @@ int PollPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 		if(item.revents) {
 			res--;
 
-			if(item.revents & POLLIN) // NOLINT(hicpp-signed-bitwise)
-				revents.set(Pollable::PollInIndex);
-			if(item.revents & POLLOUT) // NOLINT(hicpp-signed-bitwise)
-				revents.set(Pollable::PollOutIndex);
-			if(item.revents & POLLERR) // NOLINT(hicpp-signed-bitwise)
-				revents.set(Pollable::PollErrIndex);
-			if(item.revents & POLLPRI) // NOLINT(hicpp-signed-bitwise)
-				revents.set(Pollable::PollPriIndex);
-			if(item.revents & POLLHUP) // NOLINT(hicpp-signed-bitwise)
-				revents.set(Pollable::PollHupIndex);
+			try {
+				if(item.revents & POLLIN) // NOLINT(hicpp-signed-bitwise)
+					revents.set(Pollable::PollInIndex);
+				if(item.revents & POLLOUT) // NOLINT(hicpp-signed-bitwise)
+					revents.set(Pollable::PollOutIndex);
+				if(item.revents & POLLERR) // NOLINT(hicpp-signed-bitwise)
+					revents.set(Pollable::PollErrIndex);
+				if(item.revents & POLLPRI) // NOLINT(hicpp-signed-bitwise)
+					revents.set(Pollable::PollPriIndex);
+				if(item.revents & POLLHUP) // NOLINT(hicpp-signed-bitwise)
+					revents.set(Pollable::PollHupIndex);
+			} catch(std::out_of_range const&) {
+				stored_assert(false); // NOLINT
+			}
 		}
 
 		event(revents, i);
@@ -517,6 +533,7 @@ int LoopPoller::init(Pollable const& p, Pollable const*& item) noexcept
 
 int LoopPoller::doPoll(int timeout_ms, PollItemList& items) noexcept
 {
+	// NOLINTNEXTLINE(cppcoreguidelines-avoid-do-while)
 	do {
 		int res = 0;
 		bool gotSomething = false;

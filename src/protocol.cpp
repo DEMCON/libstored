@@ -1189,6 +1189,7 @@ void Crc8Layer::decode(void* buffer, size_t len)
 	if(len == 0)
 		return;
 
+	// cppcheck-suppress constVariablePointer
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 	uint8_t crc = init;
 	for(size_t i = 0; i < len - 1; i++)
@@ -1284,6 +1285,7 @@ void Crc16Layer::decode(void* buffer, size_t len)
 	if(len < 2)
 		return;
 
+	// cppcheck-suppress constVariablePointer
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 	uint16_t crc = init;
 	for(size_t i = 0; i < len - 2; i++)
@@ -1665,7 +1667,8 @@ int PolledFileLayer::block(
 				// Interrupted. Retry.
 				continue;
 
-			if(!(err = errno) || timeout_us < 0)
+			err = errno;
+			if(!err || timeout_us < 0)
 				// Should not happen.
 				err = EINVAL;
 			break;
@@ -1784,16 +1787,19 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 
 	if(!name_w || strcmp(name_r, name_w) == 0) {
 		// NOLINTNEXTLINE(hicpp-signed-bitwise)
-		if((w = r = open(name_r, O_RDWR | O_APPEND | O_CREAT | O_NONBLOCK, 0666)) == -1)
+		w = r = open(name_r, O_RDWR | O_APPEND | O_CREAT | O_NONBLOCK, 0666);
+		if(w == -1)
+			goto error;
+	} else {
+		// NOLINTNEXTLINE(hicpp-signed-bitwise,bugprone-branch-clone)
+		r = open(name_r, O_RDONLY | O_CREAT | O_NONBLOCK, 0666);
+		if(r == -1)
 			goto error;
 
-		// NOLINTNEXTLINE(hicpp-signed-bitwise,bugprone-branch-clone)
-	} else if((r = open(name_r, O_RDONLY | O_CREAT | O_NONBLOCK, 0666)) == -1) {
-		goto error;
-
 		// NOLINTNEXTLINE(hicpp-signed-bitwise)
-	} else if((w = open(name_w, O_WRONLY | O_APPEND | O_CREAT | O_NONBLOCK, 0666)) == -1) {
-		goto error;
+		w = open(name_w, O_WRONLY | O_APPEND | O_CREAT | O_NONBLOCK, 0666);
+		if(w == -1)
+			goto error;
 	}
 
 	init(r, w);
@@ -2320,8 +2326,7 @@ wait_prev_write:
 					   fd_w(), &m_bufferWrite[offset], (DWORD)m_writeLen,
 					   &m_overlappedWrite,
 					   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
-					   (LPOVERLAPPED_COMPLETION_ROUTINE)(
-						   void*)&writeCompletionRoutine))
+					   (LPOVERLAPPED_COMPLETION_ROUTINE)(void*)&writeCompletionRoutine))
 					return 0;
 				else
 					goto error;
@@ -3440,7 +3445,8 @@ SerialLayer::SerialLayer(
 	int fd = -1;
 
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
-	if((fd = open(name, O_RDWR | O_APPEND | O_CREAT | O_NONBLOCK, 0666)) == -1) {
+	fd = open(name, O_RDWR | O_APPEND | O_CREAT | O_NONBLOCK, 0666);
+	if(fd == -1) {
 		setLastError(errno ? errno : EBADF);
 		return;
 	}

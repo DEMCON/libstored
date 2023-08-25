@@ -7,7 +7,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-set -euo pipefail
+set -exuo pipefail
 
 function gotErr {
 	echo -e "\nError occurred, stopping\n"
@@ -24,9 +24,11 @@ sudo apt install -y \
 [[ ! -z ${CXX:-} ]] || which g++ > /dev/null || sudo apt install -y g++-multilib gdb-multiarch
 [[ ! -z ${CC:-} ]] || which gcc > /dev/null || sudo apt install -y gcc-multilib gdb-multiarch
 
+set +x
+
 echo -e "\nSuggested packages to install manually:\n"
 echo -e "  sudo apt install -y ninja-build spin gdb-multiarch cppcheck \\"
-echo -e "                      clang clang-tidy clang-format libzmq3-dev \\"
+echo -e "                      clang clang-tidy clang-format-11 libzmq3-dev \\"
 echo -e "                      qt6-base-dev qt6-declarative-dev afl++\n"
 
 if [[ `lsb_release -r -s | sed 's/\..*//'` -lt 20 ]]; then

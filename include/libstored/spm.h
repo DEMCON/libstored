@@ -92,7 +92,11 @@ public:
 				chunkDeallocate(chunk(*it), bufferSize(*it));
 
 			m_old.clear();
-			reserve(m_max);
+			try {
+				reserve(m_max);
+			} catch(...) {
+				// Leave for now.
+			}
 		}
 
 		if(m_buffer)
@@ -276,6 +280,7 @@ private:
 			return;
 		}
 
+		// cppcheck-suppress constVariablePointer
 		char* snapshot_ = static_cast<char*>(snapshot);
 
 		// Find correct buffer.
@@ -303,10 +308,21 @@ private:
 	{
 		stored_assert(size > 0);
 
-		if(m_buffer)
-			m_old.push_back(m_buffer);
+		// May throw std::bad_alloc.
+		char* b = buffer(allocate<char>(size + chunkHeader));
 
-		m_buffer = buffer(allocate<char>(size + chunkHeader));
+		if(m_buffer) {
+			try {
+				// May throw std::bad_alloc.
+				m_old.push_back(m_buffer);
+			} catch(...) {
+				deallocate<char>(b, size + chunkHeader);
+				// cppcheck-suppress rethrowNoCurrentException
+				throw;
+			}
+		}
+
+		m_buffer = b;
 		setBufferSize(size);
 		m_size = 0;
 
@@ -404,6 +420,7 @@ private:
 	 * \details The chunk is the actual piece of memory on the heap, which is the buffer with a
 	 * header.
 	 */
+	// cppcheck-suppress constParameterPointer
 	static constexpr void* chunk(char* buffer) noexcept
 	{
 		return buffer ? buffer - chunkHeader : nullptr;

@@ -392,6 +392,7 @@ public:
 		}
 
 	private:
+		// NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
 		Synchronizable& m_store;
 	};
 

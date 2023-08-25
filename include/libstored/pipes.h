@@ -83,6 +83,7 @@ public:
 		: group{gc}
 	{}
 
+	// NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
 	Group& group;
 };
 
