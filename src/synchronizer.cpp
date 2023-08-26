@@ -1031,7 +1031,7 @@ void SyncConnection::eraseIn(SyncConnection::Id id)
 
 /*!
  * \brief Erase the store from this connection that uses the given ID to send updates to the other
- * party.
+ *	party.
  */
 void SyncConnection::eraseOut(SyncConnection::Id id)
 {
@@ -1135,6 +1135,13 @@ void SyncConnection::decode(void* buffer, size_t len)
 		StoreInfo& si = m_store[j];
 		si.source = false;
 		si.idOut = id;
+
+		for(IdInMap::iterator it = m_idIn.begin(); it != m_idIn.end(); ++it)
+			if(it->second == j) {
+				// Apparently, we already had a sync to this store. Replace it.
+				m_idIn.erase(it);
+				break;
+			}
 
 		id = nextId();
 		m_idIn[id] = j;
@@ -1304,20 +1311,18 @@ SyncConnection::Id SyncConnection::decodeId(void*& buffer, size_t& len)
  */
 void SyncConnection::dropNonSources()
 {
-#if STORED_cplusplus >= 201103L
-	for(StoreMap::iterator it = m_store.begin(); it != m_store.end();)
-		if(!it->second.source)
-			it = m_store.erase(it);
-		else
+	for(IdInMap::iterator it = m_idIn.begin(); it != m_idIn.end();) {
+		StoreMap::iterator sit = m_store.find(it->second);
+		stored_assert(sit != m_store.end());
+
+		if(sit->second.source) {
+			// Skip.
 			++it;
-#else
-again:
-	for(StoreMap::iterator it = m_store.begin(); it != m_store.end(); ++it)
-		if(!it->second.source) {
-			m_store.erase(it);
-			goto again;
+		} else {
+			m_store.erase(sit);
+			it = m_idIn.erase(it);
 		}
-#endif
+	}
 }
 
 /*!
