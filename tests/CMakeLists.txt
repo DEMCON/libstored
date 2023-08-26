@@ -289,3 +289,17 @@ endfunction()
 libstored_fuzz(fuzz_debug fuzz_debug.cpp)
 libstored_fuzz(fuzz_protocol fuzz_protocol.cpp)
 libstored_fuzz(fuzz_synchronizer fuzz_synchronizer.cpp)
+
+
+find_program(LCOV_EXE NAMES lcov)
+find_program(GENHTML_EXE NAMES genhtml)
+if(LIBSTORED_COVERAGE AND LCOV_EXE AND GENHTML_EXE)
+	add_custom_target(libstored-lcov
+		COMMAND ${LCOV_EXE} -q -j 4 -c -d . -o ${CMAKE_CURRENT_BINARY_DIR}/libstored.info --ignore-errors inconsistent
+			--exclude ${PROJECT_BINARY_DIR}/_deps --exclude v1/
+		COMMAND ${GENHTML_EXE} -q -j 4 -o ${CMAKE_CURRENT_BINARY_DIR}/lcov ${CMAKE_CURRENT_BINARY_DIR}/libstored.info --ignore-errors inconsistent
+		WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+		COMMENT "Generate lcov output in ${CMAKE_CURRENT_BINARY_DIR}/lcov..."
+		VERBATIM
+	)
+endif()
