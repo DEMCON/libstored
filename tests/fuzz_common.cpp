@@ -21,6 +21,10 @@
 #include <unistd.h>
 #include <vector>
 
+#ifdef STORED_COVERAGE
+#	include <csignal>
+#endif
+
 #ifdef HAVE_AFL
 __AFL_FUZZ_INIT();
 #endif
@@ -128,6 +132,37 @@ done:
 	return res;
 }
 
+#ifdef STORED_COVERAGE
+// Coverage statistics are written upon proper exit. However, the program may not exit gracefully
+// while fuzzing. Trigger writing when we get a signal.
+
+extern "C" void __gcov_dump(void);
+
+static void coverage_sig(int sig)
+{
+	__gcov_dump();
+
+	switch(sig) {
+	case SIGINT:
+	case SIGTERM:
+		exit(sig);
+		break;
+	default:;
+	}
+}
+
+static void coverage_setup()
+{
+	for(auto sig : {SIGHUP, SIGINT, SIGTERM}) {
+		if(signal(sig, coverage_sig) == SIG_ERR)
+			printf("Cannot register signal %d handler; %s (ignored)\n", sig,
+			       strerror(errno));
+	}
+}
+#else
+static void coverage_setup() {}
+#endif
+
 #ifdef HAVE_AFL
 #	ifdef STORED_COMPILER_CLANG
 #		pragma clang optimize off
@@ -165,13 +200,15 @@ int main(int argc, char** argv)
 	return 1;
 #else
 
+	coverage_setup();
+
 	printf("Ready. Waiting for afl-fuzz for instructions...\n");
 
 	__AFL_INIT();
 
 	unsigned char* buf = __AFL_FUZZ_TESTCASE_BUF;
 
-	while(__AFL_LOOP(1000000)) {
+	while(__AFL_LOOP(100000)) {
 		auto len = __AFL_FUZZ_TESTCASE_LEN;
 		test(buf, (size_t)len);
 	}

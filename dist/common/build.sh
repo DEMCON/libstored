@@ -31,6 +31,7 @@ function show_help {
 	echo "  nozmq Disable ZeroMQ integration"
 	echo "  zth   Enable Zth integration"
 	echo "  fuzz  Enable fuzzing with AFL++"
+	echo "  gcov  Enable gcov/lcov"
 	exit 2
 }
 
@@ -43,6 +44,7 @@ do_test_run=${do_test_run:-1}
 use_ninja=1
 support_test=1
 par=-j`nproc`
+lcov=0
 
 while [[ ! -z ${1:-} ]]; do
 	case "${1}" in
@@ -113,8 +115,14 @@ while [[ ! -z ${1:-} ]]; do
 			CC=afl-clang-fast
 			CXX=afl-clang-fast++
 			cmake_opts="${cmake_opts} -DCMAKE_CXX_STANDARD=17 -DCMAKE_C_STANDARD=11"
+			cmake_opts="${cmake_opts} -DLIBSTORED_ENABLE_ASAN=OFF -DLIBSTORED_ENABLE_LSAN=OFF -DLIBSTORED_ENABLE_UBSAN=OFF"
 			do_test=1
 			do_test_run=0
+			;;
+		gcov|lcov)
+			cmake_opts="${cmake_opts} -DLIBSTORED_COVERAGE=ON"
+			do_test_run=1
+			lcov=1
 			;;
 		--)
 			# Stop parsing
@@ -176,6 +184,10 @@ cmake --build . --target install "${par}"
 
 if [[ ${do_test} == 1 ]] && [[ ${do_test_run} == 1 ]]; then
 	CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target test
+
+	if [[ ${lcov} == 1 ]]; then
+		cmake --build . --target libstored-lcov
+	fi
 fi
 
 popd > /dev/null

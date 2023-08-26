@@ -232,26 +232,32 @@ endif()
 
 
 # Disable sanitizers for the targets below, as it is probably going to be executed by callgrind/AFL++.
-set(LIBSTORED_ENABLE_ASAN OFF)
-set(LIBSTORED_ENABLE_UBSAN OFF)
-set(LIBSTORED_ENABLE_LSAN OFF)
-add_custom_target(teststore-perf)
-libstored_generate(TARGET teststore-perf STORES TestStore.st DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/perf)
-target_include_directories(teststore-perf-libstored BEFORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+if(LIBSTORED_ENABLE_ASAN OR LIBSTORED_ENABLE_UBSAN OR LIBSTORED_ENABLE_LSAN)
+	set(LIBSTORED_ENABLE_ASAN OFF)
+	set(LIBSTORED_ENABLE_UBSAN OFF)
+	set(LIBSTORED_ENABLE_LSAN OFF)
+	add_custom_target(teststore-perf)
+	libstored_generate(TARGET teststore-perf STORES TestStore.st DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/perf)
+	target_include_directories(teststore-perf-libstored BEFORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+	set(TESTSTORE_LIB teststore-perf)
+else()
+	set(TESTSTORE_LIB teststore)
+endif()
+
 add_executable(perf_synchronizer perf_synchronizer.cpp test_base.cpp)
-target_link_libraries(perf_synchronizer teststore-perf-libstored)
+target_link_libraries(perf_synchronizer ${TESTSTORE_LIB}-libstored)
 
 
 
 add_library(fuzz_common STATIC fuzz_common.cpp test_base.cpp)
 target_include_directories(fuzz_common BEFORE PUBLIC include)
-target_link_libraries(fuzz_common PUBLIC teststore-perf-libstored)
+target_link_libraries(fuzz_common PUBLIC ${TESTSTORE_LIB}-libstored)
 
 find_program(AFL_FUZZ NAMES afl-fuzz)
 
 function(libstored_fuzz APP)
 	add_executable(${APP} ${ARGN})
-	target_link_libraries(${APP} PRIVATE fuzz_common teststore-perf-libstored)
+	target_link_libraries(${APP} PRIVATE fuzz_common ${TESTSTORE_LIB}-libstored)
 	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${APP}_input)
 
 	add_custom_command(
@@ -281,7 +287,7 @@ export AFL_SKIP_CPUFREQ=1
 		)
 
 		add_test(NAME ${APP}
-			COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/${APP}.sh -V 30
+			COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/${APP}.sh -V 60
 		)
 	endif()
 endfunction()
@@ -295,9 +301,9 @@ find_program(LCOV_EXE NAMES lcov)
 find_program(GENHTML_EXE NAMES genhtml)
 if(LIBSTORED_COVERAGE AND LCOV_EXE AND GENHTML_EXE)
 	add_custom_target(libstored-lcov
-		COMMAND ${LCOV_EXE} -q -j 4 -c -d . -o ${CMAKE_CURRENT_BINARY_DIR}/libstored.info --ignore-errors inconsistent
+		COMMAND ${LCOV_EXE} -q -j 4 -c -d . -o ${CMAKE_CURRENT_BINARY_DIR}/libstored.info --ignore-errors inconsistent,unused
 			--exclude ${PROJECT_BINARY_DIR}/_deps --exclude v1/
-		COMMAND ${GENHTML_EXE} -q -j 4 -o ${CMAKE_CURRENT_BINARY_DIR}/lcov ${CMAKE_CURRENT_BINARY_DIR}/libstored.info --ignore-errors inconsistent
+		COMMAND ${GENHTML_EXE} -q -j 4 -o ${CMAKE_CURRENT_BINARY_DIR}/lcov ${CMAKE_CURRENT_BINARY_DIR}/libstored.info --ignore-errors inconsistent,unused
 		WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
 		COMMENT "Generate lcov output in ${CMAKE_CURRENT_BINARY_DIR}/lcov..."
 		VERBATIM
