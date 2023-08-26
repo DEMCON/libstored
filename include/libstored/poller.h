@@ -988,8 +988,8 @@ protected:
 	virtual void event(Pollable::Events revents, size_t index) noexcept override
 	{
 		stored_assert(index < m_items.size());
-		// m_items should be large enough, as it was reserved() before.
-		stored_assert(m_items.size() < m_items.capacity());
+		// m_result should be large enough, as it was reserve()d before.
+		stored_assert(m_result.size() < m_result.capacity());
 
 		Pollable* p = m_pollables[index];
 		p->revents = revents;
