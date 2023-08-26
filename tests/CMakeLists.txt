@@ -23,6 +23,15 @@ if(MSVC)
 	endif()
 else()
 	add_compile_options(-Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wconversion -ffunction-sections -fdata-sections)
+
+	if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
+		if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT APPLE)
+			add_link_options(-Wl,--gc-sections)
+		elseif(APPLE)
+			add_link_options(-Wl,-dead_strip)
+		endif()
+	endif()
+
 	if(UNIX)
 		if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "8.0.1")
 			# Not exactly sure which clang version this applies to,

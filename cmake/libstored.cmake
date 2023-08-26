@@ -486,6 +486,10 @@ function(libstored_generate target) # add all other models as varargs
 			if(target_type STREQUAL "EXECUTABLE")
 				target_link_options(${LIBSTORED_GENERATE_TARGET} PUBLIC -Wl,--gc-sections)
 			endif()
+		elseif(APPLE)
+			if(target_type STREQUAL "EXECUTABLE")
+				target_link_options(${LIBSTORED_GENERATE_TARGET} PUBLIC -Wl,-dead_strip)
+			endif()
 		endif()
 	endif()
 
