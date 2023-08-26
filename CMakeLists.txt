@@ -50,6 +50,8 @@ else()
 	set(LIBSTORED_DEV_OPTION OFF)
 endif()
 
+option(LIBSTORED_COVERAGE "Enable code coverage instrumentation" OFF)
+
 option(LIBSTORED_PYLIBSTORED "Build python libstored package" ON)
 
 if(CMAKE_HOST_WIN32 OR NOT LIBSTORED_PYLIBSTORED)

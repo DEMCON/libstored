@@ -66,8 +66,8 @@ set +x
 
 if [[ ${do_brew} == 1 ]]; then
 	echo -e "\nSuggested packages to install manually:\n"
-	echo -e "  brew install cppcheck clang-format@11"
+	echo -e "  brew install cppcheck clang-format@11 lcov"
 elif [[ ${do_port} == 1 ]]; then
 	echo -e "\nSuggested packages to install manually:\n"
-	echo -e "  sudo port install cppcheck"
+	echo -e "  sudo port install cppcheck lcov"
 fi
