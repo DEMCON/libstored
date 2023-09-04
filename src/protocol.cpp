@@ -1751,7 +1751,7 @@ FileLayer::FileLayer(ProtocolLayer* up, ProtocolLayer* down)
  *
  * It sets #lastError() appropriately.
  */
-FileLayer::FileLayer(int fd_r, int fd_w, ProtocolLayer* up, ProtocolLayer* down)
+FileLayer::FileLayer(int fd_r, int fd_w, size_t bufferSize, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_fd_r(-1)
 	, m_fd_w(-1)
@@ -1763,7 +1763,7 @@ FileLayer::FileLayer(int fd_r, int fd_w, ProtocolLayer* up, ProtocolLayer* down)
 	fcntl(fd_w, F_SETFL, fcntl(fd_w, F_GETFL) | O_NONBLOCK);
 #	endif
 
-	init(fd_r, fd_w == -1 ? fd_r : fd_w);
+	init(fd_r, fd_w == -1 ? fd_r : fd_w, bufferSize);
 }
 
 /*!
@@ -1777,7 +1777,9 @@ FileLayer::FileLayer(int fd_r, int fd_w, ProtocolLayer* up, ProtocolLayer* down)
  *
  * It sets #lastError() appropriately.
  */
-FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, ProtocolLayer* down)
+FileLayer::FileLayer(
+	char const* name_r, char const* name_w, size_t bufferSize, ProtocolLayer* up,
+	ProtocolLayer* down)
 	: base(up, down)
 	, m_fd_r(-1)
 	, m_fd_w(-1)
@@ -1802,7 +1804,7 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 			goto error;
 	}
 
-	init(r, w);
+	init(r, w, bufferSize);
 	return;
 
 error:
@@ -1819,7 +1821,7 @@ error:
  * Does not return, but sets #lastError() appropriately.
  */
 // cppcheck-suppress passedByValue
-void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w)
+void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w, size_t bufferSize)
 {
 	stored_assert(m_fd_r == -1);
 	stored_assert(m_fd_w == -1);
@@ -1830,7 +1832,7 @@ void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w)
 	if(m_fd_r == -1 || m_fd_w == -1) {
 		setLastError(EBADF);
 	} else {
-		m_bufferRead.resize(BufferSize);
+		m_bufferRead.resize(bufferSize);
 		setLastError(0);
 	}
 }
@@ -2021,7 +2023,7 @@ static bool isValidHandle(HANDLE h)
  *
  * It sets #lastError() appropriately.
  */
-FileLayer::FileLayer(int fd_r, int fd_w, ProtocolLayer* up, ProtocolLayer* down)
+FileLayer::FileLayer(int fd_r, int fd_w, size_t bufferSize, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_fd_r(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
 	, m_fd_w(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
@@ -2034,7 +2036,7 @@ FileLayer::FileLayer(int fd_r, int fd_w, ProtocolLayer* up, ProtocolLayer* down)
 	HANDLE h_r = (HANDLE)_get_osfhandle(fd_r);
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
 	HANDLE h_w = fd_w == -1 ? h_r : (HANDLE)_get_osfhandle(fd_w);
-	init(h_r, h_w);
+	init(h_r, h_w, bufferSize);
 }
 
 /*!
@@ -2048,7 +2050,9 @@ FileLayer::FileLayer(int fd_r, int fd_w, ProtocolLayer* up, ProtocolLayer* down)
  *
  * It sets #lastError() appropriately.
  */
-FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, ProtocolLayer* down)
+FileLayer::FileLayer(
+	char const* name_r, char const* name_w, size_t bufferSize, ProtocolLayer* up,
+	ProtocolLayer* down)
 	: base(up, down)
 	, m_fd_r(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
 	, m_fd_w(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
@@ -2081,7 +2085,7 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 			return;
 		}
 
-		init(h, h);
+		init(h, h, bufferSize);
 	} else {
 		HANDLE h_r = INVALID_HANDLE_VALUE; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
 		if(!isValidHandle(
@@ -2107,12 +2111,14 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
 			return;
 		}
 
-		init(h_r, h_w);
+		init(h_r, h_w, bufferSize);
 	}
 }
 
 /*!
  * \brief Ctor for to existing HANDLEs.
+ *
+ * If \p h_w is \c INVALID_HANDLE_VALUE, \p h_r is used for writing too.
  *
  * The HANDLEs must be opened with FILE_FLAG_OVERLAPPED.
  *
@@ -2120,7 +2126,8 @@ FileLayer::FileLayer(char const* name_r, char const* name_w, ProtocolLayer* up, 
  *
  * It sets #lastError() appropriately.
  */
-FileLayer::FileLayer(HANDLE h_r, HANDLE h_w, ProtocolLayer* up, ProtocolLayer* down)
+FileLayer::FileLayer(
+	HANDLE h_r, HANDLE h_w, size_t bufferSize, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_fd_r(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
 	, m_fd_w(INVALID_HANDLE_VALUE) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
@@ -2129,7 +2136,7 @@ FileLayer::FileLayer(HANDLE h_r, HANDLE h_w, ProtocolLayer* up, ProtocolLayer* d
 	, m_this(this)
 	, m_writeLen()
 {
-	init(h_r, !isValidHandle(h_w) ? h_r : h_w);
+	init(h_r, !isValidHandle(h_w) ? h_r : h_w, bufferSize);
 }
 
 /*!
@@ -2157,7 +2164,7 @@ FileLayer::FileLayer(ProtocolLayer* up, ProtocolLayer* down)
  *
  * Does not return, but sets #lastError() appropriately.
  */
-void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w)
+void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w, size_t bufferSize)
 {
 	stored_assert(!isValidHandle(m_fd_r));
 	stored_assert(!isValidHandle(m_fd_w));
@@ -2177,7 +2184,7 @@ void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w)
 
 	setLastError(0);
 
-	m_bufferRead.resize(BufferSize);
+	m_bufferRead.resize(bufferSize);
 
 	m_overlappedRead.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	if(!m_overlappedRead.hEvent) {
@@ -2326,7 +2333,8 @@ wait_prev_write:
 					   fd_w(), &m_bufferWrite[offset], (DWORD)m_writeLen,
 					   &m_overlappedWrite,
 					   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
-					   (LPOVERLAPPED_COMPLETION_ROUTINE)(void*)&writeCompletionRoutine))
+					   (LPOVERLAPPED_COMPLETION_ROUTINE)(
+						   void*)&writeCompletionRoutine))
 					return 0;
 				else
 					goto error;
@@ -3038,7 +3046,7 @@ void XsimLayer::reopen()
 /*!
  * \brief Ctor.
  */
-StdioLayer::StdioLayer(ProtocolLayer* up, ProtocolLayer* down)
+StdioLayer::StdioLayer(size_t bufferSize, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_fd_r(GetStdHandle(STD_INPUT_HANDLE))
 	, m_fd_w(GetStdHandle(STD_OUTPUT_HANDLE))
@@ -3063,7 +3071,7 @@ StdioLayer::StdioLayer(ProtocolLayer* up, ProtocolLayer* down)
 		m_pipe_w = true;
 	}
 
-	m_bufferRead.resize(BufferSize);
+	m_bufferRead.resize(bufferSize);
 }
 
 /*!
@@ -3206,8 +3214,8 @@ StdioLayer::fd_type StdioLayer::fd() const
 /*!
  * \brief Ctor.
  */
-StdioLayer::StdioLayer(ProtocolLayer* up, ProtocolLayer* down)
-	: base(STDIN_FILENO, STDOUT_FILENO, up, down)
+StdioLayer::StdioLayer(size_t bufferSize, ProtocolLayer* up, ProtocolLayer* down)
+	: base(STDIN_FILENO, STDOUT_FILENO, bufferSize, up, down)
 {}
 
 #endif // !STORED_OS_WINDOWS
@@ -3237,7 +3245,7 @@ SerialLayer::SerialLayer(
 		return;
 	}
 
-	init(h, h);
+	init(h, h, BufferSize);
 
 	if(lastError())
 		return;
@@ -3451,7 +3459,7 @@ SerialLayer::SerialLayer(
 		return;
 	}
 
-	init(fd, fd);
+	init(fd, fd, BufferSize);
 
 	if(lastError() || !isatty(fd))
 		return;

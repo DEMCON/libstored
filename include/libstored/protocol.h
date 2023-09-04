@@ -688,17 +688,21 @@ protected:
 	static size_t encodeSeq(uint32_t seq, void* buffer);
 
 private:
-	enum { DecodeStateIdle,
-	       DecodeStateDecoding,
-	       DecodeStateDecoded,
-	       DecodeStateRetransmit } m_decodeState;
+	enum {
+		DecodeStateIdle,
+		DecodeStateDecoding,
+		DecodeStateDecoded,
+		DecodeStateRetransmit
+	} m_decodeState;
 	uint32_t m_decodeSeq;
 	uint32_t m_decodeSeqStart;
 
-	enum { EncodeStateIdle,
-	       EncodeStateEncoding,
-	       EncodeStateUnbufferedIdle,
-	       EncodeStateUnbufferedEncoding } m_encodeState;
+	enum {
+		EncodeStateIdle,
+		EncodeStateEncoding,
+		EncodeStateUnbufferedIdle,
+		EncodeStateUnbufferedEncoding
+	} m_encodeState;
 	uint32_t m_encodeSeq;
 	bool m_encodeSeqReset;
 
@@ -1217,21 +1221,23 @@ public:
 	typedef PolledFileLayer base;
 	using base::fd_type;
 
-	enum { BufferSize = 128 };
+	enum { DefaultBufferSize = 128 };
 
 protected:
 	explicit FileLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 
 public:
 	explicit FileLayer(
-		int fd_r, int fd_w = -1, ProtocolLayer* up = nullptr,
-		ProtocolLayer* down = nullptr);
+		int fd_r, int fd_w = -1, size_t bufferSize = DefaultBufferSize,
+		ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 	explicit FileLayer(
-		char const* name_r, char const* name_w = nullptr, ProtocolLayer* up = nullptr,
+		char const* name_r, char const* name_w = nullptr,
+		size_t bufferSize = DefaultBufferSize, ProtocolLayer* up = nullptr,
 		ProtocolLayer* down = nullptr);
 #	ifdef STORED_OS_WINDOWS
 	explicit FileLayer(
-		HANDLE h_r, HANDLE h_w = INVALID_HANDLE_VALUE, ProtocolLayer* up = nullptr,
+		HANDLE h_r, HANDLE h_w = INVALID_HANDLE_VALUE,
+		size_t bufferSize = DefaultBufferSize, ProtocolLayer* up = nullptr,
 		ProtocolLayer* down = nullptr);
 #	endif
 
@@ -1247,7 +1253,7 @@ public:
 	virtual bool isOpen() const override;
 
 protected:
-	void init(fd_type fd_r, fd_type fd_w);
+	void init(fd_type fd_r, fd_type fd_w, size_t bufferSize = DefaultBufferSize);
 	fd_type fd_r() const;
 	fd_type fd_w() const;
 	virtual void close() override;
@@ -1455,9 +1461,11 @@ public:
 	typedef PolledFileLayer base;
 	using base::fd_type;
 
-	enum { BufferSize = 128 };
+	enum { DefaultBufferSize = 128 };
 
-	explicit StdioLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+	explicit StdioLayer(
+		size_t bufferSize = DefaultBufferSize, ProtocolLayer* up = nullptr,
+		ProtocolLayer* down = nullptr);
 	virtual ~StdioLayer() override;
 
 	virtual bool isOpen() const override;
@@ -1503,7 +1511,9 @@ class StdioLayer : public FileLayer {
 	STORED_CLASS_NOCOPY(StdioLayer)
 public:
 	typedef FileLayer base;
-	explicit StdioLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+	explicit StdioLayer(
+		size_t bufferSize = DefaultBufferSize, ProtocolLayer* up = nullptr,
+		ProtocolLayer* down = nullptr);
 	virtual ~StdioLayer() override is_default
 };
 
@@ -1519,6 +1529,8 @@ public:
 class SerialLayer : public FileLayer {
 	STORED_CLASS_NOCOPY(SerialLayer)
 public:
+	enum { BufferSize = 4096 };
+
 	typedef FileLayer base;
 	explicit SerialLayer(
 		char const* name, unsigned long baud, bool rtscts = false, bool xonxoff = false,
