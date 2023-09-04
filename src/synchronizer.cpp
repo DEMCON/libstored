@@ -1311,6 +1311,9 @@ SyncConnection::Id SyncConnection::decodeId(void*& buffer, size_t& len)
  */
 void SyncConnection::dropNonSources()
 {
+#if STORED_cplusplus < 201103L
+again:
+#endif
 	for(IdInMap::iterator it = m_idIn.begin(); it != m_idIn.end();) {
 		StoreMap::iterator sit = m_store.find(it->second);
 		stored_assert(sit != m_store.end());
@@ -1320,7 +1323,12 @@ void SyncConnection::dropNonSources()
 			++it;
 		} else {
 			m_store.erase(sit);
+#if STORED_cplusplus < 201103L
+			m_idIn.erase(it);
+			goto again;
+#else
 			it = m_idIn.erase(it);
+#endif
 		}
 	}
 }
