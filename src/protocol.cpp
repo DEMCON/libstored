@@ -193,8 +193,8 @@ size_t AsciiEscapeLayer::mtu() const
 #if STORED_cplusplus < 201103L
 /*!
  * \copydoc stored::ProtocolLayer::ProtocolLayer(ProtocolLayer*,ProtocolLayer*)
- * \param nonDebugDecodeFd the file descriptor to write data to that are not part of debug messages
- *	during decode(). Set to -1 to drop this data.
+ * \param cb the callback to call with the data that is not part of debug messages during decode().
+ *	Set to \c nullptr to drop this data.
  */
 TerminalLayer::TerminalLayer(NonDebugDecodeCallback* cb, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)

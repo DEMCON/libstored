@@ -160,7 +160,7 @@ static void coverage_setup()
 	}
 }
 #else
-static void coverage_setup() {}
+[[maybe_unused]] static void coverage_setup() {}
 #endif
 
 #ifdef HAVE_AFL
