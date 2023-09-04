@@ -24,6 +24,7 @@ Fixed
 
 - Fix baud rate setting and break generation in stored::SerialLayer for Linux.
 - Fix encode queue size computation of stored::ArqLayer.
+- Improve stability of Debugger/Synchronizer protocol handling of bogus messages.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.5.0...HEAD
 
