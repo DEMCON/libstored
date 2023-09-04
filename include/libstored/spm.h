@@ -309,20 +309,20 @@ private:
 		stored_assert(size > 0);
 
 		// May throw std::bad_alloc.
-		char* b = buffer(allocate<char>(size + chunkHeader));
+		char* p = allocate<char>(size + chunkHeader);
 
 		if(m_buffer) {
 			try {
 				// May throw std::bad_alloc.
 				m_old.push_back(m_buffer);
 			} catch(...) {
-				deallocate<char>(b, size + chunkHeader);
+				deallocate<char>(p, size + chunkHeader);
 				// cppcheck-suppress rethrowNoCurrentException
 				throw;
 			}
 		}
 
-		m_buffer = b;
+		m_buffer = buffer(p);
 		setBufferSize(size);
 		m_size = 0;
 
