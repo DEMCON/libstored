@@ -247,29 +247,28 @@ endif()
 add_executable(perf_synchronizer perf_synchronizer.cpp test_base.cpp)
 target_link_libraries(perf_synchronizer ${TESTSTORE_LIB}-libstored)
 
+if(NOT WIN32)
+	add_library(fuzz_common STATIC fuzz_common.cpp test_base.cpp)
+	target_include_directories(fuzz_common BEFORE PUBLIC include)
+	target_link_libraries(fuzz_common PUBLIC ${TESTSTORE_LIB}-libstored)
 
+	find_program(AFL_FUZZ NAMES afl-fuzz)
 
-add_library(fuzz_common STATIC fuzz_common.cpp test_base.cpp)
-target_include_directories(fuzz_common BEFORE PUBLIC include)
-target_link_libraries(fuzz_common PUBLIC ${TESTSTORE_LIB}-libstored)
+	function(libstored_fuzz APP)
+		add_executable(${APP} ${ARGN})
+		target_link_libraries(${APP} PRIVATE fuzz_common ${TESTSTORE_LIB}-libstored)
+		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${APP}_input)
 
-find_program(AFL_FUZZ NAMES afl-fuzz)
+		add_custom_command(
+			TARGET ${APP}
+			POST_BUILD
+			COMMAND $<TARGET_FILE:${APP}> -i
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${APP}_input
+			VERBATIM
+		)
 
-function(libstored_fuzz APP)
-	add_executable(${APP} ${ARGN})
-	target_link_libraries(${APP} PRIVATE fuzz_common ${TESTSTORE_LIB}-libstored)
-	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${APP}_input)
-
-	add_custom_command(
-		TARGET ${APP}
-		POST_BUILD
-		COMMAND $<TARGET_FILE:${APP}> -i
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${APP}_input
-		VERBATIM
-	)
-
-	if(AFL_FUZZ)
-		file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${APP}.sh CONTENT
+		if(AFL_FUZZ)
+			file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${APP}.sh CONTENT
 "#!/bin/bash
 
 set -euo pipefail
@@ -284,28 +283,29 @@ export AFL_SKIP_CPUFREQ=1
 
 ! ls \"${CMAKE_CURRENT_BINARY_DIR}/${APP}_output/{crashes,hangs}/\"* > /dev/null 2>&1
 "
-		)
+			)
 
-		add_test(NAME ${APP}
-			COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/${APP}.sh -V 60
+			add_test(NAME ${APP}
+				COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/${APP}.sh -V 60
+			)
+		endif()
+	endfunction()
+
+	libstored_fuzz(fuzz_debug fuzz_debug.cpp)
+	libstored_fuzz(fuzz_protocol fuzz_protocol.cpp)
+	libstored_fuzz(fuzz_synchronizer fuzz_synchronizer.cpp)
+
+
+	find_program(LCOV_EXE NAMES lcov)
+	find_program(GENHTML_EXE NAMES genhtml)
+	if(LIBSTORED_COVERAGE AND LCOV_EXE AND GENHTML_EXE)
+		add_custom_target(libstored-lcov
+			COMMAND ${LCOV_EXE} -q -j 4 -c -d . -o ${CMAKE_CURRENT_BINARY_DIR}/libstored.info --ignore-errors inconsistent,unused
+				--exclude ${PROJECT_BINARY_DIR}/_deps --exclude v1/
+			COMMAND ${GENHTML_EXE} -q -j 4 -o ${CMAKE_CURRENT_BINARY_DIR}/lcov ${CMAKE_CURRENT_BINARY_DIR}/libstored.info --ignore-errors inconsistent,unused
+			WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+			COMMENT "Generate lcov output in ${CMAKE_CURRENT_BINARY_DIR}/lcov..."
+			VERBATIM
 		)
 	endif()
-endfunction()
-
-libstored_fuzz(fuzz_debug fuzz_debug.cpp)
-libstored_fuzz(fuzz_protocol fuzz_protocol.cpp)
-libstored_fuzz(fuzz_synchronizer fuzz_synchronizer.cpp)
-
-
-find_program(LCOV_EXE NAMES lcov)
-find_program(GENHTML_EXE NAMES genhtml)
-if(LIBSTORED_COVERAGE AND LCOV_EXE AND GENHTML_EXE)
-	add_custom_target(libstored-lcov
-		COMMAND ${LCOV_EXE} -q -j 4 -c -d . -o ${CMAKE_CURRENT_BINARY_DIR}/libstored.info --ignore-errors inconsistent,unused
-			--exclude ${PROJECT_BINARY_DIR}/_deps --exclude v1/
-		COMMAND ${GENHTML_EXE} -q -j 4 -o ${CMAKE_CURRENT_BINARY_DIR}/lcov ${CMAKE_CURRENT_BINARY_DIR}/libstored.info --ignore-errors inconsistent,unused
-		WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-		COMMENT "Generate lcov output in ${CMAKE_CURRENT_BINARY_DIR}/lcov..."
-		VERBATIM
-	)
 endif()
