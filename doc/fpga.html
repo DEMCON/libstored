@@ -4,18 +4,18 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VHDL &mdash; libstored 1.5.0 documentation</title>
+  <title>VHDL &mdash; libstored 1.5.1-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=e1c64ce6"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -35,7 +35,7 @@
             libstored
           </a>
               <div class="version">
-                1.5.0
+                1.5.1.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -103,7 +103,7 @@
            <div itemprop="articleBody">
              
   <section id="vhdl">
-<h1>VHDL<a class="headerlink" href="#vhdl" title="Permalink to this heading"></a></h1>
+<h1>VHDL<a class="headerlink" href="#vhdl" title="Link to this heading"></a></h1>
 <p>The generated VHDL entity for a store contains the following:</p>
 <ul class="simple">
 <li><p>All variables of the store (functions are not supported).</p></li>
@@ -117,7 +117,7 @@ write-only, read-write, or not available.</p></li>
 protocol stack.</p></li>
 </ul>
 <section id="store-entity">
-<h2>Store entity<a class="headerlink" href="#store-entity" title="Permalink to this heading"></a></h2>
+<h2>Store entity<a class="headerlink" href="#store-entity" title="Link to this heading"></a></h2>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">Store_hdl</span></span></dt>
@@ -256,7 +256,7 @@ variables that are at most 32-bit in size.</p>
 
 </section>
 <section id="store-package">
-<h2>Store package<a class="headerlink" href="#store-package" title="Permalink to this heading"></a></h2>
+<h2>Store package<a class="headerlink" href="#store-package" title="Link to this heading"></a></h2>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">Store_pkg</span></span></dt>
@@ -283,7 +283,7 @@ this:</p>
 </pre></div>
 </div>
 <p>The output timing is exemplified below.</p>
-<img alt="../_images/wavedrom-78773c8d-80db-4304-a92f-0c6f048f9d58.svg" src="../_images/wavedrom-78773c8d-80db-4304-a92f-0c6f048f9d58.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
+<img alt="../_images/wavedrom-41a47f2a-38b7-4175-9777-0c1eef47c676.svg" src="../_images/wavedrom-41a47f2a-38b7-4175-9777-0c1eef47c676.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
 When the value is written, via <code class="docutils literal notranslate"><span class="pre">var_in</span></code>, the AXI interface, or via the
 Synchronizer, <code class="docutils literal notranslate"><span class="pre">value</span></code> is updated and <code class="docutils literal notranslate"><span class="pre">updated</span></code> is flagged for one
 clock cycle.  The flag is set at every write, not only when the data
@@ -319,7 +319,7 @@ this:</p>
 </pre></div>
 </div>
 <p>When <code class="docutils literal notranslate"><span class="pre">we</span></code> is high, the <code class="docutils literal notranslate"><span class="pre">value</span></code> is written to the store.</p>
-<img alt="../_images/wavedrom-799dd325-9e0c-4185-8850-3f12950dee83.svg" src="../_images/wavedrom-799dd325-9e0c-4185-8850-3f12950dee83.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
+<img alt="../_images/wavedrom-1a2ce44a-ee5e-4f15-a1dc-2df6a5cbb211.svg" src="../_images/wavedrom-1a2ce44a-ee5e-4f15-a1dc-2df6a5cbb211.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
 the case that a microcontroller and the FPGA synchronize a store.  If a
 variable should be read-only for the microcontroller, <code class="docutils literal notranslate"><span class="pre">we</span></code> can be tied
 high by the FPGA, such that the FPGA updates the variable constantly.  In
@@ -357,7 +357,7 @@ is ignored (there is no backpressure in place).</p>
 
 </section>
 <section id="common-package">
-<h2>Common package<a class="headerlink" href="#common-package" title="Permalink to this heading"></a></h2>
+<h2>Common package<a class="headerlink" href="#common-package" title="Link to this heading"></a></h2>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">libstored_pkg</span></span></dt>
@@ -399,7 +399,7 @@ messages that reach the terminator, are accepted and dropped.</p>
 
 </section>
 <section id="protocol">
-<h2>Protocol<a class="headerlink" href="#protocol" title="Permalink to this heading"></a></h2>
+<h2>Protocol<a class="headerlink" href="#protocol" title="Link to this heading"></a></h2>
 <p>The protocol stack can be built by chaining these components using two <code class="docutils literal notranslate"><span class="pre">msg_t</span></code> signals.
 All layers have a similar interface:</p>
 <dl class="object">
@@ -437,7 +437,7 @@ layer in the stack.</p>
 </dd>
 </dl>
 <p>Passing messages follows this scheme, which is resembles the AXI4-Stream Protocol:</p>
-<img alt="../_images/wavedrom-a7f0cc2d-53b7-403f-a270-91eb26c65487.svg" src="../_images/wavedrom-a7f0cc2d-53b7-403f-a270-91eb26c65487.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
+<img alt="../_images/wavedrom-f0724fcb-bfa3-45bd-9ea4-cd43d5e55492.svg" src="../_images/wavedrom-f0724fcb-bfa3-45bd-9ea4-cd43d5e55492.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
 clock edge.  In the example above, this happens at edge 2, 3, 6, 9, and 10.
 There is no order or dependency in <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code>; both can be
 high while other is not, indicating ‘there is data’, or ‘the data can be
@@ -455,7 +455,7 @@ integration, <code class="docutils literal notranslate"><span class="pre">accept
 </dd></dl>
 
 <section id="asciiescapelayer">
-<h3>AsciiEscapeLayer<a class="headerlink" href="#asciiescapelayer" title="Permalink to this heading"></a></h3>
+<h3>AsciiEscapeLayer<a class="headerlink" href="#asciiescapelayer" title="Link to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">AsciiEscapeLayer</span></span></dt>
@@ -496,7 +496,7 @@ Set to 0 to allow pass-through.</p>
 
 </section>
 <section id="bufferlayer">
-<h3>BufferLayer<a class="headerlink" href="#bufferlayer" title="Permalink to this heading"></a></h3>
+<h3>BufferLayer<a class="headerlink" href="#bufferlayer" title="Link to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">BufferLayer</span></span></dt>
@@ -531,7 +531,7 @@ Set to 0 to allow pass-through.</p>
 
 </section>
 <section id="terminallayer">
-<h3>TerminalLayer<a class="headerlink" href="#terminallayer" title="Permalink to this heading"></a></h3>
+<h3>TerminalLayer<a class="headerlink" href="#terminallayer" title="Link to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">TerminalLayer</span></span></dt>
@@ -579,7 +579,7 @@ Set to 0 to allow pass-through.</p>
 
 </section>
 <section id="uartlayer">
-<h3>UARTLayer<a class="headerlink" href="#uartlayer" title="Permalink to this heading"></a></h3>
+<h3>UARTLayer<a class="headerlink" href="#uartlayer" title="Link to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">UARTLayer</span></span></dt>
@@ -619,7 +619,7 @@ Set to 0 to allow pass-through.</p>
 
 </section>
 <section id="filelayer">
-<h3>FileLayer<a class="headerlink" href="#filelayer" title="Permalink to this heading"></a></h3>
+<h3>FileLayer<a class="headerlink" href="#filelayer" title="Link to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">FileLayer</span></span></dt>
@@ -660,7 +660,7 @@ Some throttling can be implemented this way.</p>
 
 </section>
 <section id="teelayer">
-<h3>TeeLayer<a class="headerlink" href="#teelayer" title="Permalink to this heading"></a></h3>
+<h3>TeeLayer<a class="headerlink" href="#teelayer" title="Link to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">TeeLayer</span></span></dt>
@@ -698,7 +698,7 @@ Only used when not empty.</p>
 
 </section>
 <section id="xsimlayer">
-<h3>XsimLayer<a class="headerlink" href="#xsimlayer" title="Permalink to this heading"></a></h3>
+<h3>XsimLayer<a class="headerlink" href="#xsimlayer" title="Link to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">XsimLayer</span></span></dt>
@@ -732,9 +732,9 @@ Only available in simulation.</p>
 </section>
 </section>
 <section id="utilities">
-<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this heading"></a></h2>
+<h2>Utilities<a class="headerlink" href="#utilities" title="Link to this heading"></a></h2>
 <section id="libstored-droptail">
-<h3>libstored_droptail<a class="headerlink" href="#libstored-droptail" title="Permalink to this heading"></a></h3>
+<h3>libstored_droptail<a class="headerlink" href="#libstored-droptail" title="Link to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">libstored_droptail</span></span></dt>
@@ -763,7 +763,7 @@ Only available in simulation.</p>
 </pre></div>
 </div>
 <p>Example that drops a tail of length 1:</p>
-<img alt="../_images/wavedrom-6b0981b7-8bf3-4f01-b0d1-a5a81cc00fcb.svg" src="../_images/wavedrom-6b0981b7-8bf3-4f01-b0d1-a5a81cc00fcb.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
+<img alt="../_images/wavedrom-48eb6660-9a67-4b89-8a32-e8c20eeb80ed.svg" src="../_images/wavedrom-48eb6660-9a67-4b89-8a32-e8c20eeb80ed.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
 unspecified.</p>
 <dl class="simple">
 <dt>FIFO_DEPTH<span class="classifier">natural := 0</span></dt><dd><p>Minimum FIFO depth. Set to 0 to allow pass-through.</p>
@@ -779,7 +779,7 @@ So, <code class="docutils literal notranslate"><span class="pre">last_out</span>
 
 </section>
 <section id="libstored-stream-buffer">
-<h3>libstored_stream_buffer<a class="headerlink" href="#libstored-stream-buffer" title="Permalink to this heading"></a></h3>
+<h3>libstored_stream_buffer<a class="headerlink" href="#libstored-stream-buffer" title="Link to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">libstored_stream_buffer</span></span></dt>
@@ -808,7 +808,7 @@ This is effectively a FIFO of size 1.</p>
 
 </section>
 <section id="libstored-fifo">
-<h3>libstored_fifo<a class="headerlink" href="#libstored-fifo" title="Permalink to this heading"></a></h3>
+<h3>libstored_fifo<a class="headerlink" href="#libstored-fifo" title="Link to this heading"></a></h3>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">libstored_fifo</span></span></dt>
@@ -845,8 +845,8 @@ This is effectively a FIFO of size 1.</p>
 </pre></div>
 </div>
 <p>Example to drop and commit pushed data:</p>
-<img alt="../_images/wavedrom-dd7e5617-3f56-4369-8673-7f18d81ed4ac.svg" src="../_images/wavedrom-dd7e5617-3f56-4369-8673-7f18d81ed4ac.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
-<img alt="../_images/wavedrom-4e4785a8-12d6-475f-87b8-85f520a8002c.svg" src="../_images/wavedrom-4e4785a8-12d6-475f-87b8-85f520a8002c.svg" /><dl class="simple">
+<img alt="../_images/wavedrom-b9292537-74aa-49c9-a0aa-3b77de29d2c2.svg" src="../_images/wavedrom-b9292537-74aa-49c9-a0aa-3b77de29d2c2.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
+<img alt="../_images/wavedrom-50981558-3758-4401-8a08-8d4d7deef842.svg" src="../_images/wavedrom-50981558-3758-4401-8a08-8d4d7deef842.svg" /><dl class="simple">
 <dt>WIDTH<span class="classifier">positive</span></dt><dd><p>Data width.</p>
 </dd>
 <dt>DEPTH<span class="classifier">natural := 1</span></dt><dd><p>Minimum FIFO depth.</p>
