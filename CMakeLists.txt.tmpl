@@ -9,17 +9,17 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 -#}
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.5)
 project({{libprefix}}libstored)
-cmake_policy(VERSION 3.1)
+cmake_policy(VERSION 3.5)
 
 option(LIBSTORED_INSTALL_STORE_LIBS "Install generated static libstored libraries" ON)
 option(LIBSTORED_DRAFT_API "Enable draft API" OFF)
 option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" OFF)
 option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" OFF)
 option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" OFF)
-option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
-option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" ON)
+option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" OFF)
+option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" OFF)
 option(LIBSTORED_HAVE_ZTH "Use Zth" OFF)
 option(LIBSTORED_HAVE_QT "Use Qt" OFF)
 option(LIBSTORED_CLANG_TIDY "Run clang-tidy" OFF)
@@ -32,4 +32,6 @@ set(PYTHON_EXECUTABLE "{{python_executable|escapebs}}")
 file(TO_CMAKE_PATH "{{libstored_dir|escapebs}}" LIBSTORED_SOURCE_DIR)
 list(APPEND CMAKE_MODULE_PATH ${LIBSTORED_SOURCE_DIR}/cmake)
 include(libstored)
-libstored_lib({{libprefix}} ${CMAKE_CURRENT_SOURCE_DIR}{% for m in models %} {{m}}{% endfor %})
+libstored_lib(TARGET {{libprefix}}libstored DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}
+	STORES{% for m in models %} {{m}}{% endfor %}
+)
