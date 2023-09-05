@@ -8,7 +8,10 @@ indent_size = 8
 indent_style = tab
 trim_trailing_whitespace = true
 
-[*.{h,c,cpp,h.tmpl,c.tmpl,cpp.tmpl}]
+[*.{h,c,cpp,h.tmpl,c.tmpl,cpp.tmpl,cmake,cmake.in}]
+max_line_length = 100
+
+[CMakeLists.txt]
 max_line_length = 100
 
 [*.{py,qml}]

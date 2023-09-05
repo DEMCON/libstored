@@ -1,0 +1,7 @@
+# vim:syntax=yaml
+
+line_width: 100
+tab_size: 8
+use_tabchars: yes
+dangle_parens: yes
+first_comment_is_literal: yes
