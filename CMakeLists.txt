@@ -214,8 +214,6 @@ endif()
 
 option(LIBSTORED_GCC_ANALYZER "Run GCC's analyzer" ${LIBSTORED_GCC_ANALYZER_DEFAULT})
 
-add_subdirectory(version)
-
 if(CMAKE_HOST_WIN32)
 	find_program(PYTHON_EXECUTABLE python)
 else()
@@ -229,16 +227,16 @@ else()
 	message(STATUS "Using python ${PYTHON_EXECUTABLE}")
 endif()
 
-if(LIBSTORED_DOCUMENTATION AND LIBSTORED_PYLIBSTORED)
-	add_subdirectory(sphinx)
-endif()
-
 set(LIBSTORED_SOURCE_DIR ${PROJECT_SOURCE_DIR} CACHE STRING "Path to the libstored sources" FORCE)
 list(APPEND CMAKE_MODULE_PATH ${LIBSTORED_SOURCE_DIR}/cmake)
 
+include(libstored)
+
 add_subdirectory(extern)
 
-include(libstored)
+if(LIBSTORED_DOCUMENTATION AND LIBSTORED_PYLIBSTORED)
+	add_subdirectory(sphinx)
+endif()
 
 install(DIRECTORY ${LIBSTORED_SOURCE_DIR}/include/libstored/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libstored FILES_MATCHING PATTERN "*.h")
 install(FILES ${LIBSTORED_SOURCE_DIR}/include/stored ${LIBSTORED_SOURCE_DIR}/include/stored.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
