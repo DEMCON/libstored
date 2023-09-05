@@ -5,23 +5,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-include(CheckIncludeFileCXX)
-include(CMakeParseArguments)
-include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
-
-if(NOT LIBSTORED_SOURCE_DIR)
-	get_filename_component(LIBSTORED_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}" DIRECTORY)
-	set(LIBSTORED_SOURCE_DIR "${LIBSTORED_SOURCE_DIR}" CACHE INTERNAL "")
-endif()
-
-if(NOT PYTHON_EXECUTABLE)
-	if(CMAKE_HOST_WIN32)
-		find_program(PYTHON_EXECUTABLE python REQUIRED)
-	else()
-		find_program(PYTHON_EXECUTABLE python3 REQUIRED)
-	endif()
-endif()
+# ##################################################################################################
+# Options
 
 option(LIBSTORED_INSTALL_STORE_LIBS "Install generated static libstored libraries" ON)
 option(LIBSTORED_DRAFT_API "Enable draft API" ON)
@@ -42,21 +27,46 @@ option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" OFF)
 option(LIBSTORED_HAVE_ZTH "Use Zth" OFF)
 option(LIBSTORED_HAVE_QT "Use Qt" OFF)
 
-# A dummy target that depends on all ...-generated targets.  May be handy in
-# case of generating documentation, for example, where all generated header
-# files are required.
+# ##################################################################################################
+# Prepare environment
+
+include(CheckIncludeFileCXX)
+include(CMakeParseArguments)
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+if(NOT LIBSTORED_SOURCE_DIR)
+	get_filename_component(LIBSTORED_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}" DIRECTORY)
+	set(LIBSTORED_SOURCE_DIR
+	    "${LIBSTORED_SOURCE_DIR}"
+	    CACHE INTERNAL ""
+	)
+endif()
+
+if(NOT PYTHON_EXECUTABLE)
+	if(CMAKE_HOST_WIN32)
+		find_program(PYTHON_EXECUTABLE python REQUIRED)
+	else()
+		find_program(PYTHON_EXECUTABLE python3 REQUIRED)
+	endif()
+endif()
+
+include(${LIBSTORED_SOURCE_DIR}/version/CMakeLists.txt)
+
+# A dummy target that depends on all ...-generated targets.  May be handy in case of generating
+# documentation, for example, where all generated header files are required.
 add_custom_target(all-libstored-generate)
 
-# Create the libstored library based on the generated files.
-# Old interface: libstored_lib(libprefix libpath store1 store2 ...)
-# New interface: libstored_lib(TARGET lib DESTINATION libpath STORES store1 store1 ... [ZTH] [ZMQ|NO_ZMQ] [QT])
+# ##################################################################################################
+# libstored_*() functions.
+
+# Create the libstored library based on the generated files. Old interface: libstored_lib(libprefix
+# libpath store1 store2 ...) New interface: libstored_lib(TARGET lib DESTINATION libpath STORES
+# store1 store1 ... [ZTH] [ZMQ|NO_ZMQ] [QT])
 function(libstored_lib libprefix libpath)
 	if("${libprefix}" STREQUAL "TARGET")
-		cmake_parse_arguments(LIBSTORED_LIB
-			"ZTH;ZMQ;NO_ZMQ;QT"
-			"TARGET;DESTINATION"
-			"STORES"
-			${ARGV}
+		cmake_parse_arguments(
+			LIBSTORED_LIB "ZTH;ZMQ;NO_ZMQ;QT" "TARGET;DESTINATION" "STORES" ${ARGV}
 		)
 	else()
 		message(DEPRECATION "Use keyword-based libstored_lib() instead.")
@@ -76,11 +86,14 @@ function(libstored_lib libprefix libpath)
 	set(LIBSTORED_LIB_TARGET_HEADERS "")
 	foreach(m IN ITEMS ${LIBSTORED_LIB_STORES})
 		list(APPEND LIBSTORED_LIB_TARGET_SRC "${LIBSTORED_LIB_DESTINATION}/include/${m}.h")
-		list(APPEND LIBSTORED_LIB_TARGET_HEADERS "${LIBSTORED_LIB_DESTINATION}/include/${m}.h")
+		list(APPEND LIBSTORED_LIB_TARGET_HEADERS
+		     "${LIBSTORED_LIB_DESTINATION}/include/${m}.h"
+		)
 		list(APPEND LIBSTORED_LIB_TARGET_SRC "${LIBSTORED_LIB_DESTINATION}/src/${m}.cpp")
 	endforeach()
 
-	add_library(${LIBSTORED_LIB_TARGET} STATIC
+	add_library(
+		${LIBSTORED_LIB_TARGET} STATIC
 		${LIBSTORED_SOURCE_DIR}/include/stored
 		${LIBSTORED_SOURCE_DIR}/include/stored.h
 		${LIBSTORED_SOURCE_DIR}/include/stored_config.h
@@ -110,12 +123,13 @@ function(libstored_lib libprefix libpath)
 		${LIBSTORED_LIB_TARGET_SRC}
 	)
 
-	target_include_directories(${LIBSTORED_LIB_TARGET} PUBLIC
-		$<BUILD_INTERFACE:${LIBSTORED_PREPEND_INCLUDE_DIRECTORIES}>
-		$<BUILD_INTERFACE:${LIBSTORED_SOURCE_DIR}/include>
-		$<BUILD_INTERFACE:${LIBSTORED_LIB_DESTINATION}/include>
-		$<BUILD_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
-		$<INSTALL_INTERFACE:include>
+	target_include_directories(
+		${LIBSTORED_LIB_TARGET}
+		PUBLIC $<BUILD_INTERFACE:${LIBSTORED_PREPEND_INCLUDE_DIRECTORIES}>
+		       $<BUILD_INTERFACE:${LIBSTORED_SOURCE_DIR}/include>
+		       $<BUILD_INTERFACE:${LIBSTORED_LIB_DESTINATION}/include>
+		       $<BUILD_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
+		       $<INSTALL_INTERFACE:include>
 	)
 
 	string(REGEX REPLACE "^(.*)-libstored$" "stored-\\1" libname ${LIBSTORED_LIB_TARGET})
@@ -140,19 +154,34 @@ function(libstored_lib libprefix libpath)
 			target_compile_options(${LIBSTORED_LIB_TARGET} PUBLIC /GR-)
 		endif()
 	else()
-		target_compile_options(${LIBSTORED_LIB_TARGET} PRIVATE -Wall -Wextra -Wdouble-promotion -Wformat=2 -Wundef -Wconversion -Wshadow -ffunction-sections -fdata-sections)
+		target_compile_options(
+			${LIBSTORED_LIB_TARGET}
+			PRIVATE -Wall
+				-Wextra
+				-Wdouble-promotion
+				-Wformat=2
+				-Wundef
+				-Wconversion
+				-Wshadow
+				-ffunction-sections
+				-fdata-sections
+		)
 		if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 			target_compile_options(${LIBSTORED_LIB_TARGET} PRIVATE -Wlogical-op)
 		endif()
 		if(LIBSTORED_DEV)
 			target_compile_options(${LIBSTORED_LIB_TARGET} PRIVATE -Werror)
 			if(NOT WIN32)
-				target_compile_options(${LIBSTORED_LIB_TARGET} PUBLIC -fstack-protector-strong)
+				target_compile_options(
+					${LIBSTORED_LIB_TARGET} PUBLIC -fstack-protector-strong
+				)
 			endif()
 		endif()
 		if(LIBSTORED_COVERAGE)
 			target_compile_options(${LIBSTORED_LIB_TARGET} PUBLIC -O0 --coverage -pg)
-			target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_COVERAGE=1)
+			target_compile_definitions(
+				${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_COVERAGE=1
+			)
 			target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC "--coverage")
 		endif()
 		if(LIBSTORED_DISABLE_EXCEPTIONS)
@@ -162,16 +191,20 @@ function(libstored_lib libprefix libpath)
 			target_compile_options(${LIBSTORED_LIB_TARGET} PUBLIC -fno-rtti)
 		endif()
 	endif()
-	if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER "8.0.1")
+	if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER
+						     "8.0.1"
+	)
 		# The flag should be there from LLVM 8.0.0, but I don't see it...
-		target_compile_options(${LIBSTORED_LIB_TARGET} PRIVATE -Wno-defaulted-function-deleted)
+		target_compile_options(
+			${LIBSTORED_LIB_TARGET} PRIVATE -Wno-defaulted-function-deleted
+		)
 	endif()
 
 	if(LIBSTORED_DRAFT_API)
 		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_DRAFT_API=1)
 	endif()
 
-	CHECK_INCLUDE_FILE_CXX("valgrind/memcheck.h" LIBSTORED_HAVE_VALGRIND)
+	check_include_file_cxx("valgrind/memcheck.h" LIBSTORED_HAVE_VALGRIND)
 	if(LIBSTORED_HAVE_VALGRIND)
 		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_VALGRIND=1)
 	endif()
@@ -190,11 +223,15 @@ function(libstored_lib libprefix libpath)
 	if(LIBSTORED_HAVE_QT AND LIBSTORED_LIB_QT)
 		if(TARGET Qt5::Core)
 			message(STATUS "Enable Qt5 integration for ${LIBSTORED_LIB_TARGET}")
-			target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_QT=5)
+			target_compile_definitions(
+				${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_QT=5
+			)
 			target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC Qt5::Core)
 		else()
 			message(STATUS "Enable Qt6 integration for ${LIBSTORED_LIB_TARGET}")
-			target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_QT=6)
+			target_compile_definitions(
+				${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_QT=6
+			)
 			target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC Qt::Core)
 		endif()
 
@@ -210,97 +247,41 @@ function(libstored_lib libprefix libpath)
 	endif()
 
 	if(LIBSTORED_HAVE_HEATSHRINK)
-		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_HEATSHRINK=1)
+		target_compile_definitions(
+			${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_HEATSHRINK=1
+		)
 		target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC heatshrink)
 	endif()
 
 	set(DO_CLANG_TIDY "")
 
 	if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
-		find_program(CLANG_TIDY_EXE NAMES "clang-tidy" DOC "Path to clang-tidy executable")
+		find_program(
+			CLANG_TIDY_EXE
+			NAMES "clang-tidy"
+			DOC "Path to clang-tidy executable"
+		)
 		if(CLANG_TIDY_EXE AND LIBSTORED_CLANG_TIDY)
 			message(STATUS "Enabled clang-tidy for ${LIBSTORED_LIB_TARGET}")
 
-			string(CONCAT CLANG_TIDY_CHECKS "-checks="
-				"bugprone-*,"
-				"-bugprone-easily-swappable-parameters,"
-				"-bugprone-macro-parentheses,"
-				"-bugprone-reserved-identifier," # Should be fixed.
-				"-bugprone-suspicious-include," # For Qt's moc
-
-				"cert-*,"
-				"-cert-dcl37-c,"
-				"-cert-dcl51-cpp,"
-
-				"clang-analyzer-*,"
-
-				"-clang-diagnostic-defaulted-function-deleted,"
-
-				"concurrency-*,"
-
-				"cppcoreguidelines-*,"
-				"-cppcoreguidelines-avoid-c-arrays,"
-				"-cppcoreguidelines-avoid-goto,"
-				"-cppcoreguidelines-avoid-magic-numbers,"
-				"-cppcoreguidelines-explicit-virtual-functions,"
-				"-cppcoreguidelines-macro-usage,"
-				"-cppcoreguidelines-pro-bounds-array-to-pointer-decay,"
-				"-cppcoreguidelines-pro-bounds-pointer-arithmetic,"
-				"-cppcoreguidelines-pro-type-union-access,"
-				"-cppcoreguidelines-pro-type-vararg,"
-
-				"hicpp-*,"
-				"-hicpp-avoid-c-arrays,"
-				"-hicpp-avoid-goto,"
-				"-hicpp-braces-around-statements,"
-				"-hicpp-member-init,"
-				"-hicpp-no-array-decay,"
-				"-hicpp-no-malloc,"
-				"-hicpp-use-auto,"
-				"-hicpp-use-override,"
-				"-hicpp-vararg,"
-
-				"misc-*,"
-				"-misc-const-correctness,"
-				"-misc-no-recursion,"
-				"-misc-non-private-member-variables-in-classes,"
-				"-misc-macro-parentheses,"
-				"-misc-use-anonymous-namespace,"
-
-				"readability-*,"
-				"-readability-braces-around-statements,"
-				"-readability-convert-member-functions-to-static,"
-				"-readability-else-after-return,"
-				"-readability-function-cognitive-complexity,"
-				"-readability-identifier-length,"
-				"-readability-implicit-bool-conversion,"
-				"-readability-magic-numbers,"
-				"-readability-make-member-function-const,"
-				"-readability-redundant-access-specifiers,"
-
-				"performance-*,"
-				"-performance-no-int-to-ptr," # Especially on WIN32 HANDLEs.
-
-				"portability-*,"
-			)
-			set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}"
-				"--extra-arg=-I${LIBSTORED_SOURCE_DIR}/include"
-				"--extra-arg=-I${CMAKE_BINARY_DIR}/include"
-				"--extra-arg=-I${LIBSTORED_LIB_DESTINATION}/include"
-				"--header-filter=.*include/libstored.*"
-				"--warnings-as-errors=*"
-				"--extra-arg=-Wno-unknown-warning-option"
+			set(DO_CLANG_TIDY
+			    "${CLANG_TIDY_EXE}" "--config=${LIBSTORED_SOURCE_DIR}/.clang-tidy"
+			    "--extra-arg=-I${LIBSTORED_SOURCE_DIR}/include"
+			    "--extra-arg=-I${LIBSTORED_LIB_DESTINATION}/include"
 			)
 
 			if(CMAKE_CXX_STANDARD)
-				set(DO_CLANG_TIDY "${DO_CLANG_TIDY}" "--extra-arg=-std=c++${CMAKE_CXX_STANDARD}")
+				set(DO_CLANG_TIDY "${DO_CLANG_TIDY}"
+						  "--extra-arg=-std=c++${CMAKE_CXX_STANDARD}"
+				)
 			endif()
 
-			set_target_properties(${LIBSTORED_LIB_TARGET}
-				PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}" )
+			set_target_properties(
+				${LIBSTORED_LIB_TARGET} PROPERTIES CXX_CLANG_TIDY
+								   "${DO_CLANG_TIDY}"
+			)
 		else()
-			set_target_properties(${LIBSTORED_LIB_TARGET}
-				PROPERTIES CXX_CLANG_TIDY "")
+			set_target_properties(${LIBSTORED_LIB_TARGET} PROPERTIES CXX_CLANG_TIDY "")
 		endif()
 	endif()
 
@@ -309,17 +290,23 @@ function(libstored_lib libprefix libpath)
 	endif()
 
 	if(LIBSTORED_ENABLE_ASAN)
-		target_compile_options(${LIBSTORED_LIB_TARGET} PUBLIC -fsanitize=address -fno-omit-frame-pointer)
+		target_compile_options(
+			${LIBSTORED_LIB_TARGET} PUBLIC -fsanitize=address -fno-omit-frame-pointer
+		)
 		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_ENABLE_ASAN=1)
 		if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
 			target_link_options(${LIBSTORED_LIB_TARGET} INTERFACE -fsanitize=address)
 		else()
-			target_link_libraries(${LIBSTORED_LIB_TARGET} INTERFACE "-fsanitize=address")
+			target_link_libraries(
+				${LIBSTORED_LIB_TARGET} INTERFACE "-fsanitize=address"
+			)
 		endif()
 	endif()
 
 	if(LIBSTORED_ENABLE_LSAN)
-		target_compile_options(${LIBSTORED_LIB_TARGET} PUBLIC -fsanitize=leak -fno-omit-frame-pointer)
+		target_compile_options(
+			${LIBSTORED_LIB_TARGET} PUBLIC -fsanitize=leak -fno-omit-frame-pointer
+		)
 		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_ENABLE_LSAN=1)
 		if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
 			target_link_options(${LIBSTORED_LIB_TARGET} INTERFACE -fsanitize=leak)
@@ -329,24 +316,24 @@ function(libstored_lib libprefix libpath)
 	endif()
 
 	if(LIBSTORED_ENABLE_UBSAN)
-		target_compile_options(${LIBSTORED_LIB_TARGET} PUBLIC -fsanitize=undefined -fno-omit-frame-pointer)
+		target_compile_options(
+			${LIBSTORED_LIB_TARGET} PUBLIC -fsanitize=undefined -fno-omit-frame-pointer
+		)
 
 		if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-			target_compile_options(${LIBSTORED_LIB_TARGET} PUBLIC
-				# The combination of -fno-sanitize-recover and
-				# ubsan gives some issues with vptr. This might
-				# be related:
-				# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94325.
-				# Disable it for now.
-				-fno-sanitize=vptr
-
-				# The following checks seem to crash the
-				# compiler (at least with GCC 11), espeically
-				# on the components example (heavily using
-				# libstored/components.h).
-				-fno-sanitize=null
-				-fno-sanitize=nonnull-attribute
-				-fno-sanitize=returns-nonnull-attribute
+			target_compile_options(
+				${LIBSTORED_LIB_TARGET}
+				PUBLIC # The combination of -fno-sanitize-recover and ubsan gives
+				       # some issues with vptr. This might be related:
+				       # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94325. Disable
+				       # it for now.
+				       -fno-sanitize=vptr
+				       # The following checks seem to crash the compiler (at least
+				       # with GCC 11), espeically on the components example (heavily
+				       # using libstored/components.h).
+				       -fno-sanitize=null
+				       -fno-sanitize=nonnull-attribute
+				       -fno-sanitize=returns-nonnull-attribute
 			)
 		endif()
 
@@ -354,12 +341,16 @@ function(libstored_lib libprefix libpath)
 		if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
 			target_link_options(${LIBSTORED_LIB_TARGET} INTERFACE -fsanitize=undefined)
 		else()
-			target_link_libraries(${LIBSTORED_LIB_TARGET} INTERFACE "-fsanitize=undefined")
+			target_link_libraries(
+				${LIBSTORED_LIB_TARGET} INTERFACE "-fsanitize=undefined"
+			)
 		endif()
 	endif()
 
 	if(LIBSTORED_INSTALL_STORE_LIBS)
-		install(TARGETS ${LIBSTORED_LIB_TARGET} EXPORT ${LIBSTORED_LIB_TARGET}Store
+		install(
+			TARGETS ${LIBSTORED_LIB_TARGET}
+			EXPORT ${LIBSTORED_LIB_TARGET}Store
 			ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 			PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 		)
@@ -368,8 +359,12 @@ function(libstored_lib libprefix libpath)
 			DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 		)
 
-		install(DIRECTORY ${LIBSTORED_LIB_DESTINATION}/doc/ DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored)
-		install(EXPORT ${LIBSTORED_LIB_TARGET}Store DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake)
+		install(DIRECTORY ${LIBSTORED_LIB_DESTINATION}/doc/
+			DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored
+		)
+		install(EXPORT ${LIBSTORED_LIB_TARGET}Store
+			DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake
+		)
 	endif()
 endfunction()
 
@@ -378,17 +373,27 @@ function(libstored_copy_dlls target)
 	if(WIN32 AND LIBSTORED_HAVE_LIBZMQ)
 		get_target_property(target_type ${target} TYPE)
 		if(target_type STREQUAL "EXECUTABLE")
-			# Missing dll's... Really annoying. Just copy the libzmq.dll to wherever
-			# it is possibly needed.
+			# Missing dll's... Really annoying. Just copy the libzmq.dll to wherever it
+			# is possibly needed.
 			if(CMAKE_STRIP)
-				add_custom_command(TARGET ${target} PRE_LINK
-					COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> $<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:libzmq>
-					COMMAND ${CMAKE_STRIP} $<SHELL_PATH:$<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:libzmq>>
+				add_custom_command(
+					TARGET ${target}
+					PRE_LINK
+					COMMAND
+						${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq>
+						$<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:libzmq>
+					COMMAND
+						${CMAKE_STRIP}
+						$<SHELL_PATH:$<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:libzmq>>
 					VERBATIM
 				)
 			else()
-				add_custom_command(TARGET ${target} PRE_LINK
-					COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> $<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:libzmq>
+				add_custom_command(
+					TARGET ${target}
+					PRE_LINK
+					COMMAND
+						${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq>
+						$<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:libzmq>
 					VERBATIM
 				)
 			endif()
@@ -396,15 +401,13 @@ function(libstored_copy_dlls target)
 	endif()
 endfunction()
 
-# Generate the store files and invoke libstored_lib to create the library for cmake.
-# Old interface: libstored_generate(target store1 store2 ...)
-# New interface: libstored_generate(TARGET target [DESTINATION path] STORES store1 store2 [ZTH] [ZMQ|NO_ZMQ])
+# Generate the store files and invoke libstored_lib to create the library for cmake. Old interface:
+# libstored_generate(target store1 store2 ...) New interface: libstored_generate(TARGET target
+# [DESTINATION path] STORES store1 store2 [ZTH] [ZMQ|NO_ZMQ])
 function(libstored_generate target) # add all other models as varargs
 	if("${target}" STREQUAL "TARGET")
-		cmake_parse_arguments(LIBSTORED_GENERATE
-			"ZTH;ZMQ;NO_ZMQ;QT"
-			"TARGET;DESTINATION"
-			"STORES"
+		cmake_parse_arguments(
+			LIBSTORED_GENERATE "ZTH;ZMQ;NO_ZMQ;QT" "TARGET;DESTINATION" "STORES"
 			${ARGV}
 		)
 	else()
@@ -438,13 +441,19 @@ function(libstored_generate target) # add all other models as varargs
 		list(APPEND models ${model_abs})
 		get_filename_component(model_base "${model}" NAME_WE)
 		list(APPEND model_bases ${model_base})
-		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/include/${model_base}.h)
+		list(APPEND generated_files
+		     ${LIBSTORED_GENERATE_DESTINATION}/include/${model_base}.h
+		)
 		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/src/${model_base}.cpp)
 		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/doc/${model_base}.rtf)
 		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/doc/${model_base}.csv)
-		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/doc/${model_base}Meta.py)
+		list(APPEND generated_files
+		     ${LIBSTORED_GENERATE_DESTINATION}/doc/${model_base}Meta.py
+		)
 		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/rtl/${model_base}.vhd)
-		list(APPEND generated_files ${LIBSTORED_GENERATE_DESTINATION}/rtl/${model_base}_pkg.vhd)
+		list(APPEND generated_files
+		     ${LIBSTORED_GENERATE_DESTINATION}/rtl/${model_base}_pkg.vhd
+		)
 	endforeach()
 
 	add_custom_command(
@@ -461,40 +470,64 @@ function(libstored_generate target) # add all other models as varargs
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/dsl/grammar.tx
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/dsl/types.py
 		DEPENDS ${models}
-		COMMAND ${PYTHON_EXECUTABLE} ${LIBSTORED_SOURCE_DIR}/generator/generate.py -p ${LIBSTORED_GENERATE_TARGET}- ${models} ${LIBSTORED_GENERATE_DESTINATION}
+		COMMAND ${PYTHON_EXECUTABLE} ${LIBSTORED_SOURCE_DIR}/generator/generate.py -p
+			${LIBSTORED_GENERATE_TARGET}- ${models} ${LIBSTORED_GENERATE_DESTINATION}
 		COMMAND ${CMAKE_COMMAND} -E touch ${LIBSTORED_GENERATE_TARGET}-libstored.timestamp
 		COMMENT "Generate store from ${LIBSTORED_GENERATE_STORES}"
 		VERBATIM
 	)
-	add_custom_target(${LIBSTORED_GENERATE_TARGET}-libstored-generate
+	add_custom_target(
+		${LIBSTORED_GENERATE_TARGET}-libstored-generate
 		DEPENDS ${LIBSTORED_GENERATE_TARGET}-libstored.timestamp
 	)
 	add_dependencies(all-libstored-generate ${LIBSTORED_GENERATE_TARGET}-libstored-generate)
 
-	libstored_lib(TARGET ${LIBSTORED_GENERATE_TARGET}-libstored DESTINATION ${LIBSTORED_GENERATE_DESTINATION} STORES ${model_bases} ${LIBSTORED_GENERATE_FLAGS})
+	libstored_lib(
+		TARGET
+		${LIBSTORED_GENERATE_TARGET}-libstored
+		DESTINATION
+		${LIBSTORED_GENERATE_DESTINATION}
+		STORES
+		${model_bases}
+		${LIBSTORED_GENERATE_FLAGS}
+	)
 
-	add_dependencies(${LIBSTORED_GENERATE_TARGET}-libstored ${LIBSTORED_GENERATE_TARGET}-libstored-generate)
+	add_dependencies(
+		${LIBSTORED_GENERATE_TARGET}-libstored
+		${LIBSTORED_GENERATE_TARGET}-libstored-generate
+	)
 
 	get_target_property(target_type ${LIBSTORED_GENERATE_TARGET} TYPE)
 	if(target_type MATCHES "^(STATIC_LIBRARY|MODULE_LIBRARY|SHARED_LIBRARY|EXECUTABLE)$")
-		target_link_libraries(${LIBSTORED_GENERATE_TARGET} PUBLIC ${LIBSTORED_GENERATE_TARGET}-libstored)
+		target_link_libraries(
+			${LIBSTORED_GENERATE_TARGET} PUBLIC ${LIBSTORED_GENERATE_TARGET}-libstored
+		)
 	else()
-		add_dependencies(${LIBSTORED_GENERATE_TARGET} ${LIBSTORED_GENERATE_TARGET}-libstored)
+		add_dependencies(
+			${LIBSTORED_GENERATE_TARGET} ${LIBSTORED_GENERATE_TARGET}-libstored
+		)
 	endif()
 
 	get_target_property(target_cxx_standard ${LIBSTORED_GENERATE_TARGET} CXX_STANDARD)
 	if(NOT target_cxx_standard STREQUAL "target_cxx_standard-NOTFOUND")
-		set_target_properties(${LIBSTORED_GENERATE_TARGET}-libstored PROPERTIES CXX_STANDARD ${target_cxx_standard})
+		set_target_properties(
+			${LIBSTORED_GENERATE_TARGET}-libstored PROPERTIES CXX_STANDARD
+									  ${target_cxx_standard}
+		)
 	endif()
 
 	if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
 		if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT APPLE)
 			if(target_type STREQUAL "EXECUTABLE")
-				target_link_options(${LIBSTORED_GENERATE_TARGET} PUBLIC -Wl,--gc-sections)
+				target_link_options(
+					${LIBSTORED_GENERATE_TARGET} PUBLIC -Wl,--gc-sections
+				)
 			endif()
 		elseif(APPLE)
 			if(target_type STREQUAL "EXECUTABLE")
-				target_link_options(${LIBSTORED_GENERATE_TARGET} PUBLIC -Wl,-dead_strip)
+				target_link_options(
+					${LIBSTORED_GENERATE_TARGET} PUBLIC -Wl,-dead_strip
+				)
 			endif()
 		endif()
 	endif()
@@ -534,7 +567,9 @@ if(NOT RCC_EXE STREQUAL "RCC_EXE-NOTFOUND")
 				string(SUBSTRING "${f_abs}" 0 ${qrc_prefix_len} f_prefix)
 				if(f_prefix STREQUAL qrc_prefix)
 					string(SUBSTRING "${f_abs}" ${qrc_prefix_len} -1 f_alias)
-					set(qrc "${qrc}<file alias=\"${f_alias}\">${f_abs}</file>\n")
+					set(qrc
+					    "${qrc}<file alias=\"${f_alias}\">${f_abs}</file>\n"
+					)
 				else()
 					set(qrc "${qrc}<file>${f_abs}</file>\n")
 				endif()
@@ -545,7 +580,11 @@ if(NOT RCC_EXE STREQUAL "RCC_EXE-NOTFOUND")
 		set(qrc "${qrc}</qresource>\n</RCC>\n")
 
 		get_filename_component(rcc ${rcc} ABSOLUTE)
-		file(GENERATE OUTPUT ${rcc}.qrc CONTENT "${qrc}")
+		file(
+			GENERATE
+			OUTPUT ${rcc}.qrc
+			CONTENT "${qrc}"
+		)
 
 		add_custom_command(
 			OUTPUT ${rcc}
@@ -557,15 +596,22 @@ if(NOT RCC_EXE STREQUAL "RCC_EXE-NOTFOUND")
 				${LIBSTORED_SOURCE_DIR}/python/libstored/visu/qml/Libstored/Components/qmldir
 				${ARGN}
 				${rcc}.qrc
-			COMMAND ${RCC_EXE} $<SHELL_PATH:${LIBSTORED_SOURCE_DIR}/python/libstored/visu/visu.qrc> $<SHELL_PATH:${rcc}.qrc> -o $<SHELL_PATH:${rcc}>
+			COMMAND
+				${RCC_EXE}
+				$<SHELL_PATH:${LIBSTORED_SOURCE_DIR}/python/libstored/visu/visu.qrc>
+				$<SHELL_PATH:${rcc}.qrc> -o $<SHELL_PATH:${rcc}>
 			COMMENT "Generating ${target} visu"
 			VERBATIM
 		)
 
-		set_property(SOURCE ${rcc}.qrc ${LIBSTORED_SOURCE_DIR}/python/libstored/visu/visu.qrc
-			PROPERTY AUTORCC OFF)
-		add_custom_target(${target} DEPENDS ${rcc} SOURCES
-			${rcc}.qrc
-			${LIBSTORED_SOURCE_DIR}/python/libstored/visu/visu.qrc)
+		set_property(
+			SOURCE ${rcc}.qrc ${LIBSTORED_SOURCE_DIR}/python/libstored/visu/visu.qrc
+			PROPERTY AUTORCC OFF
+		)
+		add_custom_target(
+			${target}
+			DEPENDS ${rcc}
+			SOURCES ${rcc}.qrc ${LIBSTORED_SOURCE_DIR}/python/libstored/visu/visu.qrc
+		)
 	endfunction()
 endif()
