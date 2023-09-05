@@ -78,12 +78,12 @@ if(LIBSTORED_VENV)
 		execute_process(
 			COMMAND ${CMAKE_COMMAND} -E env --unset=CC --unset=CXX ${PROJECT_SOURCE_DIR}/dist/common/venv.sh ${venv_check}
 			RESULT_VARIABLE ret)
-		list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_SOURCE_DIR}/dist/.venv/bin")
+		list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_SOURCE_DIR}/dist/venv/bin")
 	elseif(CMAKE_HOST_WIN32)
 		execute_process(
 			COMMAND ${CMAKE_COMMAND} -E env --unset=CC --unset=CXX ${PROJECT_SOURCE_DIR}/dist/win32/venv.cmd check
 			RESULT_VARIABLE ret)
-		list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_SOURCE_DIR}/dist/.venv/Scripts")
+		list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_SOURCE_DIR}/dist/venv/Scripts")
 	else()
 		message(FATAL_ERROR "Don't know how to create a venv.")
 	endif()

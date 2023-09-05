@@ -237,7 +237,7 @@ Example
 
 The host tools to debug your application are written in Python, based on
 PySide6. The ``libstored`` wheel file from the ``python`` directory is by
-default installed in the venv, located in ``dist/.venv``.
+default installed in the venv, located in ``dist/venv``.
 
 To get a grasp how debugging feels like, try the following.
 
@@ -247,8 +247,8 @@ To get a grasp how debugging feels like, try the following.
 3. Run ``examples/zmqserver/zmqserver``. This starts an application with a
    store with all kinds of object, and provides a ZeroMQ server interface for
    debugging.
-4. Activate the Python venv by running ``dist\.venv\Scripts\activate.bat`` on
-   Windows, or ``source dist/.venv/bin/activate`` on Linux or macOS.
+4. Activate the Python venv by running ``dist\venv\Scripts\activate.bat`` on
+   Windows, or ``source dist/venv/bin/activate`` on Linux or macOS.
 5. Run ``python3 -m libstored.gui``. This GUI connects to the ``zmqserver``
    application via ZeroMQ.
 6. The GUI window will pop up and shows the objects of the ``zmqserver``
