@@ -51,6 +51,13 @@ if(NOT PYTHON_EXECUTABLE)
 	endif()
 endif()
 
+if(WIN32)
+	file(TO_NATIVE_PATH "${LIBSTORED_SOURCE_DIR}/python" LIBSTORED_PYTHONPATH)
+	set(LIBSTORED_PYTHONPATH ${LIBSTORED_PYTHONPATH};$ENV{PYTHONPATH})
+else()
+	set(LIBSTORED_PYTHONPATH ${LIBSTORED_SOURCE_DIR}/python:$ENV{PYTHONPATH})
+endif()
+
 include(${LIBSTORED_SOURCE_DIR}/version/CMakeLists.txt)
 
 # A dummy target that depends on all ...-generated targets.  May be handy in case of generating
@@ -265,7 +272,7 @@ function(libstored_lib libprefix libpath)
 			message(STATUS "Enabled clang-tidy for ${LIBSTORED_LIB_TARGET}")
 
 			set(DO_CLANG_TIDY
-			    "${CLANG_TIDY_EXE}" "--config=${LIBSTORED_SOURCE_DIR}/.clang-tidy"
+			    "${CLANG_TIDY_EXE}" "--config-file=${LIBSTORED_SOURCE_DIR}/.clang-tidy"
 			    "--extra-arg=-I${LIBSTORED_SOURCE_DIR}/include"
 			    "--extra-arg=-I${LIBSTORED_LIB_DESTINATION}/include"
 			)
