@@ -17,6 +17,6 @@ Additionally,
   without using ``build.cmd``.
 - ``venv.cmd`` script to install and activate the Python venv. It is managed
   automatically during the build.  To get access to the Python environment,
-  call ``..\.venv\Scripts\activate.bat``.
+  call ``..\venv\Scripts\activate.bat``.
 
 .. _Chocolatey: https://chocolatey.org/

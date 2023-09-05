@@ -15,7 +15,7 @@ function gotErr {
 }
 
 dir="$( cd "$(dirname "${BASH_SOURCE[0]}")"/..; pwd -P )"
-venv_dir="${dir}/.venv"
+venv_dir="${dir}/venv"
 
 in_venv=0
 python3 "${dir}/common/check_venv.py" || in_venv=1

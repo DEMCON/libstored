@@ -12,7 +12,7 @@ set "here=%~dp0"
 
 call %here%env.cmd > NUL
 
-set "venv_dir=%here%..\.venv"
+set "venv_dir=%here%..\venv"
 set in_venv=0
 python "%here%..\common\check_venv.py"
 if errorlevel 1 set in_venv=1
