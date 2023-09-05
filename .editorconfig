@@ -8,7 +8,7 @@ indent_size = 8
 indent_style = tab
 trim_trailing_whitespace = true
 
-[*.{h,c,cpp,h.tmpl,c.tmpl,cpp.tmpl,cmake,cmake.in}]
+[*.{h,c,cpp,h.tmpl,c.tmpl,cpp.tmpl,cmake,cmake.in,cmake.tmpl}]
 max_line_length = 100
 
 [CMakeLists.txt]
