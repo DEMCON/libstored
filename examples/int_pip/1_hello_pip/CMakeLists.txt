@@ -4,11 +4,14 @@
 cmake_minimum_required(VERSION 3.5)
 project(1_hello_pip)
 
-# If you want to have ZMQ, heatshrink, Zth, and Qt, you have to do a find_package() yourself, and
-# set LIBSTORED_HAVE_LIBZMQ (and friends) to ON. Refer to the list of options() at the top of of
+# Default integration of ZeroMQ, Heathshrink, Zth, Qt5 and Qt6 can be enabled by providing these as
+# COMPONENTS to find_package().
+#
+# If you want to have more control over these libraries, you have to do a find_package() yourself,
+# and set LIBSTORED_HAVE_LIBZMQ (and friends) to ON. Refer to the list of options() at the top of of
 # cmake/libstored.cmake for details.
 
-find_package(Libstored REQUIRED)
+find_package(Libstored REQUIRED COMPONENTS Heatshrink)
 
 # Now, just continue with defining your application.
 set(HELLO_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../1_hello)
