@@ -391,9 +391,14 @@ function(libstored_lib libprefix libpath)
 		install(DIRECTORY ${LIBSTORED_LIB_DESTINATION}/doc/
 			DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored
 		)
-		install(EXPORT ${LIBSTORED_LIB_TARGET}Store
-			DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake
-		)
+
+		if(WIN32)
+			install(EXPORT ${LIBSTORED_LIB_TARGET}Store DESTINATION CMake)
+		else()
+			install(EXPORT ${LIBSTORED_LIB_TARGET}Store
+				DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake
+			)
+		endif()
 	endif()
 endfunction()
 
@@ -645,4 +650,42 @@ if(NOT RCC_EXE STREQUAL "RCC_EXE-NOTFOUND")
 			SOURCES ${rcc}.qrc ${LIBSTORED_SOURCE_DIR}/python/libstored/visu/visu.qrc
 		)
 	endfunction()
+endif()
+
+if(LIBSTORED_INSTALL_STORE_LIBS)
+	install(
+		DIRECTORY ${LIBSTORED_SOURCE_DIR}/include/libstored/
+		DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libstored
+		FILES_MATCHING
+		PATTERN "*.h"
+	)
+	install(FILES ${LIBSTORED_SOURCE_DIR}/include/stored
+		      ${LIBSTORED_SOURCE_DIR}/include/stored.h
+		DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+	)
+
+	set(LIBSTORED_CONFIG_FILE ${LIBSTORED_SOURCE_DIR}/include/stored_config.h)
+	foreach(d IN LISTS LIBSTORED_PREPEND_INCLUDE_DIRECTORIES)
+		if(EXISTS ${d}/stored_config.h)
+			set(LIBSTORED_CONFIG_FILE ${d}/stored_config.h)
+			break()
+		endif()
+	endforeach()
+	install(FILES ${LIBSTORED_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+	if(WIN32)
+		set(LIBSTORED_STORES_CMAKE_PATH CMake)
+	else()
+		set(LIBSTORED_STORES_CMAKE_PATH ${CMAKE_INSTALL_DATAROOTDIR}/cmake/LibstoredStores)
+	endif()
+
+	configure_package_config_file(
+		"${LIBSTORED_SOURCE_DIR}/cmake/LibstoredStoresConfig.cmake.in"
+		"${PROJECT_BINARY_DIR}/LibstoredStoresConfig.cmake"
+		INSTALL_DESTINATION ${LIBSTORED_STORES_CMAKE_PATH}
+	)
+
+	install(FILES ${PROJECT_BINARY_DIR}/LibstoredStoresConfig.cmake
+		DESTINATION ${LIBSTORED_STORES_CMAKE_PATH}
+	)
 endif()

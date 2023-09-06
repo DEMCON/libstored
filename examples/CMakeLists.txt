@@ -66,7 +66,7 @@ if(LIBSTORED_HAVE_QT AND LIBSTORED_HAVE_LIBZMQ)
 	add_subdirectory(qt)
 endif()
 
-if(LIBSTORED_PYLIBSTORED)
+if(LIBSTORED_PYLIBSTORED AND TARGET pylibstored-install)
 	add_subdirectory(int_pip)
 endif()
 
