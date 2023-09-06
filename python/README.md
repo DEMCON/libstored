@@ -1,15 +1,31 @@
-﻿# (py)libstored -- Embedded Debugger protocol implementation for libstored
+﻿# (py)libstored -- Store generator and Embedded Debugger client
 
-This package contains the client implementation of the Embedded Debugger
-protocol (version 2), and a few helper classes and modules to debug your
-application. See [libstored](https://github.com/DEMCON/libstored) how to create
-an application that is to be debugged using these clients.
+[libstored](https://github.com/DEMCON/libstored) is a generator for a C++ class
+(store) with your application's variables, and a tool set to synchronize
+updates between processes (including FPGA), and debug it remotely. Refer to the
+[documentation](https://demcon.github.io/libstored/doc/py.html) for details and
+examples.
+
+This Python package contains:
+
+- The generator itself.
+- The client implementation of the Embedded Debugger protocol (version 2), and
+  a few helper classes and modules to debug your application.
 
 The synchronization protocol of libstored is not available in python (yet?).
 
-See the [documentation](https://demcon.github.io/libstored/doc/py.html).
+## Generator
 
-## Interesting modules
+In short, to generate the store, run `python3 -m libstored.cmake`, which
+produces a `FindLibstored.cmake` for you. Then, call `find_package(Libstored)`
+in your `CMakeLists.txt`. Afterwards, the CMake function `libstored_generate()`
+can be used to create the store (C++ header/source files, VHDL package,
+documentation) for you and build it as a static library.
+
+This library includes the Debugger, which provides the server side of the
+Debugging client below.
+
+## Debugging client
 
 Execute these modules like `python3 -m libstored.gui`, optionally with `-h`
 argument to get some more help:
@@ -29,7 +45,7 @@ argument to get some more help:
   samples to CSV.  It is equivalent to passing `-f` to `libstored.gui`, but
   this tool allows easier automation of a specific set of samples.
 
-## Interesting classes
+### Interesting classes
 
 The following classes are particularly interesting:
 

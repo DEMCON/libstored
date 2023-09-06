@@ -42,6 +42,9 @@ set(package_data_
     cmake/FindLibstored.cmake.tmpl
     cmake/LibstoredStoresConfig.cmake.in
     cmake/libstored.cmake
+    dist/common/FindHeatshrink.cmake
+    dist/common/FindZeroMQ.cmake
+    dist/common/FindZth.cmake
     doc/store.csv.tmpl
     doc/store.py.tmpl
     doc/store.rtf.tmpl

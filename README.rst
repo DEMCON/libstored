@@ -11,7 +11,8 @@ TL;DR
 -----
 
 What is it?
-```````````````
+```````````
+
 A generator for a C++ class (store) with your application's variables, and a
 tool set to synchronize updates between processes (including FPGA), and debug
 it remotely.  See also the presentation_.
@@ -437,46 +438,27 @@ generate stuff for you.  This is how to integrate it in your project:
 1. Add libstored to your source repository, for example as a submodule.
 2. Run ``dist/<platform>/bootstrap`` in the libstored directory once to install
    all dependencies.
-3. Include libstored in your cmake project.
+3. Include libstored in your cmake project, such as:
 
-   * By using ``add_directory()`` to completely build libstored:
+   .. code:: cmake
 
-     .. code:: cmake
+      list(APPEND CMAKE_MODULE_PATH extern/libstored/cmake)
+      include(libstored)
 
-        set(LIBSTORED_EXAMPLES OFF CACHE BOOL "Disable libstored examples" FORCE)
-        set(LIBSTORED_TESTS OFF CACHE BOOL "Disable libstored tests" FORCE)
-        set(LIBSTORED_DOCUMENTATION OFF CACHE BOOL "Disable libstored documentation" FORCE)
-        add_subdirectory(libstored)
+   Before including ``libstored``, you can specify several options (see
+   ``cmake/libstored.cmake``), such as enabling ASan or clang-tidy.
+   Especially the library dependencies (ZeroMQ, Zth, Qt, heatshrink) are
+   relevant to consider.  For example, to enable ZeroMQ:
 
-     ZeroMQ support is by default enabled, when the target platform supports it.
-     To disable it, add the following line before ``add_subdirectory()`` above:
+   .. code:: cmake
 
-     .. code:: cmake
+      list(APPEND CMAKE_MODULE_PATH extern/libstored/dist/common)
+      find_package(ZeroMQ REQUIRED)
+      set(LIBSTORED_HAVE_ZMQ ON)
 
-        set(LIBSTORED_HAVE_LIBZMQ OFF CACHE BOOL "Disable ZeroMQ" FORCE)
-
-     Zth_ support is by default disabled. When enabled, it will build Zth from
-     source when not found on your system. Using gcc is required for Zth. To
-     enable it, add:
-
-     .. code:: cmake
-
-        set(LIBSTORED_HAVE_ZTH ON CACHE BOOL "Enable Zth" FORCE)
-
-   * Alternatively, use ``include()`` to only include what is required to build
-     stores.  This method does not build the python client, documentation,
-     tests, and examples, as the ``add_subdirectory()`` would do.
-
-     .. code:: cmake
-
-        list(APPEND CMAKE_MODULE_PATH extern/libstored/cmake)
-        include(libstored)
-
-     Before including ``libstored``, you can specify similar options as for
-     ``add_subdirectory()``, but the defaults are different. By default, it
-     does not enable ASan, clang-tidy, and ZMQ, etc., where
-     ``add_subdirectory()`` would try to do an auto-detect.  See also
-     ``examples/integrate``.
+   For Windows, Linux and macOS, the provided package in the ``common``
+   directory tries to find ZeroMQ on your system, or it is built from source.
+   For other targets, you might tweak this approach.
 
 4. Optional: install ``dist/common/st.vim`` in ``$HOME/.vim/syntax`` to have
    proper syntax highlighting in vim.
@@ -513,6 +495,15 @@ generate stuff for you.  This is how to integrate it in your project:
    include this file in another cmake project, you import all generated
    libraries as static libraries. See the ``examples/installed`` example how
    to do this.
+
+Alternatively, you could install libstored from PyPI instead of the submodule
+approach.  In that case:
+
+1. Do someting like ``python3 -m pip install libstored``.
+2. Run ``python3 -m libstored.cmake`` to generate a ``FindLibstored.cmake``.
+3. In your project, call ``find_package(Libstored)``, while having the
+   generated ``FindLibstored.cmake`` in your ``CMAKE_MODULE_PATH``.
+4. Continue with step 5 of the submodule-approach above.
 
 Check out the examples of libstored, which are all independent applications
 with their own generated store.
