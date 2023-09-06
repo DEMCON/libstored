@@ -375,6 +375,7 @@ if(CPPCHECK_CMD)
 			src
 #			--check-config
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		COMMENT "Running cppcheck..."
 		VERBATIM
 	)
 
