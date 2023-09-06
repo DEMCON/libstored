@@ -7,11 +7,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-import logging
 import argparse
-import jinja2
-import re
 import hashlib
+import jinja2
+import logging
+import re
 import struct
 from functools import reduce
 
@@ -21,10 +21,15 @@ import os.path
 from textx import metamodel_from_file
 from textx.export import metamodel_export, model_export
 
-from dsl import types
+from .dsl import types
 
 generator_dir = os.path.dirname(__file__)
-libstored_dir = os.path.abspath(os.path.join(generator_dir, '..'))
+
+# We are either installed by pip, so the sources are at generator_dir/../data,
+# or we are just running from the git repo, which is at generator_dir/../../..
+libstored_dir = os.path.normpath(os.path.abspath(os.path.join(generator_dir, '..', 'data')))
+if not os.path.isdir(libstored_dir) or os.path.isfile(os.path.join(libstored_dir, 'ignore')):
+    libstored_dir = os.path.normpath(os.path.abspath(os.path.join(generator_dir, '..', '..', '..')))
 
 logging.basicConfig(format='       %(message)s', level=logging.DEBUG)
 logger = logging.getLogger('libstored')
@@ -407,7 +412,7 @@ def generate_cmake(libprefix, model_files, output_dir):
             libprefix=libprefix,
             ))
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description='Store generator')
     parser.add_argument('-p', type=str, help='libstored prefix for cmake library target')
     parser.add_argument('store_file', type=str, nargs='+', help='store description to parse')
@@ -420,3 +425,5 @@ if __name__ == '__main__':
 
     generate_cmake(args.p, args.store_file, args.output_dir)
 
+if __name__ == '__main__':
+    main()

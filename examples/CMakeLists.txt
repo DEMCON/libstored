@@ -66,6 +66,10 @@ if(LIBSTORED_HAVE_QT AND LIBSTORED_HAVE_LIBZMQ)
 	add_subdirectory(qt)
 endif()
 
+if(LIBSTORED_PYLIBSTORED)
+	add_subdirectory(int_pip)
+endif()
+
 list(FIND CMAKE_CXX_COMPILE_FEATURES "cxx_std_17" _cxx17)
 if(${_cxx17} GREATER -1)
 	if(NOT CMAKE_CXX_STANDARD)
