@@ -122,8 +122,22 @@ endif()
 
 add_subdirectory(libstored/gui)
 
-file(GLOB pylibstored_wheel CONFIGURE_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/libstored*.whl)
-file(GLOB pylibstored_tar CONFIGURE_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/libstored*.tar.gz)
+macro(find_latest file pattern)
+	file(GLOB ${file}_ALL CONFIGURE_DEPENDS ${pattern})
+
+	if(NOT "${${file}_ALL}" STREQUAL "")
+		# This is an alphabetical sort, not really based on the version.  This could lead to
+		# errors if you rebuild everything while the version changes.
+		list(SORT ${file}_ALL)
+		list(REVERSE ${file}_ALL)
+		list(GET ${file}_ALL 0 ${file})
+	else()
+		set(${file})
+	endif()
+endmacro()
+
+find_latest(pylibstored_wheel ${CMAKE_CURRENT_BINARY_DIR}/libstored*.whl)
+find_latest(pylibstored_tar ${CMAKE_CURRENT_BINARY_DIR}/libstored*.tar.gz)
 
 set(_wheel_deps
     ${pylibstored_src}
@@ -139,7 +153,9 @@ if(LIBSTORED_EXAMPLES)
 	set(_wheel_deps ${_wheel_deps} visu-example)
 endif()
 
-if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.17")
+if("${pylibstored_wheel_ALL}${pylibstored_tar_ALL}" STREQUAL "")
+	set(cmake_rm echo "No old whl files found")
+elseif(CMAKE_VERSION VERSION_GREATER_EQUAL "3.17")
 	set(cmake_rm rm)
 else()
 	set(cmake_rm remove)
@@ -149,7 +165,7 @@ add_custom_command(
 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/.timestamp
 	# BYPRODUCTS ${pylibstored_wheel} ${pylibstored_tar}
 	DEPENDS ${_wheel_deps}
-	COMMAND ${CMAKE_COMMAND} -E ${cmake_rm} -f ${CMAKE_CURRENT_BINARY_DIR}/*.whl
+	COMMAND ${CMAKE_COMMAND} -E ${cmake_rm} -f ${pylibstored_wheel_ALL} ${pylibstored_tar_ALL}
 	COMMAND ${PYTHON_EXECUTABLE} -m build -o ${CMAKE_CURRENT_BINARY_DIR}
 		${CMAKE_CURRENT_SOURCE_DIR}
 	COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/.timestamp
