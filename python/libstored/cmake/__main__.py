@@ -18,21 +18,12 @@ from ..version import __version__
 
 logger = logging.getLogger('cmake')
 
-def find_tmpl(paths, file):
-    if isinstance(file, list):
-        file = os.path.join(*file)
-
-    for p in paths:
-        if isinstance(p, list):
-            p = os.path.normpath(os.path.join(*p))
-
-        f = os.path.normpath(os.path.join(p, file))
-        logger.debug('Trying %s...', f)
-
-        if os.path.isfile(f):
-            return (p, os.path.normpath(f))
-
-    return None
+# We are either installed by pip, so the sources are at here/../data,
+# or we are just running from the git repo, which is at here/../../..
+here = os.path.dirname(__file__)
+libstored_dir = os.path.normpath(os.path.abspath(os.path.join(here, '..', 'data')))
+if not os.path.isdir(libstored_dir) or os.path.isfile(os.path.join(libstored_dir, 'ignore')):
+    libstored_dir = os.path.normpath(os.path.abspath(os.path.join(here, '..', '..', '..')))
 
 def escapebs(s):
     return re.sub(r'\\', r'\\\\', s)
@@ -41,31 +32,21 @@ def escapestr(s):
     return re.sub(r'([\\"])', r'\\\1', s)
 
 def generate_cmake(filename, defines):
-    here = os.path.dirname(__file__)
-
-    tmpl_name = 'FindLibstored.cmake.tmpl'
-    p = find_tmpl([[here, '..', 'src'], [here, '..', '..', '..']], ['cmake', tmpl_name])
-    if p is None:
-        logger.error('Cannot find template')
-        sys.exit(1)
-
-    logger.info('Using %s as template', p[1])
-
     jenv = jinja2.Environment(
             loader = jinja2.FileSystemLoader(
-                os.path.join(p[0], 'cmake')
+                os.path.join(libstored_dir, 'cmake')
                 ))
 
     jenv.filters['escapebs'] = escapebs
     jenv.filters['escapestr'] = escapestr
 
-    tmpl = jenv.get_template(tmpl_name)
+    tmpl = jenv.get_template('FindLibstored.cmake.tmpl')
 
     logger.info('Writing to %s...', filename)
     with open(filename, 'w') as f:
         f.write(tmpl.render(
             python_executable=sys.executable,
-            libstored_dir=p[0],
+            libstored_dir=libstored_dir,
             defines=defines,
             ))
 

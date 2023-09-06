@@ -22,9 +22,20 @@ option(LIBSTORED_CLANG_TIDY "Run clang-tidy" OFF)
 option(LIBSTORED_GCC_ANALYZER "Run GCC's analyzer" OFF)
 
 # By default, only depend on other libraries when requested.
+
+# When enabled, make sure there is a heatshrink CMake library target, or the staic library (with
+# headers) is available in the normal search paths.
 option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" OFF)
+
+# When enabled, a libzmq CMake static (imported) library target must exist, based on PkgConfig.
+# Alternatively, ZeroMQ is built from source, which also provides the libzmq target.
 option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" OFF)
+
+# When enabled, a libzth CMake library target must exist. Either via find_package(Zth), or built
+# from source.
 option(LIBSTORED_HAVE_ZTH "Use Zth" OFF)
+
+# When enabled, the Qt5 or Qt6 namespace must exist, created via find_package().
 option(LIBSTORED_HAVE_QT "Use Qt" OFF)
 
 # ##################################################################################################
@@ -51,11 +62,22 @@ if(NOT PYTHON_EXECUTABLE)
 	endif()
 endif()
 
-if(WIN32)
+if(NOT EXISTS ${LIBSTORED_SOURCE_DIR}/python)
+	# Execute from python package. PYTHONPATH is already fine.
+	set(LIBSTORED_PYTHONPATH $ENV{PYTHONPATH})
+elseif(WIN32)
 	file(TO_NATIVE_PATH "${LIBSTORED_SOURCE_DIR}/python" LIBSTORED_PYTHONPATH)
 	set(LIBSTORED_PYTHONPATH ${LIBSTORED_PYTHONPATH};$ENV{PYTHONPATH})
 else()
 	set(LIBSTORED_PYTHONPATH ${LIBSTORED_SOURCE_DIR}/python:$ENV{PYTHONPATH})
+endif()
+
+if(EXISTS ${LIBSTORED_SOURCE_DIR}/python)
+	# Execute from git repo.
+	set(LIBSTORED_GENERATOR_DIR "${LIBSTORED_SOURCE_DIR}/python/libstored/generator")
+else()
+	# Execute from python package.
+	set(LIBSTORED_GENERATOR_DIR "${LIBSTORED_SOURCE_DIR}/../generator")
 endif()
 
 include(${LIBSTORED_SOURCE_DIR}/version/CMakeLists.txt)
@@ -473,12 +495,14 @@ function(libstored_generate target) # add all other models as varargs
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store.vhd.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store_pkg.vhd.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/CMakeLists.txt.tmpl
-		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/generate.py
-		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/dsl/grammar.tx
-		DEPENDS ${LIBSTORED_SOURCE_DIR}/generator/dsl/types.py
+		DEPENDS ${LIBSTORED_GENERATOR_DIR}/__main__.py
+		DEPENDS ${LIBSTORED_GENERATOR_DIR}/dsl/grammar.tx
+		DEPENDS ${LIBSTORED_GENERATOR_DIR}/dsl/types.py
 		DEPENDS ${models}
-		COMMAND ${PYTHON_EXECUTABLE} ${LIBSTORED_SOURCE_DIR}/generator/generate.py -p
-			${LIBSTORED_GENERATE_TARGET}- ${models} ${LIBSTORED_GENERATE_DESTINATION}
+		COMMAND
+			${CMAKE_COMMAND} -E env PYTHONPATH=${LIBSTORED_PYTHONPATH}
+			${PYTHON_EXECUTABLE} -m libstored.generator -p ${LIBSTORED_GENERATE_TARGET}-
+			${models} ${LIBSTORED_GENERATE_DESTINATION}
 		COMMAND ${CMAKE_COMMAND} -E touch ${LIBSTORED_GENERATE_TARGET}-libstored.timestamp
 		COMMENT "Generate store from ${LIBSTORED_GENERATE_STORES}"
 		VERBATIM

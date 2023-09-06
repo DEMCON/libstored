@@ -1,0 +1,3 @@
+include libstored/generator/dsl/grammar.tx
+graft libstored/data
+exclude libstored/data/ignore
