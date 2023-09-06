@@ -4,9 +4,7 @@ include(GNUInstallDirs)
 
 if(NOT TARGET libzmq)
 	if(WIN32)
-		include(${CMAKE_CURRENT_LIST_DIR}/../../../CMake/ZeroMQTargets.cmake OPTIONAL
-			RESULT_VARIABLE _zmq
-		)
+		include(${CMAKE_CURRENT_LIST_DIR}/ZeroMQTargets.cmake OPTIONAL RESULT_VARIABLE _zmq)
 	else()
 		include(
 			${CMAKE_CURRENT_LIST_DIR}/../../../${CMAKE_INSTALL_LIBDIR}/cmake/ZeroMQ/ZeroMQTargets.cmake
@@ -17,7 +15,7 @@ if(NOT TARGET libzmq)
 
 	if(_zmq STREQUAL "NOTFOUND" AND NOT CMAKE_CROSSCOMPILING)
 		# Win32 always builds from source. In case the include file was not found, we are on
-		# Linux or macOS, which may have it installed on the system. This scan be found
+		# Linux or macOS, which may have it installed on the system. This can be found
 		# using pkg_config. Try that.
 		set(_zmq "@ZeroMQ_LINK_LIBRARIES@")
 		if(_zmq)
@@ -37,9 +35,15 @@ if(NOT TARGET libzmq)
 	endif()
 endif()
 
-include(${CMAKE_CURRENT_LIST_DIR}/../../libstored/cmake/libstored.cmake OPTIONAL)
+if(WIN32)
+	set(LIBSTORED_STORES_CMAKE_PATH ${CMAKE_CURRENT_LIST_DIR})
+else()
+	set(LIBSTORED_STORES_CMAKE_PATH ${CMAKE_CURRENT_LIST_DIR}/../../libstored/cmake)
+endif()
 
-file(GLOB _stores ${CMAKE_CURRENT_LIST_DIR}/../../libstored/cmake/*Store.cmake)
+include(${LIBSTORED_STORES_CMAKE_PATH}/libstored.cmake OPTIONAL)
+
+file(GLOB _stores ${LIBSTORED_STORES_CMAKE_PATH}/*Store.cmake)
 foreach(f IN LISTS _stores)
 	include(${f})
 endforeach()

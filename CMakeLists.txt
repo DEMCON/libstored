@@ -11,23 +11,23 @@ project(libstored)
 cmake_policy(VERSION 3.5)
 
 if(NOT CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
+	set(CMAKE_BUILD_TYPE
+	    Debug
+	    CACHE STRING "Build type" FORCE
+	)
 endif()
 
 message(STATUS "CMAKE_BUILD_TYPE is ${CMAKE_BUILD_TYPE}")
 
 if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
-	message(FATAL_ERROR "CMake generation is not allowed within the source directory! \
-		Remove the CMakeCache.txt file and try again from another folder, e.g.: \
-		\
-		  rm CMakeCache.txt \
-		  mkdir build \
-		  cd build \
-		  cmake ..")
+	message(FATAL_ERROR "CMake generation is not allowed within the source directory.")
 endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-	set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/deploy" CACHE PATH "Override default install path" FORCE)
+	set(CMAKE_INSTALL_PREFIX
+	    "${CMAKE_CURRENT_BINARY_DIR}/deploy"
+	    CACHE PATH "Override default install path" FORCE
+	)
 endif()
 
 message(STATUS "Install prefix set to ${CMAKE_INSTALL_PREFIX}")
@@ -55,10 +55,9 @@ option(LIBSTORED_COVERAGE "Enable code coverage instrumentation" OFF)
 option(LIBSTORED_PYLIBSTORED "Build python libstored package" ON)
 
 if(CMAKE_HOST_WIN32 OR NOT LIBSTORED_PYLIBSTORED)
-	# The documentation needs wavedrom (via sphinx), but sphinxcontrib-wavedrom
-	# needs cairo.  In turn, that package needs libcairo-2.dll (64-bit,
-	# matching python's word size), which cannot be installed automatically by
-	# bootstrap.cmd. So, by default, leave it out.
+	# The documentation needs wavedrom (via sphinx), but sphinxcontrib-wavedrom needs cairo.  In
+	# turn, that package needs libcairo-2.dll (64-bit, matching python's word size), which
+	# cannot be installed automatically by bootstrap.cmd. So, by default, leave it out.
 	option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" OFF)
 else()
 	option(LIBSTORED_DOCUMENTATION "Create the HTML based API documentation" ON)
@@ -73,16 +72,19 @@ if(LIBSTORED_VENV)
 		else()
 			set(venv_check "check-minimal")
 		endif()
-		# Force CC and CXX to default, in case we are cross-compiling
-		# and compiling wheels for the venv...
+		# Force CC and CXX to default, in case we are cross-compiling and compiling wheels
+		# for the venv...
 		execute_process(
-			COMMAND ${CMAKE_COMMAND} -E env --unset=CC --unset=CXX ${PROJECT_SOURCE_DIR}/dist/common/venv.sh ${venv_check}
-			RESULT_VARIABLE ret)
+			COMMAND ${CMAKE_COMMAND} -E env --unset=CC --unset=CXX
+				${PROJECT_SOURCE_DIR}/dist/common/venv.sh ${venv_check}
+			RESULT_VARIABLE ret
+		)
 		list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_SOURCE_DIR}/dist/venv/bin")
 	elseif(CMAKE_HOST_WIN32)
 		execute_process(
-			COMMAND ${CMAKE_COMMAND} -E env --unset=CC --unset=CXX ${PROJECT_SOURCE_DIR}/dist/win32/venv.cmd check
-			RESULT_VARIABLE ret)
+			COMMAND ${CMAKE_COMMAND} -E env --unset=CC --unset=CXX
+				${PROJECT_SOURCE_DIR}/dist/win32/venv.cmd check RESULT_VARIABLE ret
+		)
 		list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_SOURCE_DIR}/dist/venv/Scripts")
 	else()
 		message(FATAL_ERROR "Don't know how to create a venv.")
@@ -119,13 +121,12 @@ endif()
 
 option(LIBSTORED_ENABLE_ASAN "Build with Address Sanitizer" ${LIBSTORED_ENABLE_ASAN_DEFAULT})
 option(LIBSTORED_ENABLE_LSAN "Build with Leak Sanitizer" ${LIBSTORED_ENABLE_LSAN_DEFAULT})
-option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer" ${LIBSTORED_ENABLE_UBSAN_DEFAULT})
+option(LIBSTORED_ENABLE_UBSAN "Build with Undefined Behavior Sanitizer"
+       ${LIBSTORED_ENABLE_UBSAN_DEFAULT}
+)
 
 option(LIBSTORED_DISABLE_EXCEPTIONS "Disable exception support" OFF)
 option(LIBSTORED_DISABLE_RTTI "Disable run-time type information support" OFF)
-
-# find_package(Heatshrink) may do install(...EXPORT libstored).
-set(LIBSTORED_DO_INSTALL_LIBSTORED OFF)
 
 option(LIBSTORED_HAVE_HEATSHRINK "Use heatshrink" ON)
 
@@ -148,12 +149,20 @@ endif()
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10")
 	cmake_policy(SET CMP0071 NEW)
 
-	find_package(Qt6 COMPONENTS Core QUIET)
+	find_package(
+		Qt6
+		COMPONENTS Core
+		QUIET
+	)
 	if(Qt6_FOUND)
 		set(LIBSTORED_FOUND_QT ON)
 	else()
 		# Fallback to Qt5
-		find_package(Qt5 COMPONENTS Core QUIET)
+		find_package(
+			Qt5
+			COMPONENTS Core
+			QUIET
+		)
 		if(Qt5_FOUND)
 			set(LIBSTORED_FOUND_QT ON)
 		endif()
@@ -179,20 +188,29 @@ endif()
 set(LIBSTORED_CLANG_TIDY_DEFAULT OFF)
 
 if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
-	find_program(CLANG_TIDY_EXE NAMES "clang-tidy" DOC "Path to clang-tidy executable")
-	if(	# We must have clang-tidy.
-		CLANG_TIDY_EXE AND
-		# We must compile for C++11 or later...
-		(NOT CMAKE_CXX_STANDARD OR NOT CMAKE_CXX_STANDARD EQUAL 98) AND
-		# ...except when running in Windows, which only supports C++14 or later.
-		(NOT WIN32 OR NOT CMAKE_CXX_STANDARD EQUAL 11) AND
-		# ...or Zth is used, which is not compatible with the MSVC headers, which are used by clang-tidy.
-		(NOT WIN32 OR NOT LIBSTORED_HAVE_ZTH) AND
-		# ...and somehow mingw builds don't work properly on newer versions of clang-tidy.
-		(NOT MINGW)
+	find_program(
+		CLANG_TIDY_EXE
+		NAMES "clang-tidy"
+		DOC "Path to clang-tidy executable"
+	)
+	if(# We must have clang-tidy.
+	   CLANG_TIDY_EXE
+	   AND # We must compile for C++11 or later...
+	       (NOT CMAKE_CXX_STANDARD OR NOT CMAKE_CXX_STANDARD EQUAL 98)
+	   AND # ...except when running in Windows, which only supports C++14 or later.
+	       (NOT WIN32 OR NOT CMAKE_CXX_STANDARD EQUAL 11)
+	   AND # ...or Zth is used, which is not compatible with the MSVC headers, which are used by
+	       # clang-tidy.
+	       (NOT WIN32 OR NOT LIBSTORED_HAVE_ZTH)
+	   AND # ...and somehow mingw builds don't work properly on newer versions of clang-tidy.
+	       (NOT MINGW)
 	)
 		# It seems that if clang is not installed, clang-tidy doesn't work properly.
-		find_program(CLANG_EXE NAMES "clang" DOC "Path to clang executable")
+		find_program(
+			CLANG_EXE
+			NAMES "clang"
+			DOC "Path to clang executable"
+		)
 		if(CLANG_EXE AND LIBSTORED_DEV)
 			set(LIBSTORED_CLANG_TIDY_DEFAULT ${LIBSTORED_DEV_OPTION})
 		endif()
@@ -203,11 +221,12 @@ option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ${LIBSTORED_CLANG_TIDY_DEFAULT})
 
 set(LIBSTORED_GCC_ANALYZER_DEFAULT OFF)
 
-if(	# Need gcc for this...
-	CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND
-	# ...starting from version 10, but let's start from 13, as it gets
-	# better then, although there is officially no support for C++ yet.
-	CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "13")
+if(# Need gcc for this...
+   CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
+   AND # ...starting from version 10, but let's start from 13, as it gets
+       # better then, although there is officially no support for C++ yet.
+       CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "13"
+)
 
 	set(LIBSTORED_GCC_ANALYZER_DEFAULT ${LIBSTORED_DEV_OPTION})
 endif()
@@ -227,7 +246,10 @@ else()
 	message(STATUS "Using python ${PYTHON_EXECUTABLE}")
 endif()
 
-set(LIBSTORED_SOURCE_DIR ${PROJECT_SOURCE_DIR} CACHE STRING "Path to the libstored sources" FORCE)
+set(LIBSTORED_SOURCE_DIR
+    ${PROJECT_SOURCE_DIR}
+    CACHE STRING "Path to the libstored sources" FORCE
+)
 list(APPEND CMAKE_MODULE_PATH ${LIBSTORED_SOURCE_DIR}/cmake)
 
 include(libstored)
@@ -238,32 +260,12 @@ if(LIBSTORED_DOCUMENTATION AND LIBSTORED_PYLIBSTORED)
 	add_subdirectory(sphinx)
 endif()
 
-install(DIRECTORY ${LIBSTORED_SOURCE_DIR}/include/libstored/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libstored FILES_MATCHING PATTERN "*.h")
-install(FILES ${LIBSTORED_SOURCE_DIR}/include/stored ${LIBSTORED_SOURCE_DIR}/include/stored.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-set(LIBSTORED_CONFIG_FILE ${LIBSTORED_SOURCE_DIR}/include/stored_config.h)
-foreach(d IN LISTS LIBSTORED_PREPEND_INCLUDE_DIRECTORIES)
-	if(EXISTS ${d}/stored_config.h)
-		set(LIBSTORED_CONFIG_FILE ${d}/stored_config.h)
-		break()
-	endif()
-endforeach()
-install(FILES ${LIBSTORED_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-if(LIBSTORED_DO_INSTALL_LIBSTORED)
-	install(EXPORT libstored DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake)
-endif()
-
-configure_package_config_file(
-	"${LIBSTORED_SOURCE_DIR}/cmake/LibstoredStoresConfig.cmake.in"
-	"${PROJECT_BINARY_DIR}/LibstoredStoresConfig.cmake"
-	INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/LibstoredStores
-)
-
-install(FILES ${PROJECT_BINARY_DIR}/LibstoredStoresConfig.cmake DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/LibstoredStores)
-
 if(DEFINED ENV{XILINX_VIVADO})
-	find_program(VIVADO_CMD NAMES vivado PATHS "$ENV{XILINX_VIVADO}/bin")
+	find_program(
+		VIVADO_CMD
+		NAMES vivado
+		PATHS "$ENV{XILINX_VIVADO}/bin"
+	)
 endif()
 
 if(NOT VIVADO_CMD)
@@ -294,7 +296,9 @@ else()
 	set(LIBSTORED_PIP_INSTALL_USER_DEFAULT ON)
 endif()
 
-option(LIBSTORED_PIP_INSTALL_USER "Run pip install with --user flag when installing wheel files" ${LIBSTORED_PIP_INSTALL_USER_DEFAULT})
+option(LIBSTORED_PIP_INSTALL_USER "Run pip install with --user flag when installing wheel files"
+       ${LIBSTORED_PIP_INSTALL_USER_DEFAULT}
+)
 
 if(LIBSTORED_PYLIBSTORED)
 	add_subdirectory(python)
@@ -326,7 +330,10 @@ if(CPPCHECK_CMD)
 	if(LIBSTORED_EXAMPLES)
 		macro(cppcheck_add app)
 			if(TARGET ${app}-libstored-generate)
-				set(CPPCHECK_EXAMPLES ${CPPCHECK_EXAMPLES} -I examples/${app}/libstored/include examples/${app})
+				set(CPPCHECK_EXAMPLES
+				    ${CPPCHECK_EXAMPLES} -I examples/${app}/libstored/include
+				    examples/${app}
+				)
 				set(CPPCHECK_DEPENDS ${CPPCHECK_DEPENDS} ${app}-libstored-generate)
 			endif()
 		endmacro()
@@ -341,11 +348,13 @@ if(CPPCHECK_CMD)
 		cppcheck_add(8_sync)
 		cppcheck_add(9_fpga)
 		cppcheck_add(components)
-#		cppcheck_add(concurrency) # This one somehow makes cppcheck choke.
+		# cppcheck_add(concurrency) # This one somehow makes cppcheck choke.
 		cppcheck_add(control)
 		cppcheck_add(meta)
 		if(TARGET meta-libstored-generate)
-			set(CPPCHECK_EXAMPLES ${CPPCHECK_EXAMPLES} -I ${CMAKE_BINARY_DIR}/examples/meta examples/meta)
+			set(CPPCHECK_EXAMPLES ${CPPCHECK_EXAMPLES} -I
+					      ${CMAKE_BINARY_DIR}/examples/meta examples/meta
+			)
 			set(CPPCHECK_DEPENDS ${CPPCHECK_DEPENDS} meta-generate)
 		endif()
 		cppcheck_add(pipes)
@@ -354,26 +363,17 @@ if(CPPCHECK_CMD)
 		cppcheck_add(zmqserver)
 	endif()
 
-	add_custom_target(libstored-cppcheck
+	add_custom_target(
+		libstored-cppcheck
 		COMMAND
-			${CPPCHECK_CMD}
-			--enable=warning,style,information
-			--force
-			--inline-suppr
-			--quiet
-			--suppressions-list=${CMAKE_CURRENT_SOURCE_DIR}/.cppcheck_suppr
-			--error-exitcode=1
-			-j 4
-			--library=gnu
-			"--template=[{file}:{line}]: ({severity},{id}) {message}"
-			--std=c++17 --language=c++ -D__cplusplus=201703L
-			-DCPPCHECK
-			-D__GNUC__
-#			--xml
-			-I include
-			${CPPCHECK_EXAMPLES}
-			src
-#			--check-config
+			${CPPCHECK_CMD} --enable=warning,style,information --force --inline-suppr
+			--quiet --suppressions-list=${CMAKE_CURRENT_SOURCE_DIR}/.cppcheck_suppr
+			--error-exitcode=1 -j 4 --library=gnu
+			"--template=[{file}:{line}]: ({severity},{id}) {message}" --std=c++17
+			--language=c++ -D__cplusplus=201703L -DCPPCHECK -D__GNUC__
+			# --xml
+			-I include ${CPPCHECK_EXAMPLES} src
+			# --check-config
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		COMMENT "Running cppcheck..."
 		VERBATIM

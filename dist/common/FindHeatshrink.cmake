@@ -6,6 +6,7 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 include(ExternalProject)
+include(GNUInstallDirs)
 find_package(Git)
 
 if("${HEATSHRINK_GIT_URL}" STREQUAL "")
@@ -32,11 +33,15 @@ ExternalProject_Add(
 
 ExternalProject_Get_Property(heatshrink-extern SOURCE_DIR)
 
-# heatshrink_encoder.c and heatshrink_decoder.c are considered generated files.
-# Upon a clean, they are removed. Hence the UPDATE_COMMAND to recover them.
+# heatshrink_encoder.c and heatshrink_decoder.c are considered generated files. Upon a clean, they
+# are removed. Hence the UPDATE_COMMAND to recover them.
 add_library(heatshrink STATIC ${SOURCE_DIR}/heatshrink_encoder.c ${SOURCE_DIR}/heatshrink_decoder.c)
-set_target_properties(heatshrink PROPERTIES PUBLIC_HEADER
-	"${SOURCE_DIR}/heatshrink_common.h;${SOURCE_DIR}/heatshrink_config.h;${SOURCE_DIR}/heatshrink_encoder.h;${SOURCE_DIR}/heatshrink_decoder.h")
+set_target_properties(
+	heatshrink
+	PROPERTIES
+		PUBLIC_HEADER
+		"${SOURCE_DIR}/heatshrink_common.h;${SOURCE_DIR}/heatshrink_config.h;${SOURCE_DIR}/heatshrink_encoder.h;${SOURCE_DIR}/heatshrink_decoder.h"
+)
 add_dependencies(heatshrink heatshrink-extern)
 
 get_target_property(heatshrink_src heatshrink SOURCES)
@@ -51,13 +56,21 @@ if(MSVC)
 	endif()
 endif()
 
-target_include_directories(heatshrink PUBLIC $<BUILD_INTERFACE:${SOURCE_DIR}> $<INSTALL_INTERFACE:include>)
-
-install(TARGETS heatshrink EXPORT libstored
-	ARCHIVE DESTINATION lib
-	PUBLIC_HEADER DESTINATION include
+target_include_directories(
+	heatshrink PUBLIC $<BUILD_INTERFACE:${SOURCE_DIR}> $<INSTALL_INTERFACE:include>
 )
 
-set(LIBSTORED_DO_INSTALL_LIBSTORED ON)
-set(Heatshrink_FOUND 1)
+install(
+	TARGETS heatshrink
+	EXPORT Heatshrink
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
 
+if(WIN32)
+	install(EXPORT Heatshrink DESTINATION CMake)
+else()
+	install(EXPORT Heatshrink DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake)
+endif()
+
+set(Heatshrink_FOUND 1)
