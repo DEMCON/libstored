@@ -454,7 +454,7 @@ generate stuff for you.  This is how to integrate it in your project:
 
       list(APPEND CMAKE_MODULE_PATH extern/libstored/dist/common)
       find_package(ZeroMQ REQUIRED)
-      set(LIBSTORED_HAVE_ZMQ ON)
+      set(LIBSTORED_HAVE_LIBZMQ ON)
 
    For Windows, Linux and macOS, the provided package in the ``common``
    directory tries to find ZeroMQ on your system, or it is built from source.
@@ -499,10 +499,17 @@ generate stuff for you.  This is how to integrate it in your project:
 Alternatively, you could install libstored from PyPI instead of the submodule
 approach.  In that case:
 
-1. Do someting like ``python3 -m pip install libstored``.
+1. Do something like ``python3 -m pip install libstored``.
 2. Run ``python3 -m libstored.cmake`` to generate a ``FindLibstored.cmake``.
 3. In your project, call ``find_package(Libstored)``, while having the
    generated ``FindLibstored.cmake`` in your ``CMAKE_MODULE_PATH``.
+
+   ``Libstored`` accepts ``ZeroMQ``, ``Zth``, ``Heatshrink``, ``Qt5``, ``Qt6``
+   as ``COMPONENTS``.  Setting these enables integration of these libraries
+   with libstored. When possible, they are taken from your host system, or
+   built from source (except Qt).  If you want more control over these
+   libraries, you can also use the mechanism described above with manually
+   setting ``LIBSTORED_HAVE_LIBZMQ`` and friends.
 4. Continue with step 5 of the submodule-approach above.
 
 Check out the examples of libstored, which are all independent applications
