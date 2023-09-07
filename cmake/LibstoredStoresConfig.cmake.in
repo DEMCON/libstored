@@ -42,6 +42,8 @@ else()
 endif()
 
 include(${LIBSTORED_STORES_CMAKE_PATH}/libstored.cmake OPTIONAL)
+include(${LIBSTORED_STORES_CMAKE_PATH}/heatshrink.cmake OPTIONAL)
+find_package(Zth)
 
 file(GLOB _stores ${LIBSTORED_STORES_CMAKE_PATH}/*Store.cmake)
 foreach(f IN LISTS _stores)
