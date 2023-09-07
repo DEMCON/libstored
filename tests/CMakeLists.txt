@@ -273,6 +273,11 @@ if(NOT WIN32)
 
 set -euo pipefail
 
+if ! \"$<TARGET_FILE:${APP}>\" -a > /dev/null; then
+	echo \"No AFL++ instrumentation available. Stopping.\"
+	exit 0
+fi
+
 export AFL_NO_CRASH_README=1
 export AFL_SKIP_CPUFREQ=1
 

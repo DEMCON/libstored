@@ -31,9 +31,10 @@ __AFL_FUZZ_INIT();
 
 void help(char const* exe)
 {
-	printf("Usage: %s [-h|-i|<input file>]\n", exe ? exe : fuzz_name);
+	printf("Usage: %s [-a|-h|-i|<input file>]\n", exe ? exe : fuzz_name);
 
 	printf("\nwhere\n");
+	printf("   -a   Check if there is instrumentation for AFL++.\n");
 	printf("   -h   Show this help and exit.\n");
 	printf("   -i   Generate input files in the current directory and exit.\n");
 	printf("   <input file>\n");
@@ -181,7 +182,15 @@ int main(int argc, char** argv)
 	case 1:
 		break;
 	case 2:
-		if(strcmp(argv[1], "-h") == 0) {
+		if(strcmp(argv[1], "-a") == 0) {
+#ifdef HAVE_AFL
+			printf("Compiled with instrumentation for AFL++\n");
+			return 0;
+#else
+			printf("No AFL++ instrumentation available.\n");
+			return 1;
+#endif
+		} else if(strcmp(argv[1], "-h") == 0) {
 			help(argv[0]);
 			return 0;
 		} else if(strcmp(argv[1], "-i") == 0) {
